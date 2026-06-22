@@ -6,8 +6,8 @@ package at.bitfire.synctools.mapping.jtx.builder
 
 import android.content.ContentValues
 import android.content.Entity
-import at.bitfire.ical4android.JtxICalObject
 import at.bitfire.synctools.icalendar.propertyListOf
+import at.bitfire.synctools.mapping.jtx.JtxProperty
 import at.techbee.jtx.JtxContract
 import net.fortuna.ical4j.model.component.VToDo
 import net.fortuna.ical4j.model.property.Geo
@@ -62,7 +62,7 @@ class GeoBuilderTest {
 
     @Test
     fun `X-GEOFENCE-RADIUS valid value`() {
-        val task = VToDo(propertyListOf(XProperty(JtxICalObject.X_PROP_GEOFENCE_RADIUS, "500")))
+        val task = VToDo(propertyListOf(XProperty(JtxProperty.X_GEOFENCE_RADIUS, "500")))
         val main = VToDo()
         val output = Entity(ContentValues())
 
@@ -73,7 +73,7 @@ class GeoBuilderTest {
 
     @Test
     fun `X-GEOFENCE-RADIUS invalid value`() {
-        val task = VToDo(propertyListOf(XProperty(JtxICalObject.X_PROP_GEOFENCE_RADIUS, "abc")))
+        val task = VToDo(propertyListOf(XProperty(JtxProperty.X_GEOFENCE_RADIUS, "abc")))
         val main = VToDo()
         val output = Entity(ContentValues())
 

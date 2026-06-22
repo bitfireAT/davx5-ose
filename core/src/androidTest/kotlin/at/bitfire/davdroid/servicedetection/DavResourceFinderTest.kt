@@ -7,6 +7,7 @@ package at.bitfire.davdroid.servicedetection
 import at.bitfire.dav4jvm.okhttp.DavResource
 import at.bitfire.dav4jvm.property.carddav.CardDAV
 import at.bitfire.dav4jvm.property.webdav.WebDAV
+import at.bitfire.davdroid.log.FileLoggerFactory
 import at.bitfire.davdroid.network.HttpClientBuilder
 import at.bitfire.davdroid.servicedetection.DavResourceFinder.Configuration.ServiceInfo
 import at.bitfire.davdroid.settings.Credentials
@@ -27,6 +28,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.junit.rules.TemporaryFolder
 import java.net.URI
 import java.util.logging.Logger
 import javax.inject.Inject
@@ -48,6 +50,9 @@ class DavResourceFinderTest {
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
 
+    @get:Rule
+    val tempFolder = TemporaryFolder()
+
     @Inject
     lateinit var httpClientBuilder: HttpClientBuilder
 
@@ -60,6 +65,7 @@ class DavResourceFinderTest {
     private lateinit var server: MockWebServer
     private lateinit var client: OkHttpClient
     private lateinit var finder: DavResourceFinder
+    private lateinit var finderLog: FileLoggerFactory.FileHandlerAndLogger
 
     @Before
     fun setUp() {
@@ -75,15 +81,32 @@ class DavResourceFinderTest {
                 .authenticate(domain = null, getCredentials = { credentials })
                 .build()
 
+        finderLog = FileLoggerFactory.forFile(tempFolder.newFile())
         val baseURI = URI.create("/")
-        finder = resourceFinderFactory.create(baseURI, credentials)
+        finder = resourceFinderFactory.create(baseURI, credentials, finderLog.logger)
     }
 
     @After
     fun tearDown() {
+        finderLog.close()
         server.shutdown()
     }
 
+
+    @Test
+    fun testFindInitialConfiguration_logsOutput() {
+        val logFile = tempFolder.newFile()
+        FileLoggerFactory.forFile(logFile).use { (logger) ->
+            resourceFinderFactory.create(
+                server.url(PATH_CALDAV).toUri(),
+                Credentials(username = "mock", password = "12345".toSensitiveString()),
+                logger
+            ).findInitialConfiguration()
+        }
+        val logs = logFile.readText()
+        assertTrue(logs.contains("Checking user-given URL"))    // service detection log
+        assertTrue(logs.contains("PROPFIND http://"))           // HTTP traffic
+    }
 
     @Test
     fun testRememberIfAddressBookOrHomeset() {

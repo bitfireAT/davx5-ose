@@ -5,8 +5,8 @@
 package at.bitfire.synctools.mapping.jtx.handler
 
 import android.content.Entity
-import at.bitfire.ical4android.JtxICalObject
 import at.bitfire.synctools.icalendar.plusAssign
+import at.bitfire.synctools.mapping.jtx.JtxProperty
 import at.techbee.jtx.JtxContract
 import net.fortuna.ical4j.model.component.CalendarComponent
 import net.fortuna.ical4j.model.component.VToDo
@@ -30,7 +30,7 @@ class CompletedHandler : JtxObjectEntityHandler {
             // All-day completion: no time of day, COMPLETED is stored as midnight UTC
             val date = LocalDate.ofInstant(instant, ZoneOffset.UTC).atStartOfDay().toInstant(ZoneOffset.UTC)
             to += Completed(date)
-            to += XProperty(JtxICalObject.X_PROP_COMPLETEDTIMEZONE, timezone)
+            to += XProperty(JtxProperty.X_COMPLETEDTIMEZONE, timezone)
             return
         }
 
@@ -38,7 +38,7 @@ class CompletedHandler : JtxObjectEntityHandler {
         to += Completed(instant)
 
         if (!timezone.isNullOrBlank() && isValidTimeZone(timezone)) {
-            to += XProperty(JtxICalObject.X_PROP_COMPLETEDTIMEZONE, timezone)
+            to += XProperty(JtxProperty.X_COMPLETEDTIMEZONE, timezone)
         }
         // invalid/blank timezone values are dropped (the date stays valid as UTC)
     }

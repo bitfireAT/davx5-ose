@@ -9,7 +9,6 @@ import at.bitfire.dateTimeValue
 import at.bitfire.synctools.exception.ResourceMappingException
 import at.bitfire.synctools.icalendar.DatePropertyTzMapper.normalizedDate
 import at.bitfire.synctools.icalendar.DatePropertyTzMapper.normalizedDates
-import at.bitfire.synctools.util.AndroidTimeUtils.toInstant
 import net.fortuna.ical4j.data.CalendarBuilder
 import net.fortuna.ical4j.model.Component
 import net.fortuna.ical4j.model.Parameter
@@ -88,18 +87,19 @@ class DatePropertyTzMapperTest {
         val vEvent = cal.getComponent<VEvent>(Component.VEVENT).get()
         val dtStart = vEvent.requireDtStart<Temporal>()
 
-        // ical4j returns ZonedDatetime with custom timezone from VTIMEZONE
+        // ical4j returns ZonedDateTime with the system timezone; the custom VTIMEZONE is ignored
+        // because "Europe/Berlin" is a system-known TZID (SystemAwareTimeZoneRegistry skips registration)
         val ical4jDate = dtStart.date as ZonedDateTime
-        assertTrue(ical4jDate.zone.id.startsWith("ical4j-local-"))
+        assertEquals("Europe/Berlin", ical4jDate.zone.id)
 
-        // normalizedDate returns ZonedDatetime (with other timestamp because TZ OFFSET is different) with system time zone
+        // normalizedDate returns the same ZonedDateTime (already uses system timezone)
         val normalizedDate = dtStart.normalizedDate() as ZonedDateTime
         assertEquals(ZonedDateTime.of(
             LocalDate.of(2025, 8, 28),
             LocalTime.of(13, 0, 0),
             ZoneId.of("Europe/Berlin")
         ), normalizedDate)
-        assertNotEquals(ical4jDate.toInstant(), normalizedDate.toInstant())
+        assertEquals(ical4jDate.toInstant(), normalizedDate.toInstant())
     }
 
     @Test

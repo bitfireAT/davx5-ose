@@ -3,9 +3,6 @@
  */
 package at.bitfire.davdroid.servicedetection
 
-import android.app.ActivityManager
-import android.content.Context
-import androidx.core.content.getSystemService
 import at.bitfire.dav4jvm.Property
 import at.bitfire.dav4jvm.okhttp.DavResource
 import at.bitfire.dav4jvm.okhttp.Response
@@ -23,14 +20,12 @@ import at.bitfire.dav4jvm.property.webdav.CurrentUserPrincipal
 import at.bitfire.dav4jvm.property.webdav.ResourceType
 import at.bitfire.dav4jvm.property.webdav.WebDAV
 import at.bitfire.davdroid.db.Collection
-import at.bitfire.davdroid.log.StringHandler
 import at.bitfire.davdroid.network.DnsRecordResolver
 import at.bitfire.davdroid.network.HttpClientBuilder
 import at.bitfire.davdroid.settings.Credentials
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import dagger.hilt.android.qualifiers.ApplicationContext
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import org.xbill.DNS.Type
@@ -49,21 +44,21 @@ import java.util.logging.Logger
  * - principal,
  * - homeset/collections (multistatus responses are handled through dav4jvm).
  *
- * @param context        to build the HTTP client
  * @param baseURI        user-given base URI (either mailto: URI or http(s):// URL)
  * @param credentials    optional login credentials (username/password, client certificate, OAuth state)
+ * @param log            logger for service detection; caller is responsible for its lifecycle
  */
 class DavResourceFinder @AssistedInject constructor(
     @Assisted private val baseURI: URI,
     @Assisted private val credentials: Credentials? = null,
-    @ApplicationContext val context: Context,
+    @Assisted private val log: Logger,
     private val dnsRecordResolver: DnsRecordResolver,
     httpClientBuilder: HttpClientBuilder
 ) {
 
     @AssistedFactory
     interface Factory {
-        fun create(baseURI: URI, credentials: Credentials?): DavResourceFinder
+        fun create(baseURI: URI, credentials: Credentials?, log: Logger): DavResourceFinder
     }
 
     enum class Service(val wellKnownName: String) {
@@ -72,9 +67,6 @@ class DavResourceFinder @AssistedInject constructor(
 
         override fun toString() = wellKnownName
     }
-
-    val log: Logger = Logger.getLogger(javaClass.name)
-    private val logBuffer: StringHandler = initLogging()
 
     private var encountered401 = false
 
@@ -88,19 +80,6 @@ class DavResourceFinder @AssistedInject constructor(
                 )
             }
         .build()
-
-    private fun initLogging(): StringHandler {
-        // don't use more than 1/4 of the available memory for a log string
-        val activityManager = context.getSystemService<ActivityManager>()!!
-        val maxLogSize = activityManager.memoryClass * (1024 * 1024 / 8)
-        val handler = StringHandler(maxLogSize)
-
-        // add StringHandler to logger
-        log.level = Level.ALL
-        log.addHandler(handler)
-
-        return handler
-    }
 
 
     /**
@@ -139,8 +118,7 @@ class DavResourceFinder @AssistedInject constructor(
         return Configuration(
             cardDAV = cardDavConfig,
             calDAV = calDavConfig,
-            encountered401 = encountered401,
-            logs = logBuffer.toString()
+            encountered401 = encountered401
         )
     }
 
@@ -480,8 +458,7 @@ class DavResourceFinder @AssistedInject constructor(
         val cardDAV: ServiceInfo?,
         val calDAV: ServiceInfo?,
 
-        val encountered401: Boolean,
-        val logs: String
+        val encountered401: Boolean
     ) {
 
         data class ServiceInfo(
@@ -491,9 +468,6 @@ class DavResourceFinder @AssistedInject constructor(
 
             val emails: MutableList<String> = LinkedList()
         )
-
-        override fun toString() =
-            "DavResourceFinder.Configuration(cardDAV=$cardDAV, calDAV=$calDAV, encountered401=$encountered401, logs=(${logs.length} chars))"
 
     }
 
