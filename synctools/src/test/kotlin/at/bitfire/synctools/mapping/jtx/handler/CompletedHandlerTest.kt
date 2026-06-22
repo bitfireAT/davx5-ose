@@ -7,7 +7,7 @@ package at.bitfire.synctools.mapping.jtx.handler
 import android.content.ContentValues
 import android.content.Entity
 import androidx.core.content.contentValuesOf
-import at.bitfire.ical4android.JtxICalObject
+import at.bitfire.synctools.mapping.jtx.JtxProperty
 import at.techbee.jtx.JtxContract
 import net.fortuna.ical4j.model.Property
 import net.fortuna.ical4j.model.component.VJournal
@@ -73,7 +73,7 @@ class CompletedHandlerTest {
             Completed(Instant.ofEpochMilli(completed)),
             output.getProperty<Completed>(Property.COMPLETED).getOrNull()
         )
-        assertNull(output.getProperty<XProperty>(JtxICalObject.X_PROP_COMPLETEDTIMEZONE).getOrNull())
+        assertNull(output.getProperty<XProperty>(JtxProperty.X_COMPLETEDTIMEZONE).getOrNull())
     }
 
     @Test
@@ -95,7 +95,7 @@ class CompletedHandlerTest {
         )
         assertEquals(
             "Europe/Vienna",
-            output.getProperty<XProperty>(JtxICalObject.X_PROP_COMPLETEDTIMEZONE).getOrNull()?.value
+            output.getProperty<XProperty>(JtxProperty.X_COMPLETEDTIMEZONE).getOrNull()?.value
         )
     }
 
@@ -114,7 +114,7 @@ class CompletedHandlerTest {
 
         assertEquals(
             "Z",
-            output.getProperty<XProperty>(JtxICalObject.X_PROP_COMPLETEDTIMEZONE).getOrNull()?.value
+            output.getProperty<XProperty>(JtxProperty.X_COMPLETEDTIMEZONE).getOrNull()?.value
         )
     }
 
@@ -135,7 +135,7 @@ class CompletedHandlerTest {
             Completed(Instant.ofEpochMilli(completed)),
             output.getProperty<Completed>(Property.COMPLETED).getOrNull()
         )
-        assertNull(output.getProperty<XProperty>(JtxICalObject.X_PROP_COMPLETEDTIMEZONE).getOrNull())
+        assertNull(output.getProperty<XProperty>(JtxProperty.X_COMPLETEDTIMEZONE).getOrNull())
     }
 
     @Test
@@ -155,7 +155,7 @@ class CompletedHandlerTest {
             Completed(Instant.ofEpochMilli(completed)),
             output.getProperty<Completed>(Property.COMPLETED).getOrNull()
         )
-        assertNull(output.getProperty<XProperty>(JtxICalObject.X_PROP_COMPLETEDTIMEZONE).getOrNull())
+        assertNull(output.getProperty<XProperty>(JtxProperty.X_COMPLETEDTIMEZONE).getOrNull())
     }
 
     @Test
@@ -177,7 +177,7 @@ class CompletedHandlerTest {
         )
         assertEquals(
             JtxContract.JtxICalObject.TZ_ALLDAY,
-            output.getProperty<XProperty>(JtxICalObject.X_PROP_COMPLETEDTIMEZONE).getOrNull()?.value
+            output.getProperty<XProperty>(JtxProperty.X_COMPLETEDTIMEZONE).getOrNull()?.value
         )
     }
 
@@ -189,7 +189,7 @@ class CompletedHandlerTest {
         handler.process(from = input, main = input, to = output)
 
         assertNull(output.getProperty<Completed>(Property.COMPLETED).getOrNull())
-        assertNull(output.getProperty<XProperty>(JtxICalObject.X_PROP_COMPLETEDTIMEZONE).getOrNull())
+        assertNull(output.getProperty<XProperty>(JtxProperty.X_COMPLETEDTIMEZONE).getOrNull())
     }
 
     @Test
@@ -205,6 +205,6 @@ class CompletedHandlerTest {
         handler.process(from = input, main = input, to = output)
 
         assertNull(output.getProperty<Completed>(Property.COMPLETED).getOrNull())
-        assertNull(output.getProperty<XProperty>(JtxICalObject.X_PROP_COMPLETEDTIMEZONE).getOrNull())
+        assertNull(output.getProperty<XProperty>(JtxProperty.X_COMPLETEDTIMEZONE).getOrNull())
     }
 }

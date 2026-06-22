@@ -17,7 +17,6 @@ import at.bitfire.synctools.mapping.jtx.handler.CompletedHandler
 import at.bitfire.synctools.mapping.jtx.handler.ContactHandler
 import at.bitfire.synctools.mapping.jtx.handler.CreatedHandler
 import at.bitfire.synctools.mapping.jtx.handler.DescriptionHandler
-import at.bitfire.synctools.mapping.jtx.handler.GeoFenceRadiusHandler
 import at.bitfire.synctools.mapping.jtx.handler.GeoHandler
 import at.bitfire.synctools.mapping.jtx.handler.JtxObjectEntityHandler
 import at.bitfire.synctools.mapping.jtx.handler.LastModifiedHandler
@@ -35,7 +34,7 @@ import at.bitfire.synctools.mapping.jtx.handler.TimeFieldsHandler
 import at.bitfire.synctools.mapping.jtx.handler.UidHandler
 import at.bitfire.synctools.mapping.jtx.handler.UnknownPropertiesHandler
 import at.bitfire.synctools.mapping.jtx.handler.UrlHandler
-import at.bitfire.synctools.mapping.jtx.handler.XStatusHandler
+import at.bitfire.synctools.mapping.jtx.handler.ExtendedStatusHandler
 import at.bitfire.synctools.storage.jtx.JtxObjectAndExceptions
 import at.techbee.jtx.JtxContract
 import net.fortuna.ical4j.model.Property
@@ -73,7 +72,6 @@ class JtxObjectHandler(
         CreatedHandler(),
         DescriptionHandler(),
         GeoHandler(),
-        GeoFenceRadiusHandler(),
         LastModifiedHandler(),
         LocationHandler(),
         OrganizerHandler(),
@@ -89,7 +87,7 @@ class JtxObjectHandler(
         UidHandler(),
         UnknownPropertiesHandler(),
         UrlHandler(),
-        XStatusHandler(),
+        ExtendedStatusHandler(),
     )
 
     /**
