@@ -8,7 +8,6 @@ import at.bitfire.dav4jvm.HttpUtils.toHttpUrl
 import at.bitfire.dav4jvm.HttpUtils.toKtorUrl
 import at.bitfire.dav4jvm.ktor.DavResource
 import at.bitfire.dav4jvm.ktor.Response
-import at.bitfire.dav4jvm.ktor.UrlUtils
 import at.bitfire.dav4jvm.ktor.exception.HttpException
 import at.bitfire.dav4jvm.property.webdav.CurrentUserPrivilegeSet
 import at.bitfire.dav4jvm.property.webdav.DisplayName
@@ -22,15 +21,14 @@ import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavHomeSetRepository
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
+import at.bitfire.davdroid.util.DavUtils.resolve
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import io.ktor.client.HttpClient
-import io.ktor.http.URLBuilder
-import io.ktor.http.takeFrom
-import javax.annotation.WillNotClose
 import java.util.logging.Level
 import java.util.logging.Logger
+import javax.annotation.WillNotClose
 
 /**
  * Used to update the list of synchronizable collections
@@ -94,7 +92,7 @@ class HomeSetRefresher @AssistedInject constructor(
                         homeSetId = localHomeset.id,
                         sync = shouldPreselect(collection, homesets.values),
                         ownerId = response[Owner::class.java]?.href  // save the principal id (collection owner)
-                            ?.let { URLBuilder(response.href).takeFrom(it).build().toHttpUrl() }
+                            ?.let { response.href.resolve(it).toHttpUrl() }
                             ?.let { principalUrl -> Principal.fromServiceAndUrl(service, principalUrl) }
                             ?.let { principal -> db.principalDao().insertOrUpdate(service.id, principal) }
                     )

@@ -6,7 +6,9 @@ package at.bitfire.davdroid.util
 
 import at.bitfire.davdroid.util.DavUtils.lastSegment
 import at.bitfire.davdroid.util.DavUtils.parent
+import at.bitfire.davdroid.util.DavUtils.resolve
 import io.ktor.http.ContentType
+import io.ktor.http.Url
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -75,6 +77,40 @@ class DavUtilsTest {
         assertEquals("http://example.com/1/".toHttpUrl(), "http://example.com/1/2".toHttpUrl().parent())
         assertEquals("http://example.com/".toHttpUrl(), "http://example.com/1".toHttpUrl().parent())
         assertEquals("http://example.com/".toHttpUrl(), "http://example.com".toHttpUrl().parent())
+    }
+
+    @Test
+    fun testUrl_Resolve_Collection() {
+        val collection = Url("https://example.com/base/path/")
+
+        // relative path
+        assertEquals(Url("https://example.com/base/path/relative"), collection.resolve("relative"))
+        assertEquals(Url("https://example.com/base/path/subdir/file"), collection.resolve("subdir/file"))
+
+        // absolute path
+        assertEquals(Url("https://example.com/absolute"), collection.resolve("/absolute"))
+        assertEquals(Url("https://example.com/"), collection.resolve("/"))
+
+        // absolute URL
+        assertEquals(Url("https://other.com/path"), collection.resolve("https://other.com/path"))
+        assertEquals(Url("http://example.org/test"), collection.resolve("http://example.org/test"))
+    }
+
+    @Test
+    fun testUrl_Resolve_NonCollection() {
+        val baseUrl = Url("https://example.com/base")
+
+        // relative path
+        assertEquals(Url("https://example.com/relative"), baseUrl.resolve("relative"))
+        assertEquals(Url("https://example.com/subdir/file"), baseUrl.resolve("subdir/file"))
+
+        // absolute path
+        assertEquals(Url("https://example.com/absolute"), baseUrl.resolve("/absolute"))
+        assertEquals(Url("https://example.com/"), baseUrl.resolve("/"))
+
+        // absolute URL
+        assertEquals(Url("https://other.com/path"), baseUrl.resolve("https://other.com/path"))
+        assertEquals(Url("http://example.org/test"), baseUrl.resolve("http://example.org/test"))
     }
 
 }

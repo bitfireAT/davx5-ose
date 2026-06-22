@@ -23,6 +23,7 @@ import at.bitfire.dav4jvm.property.webdav.WebDAV
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.network.DnsRecordResolver
 import at.bitfire.davdroid.settings.Credentials
+import at.bitfire.davdroid.util.DavUtils.resolve
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -30,7 +31,6 @@ import io.ktor.client.HttpClient
 import io.ktor.http.URLBuilder
 import io.ktor.http.URLProtocol
 import io.ktor.http.Url
-import io.ktor.http.takeFrom
 import org.xbill.DNS.Type
 import java.io.InterruptedIOException
 import java.net.SocketTimeoutException
@@ -142,7 +142,7 @@ class DavResourceFinder @AssistedInject constructor(
                 if (config.principal == null)
                     try {
                         config.principal = getCurrentUserPrincipal(
-                            URLBuilder(baseURL).takeFrom("/.well-known/${service.wellKnownName}").build(),
+                            baseURL.resolve("/.well-known/${service.wellKnownName}"),
                             service
                         )
                     } catch (e: Exception) {
@@ -289,7 +289,7 @@ class DavResourceFinder @AssistedInject constructor(
 
         // check for current-user-principal
         davResponse[CurrentUserPrincipal::class.java]?.href?.let { currentUserPrincipal ->
-            principal = URLBuilder(davResponse.requestedUrl).takeFrom(currentUserPrincipal).build()
+            principal = davResponse.requestedUrl.resolve(currentUserPrincipal)
         }
 
         davResponse[ResourceType::class.java]?.let {
@@ -308,7 +308,7 @@ class DavResourceFinder @AssistedInject constructor(
         // Is it an addressbook-home-set or calendar-home-set?
         davResponse[homeSetClass]?.let { homeSet ->
             for (href in homeSet.hrefs) {
-                val location = UrlUtils.withTrailingSlash(URLBuilder(davResponse.requestedUrl).takeFrom(href).build())
+                val location = UrlUtils.withTrailingSlash(davResponse.requestedUrl.resolve(href))
                 log.info("Found home-set of type $resourceType at $location")
                 config.homeSets += location
             }
@@ -416,7 +416,7 @@ class DavResourceFinder @AssistedInject constructor(
         var principal: Url? = null
         DavResource(httpClient, url, log).propfind(0, WebDAV.CurrentUserPrincipal) { response, _ ->
             response[CurrentUserPrincipal::class.java]?.href?.let { href ->
-                val resolved = URLBuilder(response.requestedUrl).takeFrom(href).build()
+                val resolved = response.requestedUrl.resolve(href)
                 log.info("Found current-user-principal: $resolved")
 
                 // service check

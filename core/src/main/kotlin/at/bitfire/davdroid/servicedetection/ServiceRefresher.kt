@@ -23,13 +23,12 @@ import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.repository.DavHomeSetRepository
 import at.bitfire.davdroid.util.DavUtils.parent
+import at.bitfire.davdroid.util.DavUtils.resolve
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import io.ktor.client.HttpClient
-import io.ktor.http.URLBuilder
 import io.ktor.http.Url
-import io.ktor.http.takeFrom
 import java.util.logging.Level
 import java.util.logging.Logger
 import javax.annotation.WillNotClose
@@ -116,7 +115,7 @@ class ServiceRefresher @AssistedInject constructor(
                 // If response holds home sets, save them
                 davResponse[homeSetClass]?.let { homeSets ->
                     for (homeSetHref in homeSets.hrefs)
-                        URLBuilder(principal.location).takeFrom(homeSetHref).build().let { homesetUrl ->
+                        principal.location.resolve(homeSetHref).let { homesetUrl ->
                             val resolvedHomeSetUrl = UrlUtils.withTrailingSlash(homesetUrl)
                             if (!alreadySavedHomeSets.contains(resolvedHomeSetUrl)) {
                                 homeSetRepository.insertOrUpdateByUrlBlocking(
@@ -144,7 +143,7 @@ class ServiceRefresher @AssistedInject constructor(
                     for (type in relatedResourcesTypes)
                         davResponse[type]?.let {
                             for (href in it.hrefs)
-                                URLBuilder(principal.location).takeFrom(href).build()
+                                principal.location.resolve(href)
                                     .let { url -> relatedResources += url }
                         }
                 }

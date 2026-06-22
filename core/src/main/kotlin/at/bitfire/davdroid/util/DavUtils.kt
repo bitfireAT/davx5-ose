@@ -8,8 +8,8 @@ import at.bitfire.davdroid.util.DavUtils.generateUidIfNecessary
 import io.ktor.http.ContentType
 import io.ktor.http.URLBuilder
 import io.ktor.http.Url
+import io.ktor.http.takeFrom
 import okhttp3.HttpUrl
-import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
 import java.net.URI
 import java.net.URISyntaxException
@@ -157,15 +157,15 @@ object DavUtils {
     }
 
     /**
-     * Compares MIME type and subtype of two MediaTypes. Does _not_ compare parameters
-     * like `charset` or `version`.
+     * Resolves `this` URL against a relative path.
      *
-     * @param other   MediaType to compare with
+     * See [URLBuilder.takeFrom] for details of resolving.
      *
-     * @return *true* if type and subtype match; *false* if they don't
+     * @param relative The relative path to resolve.
+     * @return A new [Url] representing the resolved URL.
      */
-    fun MediaType.sameTypeAs(other: MediaType) =
-        type == other.type && subtype == other.subtype
+    fun Url.resolve(relative: String): Url =
+        URLBuilder(this).takeFrom(relative).build()
 
     fun String.toURIorNull(): URI? = try {
         URI(this)

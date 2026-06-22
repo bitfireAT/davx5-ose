@@ -14,12 +14,11 @@ import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Principal
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.repository.DavCollectionRepository
+import at.bitfire.davdroid.util.DavUtils.resolve
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import io.ktor.client.HttpClient
-import io.ktor.http.URLBuilder
-import io.ktor.http.takeFrom
 import javax.annotation.WillNotClose
 
 /**
@@ -60,7 +59,7 @@ class CollectionsWithoutHomeSetRefresher @AssistedInject constructor(
                     collectionRepository.insertOrUpdateByUrlRememberSync(collection.copy(
                         serviceId = localCollection.serviceId,          // use same service ID as previous entry
                         ownerId = response[Owner::class.java]?.href     // save the principal id (collection owner)
-                            ?.let { URLBuilder(response.href).takeFrom(it).build().toHttpUrl() }
+                            ?.let { response.href.resolve(it).toHttpUrl() }
                             ?.let { principalUrl -> Principal.fromServiceAndUrl(service, principalUrl) }
                             ?.let { principal -> db.principalDao().insertOrUpdate(service.id, principal) }
                     ))
