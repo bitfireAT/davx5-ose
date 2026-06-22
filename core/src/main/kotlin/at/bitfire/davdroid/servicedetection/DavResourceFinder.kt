@@ -39,6 +39,7 @@ import java.net.URISyntaxException
 import java.util.LinkedList
 import java.util.logging.Level
 import java.util.logging.Logger
+import javax.annotation.WillNotClose
 
 /**
  * Does initial resource detection when an account is added. It uses the (user given) base URL to find
@@ -55,7 +56,7 @@ import java.util.logging.Logger
 class DavResourceFinder @AssistedInject constructor(
     @Assisted private val baseURI: URI,
     @Assisted private val credentials: Credentials? = null,
-    @Assisted private val httpClient: HttpClient,
+    @Assisted @WillNotClose private val httpClient: HttpClient,
     @Assisted private val log: Logger,
     private val dnsRecordResolver: DnsRecordResolver
 ) {
@@ -356,17 +357,14 @@ class DavResourceFinder @AssistedInject constructor(
      * @return principal URL, or null if none found
      */
     suspend fun discoverPrincipalUrl(domain: String, service: Service): Url? {
-        val scheme = "https"
-        var port = 443
-        val paths = LinkedList<String>()     // there may be multiple paths to try
-
         val query = "_${service.wellKnownName}s._tcp.$domain"
-        log.fine("Looking up SRV records for $query")
+        log.fine("Looking up SRV/TXT records for $query")
 
         val srvRecords = dnsRecordResolver.resolve(query, Type.SRV)
         val srv = dnsRecordResolver.bestSRVRecord(srvRecords)
 
         val fqdn: String
+        val port: Int
         if (srv != null) {
             // choose SRV record to use (query may return multiple SRV records)
             fqdn = srv.target.toString(true)
@@ -374,22 +372,27 @@ class DavResourceFinder @AssistedInject constructor(
             log.info("Found $service service at https://$fqdn:$port")
         } else {
             // no SRV records, try domain name as FQDN
-            log.info("Didn't find $service service, trying at https://$domain:$port")
             fqdn = domain
+            port = 443
+            log.info("Didn't find $service service, trying at https://$domain:$port")
         }
 
-        // look for TXT record too (for initial context path)
-        val txtRecords = dnsRecordResolver.resolve(query, Type.TXT)
-        paths.addAll(dnsRecordResolver.pathsFromTXTRecords(txtRecords))
+        // there can be multiple paths to try
+        val paths: List<String> = buildList {
+            // look for TXT record too (for initial context path)
+            val txtRecords = dnsRecordResolver.resolve(query, Type.TXT)
+            addAll(dnsRecordResolver.pathsFromTXTRecords(txtRecords))
 
-        // in case there's a TXT record, but it's wrong, try well-known
-        paths.add("/.well-known/" + service.wellKnownName)
-        // if this fails too, try "/"
-        paths.add("/")
+            // in case there's a TXT record, but it's wrong, try well-known
+            add("/.well-known/" + service.wellKnownName)
+
+            // if this fails too, try "/"
+            add("/")
+        }
 
         for (path in paths)
             try {
-                val initialContextPath = URLBuilder("$scheme://$fqdn:$port$path").build()
+                val initialContextPath = URLBuilder("https://$fqdn:$port$path").build()
 
                 log.info("Trying to determine principal from initial context path=$initialContextPath")
                 val principal = getCurrentUserPrincipal(initialContextPath, service)
