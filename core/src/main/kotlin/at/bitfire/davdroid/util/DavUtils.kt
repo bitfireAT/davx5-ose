@@ -6,8 +6,6 @@ package at.bitfire.davdroid.util
 
 import at.bitfire.davdroid.util.DavUtils.generateUidIfNecessary
 import io.ktor.http.ContentType
-import io.ktor.http.URLBuilder
-import io.ktor.http.Url
 import okhttp3.HttpUrl
 import okhttp3.MediaType.Companion.toMediaType
 import java.net.URI
@@ -119,17 +117,6 @@ object DavUtils {
 
     val HttpUrl.lastSegment: String
         get() = pathSegments.lastOrNull { it.isNotEmpty() } ?: "/"
-
-    /** Returns parent URL (parent folder). Always with trailing slash. */
-    fun Url.parent(): Url {
-        val segments = pathSegments
-        if (segments.size <= 1)
-            return this  // already root
-        return if (segments.last() == "")
-            URLBuilder(this).apply { pathSegments = segments.dropLast(2) + "" }.build()
-        else
-            URLBuilder(this).apply { pathSegments = segments.dropLast(1) + "" }.build()
-    }
 
     /**
      * Returns parent URL (parent folder). Always with trailing slash

@@ -7,10 +7,11 @@ import at.bitfire.dav4jvm.HttpUtils.toKtorUrl
 import at.bitfire.dav4jvm.Property
 import at.bitfire.dav4jvm.ktor.DavResource
 import at.bitfire.dav4jvm.ktor.Response
-import at.bitfire.dav4jvm.ktor.UrlUtils
 import at.bitfire.dav4jvm.ktor.exception.DavException
 import at.bitfire.dav4jvm.ktor.exception.HttpException
 import at.bitfire.dav4jvm.ktor.exception.UnauthorizedException
+import at.bitfire.dav4jvm.ktor.resolve
+import at.bitfire.dav4jvm.ktor.withTrailingSlash
 import at.bitfire.dav4jvm.property.caldav.CalDAV
 import at.bitfire.dav4jvm.property.caldav.CalendarHomeSet
 import at.bitfire.dav4jvm.property.caldav.CalendarUserAddressSet
@@ -23,7 +24,6 @@ import at.bitfire.dav4jvm.property.webdav.WebDAV
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.network.DnsRecordResolver
 import at.bitfire.davdroid.settings.Credentials
-import at.bitfire.dav4jvm.ktor.resolve
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -308,7 +308,7 @@ class DavResourceFinder @AssistedInject constructor(
         // Is it an addressbook-home-set or calendar-home-set?
         davResponse[homeSetClass]?.let { homeSet ->
             for (href in homeSet.hrefs) {
-                val location = UrlUtils.withTrailingSlash(davResponse.requestedUrl.resolve(href))
+                val location = davResponse.requestedUrl.resolve(href).withTrailingSlash()
                 log.info("Found home-set of type $resourceType at $location")
                 config.homeSets += location
             }

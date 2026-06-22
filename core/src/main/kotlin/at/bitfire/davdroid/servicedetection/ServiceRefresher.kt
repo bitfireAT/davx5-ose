@@ -7,8 +7,10 @@ package at.bitfire.davdroid.servicedetection
 import at.bitfire.dav4jvm.HttpUtils.toHttpUrl
 import at.bitfire.dav4jvm.Property
 import at.bitfire.dav4jvm.ktor.DavResource
-import at.bitfire.dav4jvm.ktor.UrlUtils
 import at.bitfire.dav4jvm.ktor.exception.HttpException
+import at.bitfire.dav4jvm.ktor.parent
+import at.bitfire.dav4jvm.ktor.resolve
+import at.bitfire.dav4jvm.ktor.withTrailingSlash
 import at.bitfire.dav4jvm.property.caldav.CalDAV
 import at.bitfire.dav4jvm.property.caldav.CalendarHomeSet
 import at.bitfire.dav4jvm.property.caldav.CalendarProxyReadFor
@@ -22,8 +24,6 @@ import at.bitfire.dav4jvm.property.webdav.WebDAV
 import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.repository.DavHomeSetRepository
-import at.bitfire.davdroid.util.DavUtils.parent
-import at.bitfire.dav4jvm.ktor.resolve
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -116,7 +116,7 @@ class ServiceRefresher @AssistedInject constructor(
                 davResponse[homeSetClass]?.let { homeSets ->
                     for (homeSetHref in homeSets.hrefs)
                         principal.location.resolve(homeSetHref).let { homesetUrl ->
-                            val resolvedHomeSetUrl = UrlUtils.withTrailingSlash(homesetUrl)
+                            val resolvedHomeSetUrl = homesetUrl.withTrailingSlash()
                             if (!alreadySavedHomeSets.contains(resolvedHomeSetUrl)) {
                                 homeSetRepository.insertOrUpdateByUrlBlocking(
                                     // HomeSet is considered personal if this is the outer recursion call,
