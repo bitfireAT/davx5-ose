@@ -95,8 +95,8 @@ class RemindersHandler : JtxObjectEntityHandler {
             val duration = try {
                 java.time.Duration.parse(triggerRelativeDuration)
             } catch (_: DateTimeParseException) {
-                null
-            } ?: return triggerTime?.let { Trigger(Instant.ofEpochMilli(it)) }
+                return null
+            }
 
             return Trigger().apply {
                 this.duration = duration
