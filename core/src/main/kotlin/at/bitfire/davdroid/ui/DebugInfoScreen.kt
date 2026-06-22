@@ -46,6 +46,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import at.bitfire.dav4jvm.okhttp.exception.DavException
 import at.bitfire.dav4jvm.okhttp.exception.HttpException
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.log.DebugDirectory
 import at.bitfire.davdroid.ui.composable.AppTheme
 import at.bitfire.davdroid.ui.composable.CardWithImage
 import at.bitfire.davdroid.ui.composable.ProgressBar
@@ -61,7 +62,7 @@ fun DebugInfoScreen(
     localResource: String?,
     canViewResource: Boolean,
     remoteResource: String?,
-    logs: String?,
+    debugLogFileName: DebugDirectory.FileName? = null,
     timestamp: Long?,
     onShareZipFile: (File) -> Unit,
     onViewFile: (File) -> Unit,
@@ -77,17 +78,17 @@ fun DebugInfoScreen(
                 cause = cause,
                 localResource = localResource,
                 remoteResource = remoteResource,
-                logs = logs,
+                debugLogFileName = debugLogFileName,
                 timestamp = timestamp
             ))
         }
     )
 
+    val logFile = model.logFile
     val uiState = model.uiState
     val debugInfo = uiState.debugInfo
     val zipInProgress = uiState.zipInProgress
     val zipFile = uiState.zipFile
-    val logFile = uiState.logFile
     val error = uiState.error
 
     // Share zip file card, once successfully generated

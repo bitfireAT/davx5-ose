@@ -7,7 +7,7 @@ package at.bitfire.synctools.mapping.jtx.handler
 import android.content.ContentValues
 import android.content.Entity
 import androidx.core.content.contentValuesOf
-import at.bitfire.ical4android.JtxICalObject
+import at.bitfire.synctools.mapping.jtx.JtxProperty
 import at.techbee.jtx.JtxContract
 import net.fortuna.ical4j.model.Property
 import net.fortuna.ical4j.model.component.VToDo
@@ -79,7 +79,7 @@ class GeoHandlerTest {
 
         assertEquals(
             "500",
-            output.getProperty<XProperty>(JtxICalObject.X_PROP_GEOFENCE_RADIUS).getOrNull()?.value
+            output.getProperty<XProperty>(JtxProperty.X_GEOFENCE_RADIUS).getOrNull()?.value
         )
     }
 
@@ -99,7 +99,7 @@ class GeoHandlerTest {
         assertEquals(Geo(48.2.toBigDecimal(), 16.3.toBigDecimal()), output.getRequiredProperty<Geo>(Property.GEO))
         assertEquals(
             "500",
-            output.getProperty<XProperty>(JtxICalObject.X_PROP_GEOFENCE_RADIUS).getOrNull()?.value
+            output.getProperty<XProperty>(JtxProperty.X_GEOFENCE_RADIUS).getOrNull()?.value
         )
     }
 }

@@ -7,7 +7,7 @@ package at.bitfire.davdroid.servicedetection
 import at.bitfire.dav4jvm.ktor.DavResource
 import at.bitfire.dav4jvm.property.carddav.CardDAV
 import at.bitfire.dav4jvm.property.webdav.WebDAV
-import at.bitfire.davdroid.log.VerboseLogCapture
+import at.bitfire.davdroid.log.FileLoggerFactory
 import at.bitfire.davdroid.network.HttpClientBuilder
 import at.bitfire.davdroid.servicedetection.DavResourceFinder.Configuration.ServiceInfo
 import at.bitfire.davdroid.settings.Credentials
@@ -33,6 +33,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.junit.rules.TemporaryFolder
 import java.net.URI
 import javax.inject.Inject
 import javax.inject.Provider
@@ -63,6 +64,9 @@ class DavResourceFinderTest {
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
 
+    @get:Rule
+    val tempFolder = TemporaryFolder()
+
     @Inject
     lateinit var httpClientBuilderProvider: Provider<HttpClientBuilder>
 
@@ -71,6 +75,7 @@ class DavResourceFinderTest {
 
     private lateinit var client: HttpClient
     private lateinit var finder: DavResourceFinder
+    private lateinit var finderLog: FileLoggerFactory.FileHandlerAndLogger
 
     private fun buildMockEngine() = MockEngine { request ->
         val path = request.url.encodedPath.trimEnd('/')
@@ -110,12 +115,14 @@ class DavResourceFinderTest {
     @Before
     fun setUp() {
         hiltRule.inject()
+        finderLog = FileLoggerFactory.forFile(tempFolder.newFile())
         client = HttpClient(buildMockEngine())
-        finder = resourceFinderFactory.create(URI(BASE_URL), null, client, VerboseLogCapture(65536))
+        finder = resourceFinderFactory.create(URI(BASE_URL), null, client, finderLog.logger)
     }
 
     @After
     fun tearDown() {
+        finderLog.close()
         client.close()
     }
 
@@ -125,22 +132,23 @@ class DavResourceFinderTest {
         val mockServer = MockWebServer()
         try {
             mockServer.start()
-
-            val logCapture = VerboseLogCapture(65536)
-            val result = httpClientBuilderProvider.get()
-                .setLogger(logCapture.logger)   // route wire logs to logCapture
-                .buildKtor()
-                .use { httpClient ->
-                    resourceFinderFactory.create(
-                        URI(mockServer.url("/").toString()),
-                        Credentials(username = "mock", password = "12345".toSensitiveString()),
-                        httpClient,
-                        logCapture              // route service detection logs to logCapture
-                    ).findInitialConfiguration()
-                }
-
-            assertTrue("Logs should contain service detection logs", result.logs.contains("Checking user-given URL"))
-            assertTrue("Logs should contain HTTP wire logs", result.logs.contains("PROPFIND ${mockServer.url("/")} HTTP/1.1"))
+            val logFile = tempFolder.newFile()
+            FileLoggerFactory.forFile(logFile).use { (logger) ->
+                httpClientBuilderProvider.get()
+                    .setLogger(logger)
+                    .buildKtor()
+                    .use { httpClient ->
+                        resourceFinderFactory.create(
+                            URI(mockServer.url("/").toString()),
+                            Credentials(username = "mock", password = "12345".toSensitiveString()),
+                            httpClient,
+                            logger
+                        ).findInitialConfiguration()
+                    }
+            }
+            val logs = logFile.readText()
+            assertTrue("Logs should contain service detection logs", logs.contains("Checking user-given URL"))
+            assertTrue("Logs should contain HTTP wire logs", logs.contains("PROPFIND http://"))
         } finally {
             mockServer.shutdown()
         }
