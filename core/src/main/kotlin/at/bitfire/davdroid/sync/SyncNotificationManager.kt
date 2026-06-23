@@ -23,11 +23,12 @@ import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.ui.DebugInfoActivity
 import at.bitfire.davdroid.ui.NotificationRegistry
 import at.bitfire.davdroid.ui.account.AccountSettingsActivity
+import at.bitfire.davdroid.util.DavUtils.resolve
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.qualifiers.ApplicationContext
-import okhttp3.HttpUrl
+import io.ktor.http.Url
 import java.io.IOException
 import java.util.logging.Level
 import java.util.logging.Logger
@@ -112,7 +113,7 @@ class SyncNotificationManager @AssistedInject constructor(
         localCollection: LocalCollection<*>,
         e: Throwable,
         local: LocalResource?,
-        remote: HttpUrl?
+        remote: Url?
     ) = notificationRegistry.notifyIfPossible(NotificationRegistry.NOTIFY_SYNC_ERROR, tag = notificationTag) {
         val contentIntent: Intent
         if (e is UnauthorizedException) {
@@ -219,7 +220,7 @@ class SyncNotificationManager @AssistedInject constructor(
         dataType: SyncDataType,
         e: Throwable,
         local: LocalResource?,
-        remote: HttpUrl?
+        remote: Url?
     ): Intent {
         val builder = DebugInfoActivity.IntentBuilder(context)
             .withAccount(account)

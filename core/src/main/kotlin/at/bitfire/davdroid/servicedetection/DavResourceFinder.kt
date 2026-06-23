@@ -4,12 +4,12 @@
 package at.bitfire.davdroid.servicedetection
 
 import at.bitfire.dav4jvm.Property
-import at.bitfire.dav4jvm.okhttp.DavResource
-import at.bitfire.dav4jvm.okhttp.Response
-import at.bitfire.dav4jvm.okhttp.UrlUtils
-import at.bitfire.dav4jvm.okhttp.exception.DavException
-import at.bitfire.dav4jvm.okhttp.exception.HttpException
-import at.bitfire.dav4jvm.okhttp.exception.UnauthorizedException
+import at.bitfire.dav4jvm.ktor.DavResource
+import at.bitfire.dav4jvm.ktor.Response
+import at.bitfire.dav4jvm.ktor.UrlUtils
+import at.bitfire.dav4jvm.ktor.exception.DavException
+import at.bitfire.dav4jvm.ktor.exception.HttpException
+import at.bitfire.dav4jvm.ktor.exception.UnauthorizedException
 import at.bitfire.dav4jvm.property.caldav.CalDAV
 import at.bitfire.dav4jvm.property.caldav.CalendarHomeSet
 import at.bitfire.dav4jvm.property.caldav.CalendarUserAddressSet
@@ -23,11 +23,15 @@ import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.network.DnsRecordResolver
 import at.bitfire.davdroid.network.HttpClientBuilder
 import at.bitfire.davdroid.settings.Credentials
+import at.bitfire.davdroid.util.DavUtils.resolve
+import at.bitfire.davdroid.util.DavUtils.toUrlOrNull
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import okhttp3.HttpUrl
-import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
+import io.ktor.http.URLBuilder
+import io.ktor.http.URLProtocol
+import io.ktor.http.Url
+import io.ktor.http.path
 import org.xbill.DNS.Type
 import java.io.InterruptedIOException
 import java.net.SocketTimeoutException
@@ -79,7 +83,7 @@ class DavResourceFinder @AssistedInject constructor(
                     getCredentials = { credentials }
                 )
             }
-        .build()
+        .buildKtor()
 
 
     /**
@@ -91,7 +95,7 @@ class DavResourceFinder @AssistedInject constructor(
      * @return service information – if there's neither a CalDAV service nor a CardDAV service,
      * service detection was not successful
      */
-    fun findInitialConfiguration(): Configuration {
+    suspend fun findInitialConfiguration(): Configuration {
         var cardDavConfig: Configuration.ServiceInfo? = null
         var calDavConfig: Configuration.ServiceInfo? = null
 
@@ -122,7 +126,7 @@ class DavResourceFinder @AssistedInject constructor(
         )
     }
 
-    private fun findInitialConfiguration(service: Service): Configuration.ServiceInfo? {
+    private suspend fun findInitialConfiguration(service: Service): Configuration.ServiceInfo? {
         // domain for service discovery
         var discoveryFQDN: String? = null
 
@@ -133,9 +137,9 @@ class DavResourceFinder @AssistedInject constructor(
         log.info("Finding initial ${service.wellKnownName} service configuration")
         when (baseURI.scheme.lowercase()) {
             "http", "https" ->
-                baseURI.toHttpUrlOrNull()?.let { baseURL ->
+                baseURI.toUrlOrNull()?.let { baseURL ->
                     // remember domain for service discovery
-                    if (baseURL.scheme.equals("https", true))
+                    if (baseURL.protocol == URLProtocol.HTTPS)
                         // service discovery will only be tried for https URLs, because only secure service discovery is implemented
                         discoveryFQDN = baseURL.host
 
@@ -145,7 +149,7 @@ class DavResourceFinder @AssistedInject constructor(
                     // If principal was not found already, try well known URI
                     if (config.principal == null)
                         try {
-                            config.principal = getCurrentUserPrincipal(baseURL.resolve("/.well-known/" + service.wellKnownName)!!, service)
+                            config.principal = getCurrentUserPrincipal(baseURL.resolve("/.well-known/" + service.wellKnownName), service)
                         } catch(e: Exception) {
                             log.log(Level.FINE, "Well-known URL detection failed", e)
                             processException(e)
@@ -195,7 +199,7 @@ class DavResourceFinder @AssistedInject constructor(
      * @param service   service to detect configuration for
      * @param config    found configuration will be written to this object
      */
-    private fun checkBaseURL(baseURL: HttpUrl, service: Service, config: Configuration.ServiceInfo) {
+    private suspend fun checkBaseURL(baseURL: Url, service: Service, config: Configuration.ServiceInfo) {
         log.info("Checking user-given URL: $baseURL")
 
         val davBaseURL = DavResource(httpClient, baseURL, log)
@@ -235,7 +239,7 @@ class DavResourceFinder @AssistedInject constructor(
      * @param principal principal URL of the user
      * @return list of found email addresses (empty if none)
      */
-    fun queryEmailAddress(principal: HttpUrl): List<String> {
+    suspend fun queryEmailAddress(principal: Url): List<String> {
         val mailboxes = LinkedList<String>()
         try {
             DavResource(httpClient, principal, log).propfind(0, CalDAV.CalendarUserAddressSet) { response, _ ->
@@ -270,8 +274,8 @@ class DavResourceFinder @AssistedInject constructor(
      * @param davResponse   response whose properties are evaluated
      * @param config        structure storing the references
      */
-    fun scanResponse(resourceType: Property.Name, davResponse: Response, config: Configuration.ServiceInfo) {
-        var principal: HttpUrl? = null
+    suspend fun scanResponse(resourceType: Property.Name, davResponse: Response, config: Configuration.ServiceInfo) {
+        var principal: Url? = null
 
         // Type mapping
         val homeSetClass: Class<out HrefListProperty>
@@ -309,11 +313,10 @@ class DavResourceFinder @AssistedInject constructor(
         // Is it an addressbook-home-set or calendar-home-set?
         davResponse[homeSetClass]?.let { homeSet ->
             for (href in homeSet.hrefs) {
-                davResponse.requestedUrl.resolve(href)?.let {
-                    val location = UrlUtils.withTrailingSlash(it)
-                    log.info("Found home-set of type $resourceType at $location")
-                    config.homeSets += location
-                }
+                val url = davResponse.requestedUrl.resolve(href)
+                val location = UrlUtils.withTrailingSlash(url)
+                log.info("Found home-set of type $resourceType at $location")
+                config.homeSets += location
             }
         }
 
@@ -334,7 +337,7 @@ class DavResourceFinder @AssistedInject constructor(
      *
      * @return whether the URL provides the given service
      */
-    fun providesService(url: HttpUrl, service: Service): Boolean {
+    suspend fun providesService(url: Url, service: Service): Boolean {
         var provided = false
         try {
             DavResource(httpClient, url, log).options { capabilities, _ ->
@@ -359,7 +362,7 @@ class DavResourceFinder @AssistedInject constructor(
      * @param service        service to discover (CALDAV or CARDDAV)
      * @return principal URL, or null if none found
      */
-    fun discoverPrincipalUrl(domain: String, service: Service): HttpUrl? {
+    suspend fun discoverPrincipalUrl(domain: String, service: Service): Url? {
         val scheme: String
         val fqdn: String
         var port = 443
@@ -396,11 +399,12 @@ class DavResourceFinder @AssistedInject constructor(
 
         for (path in paths)
             try {
-                val initialContextPath = HttpUrl.Builder()
-                        .scheme(scheme)
-                        .host(fqdn).port(port)
-                        .encodedPath(path)
-                        .build()
+                val initialContextPath = URLBuilder().apply {
+                    this.protocol = URLProtocol.createOrDefault(scheme)
+                    this.host = fqdn
+                    this.port = port
+                    path(path)
+                }.build()
 
                 log.info("Trying to determine principal from initial context path=$initialContextPath")
                 val principal = getCurrentUserPrincipal(initialContextPath, service)
@@ -420,19 +424,18 @@ class DavResourceFinder @AssistedInject constructor(
      * @param service   required service (may be null, in which case no service check is done)
      * @return          current-user-principal URL that provides required service, or null if none
      */
-    fun getCurrentUserPrincipal(url: HttpUrl, service: Service?): HttpUrl? {
-        var principal: HttpUrl? = null
+    suspend fun getCurrentUserPrincipal(url: Url, service: Service?): Url? {
+        var principal: Url? = null
         DavResource(httpClient, url, log).propfind(0, WebDAV.CurrentUserPrincipal) { response, _ ->
             response[CurrentUserPrincipal::class.java]?.href?.let { href ->
-                response.requestedUrl.resolve(href)?.let {
-                    log.info("Found current-user-principal: $it")
+                val url = response.requestedUrl.resolve(href)
+                log.info("Found current-user-principal: $url")
 
-                    // service check
-                    if (service != null && !providesService(it, service))
-                        log.warning("Principal $it doesn't provide $service service")
-                    else
-                        principal = it
-                }
+                // service check
+                if (service != null && !providesService(url, service))
+                    log.warning("Principal $url doesn't provide $service service")
+                else
+                    principal = url
             }
         }
         return principal
@@ -462,9 +465,9 @@ class DavResourceFinder @AssistedInject constructor(
     ) {
 
         data class ServiceInfo(
-            var principal: HttpUrl? = null,
-            val homeSets: MutableSet<HttpUrl> = HashSet(),
-            val collections: MutableMap<HttpUrl, Collection> = HashMap(),
+            var principal: Url? = null,
+            val homeSets: MutableSet<Url> = HashSet(),
+            val collections: MutableMap<Url, Collection> = HashMap(),
 
             val emails: MutableList<String> = LinkedList()
         )

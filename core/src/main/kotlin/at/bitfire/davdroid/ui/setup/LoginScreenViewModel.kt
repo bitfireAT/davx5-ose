@@ -248,10 +248,8 @@ class LoginScreenViewModel @AssistedInject constructor(
             val logFileName = DebugDirectory.FileName(LOG_FILE_NAME)
             val logFile = debugDirectory.resolve(logFileName)
             val result = FileLoggerFactory.forFile(logFile!!).use { (logger) ->
-                runInterruptible {
-                    resourceFinderFactory.create(baseUri, loginInfo.credentials, logger)
-                        .findInitialConfiguration()
-                }
+                resourceFinderFactory.create(baseUri, loginInfo.credentials, logger)
+                    .findInitialConfiguration()
             }
             result to logFileName
         }

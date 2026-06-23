@@ -11,19 +11,19 @@ import android.os.RemoteException
 import androidx.annotation.VisibleForTesting
 import at.bitfire.dav4jvm.Error
 import at.bitfire.dav4jvm.QuotedStringUtils
-import at.bitfire.dav4jvm.okhttp.DavCollection
-import at.bitfire.dav4jvm.okhttp.DavResource
-import at.bitfire.dav4jvm.okhttp.MultiResponseCallback
-import at.bitfire.dav4jvm.okhttp.Response
-import at.bitfire.dav4jvm.okhttp.exception.ConflictException
-import at.bitfire.dav4jvm.okhttp.exception.DavException
-import at.bitfire.dav4jvm.okhttp.exception.ForbiddenException
-import at.bitfire.dav4jvm.okhttp.exception.GoneException
-import at.bitfire.dav4jvm.okhttp.exception.HttpException
-import at.bitfire.dav4jvm.okhttp.exception.NotFoundException
-import at.bitfire.dav4jvm.okhttp.exception.PreconditionFailedException
-import at.bitfire.dav4jvm.okhttp.exception.ServiceUnavailableException
-import at.bitfire.dav4jvm.okhttp.exception.UnauthorizedException
+import at.bitfire.dav4jvm.ktor.DavCollection
+import at.bitfire.dav4jvm.ktor.DavResource
+import at.bitfire.dav4jvm.ktor.MultiResponseCallback
+import at.bitfire.dav4jvm.ktor.Response
+import at.bitfire.dav4jvm.ktor.exception.ConflictException
+import at.bitfire.dav4jvm.ktor.exception.DavException
+import at.bitfire.dav4jvm.ktor.exception.ForbiddenException
+import at.bitfire.dav4jvm.ktor.exception.GoneException
+import at.bitfire.dav4jvm.ktor.exception.HttpException
+import at.bitfire.dav4jvm.ktor.exception.NotFoundException
+import at.bitfire.dav4jvm.ktor.exception.PreconditionFailedException
+import at.bitfire.dav4jvm.ktor.exception.ServiceUnavailableException
+import at.bitfire.dav4jvm.ktor.exception.UnauthorizedException
 import at.bitfire.dav4jvm.property.caldav.CalDAV
 import at.bitfire.dav4jvm.property.caldav.GetCTag
 import at.bitfire.dav4jvm.property.caldav.ScheduleTag
@@ -43,15 +43,16 @@ import at.bitfire.davdroid.resource.SyncState
 import at.bitfire.davdroid.sync.account.InvalidAccountException
 import at.bitfire.synctools.storage.LocalStorageException
 import dagger.hilt.android.qualifiers.ApplicationContext
+import io.ktor.client.HttpClient
+import io.ktor.http.HttpStatusCode
+import io.ktor.http.URLBuilder
+import io.ktor.http.Url
+import io.ktor.http.appendPathSegments
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runInterruptible
 import kotlinx.coroutines.withContext
-import okhttp3.HttpUrl
-import okhttp3.OkHttpClient
 import java.io.IOException
-import java.net.HttpURLConnection
 import java.security.cert.CertificateException
 import java.util.LinkedList
 import java.util.Optional
@@ -79,7 +80,7 @@ import javax.net.ssl.SSLHandshakeException
  */
 abstract class SyncManager<LocalType : LocalResource, out CollectionType : LocalCollection<LocalType>, RemoteType : DavCollection>(
     val account: Account,
-    val httpClient: OkHttpClient,
+    val httpClient: HttpClient,
     val dataType: SyncDataType,
     val syncResult: SyncResult,
     val localCollection: CollectionType,
@@ -251,7 +252,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
 
         } catch (potentiallyWrappedException: Throwable) {
             var local: LocalResource? = null
-            var remote: HttpUrl? = null
+            var remote: Url? = null
 
             val e = SyncException.unwrap(potentiallyWrappedException) {
                 local = it.localResource
@@ -334,17 +335,15 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
                     val lastETag = if (lastScheduleTag == null) local.eTag else null
                     logger.info("$fileName has been deleted locally -> deleting from server (ETag $lastETag / schedule-tag $lastScheduleTag)")
 
-                    val url = collection.url.newBuilder().addPathSegment(fileName).build()
+                    val url = URLBuilder(collection.url).appendPathSegments(fileName).build()
                     val remote = DavResource(httpClient, url)
                     SyncException.wrapWithRemoteResourceSuspending(url) {
                         try {
-                            runInterruptible {
-                                remote.delete(
-                                    ifETag = lastETag,
-                                    ifScheduleTag = lastScheduleTag,
-                                    headers = pushDontNotifyHeader,
-                                ) {}
-                            }
+                            remote.delete(
+                                ifETag = lastETag,
+                                ifScheduleTag = lastScheduleTag,
+                                headers = pushDontNotifyHeader,
+                            ) {}
                             numDeleted++
                         } catch (_: HttpException) {
                             logger.warning("Couldn't delete $fileName from server; ignoring (may be downloaded again)")
@@ -396,7 +395,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
         val upload = generateUpload(local)
 
         val fileName = existingFileName ?: upload.suggestedFileName
-        val uploadUrl = collection.url.newBuilder().addPathSegment(fileName).build()
+        val uploadUrl = URLBuilder(collection.url).appendPathSegments(fileName).build()
         val remote = DavResource(httpClient, uploadUrl)
 
         try {
@@ -407,17 +406,15 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
 
                     var newETag: String? = null
                     var newScheduleTag: String? = null
-                    runInterruptible {
-                        remote.put(
-                            upload.requestBody,
-                            ifNoneMatch = true,     // fails if there's already a resource with that name
-                            callback = { response ->
-                                newETag = GetETag.fromResponse(response)?.eTag
-                                newScheduleTag = ScheduleTag.fromResponse(response)?.scheduleTag
-                            },
-                            headers = pushDontNotifyHeader
-                        )
-                    }
+                    remote.put(
+                        upload.content,
+                        ifNoneMatch = true,     // fails if there's already a resource with that name
+                        callback = { response ->
+                            newETag = GetETag.fromHttpResponse(response)?.eTag
+                            newScheduleTag = ScheduleTag.fromHttpResponse(response)?.scheduleTag
+                        },
+                        headers = pushDontNotifyHeader
+                    )
 
                     // success (no exception thrown)
                     onSuccessfulUpload(local, fileName, newETag, newScheduleTag, upload.onSuccessContext)
@@ -431,18 +428,16 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
 
                     var updatedETag: String? = null
                     var updatedScheduleTag: String? = null
-                    runInterruptible {
-                        remote.put(
-                            upload.requestBody,
-                            ifETag = ifETag,
-                            ifScheduleTag = ifScheduleTag,
-                            callback = { response ->
-                                updatedETag = GetETag.fromResponse(response)?.eTag
-                                updatedScheduleTag = ScheduleTag.fromResponse(response)?.scheduleTag
-                            },
-                            headers = pushDontNotifyHeader
-                        )
-                    }
+                    remote.put(
+                        upload.content,
+                        ifETag = ifETag,
+                        ifScheduleTag = ifScheduleTag,
+                        callback = { response ->
+                            updatedETag = GetETag.fromHttpResponse(response)?.eTag
+                            updatedScheduleTag = ScheduleTag.fromHttpResponse(response)?.scheduleTag
+                        },
+                        headers = pushDontNotifyHeader
+                    )
 
                     // success (no exception thrown)
                     onSuccessfulUpload(local, fileName, updatedETag, updatedScheduleTag, upload.onSuccessContext)
@@ -594,14 +589,14 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
      */
     protected open suspend fun syncRemote(listRemote: suspend (MultiResponseCallback) -> Unit) = coroutineScope {    // structured concurrency
         // download queue
-        val toDownload = LinkedBlockingQueue<HttpUrl>()
-        fun download(url: HttpUrl?) {
+        val toDownload = LinkedBlockingQueue<Url>()
+        fun download(url: Url?) {
             if (url != null)
                 toDownload += url
 
             if (toDownload.size >= MAX_MULTIGET_RESOURCES || url == null) {
                 while (toDownload.isNotEmpty()) {
-                    val bunch = LinkedList<HttpUrl>()
+                    val bunch = LinkedList<Url>()
                     toDownload.drainTo(bunch, MAX_MULTIGET_RESOURCES)
                     launch {
                         downloadRemote(bunch)
@@ -648,7 +643,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
                         }
                     }
 
-                } else if (response.status?.code == HttpURLConnection.HTTP_NOT_FOUND) {
+                } else if (response.status == HttpStatusCode.NotFound) {
                     // collection sync: resource has been deleted on remote server
                     launch {
                         localCollection.findByName(name)?.let { local ->
@@ -671,22 +666,20 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
     protected open suspend fun listRemoteChanges(syncState: SyncState?, callback: MultiResponseCallback): Pair<SyncToken, Boolean> {
         var furtherResults = false
 
-        val report = runInterruptible {
-            davCollection.reportChanges(
-                syncState?.takeIf { syncState.type == SyncState.Type.SYNC_TOKEN }?.value,
-                false, null,
-                WebDAV.GetETag
-            ) { response, relation ->
-                when (relation) {
-                    Response.HrefRelation.SELF ->
-                        furtherResults = response.status?.code == 507
+        val report = davCollection.reportChanges(
+            syncState?.takeIf { syncState.type == SyncState.Type.SYNC_TOKEN }?.value,
+            false, null,
+            WebDAV.GetETag
+        ) { response, relation ->
+            when (relation) {
+                Response.HrefRelation.SELF ->
+                    furtherResults = response.status == HttpStatusCode.InsufficientStorage
 
-                    Response.HrefRelation.MEMBER ->
-                        callback.onResponse(response, relation)
+                Response.HrefRelation.MEMBER ->
+                    callback.onResponse(response, relation)
 
-                    else ->
-                        logger.fine("Unexpected sync-collection response: $response")
-                }
+                else ->
+                    logger.fine("Unexpected sync-collection response: $response")
             }
         }
 
@@ -718,7 +711,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
      *      but not a single one (or vice versa). So only one method is more user-friendly.
      *   5. March 2020: iCloud now crashes with HTTP 500 upon CardDAV GET requests.
      */
-    protected abstract suspend fun downloadRemote(bunch: List<HttpUrl>)
+    protected abstract suspend fun downloadRemote(bunch: List<Url>)
 
     /**
      * Locally deletes entries which are
@@ -750,11 +743,9 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
 
     private suspend fun querySyncState(): SyncState? {
         var state: SyncState? = null
-        runInterruptible {
-            davCollection.propfind(0, CalDAV.GetCTag, WebDAV.SyncToken) { response, relation ->
-                if (relation == Response.HrefRelation.SELF)
-                    state = syncState(response)
-            }
+        davCollection.propfind(0, CalDAV.GetCTag, WebDAV.SyncToken) { response, relation ->
+            if (relation == Response.HrefRelation.SELF)
+                state = syncState(response)
         }
         return state
     }
@@ -762,7 +753,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
     /**
      * Logs the exception, updates sync result and shows a notification to the user.
      */
-    private fun handleException(e: Throwable, local: LocalResource?, remote: HttpUrl?) {
+    private fun handleException(e: Throwable, local: LocalResource?, remote: Url?) {
         var message: String
         when (e) {
             is IOException -> {

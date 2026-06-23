@@ -6,7 +6,6 @@ package at.bitfire.davdroid.repository
 
 import android.accounts.Account
 import android.content.Context
-import at.bitfire.dav4jvm.HttpUtils.toKtorUrl
 import at.bitfire.dav4jvm.XmlUtils
 import at.bitfire.dav4jvm.XmlUtils.insertTag
 import at.bitfire.dav4jvm.ktor.DavResource
@@ -29,7 +28,9 @@ import at.bitfire.synctools.icalendar.componentListOf
 import at.bitfire.synctools.icalendar.propertyListOf
 import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
+import io.ktor.http.URLBuilder
 import io.ktor.http.Url
+import io.ktor.http.appendPathSegments
 import net.fortuna.ical4j.model.Calendar
 import net.fortuna.ical4j.model.Component
 import net.fortuna.ical4j.model.TimeZoneRegistryFactory
@@ -99,15 +100,15 @@ class DavCollectionRepository @Inject constructor(
         description: String?
     ) {
         val folderName = UUID.randomUUID().toString()
-        val url = homeSet.url.newBuilder()
-            .addPathSegment(folderName)
-            .addPathSegment("")     // trailing slash
+        val url = URLBuilder(homeSet.url)
+            .appendPathSegments(folderName)
+            .appendPathSegments("")     // trailing slash
             .build()
 
         // create collection on server
         createOnServer(
             account = account,
-            url = url.toKtorUrl(),
+            url = url,
             method = "MKCOL",
             xmlBody = generateMkColXml(
                 addressBook = true,
@@ -143,15 +144,15 @@ class DavCollectionRepository @Inject constructor(
         supportVJOURNAL: Boolean
     ) {
         val folderName = UUID.randomUUID().toString()
-        val url = homeSet.url.newBuilder()
-            .addPathSegment(folderName)
-            .addPathSegment("")     // trailing slash
+        val url = URLBuilder(homeSet.url)
+            .appendPathSegments(folderName)
+            .appendPathSegments("")     // trailing slash
             .build()
 
         // create collection on server
         createOnServer(
             account = account,
-            url = url.toKtorUrl(),
+            url = url,
             method = "MKCALENDAR",
             xmlBody = generateMkColXml(
                 addressBook = false,
@@ -196,7 +197,7 @@ class DavCollectionRepository @Inject constructor(
             .buildKtor()
             .use { httpClient ->
                 try {
-                    DavResource(httpClient, collection.url.toKtorUrl()).delete {
+                    DavResource(httpClient, collection.url).delete {
                         // success, otherwise an exception would have been thrown → delete locally, too
                         delete(collection)
                     }

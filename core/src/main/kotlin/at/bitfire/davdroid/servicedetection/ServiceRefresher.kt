@@ -5,9 +5,9 @@
 package at.bitfire.davdroid.servicedetection
 
 import at.bitfire.dav4jvm.Property
-import at.bitfire.dav4jvm.okhttp.DavResource
-import at.bitfire.dav4jvm.okhttp.UrlUtils
-import at.bitfire.dav4jvm.okhttp.exception.HttpException
+import at.bitfire.dav4jvm.ktor.DavResource
+import at.bitfire.dav4jvm.ktor.UrlUtils
+import at.bitfire.dav4jvm.ktor.exception.HttpException
 import at.bitfire.dav4jvm.property.caldav.CalDAV
 import at.bitfire.dav4jvm.property.caldav.CalendarHomeSet
 import at.bitfire.dav4jvm.property.caldav.CalendarProxyReadFor
@@ -22,11 +22,12 @@ import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.repository.DavHomeSetRepository
 import at.bitfire.davdroid.util.DavUtils.parent
+import at.bitfire.davdroid.util.DavUtils.resolve
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import okhttp3.HttpUrl
-import okhttp3.OkHttpClient
+import io.ktor.client.HttpClient
+import io.ktor.http.Url
 import java.util.logging.Level
 import java.util.logging.Logger
 
@@ -35,14 +36,14 @@ import java.util.logging.Logger
  */
 class ServiceRefresher @AssistedInject constructor(
     @Assisted private val service: Service,
-    @Assisted private val httpClient: OkHttpClient,
+    @Assisted private val httpClient: HttpClient,
     private val logger: Logger,
     private val homeSetRepository: DavHomeSetRepository
 ) {
 
     @AssistedFactory
     interface Factory {
-        fun create(service: Service, httpClient: OkHttpClient): ServiceRefresher
+        fun create(service: Service, httpClient: HttpClient): ServiceRefresher
     }
 
     /**
@@ -93,14 +94,14 @@ class ServiceRefresher @AssistedInject constructor(
      * @throws HttpException                                on HTTP errors
      * @throws at.bitfire.dav4jvm.exception.DavException    on application-level or logical errors
      */
-    internal fun discoverHomesets(
-        principalUrl: HttpUrl,
+    internal suspend fun discoverHomesets(
+        principalUrl: Url,
         level: Int = 0,
-        alreadyQueriedPrincipals: MutableSet<HttpUrl> = mutableSetOf(),
-        alreadySavedHomeSets: MutableSet<HttpUrl> = mutableSetOf()
+        alreadyQueriedPrincipals: MutableSet<Url> = mutableSetOf(),
+        alreadySavedHomeSets: MutableSet<Url> = mutableSetOf()
     ) {
         logger.fine("Discovering homesets of $principalUrl")
-        val relatedResources = mutableSetOf<HttpUrl>()
+        val relatedResources = mutableSetOf<Url>()
 
         // Query the URL
         val principal = DavResource(httpClient, principalUrl)

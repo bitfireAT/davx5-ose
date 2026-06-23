@@ -72,7 +72,7 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
     }
 
     val httpClient by lazy {
-        httpClientBuilder.fromAccount(account).build()
+        httpClientBuilder.fromAccount(account).buildKtor()
     }
 
     /**

@@ -4,8 +4,14 @@
 
 package at.bitfire.davdroid.util
 
+import at.bitfire.dav4jvm.ktor.toUrlOrNull
 import at.bitfire.davdroid.util.DavUtils.generateUidIfNecessary
 import io.ktor.http.ContentType
+import io.ktor.http.URLBuilder
+import io.ktor.http.Url
+import io.ktor.http.appendPathSegments
+import io.ktor.http.path
+import io.ktor.http.takeFrom
 import okhttp3.HttpUrl
 import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
@@ -120,6 +126,19 @@ object DavUtils {
         get() = pathSegments.lastOrNull { it.isNotEmpty() } ?: "/"
 
     /**
+     * Safely gets the last segment of the URL, or returns `""` if none could be obtained.
+     */
+    val Url.lastSegment: String
+        get() = this.segments.lastOrNull { it.isNotEmpty() } ?: ""
+
+    val Url.omitTrailingSlash: Url
+        get() = Url(this.toString().removeSuffix("/"))
+
+    fun Url.resolve(urlString: String): Url = URLBuilder(this).apply {
+        takeFrom(urlString)
+    }.build()
+
+    /**
      * Returns parent URL (parent folder). Always with trailing slash
      */
     fun HttpUrl.parent(): HttpUrl {
@@ -144,6 +163,29 @@ object DavUtils {
     }
 
     /**
+     * Returns parent URL (parent folder). Always with trailing slash
+     */
+    fun Url.parent(): Url {
+        if (segments.size == 1 && segments[0] == "")
+            // already root URL
+            return this
+
+        val builder = URLBuilder(this)
+
+        if (segments[segments.lastIndex] == "") {
+            // URL ends with a slash ("/some/thing/" -> ["some","thing",""]), remove two segments ("" at lastIndex and "thing" at lastIndex - 1)
+            builder.path(*builder.pathSegments.dropLast(2).toTypedArray())
+        } else
+        // URL doesn't end with a slash ("/some/thing" -> ["some","thing"]), remove one segment ("thing" at lastIndex)
+            builder.path(*builder.pathSegments.dropLast(1).toTypedArray())
+
+        // append trailing slash
+        builder.appendPathSegments("")
+
+        return builder.build()
+    }
+
+    /**
      * Compares MIME type and subtype of two MediaTypes. Does _not_ compare parameters
      * like `charset` or `version`.
      *
@@ -159,5 +201,7 @@ object DavUtils {
     } catch (_: URISyntaxException) {
         null
     }
+
+    fun URI.toUrlOrNull(): Url? = toString().toUrlOrNull()
 
 }

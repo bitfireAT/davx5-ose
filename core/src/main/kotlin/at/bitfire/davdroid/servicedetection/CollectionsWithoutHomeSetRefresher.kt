@@ -4,18 +4,19 @@
 
 package at.bitfire.davdroid.servicedetection
 
-import at.bitfire.dav4jvm.okhttp.DavResource
-import at.bitfire.dav4jvm.okhttp.exception.HttpException
+import at.bitfire.dav4jvm.ktor.DavResource
+import at.bitfire.dav4jvm.ktor.exception.HttpException
 import at.bitfire.dav4jvm.property.webdav.Owner
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Principal
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.repository.DavCollectionRepository
+import at.bitfire.davdroid.util.DavUtils.resolve
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import okhttp3.OkHttpClient
+import io.ktor.client.HttpClient
 
 /**
  * Logic for refreshing the list of collections (and their related information)
@@ -23,14 +24,14 @@ import okhttp3.OkHttpClient
  */
 class CollectionsWithoutHomeSetRefresher @AssistedInject constructor(
     @Assisted private val service: Service,
-    @Assisted private val httpClient: OkHttpClient,
+    @Assisted private val httpClient: HttpClient,
     private val db: AppDatabase,
     private val collectionRepository: DavCollectionRepository,
 ) {
 
     @AssistedFactory
     interface Factory {
-        fun create(service: Service, httpClient: OkHttpClient): CollectionsWithoutHomeSetRefresher
+        fun create(service: Service, httpClient: HttpClient): CollectionsWithoutHomeSetRefresher
     }
 
     /**
@@ -38,7 +39,7 @@ class CollectionsWithoutHomeSetRefresher @AssistedInject constructor(
      *
      * It queries each stored collection with a homeSetId of "null" and either updates or deletes (if inaccessible or unusable) them.
      */
-    internal fun refreshCollectionsWithoutHomeSet() {
+    internal suspend fun refreshCollectionsWithoutHomeSet() {
         val withoutHomeSet = db.collectionDao().getByServiceAndHomeset(service.id, null).associateBy { it.url }.toMutableMap()
         for ((url, localCollection) in withoutHomeSet) try {
             val collectionProperties = ServiceDetectionUtils.collectionQueryProperties(service.type)
