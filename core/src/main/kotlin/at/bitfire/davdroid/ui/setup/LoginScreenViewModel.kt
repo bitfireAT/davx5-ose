@@ -258,11 +258,11 @@ class LoginScreenViewModel @AssistedInject constructor(
      * @throws IOException when the service detection log can't be created
      */
     private suspend fun findConfiguration(baseUri: URI): Pair<DavResourceFinder.Configuration, DebugDirectory.FileName> {
-        val credentials = loginInfo.credentials
         val logFile = debugDirectory.resolve(SERVICE_DETECTION_LOG_FILE)
             ?: throw IOException("Couldn't write service detection log")
 
         val result = FileLoggerFactory.forFile(logFile).use { fileLoggerContext ->
+            val credentials = loginInfo.credentials
             httpClientBuilderProvider.get()
                 .setLogger(fileLoggerContext.logger)    // log HTTP calls to logFile
                 .apply {
@@ -313,7 +313,7 @@ class LoginScreenViewModel @AssistedInject constructor(
                 try {
                     GroupMethod.valueOf(groupMethodName)
                 } catch (e: IllegalArgumentException) {
-                    Logger.getGlobal().warning("Invalid forced group method: $groupMethodName")
+                    logger.log(Level.WARNING, "Invalid forced group method: $groupMethodName", e)
                     null
                 }
             else
@@ -395,6 +395,7 @@ class LoginScreenViewModel @AssistedInject constructor(
 
     companion object {
 
+        /** file name of the service detection logs */
         private val SERVICE_DETECTION_LOG_FILE
             get() = DebugDirectory.FileName("service-detection.log")
 
