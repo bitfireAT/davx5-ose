@@ -133,16 +133,16 @@ class DavResourceFinderTest {
         try {
             mockServer.start()
             val logFile = tempFolder.newFile()
-            FileLoggerFactory.forFile(logFile).use { (logger) ->
+            FileLoggerFactory.forFile(logFile).use { fileLoggerContext ->
                 httpClientBuilderProvider.get()
-                    .setLogger(logger)
+                    .setLogger(fileLoggerContext.logger)
                     .buildKtor()
                     .use { httpClient ->
                         resourceFinderFactory.create(
                             URI(mockServer.url("/").toString()),
                             Credentials(username = "mock", password = "12345".toSensitiveString()),
                             httpClient,
-                            logger
+                            fileLoggerContext.logger
                         ).findInitialConfiguration()
                     }
             }
