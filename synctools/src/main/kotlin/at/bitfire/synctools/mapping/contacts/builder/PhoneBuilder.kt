@@ -22,11 +22,19 @@ class PhoneBuilder(dataRowUri: Uri, rawContactId: Long?, contact: Contact, readO
             val tel = phoneNumber.property
 
             // TEL can have either a TEXT (default for vCard 3 compatibility) or an URI value.
-            val number = tel.uri?.number ?: tel.text
+            val uri = tel.uri
+            val baseNumber = uri?.number ?: tel.text
 
             // Skip empty numbers
-            if (number.isNullOrBlank())
+            if (baseNumber.isNullOrBlank())
                 continue
+
+            val ext = uri?.extension
+            val number =
+                if (uri != null && !ext.isNullOrBlank() && !baseNumber.contains(';') && !baseNumber.contains(','))
+                    "$baseNumber;$ext"
+                else
+                    baseNumber
 
             val types = tel.types
 
