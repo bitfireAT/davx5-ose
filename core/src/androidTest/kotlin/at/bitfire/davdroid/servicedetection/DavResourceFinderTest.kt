@@ -75,7 +75,7 @@ class DavResourceFinderTest {
 
     private lateinit var client: HttpClient
     private lateinit var finder: DavResourceFinder
-    private lateinit var finderLog: FileLoggerFactory.FileHandlerAndLogger
+    private lateinit var finderLog: FileLoggerFactory.FileLoggerContext
 
     private fun buildMockEngine() = MockEngine { request ->
         val path = request.url.encodedPath.trimEnd('/')

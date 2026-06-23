@@ -18,18 +18,18 @@ object FileLoggerFactory {
 
     /**
      * Holds a [Logger] and its backing [FileHandler] for a bounded operation.
-     * Must be [close]d when done; prefer `.use {}`.
-     * Supports destructuring: `val (logger, fileHandler) = ...`
+     *
+     * Must be [close]d when done!
      */
-    data class FileHandlerAndLogger(
+    class FileLoggerContext(
         val logger: Logger,
-        @WillCloseWhenClosed val fileHandler: FileHandler
+        @WillCloseWhenClosed private val fileHandler: FileHandler
     ) : Closeable {
         override fun close() = fileHandler.close()
     }
 
     /**
-     * Creates a [FileHandlerAndLogger] that writes log records to [file] (up to 1 MB,
+     * Creates a [FileLoggerContext] that writes log records to [file] (up to 1 MB,
      * overwriting) and propagates them to the parent logger (logcat etc.).
      *
      * The returned logger logs all messages ([Level.ALL]).
@@ -37,7 +37,7 @@ object FileLoggerFactory {
      * Must be closed after use — prefer `.use {}`.
      */
     @MustBeClosed
-    fun forFile(file: File): FileHandlerAndLogger {
+    fun forFile(file: File): FileLoggerContext {
         val fileHandler = FileHandler(file.absolutePath, 1_000_000, 1, false).apply {
             formatter = PlainTextFormatter.DEFAULT
         }
@@ -46,7 +46,7 @@ object FileLoggerFactory {
             useParentHandlers = true
             addHandler(fileHandler)
         }
-        return FileHandlerAndLogger(logger, fileHandler)
+        return FileLoggerContext(logger, fileHandler)
     }
 
 }
