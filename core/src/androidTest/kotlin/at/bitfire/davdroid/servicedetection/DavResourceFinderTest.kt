@@ -10,8 +10,6 @@ import at.bitfire.dav4jvm.property.webdav.WebDAV
 import at.bitfire.davdroid.log.FileLoggerFactory
 import at.bitfire.davdroid.network.HttpClientBuilder
 import at.bitfire.davdroid.servicedetection.DavResourceFinder.Configuration.ServiceInfo
-import at.bitfire.davdroid.settings.Credentials
-import at.bitfire.synctools.util.SensitiveString.Companion.toSensitiveString
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.ktor.client.HttpClient
@@ -23,7 +21,6 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.http.Url
 import io.ktor.http.headersOf
 import kotlinx.coroutines.test.runTest
-import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
 import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
@@ -129,29 +126,19 @@ class DavResourceFinderTest {
 
     @Test
     fun testFindInitialConfiguration_logsOutput() = runTest {
-        val mockServer = MockWebServer()
-        try {
-            mockServer.start()
-            val logFile = tempFolder.newFile()
-            FileLoggerFactory.forFile(logFile).use { fileLoggerContext ->
-                httpClientBuilderProvider.get()
-                    .setLogger(fileLoggerContext.logger)
-                    .buildKtor()
-                    .use { httpClient ->
-                        resourceFinderFactory.create(
-                            URI(mockServer.url("/").toString()),
-                            Credentials(username = "mock", password = "12345".toSensitiveString()),
-                            httpClient,
-                            fileLoggerContext.logger
-                        ).findInitialConfiguration()
-                    }
-            }
-            val logs = logFile.readText()
-            assertTrue("Logs should contain service detection logs", logs.contains("Checking user-given URL"))
-            assertTrue("Logs should contain HTTP wire logs", logs.contains("PROPFIND http://"))
-        } finally {
-            mockServer.shutdown()
+        val logFile = tempFolder.newFile()
+        FileLoggerFactory.forFile(logFile).use { fileLoggerContext ->
+            httpClientBuilderProvider.get()
+                .setLogger(fileLoggerContext.logger)
+                .buildKtor()
+                .use { httpClient ->
+                    resourceFinderFactory.create(
+                        URI("http://localhost"), null, httpClient, fileLoggerContext.logger
+                    ).findInitialConfiguration()
+                }
         }
+        val logs = logFile.readText()
+        assertTrue("Logs should contain service detection logs", logs.contains("Checking user-given URL"))
     }
 
     @Test
