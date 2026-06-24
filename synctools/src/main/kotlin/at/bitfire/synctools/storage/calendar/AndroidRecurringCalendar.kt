@@ -14,6 +14,9 @@ import androidx.core.content.contentValuesOf
 import at.bitfire.synctools.storage.BatchOperation.CpoBuilder
 import at.bitfire.synctools.storage.LocalStorageException
 import at.bitfire.synctools.storage.containsNotNull
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.toList
 import java.util.logging.Level
 import java.util.logging.Logger
 
@@ -123,6 +126,23 @@ class AndroidRecurringCalendar(
                 main = main,
                 exceptions = buildList { calendar.iterateEvents("${Events.ORIGINAL_ID}=?", arrayOf(mainEventId.toString())) { add(it) } }
             ))
+        }
+    }
+
+    fun getEventAndExceptionsFlow(where: String?, whereArgs: Array<String>?): Flow<EventAndExceptions> {
+        val (mainWhere, mainWhereArgs) = whereWithMainEventsOnly(where, whereArgs)
+        return calendar.getEventFlow(mainWhere, mainWhereArgs).mapToEventAndExceptionsFlow()
+    }
+
+    private fun Flow<Entity>.mapToEventAndExceptionsFlow(): Flow<EventAndExceptions> {
+        return map { main ->
+            val mainEventId = main.entityValues.getAsLong(Events._ID)
+            val exceptions = calendar.getEventFlow(
+                where = "${Events.ORIGINAL_ID}=?",
+                whereArgs = arrayOf(mainEventId.toString())
+            ).toList()
+
+            EventAndExceptions(main, exceptions)
         }
     }
 

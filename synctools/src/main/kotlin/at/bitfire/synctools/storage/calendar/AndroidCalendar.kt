@@ -23,6 +23,10 @@ import at.bitfire.synctools.storage.BatchOperation.CpoBuilder
 import at.bitfire.synctools.storage.LocalStorageException
 import at.bitfire.synctools.storage.calendar.EventsContract.asSyncAdapter
 import at.bitfire.synctools.storage.toContentValues
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.onCompletion
 import org.jetbrains.annotations.TestOnly
 import java.util.logging.Logger
 
@@ -266,6 +270,24 @@ class AndroidCalendar(
                 val iterator = EventsEntity.newEntityIterator(cursor, client)
                 for (entity in iterator)
                     body(entity)
+            }
+        } catch (e: RemoteException) {
+            throw LocalStorageException("Couldn't iterate events", e)
+        }
+    }
+
+    fun getEventFlow(where: String?, whereArgs: Array<String>?): Flow<Entity> {
+        try {
+            val (protectedWhere, protectedWhereArgs) = whereWithCalendarId(where, whereArgs)
+            val cursor = client.query(eventEntitiesUri, null, protectedWhere, protectedWhereArgs, null)
+            return if (cursor != null) {
+                EventsEntity.newEntityIterator(cursor, client)
+                    .asFlow()
+                    .onCompletion {
+                        cursor.close()
+                    }
+            } else {
+                emptyFlow()
             }
         } catch (e: RemoteException) {
             throw LocalStorageException("Couldn't iterate events", e)
