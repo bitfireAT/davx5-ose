@@ -20,6 +20,7 @@ import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalCalendarStore
 import at.bitfire.davdroid.resource.LocalTestAddressBook
 import at.bitfire.davdroid.sync.account.TestAccount
+import at.bitfire.davdroid.util.DavUtils.toUrl
 import at.bitfire.synctools.storage.calendar.EventsContract.asSyncAdapter
 import at.bitfire.synctools.util.setAndVerifyUserData
 import at.bitfire.synctools.vcard.GroupMethod
@@ -28,7 +29,6 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.mockk.junit4.MockKRule
 import io.mockk.mockk
-import okhttp3.HttpUrl.Companion.toHttpUrl
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -91,7 +91,7 @@ class AccountSettingsMigration20Test {
         val collectionId = db.collectionDao().insert(Collection(
             serviceId = 1,
             type = Collection.Companion.TYPE_ADDRESSBOOK,
-            url = url.toHttpUrl()
+            url = url.toUrl()
         ))
 
         localTestAddressBook.provide(account, mockk(relaxed = true), GroupMethod.GROUP_VCARDS) { addressBook ->
@@ -121,7 +121,7 @@ class AccountSettingsMigration20Test {
             Collection(
                 serviceId = 1,
                 type = Collection.Companion.TYPE_CALENDAR,
-                url = url.toHttpUrl()
+                url = url.toUrl()
             )
         )
 

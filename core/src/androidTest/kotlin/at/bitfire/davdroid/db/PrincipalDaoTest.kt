@@ -5,13 +5,13 @@
 package at.bitfire.davdroid.db
 
 import android.database.sqlite.SQLiteConstraintException
+import at.bitfire.davdroid.util.DavUtils.toUrl
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.mockk.junit4.MockKRule
 import io.mockk.spyk
 import io.mockk.verify
 import kotlinx.coroutines.test.runTest
-import okhttp3.HttpUrl.Companion.toHttpUrl
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -34,7 +34,7 @@ class PrincipalDaoTest {
 
     private lateinit var principalDao: PrincipalDao
     private lateinit var service: Service
-    private val url = "https://example.com/dav/principal".toHttpUrl()
+    private val url = "https://example.com/dav/principal".toUrl()
 
     @Before
     fun setUp() {
@@ -88,7 +88,7 @@ class PrincipalDaoTest {
     @Test(expected = SQLiteConstraintException::class)
     fun insertOrUpdate_throwsForeignKeyConstraintViolationException() = runTest {
         // throws on non-existing service
-        val url = "https://example.com/dav/principal".toHttpUrl()
+        val url = "https://example.com/dav/principal".toUrl()
         val principal1 = Principal(serviceId = 999, url = url, displayName = "p1")
         principalDao.insertOrUpdate(999, principal1)
     }
