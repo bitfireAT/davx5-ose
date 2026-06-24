@@ -4,13 +4,14 @@
 
 package at.bitfire.davdroid.util
 
+import at.bitfire.dav4jvm.ktor.omitTrailingSlash
 import at.bitfire.dav4jvm.ktor.toUrlOrNull
+import at.bitfire.dav4jvm.ktor.withTrailingSlash
 import at.bitfire.davdroid.util.DavUtils.generateUidIfNecessary
 import at.bitfire.davdroid.util.DavUtils.toUrlOrNull
 import io.ktor.http.ContentType
 import io.ktor.http.URLBuilder
 import io.ktor.http.Url
-import io.ktor.http.appendPathSegments
 import io.ktor.http.path
 import okhttp3.HttpUrl
 import okhttp3.MediaType.Companion.toMediaType
@@ -163,19 +164,9 @@ object DavUtils {
             // already root URL
             return this
 
-        val builder = URLBuilder(this)
-
-        if (segments[segments.lastIndex] == "") {
-            // URL ends with a slash ("/some/thing/" -> ["some","thing",""]), remove two segments ("" at lastIndex and "thing" at lastIndex - 1)
-            builder.path(*builder.pathSegments.dropLast(2).toTypedArray())
-        } else
-        // URL doesn't end with a slash ("/some/thing" -> ["some","thing"]), remove one segment ("thing" at lastIndex)
-            builder.path(*builder.pathSegments.dropLast(1).toTypedArray())
-
-        // append trailing slash
-        builder.appendPathSegments("")
-
-        return builder.build()
+        return URLBuilder(omitTrailingSlash()).apply {
+            path(pathSegments.dropLast(1).joinToString("/"))
+        }.build().withTrailingSlash()
     }
 
     fun String.toURIorNull(): URI? = try {
