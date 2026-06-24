@@ -8,7 +8,6 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import at.bitfire.dav4jvm.HttpUtils.toHttpUrl
 import at.bitfire.dav4jvm.HttpUtils.toKtorUrl
 import at.bitfire.dav4jvm.ktor.Response
 import at.bitfire.dav4jvm.ktor.omitTrailingSlash
@@ -16,7 +15,6 @@ import at.bitfire.dav4jvm.okhttp.UrlUtils
 import at.bitfire.dav4jvm.property.webdav.DisplayName
 import at.bitfire.dav4jvm.property.webdav.ResourceType
 import at.bitfire.dav4jvm.property.webdav.WebDAV
-import at.bitfire.davdroid.util.DavUtils.omitTrailingSlash
 import at.bitfire.synctools.util.trimToNull
 import io.ktor.http.Url
 import okhttp3.HttpUrl
@@ -85,7 +83,7 @@ data class Principal(
             // Create and return principal - even without its display name
             return Principal(
                 serviceId = serviceId,
-                url = dav.href.omitTrailingSlash,
+                url = dav.href.omitTrailingSlash(),
                 displayName = displayName
             )
         }
@@ -98,7 +96,7 @@ data class Principal(
 
         fun fromServiceAndUrl(service: Service, url: Url) = Principal(
             serviceId = service.id,
-            url = url.omitTrailingSlash
+            url = url.omitTrailingSlash()
         )
 
     }

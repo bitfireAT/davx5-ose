@@ -4,8 +4,6 @@
 
 package at.bitfire.davdroid.servicedetection
 
-import at.bitfire.dav4jvm.HttpUtils.toHttpUrl
-import at.bitfire.dav4jvm.HttpUtils.toKtorUrl
 import at.bitfire.dav4jvm.ktor.DavResource
 import at.bitfire.dav4jvm.ktor.Response
 import at.bitfire.dav4jvm.ktor.exception.HttpException
@@ -22,7 +20,6 @@ import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavHomeSetRepository
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
-import at.bitfire.davdroid.util.DavUtils.resolve
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject

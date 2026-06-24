@@ -10,8 +10,8 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import at.bitfire.dav4jvm.HttpUtils.toHttpUrl
 import at.bitfire.dav4jvm.ktor.Response
+import at.bitfire.dav4jvm.ktor.toUrlOrNull
 import at.bitfire.dav4jvm.ktor.withTrailingSlash
 import at.bitfire.dav4jvm.property.caldav.CalDAV
 import at.bitfire.dav4jvm.property.caldav.CalendarColor
@@ -169,7 +169,7 @@ data class Collection(
          * @return null if the response doesn't represent a collection
          */
         fun fromDavResponse(dav: Response): Collection? {
-            val url = dav.href.withTrailingSlash().toHttpUrl()
+            val url = dav.href.withTrailingSlash()
             val type: String = dav[ResourceType::class.java]?.let { resourceType ->
                 when {
                     resourceType.types.contains(CardDAV.Addressbook) -> TYPE_ADDRESSBOOK

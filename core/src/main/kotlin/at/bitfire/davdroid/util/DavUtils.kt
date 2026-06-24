@@ -11,7 +11,6 @@ import io.ktor.http.URLBuilder
 import io.ktor.http.Url
 import io.ktor.http.appendPathSegments
 import io.ktor.http.path
-import io.ktor.http.takeFrom
 import okhttp3.HttpUrl
 import okhttp3.MediaType.Companion.toMediaType
 import java.net.URI
@@ -129,13 +128,6 @@ object DavUtils {
      */
     val Url.lastSegment: String
         get() = this.segments.lastOrNull { it.isNotEmpty() } ?: ""
-
-    val Url.omitTrailingSlash: Url
-        get() = Url(this.toString().removeSuffix("/"))
-
-    fun Url.resolve(urlString: String): Url = URLBuilder(this).apply {
-        takeFrom(urlString)
-    }.build()
 
     /**
      * Returns parent URL (parent folder). Always with trailing slash
