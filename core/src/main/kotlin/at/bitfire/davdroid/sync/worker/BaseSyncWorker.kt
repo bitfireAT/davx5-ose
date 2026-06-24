@@ -40,6 +40,7 @@ import java.util.Collections
 import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.seconds
 
 abstract class BaseSyncWorker(
     context: Context,
@@ -195,7 +196,7 @@ abstract class BaseSyncWorker(
                     // We block the SyncWorker here so that it won't be started by the sync framework immediately again.
                     // This should be replaced by proper work scheduling as soon as we don't depend on the sync framework anymore.
                     if (blockDuration > 0)
-                        delay(blockDuration * 1000)
+                        delay(blockDuration.seconds)
 
                     logger.warning("Retrying on soft error (attempt $runAttemptCount of $MAX_RUN_ATTEMPTS)")
                     return Result.retry()
