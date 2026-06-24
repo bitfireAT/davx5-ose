@@ -824,7 +824,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
      * @param headers Any other headers to append to the request.
      * @param callback Will be called with the request's response.
      */
-    suspend fun DavResource.put(
+    private suspend fun DavResource.put(
         content: OutgoingContent,
         ifETag: String? = null,
         ifScheduleTag: String? = null,
@@ -859,7 +859,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
      * @param headers Any other headers to append to the request.
      * @param callback Will be called with the request's response.
      */
-    suspend fun DavResource.delete(
+    private suspend fun DavResource.delete(
         ifETag: String? = null,
         ifScheduleTag: String? = null,
         headers: Map<String, String> = emptyMap(),
