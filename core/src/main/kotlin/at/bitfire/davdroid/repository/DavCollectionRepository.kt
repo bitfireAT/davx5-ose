@@ -12,6 +12,7 @@ import at.bitfire.dav4jvm.ktor.DavResource
 import at.bitfire.dav4jvm.ktor.exception.GoneException
 import at.bitfire.dav4jvm.ktor.exception.HttpException
 import at.bitfire.dav4jvm.ktor.exception.NotFoundException
+import at.bitfire.dav4jvm.ktor.withTrailingSlash
 import at.bitfire.dav4jvm.property.caldav.CalDAV
 import at.bitfire.dav4jvm.property.carddav.CardDAV
 import at.bitfire.dav4jvm.property.webdav.WebDAV
@@ -102,8 +103,8 @@ class DavCollectionRepository @Inject constructor(
         val folderName = UUID.randomUUID().toString()
         val url = URLBuilder(homeSet.url)
             .appendPathSegments(folderName)
-            .appendPathSegments("")     // trailing slash
             .build()
+            .withTrailingSlash()
 
         // create collection on server
         createOnServer(
@@ -146,8 +147,8 @@ class DavCollectionRepository @Inject constructor(
         val folderName = UUID.randomUUID().toString()
         val url = URLBuilder(homeSet.url)
             .appendPathSegments(folderName)
-            .appendPathSegments("")     // trailing slash
             .build()
+            .withTrailingSlash()
 
         // create collection on server
         createOnServer(
