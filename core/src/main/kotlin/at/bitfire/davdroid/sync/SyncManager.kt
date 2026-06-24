@@ -335,7 +335,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
                     val lastETag = if (lastScheduleTag == null) local.eTag else null
                     logger.info("$fileName has been deleted locally -> deleting from server (ETag $lastETag / schedule-tag $lastScheduleTag)")
 
-                    val url = URLBuilder(collection.url).appendPathSegments(fileName).build()
+                    val url = URLBuilder(collection.url).appendPathSegments(fileName, encodeSlash = true).build()
                     val remote = DavResource(httpClient, url)
                     SyncException.wrapWithRemoteResourceSuspending(url) {
                         try {
@@ -395,7 +395,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
         val upload = generateUpload(local)
 
         val fileName = existingFileName ?: upload.suggestedFileName
-        val uploadUrl = URLBuilder(collection.url).appendPathSegments(fileName).build()
+        val uploadUrl = URLBuilder(collection.url).appendPathSegments(fileName, encodeSlash = true).build()
         val remote = DavResource(httpClient, uploadUrl)
 
         try {

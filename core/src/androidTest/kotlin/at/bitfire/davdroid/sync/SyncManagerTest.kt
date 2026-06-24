@@ -84,8 +84,10 @@ class SyncManagerTest {
         val headers: Headers = headersOf()
     )
     private val responseQueue = ArrayDeque<QueuedResponse>()
+    private val capturedUrls = mutableListOf<Url>()
 
-    private fun buildMockEngine() = MockEngine { _ ->
+    private fun buildMockEngine() = MockEngine { request ->
+        capturedUrls += request.url
         val queued = responseQueue.removeFirstOrNull()
             ?: return@MockEngine respond("Unexpected request", HttpStatusCode.InternalServerError)
         respond(queued.body, queued.status, queued.headers)
@@ -492,6 +494,51 @@ class SyncManagerTest {
         assertFalse(syncManager.didDownloadRemote)
         assertFalse(syncManager.syncResult.hasError())
         assertTrue(collection.entries.isEmpty())
+    }
+
+
+    @Test
+    fun testDeleteLocally_SlashInFileName_SlashEncoded() = runTest {
+        // Filename containing a literal slash — must be encoded as %2F, not treated as a path separator.
+        val collection = LocalTestCollection().apply {
+            lastSyncState = SyncState(SyncState.Type.CTAG, "ctag1")
+            entries += LocalTestResource().apply {
+                fileName = "has/slash.ics"
+                deleted = true
+            }
+        }
+        enqueueQueryCapabilities("ctag1")
+        enqueue(HttpStatusCode.NoContent)           // DELETE response
+        enqueueQueryCapabilities("ctag1")           // querySyncState after modifications
+
+        val syncManager = syncManager(collection)
+        syncManager.performSync()
+
+        // The DELETE request URL must encode the slash as %2F (not split the path).
+        val resourceUrl = capturedUrls.first { it.encodedPath != "/" }
+        assertEquals("/has%2Fslash.ics", resourceUrl.encodedPath)
+    }
+
+    @Test
+    fun testUploadDirty_SlashInFileName_SlashEncoded() = runTest {
+        // Filename containing a literal slash — must be encoded as %2F, not treated as a path separator.
+        val collection = LocalTestCollection().apply {
+            lastSyncState = SyncState(SyncState.Type.CTAG, "ctag1")
+            entries += LocalTestResource().apply {
+                fileName = "has/slash.ics"
+                dirty = true
+            }
+        }
+        enqueueQueryCapabilities("ctag1")
+        enqueue(HttpStatusCode.NoContent)           // PUT response
+        enqueueQueryCapabilities("ctag1")           // querySyncState after modifications
+
+        val syncManager = syncManager(collection)
+        syncManager.performSync()
+
+        // The PUT request URL must encode the slash as %2F (not split the path).
+        val resourceUrl = capturedUrls.first { it.encodedPath != "/" }
+        assertEquals("/has%2Fslash.ics", resourceUrl.encodedPath)
     }
 
 
