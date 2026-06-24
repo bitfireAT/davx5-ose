@@ -4,15 +4,11 @@
 
 package at.bitfire.davdroid.util
 
-import at.bitfire.dav4jvm.ktor.omitTrailingSlash
 import at.bitfire.dav4jvm.ktor.toUrlOrNull
-import at.bitfire.dav4jvm.ktor.withTrailingSlash
 import at.bitfire.davdroid.util.DavUtils.generateUidIfNecessary
 import at.bitfire.davdroid.util.DavUtils.toUrlOrNull
 import io.ktor.http.ContentType
-import io.ktor.http.URLBuilder
 import io.ktor.http.Url
-import io.ktor.http.path
 import okhttp3.HttpUrl
 import okhttp3.MediaType.Companion.toMediaType
 import org.jetbrains.annotations.TestOnly
@@ -131,43 +127,6 @@ object DavUtils {
      */
     val Url.lastSegment: String
         get() = this.segments.lastOrNull { it.isNotEmpty() } ?: "/"
-
-    /**
-     * Returns parent URL (parent folder). Always with trailing slash
-     */
-    fun HttpUrl.parent(): HttpUrl {
-        if (pathSegments.size == 1 && pathSegments[0] == "")
-            // already root URL
-            return this
-
-        val builder = newBuilder()
-
-        if (pathSegments[pathSegments.lastIndex] == "") {
-            // URL ends with a slash ("/some/thing/" -> ["some","thing",""]), remove two segments ("" at lastIndex and "thing" at lastIndex - 1)
-            builder.removePathSegment(pathSegments.lastIndex)
-            builder.removePathSegment(pathSegments.lastIndex - 1)
-        } else
-            // URL doesn't end with a slash ("/some/thing" -> ["some","thing"]), remove one segment ("thing" at lastIndex)
-            builder.removePathSegment(pathSegments.lastIndex)
-
-        // append trailing slash
-        builder.addPathSegment("")
-
-        return builder.build()
-    }
-
-    /**
-     * Returns parent URL (parent folder). Always with trailing slash
-     */
-    fun Url.parent(): Url {
-        if (segments.size == 1 && segments[0] == "")
-            // already root URL
-            return this
-
-        return URLBuilder(omitTrailingSlash()).apply {
-            path(pathSegments.dropLast(1).joinToString("/"))
-        }.build().withTrailingSlash()
-    }
 
     fun String.toURIorNull(): URI? = try {
         URI(this)

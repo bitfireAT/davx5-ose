@@ -5,7 +5,6 @@
 package at.bitfire.davdroid.util
 
 import at.bitfire.davdroid.util.DavUtils.lastSegment
-import at.bitfire.davdroid.util.DavUtils.parent
 import at.bitfire.davdroid.util.DavUtils.toUrl
 import io.ktor.http.ContentType
 import okhttp3.HttpUrl.Companion.toHttpUrl
@@ -70,36 +69,6 @@ class DavUtilsTest {
         assertEquals("dir", (exampleURL + "dir").toUrl().lastSegment)
         assertEquals("dir", (exampleURL + "dir/").toUrl().lastSegment)
         assertEquals("file.html", (exampleURL + "dir/file.html").toUrl().lastSegment)
-    }
-
-    @Test
-    fun testHttpUrl_Parent() {
-        // with trailing slash
-        assertEquals("http://example.com/1/2/".toHttpUrl(), "http://example.com/1/2/3/".toHttpUrl().parent())
-        assertEquals("http://example.com/1/".toHttpUrl(), "http://example.com/1/2/".toHttpUrl().parent())
-        assertEquals("http://example.com/".toHttpUrl(), "http://example.com/1/".toHttpUrl().parent())
-        assertEquals("http://example.com/".toHttpUrl(), "http://example.com/".toHttpUrl().parent())
-
-        // without trailing slash
-        assertEquals("http://example.com/1/2/".toHttpUrl(), "http://example.com/1/2/3".toHttpUrl().parent())
-        assertEquals("http://example.com/1/".toHttpUrl(), "http://example.com/1/2".toHttpUrl().parent())
-        assertEquals("http://example.com/".toHttpUrl(), "http://example.com/1".toHttpUrl().parent())
-        assertEquals("http://example.com/".toHttpUrl(), "http://example.com".toHttpUrl().parent())
-    }
-
-    @Test
-    fun testUrl_Parent() {
-        // with trailing slash
-        assertEquals("http://example.com/1/2/".toUrl(), "http://example.com/1/2/3/".toUrl().parent())
-        assertEquals("http://example.com/1/".toUrl(), "http://example.com/1/2/".toUrl().parent())
-        assertEquals("http://example.com/".toUrl(), "http://example.com/1/".toUrl().parent())
-        assertEquals("http://example.com/".toUrl(), "http://example.com/".toUrl().parent())
-
-        // without trailing slash
-        assertEquals("http://example.com/1/2/".toUrl(), "http://example.com/1/2/3".toUrl().parent())
-        assertEquals("http://example.com/1/".toUrl(), "http://example.com/1/2".toUrl().parent())
-        assertEquals("http://example.com/".toUrl(), "http://example.com/1".toUrl().parent())
-        assertEquals("http://example.com/".toUrl(), "http://example.com".toUrl().parent())
     }
 
 }
