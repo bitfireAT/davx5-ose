@@ -144,7 +144,7 @@ class SyncManagerTest {
 
     @Test
     fun testPerformSync_503RetryAfter_DelaySeconds() = runTest {
-        enqueue(HttpStatusCode.ServiceUnavailable, headers = headersOf("Retry-After", "60"))
+        enqueue(HttpStatusCode.ServiceUnavailable, headers = headersOf(HttpHeaders.RetryAfter, "60"))
 
         val result = SyncResult()
         val syncManager = syncManager(LocalTestCollection(), result)
