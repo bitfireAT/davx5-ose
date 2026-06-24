@@ -153,7 +153,7 @@ abstract class BaseSyncWorker(
         val syncResult = SyncResult()
 
         // What are we going to sync? Select syncer based on authority
-        val syncer = when (dataType) {
+        when (dataType) {
             SyncDataType.CONTACTS ->
                 addressBookSyncer.create(account, resyncType, syncFrameworkUpload, syncResult)
             SyncDataType.EVENTS ->
@@ -172,10 +172,10 @@ abstract class BaseSyncWorker(
                     }
                 }
             }
+        }.use { syncer ->
+            // Start syncing
+            syncer()
         }
-
-        // Start syncing
-        syncer()
 
         // convert SyncResult from Syncers to worker Data
         val output = Data.Builder()

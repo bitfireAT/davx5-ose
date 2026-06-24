@@ -20,9 +20,11 @@ import at.bitfire.davdroid.sync.account.InvalidAccountException
 import at.bitfire.synctools.storage.LocalStorageException
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.runBlocking
+import java.io.Closeable
 import java.util.Optional
 import java.util.logging.Level
 import java.util.logging.Logger
+import javax.annotation.WillCloseWhenClosed
 import javax.inject.Inject
 import kotlin.jvm.optionals.getOrNull
 
@@ -39,7 +41,7 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
     protected val account: Account,
     protected val resync: ResyncType?,
     protected val syncResult: SyncResult
-) {
+): Closeable {
 
     abstract val dataStore: StoreType
 
@@ -71,6 +73,7 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
         syncNotificationManagerFactory.create(account)
     }
 
+    @WillCloseWhenClosed
     val httpClient by lazy {
         httpClientBuilder.fromAccount(account).buildKtor()
     }
@@ -202,6 +205,10 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
         }
     }
 
+    override fun close() {
+        httpClient.close()
+    }
+
     /**
      * For collection specific sync preparations.
      *
@@ -235,6 +242,7 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
      *
      * - acquire content provider
      * - handle occurring sync errors
+     * - closes the http client
      */
     operator fun invoke() {
         logger.info("${dataStore.authority} sync of $account initiated (resync=$resync)")
@@ -292,6 +300,7 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
                 }
 
             } finally {
+                httpClient.close()
                 logger.info("${dataStore.authority} sync of $account finished")
             }
         }
