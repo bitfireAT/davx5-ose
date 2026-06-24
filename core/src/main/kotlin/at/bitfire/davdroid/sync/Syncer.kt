@@ -300,7 +300,6 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
                 }
 
             } finally {
-                httpClient.close()
                 logger.info("${dataStore.authority} sync of $account finished")
             }
         }
