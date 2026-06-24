@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid.servicedetection
 
+import at.bitfire.dav4jvm.HttpUtils.toHttpUrl
 import at.bitfire.dav4jvm.Property
 import at.bitfire.dav4jvm.ktor.DavResource
 import at.bitfire.dav4jvm.ktor.exception.HttpException
@@ -123,7 +124,7 @@ class ServiceRefresher @AssistedInject constructor(
                                     // Note: This is not be be confused with the DAV:owner attribute. Home sets can be owned by
                                     // other principals while still being considered "personal" (belonging to the current-user-principal)
                                     // and an owned home set need not always be personal either.
-                                    HomeSet(0, service.id, personal, resolvedHomeSetUrl)
+                                    HomeSet(0, service.id, personal, resolvedHomeSetUrl.toHttpUrl())
                                 )
                                 alreadySavedHomeSets += resolvedHomeSetUrl
                             }

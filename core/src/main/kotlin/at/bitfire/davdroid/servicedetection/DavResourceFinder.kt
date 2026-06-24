@@ -3,6 +3,7 @@
  */
 package at.bitfire.davdroid.servicedetection
 
+import at.bitfire.dav4jvm.HttpUtils.toKtorUrl
 import at.bitfire.dav4jvm.Property
 import at.bitfire.dav4jvm.ktor.DavResource
 import at.bitfire.dav4jvm.ktor.Response
@@ -30,6 +31,7 @@ import io.ktor.client.HttpClient
 import io.ktor.http.URLBuilder
 import io.ktor.http.URLProtocol
 import io.ktor.http.Url
+import io.ktor.http.encodedPath
 import org.xbill.DNS.Type
 import java.io.InterruptedIOException
 import java.net.SocketTimeoutException
@@ -296,7 +298,7 @@ class DavResourceFinder @AssistedInject constructor(
             if (it.types.contains(resourceType))
                 Collection.fromDavResponse(davResponse)?.let { info ->
                     log.info("Found resource of type $resourceType at ${info.url}")
-                    config.collections[info.url] = info
+                    config.collections[info.url.toKtorUrl()] = info
                 }
 
             // ... and/or a principal?
@@ -391,7 +393,13 @@ class DavResourceFinder @AssistedInject constructor(
 
         for (path in paths)
             try {
-                val initialContextPath = URLBuilder("https://$fqdn:$port$path").build()
+                val initialContextPath = URLBuilder(
+                    protocol = URLProtocol.HTTPS,
+                    host = fqdn,
+                    port = port
+                ).apply {
+                    encodedPath = path
+                }.build()
 
                 log.info("Trying to determine principal from initial context path=$initialContextPath")
                 val principal = getCurrentUserPrincipal(initialContextPath, service)

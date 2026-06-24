@@ -4,6 +4,8 @@
 
 package at.bitfire.davdroid.servicedetection
 
+import at.bitfire.dav4jvm.HttpUtils.toHttpUrl
+import at.bitfire.dav4jvm.HttpUtils.toKtorUrl
 import at.bitfire.dav4jvm.ktor.DavResource
 import at.bitfire.dav4jvm.ktor.Response
 import at.bitfire.dav4jvm.ktor.exception.HttpException
@@ -69,7 +71,7 @@ class HomeSetRefresher @AssistedInject constructor(
 
             try {
                 val collectionProperties = ServiceDetectionUtils.collectionQueryProperties(service.type)
-                DavResource(httpClient, homeSetUrl).propfind(1, *collectionProperties) { response, relation ->
+                DavResource(httpClient, homeSetUrl.toKtorUrl()).propfind(1, *collectionProperties) { response, relation ->
                     // Note: This callback may be called multiple times ([MultiResponseCallback])
                     if (!response.isSuccess())
                         return@propfind

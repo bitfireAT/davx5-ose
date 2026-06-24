@@ -23,6 +23,7 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.junit4.MockKRule
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.test.runTest
+import okhttp3.HttpUrl.Companion.toHttpUrl
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule

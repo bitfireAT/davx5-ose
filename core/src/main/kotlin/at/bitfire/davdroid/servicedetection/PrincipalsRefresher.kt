@@ -52,7 +52,7 @@ class PrincipalsRefresher @AssistedInject constructor(
             val principalUrl = oldPrincipal.url
             logger.fine("Querying principal $principalUrl")
             try {
-                DavResource(httpClient, principalUrl).propfind(0, *principalProperties) { response, _ ->
+                DavResource(httpClient, principalUrl.toKtorUrl()).propfind(0, *principalProperties) { response, _ ->
                     if (!response.isSuccess())
                         return@propfind
                     Principal.fromDavResponse(service.id, response)?.let { principal ->
