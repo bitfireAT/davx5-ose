@@ -17,6 +17,7 @@ import kotlinx.coroutines.test.runTest
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -26,15 +27,13 @@ class CollectionTest {
     private val xmlHeaders = headersOf(HttpHeaders.ContentType, "application/xml; charset=UTF-8")
     private val baseUrl = Url("https://dav.example.com/")
 
-    private fun davResource(xmlBody: String): Pair<DavResource, HttpClient> {
-        val client = HttpClient(MockEngine { respond(xmlBody, HttpStatusCode.MultiStatus, xmlHeaders) })
-        return DavResource(client, baseUrl) to client
-    }
+    private fun mockClient(xmlBody: String): HttpClient =
+        HttpClient(MockEngine { respond(xmlBody, HttpStatusCode.MultiStatus, xmlHeaders) })
 
 
     @Test
     fun testFromDavResponseAddressBook() = runTest {
-        val (davResource, client) = davResource(
+        mockClient(
             "<multistatus xmlns='DAV:' xmlns:CARD='urn:ietf:params:xml:ns:carddav'>" +
                     "<response>" +
                     "   <href>/</href>" +
@@ -45,26 +44,28 @@ class CollectionTest {
                     "   </prop></propstat>" +
                     "</response>" +
                     "</multistatus>"
-        )
-        client.use {
-            lateinit var info: Collection
+        ).use { client ->
+            val davResource = DavResource(client, baseUrl)
+            var collectionFromResponse: Collection? = null
             davResource.propfind(0, WebDAV.ResourceType) { response, _ ->
-                info = Collection.fromDavResponse(response) ?: throw IllegalArgumentException()
+                collectionFromResponse = Collection.fromDavResponse(response)
             }
-            assertEquals(Collection.TYPE_ADDRESSBOOK, info.type)
-            assertTrue(info.privWriteContent)
-            assertTrue(info.privUnbind)
-            assertNull(info.supportsVEVENT)
-            assertNull(info.supportsVTODO)
-            assertNull(info.supportsVJOURNAL)
-            assertEquals("My Contacts", info.displayName)
-            assertEquals("My Contacts Description", info.description)
+            assertNotNull(collectionFromResponse)
+            val collection = collectionFromResponse!!
+            assertEquals(Collection.TYPE_ADDRESSBOOK, collection.type)
+            assertTrue(collection.privWriteContent)
+            assertTrue(collection.privUnbind)
+            assertNull(collection.supportsVEVENT)
+            assertNull(collection.supportsVTODO)
+            assertNull(collection.supportsVJOURNAL)
+            assertEquals("My Contacts", collection.displayName)
+            assertEquals("My Contacts Description", collection.description)
         }
     }
 
     @Test
     fun testFromDavResponseCalendar_FullTimezone() = runTest {
-        val (davResource, client) = davResource(
+        mockClient(
             "<multistatus xmlns='DAV:' xmlns:CAL='urn:ietf:params:xml:ns:caldav' xmlns:ICAL='http://apple.com/ns/ical/'>" +
                     "<response>" +
                     "   <href>/</href>" +
@@ -99,28 +100,30 @@ class CollectionTest {
                     "   </prop></propstat>" +
                     "</response>" +
                     "</multistatus>"
-        )
-        client.use {
-            lateinit var info: Collection
+        ).use { client ->
+            val davResource = DavResource(client, baseUrl)
+            var collectionFromResponse: Collection? = null
             davResource.propfind(0, WebDAV.ResourceType) { response, _ ->
-                info = Collection.fromDavResponse(response)!!
+                collectionFromResponse = Collection.fromDavResponse(response)
             }
-            assertEquals(Collection.TYPE_CALENDAR, info.type)
-            assertFalse(info.privWriteContent)
-            assertFalse(info.privUnbind)
-            assertNull(info.displayName)
-            assertEquals("My Calendar", info.description)
-            assertEquals(0xFFFF0000.toInt(), info.color)
-            assertEquals("US-Eastern", info.timezoneId)
-            assertTrue(info.supportsVEVENT!!)
-            assertTrue(info.supportsVTODO!!)
-            assertTrue(info.supportsVJOURNAL!!)
+            assertNotNull(collectionFromResponse)
+            val collection = collectionFromResponse!!
+            assertEquals(Collection.TYPE_CALENDAR, collection.type)
+            assertFalse(collection.privWriteContent)
+            assertFalse(collection.privUnbind)
+            assertNull(collection.displayName)
+            assertEquals("My Calendar", collection.description)
+            assertEquals(0xFFFF0000.toInt(), collection.color)
+            assertEquals("US-Eastern", collection.timezoneId)
+            assertTrue(collection.supportsVEVENT!!)
+            assertTrue(collection.supportsVTODO!!)
+            assertTrue(collection.supportsVJOURNAL!!)
         }
     }
 
     @Test
     fun testFromDavResponseCalendar_OnlyTzId() = runTest {
-        val (davResource, client) = davResource(
+        mockClient(
             "<multistatus xmlns='DAV:' xmlns:CAL='urn:ietf:params:xml:ns:caldav' xmlns:ICAL='http://apple.com/ns/ical/'>" +
                     "<response>" +
                     "   <href>/</href>" +
@@ -133,28 +136,30 @@ class CollectionTest {
                     "   </prop></propstat>" +
                     "</response>" +
                     "</multistatus>"
-        )
-        client.use {
-            lateinit var info: Collection
+        ).use { client ->
+            val davResource = DavResource(client, baseUrl)
+            var collectionFromResponse: Collection? = null
             davResource.propfind(0, WebDAV.ResourceType) { response, _ ->
-                info = Collection.fromDavResponse(response)!!
+                collectionFromResponse = Collection.fromDavResponse(response)
             }
-            assertEquals(Collection.TYPE_CALENDAR, info.type)
-            assertFalse(info.privWriteContent)
-            assertFalse(info.privUnbind)
-            assertNull(info.displayName)
-            assertEquals("My Calendar", info.description)
-            assertEquals(0xFFFF0000.toInt(), info.color)
-            assertEquals("US-Eastern", info.timezoneId)
-            assertTrue(info.supportsVEVENT!!)
-            assertTrue(info.supportsVTODO!!)
-            assertTrue(info.supportsVJOURNAL!!)
+            assertNotNull(collectionFromResponse)
+            val collection = collectionFromResponse!!
+            assertEquals(Collection.TYPE_CALENDAR, collection.type)
+            assertFalse(collection.privWriteContent)
+            assertFalse(collection.privUnbind)
+            assertNull(collection.displayName)
+            assertEquals("My Calendar", collection.description)
+            assertEquals(0xFFFF0000.toInt(), collection.color)
+            assertEquals("US-Eastern", collection.timezoneId)
+            assertTrue(collection.supportsVEVENT!!)
+            assertTrue(collection.supportsVTODO!!)
+            assertTrue(collection.supportsVJOURNAL!!)
         }
     }
 
     @Test
     fun testFromDavResponseWebcal() = runTest {
-        val (davResource, client) = davResource(
+        mockClient(
             "<multistatus xmlns='DAV:' xmlns:CS='http://calendarserver.org/ns/'>" +
                     "<response>" +
                     "   <href>/webcal1</href>" +
@@ -165,15 +170,17 @@ class CollectionTest {
                     "   </prop></propstat>" +
                     "</response>" +
                     "</multistatus>"
-        )
-        client.use {
-            lateinit var info: Collection
+        ).use { client ->
+            val davResource = DavResource(client, baseUrl)
+            var collectionFromResponse: Collection? = null
             davResource.propfind(0, WebDAV.ResourceType) { response, _ ->
-                info = Collection.fromDavResponse(response) ?: throw IllegalArgumentException()
+                collectionFromResponse = Collection.fromDavResponse(response)
             }
-            assertEquals(Collection.TYPE_WEBCAL, info.type)
-            assertEquals("Sample Subscription", info.displayName)
-            assertEquals("https://example.com/1.ics".toHttpUrl(), info.source)
+            assertNotNull(collectionFromResponse)
+            val collection = collectionFromResponse!!
+            assertEquals(Collection.TYPE_WEBCAL, collection.type)
+            assertEquals("Sample Subscription", collection.displayName)
+            assertEquals("https://example.com/1.ics".toHttpUrl(), collection.source)
         }
     }
 
