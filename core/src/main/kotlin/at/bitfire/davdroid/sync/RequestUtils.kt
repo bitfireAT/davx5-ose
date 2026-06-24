@@ -62,10 +62,16 @@ suspend fun DavResource.delete(
     )
 }
 
+class ByteArrayContentImpl(
+    private val bytes: ByteArray,
+    override val contentType: ContentType? = null
+): OutgoingContent.ByteArrayContent() {
+    override fun bytes(): ByteArray = bytes
+}
+
 fun StringWriter.toOutgoingContent(
     contentType: ContentType? = null
-): OutgoingContent = object : OutgoingContent.ByteArrayContent() {
-    override val contentType = contentType
-
-    override fun bytes(): ByteArray = toString().encodeToByteArray()
-}
+): OutgoingContent = ByteArrayContentImpl(
+    bytes = toString().encodeToByteArray(),
+    contentType = contentType
+)
