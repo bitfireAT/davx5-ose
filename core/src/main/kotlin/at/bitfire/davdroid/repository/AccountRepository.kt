@@ -9,6 +9,7 @@ import android.accounts.AccountManager
 import android.accounts.OnAccountsUpdateListener
 import android.content.Context
 import androidx.annotation.WorkerThread
+import at.bitfire.dav4jvm.HttpUtils.toHttpUrl
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.db.Service
@@ -262,12 +263,12 @@ class AccountRepository @Inject constructor(
 
     private fun insertService(accountName: String, @ServiceType type: String, info: DavResourceFinder.Configuration.ServiceInfo): Long {
         // insert service
-        val service = Service(0, accountName, type, info.principal)
+        val service = Service(0, accountName, type, info.principal?.toHttpUrl())
         val serviceId = serviceRepository.insertOrReplaceBlocking(service)
 
         // insert home sets
         for (homeSet in info.homeSets)
-            homeSetRepository.insertOrUpdateByUrlBlocking(HomeSet(0, serviceId, true, homeSet))
+            homeSetRepository.insertOrUpdateByUrlBlocking(HomeSet(0, serviceId, true, homeSet.toHttpUrl()))
 
         // insert collections
         for (collection in info.collections.values) {

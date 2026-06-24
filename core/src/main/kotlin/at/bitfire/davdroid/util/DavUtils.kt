@@ -7,7 +7,6 @@ package at.bitfire.davdroid.util
 import at.bitfire.davdroid.util.DavUtils.generateUidIfNecessary
 import io.ktor.http.ContentType
 import okhttp3.HttpUrl
-import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
 import java.net.URI
 import java.net.URISyntaxException
@@ -142,17 +141,6 @@ object DavUtils {
 
         return builder.build()
     }
-
-    /**
-     * Compares MIME type and subtype of two MediaTypes. Does _not_ compare parameters
-     * like `charset` or `version`.
-     *
-     * @param other   MediaType to compare with
-     *
-     * @return *true* if type and subtype match; *false* if they don't
-     */
-    fun MediaType.sameTypeAs(other: MediaType) =
-        type == other.type && subtype == other.subtype
 
     fun String.toURIorNull(): URI? = try {
         URI(this)

@@ -83,7 +83,7 @@ class LogFileHandler @Inject constructor(
         fileHandler = null
 
         // remove all files in debug info directory, may also contain zip files from debug info activity etc.
-        debugDirectory.get()?.deleteRecursively()
+        debugDirectory.getOrCreate()?.deleteRecursively()
 
         removeNotification()
     }

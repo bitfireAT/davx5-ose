@@ -4,10 +4,13 @@
 
 package at.bitfire.davdroid.servicedetection
 
+import at.bitfire.dav4jvm.HttpUtils.toHttpUrl
 import at.bitfire.dav4jvm.Property
-import at.bitfire.dav4jvm.okhttp.DavResource
-import at.bitfire.dav4jvm.okhttp.UrlUtils
-import at.bitfire.dav4jvm.okhttp.exception.HttpException
+import at.bitfire.dav4jvm.ktor.DavResource
+import at.bitfire.dav4jvm.ktor.exception.HttpException
+import at.bitfire.dav4jvm.ktor.parent
+import at.bitfire.dav4jvm.ktor.resolve
+import at.bitfire.dav4jvm.ktor.withTrailingSlash
 import at.bitfire.dav4jvm.property.caldav.CalDAV
 import at.bitfire.dav4jvm.property.caldav.CalendarHomeSet
 import at.bitfire.dav4jvm.property.caldav.CalendarProxyReadFor
@@ -21,28 +24,28 @@ import at.bitfire.dav4jvm.property.webdav.WebDAV
 import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.repository.DavHomeSetRepository
-import at.bitfire.davdroid.util.DavUtils.parent
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import okhttp3.HttpUrl
-import okhttp3.OkHttpClient
+import io.ktor.client.HttpClient
+import io.ktor.http.Url
 import java.util.logging.Level
 import java.util.logging.Logger
+import javax.annotation.WillNotClose
 
 /**
  * ServiceRefresher is used to discover and save home sets of a given service.
  */
 class ServiceRefresher @AssistedInject constructor(
     @Assisted private val service: Service,
-    @Assisted private val httpClient: OkHttpClient,
+    @Assisted @WillNotClose private val httpClient: HttpClient,
     private val logger: Logger,
     private val homeSetRepository: DavHomeSetRepository
 ) {
 
     @AssistedFactory
     interface Factory {
-        fun create(service: Service, httpClient: OkHttpClient): ServiceRefresher
+        fun create(service: Service, httpClient: HttpClient): ServiceRefresher
     }
 
     /**
@@ -93,14 +96,14 @@ class ServiceRefresher @AssistedInject constructor(
      * @throws HttpException                                on HTTP errors
      * @throws at.bitfire.dav4jvm.exception.DavException    on application-level or logical errors
      */
-    internal fun discoverHomesets(
-        principalUrl: HttpUrl,
+    internal suspend fun discoverHomesets(
+        principalUrl: Url,
         level: Int = 0,
-        alreadyQueriedPrincipals: MutableSet<HttpUrl> = mutableSetOf(),
-        alreadySavedHomeSets: MutableSet<HttpUrl> = mutableSetOf()
+        alreadyQueriedPrincipals: MutableSet<Url> = mutableSetOf(),
+        alreadySavedHomeSets: MutableSet<Url> = mutableSetOf()
     ) {
         logger.fine("Discovering homesets of $principalUrl")
-        val relatedResources = mutableSetOf<HttpUrl>()
+        val relatedResources = mutableSetOf<Url>()
 
         // Query the URL
         val principal = DavResource(httpClient, principalUrl)
@@ -113,7 +116,7 @@ class ServiceRefresher @AssistedInject constructor(
                 davResponse[homeSetClass]?.let { homeSets ->
                     for (homeSetHref in homeSets.hrefs)
                         principal.location.resolve(homeSetHref)?.let { homesetUrl ->
-                            val resolvedHomeSetUrl = UrlUtils.withTrailingSlash(homesetUrl)
+                            val resolvedHomeSetUrl = homesetUrl.withTrailingSlash()
                             if (!alreadySavedHomeSets.contains(resolvedHomeSetUrl)) {
                                 homeSetRepository.insertOrUpdateByUrlBlocking(
                                     // HomeSet is considered personal if this is the outer recursion call,
@@ -121,14 +124,14 @@ class ServiceRefresher @AssistedInject constructor(
                                     // Note: This is not be be confused with the DAV:owner attribute. Home sets can be owned by
                                     // other principals while still being considered "personal" (belonging to the current-user-principal)
                                     // and an owned home set need not always be personal either.
-                                    HomeSet(0, service.id, personal, resolvedHomeSetUrl)
+                                    HomeSet(0, service.id, personal, resolvedHomeSetUrl.toHttpUrl())
                                 )
                                 alreadySavedHomeSets += resolvedHomeSetUrl
                             }
                         }
                 }
 
-                // Add related principals to be queried afterwards
+                // Add related principals to be queried afterward
                 if (personal) {
                     val relatedResourcesTypes = listOf(
                         // current resource is a read/write-proxy for other principals

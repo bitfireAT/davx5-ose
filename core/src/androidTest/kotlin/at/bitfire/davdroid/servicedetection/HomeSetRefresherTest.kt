@@ -8,33 +8,51 @@ import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.db.Service
-import at.bitfire.davdroid.network.HttpClientBuilder
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.mock.MockEngine
+import io.ktor.client.engine.mock.respond
+import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpStatusCode
+import io.ktor.http.headersOf
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit4.MockKRule
 import junit.framework.TestCase.assertFalse
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.test.runTest
-import okhttp3.OkHttpClient
-import okhttp3.mockwebserver.Dispatcher
-import okhttp3.mockwebserver.MockResponse
-import okhttp3.mockwebserver.MockWebServer
-import okhttp3.mockwebserver.RecordedRequest
+import okhttp3.HttpUrl.Companion.toHttpUrl
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import java.util.logging.Logger
 import javax.inject.Inject
 
 @HiltAndroidTest
 class HomeSetRefresherTest {
+
+    companion object {
+        const val BASE_URL = "https://dav.example.com"
+
+        private const val PATH_CARDDAV = "/carddav"
+
+        private const val SUBPATH_PRINCIPAL = "/principal"
+        private const val SUBPATH_ADDRESSBOOK_HOMESET_PERSONAL = "/addressbooks-homeset"
+        private const val SUBPATH_ADDRESSBOOK_HOMESET_EMPTY = "/addressbooks-homeset-empty"
+        private const val SUBPATH_ADDRESSBOOK = "/addressbooks/my-contacts"
+
+        val xmlHeaders = headersOf(HttpHeaders.ContentType, "application/xml; charset=UTF-8")
+
+        fun multistatus(href: String, props: String) =
+            "<multistatus xmlns='DAV:' xmlns:CARD='urn:ietf:params:xml:ns:carddav' xmlns:CAL='urn:ietf:params:xml:ns:caldav'>" +
+                    "<response><href>$href</href><propstat><prop>$props</prop><status>HTTP/1.1 200 OK</status></propstat></response>" +
+                    "</multistatus>"
+    }
 
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
@@ -46,36 +64,40 @@ class HomeSetRefresherTest {
     lateinit var db: AppDatabase
 
     @Inject
-    lateinit var httpClientBuilder: HttpClientBuilder
-
-    @Inject
-    lateinit var logger: Logger
-
-    @Inject
     lateinit var homeSetRefresherFactory: HomeSetRefresher.Factory
 
     @BindValue
     @MockK(relaxed = true)
     lateinit var settings: SettingsManager
 
-    private lateinit var client: OkHttpClient
-    private lateinit var mockServer: MockWebServer
+    private lateinit var client: HttpClient
     private lateinit var service: Service
+
+    private fun buildMockEngine() = MockEngine { request ->
+        if (request.method.value != "PROPFIND")
+            return@MockEngine respond("", HttpStatusCode.NotFound)
+
+        val path = request.url.encodedPath.trimEnd('/')
+        val props = when (path) {
+            PATH_CARDDAV + SUBPATH_ADDRESSBOOK_HOMESET_PERSONAL ->
+                "<resourcetype><collection/><CARD:addressbook/></resourcetype>" +
+                        "<displayname>My Contacts</displayname>" +
+                        "<CARD:addressbook-description>My Contacts Description</CARD:addressbook-description>" +
+                        "<owner><href>$PATH_CARDDAV$SUBPATH_PRINCIPAL</href></owner>"
+            PATH_CARDDAV + SUBPATH_ADDRESSBOOK_HOMESET_EMPTY -> ""
+            else -> return@MockEngine respond("", HttpStatusCode.NotFound)
+        }
+        respond(
+            multistatus(PATH_CARDDAV + SUBPATH_ADDRESSBOOK, props),
+            HttpStatusCode.MultiStatus, xmlHeaders
+        )
+    }
 
     @Before
     fun setUp() {
         hiltRule.inject()
+        client = HttpClient(buildMockEngine())
 
-        // Start mock web server
-        mockServer = MockWebServer().apply {
-            dispatcher = TestDispatcher(logger)
-            start()
-        }
-
-        // build HTTP client
-        client = httpClientBuilder.build()
-
-        // insert test service
         val serviceId = db.serviceDao().insertOrReplace(
             Service(id = 0, accountName = "test", type = Service.TYPE_CARDDAV, principal = null)
         )
@@ -84,7 +106,7 @@ class HomeSetRefresherTest {
 
     @After
     fun tearDown() {
-        mockServer.shutdown()
+        client.close()
     }
 
 
@@ -92,16 +114,13 @@ class HomeSetRefresherTest {
 
     @Test
     fun refreshHomesetsAndTheirCollections_addsNewCollection() = runTest {
-        // save homeset in DB
         val homesetId = db.homeSetDao().insert(
-            HomeSet(id = 0, service.id, true, mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK_HOMESET_PERSONAL"))
+            HomeSet(id = 0, service.id, true, "$BASE_URL$PATH_CARDDAV$SUBPATH_ADDRESSBOOK_HOMESET_PERSONAL".toHttpUrl())
         )
 
-        // Refresh
         homeSetRefresherFactory.create(service, client)
             .refreshHomesetsAndTheirCollections()
 
-        // Check the collection defined in homeset is now in the database
         assertEquals(
             Collection(
                 1,
@@ -109,7 +128,7 @@ class HomeSetRefresherTest {
                 homesetId,
                 1, // will have gotten an owner too
                 Collection.TYPE_ADDRESSBOOK,
-                mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK/"),
+                "$BASE_URL$PATH_CARDDAV$SUBPATH_ADDRESSBOOK/".toHttpUrl(),
                 displayName = "My Contacts",
                 description = "My Contacts Description"
             ),
@@ -118,8 +137,7 @@ class HomeSetRefresherTest {
     }
 
     @Test
-    fun refreshHomesetsAndTheirCollections_updatesExistingCollection() {
-        // save "old" collection in DB
+    fun refreshHomesetsAndTheirCollections_updatesExistingCollection() = runTest {
         val collectionId = db.collectionDao().insertOrUpdateByUrl(
             Collection(
                 0,
@@ -127,16 +145,14 @@ class HomeSetRefresherTest {
                 null,
                 null,
                 Collection.TYPE_ADDRESSBOOK,
-                mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK/"),
+                "$BASE_URL$PATH_CARDDAV$SUBPATH_ADDRESSBOOK/".toHttpUrl(),
                 displayName = "My Contacts",
                 description = "My Contacts Description"
             )
         )
 
-        // Refresh
         homeSetRefresherFactory.create(service, client).refreshHomesetsAndTheirCollections()
 
-        // Check the collection got updated
         assertEquals(
             Collection(
                 collectionId,
@@ -144,7 +160,7 @@ class HomeSetRefresherTest {
                 null,
                 null,
                 Collection.TYPE_ADDRESSBOOK,
-                mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK/"),
+                "$BASE_URL$PATH_CARDDAV$SUBPATH_ADDRESSBOOK/".toHttpUrl(),
                 displayName = "My Contacts",
                 description = "My Contacts Description"
             ),
@@ -153,8 +169,7 @@ class HomeSetRefresherTest {
     }
 
     @Test
-    fun refreshHomesetsAndTheirCollections_preservesCollectionFlags() {
-        // save "old" collection in DB - with set flags
+    fun refreshHomesetsAndTheirCollections_preservesCollectionFlags() = runTest {
         val collectionId = db.collectionDao().insertOrUpdateByUrl(
             Collection(
                 0,
@@ -162,7 +177,7 @@ class HomeSetRefresherTest {
                 null,
                 null,
                 Collection.TYPE_ADDRESSBOOK,
-                mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK/"),
+                "$BASE_URL$PATH_CARDDAV$SUBPATH_ADDRESSBOOK/".toHttpUrl(),
                 displayName = "My Contacts",
                 description = "My Contacts Description",
                 forceReadOnly = true,
@@ -170,10 +185,8 @@ class HomeSetRefresherTest {
             )
         )
 
-        // Refresh
         homeSetRefresherFactory.create(service, client).refreshHomesetsAndTheirCollections()
 
-        // Check the collection got updated
         assertEquals(
             Collection(
                 collectionId,
@@ -181,7 +194,7 @@ class HomeSetRefresherTest {
                 null,
                 null,
                 Collection.TYPE_ADDRESSBOOK,
-                mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK/"),
+                "$BASE_URL$PATH_CARDDAV$SUBPATH_ADDRESSBOOK/".toHttpUrl(),
                 displayName = "My Contacts",
                 description = "My Contacts Description",
                 forceReadOnly = true,
@@ -192,13 +205,11 @@ class HomeSetRefresherTest {
     }
 
     @Test
-    fun refreshHomesetsAndTheirCollections_marksRemovedCollectionsAsHomeless() {
-        // save homeset in DB - which is empty (zero address books) on the serverside
+    fun refreshHomesetsAndTheirCollections_marksRemovedCollectionsAsHomeless() = runTest {
         val homesetId = db.homeSetDao().insert(
-            HomeSet(id = 0, service.id, true, mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK_HOMESET_EMPTY"))
+            HomeSet(id = 0, service.id, true, "$BASE_URL$PATH_CARDDAV$SUBPATH_ADDRESSBOOK_HOMESET_EMPTY".toHttpUrl())
         )
 
-        // place collection in DB - as part of the homeset
         val collectionId = db.collectionDao().insertOrUpdateByUrl(
             Collection(
                 0,
@@ -206,44 +217,38 @@ class HomeSetRefresherTest {
                 homesetId,
                 null,
                 Collection.TYPE_ADDRESSBOOK,
-                mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK/")
+                "$BASE_URL$PATH_CARDDAV$SUBPATH_ADDRESSBOOK/".toHttpUrl()
             )
         )
 
-        // Refresh - should mark collection as homeless, because serverside homeset is empty.
         homeSetRefresherFactory.create(service, client).refreshHomesetsAndTheirCollections()
 
-        // Check the collection, is now marked as homeless
         assertEquals(null, db.collectionDao().get(collectionId)!!.homeSetId)
     }
 
     @Test
-    fun refreshHomesetsAndTheirCollections_addsOwnerUrls() {
-        // save a homeset in DB
+    fun refreshHomesetsAndTheirCollections_addsOwnerUrls() = runTest {
         val homesetId = db.homeSetDao().insert(
-            HomeSet(id = 0, service.id, true, mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK_HOMESET_PERSONAL"))
+            HomeSet(id = 0, service.id, true, "$BASE_URL$PATH_CARDDAV$SUBPATH_ADDRESSBOOK_HOMESET_PERSONAL".toHttpUrl())
         )
 
-        // place collection in DB - as part of the homeset
         val collectionId = db.collectionDao().insertOrUpdateByUrl(
             Collection(
                 0,
                 service.id,
-                homesetId, // part of above home set
+                homesetId,
                 null,
                 Collection.TYPE_ADDRESSBOOK,
-                mockServer.url("$PATH_CARDDAV$SUBPATH_ADDRESSBOOK/")
+                "$BASE_URL$PATH_CARDDAV$SUBPATH_ADDRESSBOOK/".toHttpUrl()
             )
         )
 
-        // Refresh - homesets and their collections
         assertEquals(0, db.principalDao().getByService(service.id).size)
         homeSetRefresherFactory.create(service, client).refreshHomesetsAndTheirCollections()
 
-        // Check principal saved and the collection was updated with its reference
         val principals = db.principalDao().getByService(service.id)
         assertEquals(1, principals.size)
-        assertEquals(mockServer.url("$PATH_CARDDAV$SUBPATH_PRINCIPAL"), principals[0].url)
+        assertEquals("$BASE_URL$PATH_CARDDAV$SUBPATH_PRINCIPAL".toHttpUrl(), principals[0].url)
         assertEquals(null, principals[0].displayName)
         assertEquals(
             principals[0].id,
@@ -252,7 +257,7 @@ class HomeSetRefresherTest {
     }
 
 
-    // other
+    // shouldPreselect
 
     @Test
     fun shouldPreselect_none() {
@@ -260,23 +265,17 @@ class HomeSetRefresherTest {
         every { settings.getString(Settings.PRESELECT_COLLECTIONS_EXCLUDED) } returns ""
 
         val collection = Collection(
-            0,
-            service.id,
-            0,
-            type = Collection.TYPE_ADDRESSBOOK,
-            url = mockServer.url("/addressbook-homeset/addressbook/")
+            0, service.id, 0, type = Collection.TYPE_ADDRESSBOOK,
+            url = "$BASE_URL/addressbook-homeset/addressbook/".toHttpUrl()
         )
         val homesets = listOf(
             HomeSet(
-                id = 0,
-                serviceId = service.id,
-                personal = true,
-                url = mockServer.url("/addressbook-homeset/")
+                id = 0, serviceId = service.id, personal = true,
+                url = "$BASE_URL/addressbook-homeset/".toHttpUrl()
             )
         )
 
-        val refresher = homeSetRefresherFactory.create(service, client)
-        assertFalse(refresher.shouldPreselect(collection, homesets))
+        assertFalse(homeSetRefresherFactory.create(service, client).shouldPreselect(collection, homesets))
     }
 
     @Test
@@ -285,50 +284,38 @@ class HomeSetRefresherTest {
         every { settings.getString(Settings.PRESELECT_COLLECTIONS_EXCLUDED) } returns ""
 
         val collection = Collection(
-            0,
-            service.id,
-            0,
-            type = Collection.TYPE_ADDRESSBOOK,
-            url = mockServer.url("/addressbook-homeset/addressbook/")
+            0, service.id, 0, type = Collection.TYPE_ADDRESSBOOK,
+            url = "$BASE_URL/addressbook-homeset/addressbook/".toHttpUrl()
         )
         val homesets = listOf(
             HomeSet(
-                id = 0,
-                serviceId = service.id,
-                personal = false,
-                url = mockServer.url("/addressbook-homeset/")
+                id = 0, serviceId = service.id, personal = false,
+                url = "$BASE_URL/addressbook-homeset/".toHttpUrl()
             )
         )
 
-        val refresher = homeSetRefresherFactory.create(service, client)
-        assertTrue(refresher.shouldPreselect(collection, homesets))
+        assertTrue(homeSetRefresherFactory.create(service, client).shouldPreselect(collection, homesets))
     }
 
     @Test
     fun shouldPreselect_all_blacklisted() {
-        val url = mockServer.url("/addressbook-homeset/addressbook/")
+        val url = "$BASE_URL/addressbook-homeset/addressbook/".toHttpUrl()
 
         every { settings.getIntOrNull(Settings.PRESELECT_COLLECTIONS) } returns Settings.PRESELECT_COLLECTIONS_ALL
         every { settings.getString(Settings.PRESELECT_COLLECTIONS_EXCLUDED) } returns url.toString()
 
         val collection = Collection(
-            id = 0,
-            serviceId = service.id,
-            homeSetId = 0,
-            type = Collection.TYPE_ADDRESSBOOK,
-            url = url
+            id = 0, serviceId = service.id, homeSetId = 0,
+            type = Collection.TYPE_ADDRESSBOOK, url = url
         )
         val homesets = listOf(
             HomeSet(
-                id = 0,
-                serviceId = service.id,
-                personal = false,
-                url = mockServer.url("/addressbook-homeset/")
+                id = 0, serviceId = service.id, personal = false,
+                url = "$BASE_URL/addressbook-homeset/".toHttpUrl()
             )
         )
 
-        val refresher = homeSetRefresherFactory.create(service, client)
-        assertFalse(refresher.shouldPreselect(collection, homesets))
+        assertFalse(homeSetRefresherFactory.create(service, client).shouldPreselect(collection, homesets))
     }
 
     @Test
@@ -337,23 +324,18 @@ class HomeSetRefresherTest {
         every { settings.getString(Settings.PRESELECT_COLLECTIONS_EXCLUDED) } returns ""
 
         val collection = Collection(
-            id = 0,
-            serviceId = service.id,
-            homeSetId = 0,
+            id = 0, serviceId = service.id, homeSetId = 0,
             type = Collection.TYPE_ADDRESSBOOK,
-            url = mockServer.url("/addressbook-homeset/addressbook/")
+            url = "$BASE_URL/addressbook-homeset/addressbook/".toHttpUrl()
         )
         val homesets = listOf(
             HomeSet(
-                id = 0,
-                serviceId = service.id,
-                personal = false,
-                url = mockServer.url("/addressbook-homeset/")
+                id = 0, serviceId = service.id, personal = false,
+                url = "$BASE_URL/addressbook-homeset/".toHttpUrl()
             )
         )
 
-        val refresher = homeSetRefresherFactory.create(service, client)
-        assertFalse(refresher.shouldPreselect(collection, homesets))
+        assertFalse(homeSetRefresherFactory.create(service, client).shouldPreselect(collection, homesets))
     }
 
     @Test
@@ -362,109 +344,38 @@ class HomeSetRefresherTest {
         every { settings.getString(Settings.PRESELECT_COLLECTIONS_EXCLUDED) } returns ""
 
         val collection = Collection(
-            0,
-            service.id,
-            0,
-            type = Collection.TYPE_ADDRESSBOOK,
-            url = mockServer.url("/addressbook-homeset/addressbook/")
+            0, service.id, 0, type = Collection.TYPE_ADDRESSBOOK,
+            url = "$BASE_URL/addressbook-homeset/addressbook/".toHttpUrl()
         )
         val homesets = listOf(
             HomeSet(
-                id = 0,
-                serviceId = service.id,
-                personal = true,
-                url = mockServer.url("/addressbook-homeset/")
+                id = 0, serviceId = service.id, personal = true,
+                url = "$BASE_URL/addressbook-homeset/".toHttpUrl()
             )
         )
 
-        val refresher = homeSetRefresherFactory.create(service, client)
-        assertTrue(refresher.shouldPreselect(collection, homesets))
+        assertTrue(homeSetRefresherFactory.create(service, client).shouldPreselect(collection, homesets))
     }
 
     @Test
     fun shouldPreselect_personal_isPersonalButBlacklisted() {
-        val collectionUrl = mockServer.url("/addressbook-homeset/addressbook/")
+        val collectionUrl = "$BASE_URL/addressbook-homeset/addressbook/".toHttpUrl()
 
         every { settings.getIntOrNull(Settings.PRESELECT_COLLECTIONS) } returns Settings.PRESELECT_COLLECTIONS_PERSONAL
         every { settings.getString(Settings.PRESELECT_COLLECTIONS_EXCLUDED) } returns collectionUrl.toString()
 
         val collection = Collection(
-            id = 0,
-            serviceId = service.id,
-            homeSetId = 0,
-            type = Collection.TYPE_ADDRESSBOOK,
-            url = collectionUrl
+            id = 0, serviceId = service.id, homeSetId = 0,
+            type = Collection.TYPE_ADDRESSBOOK, url = collectionUrl
         )
         val homesets = listOf(
             HomeSet(
-                id = 0,
-                serviceId = service.id,
-                personal = true,
-                url = mockServer.url("/addressbook-homeset/")
+                id = 0, serviceId = service.id, personal = true,
+                url = "$BASE_URL/addressbook-homeset/".toHttpUrl()
             )
         )
 
-        val refresher = homeSetRefresherFactory.create(service, client)
-        assertFalse(refresher.shouldPreselect(collection, homesets))
-    }
-
-
-    companion object {
-
-        private const val PATH_CARDDAV = "/carddav"
-
-        private const val SUBPATH_PRINCIPAL = "/principal"
-        private const val SUBPATH_ADDRESSBOOK_HOMESET_PERSONAL = "/addressbooks-homeset"
-        private const val SUBPATH_ADDRESSBOOK_HOMESET_EMPTY = "/addressbooks-homeset-empty"
-        private const val SUBPATH_ADDRESSBOOK = "/addressbooks/my-contacts"
-
-    }
-
-    class TestDispatcher(
-        private val logger: Logger
-    ) : Dispatcher() {
-
-        override fun dispatch(request: RecordedRequest): MockResponse {
-            val path = request.path!!.trimEnd('/')
-
-            if (request.method.equals("PROPFIND", true)) {
-                val properties = when (path) {
-
-                    PATH_CARDDAV + SUBPATH_ADDRESSBOOK_HOMESET_PERSONAL ->
-                        "<resourcetype>" +
-                                "   <collection/>" +
-                                "   <CARD:addressbook/>" +
-                                "</resourcetype>" +
-                                "<displayname>My Contacts</displayname>" +
-                                "<CARD:addressbook-description>My Contacts Description</CARD:addressbook-description>" +
-                                "<owner>" +
-                                "   <href>${PATH_CARDDAV + SUBPATH_PRINCIPAL}</href>" +
-                                "</owner>"
-
-                    SUBPATH_ADDRESSBOOK_HOMESET_EMPTY -> ""
-
-                    else -> ""
-                }
-
-                logger.info("Queried: $path")
-                return MockResponse()
-                    .setResponseCode(207)
-                    .setBody(
-                        "<multistatus xmlns='DAV:' xmlns:CARD='urn:ietf:params:xml:ns:carddav' xmlns:CAL='urn:ietf:params:xml:ns:caldav'>" +
-                                "<response>" +
-                                "   <href>${PATH_CARDDAV + SUBPATH_ADDRESSBOOK}</href>" +
-                                "   <propstat><prop>" +
-                                properties +
-                                "   </prop></propstat>" +
-                                "   <status>HTTP/1.1 200 OK</status>" +
-                                "</response>" +
-                                "</multistatus>"
-                    )
-            }
-
-            return MockResponse().setResponseCode(404)
-        }
-
+        assertFalse(homeSetRefresherFactory.create(service, client).shouldPreselect(collection, homesets))
     }
 
 }
