@@ -20,7 +20,6 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import io.ktor.client.HttpClient
 import io.ktor.http.Url
-import io.ktor.http.content.OutgoingContent
 import kotlinx.coroutines.CoroutineDispatcher
 import org.junit.Assert.assertEquals
 
@@ -80,9 +79,9 @@ class TestSyncManager @AssistedInject constructor(
         didGenerateUpload = true
         return GeneratedResource(
             suggestedFileName = resource.fileName ?: "generated-file.txt",
-            content = object : OutgoingContent.ByteArrayContent() {
-                override fun bytes(): ByteArray = toString().encodeToByteArray()
-            },
+            content = ByteArrayContentImpl(
+                bytes = toString().encodeToByteArray()
+            ),
             onSuccessContext = GeneratedResource.OnSuccessContext()
         )
     }
