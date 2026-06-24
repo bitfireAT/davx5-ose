@@ -15,6 +15,7 @@ import at.bitfire.dav4jvm.ktor.DavCollection
 import at.bitfire.dav4jvm.ktor.DavResource
 import at.bitfire.dav4jvm.ktor.MultiResponseCallback
 import at.bitfire.dav4jvm.ktor.Response
+import at.bitfire.dav4jvm.ktor.ResponseCallback
 import at.bitfire.dav4jvm.ktor.exception.ConflictException
 import at.bitfire.dav4jvm.ktor.exception.DavException
 import at.bitfire.dav4jvm.ktor.exception.ForbiddenException
@@ -44,10 +45,14 @@ import at.bitfire.davdroid.sync.account.InvalidAccountException
 import at.bitfire.synctools.storage.LocalStorageException
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.ktor.client.HttpClient
+import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.URLBuilder
 import io.ktor.http.Url
 import io.ktor.http.appendPathSegments
+import io.ktor.http.content.OutgoingContent
+import io.ktor.http.headers
+import io.ktor.util.appendAll
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
@@ -809,6 +814,70 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
         )
 
     protected abstract fun notifyInvalidResourceTitle(): String
+
+    /**
+     * A wrapper for making `PUT` requests with conditional headers.
+     * @param content The content to send in the PUT request.
+     * @param ifETag If one is given, the `If-Match` header will have this value.
+     * @param ifScheduleTag If one is given, the `If-Schedule-Tag-Match` header will have this value.
+     * @param ifNoneMatch If `true`, the `If-None-Match` header will be set to `*`.
+     * @param headers Any other headers to append to the request.
+     * @param callback Will be called with the request's response.
+     */
+    suspend fun DavResource.put(
+        content: OutgoingContent,
+        ifETag: String? = null,
+        ifScheduleTag: String? = null,
+        ifNoneMatch: Boolean = false,
+        headers: Map<String, String> = emptyMap(),
+        callback: ResponseCallback
+    ) {
+        put(
+            content,
+            additionalHeaders = headers {
+                if (ifETag != null)
+                    // only overwrite specific version
+                    append(HttpHeaders.IfMatch, QuotedStringUtils.asQuotedString(ifETag))
+                if (ifScheduleTag != null)
+                    // only overwrite specific version
+                    append(HttpHeaders.IfScheduleTagMatch, QuotedStringUtils.asQuotedString(ifScheduleTag))
+                if (ifNoneMatch)
+                    // don't overwrite anything existing
+                    append(HttpHeaders.IfNoneMatch, "*")
+
+                // Append all custom headers
+                appendAll(headers)
+            },
+            callback = callback
+        )
+    }
+
+    /**
+     * A wrapper for making `DELETE` requests with conditional headers.
+     * @param ifETag If one is given, the `If-Match` header will have this value.
+     * @param ifScheduleTag If one is given, the `If-Schedule-Tag-Match` header will have this value.
+     * @param headers Any other headers to append to the request.
+     * @param callback Will be called with the request's response.
+     */
+    suspend fun DavResource.delete(
+        ifETag: String? = null,
+        ifScheduleTag: String? = null,
+        headers: Map<String, String> = emptyMap(),
+        callback: ResponseCallback
+    ) {
+        delete(
+            additionalHeaders = headers {
+                if (ifETag != null)
+                    append(HttpHeaders.IfMatch, QuotedStringUtils.asQuotedString(ifETag))
+                if (ifScheduleTag != null)
+                    append(HttpHeaders.IfScheduleTagMatch, QuotedStringUtils.asQuotedString(ifScheduleTag))
+
+                // Append all custom headers
+                appendAll(headers)
+            },
+            callback = callback
+        )
+    }
 
 
     companion object {
