@@ -127,7 +127,7 @@ object DavUtils {
      * Safely gets the last segment of the URL, or returns `""` if none could be obtained.
      */
     val Url.lastSegment: String
-        get() = this.segments.lastOrNull { it.isNotEmpty() } ?: ""
+        get() = this.segments.lastOrNull { it.isNotEmpty() } ?: "/"
 
     /**
      * Returns parent URL (parent folder). Always with trailing slash
