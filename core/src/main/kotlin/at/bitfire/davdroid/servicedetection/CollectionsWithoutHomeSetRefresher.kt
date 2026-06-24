@@ -4,19 +4,22 @@
 
 package at.bitfire.davdroid.servicedetection
 
+import at.bitfire.dav4jvm.HttpUtils.toHttpUrl
+import at.bitfire.dav4jvm.HttpUtils.toKtorUrl
 import at.bitfire.dav4jvm.ktor.DavResource
 import at.bitfire.dav4jvm.ktor.exception.HttpException
+import at.bitfire.dav4jvm.ktor.resolve
 import at.bitfire.dav4jvm.property.webdav.Owner
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Principal
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.repository.DavCollectionRepository
-import at.bitfire.davdroid.util.DavUtils.resolve
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import io.ktor.client.HttpClient
+import javax.annotation.WillNotClose
 
 /**
  * Logic for refreshing the list of collections (and their related information)
@@ -24,7 +27,7 @@ import io.ktor.client.HttpClient
  */
 class CollectionsWithoutHomeSetRefresher @AssistedInject constructor(
     @Assisted private val service: Service,
-    @Assisted private val httpClient: HttpClient,
+    @Assisted @WillNotClose private val httpClient: HttpClient,
     private val db: AppDatabase,
     private val collectionRepository: DavCollectionRepository,
 ) {

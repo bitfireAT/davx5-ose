@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid.servicedetection
 
+import at.bitfire.dav4jvm.HttpUtils.toKtorUrl
 import at.bitfire.dav4jvm.ktor.DavResource
 import at.bitfire.dav4jvm.ktor.exception.HttpException
 import at.bitfire.dav4jvm.property.webdav.WebDAV
@@ -14,6 +15,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import io.ktor.client.HttpClient
+import javax.annotation.WillNotClose
 import java.util.logging.Logger
 
 /**
@@ -21,7 +23,7 @@ import java.util.logging.Logger
  */
 class PrincipalsRefresher @AssistedInject constructor(
     @Assisted private val service: Service,
-    @Assisted private val httpClient: HttpClient,
+    @Assisted @WillNotClose private val httpClient: HttpClient,
     private val db: AppDatabase,
     private val logger: Logger
 ) {

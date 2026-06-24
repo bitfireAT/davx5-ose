@@ -8,8 +8,10 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import at.bitfire.dav4jvm.HttpUtils.toHttpUrl
 import at.bitfire.dav4jvm.HttpUtils.toKtorUrl
 import at.bitfire.dav4jvm.ktor.Response
+import at.bitfire.dav4jvm.ktor.omitTrailingSlash
 import at.bitfire.dav4jvm.okhttp.UrlUtils
 import at.bitfire.dav4jvm.property.webdav.DisplayName
 import at.bitfire.dav4jvm.property.webdav.ResourceType
@@ -80,7 +82,7 @@ data class Principal(
             // Try getting the display name of the principal
             val displayName: String? = dav[DisplayName::class.java]?.displayName.trimToNull()
 
-            // Create and return principal - even without it's display name
+            // Create and return principal - even without its display name
             return Principal(
                 serviceId = serviceId,
                 url = dav.href.omitTrailingSlash,

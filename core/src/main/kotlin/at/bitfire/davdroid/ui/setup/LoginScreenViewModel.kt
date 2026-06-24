@@ -14,6 +14,7 @@ import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.log.DebugDirectory
 import at.bitfire.davdroid.log.FileLoggerFactory
+import at.bitfire.davdroid.network.HttpClientBuilder
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.servicedetection.DavResourceFinder
 import at.bitfire.davdroid.settings.AccountSettings
@@ -36,9 +37,12 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runInterruptible
 import kotlinx.coroutines.withContext
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
+import java.io.IOException
 import java.net.URI
 import java.util.Optional
+import java.util.logging.Level
 import java.util.logging.Logger
+import javax.inject.Provider
 
 @HiltViewModel(assistedFactory = LoginScreenViewModel.Factory::class)
 class LoginScreenViewModel @AssistedInject constructor(
@@ -48,13 +52,14 @@ class LoginScreenViewModel @AssistedInject constructor(
     private val accountRepository: AccountRepository,
     @ApplicationContext val context: Context,
     private val debugDirectory: DebugDirectory,
+    private val httpClientBuilderProvider: Provider<HttpClientBuilder>,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val logger: Logger,
     val loginTypesProvider: LoginTypesProvider,
     private val resourceFinderFactory: DavResourceFinder.Factory,
     settingsManager: SettingsManager,
     private val loginValidator: Optional<LoginValidator>
-): ViewModel() {
+) : ViewModel() {
 
     @AssistedFactory
     interface Factory {
@@ -170,10 +175,12 @@ class LoginScreenViewModel @AssistedInject constructor(
         val loginInfo: LoginInfo
     )
 
-    var loginDetailsUiState by mutableStateOf(LoginDetailsUiState(
-        loginType = initialLoginType,
-        loginInfo = loginInfo
-    ))
+    var loginDetailsUiState by mutableStateOf(
+        LoginDetailsUiState(
+            loginType = initialLoginType,
+            loginInfo = loginInfo
+        )
+    )
         private set
 
     fun updateLoginInfo(loginInfo: LoginInfo) {
@@ -206,18 +213,24 @@ class LoginScreenViewModel @AssistedInject constructor(
                 return@launch
             }
 
-            val (result, logFile) = findConfiguration(baseUri)
-            if (result.calDAV != null || result.cardDAV != null) {
-                foundConfig = result
-                navToNextPage()
-            } else {
-                foundConfig = null
-                detectResourcesUiState = detectResourcesUiState.copy(
-                    loading = false,
-                    foundNothing = true,
-                    encountered401 = result.encountered401,
-                    debugLogFileName = logFile
-                )
+            try {
+                val (result, logFile) = findConfiguration(baseUri)
+                if (result.calDAV != null || result.cardDAV != null) {
+                    foundConfig = result
+                    navToNextPage()
+                } else {
+                    foundConfig = null
+                    detectResourcesUiState = detectResourcesUiState.copy(
+                        loading = false,
+                        foundNothing = true,
+                        encountered401 = result.encountered401,
+                        debugLogFileName = logFile
+                    )
+                }
+            } catch (e: IOException) {
+                /* Note: this is only reached for severe problems like when the logs can't be written. It's NOT
+                reached for exceptions during service detection – these are all caught by findConfiguration(). */
+                logger.log(Level.SEVERE, "Couldn't run service detection", e)
             }
         }
     }
@@ -242,17 +255,35 @@ class LoginScreenViewModel @AssistedInject constructor(
      * Runs service detection for [baseUri] and writes a log to a file in the debug directory.
      *
      * @return the detection result and the [DebugDirectory.FileName] of the log file written during detection
+     * @throws IOException when the service detection log can't be created
      */
-    private suspend fun findConfiguration(baseUri: URI): Pair<DavResourceFinder.Configuration, DebugDirectory.FileName> =
-        withContext(ioDispatcher) {
-            val logFileName = DebugDirectory.FileName(LOG_FILE_NAME)
-            val logFile = debugDirectory.resolve(logFileName)
-            val result = FileLoggerFactory.forFile(logFile!!).use { (logger) ->
-                resourceFinderFactory.create(baseUri, loginInfo.credentials, logger)
-                    .findInitialConfiguration()
-            }
-            result to logFileName
+    private suspend fun findConfiguration(baseUri: URI): Pair<DavResourceFinder.Configuration, DebugDirectory.FileName> {
+        val logFile = debugDirectory.resolve(SERVICE_DETECTION_LOG_FILE)
+            ?: throw IOException("Couldn't write service detection log")
+
+        val result = FileLoggerFactory.forFile(logFile).use { fileLoggerContext ->
+            val credentials = loginInfo.credentials
+            httpClientBuilderProvider.get()
+                .setLogger(fileLoggerContext.logger)    // log HTTP calls to logFile
+                .apply {
+                    if (credentials != null)
+                        authenticate(domain = null, getCredentials = { credentials })
+                }
+                .buildKtor()
+                .use { httpClient ->
+                    val finder = resourceFinderFactory.create(
+                        baseUri,
+                        credentials,
+                        httpClient,
+                        log = fileLoggerContext.logger  // log resource detection to logFile
+                    )
+
+                    // run the actual service detection
+                    finder.findInitialConfiguration()
+                }
         }
+        return result to SERVICE_DETECTION_LOG_FILE
+    }
 
     private fun cancelResourceDetection() {
         detectResourcesJob?.cancel()
@@ -282,7 +313,7 @@ class LoginScreenViewModel @AssistedInject constructor(
                 try {
                     GroupMethod.valueOf(groupMethodName)
                 } catch (e: IllegalArgumentException) {
-                    logger.warning("Invalid forced group method: $groupMethodName")
+                    logger.log(Level.WARNING, "Invalid forced group method: $groupMethodName", e)
                     null
                 }
             else
@@ -363,7 +394,11 @@ class LoginScreenViewModel @AssistedInject constructor(
 
 
     companion object {
-        private const val LOG_FILE_NAME = "service-detection.log"
+
+        /** file name of the service detection logs */
+        private val SERVICE_DETECTION_LOG_FILE
+            get() = DebugDirectory.FileName("service-detection.log")
+
     }
 
 }

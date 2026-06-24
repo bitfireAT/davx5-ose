@@ -4,9 +4,12 @@
 
 package at.bitfire.davdroid.servicedetection
 
+import at.bitfire.dav4jvm.HttpUtils.toHttpUrl
+import at.bitfire.dav4jvm.HttpUtils.toKtorUrl
 import at.bitfire.dav4jvm.ktor.DavResource
 import at.bitfire.dav4jvm.ktor.Response
 import at.bitfire.dav4jvm.ktor.exception.HttpException
+import at.bitfire.dav4jvm.ktor.resolve
 import at.bitfire.dav4jvm.property.webdav.CurrentUserPrivilegeSet
 import at.bitfire.dav4jvm.property.webdav.DisplayName
 import at.bitfire.dav4jvm.property.webdav.Owner
@@ -26,13 +29,14 @@ import dagger.assisted.AssistedInject
 import io.ktor.client.HttpClient
 import java.util.logging.Level
 import java.util.logging.Logger
+import javax.annotation.WillNotClose
 
 /**
  * Used to update the list of synchronizable collections
  */
 class HomeSetRefresher @AssistedInject constructor(
     @Assisted private val service: Service,
-    @Assisted private val httpClient: HttpClient,
+    @Assisted @WillNotClose private val httpClient: HttpClient,
     private val db: AppDatabase,
     private val logger: Logger,
     private val collectionRepository: DavCollectionRepository,

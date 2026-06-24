@@ -3,13 +3,15 @@
  */
 package at.bitfire.davdroid.servicedetection
 
+import at.bitfire.dav4jvm.HttpUtils.toKtorUrl
 import at.bitfire.dav4jvm.Property
 import at.bitfire.dav4jvm.ktor.DavResource
 import at.bitfire.dav4jvm.ktor.Response
-import at.bitfire.dav4jvm.ktor.UrlUtils
 import at.bitfire.dav4jvm.ktor.exception.DavException
 import at.bitfire.dav4jvm.ktor.exception.HttpException
 import at.bitfire.dav4jvm.ktor.exception.UnauthorizedException
+import at.bitfire.dav4jvm.ktor.resolve
+import at.bitfire.dav4jvm.ktor.withTrailingSlash
 import at.bitfire.dav4jvm.property.caldav.CalDAV
 import at.bitfire.dav4jvm.property.caldav.CalendarHomeSet
 import at.bitfire.dav4jvm.property.caldav.CalendarUserAddressSet
@@ -21,17 +23,14 @@ import at.bitfire.dav4jvm.property.webdav.ResourceType
 import at.bitfire.dav4jvm.property.webdav.WebDAV
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.network.DnsRecordResolver
-import at.bitfire.davdroid.network.HttpClientBuilder
 import at.bitfire.davdroid.settings.Credentials
-import at.bitfire.davdroid.util.DavUtils.resolve
-import at.bitfire.davdroid.util.DavUtils.toUrlOrNull
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import io.ktor.client.HttpClient
 import io.ktor.http.URLBuilder
 import io.ktor.http.URLProtocol
 import io.ktor.http.Url
-import io.ktor.http.path
 import org.xbill.DNS.Type
 import java.io.InterruptedIOException
 import java.net.SocketTimeoutException
@@ -40,6 +39,7 @@ import java.net.URISyntaxException
 import java.util.LinkedList
 import java.util.logging.Level
 import java.util.logging.Logger
+import javax.annotation.WillNotClose
 
 /**
  * Does initial resource detection when an account is added. It uses the (user given) base URL to find
@@ -50,19 +50,20 @@ import java.util.logging.Logger
  *
  * @param baseURI        user-given base URI (either mailto: URI or http(s):// URL)
  * @param credentials    optional login credentials (username/password, client certificate, OAuth state)
- * @param log            logger for service detection; caller is responsible for its lifecycle
+ * @param httpClient     Ktor HttpClient configured with authentication; caller owns and closes it
+ * @param log            logger for service detection; caller should also pass it to the HTTP client builder
  */
 class DavResourceFinder @AssistedInject constructor(
     @Assisted private val baseURI: URI,
     @Assisted private val credentials: Credentials? = null,
+    @Assisted @WillNotClose private val httpClient: HttpClient,
     @Assisted private val log: Logger,
-    private val dnsRecordResolver: DnsRecordResolver,
-    httpClientBuilder: HttpClientBuilder
+    private val dnsRecordResolver: DnsRecordResolver
 ) {
 
     @AssistedFactory
     interface Factory {
-        fun create(baseURI: URI, credentials: Credentials?, log: Logger): DavResourceFinder
+        fun create(baseURI: URI, credentials: Credentials?, httpClient: HttpClient, log: Logger): DavResourceFinder
     }
 
     enum class Service(val wellKnownName: String) {
@@ -73,17 +74,6 @@ class DavResourceFinder @AssistedInject constructor(
     }
 
     private var encountered401 = false
-
-    private val httpClient = httpClientBuilder
-        .setLogger(log)
-        .apply {
-            if (credentials != null)
-                authenticate(
-                    domain = null,
-                    getCredentials = { credentials }
-                )
-            }
-        .buildKtor()
 
 
     /**
@@ -113,7 +103,7 @@ class DavResourceFinder @AssistedInject constructor(
                 log.log(Level.INFO, "CalDAV service detection failed", e)
                 processException(e)
             }
-        } catch(_: Exception) {
+        } catch (_: Exception) {
             // we have been interrupted; reset results so that an error message will be shown
             cardDavConfig = null
             calDavConfig = null
@@ -136,25 +126,30 @@ class DavResourceFinder @AssistedInject constructor(
         // Start discovering
         log.info("Finding initial ${service.wellKnownName} service configuration")
         when (baseURI.scheme.lowercase()) {
-            "http", "https" ->
-                baseURI.toUrlOrNull()?.let { baseURL ->
-                    // remember domain for service discovery
-                    if (baseURL.protocol == URLProtocol.HTTPS)
-                        // service discovery will only be tried for https URLs, because only secure service discovery is implemented
-                        discoveryFQDN = baseURL.host
+            "http", "https" -> {
+                val baseURL = Url(baseURI)
 
-                    // Actual discovery process
-                    checkBaseURL(baseURL, service, config)
-
-                    // If principal was not found already, try well known URI
-                    if (config.principal == null)
-                        try {
-                            config.principal = getCurrentUserPrincipal(baseURL.resolve("/.well-known/" + service.wellKnownName), service)
-                        } catch(e: Exception) {
-                            log.log(Level.FINE, "Well-known URL detection failed", e)
-                            processException(e)
-                        }
+                // remember domain for service discovery
+                if (baseURL.protocol == URLProtocol.HTTPS) {
+                    // service discovery will only be tried for https URLs, because only secure service discovery is implemented
+                    discoveryFQDN = baseURL.host
                 }
+
+                // Actual discovery process
+                checkBaseURL(baseURL, service, config)
+
+                // If principal was not found already, try well known URI
+                if (config.principal == null)
+                    try {
+                        config.principal = getCurrentUserPrincipal(
+                            baseURL.resolve("/.well-known/${service.wellKnownName}")!!,
+                            service
+                        )
+                    } catch (e: Exception) {
+                        log.log(Level.FINE, "Well-known URL detection failed", e)
+                        processException(e)
+                    }
+            }
             "mailto" -> {
                 val mailbox = baseURI.schemeSpecificPart
                 val posAt = mailbox.lastIndexOf("@")
@@ -169,7 +164,7 @@ class DavResourceFinder @AssistedInject constructor(
                 log.info("No principal found at user-given URL, trying to discover for domain $fqdn")
                 try {
                     config.principal = discoverPrincipalUrl(fqdn, service)
-                } catch(e: Exception) {
+                } catch (e: Exception) {
                     log.log(Level.FINE, "$service service discovery failed", e)
                     processException(e)
                 }
@@ -228,7 +223,7 @@ class DavResourceFinder @AssistedInject constructor(
                     }
                 }
             }
-        } catch(e: Exception) {
+        } catch (e: Exception) {
             log.log(Level.FINE, "PROPFIND/OPTIONS on user-given URL failed", e)
             processException(e)
         }
@@ -249,12 +244,12 @@ class DavResourceFinder @AssistedInject constructor(
                             val uri = URI(href)
                             if (uri.scheme.equals("mailto", true))
                                 mailboxes.add(uri.schemeSpecificPart)
-                        } catch(e: URISyntaxException) {
+                        } catch (e: URISyntaxException) {
                             log.log(Level.WARNING, "Couldn't parse user address", e)
                         }
                 }
             }
-        } catch(e: Exception) {
+        } catch (e: Exception) {
             log.log(Level.WARNING, "Couldn't query user email address", e)
             processException(e)
         }
@@ -313,8 +308,7 @@ class DavResourceFinder @AssistedInject constructor(
         // Is it an addressbook-home-set or calendar-home-set?
         davResponse[homeSetClass]?.let { homeSet ->
             for (href in homeSet.hrefs) {
-                val url = davResponse.requestedUrl.resolve(href)
-                val location = UrlUtils.withTrailingSlash(url)
+                val location = davResponse.requestedUrl.resolve(href)?.withTrailingSlash() ?: continue
                 log.info("Found home-set of type $resourceType at $location")
                 config.homeSets += location
             }
@@ -345,7 +339,7 @@ class DavResourceFinder @AssistedInject constructor(
                     (service == Service.CALDAV && capabilities.contains("calendar-access")))
                     provided = true
             }
-        } catch(e: Exception) {
+        } catch (e: Exception) {
             log.log(Level.SEVERE, "Couldn't detect services on $url", e)
             if (e !is HttpException && e !is DavException)
                 throw e
@@ -363,54 +357,48 @@ class DavResourceFinder @AssistedInject constructor(
      * @return principal URL, or null if none found
      */
     suspend fun discoverPrincipalUrl(domain: String, service: Service): Url? {
-        val scheme: String
-        val fqdn: String
-        var port = 443
-        val paths = LinkedList<String>()     // there may be multiple paths to try
-
         val query = "_${service.wellKnownName}s._tcp.$domain"
-        log.fine("Looking up SRV records for $query")
+        log.fine("Looking up SRV/TXT records for $query")
 
         val srvRecords = dnsRecordResolver.resolve(query, Type.SRV)
         val srv = dnsRecordResolver.bestSRVRecord(srvRecords)
 
+        val fqdn: String
+        val port: Int
         if (srv != null) {
             // choose SRV record to use (query may return multiple SRV records)
-            scheme = "https"
             fqdn = srv.target.toString(true)
             port = srv.port
             log.info("Found $service service at https://$fqdn:$port")
         } else {
             // no SRV records, try domain name as FQDN
-            log.info("Didn't find $service service, trying at https://$domain:$port")
-
-            scheme = "https"
             fqdn = domain
+            port = 443
+            log.info("Didn't find $service service, trying at https://$domain:$port")
         }
 
-        // look for TXT record too (for initial context path)
-        val txtRecords = dnsRecordResolver.resolve(query, Type.TXT)
-        paths.addAll(dnsRecordResolver.pathsFromTXTRecords(txtRecords))
+        // there can be multiple paths to try
+        val paths: List<String> = buildList {
+            // look for TXT record too (for initial context path)
+            val txtRecords = dnsRecordResolver.resolve(query, Type.TXT)
+            addAll(dnsRecordResolver.pathsFromTXTRecords(txtRecords))
 
-        // in case there's a TXT record, but it's wrong, try well-known
-        paths.add("/.well-known/" + service.wellKnownName)
-        // if this fails too, try "/"
-        paths.add("/")
+            // in case there's a TXT record, but it's wrong, try well-known
+            add("/.well-known/" + service.wellKnownName)
+
+            // if this fails too, try "/"
+            add("/")
+        }
 
         for (path in paths)
             try {
-                val initialContextPath = URLBuilder().apply {
-                    this.protocol = URLProtocol.createOrDefault(scheme)
-                    this.host = fqdn
-                    this.port = port
-                    path(path)
-                }.build()
+                val initialContextPath = URLBuilder("https://$fqdn:$port$path").build()
 
                 log.info("Trying to determine principal from initial context path=$initialContextPath")
                 val principal = getCurrentUserPrincipal(initialContextPath, service)
 
                 principal?.let { return it }
-            } catch(e: Exception) {
+            } catch (e: Exception) {
                 log.log(Level.WARNING, "No resource found", e)
                 processException(e)
             }
@@ -428,14 +416,14 @@ class DavResourceFinder @AssistedInject constructor(
         var principal: Url? = null
         DavResource(httpClient, url, log).propfind(0, WebDAV.CurrentUserPrincipal) { response, _ ->
             response[CurrentUserPrincipal::class.java]?.href?.let { href ->
-                val url = response.requestedUrl.resolve(href)
-                log.info("Found current-user-principal: $url")
+                val resolved = response.requestedUrl.resolve(href) ?: return@let
+                log.info("Found current-user-principal: $resolved")
 
                 // service check
-                if (service != null && !providesService(url, service))
-                    log.warning("Principal $url doesn't provide $service service")
+                if (service != null && !providesService(resolved, service))
+                    log.warning("Principal $resolved doesn't provide $service service")
                 else
-                    principal = url
+                    principal = resolved
             }
         }
         return principal
