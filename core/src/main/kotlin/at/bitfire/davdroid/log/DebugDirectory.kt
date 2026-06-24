@@ -11,7 +11,9 @@ import javax.inject.Inject
 
 /**
  * The app-private directory where debug files (log files, debug info ZIP, etc.) are stored.
- * Must match the paths declared in `res/xml/debug.paths.xml`.
+ *
+ * This directory matches the path declared in `res/xml/debug.paths.xml`, so its files can
+ * be provided using the FileProvider with debugInfoAuthority (declared in the app module).
  */
 class DebugDirectory @Inject constructor(
     @ApplicationContext private val context: Context
@@ -30,9 +32,10 @@ class DebugDirectory @Inject constructor(
      *
      * The debug directory is always app-private and can't be read by other apps.
      *
-     * @return The debug directory if it exists or could be created, otherwise null.
+     * @return The debug directory, or `null` if it can't be created (for instance because the disk
+     * is full or read-only or there's already a file with the same name)
      */
-    fun get(): File? {
+    fun getOrCreate(): File? {
         val dir = File(context.filesDir, DIRECTORY_NAME)
         if (dir.exists() && dir.isDirectory)
             return dir
@@ -47,7 +50,9 @@ class DebugDirectory @Inject constructor(
      * @param fileName The file name to resolve.
      * @return The resolved file if the debug directory exists, otherwise null.
      */
-    fun resolve(fileName: FileName): File? = get()?.let { File(it, fileName.name) }
+    fun resolve(fileName: FileName): File? = getOrCreate()?.let {
+        File(it, fileName.name)
+    }
 
     companion object {
         const val DIRECTORY_NAME = "debug"

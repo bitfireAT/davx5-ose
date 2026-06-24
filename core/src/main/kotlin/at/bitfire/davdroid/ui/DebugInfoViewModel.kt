@@ -105,7 +105,7 @@ class DebugInfoViewModel @AssistedInject constructor(
         remoteResource: String?,
         timestamp: Long?
     ) {
-        val debugInfoFile = File(debugDirectory.get(), FILE_DEBUG_INFO)
+        val debugInfoFile = File(debugDirectory.getOrCreate(), FILE_DEBUG_INFO)
         debugInfoFile.printWriter().use { writer ->
             debugInfoGenerator(
                 syncAccount = syncAccount,
@@ -130,7 +130,7 @@ class DebugInfoViewModel @AssistedInject constructor(
         try {
             uiState = uiState.copy(zipInProgress = true)
 
-            val file = File(debugDirectory.get(), "davx5-debug.zip")
+            val file = File(debugDirectory.getOrCreate(), "davx5-debug.zip")
             logger.fine("Writing debug info to ${file.absolutePath}")
             ZipOutputStream(file.outputStream().buffered()).use { zip ->
                 zip.setLevel(9)
