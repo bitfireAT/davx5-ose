@@ -6,6 +6,7 @@ package at.bitfire.davdroid.servicedetection
 
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Service
+import at.bitfire.davdroid.util.DavUtils.toUrl
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.ktor.client.HttpClient
@@ -16,7 +17,6 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.http.Url
 import io.ktor.http.headersOf
 import kotlinx.coroutines.test.runTest
-import okhttp3.HttpUrl.Companion.toHttpUrl
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -115,14 +115,14 @@ class ServiceRefresherTest {
 
         // Home set from current-user-principal
         val personalHomeset = savedHomesets[1]
-        assertEquals("$BASE_URL$PATH_CARDDAV$SUBPATH_ADDRESSBOOK_HOMESET_PERSONAL/".toHttpUrl(), personalHomeset.url)
+        assertEquals("$BASE_URL$PATH_CARDDAV$SUBPATH_ADDRESSBOOK_HOMESET_PERSONAL/".toUrl(), personalHomeset.url)
         assertEquals(service.id, personalHomeset.serviceId)
         // personal should be true for homesets detected at first query of current-user-principal (Even if they occur in a group principal as well!!!)
         assertEquals(true, personalHomeset.personal)
 
         // Home set found in a group principal
         val groupHomeset = savedHomesets[0]
-        assertEquals("$BASE_URL$PATH_CARDDAV$SUBPATH_ADDRESSBOOK_HOMESET_NON_PERSONAL/".toHttpUrl(), groupHomeset.url)
+        assertEquals("$BASE_URL$PATH_CARDDAV$SUBPATH_ADDRESSBOOK_HOMESET_NON_PERSONAL/".toUrl(), groupHomeset.url)
         assertEquals(service.id, groupHomeset.serviceId)
         // personal should be false for homesets not detected at the first query of current-user-principal (IE. in groups)
         assertEquals(false, groupHomeset.personal)

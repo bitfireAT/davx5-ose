@@ -6,6 +6,7 @@ package at.bitfire.davdroid.db
 
 import at.bitfire.dav4jvm.ktor.DavResource
 import at.bitfire.dav4jvm.property.webdav.WebDAV
+import at.bitfire.davdroid.util.DavUtils.toUrl
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
@@ -14,7 +15,6 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.http.Url
 import io.ktor.http.headersOf
 import kotlinx.coroutines.test.runTest
-import okhttp3.HttpUrl.Companion.toHttpUrl
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
@@ -173,7 +173,7 @@ class CollectionTest {
             }
             assertEquals(Collection.TYPE_WEBCAL, info.type)
             assertEquals("Sample Subscription", info.displayName)
-            assertEquals("https://example.com/1.ics".toHttpUrl(), info.source)
+            assertEquals("https://example.com/1.ics".toUrl(), info.source)
         }
     }
 
