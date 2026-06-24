@@ -102,7 +102,7 @@ class DavCollectionRepository @Inject constructor(
     ) {
         val folderName = UUID.randomUUID().toString()
         val url = URLBuilder(homeSet.url)
-            .appendPathSegments(folderName)
+            .appendPathSegments(folderName, encodeSlash = true)
             .build()
             .withTrailingSlash()
 
@@ -146,7 +146,7 @@ class DavCollectionRepository @Inject constructor(
     ) {
         val folderName = UUID.randomUUID().toString()
         val url = URLBuilder(homeSet.url)
-            .appendPathSegments(folderName)
+            .appendPathSegments(folderName, encodeSlash = true)
             .build()
             .withTrailingSlash()
 
