@@ -126,7 +126,7 @@ object DavUtils {
         get() = pathSegments.lastOrNull { it.isNotEmpty() } ?: "/"
 
     /**
-     * Safely gets the last segment of the URL, or returns `""` if none could be obtained.
+     * Safely gets the last segment of the URL, or returns `"/"` if none could be obtained.
      */
     val Url.lastSegment: String
         get() = this.segments.lastOrNull { it.isNotEmpty() } ?: "/"
