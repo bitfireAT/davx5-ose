@@ -6,15 +6,10 @@ package at.bitfire.davdroid.webdav
 
 import android.content.Context
 import android.provider.DocumentsContract
-import androidx.annotation.VisibleForTesting
-import at.bitfire.dav4jvm.HttpUtils.toHttpUrl
-import at.bitfire.dav4jvm.HttpUtils.toKtorUrl
-import at.bitfire.dav4jvm.ktor.DavResource
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.WebDavMount
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
-import at.bitfire.davdroid.network.HttpClientBuilder
 import at.bitfire.davdroid.settings.Credentials
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
@@ -22,13 +17,12 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import okhttp3.HttpUrl
 import javax.inject.Inject
-import javax.inject.Provider
 
 class WebDavMountRepository @Inject constructor(
     @ApplicationContext private val context: Context,
     private val db: AppDatabase,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
-    private val httpClientBuilder: Provider<HttpClientBuilder>
+    private val webDavUrlChecker: WebDavUrlChecker
 ) {
 
     private val mountDao = db.webDavMountDao()
@@ -51,9 +45,7 @@ class WebDavMountRepository @Inject constructor(
         displayName: String,
         credentials: Credentials?
     ): Boolean {
-        val webdavUrl = hasWebDav(url, credentials)
-        if (webdavUrl == null)
-            return false
+        val webdavUrl = webDavUrlChecker.getWebDavUrl(url, credentials) ?: return false
 
         // create in database
         val mount = WebDavMount(
@@ -108,42 +100,4 @@ class WebDavMountRepository @Inject constructor(
             }
         }
     }
-
-
-    // helpers
-
-    /**
-     * Checks whether WebDAV is supported at given URL with given credentials
-     * and returns the resulting if following a few redirects.
-     *
-     * @param url The URL to check
-     * @param credentials The credentials to use for the request
-     * @return The URL at which WebDAV support was found
-     */
-    @VisibleForTesting
-    internal suspend fun hasWebDav(
-        url: HttpUrl,
-        credentials: Credentials?
-    ): HttpUrl? {
-        val validVersions = arrayOf("1", "2", "3")
-
-        val builder = httpClientBuilder.get()
-        if (credentials != null)
-            builder.authenticate(
-                domain = null,
-                getCredentials = { credentials }
-            )
-
-        var webdavUrl: HttpUrl? = null
-        builder.buildKtor().use { httpClient ->
-            val dav = DavResource(httpClient, url.toKtorUrl())
-            dav.options(followRedirects = true) { davCapabilities, _ ->
-                if (davCapabilities.any { it in validVersions })
-                    webdavUrl = dav.location.toHttpUrl()
-            }
-        }
-
-        return webdavUrl
-    }
-
 }
