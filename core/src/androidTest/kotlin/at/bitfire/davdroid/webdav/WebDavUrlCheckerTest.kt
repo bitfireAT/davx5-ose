@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid.webdav
 
+import at.bitfire.dav4jvm.HttpUtils.toKtorUrl
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import junit.framework.TestCase.assertEquals
@@ -31,7 +32,7 @@ class WebDavUrlCheckerTest {
     }
 
     val web = MockWebServer()
-    val url = web.url("/")
+    val url = web.url("/").toKtorUrl()
 
     @Test
     fun getWebDavUrl_NoDavHeader() = runTest {

@@ -6,16 +6,17 @@ package at.bitfire.davdroid.webdav
 
 import android.content.Context
 import android.provider.DocumentsContract
+import at.bitfire.dav4jvm.HttpUtils.toHttpUrl
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.WebDavMount
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.settings.Credentials
 import dagger.hilt.android.qualifiers.ApplicationContext
+import io.ktor.http.Url
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
-import okhttp3.HttpUrl
 import javax.inject.Inject
 
 class WebDavMountRepository @Inject constructor(
@@ -41,7 +42,7 @@ class WebDavMountRepository @Inject constructor(
      * @return `true` if the mount was added successfully, `false` if the endpoint doesn't support WebDAV
      */
     suspend fun addMount(
-        url: HttpUrl,
+        url: Url,
         displayName: String,
         credentials: Credentials?
     ): Boolean {
@@ -49,7 +50,7 @@ class WebDavMountRepository @Inject constructor(
 
         // create in database
         val mount = WebDavMount(
-            url = webdavUrl,
+            url = webdavUrl.toHttpUrl(),
             name = displayName
         )
         val id = db.webDavMountDao().insert(mount)

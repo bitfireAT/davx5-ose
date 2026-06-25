@@ -4,12 +4,10 @@
 
 package at.bitfire.davdroid.webdav
 
-import at.bitfire.dav4jvm.HttpUtils.toHttpUrl
-import at.bitfire.dav4jvm.HttpUtils.toKtorUrl
 import at.bitfire.dav4jvm.ktor.DavResource
 import at.bitfire.davdroid.network.HttpClientBuilder
 import at.bitfire.davdroid.settings.Credentials
-import okhttp3.HttpUrl
+import io.ktor.http.Url
 import javax.inject.Inject
 import javax.inject.Provider
 
@@ -28,9 +26,9 @@ class WebDavUrlChecker @Inject constructor(
      * @return The URL at which WebDAV support was found
      */
     suspend fun getWebDavUrl(
-        url: HttpUrl,
+        url: Url,
         credentials: Credentials?
-    ): HttpUrl? {
+    ): Url? {
         val validVersions = arrayOf("1", "2", "3")
 
         val builder = httpClientBuilder.get()
@@ -40,12 +38,12 @@ class WebDavUrlChecker @Inject constructor(
                 getCredentials = { credentials }
             )
 
-        var webdavUrl: HttpUrl? = null
+        var webdavUrl: Url? = null
         builder.buildKtor().use { httpClient ->
-            val dav = DavResource(httpClient, url.toKtorUrl())
+            val dav = DavResource(httpClient, url)
             dav.options(followRedirects = true) { davCapabilities, _ ->
                 if (davCapabilities.any { it in validVersions })
-                    webdavUrl = dav.location.toHttpUrl()
+                    webdavUrl = dav.location
             }
         }
 
