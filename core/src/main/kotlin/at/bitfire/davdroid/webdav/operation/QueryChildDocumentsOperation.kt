@@ -9,6 +9,7 @@ import android.provider.DocumentsContract.Document
 import android.provider.DocumentsContract.buildChildDocumentsUri
 import at.bitfire.dav4jvm.ktor.DavCollection
 import at.bitfire.dav4jvm.ktor.Response
+import at.bitfire.dav4jvm.ktor.toContentTypeOrNull
 import at.bitfire.dav4jvm.property.webdav.CurrentUserPrivilegeSet
 import at.bitfire.dav4jvm.property.webdav.DisplayName
 import at.bitfire.dav4jvm.property.webdav.GetContentLength
@@ -31,7 +32,6 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import java.io.FileNotFoundException
 import java.util.concurrent.ConcurrentHashMap
 import java.util.logging.Level
@@ -151,7 +151,7 @@ class QueryChildDocumentsOperation @Inject constructor(
                         isDirectory = response[ResourceType::class.java]?.types?.contains(WebDAV.Collection)
                             ?: resource.isDirectory,
                         displayName = response[DisplayName::class.java]?.displayName,
-                        mimeType = response[GetContentType::class.java]?.type?.toMediaTypeOrNull(),
+                        mimeType = response[GetContentType::class.java]?.type?.toContentTypeOrNull(),
                         eTag = response[GetETag::class.java]?.takeIf { !it.weak }?.eTag,
                         lastModified = response[GetLastModified::class.java]?.lastModified?.toEpochMilli(),
                         size = response[GetContentLength::class.java]?.contentLength,

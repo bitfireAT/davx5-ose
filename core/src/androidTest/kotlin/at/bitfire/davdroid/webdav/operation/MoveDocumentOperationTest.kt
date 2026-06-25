@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.webdav.operation
 
 import android.security.NetworkSecurityPolicy
+import at.bitfire.dav4jvm.HttpUtils.toKtorUrl
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.WebDavDocument
 import at.bitfire.davdroid.db.WebDavDocumentDao
@@ -65,7 +66,7 @@ class MoveDocumentOperationTest {
 
         // set up WebDAV mount
         runBlocking {
-            val mountId = mountDao.insert(WebDavMount(0, "Test Mount", server.url("/webdav/")))
+            val mountId = mountDao.insert(WebDavMount(0, "Test Mount", server.url("/webdav/").toKtorUrl()))
             mount = mountDao.getById(mountId)
         }
     }

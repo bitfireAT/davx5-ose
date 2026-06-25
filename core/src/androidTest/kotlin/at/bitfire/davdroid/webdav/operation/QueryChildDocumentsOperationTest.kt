@@ -6,6 +6,7 @@ package at.bitfire.davdroid.webdav.operation
 
 import android.content.Context
 import android.security.NetworkSecurityPolicy
+import at.bitfire.dav4jvm.HttpUtils.toKtorUrl
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.WebDavDocument
 import at.bitfire.davdroid.db.WebDavMount
@@ -78,7 +79,9 @@ class QueryChildDocumentsOperationTest {
 
         // create WebDAV mount and root document in DB
         runBlocking {
-            val mountId = db.webDavMountDao().insert(WebDavMount(0, "Cat food storage", server.url(PATH_WEBDAV_ROOT)))
+            val mountId = db.webDavMountDao().insert(
+                WebDavMount(0, "Cat food storage", server.url(PATH_WEBDAV_ROOT).toKtorUrl())
+            )
             mount = db.webDavMountDao().getById(mountId)
             rootDocument = db.webDavDocumentDao().getOrCreateRoot(mount)
         }
