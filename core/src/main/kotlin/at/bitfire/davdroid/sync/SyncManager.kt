@@ -59,10 +59,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.IOException
 import java.security.cert.CertificateException
-import java.util.LinkedList
 import java.util.Optional
 import java.util.concurrent.CancellationException
-import java.util.concurrent.LinkedBlockingQueue
 import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
@@ -593,20 +591,9 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
      * @param listRemote function to list remote resources (for instance, all since a certain sync-token)
      */
     protected open suspend fun syncRemote(listRemote: suspend (MultiResponseCallback) -> Unit) = coroutineScope {    // structured concurrency
-        // download queue
-        val toDownload = LinkedBlockingQueue<Url>()
-        fun download(url: Url?) {
-            if (url != null)
-                toDownload += url
-
-            if (toDownload.size >= MAX_MULTIGET_RESOURCES || url == null) {
-                while (toDownload.isNotEmpty()) {
-                    val bunch = LinkedList<Url>()
-                    toDownload.drainTo(bunch, MAX_MULTIGET_RESOURCES)
-                    launch {
-                        downloadRemote(bunch)
-                    }
-                }
+        val batchDownloader = BatchDownloader { batch ->
+            launch {
+                downloadRemote(batch)
             }
         }
 
@@ -627,10 +614,10 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
 
                     launch {
                         val local = localCollection.findByName(name)
-                        SyncException.wrapWithLocalResource(local) {
+                        SyncException.wrapWithLocalResourceSuspending(local) {
                             if (local == null) {
                                 logger.info("$name has been added remotely, queueing download")
-                                download(response.href)
+                                batchDownloader += response.href
                             } else {
                                 val localETag = local.eTag
                                 val remoteETag = response[GetETag::class.java]?.eTag
@@ -639,7 +626,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
                                     logger.info("$name has not been changed on server (ETag still $remoteETag)")
                                 } else {
                                     logger.info("$name has been changed on server (current ETag=$remoteETag, last known ETag=$localETag)")
-                                    download(response.href)
+                                    batchDownloader += response.href
                                 }
 
                                 // mark as remotely present, so that this resource won't be deleted at the end
@@ -663,7 +650,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
         }
 
         // download remaining resources
-        download(null)
+        batchDownloader.flush()
     }
 
     protected abstract suspend fun listAllRemote(callback: MultiResponseCallback)
