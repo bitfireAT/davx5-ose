@@ -11,6 +11,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import at.bitfire.dav4jvm.ktor.toUrlOrNull
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.settings.Credentials
@@ -20,7 +21,6 @@ import at.bitfire.synctools.util.trimToNull
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
-import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import javax.inject.Inject
 
 @HiltViewModel
@@ -45,7 +45,7 @@ class AddWebdavMountViewModel @Inject constructor(
                 url
             else
                 "https://$url"
-        val httpUrl = urlWithPrefix.toHttpUrlOrNull()
+        val httpUrl = urlWithPrefix.toUrlOrNull()
         val canContinue = displayName.isNotBlank() && httpUrl != null
     }
 
