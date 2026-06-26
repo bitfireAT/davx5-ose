@@ -10,7 +10,6 @@ import android.os.DeadObjectException
 import android.os.RemoteException
 import androidx.annotation.VisibleForTesting
 import at.bitfire.dav4jvm.Error
-import at.bitfire.dav4jvm.QuotedStringUtils
 import at.bitfire.dav4jvm.ktor.DavCollection
 import at.bitfire.dav4jvm.ktor.DavResource
 import at.bitfire.dav4jvm.ktor.MultiResponseCallback
@@ -51,6 +50,7 @@ import io.ktor.http.URLBuilder
 import io.ktor.http.Url
 import io.ktor.http.appendPathSegments
 import io.ktor.http.content.OutgoingContent
+import io.ktor.http.escapeIfNeeded
 import io.ktor.http.headers
 import io.ktor.util.appendAll
 import kotlinx.coroutines.CoroutineDispatcher
@@ -136,7 +136,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
      */
     private val pushDontNotifyHeader by lazy {
         collection.pushSubscription?.let { pushSubscription ->
-            mapOf("Push-Dont-Notify" to QuotedStringUtils.asQuotedString(pushSubscription))
+            mapOf("Push-Dont-Notify" to pushSubscription.escapeIfNeeded())
         } ?: emptyMap()
     }
 
@@ -837,10 +837,10 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
             additionalHeaders = headers {
                 if (ifETag != null)
                     // only overwrite specific version
-                    append(HttpHeaders.IfMatch, QuotedStringUtils.asQuotedString(ifETag))
+                    append(HttpHeaders.IfMatch, ifETag.escapeIfNeeded())
                 if (ifScheduleTag != null)
                     // only overwrite specific version
-                    append(HttpHeaders.IfScheduleTagMatch, QuotedStringUtils.asQuotedString(ifScheduleTag))
+                    append(HttpHeaders.IfScheduleTagMatch, ifScheduleTag.escapeIfNeeded())
                 if (ifNoneMatch)
                     // don't overwrite anything existing
                     append(HttpHeaders.IfNoneMatch, "*")
@@ -868,9 +868,9 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
         delete(
             additionalHeaders = headers {
                 if (ifETag != null)
-                    append(HttpHeaders.IfMatch, QuotedStringUtils.asQuotedString(ifETag))
+                    append(HttpHeaders.IfMatch, ifETag.escapeIfNeeded())
                 if (ifScheduleTag != null)
-                    append(HttpHeaders.IfScheduleTagMatch, QuotedStringUtils.asQuotedString(ifScheduleTag))
+                    append(HttpHeaders.IfScheduleTagMatch, ifScheduleTag.escapeIfNeeded())
 
                 // Append all custom headers
                 appendAll(headers)
