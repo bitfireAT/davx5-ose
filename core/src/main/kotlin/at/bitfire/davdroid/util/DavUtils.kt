@@ -9,9 +9,12 @@ import at.bitfire.davdroid.util.DavUtils.generateUidIfNecessary
 import at.bitfire.davdroid.util.DavUtils.toUrlOrNull
 import io.ktor.http.ContentType
 import io.ktor.http.Url
+import io.ktor.http.content.ByteArrayContent
+import io.ktor.http.content.OutgoingContent
 import okhttp3.HttpUrl
 import okhttp3.MediaType.Companion.toMediaType
 import org.jetbrains.annotations.TestOnly
+import java.io.StringWriter
 import java.net.URI
 import java.net.URISyntaxException
 import java.util.Locale
@@ -144,5 +147,15 @@ object DavUtils {
      */
     @TestOnly
     fun String.toUrl(): Url = toUrlOrNull() ?: throw IllegalArgumentException("The source string ($this) is not a valid URL")
+
+    /**
+     * Encodes this writer's output into a [ByteArray] and wraps it into a [ByteArrayContent] with the given [contentType].
+     */
+    fun StringWriter.toOutgoingContent(
+        contentType: ContentType? = null
+    ): OutgoingContent = ByteArrayContent(
+        bytes = toString().encodeToByteArray(),
+        contentType = contentType
+    )
 
 }
