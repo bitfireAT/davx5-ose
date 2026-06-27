@@ -27,7 +27,6 @@ import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.resource.SyncState
 import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.davdroid.util.DavUtils.lastSegment
-import at.bitfire.davdroid.util.DavUtils.toOutgoingContent
 import at.bitfire.synctools.exception.InvalidResourceException
 import at.bitfire.synctools.icalendar.CalendarUidSplitter
 import at.bitfire.synctools.icalendar.ICalendarGenerator
@@ -40,6 +39,7 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import io.ktor.client.HttpClient
 import io.ktor.http.Url
+import io.ktor.http.content.TextContent
 import kotlinx.coroutines.CoroutineDispatcher
 import net.fortuna.ical4j.model.Component
 import net.fortuna.ical4j.model.component.CalendarComponent
@@ -125,7 +125,10 @@ class JtxSyncManager @AssistedInject constructor(
         // generate iCalendar and convert to request body
         val iCalWriter = StringWriter()
         ICalendarGenerator().write(mappedJtxObjects.associatedComponents, iCalWriter)
-        val outgoingContent = iCalWriter.toOutgoingContent(DavCalendar.MIME_ICALENDAR_UTF8)
+        val outgoingContent = TextContent(
+            text = iCalWriter.toString(),
+            contentType = DavCalendar.MIME_ICALENDAR_UTF8
+        )
 
         return GeneratedResource(
             suggestedFileName = DavUtils.fileNameFromUid(mappedJtxObjects.uid, "ics"),
