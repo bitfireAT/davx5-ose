@@ -10,7 +10,7 @@ import at.bitfire.davdroid.push.PushRegistrationManager
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
-import at.bitfire.davdroid.util.DavUtils.toUrl
+import at.bitfire.davdroid.util.toUrl
 import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest

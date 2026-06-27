@@ -4,7 +4,7 @@
 
 package at.bitfire.davdroid.db
 
-import at.bitfire.davdroid.util.DavUtils.toUrl
+import at.bitfire.davdroid.util.toUrl
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.Dispatchers
