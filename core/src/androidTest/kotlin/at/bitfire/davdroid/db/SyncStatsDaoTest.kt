@@ -6,7 +6,7 @@ package at.bitfire.davdroid.db
 
 import androidx.sqlite.SQLiteException
 import at.bitfire.davdroid.sync.SyncDataType
-import at.bitfire.davdroid.util.toUrl
+import at.bitfire.davdroid.util.DavUtils.toUrl
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.test.runTest

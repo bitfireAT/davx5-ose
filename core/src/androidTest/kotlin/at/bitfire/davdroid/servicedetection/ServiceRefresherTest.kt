@@ -6,7 +6,7 @@ package at.bitfire.davdroid.servicedetection
 
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Service
-import at.bitfire.davdroid.util.toUrl
+import at.bitfire.davdroid.util.DavUtils.toUrl
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.ktor.client.HttpClient

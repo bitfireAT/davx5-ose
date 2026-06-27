@@ -13,7 +13,7 @@ import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.sync.account.TestAccount
-import at.bitfire.davdroid.util.toUrl
+import at.bitfire.davdroid.util.DavUtils.toUrl
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest

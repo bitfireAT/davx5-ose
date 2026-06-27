@@ -5,7 +5,7 @@
 package at.bitfire.davdroid.db
 
 import android.database.sqlite.SQLiteConstraintException
-import at.bitfire.davdroid.util.toUrl
+import at.bitfire.davdroid.util.DavUtils.toUrl
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.mockk.junit4.MockKRule

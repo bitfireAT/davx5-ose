@@ -6,7 +6,7 @@ package at.bitfire.davdroid.db
 
 import at.bitfire.dav4jvm.ktor.DavResource
 import at.bitfire.dav4jvm.property.webdav.WebDAV
-import at.bitfire.davdroid.util.toUrl
+import at.bitfire.davdroid.util.DavUtils.toUrl
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond

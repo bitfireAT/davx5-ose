@@ -6,10 +6,12 @@ package at.bitfire.davdroid.util
 
 import at.bitfire.dav4jvm.ktor.toUrlOrNull
 import at.bitfire.davdroid.util.DavUtils.generateUidIfNecessary
+import at.bitfire.davdroid.util.DavUtils.toUrlOrNull
 import io.ktor.http.ContentType
 import io.ktor.http.Url
 import okhttp3.HttpUrl
 import okhttp3.MediaType.Companion.toMediaType
+import org.jetbrains.annotations.TestOnly
 import java.net.URI
 import java.net.URISyntaxException
 import java.util.Locale
@@ -133,5 +135,14 @@ object DavUtils {
     }
 
     fun URI.toUrlOrNull(): Url? = toString().toUrlOrNull()
+
+    /**
+     * An unsafe call to convert a [String] to a [Url].
+     *
+     * Highly preferred to use [toUrlOrNull] instead, and handle nullability.
+     * @throws IllegalArgumentException If the source string is not a valid URL.
+     */
+    @TestOnly
+    fun String.toUrl(): Url = toUrlOrNull() ?: throw IllegalArgumentException("The source string ($this) is not a valid URL")
 
 }
