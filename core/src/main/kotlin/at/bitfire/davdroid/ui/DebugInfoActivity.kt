@@ -28,7 +28,7 @@ import at.techbee.jtx.JtxContract
 import com.google.common.base.Ascii
 import dagger.Lazy
 import dagger.hilt.android.AndroidEntryPoint
-import okhttp3.HttpUrl
+import io.ktor.http.Url
 import java.io.File
 import java.time.Instant
 import javax.inject.Inject
@@ -233,7 +233,7 @@ class DebugInfoActivity: AppCompatActivity() {
             return this
         }
 
-        fun withRemoteResource(remote: HttpUrl?): IntentBuilder {
+        fun withRemoteResource(remote: Url?): IntentBuilder {
             if (remote != null)
                 intent.putExtra(EXTRA_REMOTE_RESOURCE, remote.toString())
             return this

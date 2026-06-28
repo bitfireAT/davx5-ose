@@ -4,19 +4,19 @@
 
 package at.bitfire.davdroid.sync
 
-import okhttp3.RequestBody
+import io.ktor.http.content.OutgoingContent
 
 /**
  * Represents a resource that has been generated for the purpose of being uploaded.
  *
  * @param suggestedFileName     file name that can be used for uploading if there's no existing name
- * @param requestBody           resource body (including MIME type)
+ * @param content               resource content (including MIME type)
  * @param onSuccessContext      context that must be passed to [SyncManager.onSuccessfulUpload]
  * on successful upload in order to persist the changes made during mapping
  */
 class GeneratedResource(
     val suggestedFileName: String,
-    val requestBody: RequestBody,
+    val content: OutgoingContent,
     val onSuccessContext: OnSuccessContext? = null
 ) {
 

@@ -18,8 +18,8 @@ import at.bitfire.synctools.util.setAndVerifyUserData
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import io.ktor.client.HttpClient
 import kotlinx.coroutines.runBlocking
-import okhttp3.OkHttpClient
 import java.util.logging.Level
 
 /**
@@ -78,7 +78,7 @@ class AddressBookSyncer @AssistedInject constructor(
     private fun syncAddressBook(
         account: Account,
         addressBook: LocalAddressBook,
-        provideHttpClient: () -> OkHttpClient,
+        provideHttpClient: () -> HttpClient,
         provider: ContentProviderClient,
         syncResult: SyncResult,
         collection: Collection

@@ -23,7 +23,9 @@ import at.bitfire.synctools.storage.calendar.EventAndExceptions
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import io.ktor.client.engine.mock.toByteArray
 import io.mockk.mockk
+import kotlinx.coroutines.test.runTest
 import okio.Buffer
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -82,7 +84,7 @@ class CalendarSyncManagerTest {
 
 
     @Test
-    fun test_generateUpload_existingUid() {
+    fun test_generateUpload_existingUid() = runTest {
         val result = syncManager().generateUpload(LocalEvent(
             localCalendar.recurringCalendar,
             EventAndExceptions(
@@ -99,13 +101,13 @@ class CalendarSyncManagerTest {
         assertEquals("existing-uid.ics", result.suggestedFileName)
 
         val iCal = Buffer().also {
-            result.requestBody.writeTo(it)
+            it.write(result.content.toByteArray())
         }.readString(Charsets.UTF_8)
         assertTrue(iCal.contains("UID:existing-uid\r\n"))
     }
 
     @Test
-    fun generateUpload_noUid() {
+    fun generateUpload_noUid() = runTest {
         val result = syncManager().generateUpload(LocalEvent(
             localCalendar.recurringCalendar,
             EventAndExceptions(
@@ -122,7 +124,7 @@ class CalendarSyncManagerTest {
         val uuid = result.suggestedFileName.removeSuffix(".ics")
 
         val iCal = Buffer().also {
-            result.requestBody.writeTo(it)
+            it.write(result.content.toByteArray())
         }.readString(Charsets.UTF_8)
         assertTrue(iCal.contains("UID:$uuid\r\n"))
 

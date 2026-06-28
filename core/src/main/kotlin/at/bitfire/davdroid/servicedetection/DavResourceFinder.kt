@@ -3,7 +3,6 @@
  */
 package at.bitfire.davdroid.servicedetection
 
-import at.bitfire.dav4jvm.HttpUtils.toKtorUrl
 import at.bitfire.dav4jvm.Property
 import at.bitfire.dav4jvm.ktor.DavResource
 import at.bitfire.dav4jvm.ktor.Response
@@ -298,7 +297,7 @@ class DavResourceFinder @AssistedInject constructor(
             if (it.types.contains(resourceType))
                 Collection.fromDavResponse(davResponse)?.let { info ->
                     log.info("Found resource of type $resourceType at ${info.url}")
-                    config.collections[info.url.toKtorUrl()] = info
+                    config.collections[info.url] = info
                 }
 
             // ... and/or a principal?
