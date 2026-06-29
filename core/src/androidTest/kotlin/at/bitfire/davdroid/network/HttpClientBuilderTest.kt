@@ -9,7 +9,6 @@ import dagger.hilt.android.testing.HiltAndroidTest
 import io.ktor.client.request.get
 import io.ktor.client.statement.bodyAsText
 import kotlinx.coroutines.test.runTest
-import okhttp3.Request
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
@@ -69,40 +68,42 @@ class HttpClientBuilderTest {
     }
 
     @Test
-    fun testCookies() {
-        val url = server.url("/test")
+    fun testCookies() = runTest {
+        // Cookies are handled by Ktor's HttpCookies plugin (AcceptAllCookiesStorage),
+        // so they're only stored/sent by the Ktor client, not the raw OkHttp client.
+        val url = server.url("/test").toString()
 
-        // set cookie for root path (/) and /test path in first response
-        server.enqueue(MockResponse()
-                .setResponseCode(200)
-                .addHeader("Set-Cookie", "cookie1=1; path=/")
-                .addHeader("Set-Cookie", "cookie2=2")
-                .setBody("Cookie set"))
+        httpClientBuilder.get().buildKtor().use { client ->
+            // set cookie for root path (/) and /test path in first response
+            server.enqueue(
+                MockResponse()
+                    .setResponseCode(200)
+                    .addHeader("Set-Cookie", "cookie1=1; path=/")
+                    .addHeader("Set-Cookie", "cookie2=2")
+                    .setBody("Cookie set")
+            )
+            client.get(url)
+            assertNull(server.takeRequest().getHeader("Cookie"))
 
-        val httpClient = httpClientBuilder.get().build()
-        httpClient.newCall(Request.Builder()
-                .get().url(url)
-                .build()).execute()
-        assertNull(server.takeRequest().getHeader("Cookie"))
+            // cookie should be sent with second request
+            // second response lets first cookie expire and overwrites second cookie
+            server.enqueue(
+                MockResponse()
+                    .addHeader("Set-Cookie", "cookie1=1a; path=/; Max-Age=0")
+                    .addHeader("Set-Cookie", "cookie2=2a")
+                    .setResponseCode(200)
+            )
+            client.get(url)
+            val header = server.takeRequest().getHeader("Cookie")
+            assertTrue(header == "cookie1=1; cookie2=2" || header == "cookie2=2; cookie1=1")
 
-        // cookie should be sent with second request
-        // second response lets first cookie expire and overwrites second cookie
-        server.enqueue(MockResponse()
-                .addHeader("Set-Cookie", "cookie1=1a; path=/; Max-Age=0")
-                .addHeader("Set-Cookie", "cookie2=2a")
-                .setResponseCode(200))
-        httpClient.newCall(Request.Builder()
-                .get().url(url)
-                .build()).execute()
-        val header = server.takeRequest().getHeader("Cookie")
-        assertTrue(header == "cookie1=1; cookie2=2" || header == "cookie2=2; cookie1=1")
-
-        server.enqueue(MockResponse()
-                .setResponseCode(200))
-        httpClient.newCall(Request.Builder()
-                .get().url(url)
-                .build()).execute()
-        assertEquals("cookie2=2a", server.takeRequest().getHeader("Cookie"))
+            server.enqueue(
+                MockResponse()
+                    .setResponseCode(200)
+            )
+            client.get(url)
+            assertEquals("cookie2=2a", server.takeRequest().getHeader("Cookie"))
+        }
     }
 
 }
