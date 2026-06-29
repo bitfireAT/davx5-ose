@@ -7,7 +7,6 @@ package at.bitfire.davdroid.util
 import at.bitfire.davdroid.util.DavUtils.lastSegment
 import at.bitfire.davdroid.util.DavUtils.toUrl
 import io.ktor.http.ContentType
-import okhttp3.HttpUrl.Companion.toHttpUrl
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
