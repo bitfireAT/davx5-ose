@@ -331,8 +331,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
 
         // Remove locally deleted entries from server (if they have a name, i.e. if they were uploaded before),
         // but only if they don't have changed on the server. Then finally remove them from the local address book.
-        val localList = localCollection.findDeleted()
-        for (local in localList) {
+        localCollection.deletedFlow().collect { local ->
             SyncException.wrapWithLocalResourceSuspending(local) {
                 val fileName = local.fileName
                 if (fileName != null) {

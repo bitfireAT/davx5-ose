@@ -24,6 +24,7 @@ class LocalTestCollection(
         get() = throw NotImplementedError()
 
     override fun findDeleted() = entries.filter { it.deleted }
+    override fun deletedFlow() = findDeleted().asFlow()
 
     override fun findDirty() = entries.filter { it.dirty }
     override fun dirtyFlow() = findDirty().asFlow()

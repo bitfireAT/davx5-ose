@@ -84,6 +84,16 @@ class LocalCalendar @AssistedInject constructor(
         }
     }
 
+    override fun deletedFlow(): Flow<LocalEvent> {
+        return channelFlow {
+            launch(Dispatchers.IO) {
+                recurringCalendar.iterateEventAndExceptions(Events.DELETED, null) { eventAndExceptions ->
+                    trySendBlocking(LocalEvent(recurringCalendar, eventAndExceptions))
+                }
+            }
+        }.buffer(capacity = 1)
+    }
+
     override fun findDirty(): List<LocalEvent> = buildList {
         recurringCalendar.iterateEventAndExceptions(Events.DIRTY, null) { eventAndExceptions ->
             add(LocalEvent(recurringCalendar, eventAndExceptions))

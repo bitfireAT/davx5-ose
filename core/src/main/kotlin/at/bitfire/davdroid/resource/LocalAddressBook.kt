@@ -226,6 +226,29 @@ open class LocalAddressBook @AssistedInject constructor(
     fun findDeletedContacts() = queryContacts(RawContacts.DELETED, null)
     fun findDeletedGroups() = queryGroups(Groups.DELETED, null)
 
+    override fun deletedFlow(): Flow<LocalAddress> {
+        return channelFlow {
+            launch(Dispatchers.IO) {
+                sendDeletedContacts()
+                if (includeGroups) {
+                    sendDeletedGroups()
+                }
+            }
+        }.buffer(capacity = 1)
+    }
+
+    private fun ProducerScope<LocalAddress>.sendDeletedContacts() {
+        ab.iterateRawContactRows(RawContacts.DELETED, null) { values ->
+            trySendBlocking(LocalContact(this@LocalAddressBook, AndroidContact(ab, values)))
+        }
+    }
+
+    private fun ProducerScope<LocalAddress>.sendDeletedGroups() {
+        ab.iterateGroups(null, Groups.DELETED, null) { values ->
+            trySendBlocking(LocalGroup(AndroidGroup(ab, values)))
+        }
+    }
+
     /**
      * Returns an array of local contacts/groups which have been changed locally (DIRTY != 0).
      * @throws RemoteException on content provider errors

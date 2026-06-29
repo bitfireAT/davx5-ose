@@ -88,6 +88,16 @@ class LocalTaskList (
         }
     }
 
+    override fun deletedFlow(): Flow<LocalTask> {
+        return channelFlow {
+            launch(Dispatchers.IO) {
+                recurringTaskList.iterateTaskAndExceptions(Tasks._DELETED, null) {
+                    trySendBlocking(LocalTask(recurringTaskList, it))
+                }
+            }
+        }.buffer(capacity = 1)
+    }
+
     override fun findDirty(): List<LocalTask> = buildList {
         recurringTaskList.iterateTaskAndExceptions(Tasks._DIRTY, null) {
             add(LocalTask(recurringTaskList, it))

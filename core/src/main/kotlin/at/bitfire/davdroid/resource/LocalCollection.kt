@@ -39,6 +39,14 @@ interface LocalCollection<out T: LocalResource> {
     fun findDeleted(): List<T>
 
     /**
+     * Finds local resources of this collection which have been marked as *deleted* by the user
+     * or an app acting on their behalf.
+     *
+     * @return [Flow] of resources marked as *deleted*
+     */
+    fun deletedFlow(): Flow<T>
+
+    /**
      * Finds local resources of this collection which have been marked as *dirty*, i.e. resources
      * which have been modified by the user or an app acting on their behalf.
      *

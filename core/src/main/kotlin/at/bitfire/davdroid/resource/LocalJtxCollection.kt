@@ -72,6 +72,16 @@ class LocalJtxCollection(internal val jtxCollection: JtxCollection) :
         }
     }
 
+    override fun deletedFlow(): Flow<LocalJtxObject> {
+        return channelFlow {
+            launch(Dispatchers.IO) {
+                recurringCollection.iterateJtxObjectAndExceptions(JtxICalObject.DELETED, null) { jtxObjectAndExceptions ->
+                    trySendBlocking(LocalJtxObject(recurringCollection, jtxObjectAndExceptions))
+                }
+            }
+        }.buffer(capacity = 1)
+    }
+
     override fun findDirty(): List<LocalJtxObject> = buildList {
         recurringCollection.iterateJtxObjectAndExceptions(JtxICalObject.DIRTY, null) { jtxObjectAndExceptions ->
             add(LocalJtxObject(recurringCollection, jtxObjectAndExceptions))

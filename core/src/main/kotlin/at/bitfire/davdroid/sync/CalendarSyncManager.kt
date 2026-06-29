@@ -140,7 +140,7 @@ class CalendarSyncManager @AssistedInject constructor(
     override suspend fun processLocallyDeleted(): Boolean {
         if (localCollection.readOnly) {
             var modified = false
-            for (event in localCollection.findDeleted()) {
+            localCollection.deletedFlow().collect { event ->
                 logger.warning("Restoring locally deleted event (read-only calendar!)")
                 SyncException.wrapWithLocalResource(event) {
                     event.resetDeleted()
