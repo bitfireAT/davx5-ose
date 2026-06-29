@@ -11,6 +11,12 @@ import at.bitfire.synctools.storage.jtx.JtxEntityAndExceptions
 import at.bitfire.synctools.storage.jtx.JtxRecurringCollection
 import at.techbee.jtx.JtxContract
 import at.techbee.jtx.JtxContract.JtxICalObject
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.trySendBlocking
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.buffer
+import kotlinx.coroutines.flow.channelFlow
+import kotlinx.coroutines.launch
 
 /**
  * Application-specific implementation for jtx collections.
@@ -70,6 +76,16 @@ class LocalJtxCollection(internal val jtxCollection: JtxCollection) :
         recurringCollection.iterateJtxObjectAndExceptions(JtxICalObject.DIRTY, null) { jtxObjectAndExceptions ->
             add(LocalJtxObject(recurringCollection, jtxObjectAndExceptions))
         }
+    }
+
+    override fun dirtyFlow(): Flow<LocalJtxObject> {
+        return channelFlow {
+            launch(Dispatchers.IO) {
+                recurringCollection.iterateJtxObjectAndExceptions(JtxICalObject.DIRTY, null) { jtxObjectAndExceptions ->
+                    trySendBlocking(LocalJtxObject(recurringCollection, jtxObjectAndExceptions))
+                }
+            }
+        }.buffer(capacity = 1)
     }
 
     override fun findByName(name: String): LocalJtxObject? {

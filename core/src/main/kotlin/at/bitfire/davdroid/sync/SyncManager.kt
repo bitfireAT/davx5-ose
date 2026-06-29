@@ -374,14 +374,11 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
     protected open suspend fun uploadDirty(): Boolean {
         var numUploaded = 0
 
-        coroutineScope {    // structured concurrency
-            for (local in localCollection.findDirty())
-                launch {
-                    SyncException.wrapWithLocalResourceSuspending(local) {
-                        uploadDirty(local)
-                        numUploaded++
-                    }
-                }
+        localCollection.dirtyFlow().collect { local ->
+            SyncException.wrapWithLocalResourceSuspending(local) {
+                uploadDirty(local)
+                numUploaded++
+            }
         }
         logger.info("Sent $numUploaded record(s) to server")
         return numUploaded > 0

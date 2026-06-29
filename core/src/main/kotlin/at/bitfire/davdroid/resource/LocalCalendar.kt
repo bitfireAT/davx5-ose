@@ -17,6 +17,12 @@ import at.bitfire.synctools.storage.calendar.EventsContract
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.trySendBlocking
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.buffer
+import kotlinx.coroutines.flow.channelFlow
+import kotlinx.coroutines.launch
 
 /**
  * Application-specific subclass of [AndroidCalendar] for local calendars.
@@ -82,6 +88,16 @@ class LocalCalendar @AssistedInject constructor(
         recurringCalendar.iterateEventAndExceptions(Events.DIRTY, null) { eventAndExceptions ->
             add(LocalEvent(recurringCalendar, eventAndExceptions))
         }
+    }
+
+    override fun dirtyFlow(): Flow<LocalEvent> {
+        return channelFlow {
+            launch(Dispatchers.IO) {
+                recurringCalendar.iterateEventAndExceptions(Events.DIRTY, null) { eventAndExceptions ->
+                    trySendBlocking(LocalEvent(recurringCalendar, eventAndExceptions))
+                }
+            }
+        }.buffer(capacity = 1)
     }
 
     override fun findByName(name: String) =

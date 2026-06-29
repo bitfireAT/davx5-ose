@@ -4,6 +4,8 @@
 
 package at.bitfire.davdroid.resource
 
+import kotlinx.coroutines.flow.Flow
+
 /**
  * This is an interface between the Syncer/SyncManager and a collection in the local storage.
  *
@@ -43,6 +45,14 @@ interface LocalCollection<out T: LocalResource> {
      * @return list of resources marked as *dirty*
      */
     fun findDirty(): List<T>
+
+    /**
+     * Finds local resources of this collection which have been marked as *dirty*, i.e. resources
+     * which have been modified by the user or an app acting on their behalf.
+     *
+     * @return [Flow] of resources marked as *dirty*
+     */
+    fun dirtyFlow(): Flow<T>
 
     /**
      * Finds a local resource of this collection with a given file name. (File names are assigned
