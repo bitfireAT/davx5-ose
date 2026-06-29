@@ -18,13 +18,13 @@ import com.google.errorprone.annotations.MustBeClosed
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.plugins.cookies.HttpCookies
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import net.openid.appauth.AuthState
 import okhttp3.Authenticator
 import okhttp3.ConnectionSpec
-import okhttp3.CookieJar
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Protocol
@@ -103,14 +103,6 @@ class HttpClientBuilder @Inject constructor(
 
     fun loggerInterceptorLevel(level: HttpLoggingInterceptor.Level): HttpClientBuilder {
         loggerInterceptorLevel = level
-        return this
-    }
-
-    // default cookie store for non-persistent cookies (some services like Horde use cookies for session tracking)
-    private var cookieStore: CookieJar = MemoryCookieStore()
-
-    fun setCookieStore(cookieStore: CookieJar): HttpClientBuilder {
-        this.cookieStore = cookieStore
         return this
     }
 
@@ -238,9 +230,6 @@ class HttpClientBuilder @Inject constructor(
         // add User-Agent to every request
         builder.addInterceptor(userAgentInterceptor)
 
-        // connection-private cookie store
-        builder.cookieJar(cookieStore)
-
         // offer Brotli and gzip compression (can be disabled per request with `Accept-Encoding: identity`)
         builder.addInterceptor(BrotliInterceptor)
 
@@ -347,6 +336,9 @@ class HttpClientBuilder @Inject constructor(
 
         val client = HttpClient(OkHttp) {
             // Ktor-level configuration here
+
+            // Uses AcceptAllCookiesStorage, which stores all the cookies in an in-memory map.
+            install(HttpCookies)
 
             // automatically convert JSON from/into data classes (if requested in respective code)
             install(ContentNegotiation) {
