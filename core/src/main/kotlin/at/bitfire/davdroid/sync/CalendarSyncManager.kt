@@ -140,7 +140,7 @@ class CalendarSyncManager @AssistedInject constructor(
     override suspend fun processLocallyDeleted(): Boolean {
         if (localCollection.readOnly) {
             var modified = false
-            for (event in localCollection.findDeleted()) {
+            localCollection.deletedFlow().collect { event ->
                 logger.warning("Restoring locally deleted event (read-only calendar!)")
                 SyncException.wrapWithLocalResource(event) {
                     event.resetDeleted()
@@ -163,7 +163,7 @@ class CalendarSyncManager @AssistedInject constructor(
     override suspend fun uploadDirty(): Boolean {
         var modified = false
         if (localCollection.readOnly) {
-            for (event in localCollection.findDirty()) {
+            localCollection.dirtyFlow().collect { event ->
                 logger.warning("Resetting locally modified event to ETag=null (read-only calendar!)")
                 SyncException.wrapWithLocalResource(event) {
                     event.clearDirty(Optional.empty(), null, null)
