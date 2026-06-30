@@ -8,6 +8,7 @@ import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.settings.SettingsManager
+import at.bitfire.davdroid.util.DavUtils.toUrl
 import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -20,7 +21,6 @@ import io.ktor.http.headersOf
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit4.MockKRule
 import kotlinx.coroutines.test.runTest
-import okhttp3.HttpUrl.Companion.toHttpUrl
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -111,7 +111,7 @@ class CollectionsWithoutHomeSetRefresherTest {
             Collection(
                 0, service.id, null, null,
                 Collection.TYPE_ADDRESSBOOK,
-                "$BASE_URL$PATH_CARDDAV$SUBPATH_ADDRESSBOOK/".toHttpUrl()
+                "$BASE_URL$PATH_CARDDAV$SUBPATH_ADDRESSBOOK/".toUrl()
             )
         )
 
@@ -122,7 +122,7 @@ class CollectionsWithoutHomeSetRefresherTest {
                 collectionId, service.id, null,
                 1, // will have gotten an owner too
                 Collection.TYPE_ADDRESSBOOK,
-                "$BASE_URL$PATH_CARDDAV$SUBPATH_ADDRESSBOOK/".toHttpUrl(),
+                "$BASE_URL$PATH_CARDDAV$SUBPATH_ADDRESSBOOK/".toUrl(),
                 displayName = "My Contacts",
                 description = "My Contacts Description"
             ),
@@ -136,7 +136,7 @@ class CollectionsWithoutHomeSetRefresherTest {
             Collection(
                 0, service.id, null, null,
                 Collection.TYPE_ADDRESSBOOK,
-                "$BASE_URL$PATH_CARDDAV$SUBPATH_ADDRESSBOOK_INACCESSIBLE".toHttpUrl()
+                "$BASE_URL$PATH_CARDDAV$SUBPATH_ADDRESSBOOK_INACCESSIBLE".toUrl()
             )
         )
 
@@ -151,7 +151,7 @@ class CollectionsWithoutHomeSetRefresherTest {
             Collection(
                 0, service.id, null, null,
                 Collection.TYPE_ADDRESSBOOK,
-                "$BASE_URL$PATH_CARDDAV$SUBPATH_ADDRESSBOOK/".toHttpUrl()
+                "$BASE_URL$PATH_CARDDAV$SUBPATH_ADDRESSBOOK/".toUrl()
             )
         )
 
@@ -160,7 +160,7 @@ class CollectionsWithoutHomeSetRefresherTest {
 
         val principals = db.principalDao().getByService(service.id)
         assertEquals(1, principals.size)
-        assertEquals("$BASE_URL$PATH_CARDDAV$SUBPATH_PRINCIPAL".toHttpUrl(), principals[0].url)
+        assertEquals("$BASE_URL$PATH_CARDDAV$SUBPATH_PRINCIPAL".toUrl(), principals[0].url)
         assertEquals(null, principals[0].displayName)
         assertEquals(
             principals[0].id,

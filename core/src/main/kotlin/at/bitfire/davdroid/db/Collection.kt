@@ -10,8 +10,8 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import at.bitfire.dav4jvm.HttpUtils.toHttpUrl
 import at.bitfire.dav4jvm.ktor.Response
+import at.bitfire.dav4jvm.ktor.toUrlOrNull
 import at.bitfire.dav4jvm.ktor.withTrailingSlash
 import at.bitfire.dav4jvm.property.caldav.CalDAV
 import at.bitfire.dav4jvm.property.caldav.CalendarColor
@@ -31,8 +31,7 @@ import at.bitfire.dav4jvm.property.webdav.ResourceType
 import at.bitfire.davdroid.util.DavUtils.lastSegment
 import at.bitfire.synctools.icalendar.timezoneDefToTzId
 import at.bitfire.synctools.util.trimToNull
-import okhttp3.HttpUrl
-import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
+import io.ktor.http.Url
 
 @Retention(AnnotationRetention.SOURCE)
 @StringDef(
@@ -86,7 +85,7 @@ data class Collection(
     /**
      * Address where this collection lives - with trailing slash
      */
-    val url: HttpUrl,
+    val url: Url,
 
     /**
      * Whether we have the permission to change contents of the collection on the server.
@@ -128,7 +127,7 @@ data class Collection(
     val supportsVJOURNAL: Boolean? = null,
 
     /** Webcal subscription source URL */
-    val source: HttpUrl? = null,
+    val source: Url? = null,
 
     /** whether this collection has been selected for synchronization */
     val sync: Boolean = false,
@@ -170,7 +169,7 @@ data class Collection(
          * @return null if the response doesn't represent a collection
          */
         fun fromDavResponse(dav: Response): Collection? {
-            val url = dav.href.withTrailingSlash().toHttpUrl()
+            val url = dav.href.withTrailingSlash()
             val type: String = dav[ResourceType::class.java]?.let { resourceType ->
                 when {
                     resourceType.types.contains(CardDAV.Addressbook) -> TYPE_ADDRESSBOOK
@@ -195,7 +194,7 @@ data class Collection(
             var supportsVEVENT: Boolean? = null
             var supportsVTODO: Boolean? = null
             var supportsVJOURNAL: Boolean? = null
-            var source: HttpUrl? = null
+            var source: Url? = null
             when (type) {
                 TYPE_ADDRESSBOOK -> {
                     dav[AddressbookDescription::class.java]?.let { description = it.description }
@@ -224,7 +223,7 @@ data class Collection(
                                 val href = rawHref
                                         .replace("^webcal://".toRegex(), "http://")
                                         .replace("^webcals://".toRegex(), "https://")
-                                href.toHttpUrlOrNull()
+                                href.toUrlOrNull()
                             }
                         }
                         supportsVEVENT = true

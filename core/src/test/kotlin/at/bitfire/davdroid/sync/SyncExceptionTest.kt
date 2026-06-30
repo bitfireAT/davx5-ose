@@ -5,8 +5,8 @@
 package at.bitfire.davdroid.sync
 
 import at.bitfire.davdroid.resource.LocalResource
+import io.ktor.http.Url
 import io.mockk.mockk
-import okhttp3.HttpUrl
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -53,7 +53,7 @@ class SyncExceptionTest {
     @Test
     fun testWrapWithLocalResource_RemoteResource_Exception() {
         val local = mockk<LocalResource>()
-        val remote = mockk<HttpUrl>()
+        val remote = mockk<Url>()
         val e = Exception()
 
         val result = assertSyncException {
@@ -72,7 +72,7 @@ class SyncExceptionTest {
     @Test
     fun testWrapWithLocalResource_RemoteResource_SyncException() {
         val local = mockk<LocalResource>()
-        val remote = mockk<HttpUrl>()
+        val remote = mockk<Url>()
         val e = SyncException(Exception())
 
         val result = assertSyncException {
@@ -91,7 +91,7 @@ class SyncExceptionTest {
 
     @Test
     fun testWrapWithRemoteResource_LocalResource_Exception() {
-        val remote = mockk<HttpUrl>()
+        val remote = mockk<Url>()
         val local = mockk<LocalResource>()
         val e = Exception()
 
@@ -110,7 +110,7 @@ class SyncExceptionTest {
 
     @Test
     fun testWrapWithRemoteResource_LocalResource_SyncException() {
-        val remote = mockk<HttpUrl>()
+        val remote = mockk<Url>()
         val local = mockk<LocalResource>()
         val e = SyncException(Exception())
 
@@ -129,8 +129,8 @@ class SyncExceptionTest {
 
     @Test
     fun testWrapWithRemoteResource_RemoteResource_Exception() {
-        val outer = mockk<HttpUrl>()
-        val inner = mockk<HttpUrl>()
+        val outer = mockk<Url>()
+        val inner = mockk<Url>()
         val e = Exception()
 
         val result = assertSyncException {
@@ -147,8 +147,8 @@ class SyncExceptionTest {
 
     @Test
     fun testWrapWithRemoteResource_RemoteResource_SyncException() {
-        val outer = mockk<HttpUrl>()
-        val inner = mockk<HttpUrl>()
+        val outer = mockk<Url>()
+        val inner = mockk<Url>()
         val e = SyncException(Exception())
 
         val result = assertSyncException {

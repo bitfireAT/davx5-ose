@@ -27,9 +27,9 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import at.bitfire.dav4jvm.ktor.toUrlOrNull
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.HomeSet
-import okhttp3.HttpUrl.Companion.toHttpUrl
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -106,13 +106,13 @@ fun HomeSetSelection_Preview() {
             id = 0,
             serviceId = 0,
             personal = true,
-            url = "https://example.com/homeset/first".toHttpUrl()
+            url = "https://example.com/homeset/first".toUrlOrNull()!!
         ),
         HomeSet(
             id = 0,
             serviceId = 0,
             personal = true,
-            url = "https://example.com/homeset/second".toHttpUrl()
+            url = "https://example.com/homeset/second".toUrlOrNull()!!
         )
     )
     HomeSetSelection(

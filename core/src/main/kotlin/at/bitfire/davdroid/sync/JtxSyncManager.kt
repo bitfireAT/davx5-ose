@@ -7,10 +7,10 @@ package at.bitfire.davdroid.sync
 import android.accounts.Account
 import android.text.format.Formatter
 import androidx.annotation.OpenForTesting
-import at.bitfire.dav4jvm.okhttp.DavCalendar
-import at.bitfire.dav4jvm.okhttp.MultiResponseCallback
-import at.bitfire.dav4jvm.okhttp.Response
-import at.bitfire.dav4jvm.okhttp.exception.DavException
+import at.bitfire.dav4jvm.ktor.DavCalendar
+import at.bitfire.dav4jvm.ktor.MultiResponseCallback
+import at.bitfire.dav4jvm.ktor.Response
+import at.bitfire.dav4jvm.ktor.exception.DavException
 import at.bitfire.dav4jvm.property.caldav.CalDAV
 import at.bitfire.dav4jvm.property.caldav.CalendarData
 import at.bitfire.dav4jvm.property.caldav.MaxResourceSize
@@ -37,14 +37,13 @@ import at.bitfire.synctools.mapping.jtx.handler.AndroidAttachmentFetcher
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import io.ktor.client.HttpClient
+import io.ktor.http.Url
+import io.ktor.http.content.TextContent
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.runInterruptible
 import net.fortuna.ical4j.model.Component
 import net.fortuna.ical4j.model.component.CalendarComponent
 import net.fortuna.ical4j.model.property.ProdId
-import okhttp3.HttpUrl
-import okhttp3.OkHttpClient
-import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.Reader
 import java.io.StringReader
 import java.io.StringWriter
@@ -52,7 +51,7 @@ import java.util.logging.Level
 
 class JtxSyncManager @AssistedInject constructor(
     @Assisted account: Account,
-    @Assisted httpClient: OkHttpClient,
+    @Assisted httpClient: HttpClient,
     @Assisted syncResult: SyncResult,
     @Assisted localCollection: LocalJtxCollection,
     @Assisted collection: Collection,
@@ -74,7 +73,7 @@ class JtxSyncManager @AssistedInject constructor(
     interface Factory {
         fun jtxSyncManager(
             account: Account,
-            httpClient: OkHttpClient,
+            httpClient: HttpClient,
             syncResult: SyncResult,
             localCollection: LocalJtxCollection,
             collection: Collection,
@@ -92,15 +91,13 @@ class JtxSyncManager @AssistedInject constructor(
     override suspend fun queryCapabilities() =
         SyncException.wrapWithRemoteResourceSuspending(collection.url) {
             var syncState: SyncState? = null
-            runInterruptible {
-                davCollection.propfind(0, CalDAV.GetCTag, CalDAV.MaxResourceSize, WebDAV.SyncToken) { response, relation ->
-                    if (relation == Response.HrefRelation.SELF) {
-                        response[MaxResourceSize::class.java]?.maxSize?.let { maxSize ->
-                            logger.info("Collection accepts resources up to ${Formatter.formatFileSize(context, maxSize)}")
-                        }
-
-                        syncState = syncState(response)
+            davCollection.propfind(0, CalDAV.GetCTag, CalDAV.MaxResourceSize, WebDAV.SyncToken) { response, relation ->
+                if (relation == Response.HrefRelation.SELF) {
+                    response[MaxResourceSize::class.java]?.maxSize?.let { maxSize ->
+                        logger.info("Collection accepts resources up to ${Formatter.formatFileSize(context, maxSize)}")
                     }
+
+                    syncState = syncState(response)
                 }
             }
             syncState
@@ -128,11 +125,14 @@ class JtxSyncManager @AssistedInject constructor(
         // generate iCalendar and convert to request body
         val iCalWriter = StringWriter()
         ICalendarGenerator().write(mappedJtxObjects.associatedComponents, iCalWriter)
-        val requestBody = iCalWriter.toString().toRequestBody(DavCalendar.MIME_ICALENDAR_UTF8)
+        val outgoingContent = TextContent(
+            text = iCalWriter.toString(),
+            contentType = DavCalendar.MIME_ICALENDAR_UTF8
+        )
 
         return GeneratedResource(
             suggestedFileName = DavUtils.fileNameFromUid(mappedJtxObjects.uid, "ics"),
-            requestBody = requestBody
+            content = outgoingContent
         )
     }
 
@@ -142,50 +142,44 @@ class JtxSyncManager @AssistedInject constructor(
         SyncException.wrapWithRemoteResourceSuspending(collection.url) {
             if (localCollection.supportsVTODO) {
                 logger.info("Querying tasks")
-                runInterruptible {
-                    davCollection.calendarQuery("VTODO", null, null, callback)
-                }
+                davCollection.calendarQuery("VTODO", null, null, callback = callback)
             }
 
             if (localCollection.supportsVJOURNAL) {
                 logger.info("Querying journals")
-                runInterruptible {
-                    davCollection.calendarQuery("VJOURNAL", null, null, callback)
-                }
+                davCollection.calendarQuery("VJOURNAL", null, null, callback = callback)
             }
         }
     }
 
-    override suspend fun downloadRemote(bunch: List<HttpUrl>) {
+    override suspend fun downloadRemote(bunch: List<Url>) {
         logger.info("Downloading ${bunch.size} iCalendars: $bunch")
         // multiple iCalendars, use calendar-multi-get
         SyncException.wrapWithRemoteResourceSuspending(collection.url) {
-            runInterruptible {
-                davCollection.multiget(bunch) { response, _ ->
-                    // See CalendarSyncManager for more information about the multi-get response
-                    SyncException.wrapWithRemoteResource(response.href) wrapResource@{
-                        if (!response.isSuccess()) {
-                            logger.warning("Ignoring non-successful multi-get response for ${response.href}")
-                            return@wrapResource
-                        }
+            davCollection.multiget(bunch) { response, _ ->
+                // See CalendarSyncManager for more information about the multi-get response
+                SyncException.wrapWithRemoteResource(response.href) wrapResource@{
+                    if (!response.isSuccess()) {
+                        logger.warning("Ignoring non-successful multi-get response for ${response.href}")
+                        return@wrapResource
+                    }
 
-                        val iCal = response[CalendarData::class.java]?.iCalendar
-                        if (iCal == null) {
-                            logger.warning("Ignoring multi-get response without calendar-data")
-                            return@wrapResource
-                        }
+                    val iCal = response[CalendarData::class.java]?.iCalendar
+                    if (iCal == null) {
+                        logger.warning("Ignoring multi-get response without calendar-data")
+                        return@wrapResource
+                    }
 
-                        val eTag = response[GetETag::class.java]?.eTag
-                            ?: throw DavException("Received multi-get response without ETag")
-                        val scheduleTag = response[ScheduleTag::class.java]?.scheduleTag
-                        val fileName = response.href.lastSegment
+                    val eTag = response[GetETag::class.java]?.eTag
+                        ?: throw DavException("Received multi-get response without ETag")
+                    val scheduleTag = response[ScheduleTag::class.java]?.scheduleTag
+                    val fileName = response.href.lastSegment
 
-                        try {
-                            processICalObject(fileName, eTag, scheduleTag, StringReader(iCal))
-                        } catch (e: InvalidResourceException) {
-                            logger.log(Level.WARNING, "Error while processing jtx object", e)
-                            notifyInvalidResource(e, fileName)
-                        }
+                    try {
+                        processICalObject(fileName, eTag, scheduleTag, StringReader(iCal))
+                    } catch (e: InvalidResourceException) {
+                        logger.log(Level.WARNING, "Error while processing jtx object", e)
+                        notifyInvalidResource(e, fileName)
                     }
                 }
             }

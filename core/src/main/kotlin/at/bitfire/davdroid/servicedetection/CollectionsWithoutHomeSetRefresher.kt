@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.servicedetection
 
-import at.bitfire.dav4jvm.HttpUtils.toHttpUrl
 import at.bitfire.dav4jvm.HttpUtils.toKtorUrl
 import at.bitfire.dav4jvm.ktor.DavResource
 import at.bitfire.dav4jvm.ktor.exception.HttpException
@@ -46,7 +45,7 @@ class CollectionsWithoutHomeSetRefresher @AssistedInject constructor(
         val withoutHomeSet = db.collectionDao().getByServiceAndHomeset(service.id, null).associateBy { it.url }.toMutableMap()
         for ((url, localCollection) in withoutHomeSet) try {
             val collectionProperties = ServiceDetectionUtils.collectionQueryProperties(service.type)
-            DavResource(httpClient, url.toKtorUrl()).propfind(0, *collectionProperties) { response, _ ->
+            DavResource(httpClient, url).propfind(0, *collectionProperties) { response, _ ->
                 if (!response.isSuccess()) {
                     collectionRepository.delete(localCollection)
                     return@propfind
@@ -59,7 +58,7 @@ class CollectionsWithoutHomeSetRefresher @AssistedInject constructor(
                     collectionRepository.insertOrUpdateByUrlRememberSync(collection.copy(
                         serviceId = localCollection.serviceId,          // use same service ID as previous entry
                         ownerId = response[Owner::class.java]?.href     // save the principal id (collection owner)
-                            ?.let { response.href.resolve(it)?.toHttpUrl() }
+                            ?.let { response.href.resolve(it) }
                             ?.let { principalUrl -> Principal.fromServiceAndUrl(service, principalUrl) }
                             ?.let { principal -> db.principalDao().insertOrUpdate(service.id, principal) }
                     ))

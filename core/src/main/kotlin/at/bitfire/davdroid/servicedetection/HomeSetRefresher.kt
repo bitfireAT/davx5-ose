@@ -4,8 +4,6 @@
 
 package at.bitfire.davdroid.servicedetection
 
-import at.bitfire.dav4jvm.HttpUtils.toHttpUrl
-import at.bitfire.dav4jvm.HttpUtils.toKtorUrl
 import at.bitfire.dav4jvm.ktor.DavResource
 import at.bitfire.dav4jvm.ktor.Response
 import at.bitfire.dav4jvm.ktor.exception.HttpException
@@ -71,7 +69,7 @@ class HomeSetRefresher @AssistedInject constructor(
 
             try {
                 val collectionProperties = ServiceDetectionUtils.collectionQueryProperties(service.type)
-                DavResource(httpClient, homeSetUrl.toKtorUrl()).propfind(1, *collectionProperties) { response, relation ->
+                DavResource(httpClient, homeSetUrl).propfind(1, *collectionProperties) { response, relation ->
                     // Note: This callback may be called multiple times ([MultiResponseCallback])
                     if (!response.isSuccess())
                         return@propfind
@@ -92,7 +90,7 @@ class HomeSetRefresher @AssistedInject constructor(
                         homeSetId = localHomeset.id,
                         sync = shouldPreselect(collection, homesets.values),
                         ownerId = response[Owner::class.java]?.href  // save the principal id (collection owner)
-                            ?.let { response.href.resolve(it)?.toHttpUrl() }
+                            ?.let { response.href.resolve(it) }
                             ?.let { principalUrl -> Principal.fromServiceAndUrl(service, principalUrl) }
                             ?.let { principal -> db.principalDao().insertOrUpdate(service.id, principal) }
                     )

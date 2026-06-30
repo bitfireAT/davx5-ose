@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.servicedetection
 
-import at.bitfire.dav4jvm.HttpUtils.toKtorUrl
 import at.bitfire.dav4jvm.ktor.DavResource
 import at.bitfire.dav4jvm.ktor.exception.HttpException
 import at.bitfire.dav4jvm.property.webdav.WebDAV
@@ -15,8 +14,8 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import io.ktor.client.HttpClient
-import javax.annotation.WillNotClose
 import java.util.logging.Logger
+import javax.annotation.WillNotClose
 
 /**
  * Used to update the principals (their current display names) and delete those without collections.
@@ -52,7 +51,7 @@ class PrincipalsRefresher @AssistedInject constructor(
             val principalUrl = oldPrincipal.url
             logger.fine("Querying principal $principalUrl")
             try {
-                DavResource(httpClient, principalUrl.toKtorUrl()).propfind(0, *principalProperties) { response, _ ->
+                DavResource(httpClient, principalUrl).propfind(0, *principalProperties) { response, _ ->
                     if (!response.isSuccess())
                         return@propfind
                     Principal.fromDavResponse(service.id, response)?.let { principal ->

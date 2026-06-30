@@ -6,6 +6,8 @@ package at.bitfire.davdroid.sync
 
 import at.bitfire.davdroid.resource.LocalCollection
 import at.bitfire.davdroid.resource.SyncState
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.asFlow
 
 class LocalTestCollection(
     override val dbCollectionId: Long = 0L
@@ -22,7 +24,10 @@ class LocalTestCollection(
         get() = throw NotImplementedError()
 
     override fun findDeleted() = entries.filter { it.deleted }
+    override fun deletedFlow() = findDeleted().asFlow()
+
     override fun findDirty() = entries.filter { it.dirty }
+    override fun dirtyFlow() = findDirty().asFlow()
 
     override fun findByName(name: String) = entries.firstOrNull { it.fileName == name }
 

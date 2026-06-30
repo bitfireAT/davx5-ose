@@ -8,14 +8,13 @@ import android.accounts.Account
 import android.content.Context
 import androidx.core.app.NotificationManagerCompat
 import androidx.hilt.work.HiltWorkerFactory
-import at.bitfire.dav4jvm.okhttp.PropStat
-import at.bitfire.dav4jvm.okhttp.Response
-import at.bitfire.dav4jvm.okhttp.Response.HrefRelation
+import at.bitfire.dav4jvm.ktor.PropStat
+import at.bitfire.dav4jvm.ktor.Response
+import at.bitfire.dav4jvm.ktor.Response.HrefRelation
 import at.bitfire.dav4jvm.property.webdav.GetETag
 import at.bitfire.davdroid.TestUtils
 import at.bitfire.davdroid.TestUtils.assertWithin
 import at.bitfire.davdroid.db.Collection
-import at.bitfire.davdroid.network.HttpClientBuilder
 import at.bitfire.davdroid.repository.DavSyncStatsRepository
 import at.bitfire.davdroid.resource.SyncState
 import at.bitfire.davdroid.settings.AccountSettings
@@ -24,15 +23,19 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.mock.MockEngine
+import io.ktor.client.engine.mock.respond
+import io.ktor.http.Headers
+import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpStatusCode
+import io.ktor.http.Url
+import io.ktor.http.headersOf
 import io.mockk.every
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit4.MockKRule
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
-import okhttp3.Protocol
-import okhttp3.internal.http.StatusLine
-import okhttp3.mockwebserver.MockResponse
-import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -45,6 +48,10 @@ import javax.inject.Inject
 
 @HiltAndroidTest
 class SyncManagerTest {
+
+    companion object {
+        const val BASE_URL = "https://dav.example.com"
+    }
 
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
@@ -59,9 +66,6 @@ class SyncManagerTest {
     lateinit var context: Context
 
     @Inject
-    lateinit var httpClientBuilder: HttpClientBuilder
-
-    @Inject
     lateinit var syncManagerFactory: TestSyncManager.Factory
 
     @BindValue
@@ -72,33 +76,28 @@ class SyncManagerTest {
     lateinit var workerFactory: HiltWorkerFactory
 
     private lateinit var account: Account
-    private lateinit var server: MockWebServer
+    private lateinit var client: HttpClient
 
-    @Before
-    fun setUp() {
-        hiltRule.inject()
+    private data class QueuedResponse(
+        val status: HttpStatusCode,
+        val body: String = "",
+        val headers: Headers = headersOf()
+    )
+    private val responseQueue = ArrayDeque<QueuedResponse>()
+    private val capturedUrls = mutableListOf<Url>()
 
-        TestUtils.setUpWorkManager(context, workerFactory)
-
-        account = TestAccount.create()
-
-        server = MockWebServer().apply {
-            start()
-        }
+    private fun buildMockEngine() = MockEngine { request ->
+        capturedUrls += request.url
+        val queued = responseQueue.removeFirstOrNull()
+            ?: return@MockEngine respond("Unexpected request", HttpStatusCode.InternalServerError)
+        respond(queued.body, queued.status, queued.headers)
     }
 
-    @After
-    fun tearDown() {
-        TestAccount.remove(account)
-
-        // clear annoying syncError notifications
-        NotificationManagerCompat.from(context).cancelAll()
-
-        server.close()
+    private fun enqueue(status: HttpStatusCode, body: String = "", headers: Headers = headersOf()) {
+        responseQueue.addLast(QueuedResponse(status, body, headers))
     }
 
-
-    private fun queryCapabilitiesResponse(cTag: String? = null): MockResponse {
+    private fun enqueueQueryCapabilities(cTag: String? = null) {
         val body = StringBuilder()
         body.append(
             "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n" +
@@ -116,18 +115,38 @@ class SyncManagerTest {
                     "  </response>\n" +
                     "</multistatus>"
         )
-        return MockResponse()
-            .setResponseCode(207)
-            .setHeader("Content-Type", "text/xml")
-            .setBody(body.toString())
+        enqueue(
+            HttpStatusCode.MultiStatus,
+            body.toString(),
+            headersOf(HttpHeaders.ContentType, "text/xml")
+        )
+    }
+
+    @Before
+    fun setUp() {
+        hiltRule.inject()
+
+        TestUtils.setUpWorkManager(context, workerFactory)
+
+        account = TestAccount.create()
+
+        client = HttpClient(buildMockEngine())
+    }
+
+    @After
+    fun tearDown() {
+        TestAccount.remove(account)
+
+        // clear annoying syncError notifications
+        NotificationManagerCompat.from(context).cancelAll()
+
+        client.close()
     }
 
 
     @Test
     fun testPerformSync_503RetryAfter_DelaySeconds() = runTest {
-        server.enqueue(MockResponse()
-            .setResponseCode(503)
-            .setHeader("Retry-After", "60"))    // 60 seconds
+        enqueue(HttpStatusCode.ServiceUnavailable, headers = headersOf(HttpHeaders.RetryAfter, "60"))
 
         val result = SyncResult()
         val syncManager = syncManager(LocalTestCollection(), result)
@@ -143,7 +162,7 @@ class SyncManagerTest {
     @Test
     fun testPerformSync_FirstSync_Empty() = runTest {
         val collection = LocalTestCollection() /* no last known ctag */
-        server.enqueue(queryCapabilitiesResponse())
+        enqueueQueryCapabilities()
 
         val syncManager = syncManager(collection)
         syncManager.performSync()
@@ -163,29 +182,27 @@ class SyncManagerTest {
                 dirty = true
             }
         }
-        server.enqueue(queryCapabilitiesResponse("ctag1"))
+        enqueueQueryCapabilities("ctag1")
 
         // PUT -> 204 No Content
-        server.enqueue(MockResponse()
-                .setResponseCode(204)
-                .setHeader("ETag", "etag-from-put"))
+        enqueue(HttpStatusCode.NoContent, headers = headersOf(HttpHeaders.ETag, "etag-from-put"))
 
         // modifications sent, so DAVx5 will query CTag again
-        server.enqueue(queryCapabilitiesResponse("ctag2"))
+        enqueueQueryCapabilities("ctag2")
 
         val syncManager = syncManager(collection).apply {
             listAllRemoteResult = listOf(
                     Pair(Response(
-                            server.url("/"),
-                            server.url("/generated-file.txt"),
+                            Url("$BASE_URL/"),
+                            Url("$BASE_URL/generated-file.txt"),
                             null,
                             listOf(PropStat(
                                     listOf(
                                             GetETag("\"etag-from-put\"")
                                     ),
-                                    StatusLine(Protocol.HTTP_1_1, 200, "OK")
-                            )
-                            )), HrefRelation.MEMBER)
+                                    HttpStatusCode.OK
+                            ))
+                    ), HrefRelation.MEMBER)
             )
         }
         syncManager.performSync()
@@ -208,32 +225,30 @@ class SyncManagerTest {
                 dirty = true
             }
         }
-        server.enqueue(queryCapabilitiesResponse("ctag1"))
+        enqueueQueryCapabilities("ctag1")
 
         // PUT -> 204 No Content
-        server.enqueue(MockResponse()
-                .setResponseCode(204)
-                .addHeader("ETag", "etag-from-put"))
+        enqueue(HttpStatusCode.NoContent, headers = headersOf(HttpHeaders.ETag, "etag-from-put"))
 
         // modifications sent, so DAVx5 will query CTag again
-        server.enqueue(queryCapabilitiesResponse("ctag2"))
+        enqueueQueryCapabilities("ctag2")
 
         val syncManager = syncManager(collection).apply {
             listAllRemoteResult = listOf(
                     Pair(Response(
-                            server.url("/"),
-                            server.url("/existing-file.txt"),
+                            Url("$BASE_URL/"),
+                            Url("$BASE_URL/existing-file.txt"),
                             null,
                             listOf(PropStat(
                                     listOf(
                                             GetETag("etag-from-put")
                                     ),
-                                    StatusLine(Protocol.HTTP_1_1, 200, "OK")
-                            )
-                            )), HrefRelation.MEMBER)
+                                    HttpStatusCode.OK
+                            ))
+                    ), HrefRelation.MEMBER)
             )
 
-            assertDownloadRemote = mapOf(Pair(server.url("/existing-file.txt"), "etag-from-put"))
+            assertDownloadRemote = mapOf(Pair(Url("$BASE_URL/existing-file.txt"), "etag-from-put"))
         }
         syncManager.performSync()
 
@@ -255,30 +270,30 @@ class SyncManagerTest {
                 dirty = true
             }
         }
-        server.enqueue(queryCapabilitiesResponse("ctag1"))
+        enqueueQueryCapabilities("ctag1")
 
         // PUT -> 204 No Content
-        server.enqueue(MockResponse().setResponseCode(204))
+        enqueue(HttpStatusCode.NoContent)
 
         // modifications sent, so DAVx5 will query CTag again
-        server.enqueue(queryCapabilitiesResponse("ctag2"))
+        enqueueQueryCapabilities("ctag2")
 
         val syncManager = syncManager(collection).apply {
             listAllRemoteResult = listOf(
                     Pair(Response(
-                            server.url("/"),
-                            server.url("/existing-file.txt"),
+                            Url("$BASE_URL/"),
+                            Url("$BASE_URL/existing-file.txt"),
                             null,
                             listOf(PropStat(
                                     listOf(
                                             GetETag("etag-from-propfind")
                                     ),
-                                    StatusLine(Protocol.HTTP_1_1, 200, "OK")
-                            )
-                            )), HrefRelation.MEMBER)
+                                    HttpStatusCode.OK
+                            ))
+                    ), HrefRelation.MEMBER)
             )
 
-            assertDownloadRemote = mapOf(Pair(server.url("/existing-file.txt"), "etag-from-propfind"))
+            assertDownloadRemote = mapOf(Pair(Url("$BASE_URL/existing-file.txt"), "etag-from-propfind"))
         }
         syncManager.performSync()
 
@@ -300,31 +315,30 @@ class SyncManagerTest {
                 dirty = true
             }
         }
-        server.enqueue(queryCapabilitiesResponse("ctag1"))
+        enqueueQueryCapabilities("ctag1")
 
         // PUT -> 412 Precondition Failed
-        server.enqueue(MockResponse()
-                .setResponseCode(412))
+        enqueue(HttpStatusCode.PreconditionFailed)
 
         // modifications sent, so DAVx5 will query CTag again
-        server.enqueue(queryCapabilitiesResponse("ctag1"))
+        enqueueQueryCapabilities("ctag1")
 
         val syncManager = syncManager(collection).apply {
             listAllRemoteResult = listOf(
                     Pair(Response(
-                            server.url("/"),
-                            server.url("/existing-file.txt"),
+                            Url("$BASE_URL/"),
+                            Url("$BASE_URL/existing-file.txt"),
                             null,
                             listOf(PropStat(
                                     listOf(
                                             GetETag("changed-etag-from-server")
                                     ),
-                                    StatusLine(Protocol.HTTP_1_1, 200, "OK")
-                            )
-                            )), HrefRelation.MEMBER)
+                                    HttpStatusCode.OK
+                            ))
+                    ), HrefRelation.MEMBER)
             )
 
-            assertDownloadRemote = mapOf(Pair(server.url("/existing-file.txt"), "changed-etag-from-server"))
+            assertDownloadRemote = mapOf(Pair(Url("$BASE_URL/existing-file.txt"), "changed-etag-from-server"))
         }
         syncManager.performSync()
 
@@ -345,21 +359,21 @@ class SyncManagerTest {
                 eTag = "MemberETag1"
             }
         }
-        server.enqueue(queryCapabilitiesResponse("ctag2"))
+        enqueueQueryCapabilities("ctag2")
 
         val syncManager = syncManager(collection).apply {
             listAllRemoteResult = listOf(
                     Pair(Response(
-                            server.url("/"),
-                            server.url("/downloaded-member.txt"),
+                            Url("$BASE_URL/"),
+                            Url("$BASE_URL/downloaded-member.txt"),
                             null,
                             listOf(PropStat(
                                     listOf(
                                             GetETag("\"MemberETag1\"")
                                     ),
-                                    StatusLine(Protocol.HTTP_1_1, 200, "OK")
-                            )
-                            )), HrefRelation.MEMBER)
+                                    HttpStatusCode.OK
+                            ))
+                    ), HrefRelation.MEMBER)
             )
 
         }
@@ -378,24 +392,24 @@ class SyncManagerTest {
         val collection = LocalTestCollection().apply {
             lastSyncState = SyncState(SyncState.Type.CTAG, "old-ctag")
         }
-        server.enqueue(queryCapabilitiesResponse(cTag = "new-ctag"))
+        enqueueQueryCapabilities(cTag = "new-ctag")
 
         val syncManager = syncManager(collection).apply {
             listAllRemoteResult = listOf(
                     Pair(Response(
-                            server.url("/"),
-                            server.url("/new-member.txt"),
+                            Url("$BASE_URL/"),
+                            Url("$BASE_URL/new-member.txt"),
                             null,
                             listOf(PropStat(
                                     listOf(
                                             GetETag("\"NewMemberETag1\"")
                                     ),
-                                    StatusLine(Protocol.HTTP_1_1, 200, "OK")
-                            )
-                    )), HrefRelation.MEMBER)
+                                    HttpStatusCode.OK
+                            ))
+                    ), HrefRelation.MEMBER)
             )
 
-            assertDownloadRemote = mapOf(Pair(server.url("/new-member.txt"), "NewMemberETag1"))
+            assertDownloadRemote = mapOf(Pair(Url("$BASE_URL/new-member.txt"), "NewMemberETag1"))
         }
         syncManager.performSync()
 
@@ -416,24 +430,24 @@ class SyncManagerTest {
                 eTag = "MemberETag1"
             }
         }
-        server.enqueue(queryCapabilitiesResponse(cTag = "new-ctag"))
+        enqueueQueryCapabilities(cTag = "new-ctag")
 
         val syncManager = syncManager(collection).apply {
             listAllRemoteResult = listOf(
                     Pair(Response(
-                            server.url("/"),
-                            server.url("/downloaded-member.txt"),
+                            Url("$BASE_URL/"),
+                            Url("$BASE_URL/downloaded-member.txt"),
                             null,
                             listOf(PropStat(
                                     listOf(
                                             GetETag("\"MemberETag2\"")
                                     ),
-                                    StatusLine(Protocol.HTTP_1_1, 200, "OK")
-                            )
-                            )), HrefRelation.MEMBER)
+                                    HttpStatusCode.OK
+                            ))
+                    ), HrefRelation.MEMBER)
             )
 
-            assertDownloadRemote = mapOf(Pair(server.url("/downloaded-member.txt"), "MemberETag2"))
+            assertDownloadRemote = mapOf(Pair(Url("$BASE_URL/downloaded-member.txt"), "MemberETag2"))
         }
         syncManager.performSync()
 
@@ -453,7 +467,7 @@ class SyncManagerTest {
                 fileName = "downloaded-member.txt"
             }
         }
-        server.enqueue(queryCapabilitiesResponse(cTag = "new-ctag"))
+        enqueueQueryCapabilities(cTag = "new-ctag")
 
         val syncManager = syncManager(collection)
         syncManager.performSync()
@@ -470,7 +484,7 @@ class SyncManagerTest {
         val collection = LocalTestCollection().apply {
             lastSyncState = SyncState(SyncState.Type.CTAG, "ctag1")
         }
-        server.enqueue(queryCapabilitiesResponse("ctag1"))
+        enqueueQueryCapabilities("ctag1")
 
         val syncManager = syncManager(collection)
         syncManager.performSync()
@@ -483,6 +497,51 @@ class SyncManagerTest {
     }
 
 
+    @Test
+    fun testDeleteLocally_SlashInFileName_SlashEncoded() = runTest {
+        // Filename containing a literal slash — must be encoded as %2F, not treated as a path separator.
+        val collection = LocalTestCollection().apply {
+            lastSyncState = SyncState(SyncState.Type.CTAG, "ctag1")
+            entries += LocalTestResource().apply {
+                fileName = "has/slash.ics"
+                deleted = true
+            }
+        }
+        enqueueQueryCapabilities("ctag1")
+        enqueue(HttpStatusCode.NoContent)           // DELETE response
+        enqueueQueryCapabilities("ctag1")           // querySyncState after modifications
+
+        val syncManager = syncManager(collection)
+        syncManager.performSync()
+
+        // The DELETE request URL must encode the slash as %2F (not split the path).
+        val resourceUrl = capturedUrls.first { it.encodedPath != "/" }
+        assertEquals("/has%2Fslash.ics", resourceUrl.encodedPath)
+    }
+
+    @Test
+    fun testUploadDirty_SlashInFileName_SlashEncoded() = runTest {
+        // Filename containing a literal slash — must be encoded as %2F, not treated as a path separator.
+        val collection = LocalTestCollection().apply {
+            lastSyncState = SyncState(SyncState.Type.CTAG, "ctag1")
+            entries += LocalTestResource().apply {
+                fileName = "has/slash.ics"
+                dirty = true
+            }
+        }
+        enqueueQueryCapabilities("ctag1")
+        enqueue(HttpStatusCode.NoContent)           // PUT response
+        enqueueQueryCapabilities("ctag1")           // querySyncState after modifications
+
+        val syncManager = syncManager(collection)
+        syncManager.performSync()
+
+        // The PUT request URL must encode the slash as %2F (not split the path).
+        val resourceUrl = capturedUrls.first { it.encodedPath != "/" }
+        assertEquals("/has%2Fslash.ics", resourceUrl.encodedPath)
+    }
+
+
     // helpers
 
     private fun syncManager(
@@ -490,11 +549,11 @@ class SyncManagerTest {
         syncResult: SyncResult = SyncResult(),
         collection: Collection = mockk<Collection>(relaxed = true) {
             every { id } returns 1
-            every { url } returns server.url("/")
+            every { url } returns Url("$BASE_URL/")
         }
     ) = syncManagerFactory.create(
         account,
-        httpClientBuilder.build(),
+        client,
         syncResult,
         localCollection,
         collection

@@ -12,13 +12,13 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import at.bitfire.dav4jvm.HttpUtils.toKtorUrl
+import at.bitfire.dav4jvm.ktor.toContentTypeOrNull
 import at.bitfire.davdroid.util.DavUtils.MEDIA_TYPE_OCTET_STREAM
 import at.bitfire.davdroid.webdav.DocumentState
+import io.ktor.http.ContentType
+import io.ktor.http.URLBuilder
 import io.ktor.http.Url
-import okhttp3.HttpUrl
-import okhttp3.MediaType
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import io.ktor.http.appendPathSegments
 import java.io.FileNotFoundException
 import java.time.Instant
 
@@ -50,7 +50,7 @@ data class WebDavDocument(
     val isDirectory: Boolean = false,
 
     val displayName: String? = null,
-    val mimeType: MediaType? = null,
+    val mimeType: ContentType? = null,
     val eTag: String? = null,
     val lastModified: Long? = null,
     val size: Long? = null,
@@ -94,11 +94,11 @@ data class WebDavDocument(
             val reportedMimeType = mimeType ?:
                 MimeTypeMap.getSingleton().getMimeTypeFromExtension(
                     MimeTypeMap.getFileExtensionFromUrl(name)
-                )?.toMediaTypeOrNull() ?:
+                )?.toContentTypeOrNull() ?:
                 MEDIA_TYPE_OCTET_STREAM
 
             bundle.putString(Document.COLUMN_MIME_TYPE, reportedMimeType.toString())
-            if (mimeType?.type == "image")
+            if (mimeType?.match(ContentType.Image.Any) == true)
                 flags += Document.FLAG_SUPPORTS_THUMBNAIL
             if (mayWriteContent != false)
                 flags += Document.FLAG_SUPPORTS_WRITE
@@ -112,7 +112,7 @@ data class WebDavDocument(
         return bundle
     }
 
-    suspend fun toHttpUrl(db: AppDatabase): HttpUrl {
+    suspend fun toKtorUrl(db: AppDatabase): Url {
         val mount = db.webDavMountDao().getById(mountId)
 
         val segments = mutableListOf(name)
@@ -123,14 +123,11 @@ data class WebDavDocument(
             parentIter = parent.parentId
         }
 
-        val builder = mount.url.newBuilder()
+        val builder = URLBuilder(mount.url)
         for (segment in segments.reversed())
-            builder.addPathSegment(segment)
+            builder.appendPathSegments(segment)
         return builder.build()
     }
-
-    suspend fun toKtorUrl(db: AppDatabase): Url =
-        toHttpUrl(db).toKtorUrl()
 
 
     /**
