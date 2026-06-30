@@ -7,7 +7,6 @@ package at.bitfire.davdroid.util
 import at.bitfire.davdroid.util.DavUtils.lastSegment
 import at.bitfire.davdroid.util.DavUtils.toUrl
 import io.ktor.http.ContentType
-import okhttp3.HttpUrl.Companion.toHttpUrl
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
@@ -51,15 +50,6 @@ class DavUtilsTest {
             DavUtils.UidGenerationResult("new-uuid", generated = true),
             DavUtils.generateUidIfNecessary(null, generateUuid = { "new-uuid" })
         )
-    }
-
-    @Test
-    fun testHttpUrl_LastSegment() {
-        val exampleURL = "http://example.com/"
-        assertEquals("/", exampleURL.toHttpUrl().lastSegment)
-        assertEquals("dir", (exampleURL + "dir").toHttpUrl().lastSegment)
-        assertEquals("dir", (exampleURL + "dir/").toHttpUrl().lastSegment)
-        assertEquals("file.html", (exampleURL + "dir/file.html").toHttpUrl().lastSegment)
     }
 
     @Test

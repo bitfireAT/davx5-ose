@@ -68,8 +68,8 @@ import at.bitfire.davdroid.ui.UiUtils.toAnnotatedString
 import at.bitfire.davdroid.ui.composable.AppTheme
 import at.bitfire.davdroid.ui.composable.ProgressBar
 import at.bitfire.davdroid.util.DavUtils
+import at.bitfire.davdroid.util.DavUtils.toUrl
 import kotlinx.coroutines.delay
-import okhttp3.HttpUrl
 
 @Composable
 fun WebdavMountsScreen(
@@ -376,10 +376,7 @@ fun WebdavMountsScreen_Preview_TwoMounts() {
                     mount = WebDavMount(
                         id = 0,
                         name = "Preview Webdav Mount 1",
-                        url = HttpUrl.Builder()
-                            .scheme("https")
-                            .host("example.com")
-                            .build()
+                        url = "https://example.com".toUrl()
                     ),
                     quotaAvailable = 1024 * 1024 * 1024,
                     quotaUsed = 512 * 1024 * 1024
@@ -388,10 +385,7 @@ fun WebdavMountsScreen_Preview_TwoMounts() {
                     mount = WebDavMount(
                         id = 1,
                         name = "Preview Webdav Mount 2",
-                        url = HttpUrl.Builder()
-                            .scheme("https")
-                            .host("example.com")
-                            .build()
+                        url = "https://example.com".toUrl()
                     ),
                     quotaAvailable = 1024 * 1024 * 1024,
                     quotaUsed = 512 * 1024 * 1024
@@ -411,10 +405,7 @@ fun WebdavMountsItem_Preview() {
                 mount = WebDavMount(
                     id = 0,
                     name = "Preview Webdav Mount",
-                    url = HttpUrl.Builder()
-                        .scheme("https")
-                        .host("example.com")
-                        .build()
+                    url = "https://example.com".toUrl()
                 ),
                 quotaAvailable = 1024 * 1024 * 1024,
                 quotaUsed = 512 * 1024 * 1024

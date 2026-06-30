@@ -8,6 +8,7 @@ import android.content.Context
 import android.provider.DocumentsContract.Document
 import at.bitfire.dav4jvm.ktor.DavResource
 import at.bitfire.dav4jvm.ktor.exception.HttpException
+import at.bitfire.dav4jvm.ktor.toContentTypeOrNull
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.WebDavDocument
 import at.bitfire.davdroid.webdav.DavHttpClientBuilder
@@ -21,7 +22,6 @@ import io.ktor.http.URLBuilder
 import io.ktor.http.appendPathSegments
 import io.ktor.http.headersOf
 import kotlinx.coroutines.runBlocking
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import java.io.FileNotFoundException
 import java.util.logging.Logger
 import javax.inject.Inject
@@ -66,7 +66,7 @@ class CreateDocumentOperation @Inject constructor(
                             parentId = parent.id,
                             name = newName,
                             isDirectory = createDirectory,
-                            mimeType = mimeType.toMediaTypeOrNull(),
+                            mimeType = mimeType.toContentTypeOrNull(),
                             eTag = null,
                             lastModified = null,
                             size = if (createDirectory) null else 0

@@ -9,8 +9,6 @@ import at.bitfire.davdroid.util.DavUtils.generateUidIfNecessary
 import at.bitfire.davdroid.util.DavUtils.toUrlOrNull
 import io.ktor.http.ContentType
 import io.ktor.http.Url
-import okhttp3.HttpUrl
-import okhttp3.MediaType.Companion.toMediaType
 import org.jetbrains.annotations.TestOnly
 import java.net.URI
 import java.net.URISyntaxException
@@ -24,8 +22,8 @@ object DavUtils {
 
     const val MIME_TYPE_ACCEPT_ALL = "*/*"
 
-    val MEDIA_TYPE_OCTET_STREAM = "application/octet-stream".toMediaType()
-    val MEDIA_TYPE_VCARD = "text/vcard".toMediaType()
+    val MEDIA_TYPE_OCTET_STREAM = ContentType.Application.OctetStream
+    val MEDIA_TYPE_VCARD = ContentType.Text.VCard
 
     /**
      * Builds an HTTP `Accept` header that accepts anything (&#42;/&#42;), but optionally
@@ -118,9 +116,6 @@ object DavUtils {
 
 
     // extension methods
-
-    val HttpUrl.lastSegment: String
-        get() = pathSegments.lastOrNull { it.isNotEmpty() } ?: "/"
 
     /**
      * Safely gets the last segment of the URL, or returns `"/"` if none could be obtained.

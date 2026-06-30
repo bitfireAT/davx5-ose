@@ -6,7 +6,6 @@ package at.bitfire.davdroid.webdav
 
 import android.content.Context
 import android.provider.DocumentsContract
-import at.bitfire.dav4jvm.HttpUtils.toHttpUrl
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.WebDavMount
@@ -50,7 +49,7 @@ class WebDavMountRepository @Inject constructor(
 
         // create in database
         val mount = WebDavMount(
-            url = webdavUrl.toHttpUrl(),
+            url = webdavUrl,
             name = displayName
         )
         val id = db.webDavMountDao().insert(mount)
