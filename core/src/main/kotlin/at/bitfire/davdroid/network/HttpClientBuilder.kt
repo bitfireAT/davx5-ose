@@ -8,18 +8,24 @@ import android.accounts.Account
 import androidx.annotation.WorkerThread
 import at.bitfire.dav4jvm.okhttp.BasicDigestAuthHandler
 import at.bitfire.dav4jvm.okhttp.UrlUtils
+import at.bitfire.davdroid.ProductIds
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Credentials
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
-import com.google.common.net.HttpHeaders
 import com.google.errorprone.annotations.MustBeClosed
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
+import io.ktor.client.plugins.DefaultRequest
+import io.ktor.client.plugins.compression.ContentEncoding
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.cookies.HttpCookies
+import io.ktor.client.plugins.logging.LogLevel
+import io.ktor.client.plugins.logging.Logging
+import io.ktor.http.HttpHeaders
 import io.ktor.serialization.kotlinx.json.json
+import io.ktor.util.appendIfNameAbsent
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import net.openid.appauth.AuthState
@@ -32,10 +38,12 @@ import okhttp3.brotli.BrotliInterceptor
 import okhttp3.logging.HttpLoggingInterceptor
 import java.net.InetSocketAddress
 import java.net.Proxy
+import java.util.Locale
 import java.util.concurrent.TimeUnit
 import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
+import com.google.common.net.HttpHeaders as OkHttpHeaders
 
 /**
  * Builder for the HTTP client.
@@ -52,6 +60,7 @@ class HttpClientBuilder @Inject constructor(
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val oAuthInterceptorFactory: OAuthInterceptor.Factory,
     private val settingsManager: SettingsManager,
+    private val productIds: ProductIds,
     private val userAgentInterceptor: UserAgentInterceptor
 ) {
 
@@ -99,9 +108,10 @@ class HttpClientBuilder @Inject constructor(
         return this
     }
 
-    private var loggerInterceptorLevel: HttpLoggingInterceptor.Level = HttpLoggingInterceptor.Level.BODY
+    // LogLevel.ALL logs headers + body (unlike LogLevel.BODY, which omits headers)
+    private var loggerInterceptorLevel: LogLevel = LogLevel.ALL
 
-    fun loggerInterceptorLevel(level: HttpLoggingInterceptor.Level): HttpClientBuilder {
+    fun loggerInterceptorLevel(level: LogLevel): HttpClientBuilder {
         loggerInterceptorLevel = level
         return this
     }
@@ -212,6 +222,7 @@ class HttpClientBuilder @Inject constructor(
      *
      * Closing/shutting down the client is not necessary.
      */
+    @Deprecated("Use buildKtor instead")
     fun build(): OkHttpClient {
         if (alreadyBuilt)
             logger.warning("build() should only be called once; use Provider<HttpClientBuilder> instead")
@@ -243,11 +254,11 @@ class HttpClientBuilder @Inject constructor(
         // add network logging, if requested
         if (logger.isLoggable(Level.FINEST)) {
             val loggingInterceptor = HttpLoggingInterceptor { message -> logger.finest(message) }
-            loggingInterceptor.redactHeader(HttpHeaders.AUTHORIZATION)
-            loggingInterceptor.redactHeader(HttpHeaders.COOKIE)
-            loggingInterceptor.redactHeader(HttpHeaders.SET_COOKIE)
-            loggingInterceptor.redactHeader(HttpHeaders.SET_COOKIE2)
-            loggingInterceptor.level = loggerInterceptorLevel
+            loggingInterceptor.redactHeader(OkHttpHeaders.AUTHORIZATION)
+            loggingInterceptor.redactHeader(OkHttpHeaders.COOKIE)
+            loggingInterceptor.redactHeader(OkHttpHeaders.SET_COOKIE)
+            loggingInterceptor.redactHeader(OkHttpHeaders.SET_COOKIE2)
+            loggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
             builder.addNetworkInterceptor(loggingInterceptor)
         }
     }
@@ -337,6 +348,10 @@ class HttpClientBuilder @Inject constructor(
         val client = HttpClient(OkHttp) {
             // Ktor-level configuration here
 
+            // don't follow redirects by default because it would break PROPFIND handling;
+            // this controls whether Ktor's HttpRedirect plugin is active
+            followRedirects = this@HttpClientBuilder.followRedirects
+
             // Uses AcceptAllCookiesStorage, which stores all the cookies in an in-memory map.
             install(HttpCookies)
 
@@ -344,6 +359,46 @@ class HttpClientBuilder @Inject constructor(
             install(ContentNegotiation) {
                 // use lenient parser that ignores unknown keys
                 json(lenientJson)
+            }
+
+            // Set User-Agent and Accept-Language on every request (locale is read per request)
+            install(DefaultRequest) {
+                val userAgent = productIds.httpUserAgent
+                logger.info("Will use User-Agent: $userAgent")
+
+                val locale = Locale.getDefault()
+                headers.appendIfNameAbsent(HttpHeaders.UserAgent, userAgent)
+                headers.appendIfNameAbsent(
+                    HttpHeaders.AcceptLanguage,
+                    "${locale.language}-${locale.country}, ${locale.language};q=0.7, *;q=0.5"
+                )
+            }
+
+            // offer gzip/deflate compression and decompress responses transparently
+            install(ContentEncoding) {
+                gzip()
+                deflate()
+            }
+
+            // add network logging (with redaction of sensitive headers), if requested
+            if (logger.isLoggable(Level.FINEST)) {
+                install(Logging) {
+                    logger = object : io.ktor.client.plugins.logging.Logger {
+                        override fun log(message: String) {
+                            this@HttpClientBuilder.logger.finest(message)
+                        }
+                    }
+                    level = loggerInterceptorLevel
+                    sanitizeHeader { header ->
+                        header.equals(HttpHeaders.Authorization, ignoreCase = true) ||
+                                header.equals(HttpHeaders.Cookie, ignoreCase = true) ||
+                                header.equals(HttpHeaders.SetCookie, ignoreCase = true) ||
+                                header.equals(
+                                    "Set-Cookie2",
+                                    ignoreCase = true
+                                ) // Obsoleted, but included here for good measure
+                    }
+                }
             }
 
             engine {

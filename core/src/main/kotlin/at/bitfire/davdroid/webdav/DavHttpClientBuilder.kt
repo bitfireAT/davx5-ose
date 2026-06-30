@@ -7,8 +7,8 @@ package at.bitfire.davdroid.webdav
 import at.bitfire.davdroid.network.HttpClientBuilder
 import com.google.errorprone.annotations.MustBeClosed
 import io.ktor.client.HttpClient
+import io.ktor.client.plugins.logging.LogLevel
 import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
 import javax.inject.Inject
 import javax.inject.Provider
 
@@ -50,7 +50,8 @@ class DavHttpClientBuilder @Inject constructor(
      */
     private fun createBuilder(mountId: Long, logBody: Boolean = true): HttpClientBuilder {
         val builder = httpClientBuilder.get()
-            .loggerInterceptorLevel(if (logBody) HttpLoggingInterceptor.Level.BODY else HttpLoggingInterceptor.Level.HEADERS)
+            // Ktor's LogLevel.ALL logs headers + body (unlike LogLevel.BODY, which omits headers)
+            .loggerInterceptorLevel(if (logBody) LogLevel.ALL else LogLevel.HEADERS)
 
         credentialsStore.getCredentials(mountId)?.let { credentials ->
             builder.authenticate(

@@ -4,20 +4,30 @@
 
 package at.bitfire.davdroid.network
 
+import at.bitfire.davdroid.ProductIds
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.request.get
+import io.ktor.client.request.header
 import io.ktor.client.statement.bodyAsText
+import io.ktor.http.HttpHeaders
 import kotlinx.coroutines.test.runTest
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import java.util.logging.Handler
+import java.util.logging.Level
+import java.util.logging.LogRecord
+import java.util.logging.Logger
 import javax.inject.Inject
 import javax.inject.Provider
 
@@ -29,6 +39,9 @@ class HttpClientBuilderTest {
 
     @Inject
     lateinit var httpClientBuilder: Provider<HttpClientBuilder>
+
+    @Inject
+    lateinit var productIds: ProductIds
 
     lateinit var server: MockWebServer
 
@@ -104,6 +117,106 @@ class HttpClientBuilderTest {
             client.get(url)
             assertEquals("cookie2=2a", server.takeRequest().getHeader("Cookie"))
         }
+    }
+
+    @Test
+    fun testDefaultRequest_SetsUserAgentAndAcceptLanguage() = runTest {
+        server.enqueue(MockResponse().setResponseCode(200))
+
+        httpClientBuilder.get().buildKtor().use { client ->
+            client.get(server.url("/").toString())
+        }
+
+        val request = server.takeRequest()
+        assertEquals(productIds.httpUserAgent, request.getHeader("User-Agent"))
+        // e.g. "en-US, en;q=0.7, *;q=0.5"
+        val acceptLanguage = request.getHeader("Accept-Language")
+        assertNotNull(acceptLanguage)
+        assertTrue(acceptLanguage!!.contains("q=0.7"))
+    }
+
+    @Test
+    fun testFollowRedirects_DisabledByDefault() = runTest {
+        server.enqueue(
+            MockResponse()
+                .setResponseCode(302)
+                .addHeader("Location", server.url("/redirected").toString())
+        )
+
+        httpClientBuilder.get().buildKtor().use { client ->
+            val response = client.get(server.url("/").toString())
+            // redirect is not followed, so we get the 302 response directly
+            assertEquals(302, response.status.value)
+        }
+        // only the initial request was made
+        assertEquals(1, server.requestCount)
+    }
+
+    @Test
+    fun testFollowRedirects_EnabledWhenRequested() = runTest {
+        server.enqueue(
+            MockResponse()
+                .setResponseCode(302)
+                .addHeader("Location", server.url("/redirected").toString())
+        )
+        server.enqueue(
+            MockResponse()
+                .setResponseCode(200)
+                .setBody("Target")
+        )
+
+        httpClientBuilder.get().followRedirects(true).buildKtor().use { client ->
+            val response = client.get(server.url("/").toString())
+            assertEquals(200, response.status.value)
+            assertEquals("Target", response.bodyAsText())
+        }
+        // initial request + followed redirect
+        assertEquals(2, server.requestCount)
+    }
+
+    @Test
+    fun testLogging_RedactsSensitiveHeaders() = runTest {
+        val secret = "Bearer super-secret-token-12345"
+
+        // capture log messages emitted at FINEST
+        val messages = mutableListOf<String>()
+        val captureHandler = object : Handler() {
+            override fun publish(record: LogRecord) {
+                messages += record.message
+            }
+
+            override fun flush() {}
+            override fun close() {}
+        }
+        val logger = Logger.getAnonymousLogger().apply {
+            level = Level.FINEST
+            useParentHandlers = false
+            captureHandler.level = Level.FINEST
+            addHandler(captureHandler)
+        }
+
+        server.enqueue(
+            MockResponse()
+                .setResponseCode(200)
+                .addHeader("Set-Cookie", "session=secret-cookie-value")
+                .setBody("OK")
+        )
+
+        httpClientBuilder.get()
+            .setLogger(logger)
+            .loggerInterceptorLevel(LogLevel.ALL)
+            .buildKtor().use { client ->
+                client.get(server.url("/").toString()) {
+                    header(HttpHeaders.Authorization, secret)
+                }
+            }
+
+        val log = messages.joinToString("\n")
+        // sensitive header values must not be logged
+        assertFalse(log.contains("super-secret-token-12345"))
+        assertFalse(log.contains("secret-cookie-value"))
+        // they must be redacted
+        assertTrue(log.contains("***"))
     }
 
 }
