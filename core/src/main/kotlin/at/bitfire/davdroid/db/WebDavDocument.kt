@@ -98,7 +98,7 @@ data class WebDavDocument(
                 MEDIA_TYPE_OCTET_STREAM
 
             bundle.putString(Document.COLUMN_MIME_TYPE, reportedMimeType.toString())
-            if (mimeType?.match("image/*") == true)
+            if (mimeType?.match(ContentType.Image.Any) == true)
                 flags += Document.FLAG_SUPPORTS_THUMBNAIL
             if (mayWriteContent != false)
                 flags += Document.FLAG_SUPPORTS_WRITE
