@@ -19,6 +19,7 @@ import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.servicedetection.DavResourceFinder
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.SettingsManager
+import at.bitfire.davdroid.util.DavUtils.toUrlOrNull
 import at.bitfire.synctools.vcard.GroupMethod
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -34,9 +35,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runInterruptible
 import kotlinx.coroutines.withContext
-import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import java.io.IOException
 import java.net.URI
 import java.util.Optional
@@ -241,14 +240,10 @@ class LoginScreenViewModel @AssistedInject constructor(
      * @return `true` if valid or no validator is configured; `false` if the server rejected the login
      */
     private suspend fun validateLogin(baseUri: URI): Boolean {
-        val httpUrl = baseUri.toHttpUrlOrNull() ?: return true
+        val httpUrl = baseUri.toUrlOrNull() ?: return true
         if (!loginValidator.isPresent)
             return true
-        return withContext(ioDispatcher) {
-            runInterruptible {
-                loginValidator.get().beforeLogin(httpUrl)
-            }
-        }
+        return loginValidator.get().beforeLogin(httpUrl)
     }
 
     /**

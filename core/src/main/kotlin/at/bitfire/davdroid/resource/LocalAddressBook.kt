@@ -34,6 +34,13 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.ProducerScope
+import kotlinx.coroutines.channels.trySendBlocking
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.buffer
+import kotlinx.coroutines.flow.channelFlow
+import kotlinx.coroutines.launch
 import java.io.FileNotFoundException
 import java.util.Optional
 import java.util.logging.Logger
@@ -219,6 +226,29 @@ open class LocalAddressBook @AssistedInject constructor(
     fun findDeletedContacts() = queryContacts(RawContacts.DELETED, null)
     fun findDeletedGroups() = queryGroups(Groups.DELETED, null)
 
+    override fun deletedFlow(): Flow<LocalAddress> {
+        return channelFlow {
+            launch(Dispatchers.IO) {
+                sendDeletedContacts()
+                if (includeGroups) {
+                    sendDeletedGroups()
+                }
+            }
+        }.buffer(capacity = 1)
+    }
+
+    private fun ProducerScope<LocalAddress>.sendDeletedContacts() {
+        ab.iterateRawContactRows(RawContacts.DELETED, null) { values ->
+            trySendBlocking(LocalContact(this@LocalAddressBook, AndroidContact(ab, values)))
+        }
+    }
+
+    private fun ProducerScope<LocalAddress>.sendDeletedGroups() {
+        ab.iterateGroups(null, Groups.DELETED, null) { values ->
+            trySendBlocking(LocalGroup(AndroidGroup(ab, values)))
+        }
+    }
+
     /**
      * Returns an array of local contacts/groups which have been changed locally (DIRTY != 0).
      * @throws RemoteException on content provider errors
@@ -231,6 +261,29 @@ open class LocalAddressBook @AssistedInject constructor(
 
     fun findDirtyContacts() = queryContacts(RawContacts.DIRTY, null)
     fun findDirtyGroups() = queryGroups(Groups.DIRTY, null)
+
+    override fun dirtyFlow(): Flow<LocalAddress> {
+        return channelFlow {
+            launch(Dispatchers.IO) {
+                sendDirtyContacts()
+                if (includeGroups) {
+                    sendDirtyGroups()
+                }
+            }
+        }.buffer(capacity = 1)
+    }
+
+    private fun ProducerScope<LocalAddress>.sendDirtyContacts() {
+        ab.iterateRawContactRows(RawContacts.DIRTY, null) { values ->
+            trySendBlocking(LocalContact(this@LocalAddressBook, AndroidContact(ab, values)))
+        }
+    }
+
+    private fun ProducerScope<LocalAddress>.sendDirtyGroups() {
+        ab.iterateGroups(null, Groups.DIRTY, null) { values ->
+            trySendBlocking(LocalGroup(AndroidGroup(ab, values)))
+        }
+    }
 
     override fun forgetETags() {
         val batch = ContactsBatchOperation(ab.provider)

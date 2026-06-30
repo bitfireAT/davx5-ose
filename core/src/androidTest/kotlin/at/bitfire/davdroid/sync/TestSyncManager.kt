@@ -5,9 +5,9 @@
 package at.bitfire.davdroid.sync
 
 import android.accounts.Account
-import at.bitfire.dav4jvm.okhttp.DavCollection
-import at.bitfire.dav4jvm.okhttp.MultiResponseCallback
-import at.bitfire.dav4jvm.okhttp.Response
+import at.bitfire.dav4jvm.ktor.DavCollection
+import at.bitfire.dav4jvm.ktor.MultiResponseCallback
+import at.bitfire.dav4jvm.ktor.Response
 import at.bitfire.dav4jvm.property.caldav.CalDAV
 import at.bitfire.dav4jvm.property.caldav.GetCTag
 import at.bitfire.davdroid.db.Collection
@@ -18,15 +18,15 @@ import at.bitfire.davdroid.util.DavUtils.lastSegment
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import io.ktor.client.HttpClient
+import io.ktor.http.Url
+import io.ktor.http.content.ByteArrayContent
 import kotlinx.coroutines.CoroutineDispatcher
-import okhttp3.HttpUrl
-import okhttp3.OkHttpClient
-import okhttp3.RequestBody.Companion.toRequestBody
 import org.junit.Assert.assertEquals
 
 class TestSyncManager @AssistedInject constructor(
     @Assisted account: Account,
-    @Assisted httpClient: OkHttpClient,
+    @Assisted httpClient: HttpClient,
     @Assisted syncResult: SyncResult,
     @Assisted localCollection: LocalTestCollection,
     @Assisted collection: Collection,
@@ -46,7 +46,7 @@ class TestSyncManager @AssistedInject constructor(
     interface Factory {
         fun create(
             account: Account,
-            httpClient: OkHttpClient,
+            httpClient: HttpClient,
             syncResult: SyncResult,
             localCollection: LocalTestCollection,
             collection: Collection
@@ -80,7 +80,9 @@ class TestSyncManager @AssistedInject constructor(
         didGenerateUpload = true
         return GeneratedResource(
             suggestedFileName = resource.fileName ?: "generated-file.txt",
-            requestBody = resource.toString().toRequestBody(),
+            content = ByteArrayContent(
+                bytes = resource.toString().encodeToByteArray()
+            ),
             onSuccessContext = GeneratedResource.OnSuccessContext()
         )
     }
@@ -97,9 +99,9 @@ class TestSyncManager @AssistedInject constructor(
             callback.onResponse(result.first, result.second)
     }
 
-    var assertDownloadRemote = emptyMap<HttpUrl, String>()
+    var assertDownloadRemote = emptyMap<Url, String>()
     var didDownloadRemote = false
-    override suspend fun downloadRemote(bunch: List<HttpUrl>) {
+    override suspend fun downloadRemote(bunch: List<Url>) {
         didDownloadRemote = true
         assertEquals(assertDownloadRemote.keys.toList(), bunch)
 

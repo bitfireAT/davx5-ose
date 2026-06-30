@@ -34,7 +34,7 @@ class LocalTestResource: LocalResource {
     override fun updateUid(uid: String) { /* no-op */ }
     override fun updateSequence(sequence: Int) = throw NotImplementedError()
 
-    override fun deleteLocal() = throw NotImplementedError()
+    override fun deleteLocal() {}  // no-op: test callers handle deletion via the collection
     override fun resetDeleted() = throw NotImplementedError()
 
     override fun getDebugSummary() = "Test Resource"

@@ -85,7 +85,7 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y jq
 
       - name: Restore F-Droid APKs from cache
-        uses: actions/cache/restore@v5
+        uses: actions/cache/restore@v6
         with:
           path: ${{ env.apk-dir }}
           key: fdroid-apks
@@ -118,7 +118,7 @@ jobs:
           done
 
       - name: Cache F-Droid APKs
-        uses: actions/cache/save@v5
+        uses: actions/cache/save@v6
         with:
           path: ${{ env.apk-dir }}
           key: fdroid-apks-${{ hashFiles(format('{0}/*.apk', env.apk-dir)) }}
