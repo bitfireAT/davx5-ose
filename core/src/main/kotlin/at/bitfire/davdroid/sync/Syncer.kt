@@ -243,7 +243,7 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
      * - acquire content provider
      * - handle occurring sync errors
      */
-    operator fun invoke() {
+    suspend operator fun invoke() {
         logger.info("${dataStore.authority} sync of $account initiated (resync=$resync)")
 
         try {
