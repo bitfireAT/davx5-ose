@@ -71,20 +71,6 @@ class HttpClientBuilder @Inject constructor(
             ConscryptIntegration().initialize()
         }
 
-        /**
-         * According to [OkHttpClient] documentation, [OkHttpClient]s should be shared, which allows it to use a
-         * shared connection and thread pool.
-         *
-         * We need custom settings for each actual client, but we can use a shared client as a base. This also
-         * enables sharing resources like connection and thread pool.
-         *
-         * The shared client is available for the lifetime of the application and must not be shut down or
-         * closed (which is not necessary, according to its documentation).
-         */
-        val sharedOkHttpClient = OkHttpClient.Builder().apply {
-            configureTimeouts(this)
-        }.build()
-
         private fun configureTimeouts(okBuilder: OkHttpClient.Builder) {
             okBuilder
                 .connectTimeout(15, TimeUnit.SECONDS)
@@ -96,7 +82,7 @@ class HttpClientBuilder @Inject constructor(
     }
 
     /**
-     * Flag to prevent multiple [build] calls
+     * Flag to prevent multiple [buildKtor] calls
      */
     var alreadyBuilt = false
 
@@ -204,35 +190,7 @@ class HttpClientBuilder @Inject constructor(
     }
 
 
-    // okhttp builder
-
-    /**
-     * Builds an [OkHttpClient] with the configured settings.
-     *
-     * [build] or [buildKtor] is usually called only once because multiple calls indicate this wrong usage pattern:
-     *
-     * ```
-     * val builder = HttpClientBuilder(/*injected*/)
-     * val client1 = builder.configure().build()
-     * val client2 = builder.configureOtherwise().build()
-     * ```
-     *
-     * However in this case the configuration of `client1` is still in `builder` and would be reused for `client2`,
-     * which is usually not desired.
-     *
-     * Closing/shutting down the client is not necessary.
-     */
-    @Deprecated("Use buildKtor instead")
-    fun build(): OkHttpClient {
-        if (alreadyBuilt)
-            logger.warning("build() should only be called once; use Provider<HttpClientBuilder> instead")
-
-        val builder = sharedOkHttpClient.newBuilder()
-        configureOkHttp(builder)
-
-        alreadyBuilt = true
-        return builder.build()
-    }
+    // okhttp configuration (internal: applied to the OkHttp engine of the Ktor client)
 
     private fun configureOkHttp(builder: OkHttpClient.Builder) {
         // don't allow redirects by default because it would break PROPFIND handling
@@ -327,7 +285,7 @@ class HttpClientBuilder @Inject constructor(
     /**
      * Builds a Ktor [HttpClient] with the configured settings.
      *
-     * [buildKtor] or [build] must be called only once because multiple calls indicate this wrong usage pattern:
+     * [buildKtor] must be called only once because multiple calls indicate this wrong usage pattern:
      *
      * ```
      * val builder = HttpClientBuilder(/*injected*/)
@@ -407,7 +365,6 @@ class HttpClientBuilder @Inject constructor(
                 config {
                     // OkHttpClient.Builder configuration here
 
-                    // we don't use the sharedOkHttpClient, so we have to apply timeouts again
                     configureTimeouts(this)
 
                     // build most config on okhttp level
