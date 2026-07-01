@@ -124,8 +124,10 @@ class AndroidCalendar(
     fun countEvents(where: String?, whereArgs: Array<String>?): Int {
         try {
             val (protectedWhere, protectedWhereArgs) = whereWithCalendarId(where, whereArgs)
-            client.query(eventsUri, arrayOf(Events._ID),
-                protectedWhere, protectedWhereArgs, null)?.use { cursor ->
+            client.query(
+                eventsUri, arrayOf(Events._ID),
+                protectedWhere, protectedWhereArgs, null
+            )?.use { cursor ->
                 return cursor.count
             }
         } catch (e: RemoteException) {
@@ -213,7 +215,12 @@ class AndroidCalendar(
      *
      * @throws LocalStorageException when the content provider returns an error
      */
-    fun getEventRow(id: Long, projection: Array<String>? = null, where: String? = null, whereArgs: Array<String>? = null): ContentValues? {
+    fun getEventRow(
+        id: Long,
+        projection: Array<String>? = null,
+        where: String? = null,
+        whereArgs: Array<String>? = null
+    ): ContentValues? {
         try {
             client.query(eventUri(id), projection, where, whereArgs, null)?.use { cursor ->
                 if (cursor.moveToNext())
@@ -237,7 +244,12 @@ class AndroidCalendar(
      *
      * @throws LocalStorageException when the content provider returns an error
      */
-    fun iterateEventRows(projection: Array<String>?, where: String?, whereArgs: Array<String>?, body: (ContentValues) -> Unit) {
+    fun iterateEventRows(
+        projection: Array<String>?,
+        where: String?,
+        whereArgs: Array<String>?,
+        body: (ContentValues) -> Unit
+    ) {
         try {
             val (protectedWhere, protectedWhereArgs) = whereWithCalendarId(where, whereArgs)
             client.query(eventsUri, projection, protectedWhere, protectedWhereArgs, null)?.use { cursor ->
@@ -260,11 +272,9 @@ class AndroidCalendar(
      */
     fun queryEvents(where: String?, whereArgs: Array<String>?): Flow<Entity> {
         val (protectedWhere, protectedWhereArgs) = whereWithCalendarId(where, whereArgs)
-        return client.queryEntityFlow(
-            eventEntitiesUri, null, protectedWhere, protectedWhereArgs,
-            buildIterator = { cursor -> EventsEntity.newEntityIterator(cursor, client) },
-            transformEntity = { it }
-        )
+        return client.queryEntityFlow(eventEntitiesUri, null, protectedWhere, protectedWhereArgs) {
+            EventsEntity.newEntityIterator(it, client)
+        }
     }
 
     /**
@@ -320,7 +330,7 @@ class AndroidCalendar(
             batch.commit()
 
             if (newEventIdIdx == null)
-                // event was updated
+            // event was updated
                 return id
             else {
                 // event was re-built
@@ -646,8 +656,10 @@ class AndroidCalendar(
     enum class StatusUpdateWorkaround {
         /** no workaround needed */
         NO_WORKAROUND,
+
         /** don't update eventStatus (no need to change value) */
         DONT_UPDATE_STATUS,
+
         /** rebuild event (delete+insert instead of update) */
         REBUILD_EVENT
     }

@@ -17,6 +17,7 @@ import at.bitfire.synctools.storage.toContentValues
 import at.techbee.jtx.JtxContract
 import at.techbee.jtx.JtxContract.asSyncAdapter
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import org.jetbrains.annotations.TestOnly
 import java.nio.channels.Channels
 
@@ -336,7 +337,7 @@ class JtxCollection(
             jtxObjectsUri,
             null,
             protectedWhere, protectedWhereArgs
-        ) { readEntity(it.toContentValues()) }
+        ).map { readEntity(it) }
     }
 
     /**

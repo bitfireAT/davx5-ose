@@ -298,7 +298,7 @@ class DmfsTaskList(
     fun queryTasks(where: String?, whereArgs: Array<String>?): Flow<Entity> {
         val (protectedWhere, protectedWhereArgs) = whereWithTaskListId(where, whereArgs)
         return client
-            .queryFlow(tasksUri(), null, protectedWhere, protectedWhereArgs) { it.toContentValues() }
+            .queryFlow(tasksUri(), null, protectedWhere, protectedWhereArgs)
             .mapNotNull { row -> row.getAsLong(Tasks._ID)?.let { getTask(it) } }
             .flowOn(Dispatchers.IO)
     }

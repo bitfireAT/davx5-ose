@@ -5,6 +5,7 @@
 package at.bitfire.synctools.storage
 
 import android.content.ContentProviderClient
+import android.content.ContentValues
 import android.content.Entity
 import android.content.EntityIterator
 import android.database.Cursor
@@ -25,21 +26,19 @@ import kotlinx.coroutines.flow.flowOn
  * @param projection    columns to return
  * @param where         selection
  * @param whereArgs     arguments for selection
- * @param transformRow  maps a cursor row (positioned by the query) to the emitted value
  * @throws LocalStorageException when the content provider returns an error
  */
-fun <T> ContentProviderClient.queryFlow(
+fun ContentProviderClient.queryFlow(
     uri: Uri,
     projection: Array<String>? = null,
     where: String? = null,
-    whereArgs: Array<String>? = null,
-    transformRow: (Cursor) -> T
-): Flow<T> =
+    whereArgs: Array<String>? = null
+): Flow<ContentValues> =
     flow {
         try {
             query(uri, projection, where, whereArgs, null)?.use { cursor ->
                 while (cursor.moveToNext())
-                    emit(transformRow(cursor))
+                    emit(cursor.toContentValues())
             }
         } catch (e: RemoteException) {
             throw LocalStorageException("Couldn't query $uri", e)
@@ -55,22 +54,20 @@ fun <T> ContentProviderClient.queryFlow(
  * @param where            selection
  * @param whereArgs        arguments for selection
  * @param buildIterator    builds the [EntityIterator] from the query's cursor
- * @param transformEntity  maps an entity produced by [buildIterator] to the emitted value
  * @throws LocalStorageException when the content provider returns an error
  */
-fun <T> ContentProviderClient.queryEntityFlow(
+fun ContentProviderClient.queryEntityFlow(
     uri: Uri,
     projection: Array<String>? = null,
     where: String? = null,
     whereArgs: Array<String>? = null,
-    buildIterator: (Cursor) -> EntityIterator,
-    transformEntity: (Entity) -> T
-): Flow<T> =
+    buildIterator: (Cursor) -> EntityIterator
+): Flow<Entity> =
     flow {
         try {
             query(uri, projection, where, whereArgs, null)?.use { cursor ->
                 for (entity in buildIterator(cursor))
-                    emit(transformEntity(entity))
+                    emit(entity)
             }
         } catch (e: RemoteException) {
             throw LocalStorageException("Couldn't query $uri", e)

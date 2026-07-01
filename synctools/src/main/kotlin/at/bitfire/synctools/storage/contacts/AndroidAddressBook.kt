@@ -194,7 +194,7 @@ class AndroidAddressBook(
      * @param whereArgs  optional arguments for [where]
      */
     fun queryRawContactRows(where: String? = null, whereArgs: Array<String>? = null): Flow<ContentValues> =
-        provider.queryFlow(rawContactsSyncUri(), null, where, whereArgs) { it.toContentValues() }
+        provider.queryFlow(rawContactsSyncUri(), null, where, whereArgs)
 
     /**
      * Finds the first raw contact row matching the given selection, without collecting
@@ -292,7 +292,7 @@ class AndroidAddressBook(
         where: String? = null,
         whereArgs: Array<String>? = null
     ): Flow<ContentValues> =
-        provider.queryFlow(groupsSyncUri(), projection, where, whereArgs) { it.toContentValues() }
+        provider.queryFlow(groupsSyncUri(), projection, where, whereArgs)
 
     /**
      * Finds the first group row matching the given selection, without collecting
