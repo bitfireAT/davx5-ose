@@ -329,10 +329,10 @@ class AndroidCalendar(
             val newEventIdIdx = updateEvent(id, entity, batch)
             batch.commit()
 
-            if (newEventIdIdx == null)
-            // event was updated
+            if (newEventIdIdx == null) {
+                // event was updated
                 return id
-            else {
+            } else {
                 // event was re-built
                 val result = batch.getResult(newEventIdIdx)
                 val newEventUri = result?.uri ?: throw LocalStorageException("Content provider returned null on insert")
