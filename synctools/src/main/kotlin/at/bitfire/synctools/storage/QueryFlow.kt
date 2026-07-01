@@ -37,6 +37,7 @@ fun <T> ContentProviderClient.queryFlow(
 ): Flow<T> =
     flow {
         try {
+            // Flow cancellation causes the next emit to throw a CancellationException, so the cursor is still closed.
             query(uri, projection, where, whereArgs, null)?.use { cursor ->
                 while (cursor.moveToNext())
                     emit(transformRow(cursor))
@@ -68,6 +69,7 @@ fun <T> ContentProviderClient.queryEntityFlow(
 ): Flow<T> =
     flow {
         try {
+            // Flow cancellation causes the next emit to throw a CancellationException, so the cursor is still closed.
             query(uri, projection, where, whereArgs, null)?.use { cursor ->
                 for (entity in newIterator(cursor))
                     emit(transformEntity(entity))

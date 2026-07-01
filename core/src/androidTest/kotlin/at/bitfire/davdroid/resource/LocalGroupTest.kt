@@ -136,8 +136,9 @@ class LocalGroupTest {
     }
 
     @Test
-    fun testMarkMembersDirty() {
-        localTestAddressBook.provide(account, provider, GroupMethod.CATEGORIES) { localAddressBook ->
+    fun testMarkMembersDirty() = runTest {
+        val localAddressBook = localTestAddressBook.create(account, provider, GroupMethod.CATEGORIES)
+        try {
             val group = newGroup(localAddressBook)
 
             val contact1 = localAddressBook.addContact(Contact().apply { displayName = "Test" }, "fn.vcf", null, 0)
@@ -148,9 +149,10 @@ class LocalGroupTest {
 
             assertEquals(0, localAddressBook.countDirty())
             group.markMembersDirty()
-            var dirtyId: Long? = null
-            runTest { dirtyId = localAddressBook.findDirty().first().id }
+            val dirtyId = localAddressBook.findDirty().first().id
             assertEquals(contact1.id, dirtyId)
+        } finally {
+            localTestAddressBook.delete(localAddressBook)
         }
     }
 
