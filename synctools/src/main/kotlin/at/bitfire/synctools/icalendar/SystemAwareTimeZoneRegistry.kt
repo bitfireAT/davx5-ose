@@ -23,9 +23,6 @@ import java.util.logging.Logger
  * Also contains workarounds for:
  * - https://github.com/bitfireAT/davx5-ose/issues/2248 – NPE when receiving calendar event with invalid VTIMEZONE
  * - https://github.com/bitfireAT/davx5/issues/914 – ZoneIdPool exhaustion during timezone registration.
- *   Before ical4j 4.3.0 this caused an NPE; since 4.3.0 it throws RuntimeException → ParserException,
- *   which is caught by [ICalendarParser] and converted to [at.bitfire.synctools.exception.InvalidICalendarException].
- *   The GC-trigger workaround still helps reduce the chance of exhaustion.
  *
  * If more workarounds are to be added, the class should probably be split into one for the core
  * functionality and one for the workarounds.
@@ -106,11 +103,6 @@ class SystemAwareTimeZoneRegistry(
     /**
      * Workaround for https://github.com/bitfireAT/davx5/issues/914 that reduces
      * the chance of pool exhaustion during time zone registration.
-     *
-     * Before ical4j 4.3.0, an exhausted pool caused an NPE. Since 4.3.0 it throws a
-     * RuntimeException that is wrapped as a ParserException by the parser.
-     * Triggering GC here still helps reclaim zone IDs from discarded registries,
-     * reducing the chance of exhaustion and the resulting ParserException.
      */
     private fun triggerGcBeforeZoneIdAllocation() {
         if (ZoneRulesProviderImpl.INSTANCE.zoneIdPool.availableZoneIds() == 0) {
