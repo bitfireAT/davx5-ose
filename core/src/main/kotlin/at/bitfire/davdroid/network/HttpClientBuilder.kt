@@ -289,8 +289,8 @@ class HttpClientBuilder @Inject constructor(
      *
      * ```
      * val builder = HttpClientBuilder(/*injected*/)
-     * val client1 = builder.configure().build()
-     * val client2 = builder.configureOtherwise().build()
+     * val client1 = builder.configure().buildKtor()
+     * val client2 = builder.configureOtherwise().buildKtor()
      * ```
      *
      * However in this case the configuration of `client1` is still in `builder` and would be reused for `client2`,
@@ -301,7 +301,7 @@ class HttpClientBuilder @Inject constructor(
     @MustBeClosed
     fun buildKtor(): HttpClient {
         if (alreadyBuilt)
-            logger.warning("build() should only be called once; use Provider<HttpClientBuilder> instead")
+            logger.warning("buildKtor() should only be called once; use Provider<HttpClientBuilder> instead")
 
         val client = HttpClient(OkHttp) {
             // Ktor-level configuration here
