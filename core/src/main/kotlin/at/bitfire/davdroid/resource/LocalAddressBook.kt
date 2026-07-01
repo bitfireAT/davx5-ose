@@ -8,7 +8,6 @@ import android.accounts.AccountManager
 import android.content.ContentProviderClient
 import android.content.ContentValues
 import android.content.Context
-import android.os.RemoteException
 import android.provider.ContactsContract
 import android.provider.ContactsContract.CommonDataKinds.GroupMembership
 import android.provider.ContactsContract.Groups
@@ -20,6 +19,7 @@ import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.adapter.SyncFrameworkIntegration
 import at.bitfire.synctools.mapping.contacts.Contact
+import at.bitfire.synctools.storage.LocalStorageException
 import at.bitfire.synctools.storage.contacts.AddressContract.GroupColumns
 import at.bitfire.synctools.storage.contacts.AddressContract.RawContactColumns
 import at.bitfire.synctools.storage.contacts.AddressContract.asSyncAdapter
@@ -114,7 +114,12 @@ open class LocalAddressBook @AssistedInject constructor(
 
     override fun markNotDirty(flags: Int): Int {
         val batch = ContactsBatchOperation(ab.provider)
-        ab.updateRawContactRows(contentValuesOf(RawContactColumns.FLAGS to flags), "${RawContacts.DIRTY}=0", null, batch)
+        ab.updateRawContactRows(
+            contentValuesOf(RawContactColumns.FLAGS to flags),
+            "${RawContacts.DIRTY}=0",
+            null,
+            batch
+        )
         if (includeGroups)
             ab.updateGroups(contentValuesOf(GroupColumns.FLAGS to flags), "NOT ${Groups.DIRTY}", null, batch)
         return batch.commit()
@@ -122,7 +127,11 @@ open class LocalAddressBook @AssistedInject constructor(
 
     override suspend fun removeNotDirtyMarked(flags: Int): Int {
         val batch = ContactsBatchOperation(ab.provider)
-        ab.deleteRawContacts("NOT ${RawContacts.DIRTY} AND ${RawContactColumns.FLAGS}=?", arrayOf(flags.toString()), batch)
+        ab.deleteRawContacts(
+            "NOT ${RawContacts.DIRTY} AND ${RawContactColumns.FLAGS}=?",
+            arrayOf(flags.toString()),
+            batch
+        )
         if (includeGroups)
             ab.deleteGroups("NOT ${Groups.DIRTY} AND ${GroupColumns.FLAGS}=?", arrayOf(flags.toString()), batch)
         return batch.commit()
@@ -191,14 +200,23 @@ open class LocalAddressBook @AssistedInject constructor(
 
     /* operations on members (contacts/groups) */
 
-    override fun countAll(): Int =
-        ab.countRawContacts(null, null)
+    override fun countAll(): Int {
+        val contacts = ab.countRawContacts(null, null)
+        val groups = if (includeGroups) ab.countGroups(null, null) else 0
+        return contacts + groups
+    }
 
-    override fun countDeleted(): Int =
-        ab.countRawContacts(RawContacts.DELETED, null)
+    override fun countDeleted(): Int {
+        val deletedContacts = ab.countRawContacts(RawContacts.DELETED, null)
+        val deletedGroups = if (includeGroups) ab.countGroups(Groups.DELETED, null) else 0
+        return deletedContacts + deletedGroups
+    }
 
-    override fun countModified(): Int =
-        ab.countRawContacts("${RawContacts.DIRTY} AND NOT ${RawContacts.DELETED}", null)
+    override fun countModified(): Int {
+        val modifiedContacts = ab.countRawContacts("${RawContacts.DIRTY} AND NOT ${RawContacts.DELETED}", null)
+        val modifiedGroups = if (includeGroups) ab.countGroups("${Groups.DIRTY} AND NOT ${Groups.DELETED}", null) else 0
+        return modifiedContacts + modifiedGroups
+    }
 
     override fun countDirty(): Int {
         val dirtyContacts = ab.countRawContacts(RawContacts.DIRTY, null)
@@ -217,21 +235,21 @@ open class LocalAddressBook @AssistedInject constructor(
 
     /**
      * Finds local contacts which have been deleted locally. (DELETED != 0).
-     * @throws RemoteException on content provider errors
+     * @throws LocalStorageException on content provider errors
      */
     fun findDeletedContacts(): Flow<LocalContact> =
         ab.rawContactRowsFlow(RawContacts.DELETED, null).map { LocalContact(this, AndroidContact(ab, it)) }
 
     /**
      * Finds local groups which have been deleted locally. (DELETED != 0).
-     * @throws RemoteException on content provider errors
+     * @throws LocalStorageException on content provider errors
      */
     fun findDeletedGroups(): Flow<LocalGroup> =
         ab.groupsFlow(null, Groups.DELETED, null).map { LocalGroup(AndroidGroup(ab, it)) }
 
     /**
      * Finds local contacts/groups which have been deleted locally. (DELETED != 0).
-     * @throws RemoteException on content provider errors
+     * @throws LocalStorageException on content provider errors
      */
     override fun findDeleted(): Flow<LocalAddress> =
         if (includeGroups)
@@ -241,21 +259,21 @@ open class LocalAddressBook @AssistedInject constructor(
 
     /**
      * Finds local contacts which have been changed locally (DIRTY != 0).
-     * @throws RemoteException on content provider errors
+     * @throws LocalStorageException on content provider errors
      */
     fun findDirtyContacts(): Flow<LocalContact> =
         ab.rawContactRowsFlow(RawContacts.DIRTY, null).map { LocalContact(this, AndroidContact(ab, it)) }
 
     /**
      * Finds local groups which have been changed locally (DIRTY != 0).
-     * @throws RemoteException on content provider errors
+     * @throws LocalStorageException on content provider errors
      */
     fun findDirtyGroups(): Flow<LocalGroup> =
         ab.groupsFlow(null, Groups.DIRTY, null).map { LocalGroup(AndroidGroup(ab, it)) }
 
     /**
      * Finds local contacts/groups which have been changed locally (DIRTY != 0).
-     * @throws RemoteException on content provider errors
+     * @throws LocalStorageException on content provider errors
      */
     override fun findDirty(): Flow<LocalAddress> =
         if (includeGroups)
@@ -340,7 +358,10 @@ open class LocalAddressBook @AssistedInject constructor(
     fun applyPendingMemberships() {
         logger.info("Assigning memberships of contact groups")
 
-        queryGroups("${Groups.ACCOUNT_TYPE}=? AND ${Groups.ACCOUNT_NAME}=?", arrayOf(addressBookAccount.type, addressBookAccount.name)).forEach { group ->
+        queryGroups(
+            "${Groups.ACCOUNT_TYPE}=? AND ${Groups.ACCOUNT_NAME}=?",
+            arrayOf(addressBookAccount.type, addressBookAccount.name)
+        ).forEach { group ->
             val groupId = group.id!!
             val pendingMemberUids = group.androidGroup.pendingMemberships.toMutableSet()
             val batch = ContactsBatchOperation(ab.provider)
