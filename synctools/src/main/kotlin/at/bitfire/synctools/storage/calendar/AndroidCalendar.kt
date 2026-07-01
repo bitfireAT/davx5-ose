@@ -265,7 +265,7 @@ class AndroidCalendar(
         return client.queryEntityFlow(
             eventEntitiesUri, null, protectedWhere, protectedWhereArgs,
             newIterator = { cursor -> EventsEntity.newEntityIterator(cursor, client) },
-            transformRow = { it }
+            transformEntity = { it }
         )
     }
 
