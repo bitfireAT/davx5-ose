@@ -181,8 +181,7 @@ class AndroidAddressBook(
         )?.use { cursor ->
             return cursor.count
         }
-        // If the query was invalid, an exception should have been thrown. So this should never be reached:
-        return 0
+        throw LocalStorageException("Couldn't count raw contacts")
     }
 
     /**
@@ -329,8 +328,7 @@ class AndroidAddressBook(
         )?.use { cursor ->
             return cursor.count
         }
-        // If the query was invalid, an exception should have been thrown. So this should never be reached:
-        return 0
+        throw LocalStorageException("Couldn't count groups")
     }
 
     /**
