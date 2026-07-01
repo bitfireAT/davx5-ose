@@ -186,7 +186,7 @@ class JtxSyncManager @AssistedInject constructor(
         }
     }
 
-    override fun postProcess() {
+    override suspend fun postProcess() {
         localCollection.updateLastSync()
     }
 

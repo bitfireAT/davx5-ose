@@ -182,7 +182,7 @@ class TasksSyncManager @AssistedInject constructor(
         }
     }
 
-    override fun postProcess() {
+    override suspend fun postProcess() {
         val touched = localCollection.dmfsTaskList.touchRelations()
         logger.info("Touched $touched relations")
     }

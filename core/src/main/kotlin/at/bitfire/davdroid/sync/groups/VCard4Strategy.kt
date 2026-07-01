@@ -48,7 +48,7 @@ class VCard4Strategy(val addressBook: LocalAddressBook): ContactGroupStrategy {
     override fun verifyContactBeforeSaving(contact: Contact) {
     }
 
-    override fun postProcess() {
+    override suspend fun postProcess() {
         addressBook.applyPendingMemberships()
     }
 

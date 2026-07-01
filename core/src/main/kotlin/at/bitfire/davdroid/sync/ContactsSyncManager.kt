@@ -358,7 +358,7 @@ class ContactsSyncManager @AssistedInject constructor(
         }
     }
 
-    override fun postProcess() {
+    override suspend fun postProcess() {
         groupStrategy.postProcess()
     }
 

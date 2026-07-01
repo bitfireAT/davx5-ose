@@ -37,6 +37,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
+import kotlinx.coroutines.flow.toList
 import java.io.FileNotFoundException
 import java.util.Optional
 import java.util.logging.Logger
@@ -300,27 +301,21 @@ open class LocalAddressBook @AssistedInject constructor(
         return LocalGroup(androidGroup)
     }
 
-    fun queryContacts(where: String?, whereArgs: Array<String>?): List<LocalContact> = buildList {
-        ab.iterateRawContactRows(where, whereArgs) { values ->
-            add(LocalContact(this@LocalAddressBook, AndroidContact(ab, values)))
-        }
-    }
+    suspend fun queryContacts(where: String?, whereArgs: Array<String>?): List<LocalContact> =
+        ab.queryRawContactRows(where, whereArgs).map { LocalContact(this, AndroidContact(ab, it)) }.toList()
 
-    fun queryGroups(where: String?, whereArgs: Array<String>?): List<LocalGroup> = buildList {
-        ab.iterateGroups(null, where, whereArgs) { values ->
-            add(LocalGroup(AndroidGroup(ab, values)))
-        }
-    }
+    suspend fun queryGroups(where: String?, whereArgs: Array<String>?): List<LocalGroup> =
+        ab.queryGroupRows(null, where, whereArgs).map { LocalGroup(AndroidGroup(ab, it)) }.toList()
 
     @Throws(FileNotFoundException::class)
-    fun findContactById(id: Long) =
+    suspend fun findContactById(id: Long) =
         queryContacts("${RawContacts._ID}=?", arrayOf(id.toString())).firstOrNull() ?: throw FileNotFoundException()
 
-    fun findContactByUid(uid: String) =
+    suspend fun findContactByUid(uid: String) =
         queryContacts("${RawContactColumns.UID}=?", arrayOf(uid)).firstOrNull()
 
     @Throws(FileNotFoundException::class)
-    fun findGroupById(id: Long) =
+    suspend fun findGroupById(id: Long) =
         queryGroups("${Groups._ID}=?", arrayOf(id.toString())).firstOrNull() ?: throw FileNotFoundException()
 
 
@@ -353,7 +348,7 @@ open class LocalAddressBook @AssistedInject constructor(
      * Processes all groups with pending memberships: applies them (if possible) to keep cached
      * memberships in sync.
      */
-    fun applyPendingMemberships() {
+    suspend fun applyPendingMemberships() {
         logger.info("Assigning memberships of contact groups")
 
         queryGroups(

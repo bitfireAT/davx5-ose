@@ -29,6 +29,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import ezvcard.property.Telephone
+import kotlinx.coroutines.runBlocking
 import org.junit.AfterClass
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -126,7 +127,7 @@ class LocalAddressBookTest {
             assertEquals(newName, addressBook.addressBookAccount.name)
 
             // check whether contact is still here (including data rows) and not dirty
-            val result = addressBook.findContactById(id)
+            val result = runBlocking { addressBook.findContactById(id) }
             assertFalse("Contact is dirty after moving", isContactDirty(addressBook, id))
 
             val contact2 = result.androidContact.getContact()
@@ -156,7 +157,7 @@ class LocalAddressBookTest {
             assertEquals(newName, addressBook.addressBookAccount.name)
 
             // check whether group is still here and not dirty
-            val result = addressBook.findGroupById(id)
+            val result = runBlocking { addressBook.findGroupById(id) }
             assertFalse("Group is dirty after moving", isGroupDirty(addressBook, id))
 
             val group = result.androidGroup.getContact()
@@ -182,7 +183,7 @@ class LocalAddressBookTest {
             )
 
             // pending membership -> contact1 should be added to group
-            localAddressBook.applyPendingMemberships()
+            runBlocking { localAddressBook.applyPendingMemberships() }
 
             // check group membership
             localAddressBook.ab.provider.query(
@@ -231,7 +232,7 @@ class LocalAddressBookTest {
             batch.commit()
 
             // no pending memberships -> membership should be removed
-            localAddressBook.applyPendingMemberships()
+            runBlocking { localAddressBook.applyPendingMemberships() }
 
             // check group membership
             localAddressBook.ab.provider.query(

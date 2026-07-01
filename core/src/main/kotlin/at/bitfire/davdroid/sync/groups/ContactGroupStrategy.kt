@@ -10,6 +10,6 @@ interface ContactGroupStrategy {
 
     suspend fun beforeUploadDirty()
     fun verifyContactBeforeSaving(contact: Contact)
-    fun postProcess()
+    suspend fun postProcess()
 
 }

@@ -730,7 +730,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
     /**
      * Post-processing of synchronized entries, for instance contact group membership operations.
      */
-    protected abstract fun postProcess()
+    protected abstract suspend fun postProcess()
 
 
     // sync helpers

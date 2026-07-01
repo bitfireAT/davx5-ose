@@ -283,7 +283,7 @@ class CalendarSyncManager @AssistedInject constructor(
         }
     }
 
-    override fun postProcess() {}
+    override suspend fun postProcess() {}
 
 
     // helpers

@@ -29,6 +29,8 @@ import at.bitfire.synctools.storage.toContentValues
 import at.bitfire.synctools.util.setAndVerifyUserData
 import at.bitfire.synctools.vcard.GroupMethod
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.toList
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.annotations.VisibleForTesting
 import java.io.FileNotFoundException
@@ -185,29 +187,7 @@ class AndroidAddressBook(
     }
 
     /**
-     * Iterates raw contact rows (without associated data rows) from this address book.
-     *
-     * This method operates "as sync adapter" on [addressBookAccount] and doesn't take the [readOnly] flag into account.
-     *
-     * @param where      optional selection
-     * @param whereArgs  optional arguments for [where]
-     * @param block      callback invoked for each raw contact row
-     * @throws LocalStorageException on content provider errors
-     */
-    fun iterateRawContactRows(where: String? = null, whereArgs: Array<String>? = null, block: (ContentValues) -> Unit) {
-        // account is implicitly restricted via the URI (asSyncAdapter appends ACCOUNT_NAME/ACCOUNT_TYPE)
-        try {
-            provider.query(rawContactsSyncUri(), null, where, whereArgs, null)?.use { cursor ->
-                while (cursor.moveToNext())
-                    block(cursor.toContentValues())
-            }
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't iterate raw contact rows", e)
-        }
-    }
-
-    /**
-     * Like [iterateRawContactRows], but returns a cold [Flow] instead of using a callback.
+     * Cold [Flow] of raw contact rows (without associated data rows) from this address book.
      *
      * This method operates "as sync adapter" on [addressBookAccount] and doesn't take the [readOnly] flag into account.
      *
@@ -260,8 +240,14 @@ class AndroidAddressBook(
     // region ContactsContract.Groups CRUD
 
     @Throws(FileNotFoundException::class)
-    fun findGroupById(id: Long) =
-        queryGroups("${Groups._ID}=?", arrayOf(id.toString())).firstOrNull() ?: throw FileNotFoundException()
+    fun findGroupById(id: Long): AndroidGroup {
+        // account is implicitly restricted via the URI (asSyncAdapter appends ACCOUNT_NAME/ACCOUNT_TYPE)
+        provider.query(groupsSyncUri(), null, "${Groups._ID}=?", arrayOf(id.toString()), null)?.use { cursor ->
+            if (cursor.moveToNext())
+                return AndroidGroup(this, cursor.toContentValues())
+        }
+        throw FileNotFoundException()
+    }
 
     fun findOrCreateGroup(title: String): Long {
         provider.query(
@@ -279,30 +265,7 @@ class AndroidAddressBook(
     }
 
     /**
-     * Iterates group rows in this address book.
-     *
-     * This method operates "as sync adapter" on [addressBookAccount] and doesn't take the [readOnly] flag into account.
-     *
-     * @param projection optional column projection
-     * @param where      optional selection
-     * @param whereArgs  optional arguments for [where]
-     * @param block      callback invoked for each group row
-     * @throws LocalStorageException on content provider errors
-     */
-    fun iterateGroups(projection: Array<String>? = null, where: String? = null, whereArgs: Array<String>? = null, block: (ContentValues) -> Unit) {
-        // account is implicitly restricted via the URI (asSyncAdapter appends ACCOUNT_NAME/ACCOUNT_TYPE)
-        try {
-            provider.query(groupsSyncUri(), projection, where, whereArgs, null)?.use { cursor ->
-                while (cursor.moveToNext())
-                    block(cursor.toContentValues())
-            }
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't iterate groups", e)
-        }
-    }
-
-    /**
-     * Like [iterateGroups], but returns a cold [Flow] instead of using a callback.
+     * Cold [Flow] of group rows in this address book.
      *
      * This method operates "as sync adapter" on [addressBookAccount] and doesn't take the [readOnly] flag into account.
      *
@@ -376,7 +339,7 @@ class AndroidAddressBook(
         batch += builder
     }
 
-    fun deleteGroupsWithoutMembers() {
+    suspend fun deleteGroupsWithoutMembers() {
         queryGroups(null, null).filter { it.getMembers().isEmpty() }.forEach { group ->
             logger.log(Level.FINE, "Deleting empty group", group)
             group.delete()
@@ -499,11 +462,8 @@ class AndroidAddressBook(
     }
 
     @VisibleForTesting
-    internal fun queryGroups(where: String?, whereArgs: Array<String>?): List<AndroidGroup> = buildList {
-        iterateGroups(null, where, whereArgs) { values ->
-            add(AndroidGroup(this@AndroidAddressBook, values))
-        }
-    }
+    internal suspend fun queryGroups(where: String?, whereArgs: Array<String>?): List<AndroidGroup> =
+        queryGroupRows(null, where, whereArgs).map { AndroidGroup(this, it) }.toList()
 
     @TestOnly
     @Throws(FileNotFoundException::class)
