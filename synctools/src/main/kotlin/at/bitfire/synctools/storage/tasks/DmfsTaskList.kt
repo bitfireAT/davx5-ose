@@ -243,7 +243,12 @@ class DmfsTaskList(
      *
      * @throws LocalStorageException when the content provider returns an error
      */
-    fun getTaskRow(id: Long, projection: Array<String>? = null, where: String? = null, whereArgs: Array<String>? = null): ContentValues? {
+    fun getTaskRow(
+        id: Long,
+        projection: Array<String>? = null,
+        where: String? = null,
+        whereArgs: Array<String>? = null
+    ): ContentValues? {
         try {
             client.query(taskUri(id), projection, where, whereArgs, null)?.use { cursor ->
                 if (cursor.moveToNext())
@@ -265,7 +270,12 @@ class DmfsTaskList(
      *
      * @throws LocalStorageException when the content provider returns an error
      */
-    fun iterateTaskRows(projection: Array<String>?, where: String?, whereArgs: Array<String>?, body: (ContentValues) -> Unit) {
+    fun iterateTaskRows(
+        projection: Array<String>?,
+        where: String?,
+        whereArgs: Array<String>?,
+        body: (ContentValues) -> Unit
+    ) {
         try {
             val (protectedWhere, protectedWhereArgs) = whereWithTaskListId(where, whereArgs)
             client.query(tasksUri(), projection, protectedWhere, protectedWhereArgs, null)?.use { cursor ->
@@ -280,15 +290,15 @@ class DmfsTaskList(
     }
 
     /**
-     * Cold [Flow] of tasks (with properties) from this task list. Runs on [Dispatchers.IO],
-     * since content provider access is blocking.
+     * Cold [Flow] of tasks (with properties) from this task list.
      *
      * @param where         selection
      * @param whereArgs     arguments for selection
      */
     fun tasksFlow(where: String?, whereArgs: Array<String>?): Flow<Entity> {
         val (protectedWhere, protectedWhereArgs) = whereWithTaskListId(where, whereArgs)
-        return client.queryFlow(tasksUri(), null, protectedWhere, protectedWhereArgs) { it.toContentValues() }
+        return client
+            .queryFlow(tasksUri(), null, protectedWhere, protectedWhereArgs) { it.toContentValues() }
             .mapNotNull { row -> row.getAsLong(Tasks._ID)?.let { getTask(it) } }
             .flowOn(Dispatchers.IO)
     }

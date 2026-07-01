@@ -28,7 +28,6 @@ import at.bitfire.synctools.storage.queryFlow
 import at.bitfire.synctools.storage.toContentValues
 import at.bitfire.synctools.util.setAndVerifyUserData
 import at.bitfire.synctools.vcard.GroupMethod
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.annotations.VisibleForTesting
@@ -235,7 +234,6 @@ class AndroidAddressBook(
 
     /**
      * Like [iterateRawContactRows], but returns a cold [Flow] instead of using a callback.
-     * Runs on [Dispatchers.IO], since content provider access is blocking.
      *
      * This method operates "as sync adapter" on [addressBookAccount] and doesn't take the [readOnly] flag into account.
      *
@@ -331,7 +329,6 @@ class AndroidAddressBook(
 
     /**
      * Like [iterateGroups], but returns a cold [Flow] instead of using a callback.
-     * Runs on [Dispatchers.IO], since content provider access is blocking.
      *
      * This method operates "as sync adapter" on [addressBookAccount] and doesn't take the [readOnly] flag into account.
      *

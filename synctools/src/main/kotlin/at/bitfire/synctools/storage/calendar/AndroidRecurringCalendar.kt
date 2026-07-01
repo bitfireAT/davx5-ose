@@ -103,9 +103,8 @@ class AndroidRecurringCalendar(
         findEventAndExceptions("${Events._ID}=?", arrayOf(mainEventId.toString()))
 
     /**
-     * Cold [Flow] of main events together with their exceptions. Runs on [Dispatchers.IO] as a
-     * whole, since content provider access is blocking; the per-main exceptions lookup stays a
-     * small bounded query (exceptions of a single event are not streamed).
+     * Cold [Flow] of main events together with their exceptions; the per-main exceptions lookup
+     * stays a small bounded query (exceptions of a single event are not streamed).
      *
      * Note that the exceptions may contain deleted events.
      *
@@ -114,7 +113,8 @@ class AndroidRecurringCalendar(
      */
     fun eventAndExceptionsFlow(where: String?, whereArgs: Array<String>?): Flow<EventAndExceptions> {
         val (mainWhere, mainWhereArgs) = whereWithMainEventsOnly(where, whereArgs)
-        return calendar.eventsFlow(mainWhere, mainWhereArgs)
+        return calendar
+            .eventsFlow(mainWhere, mainWhereArgs)
             .map { main ->
                 val mainEventId = main.entityValues.getAsLong(Events._ID)
                 EventAndExceptions(

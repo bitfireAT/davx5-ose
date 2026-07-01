@@ -95,9 +95,8 @@ class DmfsRecurringTaskList(
         findTaskAndExceptions("${Tasks._ID}=?", arrayOf(mainTaskId.toString()))
 
     /**
-     * Cold [Flow] of main tasks together with their exceptions. Runs on [Dispatchers.IO] as a
-     * whole, since content provider access is blocking; the per-main exceptions lookup stays a
-     * small bounded query (exceptions of a single task are not streamed).
+     * Cold [Flow] of main tasks together with their exceptions; the per-main exceptions lookup
+     * stays a small bounded query (exceptions of a single task are not streamed).
      *
      * Note that the exceptions may contain deleted tasks.
      *
@@ -106,7 +105,8 @@ class DmfsRecurringTaskList(
      */
     fun taskAndExceptionsFlow(where: String?, whereArgs: Array<String>?): Flow<TaskAndExceptions> {
         val (mainWhere, mainWhereArgs) = whereWithMainTasksOnly(where, whereArgs)
-        return taskList.tasksFlow(mainWhere, mainWhereArgs)
+        return taskList
+            .tasksFlow(mainWhere, mainWhereArgs)
             .map { main ->
                 val mainTaskId = main.entityValues.getAsLong(Tasks._ID)
                 TaskAndExceptions(main = main, exceptions = findExceptions(mainTaskId))

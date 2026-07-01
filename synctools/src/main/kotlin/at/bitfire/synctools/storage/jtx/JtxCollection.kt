@@ -16,7 +16,6 @@ import at.bitfire.synctools.storage.queryFlow
 import at.bitfire.synctools.storage.toContentValues
 import at.techbee.jtx.JtxContract
 import at.techbee.jtx.JtxContract.asSyncAdapter
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import org.jetbrains.annotations.TestOnly
 import java.nio.channels.Channels
@@ -324,8 +323,7 @@ class JtxCollection(
     }
 
     /**
-     * Cold [Flow] of jtx objects (with sub-rows) from this collection. Runs on [Dispatchers.IO],
-     * since content provider access is blocking.
+     * Cold [Flow] of jtx objects (with sub-rows) from this collection.
      *
      * Adds a WHERE clause that restricts the query to [JtxContract.JtxICalObject.ICALOBJECT_COLLECTIONID] = [id].
      *

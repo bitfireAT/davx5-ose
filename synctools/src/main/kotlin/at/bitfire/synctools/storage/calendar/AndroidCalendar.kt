@@ -24,7 +24,6 @@ import at.bitfire.synctools.storage.LocalStorageException
 import at.bitfire.synctools.storage.calendar.EventsContract.asSyncAdapter
 import at.bitfire.synctools.storage.queryEntityFlow
 import at.bitfire.synctools.storage.toContentValues
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import org.jetbrains.annotations.TestOnly
 import java.util.logging.Logger
@@ -252,8 +251,7 @@ class AndroidCalendar(
     }
 
     /**
-     * Cold [Flow] of event entities from this calendar. Runs on [Dispatchers.IO], since content
-     * provider access is blocking.
+     * Cold [Flow] of event entities from this calendar.
      *
      * Adds a WHERE clause that restricts the query to [CalendarContract.EventsColumns.CALENDAR_ID] = [id].
      *

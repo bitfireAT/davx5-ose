@@ -101,16 +101,16 @@ class JtxRecurringCollection(
     }
 
     /**
-     * Cold [Flow] of main jtx objects together with their exceptions. Runs on [Dispatchers.IO] as
-     * a whole, since content provider access is blocking; the per-main exceptions lookup stays a
-     * small bounded query (exceptions of a single object are not streamed).
+     * Cold [Flow] of main jtx objects together with their exceptions; the per-main exceptions
+     * lookup stays a small bounded query (exceptions of a single object are not streamed).
      *
      * @param where         selection (applied to main objects only; [JtxContract.JtxICalObject.RECURID] IS NULL is added automatically)
      * @param whereArgs     arguments for selection
      */
     fun jtxObjectAndExceptionsFlow(where: String?, whereArgs: Array<String>?): Flow<JtxObjectAndExceptions> {
         val mainWhere = mainJtxObjectOnlyWhere(where)
-        return collection.jtxObjectsFlow(mainWhere, whereArgs)
+        return collection
+            .jtxObjectsFlow(mainWhere, whereArgs)
             .map { main ->
                 val uid = main.entityValues.getAsString(JtxContract.JtxICalObject.UID)
                 JtxObjectAndExceptions(

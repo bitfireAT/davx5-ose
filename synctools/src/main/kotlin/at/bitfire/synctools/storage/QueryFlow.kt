@@ -9,6 +9,7 @@ import android.content.Entity
 import android.content.EntityIterator
 import android.database.Cursor
 import android.net.Uri
+import android.os.RemoteException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -25,6 +26,7 @@ import kotlinx.coroutines.flow.flowOn
  * @param where         selection
  * @param whereArgs     arguments for selection
  * @param transformRow  maps a cursor row (positioned by the query) to the emitted value
+ * @throws LocalStorageException when the content provider returns an error
  */
 fun <T> ContentProviderClient.queryFlow(
     uri: Uri,
@@ -34,9 +36,13 @@ fun <T> ContentProviderClient.queryFlow(
     transformRow: (Cursor) -> T
 ): Flow<T> =
     flow {
-        query(uri, projection, where, whereArgs, null)?.use { cursor ->
-            while (cursor.moveToNext())
-                emit(transformRow(cursor))
+        try {
+            query(uri, projection, where, whereArgs, null)?.use { cursor ->
+                while (cursor.moveToNext())
+                    emit(transformRow(cursor))
+            }
+        } catch (e: RemoteException) {
+            throw LocalStorageException("Couldn't query $uri", e)
         }
     }.flowOn(Dispatchers.IO)
 
@@ -50,6 +56,7 @@ fun <T> ContentProviderClient.queryFlow(
  * @param whereArgs        arguments for selection
  * @param newIterator      builds the [EntityIterator] from the query's cursor
  * @param transformEntity  maps an entity produced by [newIterator] to the emitted value
+ * @throws LocalStorageException when the content provider returns an error
  */
 fun <T> ContentProviderClient.queryEntityFlow(
     uri: Uri,
@@ -60,8 +67,12 @@ fun <T> ContentProviderClient.queryEntityFlow(
     transformEntity: (Entity) -> T
 ): Flow<T> =
     flow {
-        query(uri, projection, where, whereArgs, null)?.use { cursor ->
-            for (entity in newIterator(cursor))
-                emit(transformEntity(entity))
+        try {
+            query(uri, projection, where, whereArgs, null)?.use { cursor ->
+                for (entity in newIterator(cursor))
+                    emit(transformEntity(entity))
+            }
+        } catch (e: RemoteException) {
+            throw LocalStorageException("Couldn't query $uri", e)
         }
     }.flowOn(Dispatchers.IO)
