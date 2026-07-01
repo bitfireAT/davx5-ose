@@ -10,6 +10,8 @@ import android.provider.ContactsContract
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
 import at.bitfire.synctools.mapping.contacts.Contact
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.AfterClass
 import org.junit.Assert.assertEquals
@@ -59,14 +61,14 @@ class AndroidGroupTest {
         removeGroups()
     }
 
-    private fun removeGroups() {
+    private fun removeGroups() = runBlocking {
         addressBook.provider.delete(addressBook.groupsSyncUri(), null, null)
         assertEquals(0, addressBook.queryGroups(null, null).size)
     }
 
 
     @Test
-    fun testCreateReadDeleteGroup() {
+    fun testCreateReadDeleteGroup() = runTest {
         val contact = Contact()
         contact.displayName = "at.bitfire.vcard4android-AndroidGroupTest"
         contact.note = "(test group)"
@@ -89,7 +91,7 @@ class AndroidGroupTest {
     }
 
     @Test
-    fun testAdd_readOnly() {
+    fun testAdd_readOnly() = runTest {
         addressBook.readOnly = true
 
         val contact = Contact()
@@ -111,7 +113,7 @@ class AndroidGroupTest {
     }
 
     @Test
-    fun testAdd_notReadOnly() {
+    fun testAdd_notReadOnly() = runTest {
         addressBook.readOnly = false
 
         val contact = Contact()

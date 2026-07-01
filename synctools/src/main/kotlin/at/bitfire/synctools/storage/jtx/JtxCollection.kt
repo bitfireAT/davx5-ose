@@ -12,9 +12,12 @@ import android.os.ParcelFileDescriptor
 import android.os.RemoteException
 import at.bitfire.synctools.storage.BatchOperation.CpoBuilder
 import at.bitfire.synctools.storage.LocalStorageException
+import at.bitfire.synctools.storage.queryFlow
 import at.bitfire.synctools.storage.toContentValues
 import at.techbee.jtx.JtxContract
 import at.techbee.jtx.JtxContract.asSyncAdapter
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import org.jetbrains.annotations.TestOnly
 import java.nio.channels.Channels
 
@@ -321,26 +324,20 @@ class JtxCollection(
     }
 
     /**
-     * Iterates jtx objects (with sub-rows) from this collection.
+     * Cold [Flow] of jtx objects (with sub-rows) from this collection.
      *
      * Adds a WHERE clause that restricts the query to [JtxContract.JtxICalObject.ICALOBJECT_COLLECTIONID] = [id].
      *
      * @param where         selection
      * @param whereArgs     arguments for selection
-     * @param body          callback that is called for each jtx object entity
-     *
-     * @throws LocalStorageException when the content provider returns an error
      */
-    fun iterateJtxObjects(where: String?, whereArgs: Array<String>?, body: (Entity) -> Unit) {
-        try {
-            val (protectedWhere, protectedWhereArgs) = whereWithCollectionId(where, whereArgs)
-            client.query(jtxObjectsUri, null, protectedWhere, protectedWhereArgs, null)?.use { cursor ->
-                while (cursor.moveToNext())
-                    body(readEntity(cursor.toContentValues()))
-            }
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't iterate jtx objects", e)
-        }
+    fun queryJtxObjects(where: String?, whereArgs: Array<String>?): Flow<Entity> {
+        val (protectedWhere, protectedWhereArgs) = whereWithCollectionId(where, whereArgs)
+        return client.queryFlow(
+            jtxObjectsUri,
+            null,
+            protectedWhere, protectedWhereArgs
+        ).map { readEntity(it) }
     }
 
     /**

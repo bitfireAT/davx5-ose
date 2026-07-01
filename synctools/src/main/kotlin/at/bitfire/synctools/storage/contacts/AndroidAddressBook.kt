@@ -24,14 +24,17 @@ import at.bitfire.synctools.storage.BatchOperation
 import at.bitfire.synctools.storage.LocalStorageException
 import at.bitfire.synctools.storage.contacts.AddressContract.asSyncAdapter
 import at.bitfire.synctools.storage.contacts.AndroidAddressBook.Companion.USER_DATA_READ_ONLY
+import at.bitfire.synctools.storage.queryFlow
 import at.bitfire.synctools.storage.toContentValues
 import at.bitfire.synctools.util.setAndVerifyUserData
 import at.bitfire.synctools.vcard.GroupMethod
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.toList
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.annotations.VisibleForTesting
 import java.io.FileNotFoundException
 import java.io.IOException
-import java.util.LinkedList
 import java.util.logging.Level
 import java.util.logging.Logger
 
@@ -178,56 +181,36 @@ class AndroidAddressBook(
         )?.use { cursor ->
             return cursor.count
         }
-        // If the query was invalid, an exception should have been thrown. So this should never be reached:
-        return 0
+        throw LocalStorageException("Couldn't count raw contacts")
     }
 
     /**
-     * Iterates raw contacts with their associated data rows (as [Entity]) from this address book.
-     *
-     * This method operates "as sync adapter" on [addressBookAccount] and doesn't take the [readOnly] flag into account.
-     *
-     * @param where     optional selection (only applied to raw contact rows, not data rows)
-     * @param whereArgs optional arguments for [where]
-     * @param block     callback invoked for each raw contact entity
-     * @throws LocalStorageException on content provider errors
-     */
-    fun iterateRawContacts(where: String? = null, whereArgs: Array<String>? = null, block: (Entity) -> Unit) {
-        // account is implicitly restricted via the URI (asSyncAdapter appends ACCOUNT_NAME/ACCOUNT_TYPE)
-        try {
-            provider.query(
-                ContactsContract.RawContactsEntity.CONTENT_URI.asSyncAdapter(addressBookAccount),
-                null, where, whereArgs, null
-            )?.use { cursor ->
-                val iterator = RawContacts.newEntityIterator(cursor)
-                for (entity in iterator)
-                    block(entity)
-            }
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't iterate raw contacts", e)
-        }
-    }
-
-    /**
-     * Iterates raw contact rows (without associated data rows) from this address book.
+     * Cold [Flow] of raw contact rows (without associated data rows) from this address book.
      *
      * This method operates "as sync adapter" on [addressBookAccount] and doesn't take the [readOnly] flag into account.
      *
      * @param where      optional selection
      * @param whereArgs  optional arguments for [where]
-     * @param block      callback invoked for each raw contact row
-     * @throws LocalStorageException on content provider errors
      */
-    fun iterateRawContactRows(where: String? = null, whereArgs: Array<String>? = null, block: (ContentValues) -> Unit) {
-        // account is implicitly restricted via the URI (asSyncAdapter appends ACCOUNT_NAME/ACCOUNT_TYPE)
-        try {
-            provider.query(rawContactsSyncUri(), null, where, whereArgs, null)?.use { cursor ->
-                while (cursor.moveToNext())
-                    block(cursor.toContentValues())
-            }
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't iterate raw contact rows", e)
+    fun queryRawContactRows(where: String? = null, whereArgs: Array<String>? = null): Flow<ContentValues> =
+        provider.queryFlow(rawContactsSyncUri(), null, where, whereArgs)
+
+    /**
+     * Finds the first raw contact row matching the given selection, without collecting
+     * the full result set.
+     *
+     * This method operates "as sync adapter" on [addressBookAccount] and doesn't take the [readOnly] flag into account.
+     *
+     * @param where      optional selection
+     * @param whereArgs  optional arguments for [where]
+     * @return the matching row, or `null` if none matches
+     */
+    fun getRawContactRowOrNull(where: String?, whereArgs: Array<String>?): ContentValues? {
+        provider.query(rawContactsSyncUri(), null, where, whereArgs, null)?.use { cursor ->
+            if (cursor.moveToNext())
+                return cursor.toContentValues()
         }
+        return null
     }
 
     /**
@@ -273,8 +256,11 @@ class AndroidAddressBook(
     // region ContactsContract.Groups CRUD
 
     @Throws(FileNotFoundException::class)
-    fun findGroupById(id: Long) =
-        queryGroups("${Groups._ID}=?", arrayOf(id.toString())).firstOrNull() ?: throw FileNotFoundException()
+    fun findGroupById(id: Long): AndroidGroup =
+        // account is implicitly restricted via the URI (asSyncAdapter appends ACCOUNT_NAME/ACCOUNT_TYPE)
+        getGroupOrNull("${Groups._ID}=?", arrayOf(id.toString()))
+            ?.let { AndroidGroup(this, it) }
+            ?: throw FileNotFoundException()
 
     fun findOrCreateGroup(title: String): Long {
         provider.query(
@@ -292,26 +278,57 @@ class AndroidAddressBook(
     }
 
     /**
-     * Iterates group rows in this address book.
+     * Cold [Flow] of group rows in this address book.
      *
      * This method operates "as sync adapter" on [addressBookAccount] and doesn't take the [readOnly] flag into account.
      *
      * @param projection optional column projection
      * @param where      optional selection
      * @param whereArgs  optional arguments for [where]
-     * @param block      callback invoked for each group row
-     * @throws LocalStorageException on content provider errors
      */
-    fun iterateGroups(projection: Array<String>? = null, where: String? = null, whereArgs: Array<String>? = null, block: (ContentValues) -> Unit) {
-        // account is implicitly restricted via the URI (asSyncAdapter appends ACCOUNT_NAME/ACCOUNT_TYPE)
-        try {
-            provider.query(groupsSyncUri(), projection, where, whereArgs, null)?.use { cursor ->
-                while (cursor.moveToNext())
-                    block(cursor.toContentValues())
-            }
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't iterate groups", e)
+    fun queryGroupRows(
+        projection: Array<String>? = null,
+        where: String? = null,
+        whereArgs: Array<String>? = null
+    ): Flow<ContentValues> =
+        provider.queryFlow(groupsSyncUri(), projection, where, whereArgs)
+
+    /**
+     * Finds the first group row matching the given selection, without collecting
+     * the full result set.
+     *
+     * This method operates "as sync adapter" on [addressBookAccount] and doesn't take the [readOnly] flag into account.
+     *
+     * @param where      optional selection
+     * @param whereArgs  optional arguments for [where]
+     * @return the matching row, or `null` if none matches
+     */
+    fun getGroupOrNull(where: String?, whereArgs: Array<String>?): ContentValues? {
+        provider.query(groupsSyncUri(), null, where, whereArgs, null)?.use { cursor ->
+            if (cursor.moveToNext())
+                return cursor.toContentValues()
         }
+        return null
+    }
+
+    /**
+     * Counts the number of groups in the address book that match the given selection criteria.
+     *
+     * This method operates "as sync adapter" on [addressBookAccount] and doesn't take the [readOnly] flag into account.
+     *
+     * @param where An optional filter declaring which rows to return.
+     * @param whereArgs Optional arguments for [where].
+     * @return The number of groups matching the selection criteria.
+     */
+    fun countGroups(where: String?, whereArgs: Array<String>?): Int {
+        // account is implicitly restricted via the URI (asSyncAdapter appends ACCOUNT_NAME/ACCOUNT_TYPE)
+        provider.query(
+            groupsSyncUri(), arrayOf(Groups._ID),
+            where, whereArgs, null
+        )?.use { cursor ->
+            return cursor.count
+        }
+        throw LocalStorageException("Couldn't count groups")
     }
 
     /**
@@ -352,7 +369,7 @@ class AndroidAddressBook(
         batch += builder
     }
 
-    fun deleteGroupsWithoutMembers() {
+    suspend fun deleteGroupsWithoutMembers() {
         queryGroups(null, null).filter { it.getMembers().isEmpty() }.forEach { group ->
             logger.log(Level.FINE, "Deleting empty group", group)
             group.delete()
@@ -461,30 +478,16 @@ class AndroidAddressBook(
 
     // region legacy AndroidContact/AndroidGroup CRUD
 
-    @Deprecated("Use iterateRawContacts instead")
-    fun queryContacts(where: String?, whereArgs: Array<String>?): List<AndroidContact> {
-        val contacts = LinkedList<AndroidContact>()
-        provider.query(
-            rawContactsSyncUri(), null,
-            where, whereArgs, null
-        )?.use { cursor ->
-            while (cursor.moveToNext())
-                contacts += AndroidContact(this, cursor.toContentValues())
-        }
-        return contacts
-    }
-
     @VisibleForTesting
-    internal fun queryGroups(where: String?, whereArgs: Array<String>?): List<AndroidGroup> = buildList {
-        iterateGroups(null, where, whereArgs) { values ->
-            add(AndroidGroup(this@AndroidAddressBook, values))
-        }
-    }
+    internal suspend fun queryGroups(where: String?, whereArgs: Array<String>?): List<AndroidGroup> =
+        queryGroupRows(null, where, whereArgs).map { AndroidGroup(this, it) }.toList()
 
     @TestOnly
     @Throws(FileNotFoundException::class)
     fun findContactById(id: Long) =
-        queryContacts("${RawContacts._ID}=?", arrayOf(id.toString())).firstOrNull() ?: throw FileNotFoundException()
+        getRawContactRowOrNull("${RawContacts._ID}=?", arrayOf(id.toString()))
+            ?.let { AndroidContact(this, it) }
+            ?: throw FileNotFoundException()
 
     // endregion
 

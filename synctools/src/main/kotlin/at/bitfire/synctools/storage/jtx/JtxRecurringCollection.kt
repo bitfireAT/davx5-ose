@@ -12,6 +12,11 @@ import androidx.core.content.contentValuesOf
 import at.bitfire.synctools.storage.LocalStorageException
 import at.bitfire.synctools.storage.containsNotNull
 import at.techbee.jtx.JtxContract
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.toList
 import java.util.logging.Level
 import java.util.logging.Logger
 
@@ -56,7 +61,7 @@ class JtxRecurringCollection(
      * @param where         selection (applied to main objects only; [JtxContract.JtxICalObject.RECURID] IS NULL is added automatically)
      * @param whereArgs     arguments for selection
      */
-    fun findJtxObjectAndExceptions(where: String?, whereArgs: Array<String>?): JtxObjectAndExceptions? {
+    suspend fun findJtxObjectAndExceptions(where: String?, whereArgs: Array<String>?): JtxObjectAndExceptions? {
         val mainWhere = mainJtxObjectOnlyWhere(where)
 
         // attach exceptions
@@ -81,7 +86,7 @@ class JtxRecurringCollection(
      *
      * @return jtx object and exceptions, or `null` if not found or [mainId] is an exception
      */
-    fun getById(mainId: Long): JtxObjectAndExceptions? {
+    suspend fun getById(mainId: Long): JtxObjectAndExceptions? {
         val main = collection.getJtxObject(mainId) ?: return null
         if (main.entityValues.getAsString(JtxContract.JtxICalObject.RECURID) != null) {
             logger.warning("getById called with exception ID $mainId (RECURID IS NOT NULL) – returning null")
@@ -96,22 +101,24 @@ class JtxRecurringCollection(
     }
 
     /**
-     * Iterates through main jtx objects together with their exceptions from the content provider.
+     * Cold [Flow] of main jtx objects together with their exceptions; the per-main exceptions
+     * lookup stays a small bounded query (exceptions of a single object are not streamed).
      *
      * @param where         selection (applied to main objects only; [JtxContract.JtxICalObject.RECURID] IS NULL is added automatically)
      * @param whereArgs     arguments for selection
-     * @param body          callback that is called for each main object (with exceptions attached)
      */
-    fun iterateJtxObjectAndExceptions(where: String?, whereArgs: Array<String>?, body: (JtxObjectAndExceptions) -> Unit) {
+    fun queryJtxObjectsAndExceptions(where: String?, whereArgs: Array<String>?): Flow<JtxObjectAndExceptions> {
         val mainWhere = mainJtxObjectOnlyWhere(where)
-        // iterate through main events and attach exceptions
-        collection.iterateJtxObjects(mainWhere, whereArgs) { main ->
-            val uid = main.entityValues.getAsString(JtxContract.JtxICalObject.UID)
-            body(JtxObjectAndExceptions(
-                main = main,
-                exceptions = if (uid != null) findExceptionsByUid(uid) else emptyList()
-            ))
-        }
+        return collection
+            .queryJtxObjects(mainWhere, whereArgs)
+            .map { main ->
+                val uid = main.entityValues.getAsString(JtxContract.JtxICalObject.UID)
+                JtxObjectAndExceptions(
+                    main = main,
+                    exceptions = if (uid != null) findExceptionsByUid(uid) else emptyList()
+                )
+            }
+            .flowOn(Dispatchers.IO)
     }
 
     /**
@@ -125,7 +132,7 @@ class JtxRecurringCollection(
      *
      * @throws LocalStorageException when [id] refers to an exception row instead of a main object
      */
-    fun updateJtxObjectAndExceptions(id: Long, jtxEntityAndExceptions: JtxEntityAndExceptions): Long {
+    suspend fun updateJtxObjectAndExceptions(id: Long, jtxEntityAndExceptions: JtxEntityAndExceptions): Long {
         try {
             // validate / clean up input
             val cleaned = cleanUp(jtxEntityAndExceptions)
@@ -432,12 +439,11 @@ class JtxRecurringCollection(
      * exceptions and must not be treated as such. The provider sets SEQUENCE to at least 1 for any
      * sync-adapter-inserted exception.
      */
-    private fun findExceptionsByUid(uid: String): List<Entity> = buildList {
-        collection.iterateJtxObjects(
+    private suspend fun findExceptionsByUid(uid: String): List<Entity> =
+        collection.queryJtxObjects(
             "${JtxContract.JtxICalObject.UID}=? AND ${JtxContract.JtxICalObject.RECURID} IS NOT NULL AND ${JtxContract.JtxICalObject.SEQUENCE} > 0",
             arrayOf(uid)
-        ) { add(it) }
-    }
+        ).toList()
 
     /**
      * Adds [JtxContract.JtxICalObject.RECURID] IS NULL to [where] to restrict queries to main objects only.

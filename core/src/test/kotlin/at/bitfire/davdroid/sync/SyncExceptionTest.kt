@@ -7,6 +7,7 @@ package at.bitfire.davdroid.sync
 import at.bitfire.davdroid.resource.LocalResource
 import io.ktor.http.Url
 import io.mockk.mockk
+import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -51,14 +52,14 @@ class SyncExceptionTest {
     }
 
     @Test
-    fun testWrapWithLocalResource_RemoteResource_Exception() {
+    fun testWrapWithLocalResource_RemoteResource_Exception() = runTest {
         val local = mockk<LocalResource>()
         val remote = mockk<Url>()
         val e = Exception()
 
-        val result = assertSyncException {
-            SyncException.wrapWithLocalResource(local) {
-                SyncException.wrapWithRemoteResource(remote) {
+        val result = assertSyncExceptionSuspending {
+            SyncException.wrapWithLocalResourceSuspending(local) {
+                SyncException.wrapWithRemoteResourceSuspending(remote) {
                     throw e
                 }
             }
@@ -70,14 +71,14 @@ class SyncExceptionTest {
     }
 
     @Test
-    fun testWrapWithLocalResource_RemoteResource_SyncException() {
+    fun testWrapWithLocalResource_RemoteResource_SyncException() = runTest {
         val local = mockk<LocalResource>()
         val remote = mockk<Url>()
         val e = SyncException(Exception())
 
-        val result = assertSyncException {
-            SyncException.wrapWithLocalResource(local) {
-                SyncException.wrapWithRemoteResource(remote) {
+        val result = assertSyncExceptionSuspending {
+            SyncException.wrapWithLocalResourceSuspending(local) {
+                SyncException.wrapWithRemoteResourceSuspending(remote) {
                     throw e
                 }
             }
@@ -87,17 +88,17 @@ class SyncExceptionTest {
         assertEquals(remote, result.remoteResource)
         assertEquals(e, result)
     }
-    
+
 
     @Test
-    fun testWrapWithRemoteResource_LocalResource_Exception() {
+    fun testWrapWithRemoteResource_LocalResource_Exception() = runTest {
         val remote = mockk<Url>()
         val local = mockk<LocalResource>()
         val e = Exception()
 
-        val result = assertSyncException {
-            SyncException.wrapWithRemoteResource(remote) {
-                SyncException.wrapWithLocalResource(local) {
+        val result = assertSyncExceptionSuspending {
+            SyncException.wrapWithRemoteResourceSuspending(remote) {
+                SyncException.wrapWithLocalResourceSuspending(local) {
                     throw e
                 }
             }
@@ -109,14 +110,14 @@ class SyncExceptionTest {
     }
 
     @Test
-    fun testWrapWithRemoteResource_LocalResource_SyncException() {
+    fun testWrapWithRemoteResource_LocalResource_SyncException() = runTest {
         val remote = mockk<Url>()
         val local = mockk<LocalResource>()
         val e = SyncException(Exception())
 
-        val result = assertSyncException {
-            SyncException.wrapWithRemoteResource(remote) {
-                SyncException.wrapWithLocalResource(local) {
+        val result = assertSyncExceptionSuspending {
+            SyncException.wrapWithRemoteResourceSuspending(remote) {
+                SyncException.wrapWithLocalResourceSuspending(local) {
                     throw e
                 }
             }
@@ -128,14 +129,14 @@ class SyncExceptionTest {
     }
 
     @Test
-    fun testWrapWithRemoteResource_RemoteResource_Exception() {
+    fun testWrapWithRemoteResource_RemoteResource_Exception() = runTest {
         val outer = mockk<Url>()
         val inner = mockk<Url>()
         val e = Exception()
 
-        val result = assertSyncException {
-            SyncException.wrapWithRemoteResource(outer) {
-                SyncException.wrapWithRemoteResource(inner) {
+        val result = assertSyncExceptionSuspending {
+            SyncException.wrapWithRemoteResourceSuspending(outer) {
+                SyncException.wrapWithRemoteResourceSuspending(inner) {
                     throw e
                 }
             }
@@ -146,14 +147,14 @@ class SyncExceptionTest {
     }
 
     @Test
-    fun testWrapWithRemoteResource_RemoteResource_SyncException() {
+    fun testWrapWithRemoteResource_RemoteResource_SyncException() = runTest {
         val outer = mockk<Url>()
         val inner = mockk<Url>()
         val e = SyncException(Exception())
 
-        val result = assertSyncException {
-            SyncException.wrapWithRemoteResource(outer) {
-                SyncException.wrapWithRemoteResource(inner) {
+        val result = assertSyncExceptionSuspending {
+            SyncException.wrapWithRemoteResourceSuspending(outer) {
+                SyncException.wrapWithRemoteResourceSuspending(inner) {
                     throw e
                 }
             }
@@ -197,6 +198,16 @@ class SyncExceptionTest {
         try {
             block()
         } catch(ex: Throwable) {
+            if (ex is SyncException)
+                return ex
+        }
+        throw AssertionError("Expected SyncException")
+    }
+
+    suspend fun assertSyncExceptionSuspending(block: suspend () -> Unit): SyncException {
+        try {
+            block()
+        } catch (ex: Throwable) {
             if (ex is SyncException)
                 return ex
         }

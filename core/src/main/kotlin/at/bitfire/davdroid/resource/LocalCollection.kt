@@ -34,25 +34,9 @@ interface LocalCollection<out T: LocalResource> {
      * Finds local resources of this collection which have been marked as *deleted* by the user
      * or an app acting on their behalf.
      *
-     * @return list of resources marked as *deleted*
-     */
-    fun findDeleted(): List<T>
-
-    /**
-     * Finds local resources of this collection which have been marked as *deleted* by the user
-     * or an app acting on their behalf.
-     *
      * @return [Flow] of resources marked as *deleted*
      */
-    fun deletedFlow(): Flow<T>
-
-    /**
-     * Finds local resources of this collection which have been marked as *dirty*, i.e. resources
-     * which have been modified by the user or an app acting on their behalf.
-     *
-     * @return list of resources marked as *dirty*
-     */
-    fun findDirty(): List<T>
+    fun findDeleted(): Flow<T>
 
     /**
      * Finds local resources of this collection which have been marked as *dirty*, i.e. resources
@@ -60,7 +44,7 @@ interface LocalCollection<out T: LocalResource> {
      *
      * @return [Flow] of resources marked as *dirty*
      */
-    fun dirtyFlow(): Flow<T>
+    fun findDirty(): Flow<T>
 
     /**
      * Finds a local resource of this collection with a given file name. (File names are assigned
@@ -69,7 +53,7 @@ interface LocalCollection<out T: LocalResource> {
      * @param name file name to look for
      * @return resource with the given name, or null if none
      */
-    fun findByName(name: String): T?
+    suspend fun findByName(name: String): T?
 
     /**
      * Updates the flags value for entries which are not dirty.
@@ -88,7 +72,7 @@ interface LocalCollection<out T: LocalResource> {
      *
      * @return         number of removed entries
      */
-    fun removeNotDirtyMarked(flags: Int): Int
+    suspend fun removeNotDirtyMarked(flags: Int): Int
 
 
     /**
@@ -100,7 +84,6 @@ interface LocalCollection<out T: LocalResource> {
      * Counts all resources in this collection.
      *
      * @return total number of resources
-     * @throws UnsupportedOperationException if the operation is not supported on this collection (jtx Board)
      */
     fun countAll(): Int
 
@@ -108,7 +91,6 @@ interface LocalCollection<out T: LocalResource> {
      * Counts resources in this collection that are locally deleted (pending removal from server).
      *
      * @return number of deleted resources
-     * @throws UnsupportedOperationException if the operation is not supported on this collection (jtx Board)
      */
     fun countDeleted(): Int
 
@@ -117,8 +99,14 @@ interface LocalCollection<out T: LocalResource> {
      * excluding resources already marked as deleted.
      *
      * @return number of modified resources
-     * @throws UnsupportedOperationException if the operation is not supported on this collection (jtx Board)
      */
     fun countModified(): Int
+
+    /**
+     * Counts resources in this collection that are locally marked as *dirty*.
+     *
+     * @return number of dirty resources
+     */
+    fun countDirty(): Int
 
 }
