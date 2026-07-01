@@ -308,15 +308,20 @@ open class LocalAddressBook @AssistedInject constructor(
         ab.queryGroupRows(null, where, whereArgs).map { LocalGroup(AndroidGroup(ab, it)) }.toList()
 
     @Throws(FileNotFoundException::class)
-    suspend fun findContactById(id: Long) =
-        queryContacts("${RawContacts._ID}=?", arrayOf(id.toString())).firstOrNull() ?: throw FileNotFoundException()
+    fun findContactById(id: Long): LocalContact =
+        ab.getRawContactRowOrNull("${RawContacts._ID}=?", arrayOf(id.toString()))
+            ?.let { LocalContact(this, AndroidContact(ab, it)) }
+            ?: throw FileNotFoundException()
 
-    suspend fun findContactByUid(uid: String) =
-        queryContacts("${RawContactColumns.UID}=?", arrayOf(uid)).firstOrNull()
+    fun findContactByUid(uid: String): LocalContact? =
+        ab.getRawContactRowOrNull("${RawContactColumns.UID}=?", arrayOf(uid))
+            ?.let { LocalContact(this, AndroidContact(ab, it)) }
 
     @Throws(FileNotFoundException::class)
-    suspend fun findGroupById(id: Long) =
-        queryGroups("${Groups._ID}=?", arrayOf(id.toString())).firstOrNull() ?: throw FileNotFoundException()
+    fun findGroupById(id: Long): LocalGroup =
+        ab.getGroupOrNull("${Groups._ID}=?", arrayOf(id.toString()))
+            ?.let { LocalGroup(AndroidGroup(ab, it)) }
+            ?: throw FileNotFoundException()
 
 
     fun getContactIdsByGroupMembership(groupId: Long): List<Long> = buildList {
@@ -330,16 +335,9 @@ open class LocalAddressBook @AssistedInject constructor(
         }
     }
 
-    fun getContactUidFromId(contactId: Long): String? {
-        ab.provider.query(
-            ab.rawContactsSyncUri(), arrayOf(RawContactColumns.UID),
-            "${RawContacts._ID}=?", arrayOf(contactId.toString()), null
-        )?.use { cursor ->
-            if (cursor.moveToNext())
-                return cursor.getString(0)
-        }
-        return null
-    }
+    fun getContactUidFromId(contactId: Long): String? =
+        ab.getRawContactRowOrNull("${RawContacts._ID}=?", arrayOf(contactId.toString()))
+            ?.getAsString(RawContactColumns.UID)
 
 
     /* special group operations */

@@ -35,7 +35,6 @@ import org.jetbrains.annotations.TestOnly
 import org.jetbrains.annotations.VisibleForTesting
 import java.io.FileNotFoundException
 import java.io.IOException
-import java.util.LinkedList
 import java.util.logging.Level
 import java.util.logging.Logger
 
@@ -198,6 +197,24 @@ class AndroidAddressBook(
         provider.queryFlow(rawContactsSyncUri(), null, where, whereArgs) { it.toContentValues() }
 
     /**
+     * Finds the first raw contact row matching the given selection, without collecting
+     * the full result set.
+     *
+     * This method operates "as sync adapter" on [addressBookAccount] and doesn't take the [readOnly] flag into account.
+     *
+     * @param where      optional selection
+     * @param whereArgs  optional arguments for [where]
+     * @return the matching row, or `null` if none matches
+     */
+    fun getRawContactRowOrNull(where: String?, whereArgs: Array<String>?): ContentValues? {
+        provider.query(rawContactsSyncUri(), null, where, whereArgs, null)?.use { cursor ->
+            if (cursor.moveToNext())
+                return cursor.toContentValues()
+        }
+        return null
+    }
+
+    /**
      * Enqueues an update of raw contact rows in this address book to the given batch.
      *
      * This method operates "as sync adapter" on [addressBookAccount] and doesn't take the [readOnly] flag into account.
@@ -240,14 +257,11 @@ class AndroidAddressBook(
     // region ContactsContract.Groups CRUD
 
     @Throws(FileNotFoundException::class)
-    fun findGroupById(id: Long): AndroidGroup {
+    fun findGroupById(id: Long): AndroidGroup =
         // account is implicitly restricted via the URI (asSyncAdapter appends ACCOUNT_NAME/ACCOUNT_TYPE)
-        provider.query(groupsSyncUri(), null, "${Groups._ID}=?", arrayOf(id.toString()), null)?.use { cursor ->
-            if (cursor.moveToNext())
-                return AndroidGroup(this, cursor.toContentValues())
-        }
-        throw FileNotFoundException()
-    }
+        getGroupOrNull("${Groups._ID}=?", arrayOf(id.toString()))
+            ?.let { AndroidGroup(this, it) }
+            ?: throw FileNotFoundException()
 
     fun findOrCreateGroup(title: String): Long {
         provider.query(
@@ -279,6 +293,24 @@ class AndroidAddressBook(
         whereArgs: Array<String>? = null
     ): Flow<ContentValues> =
         provider.queryFlow(groupsSyncUri(), projection, where, whereArgs) { it.toContentValues() }
+
+    /**
+     * Finds the first group row matching the given selection, without collecting
+     * the full result set.
+     *
+     * This method operates "as sync adapter" on [addressBookAccount] and doesn't take the [readOnly] flag into account.
+     *
+     * @param where      optional selection
+     * @param whereArgs  optional arguments for [where]
+     * @return the matching row, or `null` if none matches
+     */
+    fun getGroupOrNull(where: String?, whereArgs: Array<String>?): ContentValues? {
+        provider.query(groupsSyncUri(), null, where, whereArgs, null)?.use { cursor ->
+            if (cursor.moveToNext())
+                return cursor.toContentValues()
+        }
+        return null
+    }
 
     /**
      * Counts the number of groups in the address book that match the given selection criteria.
@@ -448,19 +480,6 @@ class AndroidAddressBook(
 
     // region legacy AndroidContact/AndroidGroup CRUD
 
-    @Deprecated("Use queryRawContactRows instead")
-    fun queryContacts(where: String?, whereArgs: Array<String>?): List<AndroidContact> {
-        val contacts = LinkedList<AndroidContact>()
-        provider.query(
-            rawContactsSyncUri(), null,
-            where, whereArgs, null
-        )?.use { cursor ->
-            while (cursor.moveToNext())
-                contacts += AndroidContact(this, cursor.toContentValues())
-        }
-        return contacts
-    }
-
     @VisibleForTesting
     internal suspend fun queryGroups(where: String?, whereArgs: Array<String>?): List<AndroidGroup> =
         queryGroupRows(null, where, whereArgs).map { AndroidGroup(this, it) }.toList()
@@ -468,7 +487,9 @@ class AndroidAddressBook(
     @TestOnly
     @Throws(FileNotFoundException::class)
     fun findContactById(id: Long) =
-        queryContacts("${RawContacts._ID}=?", arrayOf(id.toString())).firstOrNull() ?: throw FileNotFoundException()
+        getRawContactRowOrNull("${RawContacts._ID}=?", arrayOf(id.toString()))
+            ?.let { AndroidContact(this, it) }
+            ?: throw FileNotFoundException()
 
     // endregion
 

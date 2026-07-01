@@ -127,7 +127,7 @@ class LocalAddressBookTest {
             assertEquals(newName, addressBook.addressBookAccount.name)
 
             // check whether contact is still here (including data rows) and not dirty
-            val result = runBlocking { addressBook.findContactById(id) }
+            val result = addressBook.findContactById(id)
             assertFalse("Contact is dirty after moving", isContactDirty(addressBook, id))
 
             val contact2 = result.androidContact.getContact()
@@ -157,7 +157,7 @@ class LocalAddressBookTest {
             assertEquals(newName, addressBook.addressBookAccount.name)
 
             // check whether group is still here and not dirty
-            val result = runBlocking { addressBook.findGroupById(id) }
+            val result = addressBook.findGroupById(id)
             assertFalse("Group is dirty after moving", isGroupDirty(addressBook, id))
 
             val group = result.androidGroup.getContact()
