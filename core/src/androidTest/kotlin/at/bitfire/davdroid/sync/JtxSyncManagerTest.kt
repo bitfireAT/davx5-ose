@@ -22,6 +22,7 @@ import at.techbee.jtx.JtxContract
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assume.assumeNotNull
@@ -117,7 +118,7 @@ class JtxSyncManagerTest {
 
 
     @Test
-    fun testProcessICalObject_addsVtodo() {
+    fun testProcessICalObject_addsVtodo() = runTest {
         val calendar = "BEGIN:VCALENDAR\n" +
                 "PRODID:-Vivaldi Calendar V1.0//EN\n" +
                 "VERSION:2.0\n" +
@@ -145,7 +146,7 @@ class JtxSyncManagerTest {
     }
 
     @Test
-    fun testProcessICalObject_addsRecurringVtodo_withoutDtStart() {
+    fun testProcessICalObject_addsRecurringVtodo_withoutDtStart() = runTest {
         // Valid calendar example (See bitfireAT/davx5-ose#1265)
         // Note: We don't support starting a recurrence from DUE (RFC 5545  leaves it open to interpretation)
         val calendar = "BEGIN:VCALENDAR\n" +

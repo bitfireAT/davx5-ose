@@ -154,7 +154,7 @@ class TasksSyncManager @AssistedInject constructor(
         SyncException.wrapWithRemoteResourceSuspending(collection.url) {
             davCollection.multiget(bunch) { response, _ ->
                 // See CalendarSyncManager for more information about the multi-get response
-                SyncException.wrapWithRemoteResource(response.href) wrapResource@{
+                SyncException.wrapWithRemoteResourceSuspending(response.href) wrapResource@{
                     if (!response.isSuccess()) {
                         logger.warning("Ignoring non-successful multi-get response for ${response.href}")
                         return@wrapResource
@@ -190,7 +190,7 @@ class TasksSyncManager @AssistedInject constructor(
 
     // helpers
 
-    private fun processVTodo(fileName: String, eTag: String, reader: Reader) {
+    private suspend fun processVTodo(fileName: String, eTag: String, reader: Reader) {
         val calendar = ICalendarParser().parse(reader)
 
         val uidsAndTasks = CalendarUidSplitter<VToDo>().associateByUid(calendar, Component.VTODO)

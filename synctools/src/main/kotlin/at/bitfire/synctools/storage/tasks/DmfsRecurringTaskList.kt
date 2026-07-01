@@ -15,8 +15,10 @@ import at.bitfire.synctools.storage.LocalStorageException
 import at.bitfire.synctools.storage.containsNotNull
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.toList
 import org.dmfs.tasks.contract.TaskContract
 import org.dmfs.tasks.contract.TaskContract.Tasks
 import java.util.logging.Level
@@ -79,17 +81,8 @@ class DmfsRecurringTaskList(
      * @param where         selection
      * @param whereArgs     arguments for selection
      */
-    fun findTaskAndExceptions(where: String?, whereArgs: Array<String>?): TaskAndExceptions? {
-        val (mainWhere, mainWhereArgs) = whereWithMainTasksOnly(where, whereArgs)
-        val main = taskList.findTask(mainWhere, mainWhereArgs) ?: return null
-
-        // attach exceptions
-        val mainTaskId = main.entityValues.getAsLong(Tasks._ID)
-        return TaskAndExceptions(
-            main = main,
-            exceptions = findExceptions(mainTaskId)
-        )
-    }
+    suspend fun findTaskAndExceptions(where: String?, whereArgs: Array<String>?): TaskAndExceptions? =
+        taskAndExceptionsFlow(where, whereArgs).firstOrNull()
 
     /**
      * Retrieves a main task and its exceptions from the content provider.
@@ -98,14 +91,13 @@ class DmfsRecurringTaskList(
      *
      * @return the task and its exceptions, or _null_ if no task with the given id was found
      */
-    fun getById(mainTaskId: Long): TaskAndExceptions? =
+    suspend fun getById(mainTaskId: Long): TaskAndExceptions? =
         findTaskAndExceptions("${Tasks._ID}=?", arrayOf(mainTaskId.toString()))
 
     /**
-     * Like the callback-based iteration through main tasks together with their exceptions,
-     * but returns a cold [Flow] instead. Runs on [Dispatchers.IO] as a whole, since content
-     * provider access is blocking; the per-main exceptions lookup stays a small bounded
-     * synchronous query (exceptions of a single task are not streamed).
+     * Cold [Flow] of main tasks together with their exceptions. Runs on [Dispatchers.IO] as a
+     * whole, since content provider access is blocking; the per-main exceptions lookup stays a
+     * small bounded query (exceptions of a single task are not streamed).
      *
      * Note that the exceptions may contain deleted tasks.
      *
@@ -367,9 +359,8 @@ class DmfsRecurringTaskList(
      * @param mainTaskId   The [Tasks._ID] of the main task
      * @return List of exception entities linked to the main task
      */
-    private fun findExceptions(mainTaskId: Long): List<Entity> = buildList {
-        taskList.iterateTasks("${Tasks.ORIGINAL_INSTANCE_ID}=?", arrayOf(mainTaskId.toString())) { add(it) }
-    }
+    private suspend fun findExceptions(mainTaskId: Long): List<Entity> =
+        taskList.tasksFlow("${Tasks.ORIGINAL_INSTANCE_ID}=?", arrayOf(mainTaskId.toString())).toList()
 
     private fun whereWithMainTasksOnly(where: String?, whereArgs: Array<String>?): Pair<String, Array<String>> {
         val protectedWhere = "(${where ?: "1"}) AND ${Tasks.ORIGINAL_INSTANCE_ID} IS NULL"

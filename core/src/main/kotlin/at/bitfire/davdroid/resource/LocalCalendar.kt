@@ -83,7 +83,7 @@ class LocalCalendar @AssistedInject constructor(
     override fun findDirty(): Flow<LocalEvent> =
         recurringCalendar.eventAndExceptionsFlow(Events.DIRTY, null).map { LocalEvent(recurringCalendar, it) }
 
-    override fun findByName(name: String) =
+    override suspend fun findByName(name: String) =
         recurringCalendar.findEventAndExceptions("${Events._SYNC_ID}=?", arrayOf(name))?.let {
             LocalEvent(recurringCalendar, it)
         }
@@ -100,7 +100,7 @@ class LocalCalendar @AssistedInject constructor(
             arrayOf(androidCalendar.id.toString())
         )
 
-    override fun removeNotDirtyMarked(flags: Int): Int {
+    override suspend fun removeNotDirtyMarked(flags: Int): Int {
         // list all non-dirty events with the given flags and delete every row + its exceptions
         val batch = CalendarBatchOperation(androidCalendar.client)
         androidCalendar.iterateEventRows(

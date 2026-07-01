@@ -53,7 +53,7 @@ interface LocalCollection<out T: LocalResource> {
      * @param name file name to look for
      * @return resource with the given name, or null if none
      */
-    fun findByName(name: String): T?
+    suspend fun findByName(name: String): T?
 
     /**
      * Updates the flags value for entries which are not dirty.
@@ -72,7 +72,7 @@ interface LocalCollection<out T: LocalResource> {
      *
      * @return         number of removed entries
      */
-    fun removeNotDirtyMarked(flags: Int): Int
+    suspend fun removeNotDirtyMarked(flags: Int): Int
 
 
     /**

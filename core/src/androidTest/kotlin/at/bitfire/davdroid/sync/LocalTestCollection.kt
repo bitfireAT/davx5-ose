@@ -26,7 +26,7 @@ class LocalTestCollection(
 
     override fun findDirty() = entries.filter { it.dirty }.asFlow()
 
-    override fun findByName(name: String) = entries.firstOrNull { it.fileName == name }
+    override suspend fun findByName(name: String) = entries.firstOrNull { it.fileName == name }
 
     override fun markNotDirty(flags: Int): Int {
         var updated = 0
@@ -37,7 +37,7 @@ class LocalTestCollection(
         return updated
     }
 
-    override fun removeNotDirtyMarked(flags: Int): Int {
+    override suspend fun removeNotDirtyMarked(flags: Int): Int {
         val numBefore = entries.size
         entries.removeIf { !it.dirty && it.flags == flags }
         return numBefore - entries.size

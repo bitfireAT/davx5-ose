@@ -326,7 +326,7 @@ class ContactsSyncManager @AssistedInject constructor(
             }
             davCollection.multiget(bunch, contentType, version) { response, _ ->
                 // See CalendarSyncManager for more information about the multi-get response
-                SyncException.wrapWithRemoteResource(response.href) wrapResource@{
+                SyncException.wrapWithRemoteResourceSuspending(response.href) wrapResource@{
                     if (!response.isSuccess()) {
                         logger.warning("Ignoring non-successful multi-get response for ${response.href}")
                         return@wrapResource
@@ -365,7 +365,7 @@ class ContactsSyncManager @AssistedInject constructor(
 
     // helpers
 
-    private fun processCard(fileName: String, eTag: String, reader: Reader, downloader: Contact.Downloader) {
+    private suspend fun processCard(fileName: String, eTag: String, reader: Reader, downloader: Contact.Downloader) {
         logger.info("Processing CardDAV resource $fileName")
 
         val newData = try {

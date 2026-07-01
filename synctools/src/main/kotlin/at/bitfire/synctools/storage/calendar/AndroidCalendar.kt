@@ -26,7 +26,6 @@ import at.bitfire.synctools.storage.queryEntityFlow
 import at.bitfire.synctools.storage.toContentValues
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOn
 import org.jetbrains.annotations.TestOnly
 import java.util.logging.Logger
 
@@ -253,32 +252,8 @@ class AndroidCalendar(
     }
 
     /**
-     * Iterates event entities from this calendar.
-     *
-     * Adds a WHERE clause that restricts the query to [CalendarContract.EventsColumns.CALENDAR_ID] = [id].
-     *
-     * @param where         selection
-     * @param whereArgs     arguments for selection
-     * @param body          callback that is called for each entity
-     *
-     * @throws LocalStorageException when the content provider returns an error
-     */
-    fun iterateEvents(where: String?, whereArgs: Array<String>?, body: (Entity) -> Unit) {
-        try {
-            val (protectedWhere, protectedWhereArgs) = whereWithCalendarId(where, whereArgs)
-            client.query(eventEntitiesUri, null, protectedWhere, protectedWhereArgs, null)?.use { cursor ->
-                val iterator = EventsEntity.newEntityIterator(cursor, client)
-                for (entity in iterator)
-                    body(entity)
-            }
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't iterate events", e)
-        }
-    }
-
-    /**
-     * Like [iterateEvents], but returns a cold [Flow] instead of using a callback.
-     * Runs on [Dispatchers.IO], since content provider access is blocking.
+     * Cold [Flow] of event entities from this calendar. Runs on [Dispatchers.IO], since content
+     * provider access is blocking.
      *
      * Adds a WHERE clause that restricts the query to [CalendarContract.EventsColumns.CALENDAR_ID] = [id].
      *
@@ -291,7 +266,7 @@ class AndroidCalendar(
             eventEntitiesUri, null, protectedWhere, protectedWhereArgs,
             newIterator = { cursor -> EventsEntity.newEntityIterator(cursor, client) },
             transform = { it }
-        ).flowOn(Dispatchers.IO)
+        )
     }
 
     /**

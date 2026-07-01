@@ -250,7 +250,7 @@ class CalendarSyncManager @AssistedInject constructor(
                  * - ignore responses without requested calendar data (should also ignore collections and hopefully unrelated resources), and
                  * - take the last segment of the href as the file name and assume that it's in the requested collection.
                  */
-                SyncException.wrapWithRemoteResource(response.href) wrapResource@{
+                SyncException.wrapWithRemoteResourceSuspending(response.href) wrapResource@{
                     if (!response.isSuccess()) {
                         logger.warning("Ignoring non-successful multi-get response for ${response.href}")
                         return@wrapResource
@@ -288,7 +288,7 @@ class CalendarSyncManager @AssistedInject constructor(
 
     // helpers
 
-    private fun processICalendar(fileName: String, eTag: String, scheduleTag: String?, reader: Reader) {
+    private suspend fun processICalendar(fileName: String, eTag: String, scheduleTag: String?, reader: Reader) {
         val calendar = ICalendarParser().parse(reader)
 
         val uidsAndEvents = CalendarUidSplitter<VEvent>().associateByUid(calendar, Component.VEVENT)

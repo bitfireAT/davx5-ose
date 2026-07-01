@@ -722,7 +722,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
      * Used together with [resetPresentRemotely] when a full listing has been received from
      * the server to locally delete resources which are not present remotely (anymore).
      */
-    protected open fun deleteNotPresentRemotely() {
+    protected open suspend fun deleteNotPresentRemotely() {
         val removed = localCollection.removeNotDirtyMarked(0)
         logger.info("Removed $removed local resources which are not present on the server anymore")
     }

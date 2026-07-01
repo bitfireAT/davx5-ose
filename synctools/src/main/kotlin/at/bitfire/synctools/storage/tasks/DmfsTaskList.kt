@@ -280,29 +280,8 @@ class DmfsTaskList(
     }
 
     /**
-     * Iterates tasks (with properties) from this task list.
-     *
-     * @param where         selection
-     * @param whereArgs     arguments for selection
-     * @param body          callback that is called for each task entity
-     *
-     * @throws LocalStorageException when the content provider returns an error
-     */
-    fun iterateTasks(where: String?, whereArgs: Array<String>?, body: (Entity) -> Unit) {
-        try {
-            iterateTaskRows(null, where, whereArgs) { row ->
-                val id = row.getAsLong(Tasks._ID) ?: return@iterateTaskRows
-                val entity = getTask(id) ?: return@iterateTaskRows
-                body(entity)
-            }
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't iterate tasks", e)
-        }
-    }
-
-    /**
-     * Like [iterateTasks], but returns a cold [Flow] instead of using a callback.
-     * Runs on [Dispatchers.IO], since content provider access is blocking.
+     * Cold [Flow] of tasks (with properties) from this task list. Runs on [Dispatchers.IO],
+     * since content provider access is blocking.
      *
      * @param where         selection
      * @param whereArgs     arguments for selection

@@ -16,8 +16,10 @@ import at.bitfire.synctools.storage.LocalStorageException
 import at.bitfire.synctools.storage.containsNotNull
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.toList
 import java.util.logging.Level
 import java.util.logging.Logger
 
@@ -87,17 +89,8 @@ class AndroidRecurringCalendar(
      * @param where         selection
      * @param whereArgs     arguments for selection
      */
-    fun findEventAndExceptions(where: String?, whereArgs: Array<String>?): EventAndExceptions? {
-        val (mainWhere, mainWhereArgs) = whereWithMainEventsOnly(where, whereArgs)
-        val main = calendar.findEvent(mainWhere, mainWhereArgs) ?: return null
-
-        // attach exceptions
-        val mainEventId = main.entityValues.getAsLong(Events._ID)
-        return EventAndExceptions(
-            main = main,
-            exceptions = buildList { calendar.iterateEvents("${Events.ORIGINAL_ID}=?", arrayOf(mainEventId.toString())) { add(it) } }
-        )
-    }
+    suspend fun findEventAndExceptions(where: String?, whereArgs: Array<String>?): EventAndExceptions? =
+        eventAndExceptionsFlow(where, whereArgs).firstOrNull()
 
     /**
      * Retrieves a main event and its exceptions from the content provider (associated by [Events.ORIGINAL_ID]).
@@ -106,14 +99,13 @@ class AndroidRecurringCalendar(
      *
      * @return event and exceptions
      */
-    fun getById(mainEventId: Long): EventAndExceptions? =
+    suspend fun getById(mainEventId: Long): EventAndExceptions? =
         findEventAndExceptions("${Events._ID}=?", arrayOf(mainEventId.toString()))
 
     /**
-     * Like the callback-based iteration through main events together with their exceptions,
-     * but returns a cold [Flow] instead. Runs on [Dispatchers.IO] as a whole, since content
-     * provider access is blocking; the per-main exceptions lookup stays a small bounded
-     * synchronous query (exceptions of a single event are not streamed).
+     * Cold [Flow] of main events together with their exceptions. Runs on [Dispatchers.IO] as a
+     * whole, since content provider access is blocking; the per-main exceptions lookup stays a
+     * small bounded query (exceptions of a single event are not streamed).
      *
      * Note that the exceptions may contain deleted events.
      *
@@ -127,12 +119,8 @@ class AndroidRecurringCalendar(
                 val mainEventId = main.entityValues.getAsLong(Events._ID)
                 EventAndExceptions(
                     main = main,
-                    exceptions = buildList {
-                        calendar.iterateEvents(
-                            "${Events.ORIGINAL_ID}=?",
-                            arrayOf(mainEventId.toString())
-                        ) { add(it) }
-                    }
+                    exceptions = calendar.eventsFlow("${Events.ORIGINAL_ID}=?", arrayOf(mainEventId.toString()))
+                        .toList()
                 )
             }
             .flowOn(Dispatchers.IO)

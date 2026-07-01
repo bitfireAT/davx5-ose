@@ -120,7 +120,7 @@ open class LocalAddressBook @AssistedInject constructor(
         return batch.commit()
     }
 
-    override fun removeNotDirtyMarked(flags: Int): Int {
+    override suspend fun removeNotDirtyMarked(flags: Int): Int {
         val batch = ContactsBatchOperation(ab.provider)
         ab.deleteRawContacts("NOT ${RawContacts.DIRTY} AND ${RawContactColumns.FLAGS}=?", arrayOf(flags.toString()), batch)
         if (includeGroups)
@@ -206,7 +206,7 @@ open class LocalAddressBook @AssistedInject constructor(
         return dirtyContacts + dirtyGroups
     }
 
-    override fun findByName(name: String): LocalAddress? {
+    override suspend fun findByName(name: String): LocalAddress? {
         val result = queryContacts("${RawContactColumns.FILENAME}=?", arrayOf(name)).firstOrNull()
         return if (includeGroups)
             result ?: queryGroups("${GroupColumns.FILENAME}=?", arrayOf(name)).firstOrNull()

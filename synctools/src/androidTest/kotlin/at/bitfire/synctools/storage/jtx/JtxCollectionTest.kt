@@ -19,6 +19,8 @@ import at.bitfire.synctools.test.assertEntitiesEqual
 import at.techbee.jtx.JtxContract
 import at.techbee.jtx.JtxContract.JtxICalObject.Component
 import at.techbee.jtx.JtxContract.asSyncAdapter
+import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.AfterClass
 import org.junit.Assert.assertEquals
@@ -322,12 +324,11 @@ class JtxCollectionTest {
     }
 
     @Test
-    fun testIterateJtxObjects() {
+    fun testIterateJtxObjects() = runTest {
         val id1 = collection.addJtxObject(sampleEntityWithSubValues("Object 1"))
         val id2 = collection.addJtxObject(sampleEntityWithSubValues("Object 2"))
 
-        val result = mutableListOf<Entity>()
-        collection.iterateJtxObjects(null, null) { result += it }
+        val result = collection.jtxObjectsFlow(null, null).toList()
 
         assertEquals(
             setOf(id1, id2),

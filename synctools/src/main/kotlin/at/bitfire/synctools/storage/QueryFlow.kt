@@ -9,16 +9,16 @@ import android.content.Entity
 import android.content.EntityIterator
 import android.database.Cursor
 import android.net.Uri
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 
 /**
- * Runs a content provider query and emits each row as a cold [Flow], transformed by [transform].
- * The query is executed and the cursor is iterated lazily, only when the flow is collected; the
- * cursor is closed once the flow completes or is cancelled. No producer coroutine/thread is used.
+ * Cold [Flow] over a content provider query, one row per emission.
  *
- * Doesn't switch dispatchers itself — callers should apply [kotlinx.coroutines.flow.flowOn] as
- * needed, since content provider access is blocking.
+ * Runs on [Dispatchers.IO]. Chained blocking work (e.g. a nested query in `.map { }`) needs its
+ * own trailing [kotlinx.coroutines.flow.flowOn] — this one only covers the query itself.
  */
 fun <T> ContentProviderClient.queryFlow(
     uri: Uri,
@@ -32,11 +32,11 @@ fun <T> ContentProviderClient.queryFlow(
         while (cursor.moveToNext())
             emit(transform(cursor))
     }
-}
+}.flowOn(Dispatchers.IO)
 
 /**
- * Like [queryFlow], but iterates rows as [Entity] via [newIterator], for content providers that
- * expose their rows through an [EntityIterator] (e.g. raw contacts and calendar events).
+ * Like [queryFlow], but for providers that expose rows via an [EntityIterator] (e.g. raw contacts,
+ * calendar events), built from the cursor by [newIterator].
  */
 fun <T> ContentProviderClient.queryEntityFlow(
     uri: Uri,
@@ -50,4 +50,4 @@ fun <T> ContentProviderClient.queryEntityFlow(
         for (entity in newIterator(cursor))
             emit(transform(entity))
     }
-}
+}.flowOn(Dispatchers.IO)

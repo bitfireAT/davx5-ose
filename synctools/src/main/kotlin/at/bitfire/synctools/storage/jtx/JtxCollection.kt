@@ -18,7 +18,6 @@ import at.techbee.jtx.JtxContract
 import at.techbee.jtx.JtxContract.asSyncAdapter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOn
 import org.jetbrains.annotations.TestOnly
 import java.nio.channels.Channels
 
@@ -325,31 +324,8 @@ class JtxCollection(
     }
 
     /**
-     * Iterates jtx objects (with sub-rows) from this collection.
-     *
-     * Adds a WHERE clause that restricts the query to [JtxContract.JtxICalObject.ICALOBJECT_COLLECTIONID] = [id].
-     *
-     * @param where         selection
-     * @param whereArgs     arguments for selection
-     * @param body          callback that is called for each jtx object entity
-     *
-     * @throws LocalStorageException when the content provider returns an error
-     */
-    fun iterateJtxObjects(where: String?, whereArgs: Array<String>?, body: (Entity) -> Unit) {
-        try {
-            val (protectedWhere, protectedWhereArgs) = whereWithCollectionId(where, whereArgs)
-            client.query(jtxObjectsUri, null, protectedWhere, protectedWhereArgs, null)?.use { cursor ->
-                while (cursor.moveToNext())
-                    body(readEntity(cursor.toContentValues()))
-            }
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't iterate jtx objects", e)
-        }
-    }
-
-    /**
-     * Like [iterateJtxObjects], but returns a cold [Flow] instead of using a callback.
-     * Runs on [Dispatchers.IO], since content provider access is blocking.
+     * Cold [Flow] of jtx objects (with sub-rows) from this collection. Runs on [Dispatchers.IO],
+     * since content provider access is blocking.
      *
      * Adds a WHERE clause that restricts the query to [JtxContract.JtxICalObject.ICALOBJECT_COLLECTIONID] = [id].
      *
@@ -364,7 +340,6 @@ class JtxCollection(
             protectedWhere,
             protectedWhereArgs
         ) { readEntity(it.toContentValues()) }
-            .flowOn(Dispatchers.IO)
     }
 
     /**

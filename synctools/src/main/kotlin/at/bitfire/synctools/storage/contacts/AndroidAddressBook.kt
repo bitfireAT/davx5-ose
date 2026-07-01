@@ -30,7 +30,6 @@ import at.bitfire.synctools.util.setAndVerifyUserData
 import at.bitfire.synctools.vcard.GroupMethod
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOn
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.annotations.VisibleForTesting
 import java.io.FileNotFoundException
@@ -245,7 +244,6 @@ class AndroidAddressBook(
      */
     fun rawContactRowsFlow(where: String? = null, whereArgs: Array<String>? = null): Flow<ContentValues> =
         provider.queryFlow(rawContactsSyncUri(), null, where, whereArgs) { it.toContentValues() }
-            .flowOn(Dispatchers.IO)
 
     /**
      * Enqueues an update of raw contact rows in this address book to the given batch.
@@ -347,7 +345,6 @@ class AndroidAddressBook(
         whereArgs: Array<String>? = null
     ): Flow<ContentValues> =
         provider.queryFlow(groupsSyncUri(), projection, where, whereArgs) { it.toContentValues() }
-            .flowOn(Dispatchers.IO)
 
     /**
      * Counts the number of groups in the address book that match the given selection criteria.

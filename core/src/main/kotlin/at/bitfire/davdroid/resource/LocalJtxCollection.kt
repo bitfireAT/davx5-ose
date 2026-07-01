@@ -73,7 +73,7 @@ class LocalJtxCollection(internal val jtxCollection: JtxCollection) :
         recurringCollection.jtxObjectAndExceptionsFlow(JtxICalObject.DIRTY, null)
             .map { LocalJtxObject(recurringCollection, it) }
 
-    override fun findByName(name: String): LocalJtxObject? {
+    override suspend fun findByName(name: String): LocalJtxObject? {
         return recurringCollection
             .findJtxObjectAndExceptions("${JtxICalObject.FILENAME}=?", arrayOf(name))
             ?.let { jtxObjectAndExceptions ->
@@ -87,12 +87,12 @@ class LocalJtxCollection(internal val jtxCollection: JtxCollection) :
             "NOT ${JtxICalObject.DIRTY}", null
         )
 
-    override fun removeNotDirtyMarked(flags: Int): Int {
+    override suspend fun removeNotDirtyMarked(flags: Int): Int {
         val batch = JtxBatchOperation(jtxCollection.client)
-        recurringCollection.iterateJtxObjectAndExceptions(
+        recurringCollection.jtxObjectAndExceptionsFlow(
             "NOT ${JtxICalObject.DIRTY} AND ${JtxICalObject.FLAGS}=?",
             arrayOf(flags.toString())
-        ) { objectAndExceptions ->
+        ).collect { objectAndExceptions ->
             val id = objectAndExceptions.main.entityValues.getAsLong(JtxICalObject.ID)!!
             recurringCollection.deleteJtxObjectAndExceptions(id, batch)
         }

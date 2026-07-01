@@ -20,6 +20,8 @@ import at.techbee.jtx.JtxContract
 import at.techbee.jtx.JtxContract.JtxICalObject.Component
 import io.mockk.junit4.MockKRule
 import io.mockk.spyk
+import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.AfterClass
 import org.junit.Assert.assertEquals
@@ -87,7 +89,7 @@ class JtxRecurringCollectionTest {
     // test CRUD
 
     @Test
-    fun testAddJtxEntityAndExceptions_and_GetById() {
+    fun testAddJtxEntityAndExceptions_and_GetById() = runTest {
         val (mainId, obj) = insertRecurring()
         val addedWithId = obj.withJtxId(mainId)
 
@@ -97,7 +99,7 @@ class JtxRecurringCollectionTest {
     }
 
     @Test
-    fun testFindJtxObjectAndExceptions() {
+    fun testFindJtxObjectAndExceptions() = runTest {
         val uid = "testFindJtxObjectAndExceptions"
         val (mainId, obj) = insertRecurring(uid = uid)
         val addedWithId = obj.withJtxId(mainId)
@@ -110,7 +112,7 @@ class JtxRecurringCollectionTest {
     }
 
     @Test
-    fun testFindJtxObjectAndExceptions_NotFound() {
+    fun testFindJtxObjectAndExceptions_NotFound() = runTest {
         assertNull(
             recurringCollection.findJtxObjectAndExceptions(
                 "${JtxContract.JtxICalObject.UID}=?",
@@ -120,13 +122,13 @@ class JtxRecurringCollectionTest {
     }
 
     @Test
-    fun testGetById_NotFound() {
+    fun testGetById_NotFound() = runTest {
         recurringCollection.deleteJtxObjectAndExceptions(Long.MAX_VALUE)
         assertNull(recurringCollection.getById(Long.MAX_VALUE))
     }
 
     @Test
-    fun testGetById_withExceptionId_returnsNull() {
+    fun testGetById_withExceptionId_returnsNull() = runTest {
         val uid = "testGetById_withExceptionId"
         val (mainId, _) = insertRecurring(uid = uid)
 
@@ -144,7 +146,7 @@ class JtxRecurringCollectionTest {
     }
 
     @Test
-    fun testUpdateJtxObjectAndExceptions_withExceptionId_throws() {
+    fun testUpdateJtxObjectAndExceptions_withExceptionId_throws() = runTest {
         val uid = "testUpdateJtxObjectAndExceptions_withExceptionId"
         insertRecurring(uid = uid)
 
@@ -170,17 +172,16 @@ class JtxRecurringCollectionTest {
     }
 
     @Test
-    fun testIterateJtxObjectAndExceptions() {
+    fun testIterateJtxObjectAndExceptions() = runTest {
         val uid1 = "testIterateJtxObjectAndExceptions1"
         val uid2 = "testIterateJtxObjectAndExceptions2"
         val (id1, obj1) = insertRecurring(uid = uid1)
         val (id2, obj2) = insertRecurring(uid = uid2)
 
-        val result = mutableListOf<JtxObjectAndExceptions>()
-        recurringCollection.iterateJtxObjectAndExceptions(
+        val result = recurringCollection.jtxObjectAndExceptionsFlow(
             "${JtxContract.JtxICalObject.UID} IN (?, ?)",
             arrayOf(uid1, uid2)
-        ) { result += it }
+        ).toList()
 
         val orderedResult = result.sortedBy { it.main.entityValues.getAsLong(JtxContract.JtxICalObject.ID) }
         assertEquals(2, orderedResult.size)
@@ -189,17 +190,16 @@ class JtxRecurringCollectionTest {
     }
 
     @Test
-    fun testIterateJtxObjectAndExceptions_NotFound() {
-        recurringCollection.iterateJtxObjectAndExceptions(
+    fun testIterateJtxObjectAndExceptions_NotFound() = runTest {
+        val result = recurringCollection.jtxObjectAndExceptionsFlow(
             "${JtxContract.JtxICalObject.UID}=?",
             arrayOf("does-not-exist")
-        ) {
-            fail("body must not be called, when does not exist")
-        }
+        ).toList()
+        assertTrue("result must be empty, when does not exist", result.isEmpty())
     }
 
     @Test
-    fun testUpdateJtxObjectAndExceptions() {
+    fun testUpdateJtxObjectAndExceptions() = runTest {
         val now = 1754233504000L     // Sun Aug 03 2025 15:05:04 GMT+0000
         val uid = "testUpdateJtxObjectAndExceptions"
         val initialMain = Entity(contentValuesOf(
@@ -266,7 +266,7 @@ class JtxRecurringCollectionTest {
     }
 
     @Test
-    fun testDeleteJtxObjectAndExceptions_batch() {
+    fun testDeleteJtxObjectAndExceptions_batch() = runTest {
         val now = 1754233504000L
         val uid = "testDeleteJtxObjectAndExceptions_batch"
         val mainId = recurringCollection.addJtxEntityAndExceptions(
@@ -312,7 +312,7 @@ class JtxRecurringCollectionTest {
     }
 
     @Test
-    fun testDeleteJtxObjectAndExceptions() {
+    fun testDeleteJtxObjectAndExceptions() = runTest {
         val now = 1754233504000L
         val uid = "testDeleteJtxObjectAndExceptions"
         val mainId = recurringCollection.addJtxEntityAndExceptions(
@@ -486,7 +486,7 @@ class JtxRecurringCollectionTest {
     // test processing dirty/deleted exceptions
 
     @Test
-    fun testProcessDeletedExceptions() {
+    fun testProcessDeletedExceptions() = runTest {
         val now = System.currentTimeMillis()
         val uid = "testProcessDeletedExceptions"
         val mainValues = contentValuesOf(
@@ -550,7 +550,7 @@ class JtxRecurringCollectionTest {
     }
 
     @Test
-    fun testProcessDirtyExceptions() {
+    fun testProcessDirtyExceptions() = runTest {
         val now = System.currentTimeMillis()
         val uid = "testProcessDirtyExceptions"
         val mainValues = contentValuesOf(
