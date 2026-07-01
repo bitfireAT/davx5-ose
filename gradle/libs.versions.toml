@@ -32,12 +32,10 @@ guava = "33.6.0-android"
 hilt = "2.60"
 java-toolchain = "21"
 # keep in sync with ksp version
-kotlin = "2.3.21"
+kotlin = "2.4.0"
 kotlinx-coroutines = "1.11.0"
 ksp = "2.3.9"
 ktor = "3.5.1"
-# Newer versions of aboutLibraries don't seem to work with includeBuild("../synctools").
-# When using includeBuild, temporarily use 14.0.1.
 mikepenz-aboutLibraries = "15.0.3"
 mockk = "1.14.11"
 okhttp = "5.4.0"
