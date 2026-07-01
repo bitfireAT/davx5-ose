@@ -19,6 +19,13 @@ import kotlinx.coroutines.flow.flowOn
  *
  * Runs on [Dispatchers.IO]. Chained blocking work (e.g. a nested query in `.map { }`) needs its
  * own trailing [kotlinx.coroutines.flow.flowOn] — this one only covers the query itself.
+ *
+ * @param uri           content URI to query
+ * @param projection    columns to return
+ * @param where         selection
+ * @param whereArgs     arguments for selection
+ * @param sortOrder     sort order
+ * @param transformRow  maps a cursor row (positioned by the query) to the emitted value
  */
 fun <T> ContentProviderClient.queryFlow(
     uri: Uri,
@@ -26,17 +33,24 @@ fun <T> ContentProviderClient.queryFlow(
     where: String? = null,
     whereArgs: Array<String>? = null,
     sortOrder: String? = null,
-    transform: (Cursor) -> T
+    transformRow: (Cursor) -> T
 ): Flow<T> = flow {
     query(uri, projection, where, whereArgs, sortOrder)?.use { cursor ->
         while (cursor.moveToNext())
-            emit(transform(cursor))
+            emit(transformRow(cursor))
     }
 }.flowOn(Dispatchers.IO)
 
 /**
  * Like [queryFlow], but for providers that expose rows via an [EntityIterator] (e.g. raw contacts,
  * calendar events), built from the cursor by [newIterator].
+ *
+ * @param uri           content URI to query
+ * @param projection    columns to return
+ * @param where         selection
+ * @param whereArgs     arguments for selection
+ * @param newIterator   builds the [EntityIterator] from the query's cursor
+ * @param transformRow  maps an entity produced by [newIterator] to the emitted value
  */
 fun <T> ContentProviderClient.queryEntityFlow(
     uri: Uri,
@@ -44,10 +58,10 @@ fun <T> ContentProviderClient.queryEntityFlow(
     where: String? = null,
     whereArgs: Array<String>? = null,
     newIterator: (Cursor) -> EntityIterator,
-    transform: (Entity) -> T
+    transformRow: (Entity) -> T
 ): Flow<T> = flow {
     query(uri, projection, where, whereArgs, null)?.use { cursor ->
         for (entity in newIterator(cursor))
-            emit(transform(entity))
+            emit(transformRow(entity))
     }
 }.flowOn(Dispatchers.IO)

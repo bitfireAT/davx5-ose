@@ -37,7 +37,7 @@ import java.util.logging.Logger
  * Methods that use [Entity] operate on [EventsEntity] URIs to access the [Events] rows together with
  * associated data rows (reminders, attendees etc.)
  *
- * @param client    calendar provider
+ * @param provider  calendar provider
  * @param values    content values as read from the calendar provider; [android.provider.BaseColumns._ID] must be set
  *
  * @throws IllegalArgumentException when [Calendars._ID] is not set
@@ -265,7 +265,7 @@ class AndroidCalendar(
         return client.queryEntityFlow(
             eventEntitiesUri, null, protectedWhere, protectedWhereArgs,
             newIterator = { cursor -> EventsEntity.newEntityIterator(cursor, client) },
-            transform = { it }
+            transformRow = { it }
         )
     }
 
