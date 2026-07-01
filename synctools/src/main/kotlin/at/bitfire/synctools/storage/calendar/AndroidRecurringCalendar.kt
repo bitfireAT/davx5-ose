@@ -90,7 +90,7 @@ class AndroidRecurringCalendar(
      * @param whereArgs     arguments for selection
      */
     suspend fun findEventAndExceptions(where: String?, whereArgs: Array<String>?): EventAndExceptions? =
-        eventAndExceptionsFlow(where, whereArgs).firstOrNull()
+        queryEventsAndExceptions(where, whereArgs).firstOrNull()
 
     /**
      * Retrieves a main event and its exceptions from the content provider (associated by [Events.ORIGINAL_ID]).
@@ -111,15 +111,15 @@ class AndroidRecurringCalendar(
      * @param where         selection
      * @param whereArgs     arguments for selection
      */
-    fun eventAndExceptionsFlow(where: String?, whereArgs: Array<String>?): Flow<EventAndExceptions> {
+    fun queryEventsAndExceptions(where: String?, whereArgs: Array<String>?): Flow<EventAndExceptions> {
         val (mainWhere, mainWhereArgs) = whereWithMainEventsOnly(where, whereArgs)
         return calendar
-            .eventsFlow(mainWhere, mainWhereArgs)
+            .queryEvents(mainWhere, mainWhereArgs)
             .map { main ->
                 val mainEventId = main.entityValues.getAsLong(Events._ID)
                 EventAndExceptions(
                     main = main,
-                    exceptions = calendar.eventsFlow("${Events.ORIGINAL_ID}=?", arrayOf(mainEventId.toString()))
+                    exceptions = calendar.queryEvents("${Events.ORIGINAL_ID}=?", arrayOf(mainEventId.toString()))
                         .toList()
                 )
             }

@@ -84,7 +84,6 @@ interface LocalCollection<out T: LocalResource> {
      * Counts all resources in this collection.
      *
      * @return total number of resources
-     * @throws UnsupportedOperationException if the operation is not supported on this collection (jtx Board)
      */
     fun countAll(): Int
 
@@ -92,7 +91,6 @@ interface LocalCollection<out T: LocalResource> {
      * Counts resources in this collection that are locally deleted (pending removal from server).
      *
      * @return number of deleted resources
-     * @throws UnsupportedOperationException if the operation is not supported on this collection (jtx Board)
      */
     fun countDeleted(): Int
 
@@ -101,7 +99,6 @@ interface LocalCollection<out T: LocalResource> {
      * excluding resources already marked as deleted.
      *
      * @return number of modified resources
-     * @throws UnsupportedOperationException if the operation is not supported on this collection (jtx Board)
      */
     fun countModified(): Int
 
@@ -109,7 +106,6 @@ interface LocalCollection<out T: LocalResource> {
      * Counts resources in this collection that are locally marked as *dirty*.
      *
      * @return number of dirty resources
-     * @throws UnsupportedOperationException if the operation is not supported on this collection (jtx Board)
      */
     fun countDirty(): Int
 

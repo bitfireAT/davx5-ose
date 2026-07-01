@@ -258,7 +258,7 @@ class AndroidCalendar(
      * @param where         selection
      * @param whereArgs     arguments for selection
      */
-    fun eventsFlow(where: String?, whereArgs: Array<String>?): Flow<Entity> {
+    fun queryEvents(where: String?, whereArgs: Array<String>?): Flow<Entity> {
         val (protectedWhere, protectedWhereArgs) = whereWithCalendarId(where, whereArgs)
         return client.queryEntityFlow(
             eventEntitiesUri, null, protectedWhere, protectedWhereArgs,

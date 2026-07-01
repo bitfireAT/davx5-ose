@@ -116,8 +116,7 @@ open class LocalAddressBook @AssistedInject constructor(
         val batch = ContactsBatchOperation(ab.provider)
         ab.updateRawContactRows(
             contentValuesOf(RawContactColumns.FLAGS to flags),
-            "${RawContacts.DIRTY}=0",
-            null,
+            "${RawContacts.DIRTY}=0", null,
             batch
         )
         if (includeGroups)
@@ -128,8 +127,7 @@ open class LocalAddressBook @AssistedInject constructor(
     override suspend fun removeNotDirtyMarked(flags: Int): Int {
         val batch = ContactsBatchOperation(ab.provider)
         ab.deleteRawContacts(
-            "NOT ${RawContacts.DIRTY} AND ${RawContactColumns.FLAGS}=?",
-            arrayOf(flags.toString()),
+            "NOT ${RawContacts.DIRTY} AND ${RawContactColumns.FLAGS}=?", arrayOf(flags.toString()),
             batch
         )
         if (includeGroups)
@@ -238,14 +236,14 @@ open class LocalAddressBook @AssistedInject constructor(
      * @throws LocalStorageException on content provider errors
      */
     fun findDeletedContacts(): Flow<LocalContact> =
-        ab.rawContactRowsFlow(RawContacts.DELETED, null).map { LocalContact(this, AndroidContact(ab, it)) }
+        ab.queryRawContactRows(RawContacts.DELETED, null).map { LocalContact(this, AndroidContact(ab, it)) }
 
     /**
      * Finds local groups which have been deleted locally. (DELETED != 0).
      * @throws LocalStorageException on content provider errors
      */
     fun findDeletedGroups(): Flow<LocalGroup> =
-        ab.groupsFlow(null, Groups.DELETED, null).map { LocalGroup(AndroidGroup(ab, it)) }
+        ab.queryGroupRows(null, Groups.DELETED, null).map { LocalGroup(AndroidGroup(ab, it)) }
 
     /**
      * Finds local contacts/groups which have been deleted locally. (DELETED != 0).
@@ -262,14 +260,14 @@ open class LocalAddressBook @AssistedInject constructor(
      * @throws LocalStorageException on content provider errors
      */
     fun findDirtyContacts(): Flow<LocalContact> =
-        ab.rawContactRowsFlow(RawContacts.DIRTY, null).map { LocalContact(this, AndroidContact(ab, it)) }
+        ab.queryRawContactRows(RawContacts.DIRTY, null).map { LocalContact(this, AndroidContact(ab, it)) }
 
     /**
      * Finds local groups which have been changed locally (DIRTY != 0).
      * @throws LocalStorageException on content provider errors
      */
     fun findDirtyGroups(): Flow<LocalGroup> =
-        ab.groupsFlow(null, Groups.DIRTY, null).map { LocalGroup(AndroidGroup(ab, it)) }
+        ab.queryGroupRows(null, Groups.DIRTY, null).map { LocalGroup(AndroidGroup(ab, it)) }
 
     /**
      * Finds local contacts/groups which have been changed locally (DIRTY != 0).

@@ -328,7 +328,7 @@ class JtxCollectionTest {
         val id1 = collection.addJtxObject(sampleEntityWithSubValues("Object 1"))
         val id2 = collection.addJtxObject(sampleEntityWithSubValues("Object 2"))
 
-        val result = collection.jtxObjectsFlow(null, null).toList()
+        val result = collection.queryJtxObjects(null, null).toList()
 
         assertEquals(
             setOf(id1, id2),

@@ -66,11 +66,11 @@ class LocalJtxCollection(internal val jtxCollection: JtxCollection) :
         jtxCollection.countJtxObjects(JtxICalObject.DIRTY, null)
 
     override fun findDeleted(): Flow<LocalJtxObject> =
-        recurringCollection.jtxObjectAndExceptionsFlow(JtxICalObject.DELETED, null)
+        recurringCollection.queryJtxObjectsAndExceptions(JtxICalObject.DELETED, null)
             .map { LocalJtxObject(recurringCollection, it) }
 
     override fun findDirty(): Flow<LocalJtxObject> =
-        recurringCollection.jtxObjectAndExceptionsFlow(JtxICalObject.DIRTY, null)
+        recurringCollection.queryJtxObjectsAndExceptions(JtxICalObject.DIRTY, null)
             .map { LocalJtxObject(recurringCollection, it) }
 
     override suspend fun findByName(name: String): LocalJtxObject? {
@@ -89,7 +89,7 @@ class LocalJtxCollection(internal val jtxCollection: JtxCollection) :
 
     override suspend fun removeNotDirtyMarked(flags: Int): Int {
         val batch = JtxBatchOperation(jtxCollection.client)
-        recurringCollection.jtxObjectAndExceptionsFlow(
+        recurringCollection.queryJtxObjectsAndExceptions(
             "NOT ${JtxICalObject.DIRTY} AND ${JtxICalObject.FLAGS}=?",
             arrayOf(flags.toString())
         ).collect { objectAndExceptions ->

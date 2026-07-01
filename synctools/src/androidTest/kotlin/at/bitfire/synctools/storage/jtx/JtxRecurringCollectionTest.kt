@@ -178,7 +178,7 @@ class JtxRecurringCollectionTest {
         val (id1, obj1) = insertRecurring(uid = uid1)
         val (id2, obj2) = insertRecurring(uid = uid2)
 
-        val result = recurringCollection.jtxObjectAndExceptionsFlow(
+        val result = recurringCollection.queryJtxObjectsAndExceptions(
             "${JtxContract.JtxICalObject.UID} IN (?, ?)",
             arrayOf(uid1, uid2)
         ).toList()
@@ -191,7 +191,7 @@ class JtxRecurringCollectionTest {
 
     @Test
     fun testIterateJtxObjectAndExceptions_NotFound() = runTest {
-        val result = recurringCollection.jtxObjectAndExceptionsFlow(
+        val result = recurringCollection.queryJtxObjectsAndExceptions(
             "${JtxContract.JtxICalObject.UID}=?",
             arrayOf("does-not-exist")
         ).toList()

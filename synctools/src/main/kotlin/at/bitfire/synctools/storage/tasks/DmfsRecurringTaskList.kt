@@ -82,7 +82,7 @@ class DmfsRecurringTaskList(
      * @param whereArgs     arguments for selection
      */
     suspend fun findTaskAndExceptions(where: String?, whereArgs: Array<String>?): TaskAndExceptions? =
-        taskAndExceptionsFlow(where, whereArgs).firstOrNull()
+        queryTasksAndExceptions(where, whereArgs).firstOrNull()
 
     /**
      * Retrieves a main task and its exceptions from the content provider.
@@ -103,10 +103,10 @@ class DmfsRecurringTaskList(
      * @param where         selection
      * @param whereArgs     arguments for selection
      */
-    fun taskAndExceptionsFlow(where: String?, whereArgs: Array<String>?): Flow<TaskAndExceptions> {
+    fun queryTasksAndExceptions(where: String?, whereArgs: Array<String>?): Flow<TaskAndExceptions> {
         val (mainWhere, mainWhereArgs) = whereWithMainTasksOnly(where, whereArgs)
         return taskList
-            .tasksFlow(mainWhere, mainWhereArgs)
+            .queryTasks(mainWhere, mainWhereArgs)
             .map { main ->
                 val mainTaskId = main.entityValues.getAsLong(Tasks._ID)
                 TaskAndExceptions(main = main, exceptions = findExceptions(mainTaskId))
@@ -360,7 +360,7 @@ class DmfsRecurringTaskList(
      * @return List of exception entities linked to the main task
      */
     private suspend fun findExceptions(mainTaskId: Long): List<Entity> =
-        taskList.tasksFlow("${Tasks.ORIGINAL_INSTANCE_ID}=?", arrayOf(mainTaskId.toString())).toList()
+        taskList.queryTasks("${Tasks.ORIGINAL_INSTANCE_ID}=?", arrayOf(mainTaskId.toString())).toList()
 
     private fun whereWithMainTasksOnly(where: String?, whereArgs: Array<String>?): Pair<String, Array<String>> {
         val protectedWhere = "(${where ?: "1"}) AND ${Tasks.ORIGINAL_INSTANCE_ID} IS NULL"

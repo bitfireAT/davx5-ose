@@ -142,7 +142,7 @@ class AndroidRecurringCalendarTest {
     fun testIterateEventAndExceptions() = runTest {
         val (id1, event1) = insertRecurring(syncId = "testIterateEventAndExceptions1")
         val (id2, event2) = insertRecurring(syncId = "testIterateEventAndExceptions2")
-        val result = recurringCalendar.eventAndExceptionsFlow(
+        val result = recurringCalendar.queryEventsAndExceptions(
             "${Events._SYNC_ID} IN (?, ?)",
             arrayOf("testIterateEventAndExceptions1", "testIterateEventAndExceptions2")
         ).toList()
@@ -156,13 +156,14 @@ class AndroidRecurringCalendarTest {
     fun testIterateEventAndExceptions_IgnoresExceptionMatches() = runTest {
         insertRecurring()
 
-        val result = recurringCalendar.eventAndExceptionsFlow("${Events.TITLE}=?", arrayOf("Exception")).toList()
+        val result = recurringCalendar.queryEventsAndExceptions("${Events.TITLE}=?", arrayOf("Exception")).toList()
         assertTrue(result.isEmpty())
     }
 
     @Test
     fun testIterateEventAndExceptions_NotFound() = runTest {
-        val result = recurringCalendar.eventAndExceptionsFlow("${Events._SYNC_ID}=?", arrayOf("not-existent")).toList()
+        val result =
+            recurringCalendar.queryEventsAndExceptions("${Events._SYNC_ID}=?", arrayOf("not-existent")).toList()
         assertTrue(result.isEmpty())
     }
 

@@ -240,7 +240,7 @@ class AndroidAddressBook(
      * @param where      optional selection
      * @param whereArgs  optional arguments for [where]
      */
-    fun rawContactRowsFlow(where: String? = null, whereArgs: Array<String>? = null): Flow<ContentValues> =
+    fun queryRawContactRows(where: String? = null, whereArgs: Array<String>? = null): Flow<ContentValues> =
         provider.queryFlow(rawContactsSyncUri(), null, where, whereArgs) { it.toContentValues() }
 
     /**
@@ -336,7 +336,7 @@ class AndroidAddressBook(
      * @param where      optional selection
      * @param whereArgs  optional arguments for [where]
      */
-    fun groupsFlow(
+    fun queryGroupRows(
         projection: Array<String>? = null,
         where: String? = null,
         whereArgs: Array<String>? = null

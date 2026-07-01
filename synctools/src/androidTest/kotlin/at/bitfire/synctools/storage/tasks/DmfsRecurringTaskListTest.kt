@@ -145,7 +145,7 @@ class DmfsRecurringTaskListTest(providerName: TaskProvider.ProviderName) :
     fun testIterateTaskAndExceptions() = runTest {
         val task1 = insertRecurring(syncId = "testIterateTaskAndExceptions1")
         val task2 = insertRecurring(syncId = "testIterateTaskAndExceptions2")
-        val result = recurringTaskList.taskAndExceptionsFlow(
+        val result = recurringTaskList.queryTasksAndExceptions(
             "${Tasks._SYNC_ID} IN (?, ?)",
             arrayOf("testIterateTaskAndExceptions1", "testIterateTaskAndExceptions2")
         ).toList()
@@ -159,13 +159,13 @@ class DmfsRecurringTaskListTest(providerName: TaskProvider.ProviderName) :
     fun testIterateTaskAndExceptions_IgnoresExceptionMatches() = runTest {
         insertRecurring()
 
-        val result = recurringTaskList.taskAndExceptionsFlow("${Tasks.TITLE}=?", arrayOf("Exception")).toList()
+        val result = recurringTaskList.queryTasksAndExceptions("${Tasks.TITLE}=?", arrayOf("Exception")).toList()
         assertTrue(result.isEmpty())
     }
 
     @Test
     fun testIterateTaskAndExceptions_NotFound() = runTest {
-        val result = recurringTaskList.taskAndExceptionsFlow("${Tasks._SYNC_ID}=?", arrayOf("not-existent")).toList()
+        val result = recurringTaskList.queryTasksAndExceptions("${Tasks._SYNC_ID}=?", arrayOf("not-existent")).toList()
         assertTrue(result.isEmpty())
     }
 

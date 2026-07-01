@@ -406,7 +406,7 @@ class DmfsTaskListTest(providerName: TaskProvider.ProviderName) :
                 )
             )
 
-            val result = taskList.tasksFlow(null, null).toList()
+            val result = taskList.queryTasks(null, null).toList()
 
             assertEquals(2, result.size)
             val uids = result.mapNotNull { it.entityValues.getAsString(Tasks._UID) }.toSet()
@@ -613,7 +613,7 @@ class DmfsTaskListTest(providerName: TaskProvider.ProviderName) :
             assertEquals(2, updatedCount)
 
             // Verify updates
-            val tasks = taskList.tasksFlow(null, null).toList()
+            val tasks = taskList.queryTasks(null, null).toList()
             assertEquals(2, tasks.size)
             for (task in tasks) {
                 assertEquals("Updated Title", task.entityValues.getAsString(Tasks.TITLE))

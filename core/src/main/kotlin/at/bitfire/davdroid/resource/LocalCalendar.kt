@@ -78,10 +78,10 @@ class LocalCalendar @AssistedInject constructor(
         androidCalendar.countEvents(Events.DIRTY, null)
 
     override fun findDeleted(): Flow<LocalEvent> =
-        recurringCalendar.eventAndExceptionsFlow(Events.DELETED, null).map { LocalEvent(recurringCalendar, it) }
+        recurringCalendar.queryEventsAndExceptions(Events.DELETED, null).map { LocalEvent(recurringCalendar, it) }
 
     override fun findDirty(): Flow<LocalEvent> =
-        recurringCalendar.eventAndExceptionsFlow(Events.DIRTY, null).map { LocalEvent(recurringCalendar, it) }
+        recurringCalendar.queryEventsAndExceptions(Events.DIRTY, null).map { LocalEvent(recurringCalendar, it) }
 
     override suspend fun findByName(name: String) =
         recurringCalendar.findEventAndExceptions("${Events._SYNC_ID}=?", arrayOf(name))?.let {

@@ -330,7 +330,7 @@ class JtxCollection(
      * @param where         selection
      * @param whereArgs     arguments for selection
      */
-    fun jtxObjectsFlow(where: String?, whereArgs: Array<String>?): Flow<Entity> {
+    fun queryJtxObjects(where: String?, whereArgs: Array<String>?): Flow<Entity> {
         val (protectedWhere, protectedWhereArgs) = whereWithCollectionId(where, whereArgs)
         return client.queryFlow(
             jtxObjectsUri,

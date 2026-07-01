@@ -107,10 +107,10 @@ class JtxRecurringCollection(
      * @param where         selection (applied to main objects only; [JtxContract.JtxICalObject.RECURID] IS NULL is added automatically)
      * @param whereArgs     arguments for selection
      */
-    fun jtxObjectAndExceptionsFlow(where: String?, whereArgs: Array<String>?): Flow<JtxObjectAndExceptions> {
+    fun queryJtxObjectsAndExceptions(where: String?, whereArgs: Array<String>?): Flow<JtxObjectAndExceptions> {
         val mainWhere = mainJtxObjectOnlyWhere(where)
         return collection
-            .jtxObjectsFlow(mainWhere, whereArgs)
+            .queryJtxObjects(mainWhere, whereArgs)
             .map { main ->
                 val uid = main.entityValues.getAsString(JtxContract.JtxICalObject.UID)
                 JtxObjectAndExceptions(
@@ -440,7 +440,7 @@ class JtxRecurringCollection(
      * sync-adapter-inserted exception.
      */
     private suspend fun findExceptionsByUid(uid: String): List<Entity> =
-        collection.jtxObjectsFlow(
+        collection.queryJtxObjects(
             "${JtxContract.JtxICalObject.UID}=? AND ${JtxContract.JtxICalObject.RECURID} IS NOT NULL AND ${JtxContract.JtxICalObject.SEQUENCE} > 0",
             arrayOf(uid)
         ).toList()

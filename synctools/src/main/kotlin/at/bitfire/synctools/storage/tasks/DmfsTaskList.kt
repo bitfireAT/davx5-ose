@@ -295,7 +295,7 @@ class DmfsTaskList(
      * @param where         selection
      * @param whereArgs     arguments for selection
      */
-    fun tasksFlow(where: String?, whereArgs: Array<String>?): Flow<Entity> {
+    fun queryTasks(where: String?, whereArgs: Array<String>?): Flow<Entity> {
         val (protectedWhere, protectedWhereArgs) = whereWithTaskListId(where, whereArgs)
         return client
             .queryFlow(tasksUri(), null, protectedWhere, protectedWhereArgs) { it.toContentValues() }

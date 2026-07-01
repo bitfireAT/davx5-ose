@@ -206,7 +206,7 @@ class AndroidCalendarTest {
         calendar.addEvent(entity)
 
         // not it finds a result
-        val result = calendar.eventsFlow("${Events.DTSTART}=?", arrayOf(testStartMillis.toString())).toList()
+        val result = calendar.queryEvents("${Events.DTSTART}=?", arrayOf(testStartMillis.toString())).toList()
         assertEquals(1, result.size)
         assertEntitiesEqual(entity, result.first(), onlyFieldsInExpected = true)
     }
@@ -293,7 +293,7 @@ class AndroidCalendarTest {
             Events.TITLE to "Some Event 2"
         )))
 
-        val result = calendar.eventsFlow(null, null).toList()
+        val result = calendar.queryEvents(null, null).toList()
         assertEquals(
             setOf(id1, id2),
             result.map { it.entityValues.getAsLong(Events._ID) }.toSet()

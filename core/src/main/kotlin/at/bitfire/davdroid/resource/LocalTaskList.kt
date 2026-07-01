@@ -82,10 +82,10 @@ class LocalTaskList (
         dmfsTaskList.countTasks(Tasks._DIRTY, null)
 
     override fun findDeleted(): Flow<LocalTask> =
-        recurringTaskList.taskAndExceptionsFlow(Tasks._DELETED, null).map { LocalTask(recurringTaskList, it) }
+        recurringTaskList.queryTasksAndExceptions(Tasks._DELETED, null).map { LocalTask(recurringTaskList, it) }
 
     override fun findDirty(): Flow<LocalTask> =
-        recurringTaskList.taskAndExceptionsFlow(Tasks._DIRTY, null).map { LocalTask(recurringTaskList, it) }
+        recurringTaskList.queryTasksAndExceptions(Tasks._DIRTY, null).map { LocalTask(recurringTaskList, it) }
 
     override suspend fun findByName(name: String): LocalTask? {
         val result = recurringTaskList.findTaskAndExceptions("${Tasks._SYNC_ID}=?", arrayOf(name))
