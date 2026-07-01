@@ -25,6 +25,7 @@ import net.fortuna.ical4j.model.parameter.Value
 import net.fortuna.ical4j.model.property.Attendee
 import net.fortuna.ical4j.model.property.Completed
 import net.fortuna.ical4j.model.property.DtStart
+import net.fortuna.ical4j.model.property.ExDate
 import net.fortuna.ical4j.model.property.ProdId
 import net.fortuna.ical4j.transform.compliance.DatePropertyRule
 import net.fortuna.ical4j.util.CompatibilityHints
@@ -39,6 +40,7 @@ import java.io.StringReader
 import java.io.StringWriter
 import java.time.DateTimeException
 import java.time.Duration
+import java.time.LocalDateTime
 import java.time.Period
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
@@ -401,7 +403,9 @@ class Ical4jTest {
 
     @Test
     fun `DateProperty_getValue() with unknown timezone`() {
-        // https://github.com/ical4j/ical4j/issues/889
+        // https://github.com/ical4j/ical4j/issues/889 (fixed in ical4j 4.3.0)
+        // DateProperty.getValue() no longer throws for unknown timezones under relaxed validation;
+        // the TZID is ignored and the value is returned as a floating date-time string.
         val reader = StringReader(
             """
             BEGIN:VCALENDAR
@@ -419,11 +423,48 @@ class Ical4jTest {
         val event = calendar.getComponent<VEvent>(Component.VEVENT).get()
         val dtStart = event.getRequiredProperty<DtStart<Temporal>>(Property.DTSTART)
 
+        // TZID is ignored, value is returned as floating date-time string
+        assertEquals("20260605T120000", dtStart.value)
+        // date is returned as LocalDateTime (floating, no zone info)
+        val date = dtStart.date
+        assertTrue(date is LocalDateTime)
+        assertEquals(LocalDateTime.of(2026, 6, 5, 12, 0, 0), date)
+    }
+
+    @Test
+    fun `DateListProperty_getDates() with unknown timezone`() {
+        // Similar to DateProperty_getValue() with unknown timezone, but for ExDate (DateListProperty).
+        // DateListProperty.getDates() still throws for unknown TZID under relaxed validation in ical4j 4.3.0 —
+        // the fix was only applied to DateProperty.getDate(), not DateListProperty.getDates().
+        // When ical4j fixes this, this test will fail and the try/catch in
+        // DatePropertyTzMapper.normalizedDates() that converts DateTimeException to ResourceMappingException
+        // can be removed (or adapted to treat the dates as floating).
+        val reader = StringReader(
+            """
+            BEGIN:VCALENDAR
+            VERSION:2.0
+            PRODID:-//Test//NONSGML v1.0//EN
+            BEGIN:VEVENT
+            UID:c3b11f81-60c1-11f1-bc40-d843aea66ff3
+            DTSTAMP:20260605T120000Z
+            DTSTART;TZID=UnknownTimeZone:20260605T120000
+            RRULE:FREQ=DAILY;COUNT=5
+            EXDATE;TZID=UnknownTimeZone:20260606T120000
+            END:VEVENT
+            END:VCALENDAR
+            """.trimIndent()
+        )
+        val calendar = CalendarBuilder().build(reader)
+        val event = calendar.getComponent<VEvent>(Component.VEVENT).get()
+        val exDate = event.getRequiredProperty<ExDate<Temporal>>(Property.EXDATE)
+
         try {
-            dtStart.value
-            fail("DateProperty.getValue() no longer throws when an unknown timezone is referenced. " +
-                    "DatePropertyTzMapper.normalizedDate[s] could be updated to use the default time zone " +
-                    "instead of throwing. See https://github.com/bitfireAT/davx5-ose/issues/2339")
+            exDate.dates
+            fail(
+                "DateListProperty.getDates() no longer throws when an unknown timezone is referenced. " +
+                        "The try/catch in DatePropertyTzMapper.normalizedDates() that converts DateTimeException " +
+                        "to ResourceMappingException can be removed or adapted to treat dates as floating."
+            )
         } catch (e: DateTimeException) {
             assertTrue(e.message?.contains("UnknownTimeZone") == true)
         }
