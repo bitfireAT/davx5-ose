@@ -185,32 +185,6 @@ class AndroidAddressBook(
     }
 
     /**
-     * Iterates raw contacts with their associated data rows (as [Entity]) from this address book.
-     *
-     * This method operates "as sync adapter" on [addressBookAccount] and doesn't take the [readOnly] flag into account.
-     *
-     * @param where     optional selection (only applied to raw contact rows, not data rows)
-     * @param whereArgs optional arguments for [where]
-     * @param block     callback invoked for each raw contact entity
-     * @throws LocalStorageException on content provider errors
-     */
-    fun iterateRawContacts(where: String? = null, whereArgs: Array<String>? = null, block: (Entity) -> Unit) {
-        // account is implicitly restricted via the URI (asSyncAdapter appends ACCOUNT_NAME/ACCOUNT_TYPE)
-        try {
-            provider.query(
-                ContactsContract.RawContactsEntity.CONTENT_URI.asSyncAdapter(addressBookAccount),
-                null, where, whereArgs, null
-            )?.use { cursor ->
-                val iterator = RawContacts.newEntityIterator(cursor)
-                for (entity in iterator)
-                    block(entity)
-            }
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't iterate raw contacts", e)
-        }
-    }
-
-    /**
      * Iterates raw contact rows (without associated data rows) from this address book.
      *
      * This method operates "as sync adapter" on [addressBookAccount] and doesn't take the [readOnly] flag into account.
@@ -511,7 +485,7 @@ class AndroidAddressBook(
 
     // region legacy AndroidContact/AndroidGroup CRUD
 
-    @Deprecated("Use iterateRawContacts instead")
+    @Deprecated("Use queryRawContactRows instead")
     fun queryContacts(where: String?, whereArgs: Array<String>?): List<AndroidContact> {
         val contacts = LinkedList<AndroidContact>()
         provider.query(

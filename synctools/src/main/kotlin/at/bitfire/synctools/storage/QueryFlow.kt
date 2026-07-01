@@ -48,14 +48,14 @@ fun <T> ContentProviderClient.queryFlow(
 
 /**
  * Like [queryFlow], but for providers that expose rows via an [EntityIterator] (e.g. raw contacts,
- * calendar events), built from the cursor by [newIterator].
+ * calendar events), built from the cursor by [buildIterator].
  *
  * @param uri              content URI to query
  * @param projection       columns to return
  * @param where            selection
  * @param whereArgs        arguments for selection
- * @param newIterator      builds the [EntityIterator] from the query's cursor
- * @param transformEntity  maps an entity produced by [newIterator] to the emitted value
+ * @param buildIterator    builds the [EntityIterator] from the query's cursor
+ * @param transformEntity  maps an entity produced by [buildIterator] to the emitted value
  * @throws LocalStorageException when the content provider returns an error
  */
 fun <T> ContentProviderClient.queryEntityFlow(
@@ -63,13 +63,13 @@ fun <T> ContentProviderClient.queryEntityFlow(
     projection: Array<String>? = null,
     where: String? = null,
     whereArgs: Array<String>? = null,
-    newIterator: (Cursor) -> EntityIterator,
+    buildIterator: (Cursor) -> EntityIterator,
     transformEntity: (Entity) -> T
 ): Flow<T> =
     flow {
         try {
             query(uri, projection, where, whereArgs, null)?.use { cursor ->
-                for (entity in newIterator(cursor))
+                for (entity in buildIterator(cursor))
                     emit(transformEntity(entity))
             }
         } catch (e: RemoteException) {

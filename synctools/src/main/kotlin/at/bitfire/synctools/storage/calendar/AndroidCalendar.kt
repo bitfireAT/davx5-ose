@@ -262,7 +262,7 @@ class AndroidCalendar(
         val (protectedWhere, protectedWhereArgs) = whereWithCalendarId(where, whereArgs)
         return client.queryEntityFlow(
             eventEntitiesUri, null, protectedWhere, protectedWhereArgs,
-            newIterator = { cursor -> EventsEntity.newEntityIterator(cursor, client) },
+            buildIterator = { cursor -> EventsEntity.newEntityIterator(cursor, client) },
             transformEntity = { it }
         )
     }

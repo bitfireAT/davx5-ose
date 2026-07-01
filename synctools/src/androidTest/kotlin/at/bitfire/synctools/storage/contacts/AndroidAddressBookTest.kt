@@ -109,61 +109,6 @@ class AndroidAddressBookTest {
     }
 
 
-    // iterateRawContacts
-
-    @Test
-    fun testIterateRawContacts_empty() {
-        val addressBook = TestAddressBook.create(provider)
-        try {
-            var count = 0
-            addressBook.iterateRawContacts { count++ }
-            assertEquals(0, count)
-        } finally {
-            TestAddressBook.remove(addressBook)
-        }
-    }
-
-    @Test
-    fun testIterateRawContacts_all() {
-        val addressBook = TestAddressBook.create(provider)
-        try {
-            val id1 = addressBook.addRawContact(Entity(contentValuesOf(RawContacts.DISPLAY_NAME_PRIMARY to "Iterate Contact 1")))
-            val id2 = addressBook.addRawContact(Entity(contentValuesOf(RawContacts.DISPLAY_NAME_PRIMARY to "Iterate Contact 2")))
-            val ids = mutableListOf<Long>()
-            addressBook.iterateRawContacts { entity ->
-                ids += entity.entityValues.getAsLong(RawContacts._ID)
-            }
-            assertEquals(setOf(id1, id2), ids.toSet())
-        } finally {
-            TestAddressBook.remove(addressBook)
-        }
-    }
-
-    @Test
-    fun testIterateRawContacts_filter() {
-        val addressBook = TestAddressBook.create(provider)
-        try {
-            val id1 = addressBook.addRawContact(Entity(contentValuesOf(
-                RawContacts.DISPLAY_NAME_PRIMARY to "Iterate Filter 1",
-                AddressContract.RawContactColumns.UID to "iter-uid-1"
-            )))
-            addressBook.addRawContact(
-                Entity(
-                    contentValuesOf(
-                RawContacts.DISPLAY_NAME_PRIMARY to "Iterate Filter 2",
-                AddressContract.RawContactColumns.UID to "iter-uid-2"
-            )))
-            val ids = mutableListOf<Long>()
-            addressBook.iterateRawContacts("${AddressContract.RawContactColumns.UID}=?", arrayOf("iter-uid-1")) { entity ->
-                ids += entity.entityValues.getAsLong(RawContacts._ID)
-            }
-            assertEquals(listOf(id1), ids)
-        } finally {
-            TestAddressBook.remove(addressBook)
-        }
-    }
-
-
     // iterateRawContactRows
 
     @Test

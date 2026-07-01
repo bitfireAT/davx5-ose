@@ -335,8 +335,7 @@ class JtxCollection(
         return client.queryFlow(
             jtxObjectsUri,
             null,
-            protectedWhere,
-            protectedWhereArgs
+            protectedWhere, protectedWhereArgs
         ) { readEntity(it.toContentValues()) }
     }
 
