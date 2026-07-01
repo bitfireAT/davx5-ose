@@ -9,13 +9,13 @@ import com.android.build.api.dsl.CommonExtension
 import com.android.build.api.dsl.LibraryExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.artifacts.VersionCatalogsExtension
 import org.gradle.api.plugins.ExtensionContainer
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.plugins.PluginManager
 import org.gradle.jvm.toolchain.JavaLanguageVersion
 import org.gradle.kotlin.dsl.configure
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
+import java.util.Properties
 
 /**
  * This plugin can be applied to other modules (like core, synctools etc.) in order to
@@ -26,8 +26,10 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 class CommonBuildConfigPlugin : Plugin<Project> {
 
     override fun apply(target: Project) {
-        val libsCatalog = target.extensions.getByType(VersionCatalogsExtension::class.java).named("libs")
-        val javaToolchainVersion = libsCatalog.findVersion("java-toolchain").get().requiredVersion.toInt()
+        val gradleDaemonJvmProperties = Properties().also { props ->
+            target.rootDir.resolve("gradle/gradle-daemon-jvm.properties").reader().use { props.load(it) }
+        }
+        val javaToolchainVersion = gradleDaemonJvmProperties.getProperty("toolchainVersion").toInt()
 
         with(target) {
             // When this plugin is applied to a module:
