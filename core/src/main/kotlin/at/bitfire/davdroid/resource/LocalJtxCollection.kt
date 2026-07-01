@@ -11,12 +11,8 @@ import at.bitfire.synctools.storage.jtx.JtxEntityAndExceptions
 import at.bitfire.synctools.storage.jtx.JtxRecurringCollection
 import at.techbee.jtx.JtxContract
 import at.techbee.jtx.JtxContract.JtxICalObject
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.buffer
-import kotlinx.coroutines.flow.channelFlow
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.map
 
 /**
  * Application-specific implementation for jtx collections.
@@ -69,25 +65,13 @@ class LocalJtxCollection(internal val jtxCollection: JtxCollection) :
     override fun countDirty(): Int =
         jtxCollection.countJtxObjects(JtxICalObject.DIRTY, null)
 
-    override fun findDeleted(): Flow<LocalJtxObject> {
-        return channelFlow {
-            launch(Dispatchers.IO) {
-                recurringCollection.iterateJtxObjectAndExceptions(JtxICalObject.DELETED, null) { jtxObjectAndExceptions ->
-                    trySendBlocking(LocalJtxObject(recurringCollection, jtxObjectAndExceptions))
-                }
-            }
-        }.buffer(capacity = 1)
-    }
+    override fun findDeleted(): Flow<LocalJtxObject> =
+        recurringCollection.jtxObjectAndExceptionsFlow(JtxICalObject.DELETED, null)
+            .map { LocalJtxObject(recurringCollection, it) }
 
-    override fun findDirty(): Flow<LocalJtxObject> {
-        return channelFlow {
-            launch(Dispatchers.IO) {
-                recurringCollection.iterateJtxObjectAndExceptions(JtxICalObject.DIRTY, null) { jtxObjectAndExceptions ->
-                    trySendBlocking(LocalJtxObject(recurringCollection, jtxObjectAndExceptions))
-                }
-            }
-        }.buffer(capacity = 1)
-    }
+    override fun findDirty(): Flow<LocalJtxObject> =
+        recurringCollection.jtxObjectAndExceptionsFlow(JtxICalObject.DIRTY, null)
+            .map { LocalJtxObject(recurringCollection, it) }
 
     override fun findByName(name: String): LocalJtxObject? {
         return recurringCollection

@@ -22,7 +22,11 @@ import at.bitfire.synctools.mapping.UnknownProperty
 import at.bitfire.synctools.storage.BatchOperation.CpoBuilder
 import at.bitfire.synctools.storage.LocalStorageException
 import at.bitfire.synctools.storage.calendar.EventsContract.asSyncAdapter
+import at.bitfire.synctools.storage.queryEntityFlow
 import at.bitfire.synctools.storage.toContentValues
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOn
 import org.jetbrains.annotations.TestOnly
 import java.util.logging.Logger
 
@@ -270,6 +274,24 @@ class AndroidCalendar(
         } catch (e: RemoteException) {
             throw LocalStorageException("Couldn't iterate events", e)
         }
+    }
+
+    /**
+     * Like [iterateEvents], but returns a cold [Flow] instead of using a callback.
+     * Runs on [Dispatchers.IO], since content provider access is blocking.
+     *
+     * Adds a WHERE clause that restricts the query to [CalendarContract.EventsColumns.CALENDAR_ID] = [id].
+     *
+     * @param where         selection
+     * @param whereArgs     arguments for selection
+     */
+    fun eventsFlow(where: String?, whereArgs: Array<String>?): Flow<Entity> {
+        val (protectedWhere, protectedWhereArgs) = whereWithCalendarId(where, whereArgs)
+        return client.queryEntityFlow(
+            eventEntitiesUri, null, protectedWhere, protectedWhereArgs,
+            newIterator = { cursor -> EventsEntity.newEntityIterator(cursor, client) },
+            transform = { it }
+        ).flowOn(Dispatchers.IO)
     }
 
     /**

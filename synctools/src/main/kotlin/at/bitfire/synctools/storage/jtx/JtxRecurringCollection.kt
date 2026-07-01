@@ -12,6 +12,10 @@ import androidx.core.content.contentValuesOf
 import at.bitfire.synctools.storage.LocalStorageException
 import at.bitfire.synctools.storage.containsNotNull
 import at.techbee.jtx.JtxContract
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import java.util.logging.Level
 import java.util.logging.Logger
 
@@ -112,6 +116,28 @@ class JtxRecurringCollection(
                 exceptions = if (uid != null) findExceptionsByUid(uid) else emptyList()
             ))
         }
+    }
+
+    /**
+     * Like [iterateJtxObjectAndExceptions], but returns a cold [Flow] instead of using a callback.
+     * Runs on [Dispatchers.IO] as a whole, since content provider access is blocking; the
+     * per-main exceptions lookup stays a small bounded synchronous query (exceptions of a single
+     * object are not streamed).
+     *
+     * @param where         selection (applied to main objects only; [JtxContract.JtxICalObject.RECURID] IS NULL is added automatically)
+     * @param whereArgs     arguments for selection
+     */
+    fun jtxObjectAndExceptionsFlow(where: String?, whereArgs: Array<String>?): Flow<JtxObjectAndExceptions> {
+        val mainWhere = mainJtxObjectOnlyWhere(where)
+        return collection.jtxObjectsFlow(mainWhere, whereArgs)
+            .map { main ->
+                val uid = main.entityValues.getAsString(JtxContract.JtxICalObject.UID)
+                JtxObjectAndExceptions(
+                    main = main,
+                    exceptions = if (uid != null) findExceptionsByUid(uid) else emptyList()
+                )
+            }
+            .flowOn(Dispatchers.IO)
     }
 
     /**

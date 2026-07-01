@@ -24,9 +24,13 @@ import at.bitfire.synctools.storage.BatchOperation
 import at.bitfire.synctools.storage.LocalStorageException
 import at.bitfire.synctools.storage.contacts.AddressContract.asSyncAdapter
 import at.bitfire.synctools.storage.contacts.AndroidAddressBook.Companion.USER_DATA_READ_ONLY
+import at.bitfire.synctools.storage.queryFlow
 import at.bitfire.synctools.storage.toContentValues
 import at.bitfire.synctools.util.setAndVerifyUserData
 import at.bitfire.synctools.vcard.GroupMethod
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOn
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.annotations.VisibleForTesting
 import java.io.FileNotFoundException
@@ -231,6 +235,19 @@ class AndroidAddressBook(
     }
 
     /**
+     * Like [iterateRawContactRows], but returns a cold [Flow] instead of using a callback.
+     * Runs on [Dispatchers.IO], since content provider access is blocking.
+     *
+     * This method operates "as sync adapter" on [addressBookAccount] and doesn't take the [readOnly] flag into account.
+     *
+     * @param where      optional selection
+     * @param whereArgs  optional arguments for [where]
+     */
+    fun rawContactRowsFlow(where: String? = null, whereArgs: Array<String>? = null): Flow<ContentValues> =
+        provider.queryFlow(rawContactsSyncUri(), null, where, whereArgs) { it.toContentValues() }
+            .flowOn(Dispatchers.IO)
+
+    /**
      * Enqueues an update of raw contact rows in this address book to the given batch.
      *
      * This method operates "as sync adapter" on [addressBookAccount] and doesn't take the [readOnly] flag into account.
@@ -313,6 +330,24 @@ class AndroidAddressBook(
             throw LocalStorageException("Couldn't iterate groups", e)
         }
     }
+
+    /**
+     * Like [iterateGroups], but returns a cold [Flow] instead of using a callback.
+     * Runs on [Dispatchers.IO], since content provider access is blocking.
+     *
+     * This method operates "as sync adapter" on [addressBookAccount] and doesn't take the [readOnly] flag into account.
+     *
+     * @param projection optional column projection
+     * @param where      optional selection
+     * @param whereArgs  optional arguments for [where]
+     */
+    fun groupsFlow(
+        projection: Array<String>? = null,
+        where: String? = null,
+        whereArgs: Array<String>? = null
+    ): Flow<ContentValues> =
+        provider.queryFlow(groupsSyncUri(), projection, where, whereArgs) { it.toContentValues() }
+            .flowOn(Dispatchers.IO)
 
     /**
      * Counts the number of groups in the address book that match the given selection criteria.

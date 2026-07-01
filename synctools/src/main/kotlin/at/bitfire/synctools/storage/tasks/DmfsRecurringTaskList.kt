@@ -13,6 +13,10 @@ import androidx.core.content.contentValuesOf
 import at.bitfire.synctools.storage.BatchOperation.CpoBuilder
 import at.bitfire.synctools.storage.LocalStorageException
 import at.bitfire.synctools.storage.containsNotNull
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import org.dmfs.tasks.contract.TaskContract
 import org.dmfs.tasks.contract.TaskContract.Tasks
 import java.util.logging.Level
@@ -98,25 +102,24 @@ class DmfsRecurringTaskList(
         findTaskAndExceptions("${Tasks._ID}=?", arrayOf(mainTaskId.toString()))
 
     /**
-     * Iterates through main tasks in [taskList] together with their exceptions.
+     * Like the callback-based iteration through main tasks together with their exceptions,
+     * but returns a cold [Flow] instead. Runs on [Dispatchers.IO] as a whole, since content
+     * provider access is blocking; the per-main exceptions lookup stays a small bounded
+     * synchronous query (exceptions of a single task are not streamed).
      *
      * Note that the exceptions may contain deleted tasks.
      *
      * @param where         selection
      * @param whereArgs     arguments for selection
-     * @param body          callback that is called for each task (including exceptions)
      */
-    fun iterateTaskAndExceptions(where: String?, whereArgs: Array<String>?, body: (TaskAndExceptions) -> Unit) {
+    fun taskAndExceptionsFlow(where: String?, whereArgs: Array<String>?): Flow<TaskAndExceptions> {
         val (mainWhere, mainWhereArgs) = whereWithMainTasksOnly(where, whereArgs)
-        taskList.iterateTasks(mainWhere, mainWhereArgs) { main ->
-            val mainTaskId = main.entityValues.getAsLong(Tasks._ID)
-            body(
-                TaskAndExceptions(
-                    main = main,
-                    exceptions = findExceptions(mainTaskId)
-                )
-            )
-        }
+        return taskList.tasksFlow(mainWhere, mainWhereArgs)
+            .map { main ->
+                val mainTaskId = main.entityValues.getAsLong(Tasks._ID)
+                TaskAndExceptions(main = main, exceptions = findExceptions(mainTaskId))
+            }
+            .flowOn(Dispatchers.IO)
     }
 
     /**

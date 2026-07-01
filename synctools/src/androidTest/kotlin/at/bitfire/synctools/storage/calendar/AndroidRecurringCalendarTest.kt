@@ -20,6 +20,8 @@ import at.bitfire.synctools.test.withEventId
 import at.bitfire.synctools.verifyCompat
 import io.mockk.junit4.MockKRule
 import io.mockk.spyk
+import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.test.runTest
 import net.fortuna.ical4j.util.TimeZones
 import org.junit.After
 import org.junit.AfterClass
@@ -27,7 +29,6 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
-import org.junit.Assert.fail
 import org.junit.BeforeClass
 import org.junit.ClassRule
 import org.junit.Rule
@@ -138,14 +139,13 @@ class AndroidRecurringCalendarTest {
     }
 
     @Test
-    fun testIterateEventAndExceptions() {
+    fun testIterateEventAndExceptions() = runTest {
         val (id1, event1) = insertRecurring(syncId = "testIterateEventAndExceptions1")
         val (id2, event2) = insertRecurring(syncId = "testIterateEventAndExceptions2")
-        val result = mutableListOf<EventAndExceptions>()
-        recurringCalendar.iterateEventAndExceptions(
+        val result = recurringCalendar.eventAndExceptionsFlow(
             "${Events._SYNC_ID} IN (?, ?)",
             arrayOf("testIterateEventAndExceptions1", "testIterateEventAndExceptions2")
-        ) { result += it }
+        ).toList()
         val orderedResult = result.sortedBy { it.main.entityValues.getAsInteger(Events._ID) }
         assertEquals(2, orderedResult.size)
         assertEventAndExceptionsEqual(event1.withEventId(id1), orderedResult[0], onlyFieldsInExpected = true)
@@ -153,19 +153,17 @@ class AndroidRecurringCalendarTest {
     }
 
     @Test
-    fun testIterateEventAndExceptions_IgnoresExceptionMatches() {
+    fun testIterateEventAndExceptions_IgnoresExceptionMatches() = runTest {
         insertRecurring()
 
-        recurringCalendar.iterateEventAndExceptions("${Events.TITLE}=?", arrayOf("Exception")) {
-            fail("must not be called")
-        }
+        val result = recurringCalendar.eventAndExceptionsFlow("${Events.TITLE}=?", arrayOf("Exception")).toList()
+        assertTrue(result.isEmpty())
     }
 
     @Test
-    fun testIterateEventAndExceptions_NotFound() {
-        recurringCalendar.iterateEventAndExceptions("${Events._SYNC_ID}=?", arrayOf("not-existent")) {
-            fail("must not be called")
-        }
+    fun testIterateEventAndExceptions_NotFound() = runTest {
+        val result = recurringCalendar.eventAndExceptionsFlow("${Events._SYNC_ID}=?", arrayOf("not-existent")).toList()
+        assertTrue(result.isEmpty())
     }
 
     @Test

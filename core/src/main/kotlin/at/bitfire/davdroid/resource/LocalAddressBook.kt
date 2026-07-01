@@ -34,13 +34,9 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.buffer
-import kotlinx.coroutines.flow.channelFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
-import kotlinx.coroutines.launch
 import java.io.FileNotFoundException
 import java.util.Optional
 import java.util.logging.Logger
@@ -223,25 +219,15 @@ open class LocalAddressBook @AssistedInject constructor(
      * Finds local contacts which have been deleted locally. (DELETED != 0).
      * @throws RemoteException on content provider errors
      */
-    fun findDeletedContacts(): Flow<LocalContact> = channelFlow {
-        launch(Dispatchers.IO) {
-            ab.iterateRawContactRows(RawContacts.DELETED, null) { values ->
-                trySendBlocking(LocalContact(this@LocalAddressBook, AndroidContact(ab, values)))
-            }
-        }
-    }.buffer(capacity = 1)
+    fun findDeletedContacts(): Flow<LocalContact> =
+        ab.rawContactRowsFlow(RawContacts.DELETED, null).map { LocalContact(this, AndroidContact(ab, it)) }
 
     /**
      * Finds local groups which have been deleted locally. (DELETED != 0).
      * @throws RemoteException on content provider errors
      */
-    fun findDeletedGroups(): Flow<LocalGroup> = channelFlow {
-        launch(Dispatchers.IO) {
-            ab.iterateGroups(null, Groups.DELETED, null) { values ->
-                trySendBlocking(LocalGroup(AndroidGroup(ab, values)))
-            }
-        }
-    }.buffer(capacity = 1)
+    fun findDeletedGroups(): Flow<LocalGroup> =
+        ab.groupsFlow(null, Groups.DELETED, null).map { LocalGroup(AndroidGroup(ab, it)) }
 
     /**
      * Finds local contacts/groups which have been deleted locally. (DELETED != 0).
@@ -257,25 +243,15 @@ open class LocalAddressBook @AssistedInject constructor(
      * Finds local contacts which have been changed locally (DIRTY != 0).
      * @throws RemoteException on content provider errors
      */
-    fun findDirtyContacts(): Flow<LocalContact> = channelFlow {
-        launch(Dispatchers.IO) {
-            ab.iterateRawContactRows(RawContacts.DIRTY, null) { values ->
-                trySendBlocking(LocalContact(this@LocalAddressBook, AndroidContact(ab, values)))
-            }
-        }
-    }.buffer(capacity = 1)
+    fun findDirtyContacts(): Flow<LocalContact> =
+        ab.rawContactRowsFlow(RawContacts.DIRTY, null).map { LocalContact(this, AndroidContact(ab, it)) }
 
     /**
      * Finds local groups which have been changed locally (DIRTY != 0).
      * @throws RemoteException on content provider errors
      */
-    fun findDirtyGroups(): Flow<LocalGroup> = channelFlow {
-        launch(Dispatchers.IO) {
-            ab.iterateGroups(null, Groups.DIRTY, null) { values ->
-                trySendBlocking(LocalGroup(AndroidGroup(ab, values)))
-            }
-        }
-    }.buffer(capacity = 1)
+    fun findDirtyGroups(): Flow<LocalGroup> =
+        ab.groupsFlow(null, Groups.DIRTY, null).map { LocalGroup(AndroidGroup(ab, it)) }
 
     /**
      * Finds local contacts/groups which have been changed locally (DIRTY != 0).

@@ -12,9 +12,13 @@ import android.os.ParcelFileDescriptor
 import android.os.RemoteException
 import at.bitfire.synctools.storage.BatchOperation.CpoBuilder
 import at.bitfire.synctools.storage.LocalStorageException
+import at.bitfire.synctools.storage.queryFlow
 import at.bitfire.synctools.storage.toContentValues
 import at.techbee.jtx.JtxContract
 import at.techbee.jtx.JtxContract.asSyncAdapter
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOn
 import org.jetbrains.annotations.TestOnly
 import java.nio.channels.Channels
 
@@ -341,6 +345,26 @@ class JtxCollection(
         } catch (e: RemoteException) {
             throw LocalStorageException("Couldn't iterate jtx objects", e)
         }
+    }
+
+    /**
+     * Like [iterateJtxObjects], but returns a cold [Flow] instead of using a callback.
+     * Runs on [Dispatchers.IO], since content provider access is blocking.
+     *
+     * Adds a WHERE clause that restricts the query to [JtxContract.JtxICalObject.ICALOBJECT_COLLECTIONID] = [id].
+     *
+     * @param where         selection
+     * @param whereArgs     arguments for selection
+     */
+    fun jtxObjectsFlow(where: String?, whereArgs: Array<String>?): Flow<Entity> {
+        val (protectedWhere, protectedWhereArgs) = whereWithCollectionId(where, whereArgs)
+        return client.queryFlow(
+            jtxObjectsUri,
+            null,
+            protectedWhere,
+            protectedWhereArgs
+        ) { readEntity(it.toContentValues()) }
+            .flowOn(Dispatchers.IO)
     }
 
     /**

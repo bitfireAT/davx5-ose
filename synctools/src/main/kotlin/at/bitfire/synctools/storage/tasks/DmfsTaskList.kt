@@ -12,8 +12,13 @@ import android.os.RemoteException
 import at.bitfire.synctools.storage.BatchOperation
 import at.bitfire.synctools.storage.LocalStorageException
 import at.bitfire.synctools.storage.TaskProvider
+import at.bitfire.synctools.storage.queryFlow
 import at.bitfire.synctools.storage.tasks.DmfsTasksContract.asSyncAdapter
 import at.bitfire.synctools.storage.toContentValues
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.mapNotNull
 import org.dmfs.tasks.contract.TaskContract
 import org.dmfs.tasks.contract.TaskContract.Tasks
 import org.jetbrains.annotations.TestOnly
@@ -293,6 +298,20 @@ class DmfsTaskList(
         } catch (e: RemoteException) {
             throw LocalStorageException("Couldn't iterate tasks", e)
         }
+    }
+
+    /**
+     * Like [iterateTasks], but returns a cold [Flow] instead of using a callback.
+     * Runs on [Dispatchers.IO], since content provider access is blocking.
+     *
+     * @param where         selection
+     * @param whereArgs     arguments for selection
+     */
+    fun tasksFlow(where: String?, whereArgs: Array<String>?): Flow<Entity> {
+        val (protectedWhere, protectedWhereArgs) = whereWithTaskListId(where, whereArgs)
+        return client.queryFlow(tasksUri(), null, protectedWhere, protectedWhereArgs) { it.toContentValues() }
+            .mapNotNull { row -> row.getAsLong(Tasks._ID)?.let { getTask(it) } }
+            .flowOn(Dispatchers.IO)
     }
 
     /**

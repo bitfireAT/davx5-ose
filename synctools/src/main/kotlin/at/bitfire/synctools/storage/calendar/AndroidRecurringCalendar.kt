@@ -14,6 +14,10 @@ import androidx.core.content.contentValuesOf
 import at.bitfire.synctools.storage.BatchOperation.CpoBuilder
 import at.bitfire.synctools.storage.LocalStorageException
 import at.bitfire.synctools.storage.containsNotNull
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import java.util.logging.Level
 import java.util.logging.Logger
 
@@ -106,24 +110,32 @@ class AndroidRecurringCalendar(
         findEventAndExceptions("${Events._ID}=?", arrayOf(mainEventId.toString()))
 
     /**
-     * Iterates through main events together with their exceptions from the content provider.
+     * Like the callback-based iteration through main events together with their exceptions,
+     * but returns a cold [Flow] instead. Runs on [Dispatchers.IO] as a whole, since content
+     * provider access is blocking; the per-main exceptions lookup stays a small bounded
+     * synchronous query (exceptions of a single event are not streamed).
      *
      * Note that the exceptions may contain deleted events.
      *
      * @param where         selection
      * @param whereArgs     arguments for selection
-     * @param body          callback that is called for each event (including exceptions)
      */
-    fun iterateEventAndExceptions(where: String?, whereArgs: Array<String>?, body: (EventAndExceptions) -> Unit) {
-        // iterate through main events and attach exceptions
+    fun eventAndExceptionsFlow(where: String?, whereArgs: Array<String>?): Flow<EventAndExceptions> {
         val (mainWhere, mainWhereArgs) = whereWithMainEventsOnly(where, whereArgs)
-        calendar.iterateEvents(mainWhere, mainWhereArgs) { main ->
-            val mainEventId = main.entityValues.getAsLong(Events._ID)
-            body(EventAndExceptions(
-                main = main,
-                exceptions = buildList { calendar.iterateEvents("${Events.ORIGINAL_ID}=?", arrayOf(mainEventId.toString())) { add(it) } }
-            ))
-        }
+        return calendar.eventsFlow(mainWhere, mainWhereArgs)
+            .map { main ->
+                val mainEventId = main.entityValues.getAsLong(Events._ID)
+                EventAndExceptions(
+                    main = main,
+                    exceptions = buildList {
+                        calendar.iterateEvents(
+                            "${Events.ORIGINAL_ID}=?",
+                            arrayOf(mainEventId.toString())
+                        ) { add(it) }
+                    }
+                )
+            }
+            .flowOn(Dispatchers.IO)
     }
 
     /**

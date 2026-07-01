@@ -23,7 +23,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -148,7 +148,9 @@ class LocalGroupTest {
 
             assertEquals(0, localAddressBook.countDirty())
             group.markMembersDirty()
-            assertEquals(contact1.id, runBlocking { localAddressBook.findDirty().first() }.id)
+            var dirtyId: Long? = null
+            runTest { dirtyId = localAddressBook.findDirty().first().id }
+            assertEquals(contact1.id, dirtyId)
         }
     }
 

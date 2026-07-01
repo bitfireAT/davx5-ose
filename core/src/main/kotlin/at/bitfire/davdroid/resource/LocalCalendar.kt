@@ -17,12 +17,8 @@ import at.bitfire.synctools.storage.calendar.EventsContract
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.buffer
-import kotlinx.coroutines.flow.channelFlow
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.map
 
 /**
  * Application-specific subclass of [AndroidCalendar] for local calendars.
@@ -81,25 +77,11 @@ class LocalCalendar @AssistedInject constructor(
     override fun countDirty(): Int =
         androidCalendar.countEvents(Events.DIRTY, null)
 
-    override fun findDeleted(): Flow<LocalEvent> {
-        return channelFlow {
-            launch(Dispatchers.IO) {
-                recurringCalendar.iterateEventAndExceptions(Events.DELETED, null) { eventAndExceptions ->
-                    trySendBlocking(LocalEvent(recurringCalendar, eventAndExceptions))
-                }
-            }
-        }.buffer(capacity = 1)
-    }
+    override fun findDeleted(): Flow<LocalEvent> =
+        recurringCalendar.eventAndExceptionsFlow(Events.DELETED, null).map { LocalEvent(recurringCalendar, it) }
 
-    override fun findDirty(): Flow<LocalEvent> {
-        return channelFlow {
-            launch(Dispatchers.IO) {
-                recurringCalendar.iterateEventAndExceptions(Events.DIRTY, null) { eventAndExceptions ->
-                    trySendBlocking(LocalEvent(recurringCalendar, eventAndExceptions))
-                }
-            }
-        }.buffer(capacity = 1)
-    }
+    override fun findDirty(): Flow<LocalEvent> =
+        recurringCalendar.eventAndExceptionsFlow(Events.DIRTY, null).map { LocalEvent(recurringCalendar, it) }
 
     override fun findByName(name: String) =
         recurringCalendar.findEventAndExceptions("${Events._SYNC_ID}=?", arrayOf(name))?.let {
