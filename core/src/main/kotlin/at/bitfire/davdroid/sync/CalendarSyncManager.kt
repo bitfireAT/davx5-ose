@@ -91,7 +91,7 @@ class CalendarSyncManager @AssistedInject constructor(
     private val accountSettings = accountSettingsFactory.create(account)
 
 
-    override fun prepare(): Boolean {
+    override suspend fun prepare(): Boolean {
         davCollection = DavCalendar(httpClient, collection.url)
 
         // if there are dirty exceptions for events, mark their master events as dirty, too
@@ -140,7 +140,7 @@ class CalendarSyncManager @AssistedInject constructor(
     override suspend fun processLocallyDeleted(): Boolean {
         if (localCollection.readOnly) {
             var modified = false
-            localCollection.deletedFlow().collect { event ->
+            localCollection.findDeleted().collect { event ->
                 logger.warning("Restoring locally deleted event (read-only calendar!)")
                 SyncException.wrapWithLocalResource(event) {
                     event.resetDeleted()
@@ -163,7 +163,7 @@ class CalendarSyncManager @AssistedInject constructor(
     override suspend fun uploadDirty(): Boolean {
         var modified = false
         if (localCollection.readOnly) {
-            localCollection.dirtyFlow().collect { event ->
+            localCollection.findDirty().collect { event ->
                 logger.warning("Resetting locally modified event to ETag=null (read-only calendar!)")
                 SyncException.wrapWithLocalResource(event) {
                     event.clearDirty(Optional.empty(), null, null)

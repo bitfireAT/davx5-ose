@@ -82,7 +82,7 @@ class JtxSyncManager @AssistedInject constructor(
     }
 
 
-    override fun prepare(): Boolean {
+    override suspend fun prepare(): Boolean {
         davCollection = DavCalendar(httpClient, collection.url)
 
         return true

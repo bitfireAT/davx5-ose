@@ -306,7 +306,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
      *
      * @return whether synchronization shall be performed
      */
-    protected abstract fun prepare(): Boolean
+    protected abstract suspend fun prepare(): Boolean
 
     /**
      * Queries the server for synchronization capabilities like specific report types,
@@ -331,7 +331,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
 
         // Remove locally deleted entries from server (if they have a name, i.e. if they were uploaded before),
         // but only if they don't have changed on the server. Then finally remove them from the local address book.
-        localCollection.deletedFlow().collect { local ->
+        localCollection.findDeleted().collect { local ->
             SyncException.wrapWithLocalResourceSuspending(local) {
                 val fileName = local.fileName
                 if (fileName != null) {
@@ -373,7 +373,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
     protected open suspend fun uploadDirty(): Boolean {
         var numUploaded = 0
 
-        localCollection.dirtyFlow().collect { local ->
+        localCollection.findDirty().collect { local ->
             SyncException.wrapWithLocalResourceSuspending(local) {
                 uploadDirty(local)
                 numUploaded++

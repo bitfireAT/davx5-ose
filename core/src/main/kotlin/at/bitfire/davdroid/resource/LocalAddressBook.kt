@@ -35,11 +35,11 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.channels.ProducerScope
 import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.buffer
 import kotlinx.coroutines.flow.channelFlow
+import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.launch
 import java.io.FileNotFoundException
 import java.util.Optional
@@ -204,6 +204,12 @@ open class LocalAddressBook @AssistedInject constructor(
     override fun countModified(): Int =
         ab.countRawContacts("${RawContacts.DIRTY} AND NOT ${RawContacts.DELETED}", null)
 
+    override fun countDirty(): Int {
+        val dirtyContacts = ab.countRawContacts(RawContacts.DIRTY, null)
+        val dirtyGroups = if (includeGroups) ab.countGroups(Groups.DIRTY, null) else 0
+        return dirtyContacts + dirtyGroups
+    }
+
     override fun findByName(name: String): LocalAddress? {
         val result = queryContacts("${RawContactColumns.FILENAME}=?", arrayOf(name)).firstOrNull()
         return if (includeGroups)
@@ -214,76 +220,72 @@ open class LocalAddressBook @AssistedInject constructor(
 
 
     /**
-     * Returns an array of local contacts/groups which have been deleted locally. (DELETED != 0).
+     * Finds local contacts which have been deleted locally. (DELETED != 0).
      * @throws RemoteException on content provider errors
      */
-    override fun findDeleted() =
+    fun findDeletedContacts(): Flow<LocalContact> = channelFlow {
+        launch(Dispatchers.IO) {
+            ab.iterateRawContactRows(RawContacts.DELETED, null) { values ->
+                trySendBlocking(LocalContact(this@LocalAddressBook, AndroidContact(ab, values)))
+            }
+        }
+    }.buffer(capacity = 1)
+
+    /**
+     * Finds local groups which have been deleted locally. (DELETED != 0).
+     * @throws RemoteException on content provider errors
+     */
+    fun findDeletedGroups(): Flow<LocalGroup> = channelFlow {
+        launch(Dispatchers.IO) {
+            ab.iterateGroups(null, Groups.DELETED, null) { values ->
+                trySendBlocking(LocalGroup(AndroidGroup(ab, values)))
+            }
+        }
+    }.buffer(capacity = 1)
+
+    /**
+     * Finds local contacts/groups which have been deleted locally. (DELETED != 0).
+     * @throws RemoteException on content provider errors
+     */
+    override fun findDeleted(): Flow<LocalAddress> =
         if (includeGroups)
-            findDeletedContacts() + findDeletedGroups()
+            merge(findDeletedContacts(), findDeletedGroups())
         else
             findDeletedContacts()
 
-    fun findDeletedContacts() = queryContacts(RawContacts.DELETED, null)
-    fun findDeletedGroups() = queryGroups(Groups.DELETED, null)
-
-    override fun deletedFlow(): Flow<LocalAddress> {
-        return channelFlow {
-            launch(Dispatchers.IO) {
-                sendDeletedContacts()
-                if (includeGroups) {
-                    sendDeletedGroups()
-                }
-            }
-        }.buffer(capacity = 1)
-    }
-
-    private fun ProducerScope<LocalAddress>.sendDeletedContacts() {
-        ab.iterateRawContactRows(RawContacts.DELETED, null) { values ->
-            trySendBlocking(LocalContact(this@LocalAddressBook, AndroidContact(ab, values)))
-        }
-    }
-
-    private fun ProducerScope<LocalAddress>.sendDeletedGroups() {
-        ab.iterateGroups(null, Groups.DELETED, null) { values ->
-            trySendBlocking(LocalGroup(AndroidGroup(ab, values)))
-        }
-    }
-
     /**
-     * Returns an array of local contacts/groups which have been changed locally (DIRTY != 0).
+     * Finds local contacts which have been changed locally (DIRTY != 0).
      * @throws RemoteException on content provider errors
      */
-    override fun findDirty() =
+    fun findDirtyContacts(): Flow<LocalContact> = channelFlow {
+        launch(Dispatchers.IO) {
+            ab.iterateRawContactRows(RawContacts.DIRTY, null) { values ->
+                trySendBlocking(LocalContact(this@LocalAddressBook, AndroidContact(ab, values)))
+            }
+        }
+    }.buffer(capacity = 1)
+
+    /**
+     * Finds local groups which have been changed locally (DIRTY != 0).
+     * @throws RemoteException on content provider errors
+     */
+    fun findDirtyGroups(): Flow<LocalGroup> = channelFlow {
+        launch(Dispatchers.IO) {
+            ab.iterateGroups(null, Groups.DIRTY, null) { values ->
+                trySendBlocking(LocalGroup(AndroidGroup(ab, values)))
+            }
+        }
+    }.buffer(capacity = 1)
+
+    /**
+     * Finds local contacts/groups which have been changed locally (DIRTY != 0).
+     * @throws RemoteException on content provider errors
+     */
+    override fun findDirty(): Flow<LocalAddress> =
         if (includeGroups)
-            findDirtyContacts() + findDirtyGroups()
+            merge(findDirtyContacts(), findDirtyGroups())
         else
             findDirtyContacts()
-
-    fun findDirtyContacts() = queryContacts(RawContacts.DIRTY, null)
-    fun findDirtyGroups() = queryGroups(Groups.DIRTY, null)
-
-    override fun dirtyFlow(): Flow<LocalAddress> {
-        return channelFlow {
-            launch(Dispatchers.IO) {
-                sendDirtyContacts()
-                if (includeGroups) {
-                    sendDirtyGroups()
-                }
-            }
-        }.buffer(capacity = 1)
-    }
-
-    private fun ProducerScope<LocalAddress>.sendDirtyContacts() {
-        ab.iterateRawContactRows(RawContacts.DIRTY, null) { values ->
-            trySendBlocking(LocalContact(this@LocalAddressBook, AndroidContact(ab, values)))
-        }
-    }
-
-    private fun ProducerScope<LocalAddress>.sendDirtyGroups() {
-        ab.iterateGroups(null, Groups.DIRTY, null) { values ->
-            trySendBlocking(LocalGroup(AndroidGroup(ab, values)))
-        }
-    }
 
     override fun forgetETags() {
         val batch = ContactsBatchOperation(ab.provider)

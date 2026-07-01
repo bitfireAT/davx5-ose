@@ -66,13 +66,10 @@ class LocalJtxCollection(internal val jtxCollection: JtxCollection) :
     override fun countModified(): Int =
         jtxCollection.countJtxObjects("${JtxICalObject.DIRTY} AND NOT ${JtxICalObject.DELETED}", null)
 
-    override fun findDeleted(): List<LocalJtxObject> = buildList {
-        recurringCollection.iterateJtxObjectAndExceptions(JtxICalObject.DELETED, null) { jtxObjectAndExceptions ->
-            add(LocalJtxObject(recurringCollection, jtxObjectAndExceptions))
-        }
-    }
+    override fun countDirty(): Int =
+        jtxCollection.countJtxObjects(JtxICalObject.DIRTY, null)
 
-    override fun deletedFlow(): Flow<LocalJtxObject> {
+    override fun findDeleted(): Flow<LocalJtxObject> {
         return channelFlow {
             launch(Dispatchers.IO) {
                 recurringCollection.iterateJtxObjectAndExceptions(JtxICalObject.DELETED, null) { jtxObjectAndExceptions ->
@@ -82,13 +79,7 @@ class LocalJtxCollection(internal val jtxCollection: JtxCollection) :
         }.buffer(capacity = 1)
     }
 
-    override fun findDirty(): List<LocalJtxObject> = buildList {
-        recurringCollection.iterateJtxObjectAndExceptions(JtxICalObject.DIRTY, null) { jtxObjectAndExceptions ->
-            add(LocalJtxObject(recurringCollection, jtxObjectAndExceptions))
-        }
-    }
-
-    override fun dirtyFlow(): Flow<LocalJtxObject> {
+    override fun findDirty(): Flow<LocalJtxObject> {
         return channelFlow {
             launch(Dispatchers.IO) {
                 recurringCollection.iterateJtxObjectAndExceptions(JtxICalObject.DIRTY, null) { jtxObjectAndExceptions ->

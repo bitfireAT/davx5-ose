@@ -315,6 +315,27 @@ class AndroidAddressBook(
     }
 
     /**
+     * Counts the number of groups in the address book that match the given selection criteria.
+     *
+     * This method operates "as sync adapter" on [addressBookAccount] and doesn't take the [readOnly] flag into account.
+     *
+     * @param where An optional filter declaring which rows to return.
+     * @param whereArgs Optional arguments for [where].
+     * @return The number of groups matching the selection criteria.
+     */
+    fun countGroups(where: String?, whereArgs: Array<String>?): Int {
+        // account is implicitly restricted via the URI (asSyncAdapter appends ACCOUNT_NAME/ACCOUNT_TYPE)
+        provider.query(
+            groupsSyncUri(), arrayOf(Groups._ID),
+            where, whereArgs, null
+        )?.use { cursor ->
+            return cursor.count
+        }
+        // If the query was invalid, an exception should have been thrown. So this should never be reached:
+        return 0
+    }
+
+    /**
      * Enqueues an update of group rows in this address book to the given batch.
      *
      * This method operates "as sync adapter" on [addressBookAccount] and doesn't take the [readOnly] flag into account.

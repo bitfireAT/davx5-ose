@@ -82,13 +82,10 @@ class LocalTaskList (
     override fun countModified(): Int =
         dmfsTaskList.countTasks("${Tasks._DIRTY} AND NOT ${Tasks._DELETED}", null)
 
-    override fun findDeleted(): List<LocalTask> = buildList {
-        recurringTaskList.iterateTaskAndExceptions(Tasks._DELETED, null) {
-            add(LocalTask(recurringTaskList, it))
-        }
-    }
+    override fun countDirty(): Int =
+        dmfsTaskList.countTasks(Tasks._DIRTY, null)
 
-    override fun deletedFlow(): Flow<LocalTask> {
+    override fun findDeleted(): Flow<LocalTask> {
         return channelFlow {
             launch(Dispatchers.IO) {
                 recurringTaskList.iterateTaskAndExceptions(Tasks._DELETED, null) {
@@ -98,13 +95,7 @@ class LocalTaskList (
         }.buffer(capacity = 1)
     }
 
-    override fun findDirty(): List<LocalTask> = buildList {
-        recurringTaskList.iterateTaskAndExceptions(Tasks._DIRTY, null) {
-            add(LocalTask(recurringTaskList, it))
-        }
-    }
-
-    override fun dirtyFlow(): Flow<LocalTask> {
+    override fun findDirty(): Flow<LocalTask> {
         return channelFlow {
             launch(Dispatchers.IO) {
                 recurringTaskList.iterateTaskAndExceptions(Tasks._DIRTY, null) {

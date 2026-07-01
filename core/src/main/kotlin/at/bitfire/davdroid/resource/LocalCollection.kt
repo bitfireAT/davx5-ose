@@ -34,25 +34,9 @@ interface LocalCollection<out T: LocalResource> {
      * Finds local resources of this collection which have been marked as *deleted* by the user
      * or an app acting on their behalf.
      *
-     * @return list of resources marked as *deleted*
-     */
-    fun findDeleted(): List<T>
-
-    /**
-     * Finds local resources of this collection which have been marked as *deleted* by the user
-     * or an app acting on their behalf.
-     *
      * @return [Flow] of resources marked as *deleted*
      */
-    fun deletedFlow(): Flow<T>
-
-    /**
-     * Finds local resources of this collection which have been marked as *dirty*, i.e. resources
-     * which have been modified by the user or an app acting on their behalf.
-     *
-     * @return list of resources marked as *dirty*
-     */
-    fun findDirty(): List<T>
+    fun findDeleted(): Flow<T>
 
     /**
      * Finds local resources of this collection which have been marked as *dirty*, i.e. resources
@@ -60,7 +44,7 @@ interface LocalCollection<out T: LocalResource> {
      *
      * @return [Flow] of resources marked as *dirty*
      */
-    fun dirtyFlow(): Flow<T>
+    fun findDirty(): Flow<T>
 
     /**
      * Finds a local resource of this collection with a given file name. (File names are assigned
@@ -120,5 +104,13 @@ interface LocalCollection<out T: LocalResource> {
      * @throws UnsupportedOperationException if the operation is not supported on this collection (jtx Board)
      */
     fun countModified(): Int
+
+    /**
+     * Counts resources in this collection that are locally marked as *dirty*.
+     *
+     * @return number of dirty resources
+     * @throws UnsupportedOperationException if the operation is not supported on this collection (jtx Board)
+     */
+    fun countDirty(): Int
 
 }

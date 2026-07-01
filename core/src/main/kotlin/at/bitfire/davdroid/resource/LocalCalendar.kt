@@ -78,13 +78,10 @@ class LocalCalendar @AssistedInject constructor(
     override fun countModified(): Int =
         androidCalendar.countEvents("${Events.DIRTY} AND NOT ${Events.DELETED}", null)
 
-    override fun findDeleted(): List<LocalEvent> = buildList {
-        recurringCalendar.iterateEventAndExceptions(Events.DELETED, null) { eventAndExceptions ->
-            add(LocalEvent(recurringCalendar, eventAndExceptions))
-        }
-    }
+    override fun countDirty(): Int =
+        androidCalendar.countEvents(Events.DIRTY, null)
 
-    override fun deletedFlow(): Flow<LocalEvent> {
+    override fun findDeleted(): Flow<LocalEvent> {
         return channelFlow {
             launch(Dispatchers.IO) {
                 recurringCalendar.iterateEventAndExceptions(Events.DELETED, null) { eventAndExceptions ->
@@ -94,13 +91,7 @@ class LocalCalendar @AssistedInject constructor(
         }.buffer(capacity = 1)
     }
 
-    override fun findDirty(): List<LocalEvent> = buildList {
-        recurringCalendar.iterateEventAndExceptions(Events.DIRTY, null) { eventAndExceptions ->
-            add(LocalEvent(recurringCalendar, eventAndExceptions))
-        }
-    }
-
-    override fun dirtyFlow(): Flow<LocalEvent> {
+    override fun findDirty(): Flow<LocalEvent> {
         return channelFlow {
             launch(Dispatchers.IO) {
                 recurringCalendar.iterateEventAndExceptions(Events.DIRTY, null) { eventAndExceptions ->
