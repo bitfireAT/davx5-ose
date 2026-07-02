@@ -250,7 +250,7 @@ class CalendarSyncManager @AssistedInject constructor(
                  * - ignore responses without requested calendar data (should also ignore collections and hopefully unrelated resources), and
                  * - take the last segment of the href as the file name and assume that it's in the requested collection.
                  */
-                SyncException.wrapWithRemoteResourceSuspending(response.href) wrapResource@{
+                SyncException.wrapWithRemoteResource(response.href) wrapResource@{
                     if (!response.isSuccess()) {
                         logger.warning("Ignoring non-successful multi-get response for ${response.href}")
                         return@wrapResource
