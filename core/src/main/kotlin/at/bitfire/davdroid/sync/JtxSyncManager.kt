@@ -219,7 +219,7 @@ class JtxSyncManager @AssistedInject constructor(
 
         val local = localCollection.findByName(fileName)
         if (local != null) {
-            SyncException.wrapWithLocalResourceSuspending(local) {
+            SyncException.wrapWithLocalResource(local) {
                 logger.log(Level.INFO, "Updating $fileName in local jtx collection", component)
                 local.update(jtxEntityAndExceptions)
             }
