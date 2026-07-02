@@ -18,6 +18,7 @@ import com.google.errorprone.annotations.MustBeClosed
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.DefaultRequest
+import io.ktor.client.plugins.UserAgent
 import io.ktor.client.plugins.compression.ContentEncoding
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.cookies.HttpCookies
@@ -319,13 +320,12 @@ class HttpClientBuilder @Inject constructor(
                 json(lenientJson)
             }
 
-            // Set User-Agent and Accept-Language on every request (locale is read per request)
+            // Set User-Agent and Accept-Language on every request
+            install(UserAgent) {
+                agent = productIds.httpUserAgent
+            }
             install(DefaultRequest) {
-                val userAgent = productIds.httpUserAgent
-                logger.info("Will use User-Agent: $userAgent")
-
                 val locale = Locale.getDefault()
-                headers.appendIfNameAbsent(HttpHeaders.UserAgent, userAgent)
                 headers.appendIfNameAbsent(
                     HttpHeaders.AcceptLanguage,
                     "${locale.language}-${locale.country}, ${locale.language};q=0.7, *;q=0.5"
