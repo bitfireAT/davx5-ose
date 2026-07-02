@@ -12,6 +12,7 @@ import at.bitfire.dav4jvm.ktor.PropStat
 import at.bitfire.dav4jvm.ktor.Response
 import at.bitfire.dav4jvm.ktor.Response.HrefRelation
 import at.bitfire.dav4jvm.property.webdav.GetETag
+import at.bitfire.davdroid.MockEngineQueue
 import at.bitfire.davdroid.TestUtils
 import at.bitfire.davdroid.TestUtils.assertWithin
 import at.bitfire.davdroid.db.Collection
@@ -24,9 +25,6 @@ import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.ktor.client.HttpClient
-import io.ktor.client.engine.mock.MockEngine
-import io.ktor.client.engine.mock.respond
-import io.ktor.http.Headers
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.Url
@@ -78,24 +76,7 @@ class SyncManagerTest {
     private lateinit var account: Account
     private lateinit var client: HttpClient
 
-    private data class QueuedResponse(
-        val status: HttpStatusCode,
-        val body: String = "",
-        val headers: Headers = headersOf()
-    )
-    private val responseQueue = ArrayDeque<QueuedResponse>()
-    private val capturedUrls = mutableListOf<Url>()
-
-    private fun buildMockEngine() = MockEngine { request ->
-        capturedUrls += request.url
-        val queued = responseQueue.removeFirstOrNull()
-            ?: return@MockEngine respond("Unexpected request", HttpStatusCode.InternalServerError)
-        respond(queued.body, queued.status, queued.headers)
-    }
-
-    private fun enqueue(status: HttpStatusCode, body: String = "", headers: Headers = headersOf()) {
-        responseQueue.addLast(QueuedResponse(status, body, headers))
-    }
+    private val mockEngineQueue = MockEngineQueue()
 
     private fun enqueueQueryCapabilities(cTag: String? = null) {
         val body = StringBuilder()
@@ -115,7 +96,7 @@ class SyncManagerTest {
                     "  </response>\n" +
                     "</multistatus>"
         )
-        enqueue(
+        mockEngineQueue.enqueue(
             HttpStatusCode.MultiStatus,
             body.toString(),
             headersOf(HttpHeaders.ContentType, "text/xml")
@@ -130,7 +111,7 @@ class SyncManagerTest {
 
         account = TestAccount.create()
 
-        client = HttpClient(buildMockEngine())
+        client = HttpClient(mockEngineQueue.engine)
     }
 
     @After
@@ -146,7 +127,7 @@ class SyncManagerTest {
 
     @Test
     fun testPerformSync_503RetryAfter_DelaySeconds() = runTest {
-        enqueue(HttpStatusCode.ServiceUnavailable, headers = headersOf(HttpHeaders.RetryAfter, "60"))
+        mockEngineQueue.enqueue(HttpStatusCode.ServiceUnavailable, headers = headersOf(HttpHeaders.RetryAfter, "60"))
 
         val result = SyncResult()
         val syncManager = syncManager(LocalTestCollection(), result)
@@ -185,7 +166,7 @@ class SyncManagerTest {
         enqueueQueryCapabilities("ctag1")
 
         // PUT -> 204 No Content
-        enqueue(HttpStatusCode.NoContent, headers = headersOf(HttpHeaders.ETag, "etag-from-put"))
+        mockEngineQueue.enqueue(HttpStatusCode.NoContent, headers = headersOf(HttpHeaders.ETag, "etag-from-put"))
 
         // modifications sent, so DAVx5 will query CTag again
         enqueueQueryCapabilities("ctag2")
@@ -228,7 +209,7 @@ class SyncManagerTest {
         enqueueQueryCapabilities("ctag1")
 
         // PUT -> 204 No Content
-        enqueue(HttpStatusCode.NoContent, headers = headersOf(HttpHeaders.ETag, "etag-from-put"))
+        mockEngineQueue.enqueue(HttpStatusCode.NoContent, headers = headersOf(HttpHeaders.ETag, "etag-from-put"))
 
         // modifications sent, so DAVx5 will query CTag again
         enqueueQueryCapabilities("ctag2")
@@ -273,7 +254,7 @@ class SyncManagerTest {
         enqueueQueryCapabilities("ctag1")
 
         // PUT -> 204 No Content
-        enqueue(HttpStatusCode.NoContent)
+        mockEngineQueue.enqueue(HttpStatusCode.NoContent)
 
         // modifications sent, so DAVx5 will query CTag again
         enqueueQueryCapabilities("ctag2")
@@ -318,7 +299,7 @@ class SyncManagerTest {
         enqueueQueryCapabilities("ctag1")
 
         // PUT -> 412 Precondition Failed
-        enqueue(HttpStatusCode.PreconditionFailed)
+        mockEngineQueue.enqueue(HttpStatusCode.PreconditionFailed)
 
         // modifications sent, so DAVx5 will query CTag again
         enqueueQueryCapabilities("ctag1")
@@ -508,14 +489,14 @@ class SyncManagerTest {
             }
         }
         enqueueQueryCapabilities("ctag1")
-        enqueue(HttpStatusCode.NoContent)           // DELETE response
-        enqueueQueryCapabilities("ctag1")           // querySyncState after modifications
+        mockEngineQueue.enqueue(HttpStatusCode.NoContent)   // DELETE response
+        enqueueQueryCapabilities("ctag1")                   // querySyncState after modifications
 
         val syncManager = syncManager(collection)
         syncManager.performSync()
 
         // The DELETE request URL must encode the slash as %2F (not split the path).
-        val resourceUrl = capturedUrls.first { it.encodedPath != "/" }
+        val resourceUrl = mockEngineQueue.engine.requestHistory.first { it.url.encodedPath != "/" }.url
         assertEquals("/has%2Fslash.ics", resourceUrl.encodedPath)
     }
 
@@ -530,14 +511,14 @@ class SyncManagerTest {
             }
         }
         enqueueQueryCapabilities("ctag1")
-        enqueue(HttpStatusCode.NoContent)           // PUT response
-        enqueueQueryCapabilities("ctag1")           // querySyncState after modifications
+        mockEngineQueue.enqueue(HttpStatusCode.NoContent)   // PUT response
+        enqueueQueryCapabilities("ctag1")                   // querySyncState after modifications
 
         val syncManager = syncManager(collection)
         syncManager.performSync()
 
         // The PUT request URL must encode the slash as %2F (not split the path).
-        val resourceUrl = capturedUrls.first { it.encodedPath != "/" }
+        val resourceUrl = mockEngineQueue.engine.requestHistory.first { it.url.encodedPath != "/" }.url
         assertEquals("/has%2Fslash.ics", resourceUrl.encodedPath)
     }
 

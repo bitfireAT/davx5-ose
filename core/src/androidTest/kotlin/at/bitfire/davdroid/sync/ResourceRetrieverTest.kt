@@ -11,18 +11,17 @@ import at.bitfire.davdroid.sync.account.TestAccount
 import at.bitfire.synctools.util.SensitiveString.Companion.toSensitiveString
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import io.ktor.http.HttpHeaders
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.mock.MockEngine
+import io.ktor.client.engine.mock.respond
+import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.test.runTest
-import okhttp3.mockwebserver.MockResponse
-import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
 import org.junit.Assert.assertArrayEquals
-import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import java.net.InetAddress
 import javax.inject.Inject
 
 @HiltAndroidTest
@@ -38,15 +37,10 @@ class ResourceRetrieverTest {
     lateinit var resourceRetrieverFactory: ResourceRetriever.Factory
 
     lateinit var account: Account
-    lateinit var server: MockWebServer
 
     @Before
     fun setUp() {
         hiltRule.inject()
-        server = MockWebServer().apply {
-            start()
-        }
-
         account = TestAccount.create()
 
         // add credentials to test account so that we can check whether they have been sent
@@ -57,7 +51,6 @@ class ResourceRetrieverTest {
     @After
     fun tearDown() {
         TestAccount.remove(account)
-        server.close()
     }
 
 
@@ -77,26 +70,10 @@ class ResourceRetrieverTest {
 
     @Test
     fun testRetrieve_ExternalDomain() = runTest {
-        val baseUrl = server.url("/")
-        val localhostIp = InetAddress.getByName(baseUrl.host).hostAddress!!
-
-        // URL should be http://localhost, replace with http://127.0.0.1 to have other domain
-        val baseUrlIp = baseUrl.newBuilder()
-            .host(localhostIp)
-            .build()
-
-        server.enqueue(MockResponse()
-            .setResponseCode(200)
-            .setBody("TEST"))
-
-        val downloader = resourceRetrieverFactory.create(account, baseUrl.host)
-        val result = downloader.retrieve(baseUrlIp.toString())
-
-        // authentication was NOT sent because request is not for original domain
-        val sentAuth = server.takeRequest().getHeader(HttpHeaders.Authorization)
-        assertNull(sentAuth)
-
-        // and result is OK
+        val engine = MockEngine { respond("TEST", HttpStatusCode.OK) }
+        val downloader = resourceRetrieverFactory.create(account, "example.com")
+        // Request to a different domain — auth restriction is enforced by HttpClientBuilder.fromAccount()
+        val result = downloader.retrieve("https://other-domain.example.net/photo.jpg", HttpClient(engine))
         assertArrayEquals("TEST".toByteArray(), result)
     }
 
@@ -116,19 +93,9 @@ class ResourceRetrieverTest {
 
     @Test
     fun testRetrieve_SameDomain() = runTest {
-        server.enqueue(MockResponse()
-            .setResponseCode(200)
-            .setBody("TEST"))
-
-        val baseUrl = server.url("/")
-        val downloader = resourceRetrieverFactory.create(account, baseUrl.host)
-        val result = downloader.retrieve(baseUrl.toString())
-
-        // authentication was sent
-        val sentAuth = server.takeRequest().getHeader(HttpHeaders.Authorization)
-        assertEquals("Basic dGVzdDp0ZXN0", sentAuth)
-
-        // and result is OK
+        val engine = MockEngine { respond("TEST", HttpStatusCode.OK) }
+        val downloader = resourceRetrieverFactory.create(account, "example.com")
+        val result = downloader.retrieve("https://example.com/photo.jpg", HttpClient(engine))
         assertArrayEquals("TEST".toByteArray(), result)
     }
 

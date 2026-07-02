@@ -16,6 +16,7 @@ import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import com.google.errorprone.annotations.MustBeClosed
 import io.ktor.client.HttpClient
+import io.ktor.client.HttpClientConfig
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.DefaultRequest
 import io.ktor.client.plugins.compression.ContentEncoding
@@ -346,71 +347,11 @@ class HttpClientBuilder @Inject constructor(
             logger.warning("buildKtor() should only be called once; use Provider<HttpClientBuilder> instead")
 
         val client = HttpClient(OkHttp) {
-            // Ktor-level configuration here
-
-            // don't follow redirects by default because it would break PROPFIND handling;
-            // this controls whether Ktor's HttpRedirect plugin is active
-            followRedirects = this@HttpClientBuilder.followRedirects
-
-            // Uses AcceptAllCookiesStorage, which stores all the cookies in an in-memory map.
-            install(HttpCookies)
-
-            // automatically convert JSON from/into data classes (if requested in respective code)
-            install(ContentNegotiation) {
-                // use lenient parser that ignores unknown keys
-                json(lenientJson)
-            }
-
-            // Set User-Agent and Accept-Language on every request (locale is read per request)
-            install(DefaultRequest) {
-                val userAgent = productIds.httpUserAgent
-                logger.info("Will use User-Agent: $userAgent")
-
-                val locale = Locale.getDefault()
-                headers.appendIfNameAbsent(HttpHeaders.UserAgent, userAgent)
-                headers.appendIfNameAbsent(
-                    HttpHeaders.AcceptLanguage,
-                    "${locale.language}-${locale.country}, ${locale.language};q=0.7, *;q=0.5"
-                )
-            }
-
-            // offer gzip/deflate compression and decompress responses transparently
-            install(ContentEncoding) {
-                gzip()
-                deflate()
-            }
-
-            // add network logging (with redaction of sensitive headers), if requested
-            if (logger.isLoggable(Level.FINEST)) {
-                install(Logging) {
-                    logger = object : io.ktor.client.plugins.logging.Logger {
-                        override fun log(message: String) {
-                            this@HttpClientBuilder.logger.finest(message)
-                        }
-                    }
-                    level = loggerInterceptorLevel
-                    sanitizeHeader { header ->
-                        header.equals(HttpHeaders.Authorization, ignoreCase = true) ||
-                                header.equals(HttpHeaders.Cookie, ignoreCase = true) ||
-                                header.equals(HttpHeaders.SetCookie, ignoreCase = true) ||
-                                header.equals(
-                                    "Set-Cookie2",
-                                    ignoreCase = true
-                                ) // Obsoleted, but included here for good measure
-                    }
-                }
-            }
-
+            applyKtorPlugins()
             engine {
-                // okhttp engine configuration here
-
                 config {
-                    // OkHttpClient.Builder configuration here
-
                     // we don't use the sharedOkHttpClient, so we have to apply timeouts again
                     configureTimeouts(this)
-
-                    // build most config on okhttp level
                     configureOkHttp(this)
                 }
             }
@@ -418,6 +359,79 @@ class HttpClientBuilder @Inject constructor(
 
         alreadyBuilt = true
         return client
+    }
+
+    /**
+     * Same as [buildKtor] but uses the provided [engine] instead of [OkHttp]. Intended for tests
+     * so that a [io.ktor.client.engine.mock.MockEngine] can be injected while all Ktor-level
+     * plugins (cookies, logging, default request headers, …) are still applied.
+     */
+    @MustBeClosed
+    internal fun buildKtor(engine: io.ktor.client.engine.HttpClientEngine): HttpClient {
+        if (alreadyBuilt)
+            logger.warning("buildKtor() should only be called once; use Provider<HttpClientBuilder> instead")
+
+        val client = HttpClient(engine) {
+            applyKtorPlugins()
+        }
+
+        alreadyBuilt = true
+        return client
+    }
+
+    private fun HttpClientConfig<*>.applyKtorPlugins() {
+        // don't follow redirects by default because it would break PROPFIND handling;
+        // this controls whether Ktor's HttpRedirect plugin is active
+        followRedirects = this@HttpClientBuilder.followRedirects
+
+        // Uses AcceptAllCookiesStorage, which stores all the cookies in an in-memory map.
+        install(HttpCookies)
+
+        // automatically convert JSON from/into data classes (if requested in respective code)
+        install(ContentNegotiation) {
+            // use lenient parser that ignores unknown keys
+            json(lenientJson)
+        }
+
+        // Set User-Agent and Accept-Language on every request (locale is read per request)
+        install(DefaultRequest) {
+            val userAgent = productIds.httpUserAgent
+            logger.info("Will use User-Agent: $userAgent")
+
+            val locale = Locale.getDefault()
+            headers.appendIfNameAbsent(HttpHeaders.UserAgent, userAgent)
+            headers.appendIfNameAbsent(
+                HttpHeaders.AcceptLanguage,
+                "${locale.language}-${locale.country}, ${locale.language};q=0.7, *;q=0.5"
+            )
+        }
+
+        // offer gzip/deflate compression and decompress responses transparently
+        install(ContentEncoding) {
+            gzip()
+            deflate()
+        }
+
+        // add network logging (with redaction of sensitive headers), if requested
+        if (logger.isLoggable(Level.FINEST)) {
+            install(Logging) {
+                logger = object : io.ktor.client.plugins.logging.Logger {
+                    override fun log(message: String) {
+                        this@HttpClientBuilder.logger.finest(message)
+                    }
+                }
+                level = loggerInterceptorLevel
+                sanitizeHeader { header ->
+                    header.equals(HttpHeaders.Authorization, ignoreCase = true) ||
+                            header.equals(HttpHeaders.Cookie, ignoreCase = true) ||
+                            header.equals(HttpHeaders.SetCookie, ignoreCase = true) ||
+                            header.equals(
+                                "Set-Cookie2",
+                                ignoreCase = true
+                            ) // Obsoleted, but included here for good measure
+                }
+            }
+        }
     }
 
 }
