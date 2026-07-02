@@ -337,12 +337,14 @@ class JtxCollection(
      */
     fun queryJtxObjects(where: String?, whereArgs: Array<String>?): Flow<Entity> {
         val (protectedWhere, protectedWhereArgs) = whereWithCollectionId(where, whereArgs)
-        return client.queryFlow(
-            jtxObjectsUri,
-            null,
-            protectedWhere, protectedWhereArgs
-        ).map { readEntity(it) }
-            .flowOn(Dispatchers.IO).buffer(Channel.RENDEZVOUS)
+        return client
+            .queryFlow(
+                jtxObjectsUri,
+                null,
+                protectedWhere, protectedWhereArgs
+            ).map { readEntity(it) }
+            .flowOn(Dispatchers.IO)         // buffers by default
+            .buffer(Channel.RENDEZVOUS)     // Entity-s could be big → reduce buffer size to 1
     }
 
     /**

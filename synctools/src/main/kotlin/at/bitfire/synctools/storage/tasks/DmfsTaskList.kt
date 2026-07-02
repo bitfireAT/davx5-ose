@@ -16,7 +16,9 @@ import at.bitfire.synctools.storage.queryFlow
 import at.bitfire.synctools.storage.tasks.DmfsTasksContract.asSyncAdapter
 import at.bitfire.synctools.storage.toContentValues
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.buffer
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.mapNotNull
 import org.dmfs.tasks.contract.TaskContract
@@ -303,7 +305,8 @@ class DmfsTaskList(
                 val id = mainRow.getAsLong(Tasks._ID) ?: return@mapNotNull null
                 getTask(id)
             }
-            .flowOn(Dispatchers.IO)
+            .flowOn(Dispatchers.IO)      // buffers by default
+            .buffer(Channel.RENDEZVOUS)  // Entity-s could be big → reduce buffer size to 1
     }
 
     /**

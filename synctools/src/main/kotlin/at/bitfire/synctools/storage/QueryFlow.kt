@@ -45,7 +45,7 @@ fun ContentProviderClient.queryFlow(
         } catch (e: RemoteException) {
             throw LocalStorageException("Couldn't query $uri", e)
         }
-    }.flowOn(Dispatchers.IO).buffer(capacity = Channel.RENDEZVOUS)
+    }.flowOn(Dispatchers.IO)    // buffers by default – but main rows are not big enough to worry
 
 /**
  * Like [queryFlow], but for providers that expose rows via an [EntityIterator] (e.g. raw contacts,
@@ -74,4 +74,5 @@ fun ContentProviderClient.queryEntityFlow(
         } catch (e: RemoteException) {
             throw LocalStorageException("Couldn't query $uri", e)
         }
-    }.flowOn(Dispatchers.IO).buffer(capacity = Channel.RENDEZVOUS)
+    }.flowOn(Dispatchers.IO)            // buffers by default
+        .buffer(capacity = Channel.RENDEZVOUS)   // Entity-s could be big → reduce buffer size to 1
