@@ -38,7 +38,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
-import kotlinx.coroutines.flow.toList
 import java.io.FileNotFoundException
 import java.util.Optional
 import java.util.logging.Logger
@@ -225,7 +224,7 @@ open class LocalAddressBook @AssistedInject constructor(
     }
 
     override suspend fun findByName(name: String): LocalAddress? {
-        val result = queryContacts("${RawContactColumns.FILENAME}=?", arrayOf(name)).firstOrNull()
+        val result = findContact("${RawContactColumns.FILENAME}=?", arrayOf(name))
         return if (includeGroups)
             result ?: queryGroups("${GroupColumns.FILENAME}=?", arrayOf(name)).firstOrNull()
         else
@@ -302,8 +301,10 @@ open class LocalAddressBook @AssistedInject constructor(
         return LocalGroup(androidGroup)
     }
 
-    suspend fun queryContacts(where: String?, whereArgs: Array<String>?): List<LocalContact> =
-        ab.queryRawContactRows(where, whereArgs).map { LocalContact(this, AndroidContact(ab, it)) }.toList()
+    private suspend fun findContact(where: String?, whereArgs: Array<String>?): LocalContact? =
+        ab.queryRawContactRows(where, whereArgs).firstOrNull()?.let {
+            LocalContact(this, AndroidContact(ab, it))
+        }
 
     fun queryGroups(where: String?, whereArgs: Array<String>?): Flow<LocalGroup> =
         ab.queryGroupRows(null, where, whereArgs).map { LocalGroup(AndroidGroup(ab, it)) }
