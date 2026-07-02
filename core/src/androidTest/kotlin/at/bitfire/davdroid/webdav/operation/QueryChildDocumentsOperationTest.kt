@@ -22,6 +22,7 @@ import io.mockk.junit4.MockKRule
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
+import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
@@ -49,6 +50,11 @@ class QueryChildDocumentsOperationTest {
     @JvmField
     val httpClientBuilder: DavHttpClientBuilder = mockk()
 
+    @Inject
+    lateinit var testDispatcher: TestDispatcher
+
+    private lateinit var server: MockWebServer
+
     private lateinit var mount: WebDavMount
     private lateinit var rootDocument: WebDavDocument
 
@@ -57,6 +63,10 @@ class QueryChildDocumentsOperationTest {
         hiltRule.inject()
         every { httpClientBuilder.buildKtor(any(), any()) } answers { HttpClient(buildDefaultEngine()) }
 
+        // mock server delivers HTTP without encryption
+        assertTrue(NetworkSecurityPolicy.getInstance().isCleartextTrafficPermitted)
+
+        // create WebDAV mount and root document in DB
         runBlocking {
             val mountId = db.webDavMountDao().insert(
                 WebDavMount(0, "Cat food storage", Url("https://dav.example.com$PATH_WEBDAV_ROOT"))
