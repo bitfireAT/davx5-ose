@@ -12,7 +12,9 @@ import android.database.Cursor
 import android.net.Uri
 import android.os.RemoteException
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.buffer
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 
@@ -43,7 +45,7 @@ fun ContentProviderClient.queryFlow(
         } catch (e: RemoteException) {
             throw LocalStorageException("Couldn't query $uri", e)
         }
-    }.flowOn(Dispatchers.IO)
+    }.flowOn(Dispatchers.IO).buffer(capacity = Channel.RENDEZVOUS)
 
 /**
  * Like [queryFlow], but for providers that expose rows via an [EntityIterator] (e.g. raw contacts,
@@ -72,4 +74,4 @@ fun ContentProviderClient.queryEntityFlow(
         } catch (e: RemoteException) {
             throw LocalStorageException("Couldn't query $uri", e)
         }
-    }.flowOn(Dispatchers.IO)
+    }.flowOn(Dispatchers.IO).buffer(capacity = Channel.RENDEZVOUS)
