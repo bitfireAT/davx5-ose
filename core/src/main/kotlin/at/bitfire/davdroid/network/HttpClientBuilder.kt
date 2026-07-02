@@ -327,15 +327,17 @@ class HttpClientBuilder @Inject constructor(
                         }
                     }
                     level = loggerInterceptorLevel
+
+                    // don't log some confidential headers
+                    val headersToIgnore = arrayOf(
+                        HttpHeaders.Authorization,
+                        HttpHeaders.Cookie,
+                        HttpHeaders.SetCookie,
+                        "Set-Cookie2"       // obsoleted, but included here for good measure
+                    )
                     sanitizeHeader { header ->
-                        val ignoreHeaders = arrayOf(
-                            HttpHeaders.Authorization,
-                            HttpHeaders.Cookie,
-                            HttpHeaders.SetCookie,
-                            "Set-Cookie2"       // obsoleted, but included here for good measure
-                        )
-                        ignoreHeaders.any {
-                            header.equals(it, ignoreCase = true)
+                        headersToIgnore.any { headerToIgnore ->
+                            header.equals(headerToIgnore, ignoreCase = true)
                         }
                     }
                 }
