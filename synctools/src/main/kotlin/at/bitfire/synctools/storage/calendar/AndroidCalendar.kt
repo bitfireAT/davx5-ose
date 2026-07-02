@@ -22,7 +22,9 @@ import at.bitfire.synctools.mapping.UnknownProperty
 import at.bitfire.synctools.storage.BatchOperation.CpoBuilder
 import at.bitfire.synctools.storage.LocalStorageException
 import at.bitfire.synctools.storage.calendar.EventsContract.asSyncAdapter
+import at.bitfire.synctools.storage.queryEntityFlow
 import at.bitfire.synctools.storage.toContentValues
+import kotlinx.coroutines.flow.Flow
 import org.jetbrains.annotations.TestOnly
 import java.util.logging.Logger
 
@@ -34,7 +36,7 @@ import java.util.logging.Logger
  * Methods that use [Entity] operate on [EventsEntity] URIs to access the [Events] rows together with
  * associated data rows (reminders, attendees etc.)
  *
- * @param client    calendar provider
+ * @param provider  calendar provider
  * @param values    content values as read from the calendar provider; [android.provider.BaseColumns._ID] must be set
  *
  * @throws IllegalArgumentException when [Calendars._ID] is not set
@@ -122,8 +124,10 @@ class AndroidCalendar(
     fun countEvents(where: String?, whereArgs: Array<String>?): Int {
         try {
             val (protectedWhere, protectedWhereArgs) = whereWithCalendarId(where, whereArgs)
-            client.query(eventsUri, arrayOf(Events._ID),
-                protectedWhere, protectedWhereArgs, null)?.use { cursor ->
+            client.query(
+                eventsUri, arrayOf(Events._ID),
+                protectedWhere, protectedWhereArgs, null
+            )?.use { cursor ->
                 return cursor.count
             }
         } catch (e: RemoteException) {
@@ -211,7 +215,12 @@ class AndroidCalendar(
      *
      * @throws LocalStorageException when the content provider returns an error
      */
-    fun getEventRow(id: Long, projection: Array<String>? = null, where: String? = null, whereArgs: Array<String>? = null): ContentValues? {
+    fun getEventRow(
+        id: Long,
+        projection: Array<String>? = null,
+        where: String? = null,
+        whereArgs: Array<String>? = null
+    ): ContentValues? {
         try {
             client.query(eventUri(id), projection, where, whereArgs, null)?.use { cursor ->
                 if (cursor.moveToNext())
@@ -235,7 +244,12 @@ class AndroidCalendar(
      *
      * @throws LocalStorageException when the content provider returns an error
      */
-    fun iterateEventRows(projection: Array<String>?, where: String?, whereArgs: Array<String>?, body: (ContentValues) -> Unit) {
+    fun iterateEventRows(
+        projection: Array<String>?,
+        where: String?,
+        whereArgs: Array<String>?,
+        body: (ContentValues) -> Unit
+    ) {
         try {
             val (protectedWhere, protectedWhereArgs) = whereWithCalendarId(where, whereArgs)
             client.query(eventsUri, projection, protectedWhere, protectedWhereArgs, null)?.use { cursor ->
@@ -249,26 +263,17 @@ class AndroidCalendar(
     }
 
     /**
-     * Iterates event entities from this calendar.
+     * Cold [Flow] of event entities from this calendar.
      *
      * Adds a WHERE clause that restricts the query to [CalendarContract.EventsColumns.CALENDAR_ID] = [id].
      *
      * @param where         selection
      * @param whereArgs     arguments for selection
-     * @param body          callback that is called for each entity
-     *
-     * @throws LocalStorageException when the content provider returns an error
      */
-    fun iterateEvents(where: String?, whereArgs: Array<String>?, body: (Entity) -> Unit) {
-        try {
-            val (protectedWhere, protectedWhereArgs) = whereWithCalendarId(where, whereArgs)
-            client.query(eventEntitiesUri, null, protectedWhere, protectedWhereArgs, null)?.use { cursor ->
-                val iterator = EventsEntity.newEntityIterator(cursor, client)
-                for (entity in iterator)
-                    body(entity)
-            }
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't iterate events", e)
+    fun queryEvents(where: String?, whereArgs: Array<String>?): Flow<Entity> {
+        val (protectedWhere, protectedWhereArgs) = whereWithCalendarId(where, whereArgs)
+        return client.queryEntityFlow(eventEntitiesUri, null, protectedWhere, protectedWhereArgs) {
+            EventsEntity.newEntityIterator(it, client)
         }
     }
 
@@ -324,10 +329,10 @@ class AndroidCalendar(
             val newEventIdIdx = updateEvent(id, entity, batch)
             batch.commit()
 
-            if (newEventIdIdx == null)
+            if (newEventIdIdx == null) {
                 // event was updated
                 return id
-            else {
+            } else {
                 // event was re-built
                 val result = batch.getResult(newEventIdIdx)
                 val newEventUri = result?.uri ?: throw LocalStorageException("Content provider returned null on insert")
@@ -651,8 +656,10 @@ class AndroidCalendar(
     enum class StatusUpdateWorkaround {
         /** no workaround needed */
         NO_WORKAROUND,
+
         /** don't update eventStatus (no need to change value) */
         DONT_UPDATE_STATUS,
+
         /** rebuild event (delete+insert instead of update) */
         REBUILD_EVENT
     }

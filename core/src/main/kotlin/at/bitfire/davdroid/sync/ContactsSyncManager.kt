@@ -146,7 +146,7 @@ class ContactsSyncManager @AssistedInject constructor(
     }
 
 
-    override fun prepare(): Boolean {
+    override suspend fun prepare(): Boolean {
         if (dirtyVerifier.isPresent) {
             logger.info("Sync will verify dirty contacts (Android 7.x workaround)")
             if (!dirtyVerifier.get().prepareAddressBook(localCollection, isUpload = syncFrameworkUpload))
@@ -201,7 +201,7 @@ class ContactsSyncManager @AssistedInject constructor(
     override suspend fun processLocallyDeleted() =
             if (localCollection.readOnly) {
                 var modified = false
-                for (group in localCollection.findDeletedGroups()) {
+                localCollection.findDeletedGroups().collect { group ->
                     logger.warning("Restoring locally deleted group (read-only address book!)")
                     SyncException.wrapWithLocalResource(group) {
                         group.resetDeleted()
@@ -209,7 +209,7 @@ class ContactsSyncManager @AssistedInject constructor(
                     modified = true
                 }
 
-                for (contact in localCollection.findDeletedContacts()) {
+                localCollection.findDeletedContacts().collect { contact ->
                     logger.warning("Restoring locally deleted contact (read-only address book!)")
                     SyncException.wrapWithLocalResource(contact) {
                         contact.resetDeleted()
@@ -232,7 +232,7 @@ class ContactsSyncManager @AssistedInject constructor(
         var modified = false
 
         if (localCollection.readOnly) {
-            for (group in localCollection.findDirtyGroups()) {
+            localCollection.findDirtyGroups().collect { group ->
                 logger.warning("Resetting locally modified group to ETag=null (read-only address book!)")
                 SyncException.wrapWithLocalResource(group) {
                     group.clearDirty(Optional.empty(), null)
@@ -240,7 +240,7 @@ class ContactsSyncManager @AssistedInject constructor(
                 modified = true
             }
 
-            for (contact in localCollection.findDirtyContacts()) {
+            localCollection.findDirtyContacts().collect { contact ->
                 logger.warning("Resetting locally modified contact to ETag=null (read-only address book!)")
                 SyncException.wrapWithLocalResource(contact) {
                     contact.clearDirty(Optional.empty(), null)
@@ -323,7 +323,7 @@ class ContactsSyncManager @AssistedInject constructor(
             }
             davCollection.multiget(bunch, contentType, version) { response, _ ->
                 // See CalendarSyncManager for more information about the multi-get response
-                SyncException.wrapWithRemoteResource(response.href) wrapResource@{
+                SyncException.wrapWithRemoteResourceSuspending(response.href) wrapResource@{
                     if (!response.isSuccess()) {
                         logger.warning("Ignoring non-successful multi-get response for ${response.href}")
                         return@wrapResource
@@ -355,7 +355,7 @@ class ContactsSyncManager @AssistedInject constructor(
         }
     }
 
-    override fun postProcess() {
+    override suspend fun postProcess() {
         groupStrategy.postProcess()
     }
 

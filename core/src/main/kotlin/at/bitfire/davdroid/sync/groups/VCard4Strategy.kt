@@ -19,8 +19,8 @@ class VCard4Strategy(val addressBook: LocalAddressBook): ContactGroupStrategy {
 
     private val logger: Logger
         get() = Logger.getGlobal()
-    
-    override fun beforeUploadDirty() {
+
+    override suspend fun beforeUploadDirty() {
         /* Mark groups with changed members as dirty:
            1. Iterate over all dirty contacts.
            2. Check whether group memberships have changed by comparing group memberships and cached group memberships.
@@ -28,7 +28,7 @@ class VCard4Strategy(val addressBook: LocalAddressBook): ContactGroupStrategy {
            4. Successful upload will reset dirty flag and update cached group memberships.
          */
         val batch = ContactsBatchOperation(addressBook.ab.provider)
-        for (contact in addressBook.findDirtyContacts())
+        addressBook.findDirtyContacts().collect { contact ->
             try {
                 logger.fine("Looking for changed group memberships of contact ${contact.fileName}")
                 val cachedGroups = contact.androidContact.getCachedGroupMemberships()
@@ -41,13 +41,14 @@ class VCard4Strategy(val addressBook: LocalAddressBook): ContactGroupStrategy {
                 }
             } catch(_: FileNotFoundException) {
             }
+        }
         batch.commit()
     }
 
     override fun verifyContactBeforeSaving(contact: Contact) {
     }
 
-    override fun postProcess() {
+    override suspend fun postProcess() {
         addressBook.applyPendingMemberships()
     }
 

@@ -29,6 +29,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import ezvcard.property.Telephone
+import kotlinx.coroutines.runBlocking
 import org.junit.AfterClass
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -182,7 +183,7 @@ class LocalAddressBookTest {
             )
 
             // pending membership -> contact1 should be added to group
-            localAddressBook.applyPendingMemberships()
+            runBlocking { localAddressBook.applyPendingMemberships() }
 
             // check group membership
             localAddressBook.ab.provider.query(
@@ -231,7 +232,7 @@ class LocalAddressBookTest {
             batch.commit()
 
             // no pending memberships -> membership should be removed
-            localAddressBook.applyPendingMemberships()
+            runBlocking { localAddressBook.applyPendingMemberships() }
 
             // check group membership
             localAddressBook.ab.provider.query(
