@@ -6,6 +6,7 @@ package at.bitfire.davdroid.resource.workaround
 
 import android.content.ContentValues
 import android.os.Build
+import android.provider.ContactsContract.Groups
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalContact
 import at.bitfire.synctools.storage.BatchOperation
@@ -15,6 +16,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.flow.firstOrNull
 import java.util.Optional
 import java.util.logging.Level
 import java.util.logging.Logger
@@ -48,11 +50,11 @@ class Android7DirtyVerifier @Inject constructor(
 
     // address-book level functions
 
-    override fun prepareAddressBook(addressBook: LocalAddressBook, isUpload: Boolean): Boolean {
+    override suspend fun prepareAddressBook(addressBook: LocalAddressBook, isUpload: Boolean): Boolean {
         val reallyDirty = verifyDirtyContacts(addressBook)
 
-        val deleted = addressBook.findDeleted().size
-        if (isUpload && reallyDirty == 0 && deleted == 0) {
+        val anyDeleted = addressBook.findDeleted().firstOrNull() != null
+        if (isUpload && reallyDirty == 0 && !anyDeleted) {
             logger.info("This sync was called to up-sync dirty/deleted contacts, but no contacts have been changed")
             return false
         }
@@ -69,9 +71,9 @@ class Android7DirtyVerifier @Inject constructor(
      *
      * @return number of "really dirty" contacts
      */
-    private fun verifyDirtyContacts(addressBook: LocalAddressBook): Int {
+    private suspend fun verifyDirtyContacts(addressBook: LocalAddressBook): Int {
         var reallyDirty = 0
-        for (contact in addressBook.findDirtyContacts()) {
+        addressBook.findDirtyContacts().collect { contact ->
             val lastHash = getLastHashCode(addressBook, contact)
             val currentHash = contactDataHashCode(contact)
             if (lastHash == currentHash) {
@@ -85,7 +87,7 @@ class Android7DirtyVerifier @Inject constructor(
         }
 
         if (addressBook.includeGroups)
-            reallyDirty += addressBook.findDirtyGroups().size
+            reallyDirty += addressBook.ab.countGroups(Groups.DIRTY, null)
 
         return reallyDirty
     }

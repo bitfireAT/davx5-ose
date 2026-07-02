@@ -91,7 +91,7 @@ class CalendarSyncManager @AssistedInject constructor(
     private val accountSettings = accountSettingsFactory.create(account)
 
 
-    override fun prepare(): Boolean {
+    override suspend fun prepare(): Boolean {
         davCollection = DavCalendar(httpClient, collection.url)
 
         // if there are dirty exceptions for events, mark their master events as dirty, too
@@ -140,7 +140,7 @@ class CalendarSyncManager @AssistedInject constructor(
     override suspend fun processLocallyDeleted(): Boolean {
         if (localCollection.readOnly) {
             var modified = false
-            localCollection.deletedFlow().collect { event ->
+            localCollection.findDeleted().collect { event ->
                 logger.warning("Restoring locally deleted event (read-only calendar!)")
                 SyncException.wrapWithLocalResource(event) {
                     event.resetDeleted()
@@ -163,7 +163,7 @@ class CalendarSyncManager @AssistedInject constructor(
     override suspend fun uploadDirty(): Boolean {
         var modified = false
         if (localCollection.readOnly) {
-            localCollection.dirtyFlow().collect { event ->
+            localCollection.findDirty().collect { event ->
                 logger.warning("Resetting locally modified event to ETag=null (read-only calendar!)")
                 SyncException.wrapWithLocalResource(event) {
                     event.clearDirty(Optional.empty(), null, null)
@@ -250,7 +250,7 @@ class CalendarSyncManager @AssistedInject constructor(
                  * - ignore responses without requested calendar data (should also ignore collections and hopefully unrelated resources), and
                  * - take the last segment of the href as the file name and assume that it's in the requested collection.
                  */
-                SyncException.wrapWithRemoteResource(response.href) wrapResource@{
+                SyncException.wrapWithRemoteResourceSuspending(response.href) wrapResource@{
                     if (!response.isSuccess()) {
                         logger.warning("Ignoring non-successful multi-get response for ${response.href}")
                         return@wrapResource
@@ -283,12 +283,12 @@ class CalendarSyncManager @AssistedInject constructor(
         }
     }
 
-    override fun postProcess() {}
+    override suspend fun postProcess() {}
 
 
     // helpers
 
-    private fun processICalendar(fileName: String, eTag: String, scheduleTag: String?, reader: Reader) {
+    private suspend fun processICalendar(fileName: String, eTag: String, scheduleTag: String?, reader: Reader) {
         val calendar = ICalendarParser().parse(reader)
 
         val uidsAndEvents = CalendarUidSplitter<VEvent>().associateByUid(calendar, Component.VEVENT)

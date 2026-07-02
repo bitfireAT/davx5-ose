@@ -10,6 +10,9 @@ import android.provider.ContactsContract
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
 import at.bitfire.synctools.mapping.contacts.Contact
+import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.AfterClass
 import org.junit.Assert.assertEquals
@@ -59,25 +62,26 @@ class AndroidGroupTest {
         removeGroups()
     }
 
-    private fun removeGroups() {
+    private fun removeGroups() = runBlocking {
         addressBook.provider.delete(addressBook.groupsSyncUri(), null, null)
-        assertEquals(0, addressBook.queryGroups(null, null).size)
+        assertEquals(0, addressBook.countGroups(null, null))
     }
 
 
     @Test
-    fun testCreateReadDeleteGroup() {
+    fun testCreateReadDeleteGroup() = runTest {
         val contact = Contact()
         contact.displayName = "at.bitfire.vcard4android-AndroidGroupTest"
         contact.note = "(test group)"
 
         // ensure we start without this group
-        assertEquals(0, addressBook.queryGroups("${ContactsContract.Groups.TITLE}=?", arrayOf(contact.displayName!!)).size)
+        assertEquals(0, addressBook.countGroups("${ContactsContract.Groups.TITLE}=?", arrayOf(contact.displayName!!)))
 
         // create group
         val group = AndroidGroup(addressBook, contact, null, null)
         group.add()
-        val groups = addressBook.queryGroups("${ContactsContract.Groups.TITLE}=?", arrayOf(contact.displayName!!))
+        val groups =
+            addressBook.queryGroups("${ContactsContract.Groups.TITLE}=?", arrayOf(contact.displayName!!)).toList()
         assertEquals(1, groups.size)
         val contact2 = groups.first().getContact()
         assertEquals(contact.displayName, contact2.displayName)
@@ -85,11 +89,11 @@ class AndroidGroupTest {
 
         // delete group
         group.delete()
-        assertEquals(0, addressBook.queryGroups("${ContactsContract.Groups.TITLE}=?", arrayOf(contact.displayName!!)).size)
+        assertEquals(0, addressBook.countGroups("${ContactsContract.Groups.TITLE}=?", arrayOf(contact.displayName!!)))
     }
 
     @Test
-    fun testAdd_readOnly() {
+    fun testAdd_readOnly() = runTest {
         addressBook.readOnly = true
 
         val contact = Contact()
@@ -97,21 +101,20 @@ class AndroidGroupTest {
         contact.note = "(test group)"
 
         // ensure we start without this group
-        assertEquals(0, addressBook.queryGroups("${ContactsContract.Groups.TITLE}=?", arrayOf(contact.displayName!!)).size)
+        assertEquals(0, addressBook.countGroups("${ContactsContract.Groups.TITLE}=?", arrayOf(contact.displayName!!)))
 
         // create group
         val group = AndroidGroup(addressBook, contact, null, null)
         group.add()
-        val groups = addressBook.queryGroups("${ContactsContract.Groups.GROUP_IS_READ_ONLY}=?", arrayOf("1"))
-        assertEquals(1, groups.size)
+        assertEquals(1, addressBook.countGroups("${ContactsContract.Groups.GROUP_IS_READ_ONLY}=?", arrayOf("1")))
 
         // delete group
         group.delete()
-        assertEquals(0, addressBook.queryGroups("${ContactsContract.Groups.TITLE}=?", arrayOf(contact.displayName!!)).size)
+        assertEquals(0, addressBook.countGroups("${ContactsContract.Groups.TITLE}=?", arrayOf(contact.displayName!!)))
     }
 
     @Test
-    fun testAdd_notReadOnly() {
+    fun testAdd_notReadOnly() = runTest {
         addressBook.readOnly = false
 
         val contact = Contact()
@@ -119,17 +122,16 @@ class AndroidGroupTest {
         contact.note = "(test group)"
 
         // ensure we start without this group
-        assertEquals(0, addressBook.queryGroups("${ContactsContract.Groups.TITLE}=?", arrayOf(contact.displayName!!)).size)
+        assertEquals(0, addressBook.countGroups("${ContactsContract.Groups.TITLE}=?", arrayOf(contact.displayName!!)))
 
         // create group
         val group = AndroidGroup(addressBook, contact, null, null)
         group.add()
-        val groups = addressBook.queryGroups("${ContactsContract.Groups.GROUP_IS_READ_ONLY}=?", arrayOf("0"))
-        assertEquals(1, groups.size)
+        assertEquals(1, addressBook.countGroups("${ContactsContract.Groups.GROUP_IS_READ_ONLY}=?", arrayOf("0")))
 
         // delete group
         group.delete()
-        assertEquals(0, addressBook.queryGroups("${ContactsContract.Groups.TITLE}=?", arrayOf(contact.displayName!!)).size)
+        assertEquals(0, addressBook.countGroups("${ContactsContract.Groups.TITLE}=?", arrayOf(contact.displayName!!)))
     }
 
     @Test

@@ -22,6 +22,8 @@ import at.bitfire.synctools.vcard.GroupMethod
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -134,8 +136,9 @@ class LocalGroupTest {
     }
 
     @Test
-    fun testMarkMembersDirty() {
-        localTestAddressBook.provide(account, provider, GroupMethod.CATEGORIES) { localAddressBook ->
+    fun testMarkMembersDirty() = runTest {
+        val localAddressBook = localTestAddressBook.create(account, provider, GroupMethod.CATEGORIES)
+        try {
             val group = newGroup(localAddressBook)
 
             val contact1 = localAddressBook.addContact(Contact().apply { displayName = "Test" }, "fn.vcf", null, 0)
@@ -144,9 +147,12 @@ class LocalGroupTest {
             contact1.androidContact.addToGroup(batch, group.id!!)
             batch.commit()
 
-            assertEquals(0, localAddressBook.findDirty().size)
+            assertEquals(0, localAddressBook.countDirty())
             group.markMembersDirty()
-            assertEquals(contact1.id, localAddressBook.findDirty().first().id)
+            val dirtyId = localAddressBook.findDirty().first().id
+            assertEquals(contact1.id, dirtyId)
+        } finally {
+            localTestAddressBook.delete(localAddressBook)
         }
     }
 

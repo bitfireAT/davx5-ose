@@ -11,12 +11,8 @@ import at.bitfire.synctools.storage.jtx.JtxEntityAndExceptions
 import at.bitfire.synctools.storage.jtx.JtxRecurringCollection
 import at.techbee.jtx.JtxContract
 import at.techbee.jtx.JtxContract.JtxICalObject
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.buffer
-import kotlinx.coroutines.flow.channelFlow
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.map
 
 /**
  * Application-specific implementation for jtx collections.
@@ -66,39 +62,18 @@ class LocalJtxCollection(internal val jtxCollection: JtxCollection) :
     override fun countModified(): Int =
         jtxCollection.countJtxObjects("${JtxICalObject.DIRTY} AND NOT ${JtxICalObject.DELETED}", null)
 
-    override fun findDeleted(): List<LocalJtxObject> = buildList {
-        recurringCollection.iterateJtxObjectAndExceptions(JtxICalObject.DELETED, null) { jtxObjectAndExceptions ->
-            add(LocalJtxObject(recurringCollection, jtxObjectAndExceptions))
-        }
-    }
+    override fun countDirty(): Int =
+        jtxCollection.countJtxObjects(JtxICalObject.DIRTY, null)
 
-    override fun deletedFlow(): Flow<LocalJtxObject> {
-        return channelFlow {
-            launch(Dispatchers.IO) {
-                recurringCollection.iterateJtxObjectAndExceptions(JtxICalObject.DELETED, null) { jtxObjectAndExceptions ->
-                    trySendBlocking(LocalJtxObject(recurringCollection, jtxObjectAndExceptions))
-                }
-            }
-        }.buffer(capacity = 1)
-    }
+    override fun findDeleted(): Flow<LocalJtxObject> =
+        recurringCollection.queryJtxObjectsAndExceptions(JtxICalObject.DELETED, null)
+            .map { LocalJtxObject(recurringCollection, it) }
 
-    override fun findDirty(): List<LocalJtxObject> = buildList {
-        recurringCollection.iterateJtxObjectAndExceptions(JtxICalObject.DIRTY, null) { jtxObjectAndExceptions ->
-            add(LocalJtxObject(recurringCollection, jtxObjectAndExceptions))
-        }
-    }
+    override fun findDirty(): Flow<LocalJtxObject> =
+        recurringCollection.queryJtxObjectsAndExceptions(JtxICalObject.DIRTY, null)
+            .map { LocalJtxObject(recurringCollection, it) }
 
-    override fun dirtyFlow(): Flow<LocalJtxObject> {
-        return channelFlow {
-            launch(Dispatchers.IO) {
-                recurringCollection.iterateJtxObjectAndExceptions(JtxICalObject.DIRTY, null) { jtxObjectAndExceptions ->
-                    trySendBlocking(LocalJtxObject(recurringCollection, jtxObjectAndExceptions))
-                }
-            }
-        }.buffer(capacity = 1)
-    }
-
-    override fun findByName(name: String): LocalJtxObject? {
+    override suspend fun findByName(name: String): LocalJtxObject? {
         return recurringCollection
             .findJtxObjectAndExceptions("${JtxICalObject.FILENAME}=?", arrayOf(name))
             ?.let { jtxObjectAndExceptions ->
@@ -112,12 +87,12 @@ class LocalJtxCollection(internal val jtxCollection: JtxCollection) :
             "NOT ${JtxICalObject.DIRTY}", null
         )
 
-    override fun removeNotDirtyMarked(flags: Int): Int {
+    override suspend fun removeNotDirtyMarked(flags: Int): Int {
         val batch = JtxBatchOperation(jtxCollection.client)
-        recurringCollection.iterateJtxObjectAndExceptions(
+        recurringCollection.queryJtxObjectsAndExceptions(
             "NOT ${JtxICalObject.DIRTY} AND ${JtxICalObject.FLAGS}=?",
             arrayOf(flags.toString())
-        ) { objectAndExceptions ->
+        ).collect { objectAndExceptions ->
             val id = objectAndExceptions.main.entityValues.getAsLong(JtxICalObject.ID)!!
             recurringCollection.deleteJtxObjectAndExceptions(id, batch)
         }

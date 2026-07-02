@@ -19,6 +19,8 @@ import androidx.test.rule.GrantPermissionRule
 import at.bitfire.synctools.storage.BatchOperation
 import at.bitfire.synctools.test.assertContentValuesEqual
 import at.bitfire.synctools.test.assertEntitiesEqual
+import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.AfterClass
 import org.junit.Assert.assertEquals
@@ -190,7 +192,7 @@ class AndroidCalendarTest {
     }
 
     @Test
-    fun testFindEvent() {
+    fun testFindEvent() = runTest {
         // no result
         assertNull(calendar.findEvent("${Events.DTSTART}=?", arrayOf(testStartMillis.toString())))
 
@@ -204,7 +206,7 @@ class AndroidCalendarTest {
         calendar.addEvent(entity)
 
         // not it finds a result
-        val result = buildList { calendar.iterateEvents("${Events.DTSTART}=?", arrayOf(testStartMillis.toString())) { add(it) } }
+        val result = calendar.queryEvents("${Events.DTSTART}=?", arrayOf(testStartMillis.toString())).toList()
         assertEquals(1, result.size)
         assertEntitiesEqual(entity, result.first(), onlyFieldsInExpected = true)
     }
@@ -277,7 +279,7 @@ class AndroidCalendarTest {
     }
 
     @Test
-    fun testIterateEvents() {
+    fun testIterateEvents() = runTest {
         val id1 = calendar.addEvent(Entity(contentValuesOf(
             Events.CALENDAR_ID to calendar.id,
             Events.DTSTART to testStartMillis,
@@ -291,10 +293,7 @@ class AndroidCalendarTest {
             Events.TITLE to "Some Event 2"
         )))
 
-        val result = mutableListOf<Entity>()
-        calendar.iterateEvents(null, null) { entity ->
-            result += entity
-        }
+        val result = calendar.queryEvents(null, null).toList()
         assertEquals(
             setOf(id1, id2),
             result.map { it.entityValues.getAsLong(Events._ID) }.toSet()
