@@ -12,9 +12,7 @@ import androidx.core.content.contentValuesOf
 import at.bitfire.synctools.storage.LocalStorageException
 import at.bitfire.synctools.storage.containsNotNull
 import at.techbee.jtx.JtxContract
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
 import java.util.logging.Level
@@ -118,7 +116,6 @@ class JtxRecurringCollection(
                     exceptions = if (uid != null) findExceptionsByUid(uid) else emptyList()
                 )
             }
-            .flowOn(Dispatchers.IO)
     }
 
     /**

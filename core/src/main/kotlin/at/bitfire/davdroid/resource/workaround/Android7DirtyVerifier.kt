@@ -16,7 +16,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import kotlinx.coroutines.flow.count
+import kotlinx.coroutines.flow.firstOrNull
 import java.util.Optional
 import java.util.logging.Level
 import java.util.logging.Logger
@@ -53,8 +53,8 @@ class Android7DirtyVerifier @Inject constructor(
     override suspend fun prepareAddressBook(addressBook: LocalAddressBook, isUpload: Boolean): Boolean {
         val reallyDirty = verifyDirtyContacts(addressBook)
 
-        val deleted = addressBook.findDeleted().count()
-        if (isUpload && reallyDirty == 0 && deleted == 0) {
+        val anyDeleted = addressBook.findDeleted().firstOrNull() != null
+        if (isUpload && reallyDirty == 0 && !anyDeleted) {
             logger.info("This sync was called to up-sync dirty/deleted contacts, but no contacts have been changed")
             return false
         }

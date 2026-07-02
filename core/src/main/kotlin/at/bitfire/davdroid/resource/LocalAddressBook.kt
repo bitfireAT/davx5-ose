@@ -35,6 +35,7 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.toList
@@ -304,8 +305,8 @@ open class LocalAddressBook @AssistedInject constructor(
     suspend fun queryContacts(where: String?, whereArgs: Array<String>?): List<LocalContact> =
         ab.queryRawContactRows(where, whereArgs).map { LocalContact(this, AndroidContact(ab, it)) }.toList()
 
-    suspend fun queryGroups(where: String?, whereArgs: Array<String>?): List<LocalGroup> =
-        ab.queryGroupRows(null, where, whereArgs).map { LocalGroup(AndroidGroup(ab, it)) }.toList()
+    fun queryGroups(where: String?, whereArgs: Array<String>?): Flow<LocalGroup> =
+        ab.queryGroupRows(null, where, whereArgs).map { LocalGroup(AndroidGroup(ab, it)) }
 
     @Throws(FileNotFoundException::class)
     fun findContactById(id: Long): LocalContact =
@@ -352,7 +353,7 @@ open class LocalAddressBook @AssistedInject constructor(
         queryGroups(
             "${Groups.ACCOUNT_TYPE}=? AND ${Groups.ACCOUNT_NAME}=?",
             arrayOf(addressBookAccount.type, addressBookAccount.name)
-        ).forEach { group ->
+        ).collect { group ->
             val groupId = group.id!!
             val pendingMemberUids = group.androidGroup.pendingMemberships.toMutableSet()
             val batch = ContactsBatchOperation(ab.provider)

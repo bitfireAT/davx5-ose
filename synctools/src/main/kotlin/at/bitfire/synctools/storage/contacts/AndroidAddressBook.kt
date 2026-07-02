@@ -29,8 +29,8 @@ import at.bitfire.synctools.storage.toContentValues
 import at.bitfire.synctools.util.setAndVerifyUserData
 import at.bitfire.synctools.vcard.GroupMethod
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.toList
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.annotations.VisibleForTesting
 import java.io.FileNotFoundException
@@ -370,7 +370,7 @@ class AndroidAddressBook(
     }
 
     suspend fun deleteGroupsWithoutMembers() {
-        queryGroups(null, null).filter { it.getMembers().isEmpty() }.forEach { group ->
+        queryGroups(null, null).filter { it.getMembers().isEmpty() }.collect { group ->
             logger.log(Level.FINE, "Deleting empty group", group)
             group.delete()
         }
@@ -479,8 +479,8 @@ class AndroidAddressBook(
     // region legacy AndroidContact/AndroidGroup CRUD
 
     @VisibleForTesting
-    internal suspend fun queryGroups(where: String?, whereArgs: Array<String>?): List<AndroidGroup> =
-        queryGroupRows(null, where, whereArgs).map { AndroidGroup(this, it) }.toList()
+    internal suspend fun queryGroups(where: String?, whereArgs: Array<String>?): Flow<AndroidGroup> =
+        queryGroupRows(null, where, whereArgs).map { AndroidGroup(this, it) }
 
     @TestOnly
     @Throws(FileNotFoundException::class)

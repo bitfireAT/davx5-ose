@@ -16,7 +16,11 @@ import at.bitfire.synctools.storage.queryFlow
 import at.bitfire.synctools.storage.toContentValues
 import at.techbee.jtx.JtxContract
 import at.techbee.jtx.JtxContract.asSyncAdapter
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.buffer
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import org.jetbrains.annotations.TestOnly
 import java.nio.channels.Channels
@@ -338,6 +342,7 @@ class JtxCollection(
             null,
             protectedWhere, protectedWhereArgs
         ).map { readEntity(it) }
+            .flowOn(Dispatchers.IO).buffer(Channel.RENDEZVOUS)
     }
 
     /**

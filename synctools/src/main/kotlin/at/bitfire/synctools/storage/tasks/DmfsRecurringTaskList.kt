@@ -13,10 +13,8 @@ import androidx.core.content.contentValuesOf
 import at.bitfire.synctools.storage.BatchOperation.CpoBuilder
 import at.bitfire.synctools.storage.LocalStorageException
 import at.bitfire.synctools.storage.containsNotNull
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
 import org.dmfs.tasks.contract.TaskContract
@@ -111,7 +109,6 @@ class DmfsRecurringTaskList(
                 val mainTaskId = main.entityValues.getAsLong(Tasks._ID)
                 TaskAndExceptions(main = main, exceptions = findExceptions(mainTaskId))
             }
-            .flowOn(Dispatchers.IO)
     }
 
     /**
