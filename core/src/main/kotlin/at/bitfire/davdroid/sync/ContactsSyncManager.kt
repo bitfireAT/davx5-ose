@@ -22,7 +22,6 @@ import at.bitfire.dav4jvm.property.webdav.WebDAV
 import at.bitfire.davdroid.ProductIds
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
-import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.di.qualifier.SyncDispatcher
 import at.bitfire.davdroid.resource.LocalAddress
 import at.bitfire.davdroid.resource.LocalAddressBook
@@ -51,7 +50,6 @@ import io.ktor.http.ContentType
 import io.ktor.http.Url
 import io.ktor.http.content.TextContent
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.runBlocking
 import java.io.Reader
 import java.io.StringReader
 import java.io.StringWriter
@@ -107,7 +105,6 @@ class ContactsSyncManager @AssistedInject constructor(
     @Assisted val syncFrameworkUpload: Boolean,
     accountSettingsFactory: AccountSettings.Factory,
     val dirtyVerifier: Optional<ContactDirtyVerifier>,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val productIds: ProductIds,
     private val resourceRetrieverFactory: ResourceRetriever.Factory,
     @SyncDispatcher syncDispatcher: CoroutineDispatcher
@@ -163,7 +160,7 @@ class ContactsSyncManager @AssistedInject constructor(
     }
 
     override suspend fun queryCapabilities(): SyncState? {
-        return SyncException.wrapWithRemoteResourceSuspending(collection.url) {
+        return SyncException.wrapWithRemoteResource(collection.url) {
             var syncState: SyncState? = null
             davCollection.propfind(
                 0,
@@ -305,13 +302,13 @@ class ContactsSyncManager @AssistedInject constructor(
     }
 
     override suspend fun listAllRemote(callback: MultiResponseCallback) =
-        SyncException.wrapWithRemoteResourceSuspending(collection.url) {
+        SyncException.wrapWithRemoteResource(collection.url) {
             davCollection.propfind(1, WebDAV.ResourceType, WebDAV.GetETag, callback = callback)
         }
 
     override suspend fun downloadRemote(bunch: List<Url>) {
         logger.info("Downloading ${bunch.size} vCard(s): $bunch")
-        SyncException.wrapWithRemoteResourceSuspending(collection.url) {
+        SyncException.wrapWithRemoteResource(collection.url) {
             val contentType: String?
             val version: String?
             when {
@@ -365,7 +362,7 @@ class ContactsSyncManager @AssistedInject constructor(
 
     // helpers
 
-    private fun processCard(fileName: String, eTag: String, reader: Reader, downloader: Contact.Downloader) {
+    private suspend fun processCard(fileName: String, eTag: String, reader: Reader, downloader: Contact.Downloader) {
         logger.info("Processing CardDAV resource $fileName")
 
         val newData = try {
@@ -377,9 +374,7 @@ class ContactsSyncManager @AssistedInject constructor(
             }
 
             // map to Contact
-            runBlocking(ioDispatcher) {
-                ContactReader.fromVCard(vCard, downloader)
-            }
+            ContactReader.fromVCard(vCard, downloader)
         } catch (e: CannotParseException) {
             logger.log(Level.SEVERE, "Received invalid vCard, ignoring", e)
             notifyInvalidResource(e, fileName)

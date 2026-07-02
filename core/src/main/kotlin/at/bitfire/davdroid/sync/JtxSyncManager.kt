@@ -89,7 +89,7 @@ class JtxSyncManager @AssistedInject constructor(
     }
 
     override suspend fun queryCapabilities() =
-        SyncException.wrapWithRemoteResourceSuspending(collection.url) {
+        SyncException.wrapWithRemoteResource(collection.url) {
             var syncState: SyncState? = null
             davCollection.propfind(0, CalDAV.GetCTag, CalDAV.MaxResourceSize, WebDAV.SyncToken) { response, relation ->
                 if (relation == Response.HrefRelation.SELF) {
@@ -139,7 +139,7 @@ class JtxSyncManager @AssistedInject constructor(
     override fun syncAlgorithm() = SyncAlgorithm.PROPFIND_REPORT
 
     override suspend fun listAllRemote(callback: MultiResponseCallback) {
-        SyncException.wrapWithRemoteResourceSuspending(collection.url) {
+        SyncException.wrapWithRemoteResource(collection.url) {
             if (localCollection.supportsVTODO) {
                 logger.info("Querying tasks")
                 davCollection.calendarQuery("VTODO", null, null, callback = callback)
@@ -155,7 +155,7 @@ class JtxSyncManager @AssistedInject constructor(
     override suspend fun downloadRemote(bunch: List<Url>) {
         logger.info("Downloading ${bunch.size} iCalendars: $bunch")
         // multiple iCalendars, use calendar-multi-get
-        SyncException.wrapWithRemoteResourceSuspending(collection.url) {
+        SyncException.wrapWithRemoteResource(collection.url) {
             davCollection.multiget(bunch) { response, _ ->
                 // See CalendarSyncManager for more information about the multi-get response
                 SyncException.wrapWithRemoteResource(response.href) wrapResource@{
@@ -195,7 +195,7 @@ class JtxSyncManager @AssistedInject constructor(
 
 
     @OpenForTesting
-    internal fun processICalObject(fileName: String, eTag: String, scheduleTag: String?, reader: Reader) {
+    internal suspend fun processICalObject(fileName: String, eTag: String, scheduleTag: String?, reader: Reader) {
         val calendar = ICalendarParser().parse(reader)
 
         val uidsAndJournals = CalendarUidSplitter<CalendarComponent>().associateByUid(calendar, Component.VJOURNAL)

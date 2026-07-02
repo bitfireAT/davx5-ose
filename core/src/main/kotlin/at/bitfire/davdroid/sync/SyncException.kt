@@ -6,7 +6,6 @@ package at.bitfire.davdroid.sync
 
 import at.bitfire.davdroid.resource.LocalResource
 import io.ktor.http.Url
-import kotlinx.coroutines.runBlocking
 
 /**
  * Exception that wraps another notification together with potential information about
@@ -18,12 +17,7 @@ class SyncException(cause: Throwable) : Exception(cause) {
 
         // provide lambda wrappers for setting the local/remote resource
 
-        fun <T> wrapWithLocalResource(localResource: LocalResource?, body: () -> T): T =
-            runBlocking {
-                wrapWithLocalResourceSuspending(localResource, body)
-            }
-
-        suspend fun <T> wrapWithLocalResourceSuspending(localResource: LocalResource?, body: suspend () -> T): T {
+        suspend fun <T> wrapWithLocalResource(localResource: LocalResource?, body: suspend () -> T): T {
             try {
                 return body()
             } catch (e: SyncException) {
@@ -38,12 +32,7 @@ class SyncException(cause: Throwable) : Exception(cause) {
             }
         }
 
-        fun <T> wrapWithRemoteResource(remoteResource: Url?, body: () -> T): T =
-            runBlocking {
-                wrapWithRemoteResourceSuspending(remoteResource, body)
-            }
-
-        suspend fun <T> wrapWithRemoteResourceSuspending(remoteResource: Url?, body: suspend () -> T): T {
+        suspend fun <T> wrapWithRemoteResource(remoteResource: Url?, body: suspend () -> T): T {
             try {
                 return body()
             } catch (e: SyncException) {
