@@ -61,8 +61,7 @@ class HttpClientBuilder @Inject constructor(
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val oAuthInterceptorFactory: OAuthInterceptor.Factory,
     private val settingsManager: SettingsManager,
-    private val productIds: ProductIds,
-    private val userAgentInterceptor: UserAgentInterceptor
+    private val productIds: ProductIds
 ) {
 
     companion object {
@@ -196,9 +195,6 @@ class HttpClientBuilder @Inject constructor(
     private fun configureOkHttp(builder: OkHttpClient.Builder) {
         // don't allow redirects by default because it would break PROPFIND handling
         builder.followRedirects(followRedirects)
-
-        // add User-Agent to every request
-        builder.addInterceptor(userAgentInterceptor)
 
         // offer Brotli and gzip compression (can be disabled per request with `Accept-Encoding: identity`)
         builder.addInterceptor(BrotliInterceptor)
