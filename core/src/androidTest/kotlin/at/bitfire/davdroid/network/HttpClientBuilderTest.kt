@@ -203,7 +203,7 @@ class HttpClientBuilderTest {
 
         val origLocale = Locale.getDefault()
         try {
-            Locale.setDefault(Locale.of("de", "AT"))
+            Locale.setDefault(Locale.GERMANY)
 
             httpClientBuilder.get().buildKtor().use { client ->
                 client.get(server.url("/").toString())
@@ -215,7 +215,7 @@ class HttpClientBuilderTest {
                 request.getHeader(HttpHeaders.UserAgent)
             )
             assertEquals(
-                "de-AT, de;q=0.7, *;q=0.5",
+                "de-DE, de;q=0.7, *;q=0.5",
                 request.getHeader(HttpHeaders.AcceptLanguage)
             )
         } finally {
