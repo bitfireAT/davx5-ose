@@ -332,7 +332,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
         // Remove locally deleted entries from server (if they have a name, i.e. if they were uploaded before),
         // but only if they don't have changed on the server. Then finally remove them from the local address book.
         localCollection.findDeleted().collect { local ->
-            SyncException.wrapWithLocalResourceSuspending(local) {
+            SyncException.wrapWithLocalResource(local) {
                 val fileName = local.fileName
                 if (fileName != null) {
                     val lastScheduleTag = local.scheduleTag
@@ -341,7 +341,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
 
                     val url = URLBuilder(collection.url).appendPathSegments(fileName, encodeSlash = true).build()
                     val remote = DavResource(httpClient, url)
-                    SyncException.wrapWithRemoteResourceSuspending(url) {
+                    SyncException.wrapWithRemoteResource(url) {
                         try {
                             remote.delete(
                                 ifETag = lastETag,
@@ -374,7 +374,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
         var numUploaded = 0
 
         localCollection.findDirty().collect { local ->
-            SyncException.wrapWithLocalResourceSuspending(local) {
+            SyncException.wrapWithLocalResource(local) {
                 uploadDirty(local)
                 numUploaded++
             }
@@ -400,7 +400,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
         val remote = DavResource(httpClient, uploadUrl)
 
         try {
-            SyncException.wrapWithRemoteResourceSuspending(uploadUrl) {
+            SyncException.wrapWithRemoteResource(uploadUrl) {
                 if (existingFileName == null || forceAsNew) {
                     // create new resource on server
                     logger.info("Uploading new resource ${local.id} -> $fileName")
