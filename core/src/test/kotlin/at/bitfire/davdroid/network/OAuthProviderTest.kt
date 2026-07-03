@@ -6,10 +6,14 @@ package at.bitfire.davdroid.network
 
 import android.net.Uri
 import io.ktor.client.request.HttpRequestBuilder
+import io.ktor.client.statement.HttpResponse
 import io.ktor.http.HttpHeaders
+import io.ktor.http.URLProtocol
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit4.MockKRule
+import io.mockk.mockk
+import io.mockk.verify
 import kotlinx.coroutines.test.runTest
 import net.openid.appauth.AuthState
 import net.openid.appauth.AuthorizationRequest
@@ -46,13 +50,17 @@ class OAuthProviderTest {
     )
     private val logger = Logger.getLogger(javaClass.name)
 
-    private fun oAuthProvider(readAuthState: () -> AuthState?, writeAuthState: (AuthState) -> Unit = {}) =
+    private fun oAuthProvider(
+        readAuthState: () -> AuthState?,
+        writeAuthState: (AuthState) -> Unit = {},
+        firstLevelDomain: String? = null
+    ) =
         OAuthProvider(
             readAuthState = readAuthState,
             writeAuthState = writeAuthState,
             authServiceProvider = { authService },
             logger = logger
-        ).authProvider()
+        ).authProvider(firstLevelDomain)
 
     @Test
     fun `addRequestHeaders() with cached, still valid access token`() = runTest {
@@ -108,7 +116,7 @@ class OAuthProviderTest {
             callback.onTokenRequestCompleted(response, null)
         }
 
-        // Create OAuthProvider that interacts with our authState
+        // Create OAuthProvider that interacts with our prepared authState
         var newAuthState: AuthState? = null
         val authProvider = oAuthProvider(
             readAuthState = { authState },
@@ -126,6 +134,102 @@ class OAuthProviderTest {
     fun `addRequestHeaders() without AuthState`() = runTest {
         val authProvider = oAuthProvider(readAuthState = { null })
         val httpRequestBuilder = HttpRequestBuilder()
+
+        authProvider.addRequestHeaders(httpRequestBuilder)
+
+        assertNull(httpRequestBuilder.headers[HttpHeaders.Authorization])
+    }
+
+    @Test
+    fun `refreshToken() forces a fresh token even if the local state still considers the current one valid`() =
+        runTest {
+            // access token that is not locally expired, but a refresh token is available
+            val authRequest = AuthorizationRequest.Builder(
+                config, "client-id", ResponseTypeValues.CODE, Uri.parse("https://app.example/redirect")
+            ).build()
+            val authResponse = AuthorizationResponse.Builder(authRequest).build()
+            val tokenRequest = TokenRequest.Builder(config, "client-id")
+                .setAuthorizationCode("code")
+                .setRedirectUri(Uri.parse("https://app.example/redirect"))
+                .build()
+            val tokenResponse = TokenResponse.Builder(tokenRequest)
+                .setAccessToken("access-token")
+                .setRefreshToken("refresh-token")
+                .setAccessTokenExpirationTime(System.currentTimeMillis() + 3_600_000)
+                .build()
+            val authState = AuthState(authResponse, tokenResponse, null)
+            assertFalse(authState.needsTokenRefresh)
+
+            // AuthService returns a new access token upon request
+            every { authService.performTokenRequest(any(), any(), any()) } answers {
+                val request = firstArg<TokenRequest>()
+                val callback = thirdArg<AuthorizationService.TokenResponseCallback>()
+                val response = TokenResponse.Builder(request)
+                    .setAccessToken("new-access-token")
+                    .build()
+                callback.onTokenRequestCompleted(response, null)
+            }
+
+            val authProvider = oAuthProvider(readAuthState = { authState })
+
+            // populate the cache with the still-locally-valid token
+            val firstRequest = HttpRequestBuilder()
+            authProvider.addRequestHeaders(firstRequest)
+            assertEquals("Bearer access-token", firstRequest.headers[HttpHeaders.Authorization])
+
+            // server rejects that token (401) -> refreshToken() must not just re-return the cached one
+            val refreshed = authProvider.refreshToken(mockk<HttpResponse>(relaxed = true))
+            assertTrue(refreshed)
+            verify { authService.performTokenRequest(any(), any(), any()) }
+
+            // subsequent requests use the newly-fetched token
+            val secondRequest = HttpRequestBuilder()
+            authProvider.addRequestHeaders(secondRequest)
+            assertEquals("Bearer new-access-token", secondRequest.headers[HttpHeaders.Authorization])
+        }
+
+    @Test
+    fun `addRequestHeaders() with request hostname matching domain`() = runTest {
+        val tokenRequest = TokenRequest.Builder(config, "client-id")
+            .setRefreshToken("refresh-token")
+            .build()
+        val tokenResponse = TokenResponse.Builder(tokenRequest)
+            .setAccessToken("access-token")
+            .setAccessTokenExpirationTime(System.currentTimeMillis() + 3_600_000)
+            .build()
+        val authState = AuthState().apply {
+            update(tokenResponse, null)
+        }
+
+        val authProvider = oAuthProvider(readAuthState = { authState }, firstLevelDomain = "domain.example")
+        val httpRequestBuilder = HttpRequestBuilder().apply {
+            url.protocol = URLProtocol.HTTPS
+            url.host = "subdomain.domain.example"
+        }
+
+        authProvider.addRequestHeaders(httpRequestBuilder)
+
+        assertEquals("Bearer access-token", httpRequestBuilder.headers[HttpHeaders.Authorization])
+    }
+
+    @Test
+    fun `addRequestHeaders() with request hostname not matching domain`() = runTest {
+        val tokenRequest = TokenRequest.Builder(config, "client-id")
+            .setRefreshToken("refresh-token")
+            .build()
+        val tokenResponse = TokenResponse.Builder(tokenRequest)
+            .setAccessToken("access-token")
+            .setAccessTokenExpirationTime(System.currentTimeMillis() + 3_600_000)
+            .build()
+        val authState = AuthState().apply {
+            update(tokenResponse, null)
+        }
+
+        val authProvider = oAuthProvider(readAuthState = { authState }, firstLevelDomain = "domain.example")
+        val httpRequestBuilder = HttpRequestBuilder().apply {
+            url.protocol = URLProtocol.HTTPS
+            url.host = "other-domain.example"
+        }
 
         authProvider.addRequestHeaders(httpRequestBuilder)
 

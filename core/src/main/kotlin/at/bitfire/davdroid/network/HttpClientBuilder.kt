@@ -25,7 +25,6 @@ import io.ktor.client.plugins.DefaultRequest
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.UserAgent
 import io.ktor.client.plugins.auth.Auth
-import io.ktor.client.plugins.auth.AuthProvider
 import io.ktor.client.plugins.compression.ContentEncoding
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.cookies.HttpCookies
@@ -102,7 +101,8 @@ class HttpClientBuilder @Inject constructor(
     private var authUsername: String? = null
     private var authPassword: SensitiveString? = null
     private var authDomain: String? = null
-    private var oAuthProvider: AuthProvider? = null
+    private var readAuthStateCallback: (() -> AuthState?)? = null
+    private var updateAuthStateCallback: ((AuthState) -> Unit)? = null
 
     fun authenticate(
         domain: String?,
@@ -113,16 +113,13 @@ class HttpClientBuilder @Inject constructor(
         when {
             // OAuth
             credentials.authState != null -> {
-                oAuthProvider = oAuthProviderFactory.create(
-                    readAuthState = {
-                        /* We don't use the "credentials" object from above because it may contain an outdated
-                        access token. Instead, we fetch the up-to-date auth-state on each readAuthState call. */
-                        getCredentials().authState
-                    },
-                    writeAuthState = { authState ->
-                        updateAuthState?.invoke(authState)
-                    }
-                ).authProvider(domain)
+                readAuthStateCallback = {
+                    // We don't use the "credentials" object from above because it may contain an outdated
+                    // access token. Instead, we fetch the up-to-date auth-state on each readAuthState call.
+                    getCredentials().authState
+                }
+                updateAuthStateCallback = updateAuthState
+                authDomain = domain
             }
 
             // basic / digest auth
@@ -277,9 +274,21 @@ class HttpClientBuilder @Inject constructor(
 
             val username = authUsername
             val password = authPassword
-            if ((username != null && password != null) || oAuthProvider != null) {
-                install(Auth) {
-                    if (username != null && password != null) {
+            val readAuthState = readAuthStateCallback
+            when {
+                readAuthState != null -> {
+                    install(Auth) {
+                        providers.add(
+                            oAuthProviderFactory.create(
+                                readAuthState = readAuthState,
+                                writeAuthState = { authState -> updateAuthStateCallback?.invoke(authState) }
+                            ).authProvider(authDomain)
+                        )
+                    }
+                }
+
+                username != null && password != null -> {
+                    install(Auth) {
                         providers.add(
                             createDomainBasicAuthProvider(
                                 username = username,
@@ -296,7 +305,6 @@ class HttpClientBuilder @Inject constructor(
                             )
                         )
                     }
-                    oAuthProvider?.let { providers.add(it) }
                 }
             }
 
