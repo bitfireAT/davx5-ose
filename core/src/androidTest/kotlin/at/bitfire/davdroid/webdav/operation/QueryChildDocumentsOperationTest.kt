@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid.webdav.operation
 
+import android.security.NetworkSecurityPolicy
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.WebDavDocument
 import at.bitfire.davdroid.db.WebDavMount
@@ -22,10 +23,10 @@ import io.mockk.junit4.MockKRule
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
-import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -49,11 +50,6 @@ class QueryChildDocumentsOperationTest {
     @BindValue
     @JvmField
     val httpClientBuilder: DavHttpClientBuilder = mockk()
-
-    @Inject
-    lateinit var testDispatcher: TestDispatcher
-
-    private lateinit var server: MockWebServer
 
     private lateinit var mount: WebDavMount
     private lateinit var rootDocument: WebDavDocument
