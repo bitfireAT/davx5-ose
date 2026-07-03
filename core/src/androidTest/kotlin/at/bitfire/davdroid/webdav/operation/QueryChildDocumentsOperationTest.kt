@@ -82,8 +82,10 @@ class QueryChildDocumentsOperationTest {
 
     @Test
     fun testDoQueryChildren_insert() = runTest {
+        // Query
         operation.queryChildren(rootDocument)
 
+        // Assert new children were inserted into db
         assertEquals(3, db.webDavDocumentDao().getChildren(rootDocument.id).size)
         assertEquals("Library", db.webDavDocumentDao().getChildren(rootDocument.id)[0].displayName)
         assertEquals("MeowMeow_Cats.docx", db.webDavDocumentDao().getChildren(rootDocument.id)[1].displayName)
@@ -92,16 +94,20 @@ class QueryChildDocumentsOperationTest {
 
     @Test
     fun testDoQueryChildren_update() = runTest {
+        // Create parent and root in database
         assertEquals("Cat food storage", db.webDavDocumentDao().get(rootDocument.id)!!.displayName)
 
+        // Create a folder
         val folderId = db.webDavDocumentDao().insert(
             WebDavDocument(0, mount.id, rootDocument.id, "My_Books", true, "My Books")
         )
         assertEquals("My_Books", db.webDavDocumentDao().get(folderId)!!.name)
         assertEquals("My Books", db.webDavDocumentDao().get(folderId)!!.displayName)
 
+        // Query - should update the parent displayname and folder name
         operation.queryChildren(rootDocument)
 
+        // Assert parent and children were updated in database
         assertEquals("Cats WebDAV", db.webDavDocumentDao().get(rootDocument.id)!!.displayName)
         assertEquals("Library", db.webDavDocumentDao().getChildren(rootDocument.id)[0].name)
         assertEquals("Library", db.webDavDocumentDao().getChildren(rootDocument.id)[0].displayName)
@@ -109,18 +115,22 @@ class QueryChildDocumentsOperationTest {
 
     @Test
     fun testDoQueryChildren_delete() = runTest {
+        // Create a folder
         val folderId = db.webDavDocumentDao().insert(
             WebDavDocument(0, mount.id, rootDocument.id, "deleteme", true, "Should be deleted")
         )
         assertEquals("deleteme", db.webDavDocumentDao().get(folderId)!!.name)
 
+        // Query - discovers serverside deletion
         operation.queryChildren(rootDocument)
 
+        // Assert folder got deleted
         assertEquals(null, db.webDavDocumentDao().get(folderId))
     }
 
     @Test
     fun testDoQueryChildren_propfindFails_doesNotDeleteChildren() = runTest {
+        // Create a child document in DB
         val childId = db.webDavDocumentDao().insert(
             WebDavDocument(0, mount.id, rootDocument.id, "some_file.txt", false, "Some File")
         )
@@ -130,14 +140,17 @@ class QueryChildDocumentsOperationTest {
             HttpClient(MockEngine { respond("", HttpStatusCode.InternalServerError) })
         }
 
+        // Query - PROPFIND fails
         operation.queryChildren(rootDocument)
 
+        // Child must NOT have been deleted despite the PROPFIND failure
         assertNotNull(db.webDavDocumentDao().get(childId))
         assertEquals("some_file.txt", db.webDavDocumentDao().get(childId)!!.name)
     }
 
     @Test
     fun testDoQueryChildren_updateTwoDirectoriesSimultaneously() = runTest {
+        // Create two directories
         val parent1Id = db.webDavDocumentDao().insert(WebDavDocument(0, mount.id, rootDocument.id, "parent1", true))
         val parent2Id = db.webDavDocumentDao().insert(WebDavDocument(0, mount.id, rootDocument.id, "parent2", true))
         val parent1 = db.webDavDocumentDao().get(parent1Id)!!
@@ -145,9 +158,11 @@ class QueryChildDocumentsOperationTest {
         assertEquals("parent1", parent1.name)
         assertEquals("parent2", parent2.name)
 
+        // Query - find children of two nodes simultaneously
         operation.queryChildren(parent1)
         operation.queryChildren(parent2)
 
+        // Assert the two folders names have changed
         assertEquals("childOne.txt", db.webDavDocumentDao().getChildren(parent1Id)[0].name)
         assertEquals("childTwo.txt", db.webDavDocumentDao().getChildren(parent2Id)[0].name)
     }
