@@ -5,6 +5,8 @@
 package at.bitfire.davdroid.network
 
 import at.bitfire.davdroid.ProductIds
+import at.bitfire.davdroid.network.CookieTestUtils.assertCookiesValues
+import at.bitfire.davdroid.network.CookieTestUtils.cookie
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.ktor.client.engine.mock.MockEngine
@@ -13,9 +15,10 @@ import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.statement.bodyAsText
-import io.ktor.http.Headers
+import io.ktor.http.Cookie
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
+import io.ktor.http.headers
 import io.ktor.http.headersOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -71,16 +74,16 @@ class HttpClientBuilderTest {
             when (++callCount) {
                 1 -> respond(
                     "Cookie set", HttpStatusCode.OK,
-                    Headers.build {
-                        append(HttpHeaders.SetCookie, "cookie1=1; path=/")
-                        append(HttpHeaders.SetCookie, "cookie2=2")
+                    headers {
+                        cookie(Cookie("cookie1", "1", path = "/"))
+                        cookie(Cookie("cookie2", "2"))
                     }
                 )
                 2 -> respond(
                     "", HttpStatusCode.OK,
-                    Headers.build {
-                        append(HttpHeaders.SetCookie, "cookie1=1a; path=/; Max-Age=0")
-                        append(HttpHeaders.SetCookie, "cookie2=2a")
+                    headers {
+                        cookie(Cookie("cookie1", "1a", path = "/", maxAge = 0))
+                        cookie(Cookie("cookie2", "2a"))
                     }
                 )
                 else -> respond("", HttpStatusCode.OK)
@@ -95,12 +98,11 @@ class HttpClientBuilderTest {
 
             // cookie should be sent with second request
             client.get(url)
-            val header = engine.requestHistory[1].headers[HttpHeaders.Cookie]
-            assertTrue(header == "cookie1=1; cookie2=2" || header == "cookie2=2; cookie1=1")
+            assertCookiesValues(engine.requestHistory[1].headers, "cookie1" to "1", "cookie2" to "2")
 
             // second response let first cookie expire and overwrote second cookie
             client.get(url)
-            assertEquals("cookie2=2a", engine.requestHistory[2].headers[HttpHeaders.Cookie])
+            assertCookiesValues(engine.requestHistory[2].headers, "cookie2" to "2a")
         }
     }
 
@@ -132,7 +134,7 @@ class HttpClientBuilderTest {
         httpClientBuilder.get().buildKtor(engine).use { client ->
             val response = client.get("https://example.com/")
             // redirect is not followed, so we get the 302 response directly
-            assertEquals(302, response.status.value)
+            assertEquals(HttpStatusCode.Found, response.status)
         }
         // only the initial request was made
         assertEquals(1, engine.requestHistory.size)
@@ -150,7 +152,7 @@ class HttpClientBuilderTest {
 
         httpClientBuilder.get().followRedirects(true).buildKtor(engine).use { client ->
             val response = client.get("https://example.com/")
-            assertEquals(200, response.status.value)
+            assertEquals(HttpStatusCode.OK, response.status)
             assertEquals("Target", response.bodyAsText())
         }
         // initial request + followed redirect
