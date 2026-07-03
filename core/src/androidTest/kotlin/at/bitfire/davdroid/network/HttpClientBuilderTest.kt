@@ -18,12 +18,12 @@ import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
-import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import java.util.Locale
 import java.util.logging.Handler
 import java.util.logging.Level
 import java.util.logging.LogRecord
@@ -61,9 +61,11 @@ class HttpClientBuilderTest {
 
     @Test
     fun testBuildKtor_CreatesWorkingClient() = runTest {
-        server.enqueue(MockResponse()
-            .setResponseCode(200)
-            .setBody("Some Content"))
+        server.enqueue(
+            MockResponse()
+                .setResponseCode(200)
+                .setBody("Some Content")
+        )
 
         httpClientBuilder.get().buildKtor().use { client ->
             val response = client.get(server.url("/").toString())
@@ -83,8 +85,8 @@ class HttpClientBuilderTest {
             server.enqueue(
                 MockResponse()
                     .setResponseCode(200)
-                    .addHeader("Set-Cookie", "cookie1=1; path=/")
-                    .addHeader("Set-Cookie", "cookie2=2")
+                    .addHeader(HttpHeaders.SetCookie, "cookie1=1; path=/")
+                    .addHeader(HttpHeaders.SetCookie, "cookie2=2")
                     .setBody("Cookie set")
             )
             client.get(url)
@@ -94,8 +96,8 @@ class HttpClientBuilderTest {
             // second response lets first cookie expire and overwrites second cookie
             server.enqueue(
                 MockResponse()
-                    .addHeader("Set-Cookie", "cookie1=1a; path=/; Max-Age=0")
-                    .addHeader("Set-Cookie", "cookie2=2a")
+                    .addHeader(HttpHeaders.SetCookie, "cookie1=1a; path=/; Max-Age=0")
+                    .addHeader(HttpHeaders.SetCookie, "cookie2=2a")
                     .setResponseCode(200)
             )
             client.get(url)
@@ -112,27 +114,11 @@ class HttpClientBuilderTest {
     }
 
     @Test
-    fun testDefaultRequest_SetsUserAgentAndAcceptLanguage() = runTest {
-        server.enqueue(MockResponse().setResponseCode(200))
-
-        httpClientBuilder.get().buildKtor().use { client ->
-            client.get(server.url("/").toString())
-        }
-
-        val request = server.takeRequest()
-        assertEquals(productIds.httpUserAgent, request.getHeader("User-Agent"))
-        // e.g. "en-US, en;q=0.7, *;q=0.5"
-        val acceptLanguage = request.getHeader("Accept-Language")
-        assertNotNull(acceptLanguage)
-        assertTrue(acceptLanguage!!.contains("q=0.7"))
-    }
-
-    @Test
     fun testFollowRedirects_DisabledByDefault() = runTest {
         server.enqueue(
             MockResponse()
                 .setResponseCode(302)
-                .addHeader("Location", server.url("/redirected").toString())
+                .addHeader(HttpHeaders.Location, server.url("/redirected").toString())
         )
 
         httpClientBuilder.get().buildKtor().use { client ->
@@ -149,7 +135,7 @@ class HttpClientBuilderTest {
         server.enqueue(
             MockResponse()
                 .setResponseCode(302)
-                .addHeader("Location", server.url("/redirected").toString())
+                .addHeader(HttpHeaders.Location, server.url("/redirected").toString())
         )
         server.enqueue(
             MockResponse()
@@ -190,7 +176,7 @@ class HttpClientBuilderTest {
         server.enqueue(
             MockResponse()
                 .setResponseCode(200)
-                .addHeader("Set-Cookie", "session=secret-cookie-value")
+                .addHeader(HttpHeaders.SetCookie, "session=secret-cookie-value")
                 .setBody("OK")
         )
 
@@ -209,6 +195,32 @@ class HttpClientBuilderTest {
         assertFalse(log.contains("secret-cookie-value"))
         // they must be redacted
         assertTrue(log.contains("***"))
+    }
+
+    @Test
+    fun testUserAgentAndAcceptLanguage() = runTest {
+        server.enqueue(MockResponse().setResponseCode(200))
+
+        val origLocale = Locale.getDefault()
+        try {
+            Locale.setDefault(Locale.GERMANY)
+
+            httpClientBuilder.get().buildKtor().use { client ->
+                client.get(server.url("/").toString())
+            }
+
+            val request = server.takeRequest()
+            assertEquals(
+                productIds.httpUserAgent,
+                request.getHeader(HttpHeaders.UserAgent)
+            )
+            assertEquals(
+                "de-DE, de;q=0.7, *;q=0.5",
+                request.getHeader(HttpHeaders.AcceptLanguage)
+            )
+        } finally {
+            Locale.setDefault(origLocale)
+        }
     }
 
 }
