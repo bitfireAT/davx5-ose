@@ -14,16 +14,16 @@ class CategoriesStrategy(val addressBook: LocalAddressBook): ContactGroupStrateg
     private val logger: Logger
         get() = Logger.getGlobal()
 
-    override fun beforeUploadDirty() {
+    override suspend fun beforeUploadDirty() {
         // groups with DELETED=1: set all members to dirty, then remove group
-        for (group in addressBook.findDeletedGroups()) {
+        addressBook.findDeletedGroups().collect { group ->
             logger.fine("Finally removing group $group")
             group.markMembersDirty()
             group.androidGroup.delete()
         }
 
         // groups with DIRTY=1: mark all members as dirty, then clean DIRTY flag of group
-        for (group in addressBook.findDirtyGroups()) {
+        addressBook.findDirtyGroups().collect { group ->
             logger.fine("Marking members of modified group $group as dirty")
             group.markMembersDirty()
             group.clearDirty(Optional.empty(), null)
@@ -38,9 +38,9 @@ class CategoriesStrategy(val addressBook: LocalAddressBook): ContactGroupStrateg
         }
     }
 
-    override fun postProcess() {
+    override suspend fun postProcess() {
         logger.info("Removing empty groups")
-        addressBook.removeEmptyGroups()
+        addressBook.ab.deleteGroupsWithoutMembers()
     }
 
 }

@@ -8,6 +8,8 @@ import android.accounts.Account
 import android.content.ContentProviderClient
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.resource.LocalDataStore
+import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.RelaxedMockK
@@ -17,6 +19,7 @@ import io.mockk.just
 import io.mockk.mockk
 import io.mockk.runs
 import io.mockk.verify
+import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -41,30 +44,30 @@ class SyncerTest {
 
 
     @Test
-    fun testSync_prepare_fails() {
+    fun testSync_prepare_fails() = runTest {
         every { syncer.prepare(provider) } returns false
-        every { syncer.getSyncEnabledCollections() } returns emptyMap()
+        coEvery { syncer.getSyncEnabledCollections() } returns emptyMap()
 
         // Should stop the sync after prepare returns false
         syncer.sync(provider)
         verify(exactly = 1) { syncer.prepare(provider) }
-        verify(exactly = 0) { syncer.getSyncEnabledCollections() }
+        coVerify(exactly = 0) { syncer.getSyncEnabledCollections() }
     }
 
     @Test
-    fun testSync_prepare_succeeds() {
+    fun testSync_prepare_succeeds() = runTest {
         every { syncer.prepare(provider) } returns true
-        every { syncer.getSyncEnabledCollections() } returns emptyMap()
+        coEvery { syncer.getSyncEnabledCollections() } returns emptyMap()
 
         // Should continue the sync after prepare returns true
         syncer.sync(provider)
         verify(exactly = 1) { syncer.prepare(provider) }
-        verify(exactly = 1) { syncer.getSyncEnabledCollections() }
+        coVerify(exactly = 1) { syncer.getSyncEnabledCollections() }
     }
 
 
     @Test
-    fun testUpdateCollections_deletesCollection() {
+    fun testUpdateCollections_deletesCollection() = runTest {
         val localCollection = mockk<LocalTestCollection> {
             every { dbCollectionId } returns 0L
             every { title } returns "Collection to be deleted locally"
@@ -80,7 +83,7 @@ class SyncerTest {
     }
 
     @Test
-    fun testUpdateCollections_updatesCollection() {
+    fun testUpdateCollections_updatesCollection() = runTest {
         val localCollection = mockk<LocalTestCollection> {
             every { dbCollectionId } returns 0L
             every { title } returns "The Local Collection"
@@ -99,7 +102,7 @@ class SyncerTest {
     }
 
     @Test
-    fun testUpdateCollections_findsNewCollection() {
+    fun testUpdateCollections_findsNewCollection() = runTest {
         val dbCollection = mockk<Collection> {
             every { id } returns 0L
         }
@@ -108,7 +111,7 @@ class SyncerTest {
         })
         val dbCollections = listOf(dbCollection)
         val dbCollectionsMap = mapOf(dbCollection.id to dbCollection)
-        every { syncer.createLocalCollections(provider, dbCollections) } returns localCollections
+        coEvery { syncer.createLocalCollections(provider, dbCollections) } returns localCollections
 
         // Should return the new collection, because it was not updated
         val result = syncer.updateCollections(provider, emptyList(), dbCollectionsMap)
@@ -120,7 +123,7 @@ class SyncerTest {
 
 
     @Test
-    fun testCreateLocalCollections() {
+    fun testCreateLocalCollections() = runTest {
         val localCollection = mockk<LocalTestCollection>()
         val dbCollection = mockk<Collection>()
         every { dataStore.create(provider, dbCollection) } returns localCollection
@@ -132,7 +135,7 @@ class SyncerTest {
 
 
     @Test
-    fun testSyncCollectionContents() {
+    fun testSyncCollectionContents() = runTest {
         val dbCollection1 = mockk<Collection>()
         val dbCollection2 = mockk<Collection>()
         val dbCollections = mapOf(
@@ -144,14 +147,14 @@ class SyncerTest {
         val localCollections = listOf(localCollection1, localCollection2)
         every { localCollection1.dbCollectionId } returns 0L
         every { localCollection2.dbCollectionId } returns 1L
-        every { syncer.syncCollection(provider, any(), any()) } just runs
+        coEvery { syncer.syncCollection(provider, any(), any()) } just runs
 
         // Should call the collection content sync on both collections
         syncer.syncCollectionContents(provider, localCollections, dbCollections)
-        verify(exactly = 1) { syncer.syncCollection(provider, localCollection1, dbCollection1) }
-        verify(exactly = 1) { syncer.syncCollection(provider, localCollection2, dbCollection2) }
+        coVerify(exactly = 1) { syncer.syncCollection(provider, localCollection1, dbCollection1) }
+        coVerify(exactly = 1) { syncer.syncCollection(provider, localCollection2, dbCollection2) }
     }
-    
+
 
     // Test helpers
 
@@ -174,7 +177,7 @@ class SyncerTest {
         override fun getDbSyncCollections(serviceId: Long): List<Collection> =
             throw NotImplementedError()
 
-        override fun syncCollection(
+        override suspend fun syncCollection(
             provider: ContentProviderClient,
             localCollection: LocalTestCollection,
             remoteCollection: Collection

@@ -12,14 +12,12 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.TaskStackBuilder
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.log.LogFileHandler.Companion.debugDir
 import at.bitfire.davdroid.ui.AppSettingsActivity
 import at.bitfire.davdroid.ui.DebugInfoActivity
 import at.bitfire.davdroid.ui.NotificationRegistry
 import at.bitfire.synctools.log.PlainTextFormatter
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.Closeable
-import java.io.File
 import java.util.Date
 import java.util.logging.FileHandler
 import java.util.logging.Handler
@@ -37,47 +35,19 @@ import javax.inject.Inject
  */
 class LogFileHandler @Inject constructor(
     @ApplicationContext val context: Context,
+    private val debugDirectory: DebugDirectory,
     private val logger: Logger,
     private val notificationRegistry: NotificationRegistry
 ): Handler(), Closeable {
 
     companion object {
-
-        private const val DEBUG_INFO_DIRECTORY = "debug"
-
-        /**
-         * Creates (when necessary) and returns the directory where all the debug files (such as log files) are stored.
-         * Must match the contents of `res/xml/debug.paths.xml`.
-         *
-         * @return The directory where all debug info are stored, or `null` if the directory couldn't be created successfully.
-         */
-        fun debugDir(context: Context): File? {
-            val dir = File(context.filesDir, DEBUG_INFO_DIRECTORY)
-            if (dir.exists() && dir.isDirectory)
-                return dir
-
-            if (dir.mkdir())
-                return dir
-
-            return null
-        }
-
-        /**
-         * The file (in [debugDir]) where verbose logs are stored.
-         *
-         * @return The file where verbose logs are stored, or `null` if there's no [debugDir].
-         */
-        fun getDebugLogFile(context: Context): File? {
-            val logDir = debugDir(context) ?: return null
-            return File(logDir, "davx5-log.txt")
-        }
-
+        val LOG_FILE_NAME = DebugDirectory.FileName("davx5-log.txt")
     }
 
     private var fileHandler: FileHandler? = null
     private val notificationManager = NotificationManagerCompat.from(context)
 
-    private val logFile = getDebugLogFile(context)
+    private val logFile = debugDirectory.resolve(LOG_FILE_NAME)
 
     init {
         if (logFile != null) {
@@ -91,7 +61,7 @@ class LogFileHandler @Inject constructor(
 
             showNotification()
         } else {
-            logger.severe("Couldn't create log file in app-private directory $DEBUG_INFO_DIRECTORY/.")
+            logger.severe("Couldn't create log file in app-private directory ${DebugDirectory.DIRECTORY_NAME}/.")
             level = Level.OFF
         }
     }
@@ -113,7 +83,7 @@ class LogFileHandler @Inject constructor(
         fileHandler = null
 
         // remove all files in debug info directory, may also contain zip files from debug info activity etc.
-        logFile?.parentFile?.deleteRecursively()
+        debugDirectory.getOrCreate()?.deleteRecursively()
 
         removeNotification()
     }

@@ -7,7 +7,7 @@ package at.bitfire.synctools.mapping.jtx.handler
 import android.content.ContentValues
 import android.content.Entity
 import androidx.core.content.contentValuesOf
-import at.bitfire.ical4android.JtxICalObject
+import at.bitfire.synctools.mapping.jtx.JtxProperty
 import at.techbee.jtx.JtxContract
 import net.fortuna.ical4j.model.component.VToDo
 import net.fortuna.ical4j.model.property.XProperty
@@ -19,37 +19,30 @@ import org.robolectric.RobolectricTestRunner
 import kotlin.jvm.optionals.getOrNull
 
 @RunWith(RobolectricTestRunner::class)
-class GeoFenceRadiusHandlerTest {
+class ExtendedStatusHandlerTest {
 
-    private val handler = GeoFenceRadiusHandler()
+    private val handler = ExtendedStatusHandler()
 
     @Test
-    fun `No GEOFENCE_RADIUS`() {
+    fun `No EXTENDED_STATUS`() {
         val input = Entity(ContentValues())
         val output = VToDo()
 
         handler.process(from = input, main = input, to = output)
 
-        assertNull(output.getProperty<XProperty>(JtxICalObject.X_PROP_GEOFENCE_RADIUS).getOrNull())
+        assertNull(output.getProperty<XProperty>(JtxProperty.X_XSTATUS).getOrNull())
     }
 
     @Test
-    fun `GEOFENCE_RADIUS is added as XProperty`() {
-        val input = Entity(contentValuesOf(JtxContract.JtxICalObject.GEOFENCE_RADIUS to 500))
+    fun `EXTENDED_STATUS with value`() {
+        val input = Entity(contentValuesOf(JtxContract.JtxICalObject.EXTENDED_STATUS to "IN-PROCESS"))
         val output = VToDo()
 
         handler.process(from = input, main = input, to = output)
 
-        assertEquals("500", output.getProperty<XProperty>(JtxICalObject.X_PROP_GEOFENCE_RADIUS).getOrNull()?.value)
-    }
-
-    @Test
-    fun `Non-numeric radius is ignored`() {
-        val input = Entity(contentValuesOf(JtxContract.JtxICalObject.GEOFENCE_RADIUS to "abc"))
-        val output = VToDo()
-
-        handler.process(from = input, main = input, to = output)
-
-        assertNull(output.getProperty<XProperty>(JtxICalObject.X_PROP_GEOFENCE_RADIUS).getOrNull())
+        assertEquals(
+            "IN-PROCESS",
+            output.getProperty<XProperty>(JtxProperty.X_XSTATUS).getOrNull()?.value
+        )
     }
 }

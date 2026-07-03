@@ -43,6 +43,7 @@ import at.bitfire.synctools.mapping.tasks.builder.UrlBuilder
 import at.bitfire.synctools.storage.tasks.DmfsTaskList
 import at.bitfire.synctools.storage.tasks.TaskAndExceptions
 import net.fortuna.ical4j.model.component.VToDo
+import java.util.logging.Logger
 
 class DmfsTaskBuilder(
     taskList: DmfsTaskList,
@@ -93,14 +94,21 @@ class DmfsTaskBuilder(
         UnknownPropertiesBuilder(taskList),
     )
 
+    private val logger
+        get() = Logger.getLogger(javaClass.name)
+
     fun build(associatedTasks: AssociatedTasks): TaskAndExceptions {
-        // TODO: when recurrence is supported on tasks, no exception should be thrown, but instead a reference should be created for exceptions. See AndroidEventBuilder
-        val mainVToDo = associatedTasks.main ?: throw ResourceMappingException("Main task is missing in associated tasks")
+        val mainVToDo = associatedTasks.main
+            ?: throw ResourceMappingException("Main task is missing in associated tasks")
+
+        /* Recurring task exceptions are not yet supported. Passing them to OpenTasks
+        without ORIGINAL_INSTANCE_TIME causes problems, so drop them. */
+        if (associatedTasks.exceptions.isNotEmpty())
+            logger.warning("Ignoring ${associatedTasks.exceptions.size} exception(s) of recurring task (not yet supported, see #2357)")
+
         return TaskAndExceptions(
             main = buildTask(from = mainVToDo, main = mainVToDo),
-            exceptions = associatedTasks.exceptions.map { exception ->
-                buildTask(from = exception, main = mainVToDo)
-            }
+            exceptions = emptyList()
         )
     }
 

@@ -90,6 +90,7 @@ dependencies {
     implementation(libs.androidx.annotation)
     implementation(libs.androidx.core)
     implementation(libs.guava)
+    implementation(libs.kotlinx.coroutines)
 
     compileOnly(libs.spotbugs.annotations)
 

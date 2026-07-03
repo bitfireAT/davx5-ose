@@ -12,11 +12,18 @@ import android.os.RemoteException
 import at.bitfire.synctools.storage.BatchOperation
 import at.bitfire.synctools.storage.LocalStorageException
 import at.bitfire.synctools.storage.TaskProvider
+import at.bitfire.synctools.storage.queryFlow
 import at.bitfire.synctools.storage.tasks.DmfsTasksContract.asSyncAdapter
 import at.bitfire.synctools.storage.toContentValues
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.buffer
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.mapNotNull
 import org.dmfs.tasks.contract.TaskContract
 import org.dmfs.tasks.contract.TaskContract.Tasks
-import java.util.LinkedList
+import org.jetbrains.annotations.TestOnly
 import java.util.logging.Logger
 
 
@@ -149,6 +156,7 @@ class DmfsTaskList(
      *
      * @throws LocalStorageException when the content provider returns an error
      */
+    @TestOnly
     fun findTaskRow(projection: Array<String>?, where: String?, whereArgs: Array<String>?): ContentValues? {
         try {
             val (protectedWhere, protectedWhereArgs) = whereWithTaskListId(where, whereArgs)
@@ -185,54 +193,6 @@ class DmfsTaskList(
             throw LocalStorageException("Couldn't query tasks", e)
         }
         return null
-    }
-
-    /**
-     * Queries all tasks from this task list.
-     *
-     * Should be used rarely because it has a potentially large memory footprint.
-     * Prefer [iterateTaskRows].
-     *
-     * @return list of task entities
-     *
-     * @throws LocalStorageException when the content provider returns an error
-     */
-    fun findTasks(): List<Entity> {
-        val entities = LinkedList<Entity>()
-        try {
-            iterateTaskRows(null, null, null) { row ->
-                val id = row.getAsLong(Tasks._ID) ?: return@iterateTaskRows
-                val entity = getTask(id) ?: return@iterateTaskRows
-                entities += entity
-            }
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't query tasks", e)
-        }
-        return entities
-    }
-
-    /**
-     * Queries tasks from this task list.
-     *
-     * @param where     selection
-     * @param whereArgs arguments for selection
-     *
-     * @return tasks from this task list which match the selection
-     *
-     * @throws LocalStorageException when the content provider returns an error
-     */
-    fun findTasks(where: String?, whereArgs: Array<String>?): List<Entity> {
-        val entities = LinkedList<Entity>()
-        try {
-            iterateTaskRows(null, where, whereArgs) { row ->
-                val id = row.getAsLong(Tasks._ID) ?: return@iterateTaskRows
-                val entity = getTask(id) ?: return@iterateTaskRows
-                entities += entity
-            }
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't query tasks", e)
-        }
-        return entities
     }
 
     /**
@@ -285,7 +245,12 @@ class DmfsTaskList(
      *
      * @throws LocalStorageException when the content provider returns an error
      */
-    fun getTaskRow(id: Long, projection: Array<String>? = null, where: String? = null, whereArgs: Array<String>? = null): ContentValues? {
+    fun getTaskRow(
+        id: Long,
+        projection: Array<String>? = null,
+        where: String? = null,
+        whereArgs: Array<String>? = null
+    ): ContentValues? {
         try {
             client.query(taskUri(id), projection, where, whereArgs, null)?.use { cursor ->
                 if (cursor.moveToNext())
@@ -307,7 +272,12 @@ class DmfsTaskList(
      *
      * @throws LocalStorageException when the content provider returns an error
      */
-    fun iterateTaskRows(projection: Array<String>?, where: String?, whereArgs: Array<String>?, body: (ContentValues) -> Unit) {
+    fun iterateTaskRows(
+        projection: Array<String>?,
+        where: String?,
+        whereArgs: Array<String>?,
+        body: (ContentValues) -> Unit
+    ) {
         try {
             val (protectedWhere, protectedWhereArgs) = whereWithTaskListId(where, whereArgs)
             client.query(tasksUri(), projection, protectedWhere, protectedWhereArgs, null)?.use { cursor ->
@@ -322,24 +292,21 @@ class DmfsTaskList(
     }
 
     /**
-     * Iterates tasks (with properties) from this task list.
+     * Cold [Flow] of tasks (with properties) from this task list.
      *
      * @param where         selection
      * @param whereArgs     arguments for selection
-     * @param body          callback that is called for each task entity
-     *
-     * @throws LocalStorageException when the content provider returns an error
      */
-    fun iterateTasks(where: String?, whereArgs: Array<String>?, body: (Entity) -> Unit) {
-        try {
-            iterateTaskRows(null, where, whereArgs) { row ->
-                val id = row.getAsLong(Tasks._ID) ?: return@iterateTaskRows
-                val entity = getTask(id) ?: return@iterateTaskRows
-                body(entity)
+    fun queryTasks(where: String?, whereArgs: Array<String>?): Flow<Entity> {
+        val (protectedWhere, protectedWhereArgs) = whereWithTaskListId(where, whereArgs)
+        return client
+            .queryFlow(tasksUri(), null, protectedWhere, protectedWhereArgs)
+            .mapNotNull { mainRow ->
+                val id = mainRow.getAsLong(Tasks._ID) ?: return@mapNotNull null
+                getTask(id)
             }
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't iterate tasks", e)
-        }
+            .flowOn(Dispatchers.IO)      // buffers by default
+            .buffer(Channel.RENDEZVOUS)  // Entity-s could be big → reduce buffer size to 1
     }
 
     /**

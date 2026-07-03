@@ -28,7 +28,7 @@ interface ContactDirtyVerifier {
      *
      * @return `true` if the address book should be synced, `false` if the sync is an upload and no contacts have been changed
      */
-    fun prepareAddressBook(addressBook: LocalAddressBook, isUpload: Boolean): Boolean
+    suspend fun prepareAddressBook(addressBook: LocalAddressBook, isUpload: Boolean): Boolean
 
 
     // contact level functions

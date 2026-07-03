@@ -7,13 +7,14 @@ package at.bitfire.davdroid.sync
 import android.accounts.Account
 import android.text.format.Formatter
 import androidx.annotation.OpenForTesting
-import at.bitfire.dav4jvm.okhttp.DavCalendar
-import at.bitfire.dav4jvm.okhttp.MultiResponseCallback
-import at.bitfire.dav4jvm.okhttp.Response
-import at.bitfire.dav4jvm.okhttp.exception.DavException
+import at.bitfire.dav4jvm.ktor.DavCalendar
+import at.bitfire.dav4jvm.ktor.MultiResponseCallback
+import at.bitfire.dav4jvm.ktor.Response
+import at.bitfire.dav4jvm.ktor.exception.DavException
 import at.bitfire.dav4jvm.property.caldav.CalDAV
 import at.bitfire.dav4jvm.property.caldav.CalendarData
 import at.bitfire.dav4jvm.property.caldav.MaxResourceSize
+import at.bitfire.dav4jvm.property.caldav.ScheduleTag
 import at.bitfire.dav4jvm.property.webdav.GetETag
 import at.bitfire.dav4jvm.property.webdav.WebDAV
 import at.bitfire.davdroid.ProductIds
@@ -21,37 +22,43 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.di.qualifier.SyncDispatcher
 import at.bitfire.davdroid.resource.LocalJtxCollection
-import at.bitfire.davdroid.resource.LocalJtxICalObject
+import at.bitfire.davdroid.resource.LocalJtxObject
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.resource.SyncState
 import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.davdroid.util.DavUtils.lastSegment
-import at.bitfire.ical4android.JtxICalObject
 import at.bitfire.synctools.exception.InvalidResourceException
+import at.bitfire.synctools.icalendar.CalendarUidSplitter
+import at.bitfire.synctools.icalendar.ICalendarGenerator
+import at.bitfire.synctools.icalendar.ICalendarParser
+import at.bitfire.synctools.mapping.jtx.JtxObjectBuilder
+import at.bitfire.synctools.mapping.jtx.JtxObjectHandler
+import at.bitfire.synctools.mapping.jtx.handler.AndroidAttachmentFetcher
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import io.ktor.client.HttpClient
+import io.ktor.http.Url
+import io.ktor.http.content.TextContent
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.runInterruptible
+import net.fortuna.ical4j.model.Component
+import net.fortuna.ical4j.model.component.CalendarComponent
 import net.fortuna.ical4j.model.property.ProdId
-import okhttp3.HttpUrl
-import okhttp3.OkHttpClient
-import okhttp3.RequestBody.Companion.toRequestBody
-import java.io.ByteArrayOutputStream
 import java.io.Reader
 import java.io.StringReader
+import java.io.StringWriter
 import java.util.logging.Level
 
 class JtxSyncManager @AssistedInject constructor(
     @Assisted account: Account,
-    @Assisted httpClient: OkHttpClient,
+    @Assisted httpClient: HttpClient,
     @Assisted syncResult: SyncResult,
     @Assisted localCollection: LocalJtxCollection,
     @Assisted collection: Collection,
     @Assisted resync: ResyncType?,
     private val productIds: ProductIds,
     @SyncDispatcher syncDispatcher: CoroutineDispatcher
-): SyncManager<LocalJtxICalObject, LocalJtxCollection, DavCalendar>(
+): SyncManager<LocalJtxObject, LocalJtxCollection, DavCalendar>(
     account,
     httpClient,
     SyncDataType.TASKS,
@@ -66,7 +73,7 @@ class JtxSyncManager @AssistedInject constructor(
     interface Factory {
         fun jtxSyncManager(
             account: Account,
-            httpClient: OkHttpClient,
+            httpClient: HttpClient,
             syncResult: SyncResult,
             localCollection: LocalJtxCollection,
             collection: Collection,
@@ -75,98 +82,111 @@ class JtxSyncManager @AssistedInject constructor(
     }
 
 
-    override fun prepare(): Boolean {
+    override suspend fun prepare(): Boolean {
         davCollection = DavCalendar(httpClient, collection.url)
 
         return true
     }
 
     override suspend fun queryCapabilities() =
-        SyncException.wrapWithRemoteResourceSuspending(collection.url) {
+        SyncException.wrapWithRemoteResource(collection.url) {
             var syncState: SyncState? = null
-            runInterruptible {
-                davCollection.propfind(0, CalDAV.GetCTag, CalDAV.MaxResourceSize, WebDAV.SyncToken) { response, relation ->
-                    if (relation == Response.HrefRelation.SELF) {
-                        response[MaxResourceSize::class.java]?.maxSize?.let { maxSize ->
-                            logger.info("Collection accepts resources up to ${Formatter.formatFileSize(context, maxSize)}")
-                        }
-
-                        syncState = syncState(response)
+            davCollection.propfind(0, CalDAV.GetCTag, CalDAV.MaxResourceSize, WebDAV.SyncToken) { response, relation ->
+                if (relation == Response.HrefRelation.SELF) {
+                    response[MaxResourceSize::class.java]?.maxSize?.let { maxSize ->
+                        logger.info("Collection accepts resources up to ${Formatter.formatFileSize(context, maxSize)}")
                     }
+
+                    syncState = syncState(response)
                 }
             }
             syncState
         }
 
-    override fun generateUpload(resource: LocalJtxICalObject): GeneratedResource {
-        logger.log(Level.FINE, "Preparing upload of icalobject #${resource.id}")
+    override fun generateUpload(resource: LocalJtxObject): GeneratedResource {
+        val localJtxObject = resource.jtxObjectAndExceptions
+        logger.log(Level.FINE, "Preparing upload of icalobject #${resource.id}", localJtxObject)
 
-        val os = ByteArrayOutputStream()
-        resource.write(os, ProdId(productIds.iCalProdId))
+        // Map jtx object to iCalendar (also generates UID, if necessary)
+        val handler = JtxObjectHandler(
+            prodId = ProdId(productIds.iCalProdId),
+            attachmentFetcher = AndroidAttachmentFetcher(
+                client = resource.collection.client,
+                account = resource.collection.account
+            )
+        )
+        val mappedJtxObjects = handler.mapToCalendarComponents(localJtxObject)
+
+        // Persist UID if it was generated
+        if (mappedJtxObjects.generatedUid) {
+            resource.updateUid(mappedJtxObjects.uid)
+        }
+
+        // generate iCalendar and convert to request body
+        val iCalWriter = StringWriter()
+        ICalendarGenerator().write(mappedJtxObjects.associatedComponents, iCalWriter)
+        val outgoingContent = TextContent(
+            text = iCalWriter.toString(),
+            contentType = DavCalendar.MIME_ICALENDAR_UTF8
+        )
 
         return GeneratedResource(
-            suggestedFileName = DavUtils.fileNameFromUid(resource.uid, "ics"),
-            requestBody = os.toByteArray().toRequestBody(DavCalendar.MIME_ICALENDAR_UTF8)
+            suggestedFileName = DavUtils.fileNameFromUid(mappedJtxObjects.uid, "ics"),
+            content = outgoingContent
         )
     }
 
     override fun syncAlgorithm() = SyncAlgorithm.PROPFIND_REPORT
 
     override suspend fun listAllRemote(callback: MultiResponseCallback) {
-        SyncException.wrapWithRemoteResourceSuspending(collection.url) {
+        SyncException.wrapWithRemoteResource(collection.url) {
             if (localCollection.supportsVTODO) {
                 logger.info("Querying tasks")
-                runInterruptible {
-                    davCollection.calendarQuery("VTODO", null, null, callback)
-                }
+                davCollection.calendarQuery("VTODO", null, null, callback = callback)
             }
 
             if (localCollection.supportsVJOURNAL) {
                 logger.info("Querying journals")
-                runInterruptible {
-                    davCollection.calendarQuery("VJOURNAL", null, null, callback)
-                }
+                davCollection.calendarQuery("VJOURNAL", null, null, callback = callback)
             }
         }
     }
 
-    override suspend fun downloadRemote(bunch: List<HttpUrl>) {
+    override suspend fun downloadRemote(bunch: List<Url>) {
         logger.info("Downloading ${bunch.size} iCalendars: $bunch")
         // multiple iCalendars, use calendar-multi-get
-        SyncException.wrapWithRemoteResourceSuspending(collection.url) {
-            runInterruptible {
-                davCollection.multiget(bunch) { response, _ ->
-                    // See CalendarSyncManager for more information about the multi-get response
-                    SyncException.wrapWithRemoteResource(response.href) wrapResource@{
-                        if (!response.isSuccess()) {
-                            logger.warning("Ignoring non-successful multi-get response for ${response.href}")
-                            return@wrapResource
-                        }
+        SyncException.wrapWithRemoteResource(collection.url) {
+            davCollection.multiget(bunch) { response, _ ->
+                // See CalendarSyncManager for more information about the multi-get response
+                SyncException.wrapWithRemoteResource(response.href) wrapResource@{
+                    if (!response.isSuccess()) {
+                        logger.warning("Ignoring non-successful multi-get response for ${response.href}")
+                        return@wrapResource
+                    }
 
-                        val iCal = response[CalendarData::class.java]?.iCalendar
-                        if (iCal == null) {
-                            logger.warning("Ignoring multi-get response without calendar-data")
-                            return@wrapResource
-                        }
+                    val iCal = response[CalendarData::class.java]?.iCalendar
+                    if (iCal == null) {
+                        logger.warning("Ignoring multi-get response without calendar-data")
+                        return@wrapResource
+                    }
 
-                        val eTag = response[GetETag::class.java]?.eTag
-                            ?: throw DavException("Received multi-get response without ETag")
+                    val eTag = response[GetETag::class.java]?.eTag
+                        ?: throw DavException("Received multi-get response without ETag")
+                    val scheduleTag = response[ScheduleTag::class.java]?.scheduleTag
+                    val fileName = response.href.lastSegment
 
-                        val fileName = response.href.lastSegment
-
-                        try {
-                            processICalObject(fileName, eTag, StringReader(iCal))
-                        } catch (e: InvalidResourceException) {
-                            logger.log(Level.WARNING, "Error while processing jtx object", e)
-                            notifyInvalidResource(e, fileName)
-                        }
+                    try {
+                        processICalObject(fileName, eTag, scheduleTag, StringReader(iCal))
+                    } catch (e: InvalidResourceException) {
+                        logger.log(Level.WARNING, "Error while processing jtx object", e)
+                        notifyInvalidResource(e, fileName)
                     }
                 }
             }
         }
     }
 
-    override fun postProcess() {
+    override suspend fun postProcess() {
         localCollection.updateLastSync()
     }
 
@@ -175,48 +195,37 @@ class JtxSyncManager @AssistedInject constructor(
 
 
     @OpenForTesting
-    internal fun processICalObject(fileName: String, eTag: String, reader: Reader) {
-        val icalobjects = JtxICalObject.fromReader(reader, localCollection.jtxCollection)
+    internal suspend fun processICalObject(fileName: String, eTag: String, scheduleTag: String?, reader: Reader) {
+        val calendar = ICalendarParser().parse(reader)
 
-        logger.log(Level.INFO, "Found ${icalobjects.size} entries in $fileName", icalobjects)
+        val uidsAndJournals = CalendarUidSplitter<CalendarComponent>().associateByUid(calendar, Component.VJOURNAL)
+        val uidsAndTasks = CalendarUidSplitter<CalendarComponent>().associateByUid(calendar, Component.VTODO)
 
-        icalobjects.forEach { jtxICalObject ->
-            // if the entry is a recurring entry (and therefore has a recurid)
-            // we update the existing (generated) entry
-            val recurid = jtxICalObject.recurid
-            if(recurid != null) {
-                val local = localCollection.findRecurInstance(jtxICalObject.uid, recurid)
-                SyncException.wrapWithLocalResource(local) {
-                    logger.log(Level.INFO, "Updating $fileName with recur instance $recurid in local list", jtxICalObject)
-                    if(local != null) {
-                        local.update(jtxICalObject)
-                    } else {
-                        val newLocal = LocalJtxICalObject(localCollection.jtxCollection, fileName, eTag, null, LocalResource.FLAG_REMOTELY_PRESENT)
-                        SyncException.wrapWithLocalResource(newLocal) {
-                            newLocal.applyNewData(jtxICalObject)
-                            newLocal.add()
-                        }
-                    }
-                }
-            } else {
-                // otherwise we insert or update the main entry
-                val local = localCollection.findByName(fileName)
-                SyncException.wrapWithLocalResource(local) {
-                    if (local != null) {
-                        logger.log(Level.INFO, "Updating $fileName in local list", jtxICalObject)
-                        local.eTag = eTag
-                        local.update(jtxICalObject)
-                    } else {
-                        logger.log(Level.INFO, "Adding $fileName to local list", jtxICalObject)
+        if (uidsAndJournals.size + uidsAndTasks.size != 1) {
+            logger.warning("Received iCalendar with not exactly one UID; ignoring $fileName")
+            return
+        }
 
-                        val newLocal = LocalJtxICalObject(localCollection.jtxCollection, fileName, eTag, null, LocalResource.FLAG_REMOTELY_PRESENT)
-                        SyncException.wrapWithLocalResource(newLocal) {
-                            newLocal.applyNewData(jtxICalObject)
-                            newLocal.add()
-                        }
-                    }
-                }
+        val uidsAndComponents = uidsAndJournals.ifEmpty { uidsAndTasks }
+        val component = uidsAndComponents.values.first()
+
+        val jtxEntityAndExceptions = JtxObjectBuilder(
+            collectionId = localCollection.jtxCollection.id,
+            fileName = fileName,
+            eTag = eTag,
+            scheduleTag = scheduleTag,
+            flags = LocalResource.FLAG_REMOTELY_PRESENT
+        ).build(component)
+
+        val local = localCollection.findByName(fileName)
+        if (local != null) {
+            SyncException.wrapWithLocalResource(local) {
+                logger.log(Level.INFO, "Updating $fileName in local jtx collection", component)
+                local.update(jtxEntityAndExceptions)
             }
+        } else {
+            logger.log(Level.INFO, "Adding $fileName to local jtx collection", component)
+            localCollection.add(jtxEntityAndExceptions)
         }
     }
 }

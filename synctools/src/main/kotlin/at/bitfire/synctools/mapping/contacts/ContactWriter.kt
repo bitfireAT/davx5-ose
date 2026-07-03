@@ -71,7 +71,7 @@ class ContactWriter(
     }
 
     private fun addProperties() {
-        vCard.productId = ProductId("$productId (ez-vcard/${Ezvcard.VERSION})")
+        vCard.productId = ProductId(productId)
         contact.uid?.let { vCard.uid = Uid(it) }
 
         addKindAndMembers()

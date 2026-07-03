@@ -8,13 +8,13 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import at.bitfire.dav4jvm.okhttp.Response
-import at.bitfire.dav4jvm.okhttp.UrlUtils
+import at.bitfire.dav4jvm.ktor.Response
+import at.bitfire.dav4jvm.ktor.omitTrailingSlash
 import at.bitfire.dav4jvm.property.webdav.DisplayName
 import at.bitfire.dav4jvm.property.webdav.ResourceType
 import at.bitfire.dav4jvm.property.webdav.WebDAV
 import at.bitfire.synctools.util.trimToNull
-import okhttp3.HttpUrl
+import io.ktor.http.Url
 
 /**
  * A principal entity representing a WebDAV principal (rfc3744).
@@ -33,7 +33,7 @@ data class Principal(
     val id: Long = 0,
     val serviceId: Long,
     /** URL of the principal, always without trailing slash */
-    val url: HttpUrl,
+    val url: Url,
     val displayName: String? = null
 ) {
 
@@ -53,17 +53,17 @@ data class Principal(
             // Try getting the display name of the principal
             val displayName: String? = dav[DisplayName::class.java]?.displayName.trimToNull()
 
-            // Create and return principal - even without it's display name
+            // Create and return principal - even without its display name
             return Principal(
                 serviceId = serviceId,
-                url = UrlUtils.omitTrailingSlash(dav.href),
+                url = dav.href.omitTrailingSlash(),
                 displayName = displayName
             )
         }
 
-        fun fromServiceAndUrl(service: Service, url: HttpUrl) = Principal(
+        fun fromServiceAndUrl(service: Service, url: Url) = Principal(
             serviceId = service.id,
-            url = UrlUtils.omitTrailingSlash(url)
+            url = url.omitTrailingSlash()
         )
 
     }

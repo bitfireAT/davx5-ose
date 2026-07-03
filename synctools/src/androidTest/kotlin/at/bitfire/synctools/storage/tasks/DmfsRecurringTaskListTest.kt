@@ -16,6 +16,8 @@ import at.bitfire.synctools.test.assertExceptionsEqual
 import at.bitfire.synctools.verifyCompat
 import io.mockk.junit4.MockKRule
 import io.mockk.spyk
+import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.test.runTest
 import net.fortuna.ical4j.util.TimeZones
 import org.dmfs.tasks.contract.TaskContract
 import org.dmfs.tasks.contract.TaskContract.Tasks
@@ -26,7 +28,6 @@ import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNotSame
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
-import org.junit.Assert.fail
 import org.junit.Before
 import org.junit.BeforeClass
 import org.junit.Rule
@@ -89,7 +90,7 @@ class DmfsRecurringTaskListTest(providerName: TaskProvider.ProviderName) :
     // test CRUD
 
     @Test
-    fun testAddTaskAndExceptions_and_GetById() {
+    fun testAddTaskAndExceptions_and_GetById() = runTest {
         // add task and exceptions
         val task = insertRecurring()
 
@@ -99,14 +100,14 @@ class DmfsRecurringTaskListTest(providerName: TaskProvider.ProviderName) :
     }
 
     @Test
-    fun testFindTaskAndExceptions() {
+    fun testFindTaskAndExceptions() = runTest {
         val task = insertRecurring(syncId = "testFindTaskAndExceptions")
         val result = recurringTaskList.findTaskAndExceptions("${Tasks._SYNC_ID}=?", arrayOf("testFindTaskAndExceptions"))
         assertTaskAndExceptionsEqual(task, result!!, onlyFieldsInExpected = true)
     }
 
     @Test
-    fun testFindTaskAndExceptions_IgnoresExceptionMatches() {
+    fun testFindTaskAndExceptions_IgnoresExceptionMatches() = runTest {
         insertRecurring()
 
         val result = recurringTaskList.findTaskAndExceptions("${Tasks.TITLE}=?", arrayOf("Exception"))
@@ -115,12 +116,12 @@ class DmfsRecurringTaskListTest(providerName: TaskProvider.ProviderName) :
     }
 
     @Test
-    fun testFindTaskAndExceptions_NotFound() {
+    fun testFindTaskAndExceptions_NotFound() = runTest {
         assertNull(recurringTaskList.findTaskAndExceptions("${Tasks._SYNC_ID}=?", arrayOf("not-existent")))
     }
 
     @Test
-    fun testGetById_ExceptionId_ReturnsNull() {
+    fun testGetById_ExceptionId_ReturnsNull() = runTest {
         val task = insertRecurring()
         val mainTaskId = task.main.entityValues.getAsLong(Tasks._ID)!!
         val exceptionId = taskList.findTaskRow(
@@ -133,7 +134,7 @@ class DmfsRecurringTaskListTest(providerName: TaskProvider.ProviderName) :
     }
 
     @Test
-    fun testGetById_NotFound() {
+    fun testGetById_NotFound() = runTest {
         // make sure there's no task with id=1
         recurringTaskList.deleteTaskAndExceptions(1)
 
@@ -141,14 +142,13 @@ class DmfsRecurringTaskListTest(providerName: TaskProvider.ProviderName) :
     }
 
     @Test
-    fun testIterateTaskAndExceptions() {
+    fun testIterateTaskAndExceptions() = runTest {
         val task1 = insertRecurring(syncId = "testIterateTaskAndExceptions1")
         val task2 = insertRecurring(syncId = "testIterateTaskAndExceptions2")
-        val result = mutableListOf<TaskAndExceptions>()
-        recurringTaskList.iterateTaskAndExceptions(
+        val result = recurringTaskList.queryTasksAndExceptions(
             "${Tasks._SYNC_ID} IN (?, ?)",
             arrayOf("testIterateTaskAndExceptions1", "testIterateTaskAndExceptions2")
-        ) { result += it }
+        ).toList()
         val orderedResult = result.sortedBy { it.main.entityValues.getAsInteger(Tasks._ID) }
         assertEquals(2, orderedResult.size)
         assertTaskAndExceptionsEqual(task1, orderedResult[0], onlyFieldsInExpected = true)
@@ -156,23 +156,21 @@ class DmfsRecurringTaskListTest(providerName: TaskProvider.ProviderName) :
     }
 
     @Test
-    fun testIterateTaskAndExceptions_IgnoresExceptionMatches() {
+    fun testIterateTaskAndExceptions_IgnoresExceptionMatches() = runTest {
         insertRecurring()
 
-        recurringTaskList.iterateTaskAndExceptions("${Tasks.TITLE}=?", arrayOf("Exception")) {
-            fail("must not be called")
-        }
+        val result = recurringTaskList.queryTasksAndExceptions("${Tasks.TITLE}=?", arrayOf("Exception")).toList()
+        assertTrue(result.isEmpty())
     }
 
     @Test
-    fun testIterateTaskAndExceptions_NotFound() {
-        recurringTaskList.iterateTaskAndExceptions("${Tasks._SYNC_ID}=?", arrayOf("not-existent")) {
-            fail("must not be called")
-        }
+    fun testIterateTaskAndExceptions_NotFound() = runTest {
+        val result = recurringTaskList.queryTasksAndExceptions("${Tasks._SYNC_ID}=?", arrayOf("not-existent")).toList()
+        assertTrue(result.isEmpty())
     }
 
     @Test
-    fun testUpdateTaskAndExceptions() {
+    fun testUpdateTaskAndExceptions() = runTest {
         // Create initial task
         val now = 1754233504000L    // Sun Aug 03 2025 15:05:04 GMT+0000
         val initialTask = Entity(
@@ -244,7 +242,7 @@ class DmfsRecurringTaskListTest(providerName: TaskProvider.ProviderName) :
     }
 
     @Test
-    fun testDeleteTaskAndExceptions() {
+    fun testDeleteTaskAndExceptions() = runTest {
         // Add task with exceptions
         val now = 1754233504000L    // Sun Aug 03 2025 15:05:04 GMT+0000
         val mainTaskId = recurringTaskList.addTaskAndExceptions(
@@ -398,14 +396,13 @@ class DmfsRecurringTaskListTest(providerName: TaskProvider.ProviderName) :
      * because then the tasks provider directly deletes tasks and doesn't mark them as [Tasks._DELETED].
      */
     @Test
-    fun testProcessDeletedExceptions() {
+    fun testProcessDeletedExceptions() = runTest {
         // Insert a recurring task with an exception
         val taskAndExceptions = insertRecurring()
         val mainTaskId = taskAndExceptions.main.entityValues.getAsLong(Tasks._ID)!!
 
         // Get the actual exception ID from the database
-        val exceptions = taskList.findTasks("${Tasks.ORIGINAL_INSTANCE_ID}=?", arrayOf(mainTaskId.toString()))
-        val exceptionId = exceptions.first().entityValues.getAsLong(Tasks._ID)!!
+        val exceptionId = taskList.findTask("${Tasks.ORIGINAL_INSTANCE_ID}=?", arrayOf(mainTaskId.toString()))!!.entityValues.getAsLong(Tasks._ID)!!
 
         // Mark the exception as deleted (delete, but not "as sync adapter"!)
         val exceptionUri = ContentUris.withAppendedId(Tasks.getContentUri(providerName.authority), exceptionId)
@@ -429,14 +426,13 @@ class DmfsRecurringTaskListTest(providerName: TaskProvider.ProviderName) :
     }
 
     @Test
-    fun testProcessDirtyExceptions() {
+    fun testProcessDirtyExceptions() = runTest {
         // Insert a recurring task with an exception
         val taskAndExceptions = insertRecurring()
         val mainTaskId = taskAndExceptions.main.entityValues.getAsLong(Tasks._ID)!!
 
         // Get the actual exception ID from the database
-        val exceptions = taskList.findTasks("${Tasks.ORIGINAL_INSTANCE_ID}=?", arrayOf(mainTaskId.toString()))
-        val exceptionId = exceptions.first().entityValues.getAsLong(Tasks._ID)!!
+        val exceptionId = taskList.findTask("${Tasks.ORIGINAL_INSTANCE_ID}=?", arrayOf(mainTaskId.toString()))!!.entityValues.getAsLong(Tasks._ID)!!
 
         // Mark the exception as dirty (but not deleted)
         taskList.updateTaskRow(exceptionId, contentValuesOf(Tasks._DIRTY to 1, Tasks.SYNC_VERSION to 5))

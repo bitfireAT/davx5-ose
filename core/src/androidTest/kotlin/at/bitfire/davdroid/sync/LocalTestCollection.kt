@@ -6,6 +6,7 @@ package at.bitfire.davdroid.sync
 
 import at.bitfire.davdroid.resource.LocalCollection
 import at.bitfire.davdroid.resource.SyncState
+import kotlinx.coroutines.flow.asFlow
 
 class LocalTestCollection(
     override val dbCollectionId: Long = 0L
@@ -21,21 +22,22 @@ class LocalTestCollection(
     override val readOnly: Boolean
         get() = throw NotImplementedError()
 
-    override fun findDeleted() = entries.filter { it.deleted }
-    override fun findDirty() = entries.filter { it.dirty }
+    override fun findDeleted() = entries.filter { it.deleted }.asFlow()
 
-    override fun findByName(name: String) = entries.firstOrNull { it.fileName == name }
+    override fun findDirty() = entries.filter { it.dirty }.asFlow()
+
+    override suspend fun findByName(name: String) = entries.firstOrNull { it.fileName == name }
 
     override fun markNotDirty(flags: Int): Int {
         var updated = 0
-        for (dirty in findDirty()) {
+        for (dirty in entries.filter { it.dirty }) {
             dirty.flags = flags
             updated++
         }
         return updated
     }
 
-    override fun removeNotDirtyMarked(flags: Int): Int {
+    override suspend fun removeNotDirtyMarked(flags: Int): Int {
         val numBefore = entries.size
         entries.removeIf { !it.dirty && it.flags == flags }
         return numBefore - entries.size
@@ -47,5 +49,6 @@ class LocalTestCollection(
     override fun countAll() = entries.size
     override fun countDeleted() = entries.count { it.deleted }
     override fun countModified() = entries.count { it.dirty && !it.deleted }
+    override fun countDirty() = entries.count { it.dirty }
 
 }

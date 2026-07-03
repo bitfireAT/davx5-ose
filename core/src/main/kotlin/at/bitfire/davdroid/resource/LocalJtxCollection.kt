@@ -7,9 +7,12 @@ package at.bitfire.davdroid.resource
 import androidx.core.content.contentValuesOf
 import at.bitfire.synctools.storage.jtx.JtxBatchOperation
 import at.bitfire.synctools.storage.jtx.JtxCollection
+import at.bitfire.synctools.storage.jtx.JtxEntityAndExceptions
 import at.bitfire.synctools.storage.jtx.JtxRecurringCollection
 import at.techbee.jtx.JtxContract
 import at.techbee.jtx.JtxContract.JtxICalObject
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 /**
  * Application-specific implementation for jtx collections.
@@ -17,7 +20,7 @@ import at.techbee.jtx.JtxContract.JtxICalObject
  * [JtxContract.JtxCollection.SYNC_ID] corresponds to the database collection ID ([at.bitfire.davdroid.db.Collection.id]).
  */
 class LocalJtxCollection(internal val jtxCollection: JtxCollection) :
-    LocalCollection<LocalJtxICalObject> {
+    LocalCollection<LocalJtxObject> {
 
     override val readOnly: Boolean
         get() = throw NotImplementedError()
@@ -43,6 +46,9 @@ class LocalJtxCollection(internal val jtxCollection: JtxCollection) :
     val supportsVJOURNAL: Boolean
         get() = jtxCollection.supportsVJournal
 
+    private val recurringCollection = JtxRecurringCollection(jtxCollection)
+
+
     fun updateLastSync() =
         jtxCollection.update(contentValuesOf(JtxContract.JtxCollection.LAST_SYNC to System.currentTimeMillis()))
 
@@ -56,33 +62,24 @@ class LocalJtxCollection(internal val jtxCollection: JtxCollection) :
     override fun countModified(): Int =
         jtxCollection.countJtxObjects("${JtxICalObject.DIRTY} AND NOT ${JtxICalObject.DELETED}", null)
 
-    override fun findDeleted(): List<LocalJtxICalObject> = buildList {
-        JtxRecurringCollection(jtxCollection).iterateJtxObjectAndExceptions(JtxICalObject.DELETED, null) {
-            add(LocalJtxICalObject(jtxCollection, it.main.entityValues))
-        }
-    }
+    override fun countDirty(): Int =
+        jtxCollection.countJtxObjects(JtxICalObject.DIRTY, null)
 
-    override fun findDirty(): List<LocalJtxICalObject> = buildList {
-        JtxRecurringCollection(jtxCollection).iterateJtxObjectAndExceptions(JtxICalObject.DIRTY, null) {
-            add(LocalJtxICalObject(jtxCollection, it.main.entityValues))
-        }
-    }
+    override fun findDeleted(): Flow<LocalJtxObject> =
+        recurringCollection.queryJtxObjectsAndExceptions(JtxICalObject.DELETED, null)
+            .map { LocalJtxObject(recurringCollection, it) }
 
-    override fun findByName(name: String): LocalJtxICalObject? =
-        JtxRecurringCollection(jtxCollection)
+    override fun findDirty(): Flow<LocalJtxObject> =
+        recurringCollection.queryJtxObjectsAndExceptions(JtxICalObject.DIRTY, null)
+            .map { LocalJtxObject(recurringCollection, it) }
+
+    override suspend fun findByName(name: String): LocalJtxObject? {
+        return recurringCollection
             .findJtxObjectAndExceptions("${JtxICalObject.FILENAME}=?", arrayOf(name))
-            ?.main?.entityValues
-            ?.let { LocalJtxICalObject(jtxCollection, it) }
-
-    /**
-     * Finds and returns a recurrence instance of a [LocalJtxICalObject]
-     * @param uid       UID of the main VTODO
-     * @param recurid   RECURRENCE-ID of the recurrence instance
-     * @return LocalJtxICalObject or null if none or multiple entries found
-     */
-    fun findRecurInstance(uid: String, recurid: String): LocalJtxICalObject? =
-        JtxRecurringCollection(jtxCollection).findExceptionRow(uid, recurid)
-            ?.let { LocalJtxICalObject(jtxCollection, it) }
+            ?.let { jtxObjectAndExceptions ->
+                LocalJtxObject(recurringCollection, jtxObjectAndExceptions)
+            }
+    }
 
     override fun markNotDirty(flags: Int): Int =
         jtxCollection.updateJtxObjectRows(
@@ -90,13 +87,12 @@ class LocalJtxCollection(internal val jtxCollection: JtxCollection) :
             "NOT ${JtxICalObject.DIRTY}", null
         )
 
-    override fun removeNotDirtyMarked(flags: Int): Int {
-        val recurringCollection = JtxRecurringCollection(jtxCollection)
+    override suspend fun removeNotDirtyMarked(flags: Int): Int {
         val batch = JtxBatchOperation(jtxCollection.client)
-        recurringCollection.iterateJtxObjectAndExceptions(
+        recurringCollection.queryJtxObjectsAndExceptions(
             "NOT ${JtxICalObject.DIRTY} AND ${JtxICalObject.FLAGS}=?",
             arrayOf(flags.toString())
-        ) { objectAndExceptions ->
+        ).collect { objectAndExceptions ->
             val id = objectAndExceptions.main.entityValues.getAsLong(JtxICalObject.ID)!!
             recurringCollection.deleteJtxObjectAndExceptions(id, batch)
         }
@@ -107,4 +103,7 @@ class LocalJtxCollection(internal val jtxCollection: JtxCollection) :
         jtxCollection.updateJtxObjectRows(contentValuesOf(JtxICalObject.ETAG to null), null, null)
     }
 
+    fun add(jtxEntityAndExceptions: JtxEntityAndExceptions): Long {
+        return recurringCollection.addJtxEntityAndExceptions(jtxEntityAndExceptions)
+    }
 }

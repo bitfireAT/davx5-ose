@@ -4,7 +4,6 @@
 
 package at.bitfire.synctools.storage.jtx
 
-import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Entity
 import android.os.RemoteException
@@ -13,6 +12,9 @@ import androidx.core.content.contentValuesOf
 import at.bitfire.synctools.storage.LocalStorageException
 import at.bitfire.synctools.storage.containsNotNull
 import at.techbee.jtx.JtxContract
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.toList
 import java.util.logging.Level
 import java.util.logging.Logger
 
@@ -35,28 +37,16 @@ class JtxRecurringCollection(
     /**
      * Inserts a jtx object and all its exceptions. Input data is first cleaned up using [cleanUp].
      *
-     * @param objectAndExceptions   object and exceptions to insert
+     * @param jtxEntityAndExceptions object and exceptions to insert
      *
      * @return ID of the resulting main jtx object
      */
-    fun addJtxObjectAndExceptions(objectAndExceptions: JtxObjectAndExceptions): Long {
+    fun addJtxEntityAndExceptions(jtxEntityAndExceptions: JtxEntityAndExceptions): Long {
         try {
             // validate / clean up input
-            val cleaned = cleanUp(objectAndExceptions)
+            val cleaned = cleanUp(jtxEntityAndExceptions)
 
-            // add main jtxObject
-            val batch = JtxBatchOperation(collection.client)
-            collection.addJtxObject(cleaned.main, batch)
-
-            // add exceptions
-            for (exception in cleaned.exceptions)
-                collection.addJtxObject(exception, batch)
-
-            batch.commit()
-
-            // main object was created as first row (index 0), return its insert result (= ID)
-            val uri = batch.getResult(0)?.uri ?: throw LocalStorageException("Content provider returned null on insert")
-            return ContentUris.parseId(uri)
+            return collection.addJtxObjects(listOf(cleaned.main) + cleaned.exceptions)
         } catch (e: RemoteException) {
             throw LocalStorageException("Couldn't insert jtx object/exceptions", e)
         }
@@ -69,7 +59,7 @@ class JtxRecurringCollection(
      * @param where         selection (applied to main objects only; [JtxContract.JtxICalObject.RECURID] IS NULL is added automatically)
      * @param whereArgs     arguments for selection
      */
-    fun findJtxObjectAndExceptions(where: String?, whereArgs: Array<String>?): JtxObjectAndExceptions? {
+    suspend fun findJtxObjectAndExceptions(where: String?, whereArgs: Array<String>?): JtxObjectAndExceptions? {
         val mainWhere = mainJtxObjectOnlyWhere(where)
 
         // attach exceptions
@@ -94,36 +84,38 @@ class JtxRecurringCollection(
      *
      * @return jtx object and exceptions, or `null` if not found or [mainId] is an exception
      */
-    fun getById(mainId: Long): JtxObjectAndExceptions? {
+    suspend fun getById(mainId: Long): JtxObjectAndExceptions? {
         val main = collection.getJtxObject(mainId) ?: return null
         if (main.entityValues.getAsString(JtxContract.JtxICalObject.RECURID) != null) {
             logger.warning("getById called with exception ID $mainId (RECURID IS NOT NULL) – returning null")
             return null
         }
         val uid = main.entityValues.getAsString(JtxContract.JtxICalObject.UID)
+        val exceptions = if (uid != null) findExceptionsByUid(uid) else emptyList()
         return JtxObjectAndExceptions(
             main = main,
-            exceptions = if (uid != null) findExceptionsByUid(uid) else emptyList()
+            exceptions = exceptions
         )
     }
 
     /**
-     * Iterates through main jtx objects together with their exceptions from the content provider.
+     * Cold [Flow] of main jtx objects together with their exceptions; the per-main exceptions
+     * lookup stays a small bounded query (exceptions of a single object are not streamed).
      *
      * @param where         selection (applied to main objects only; [JtxContract.JtxICalObject.RECURID] IS NULL is added automatically)
      * @param whereArgs     arguments for selection
-     * @param body          callback that is called for each main object (with exceptions attached)
      */
-    fun iterateJtxObjectAndExceptions(where: String?, whereArgs: Array<String>?, body: (JtxObjectAndExceptions) -> Unit) {
+    fun queryJtxObjectsAndExceptions(where: String?, whereArgs: Array<String>?): Flow<JtxObjectAndExceptions> {
         val mainWhere = mainJtxObjectOnlyWhere(where)
-        // iterate through main events and attach exceptions
-        collection.iterateJtxObjects(mainWhere, whereArgs) { main ->
-            val uid = main.entityValues.getAsString(JtxContract.JtxICalObject.UID)
-            body(JtxObjectAndExceptions(
-                main = main,
-                exceptions = if (uid != null) findExceptionsByUid(uid) else emptyList()
-            ))
-        }
+        return collection
+            .queryJtxObjects(mainWhere, whereArgs)
+            .map { main ->
+                val uid = main.entityValues.getAsString(JtxContract.JtxICalObject.UID)
+                JtxObjectAndExceptions(
+                    main = main,
+                    exceptions = if (uid != null) findExceptionsByUid(uid) else emptyList()
+                )
+            }
     }
 
     /**
@@ -131,16 +123,16 @@ class JtxRecurringCollection(
      * Old exceptions are deleted and replaced with the ones provided.
      *
      * @param id                        ID of the main jtx object row (must have [JtxContract.JtxICalObject.RECURID] IS NULL)
-     * @param objectAndExceptions       new jtx object (including exceptions)
+     * @param jtxEntityAndExceptions    new jtx object (including exceptions)
      *
      * @return main jtx object ID of the updated row (always equal to [id])
      *
      * @throws LocalStorageException when [id] refers to an exception row instead of a main object
      */
-    fun updateJtxObjectAndExceptions(id: Long, objectAndExceptions: JtxObjectAndExceptions): Long {
+    suspend fun updateJtxObjectAndExceptions(id: Long, jtxEntityAndExceptions: JtxEntityAndExceptions): Long {
         try {
             // validate / clean up input
-            val cleaned = cleanUp(objectAndExceptions)
+            val cleaned = cleanUp(jtxEntityAndExceptions)
 
             // get UID of the existing main object to find and delete its old exceptions (because
             // they may be invalid for the updated event); also enforce that id is a main object
@@ -156,27 +148,29 @@ class JtxRecurringCollection(
             }
             val existingUid = existingRow.getAsString(JtxContract.JtxICalObject.UID)
 
-            val batch = JtxBatchOperation(collection.client)
-
             // Delete old exceptions individually by item URI. The jtx Board provider blocks
             // bulk directory-level deletes of RECURID-bearing rows (adds "AND RECURID IS NULL"),
             // so a bulk delete would silently be a no-op here.
             // See: https://github.com/TechbeeAT/jtxBoard/blob/45a5f75693b2a50e55f2812bb5681016e50500d8/app/src/main/java/at/techbee/jtx/SyncContentProvider.kt#L197
-            if (existingUid != null)
-                for (oldException in findExceptionsByUid(existingUid))
+            if (existingUid != null) {
+                val batch = JtxBatchOperation(collection.client)
+
+                for (oldException in findExceptionsByUid(existingUid)) {
                     collection.deleteJtxObject(
                         oldException.entityValues.getAsLong(JtxContract.JtxICalObject.ID),
                         batch
                     )
+                }
+
+                batch.commit()
+            }
 
             // update main object
-            collection.updateJtxObject(id, cleaned.main, batch)
+            collection.updateJtxObject(id, cleaned.main)
 
             // add updated exceptions
-            for (exception in cleaned.exceptions)
-                collection.addJtxObject(exception, batch)
+            collection.addJtxObjects(cleaned.exceptions)
 
-            batch.commit()
             return id
         } catch (e: RemoteException) {
             throw LocalStorageException("Couldn't update jtx object/exceptions", e)
@@ -231,10 +225,10 @@ class JtxRecurringCollection(
      * @return object and exceptions that can actually be inserted
      */
     @VisibleForTesting
-    internal fun cleanUp(original: JtxObjectAndExceptions): JtxObjectAndExceptions {
+    internal fun cleanUp(original: JtxEntityAndExceptions): JtxEntityAndExceptions {
         val main = cleanMainObject(original.main)
 
-        val mainValues = main.entityValues
+        val mainValues = main.entity.entityValues
         val uid = mainValues.getAsString(JtxContract.JtxICalObject.UID)
         val recurring = mainValues.containsNotNull(JtxContract.JtxICalObject.RRULE)
                 || mainValues.containsNotNull(JtxContract.JtxICalObject.RDATE)
@@ -245,10 +239,10 @@ class JtxRecurringCollection(
             if (original.exceptions.isNotEmpty())
                 logger.log(Level.WARNING, "Dropping exceptions of jtx object because it is not recurring or UID is not set", main)
 
-            return JtxObjectAndExceptions(main = main, exceptions = emptyList())
+            return JtxEntityAndExceptions(main = main, exceptions = emptyList())
         }
 
-        return JtxObjectAndExceptions(
+        return JtxEntityAndExceptions(
             main = main,
             exceptions = original.exceptions.map { originalException ->
                 cleanException(originalException, uid)
@@ -265,18 +259,22 @@ class JtxRecurringCollection(
      * @return cleaned entity that can actually be inserted as a main
      */
     @VisibleForTesting
-    internal fun cleanMainObject(original: Entity): Entity {
+    internal fun cleanMainObject(original: JtxEntity): JtxEntity {
         // make a copy (don't modify original entity / values)
-        val values = ContentValues(original.entityValues)
+        val values = ContentValues(original.entity.entityValues)
 
         // remove values that a main jtx object shouldn't have
         values.remove(JtxContract.JtxICalObject.RECURID)
         values.remove(JtxContract.JtxICalObject.RECURID_TIMEZONE)
 
         val result = Entity(values)
-        for (subValue in original.subValues)
+        for (subValue in original.entity.subValues)
             result.addSubValue(subValue.uri, subValue.values)
-        return result
+
+        return JtxEntity(
+            entity = result,
+            binaryDataRows = original.binaryDataRows
+        )
     }
 
     /**
@@ -293,9 +291,9 @@ class JtxRecurringCollection(
      * @return cleaned exception that can actually be inserted
      */
     @VisibleForTesting
-    internal fun cleanException(original: Entity, uid: String): Entity {
+    internal fun cleanException(original: JtxEntity, uid: String): JtxEntity {
         // make a copy (don't modify original entity / values)
-        val values = ContentValues(original.entityValues)
+        val values = ContentValues(original.entity.entityValues)
 
         // remove fields that an exception must not have
         values.remove(JtxContract.JtxICalObject.RRULE)
@@ -306,9 +304,13 @@ class JtxRecurringCollection(
         values.put(JtxContract.JtxICalObject.UID, uid)
 
         val result = Entity(values)
-        for (subValue in original.subValues)
+        for (subValue in original.entity.subValues)
             result.addSubValue(subValue.uri, subValue.values)
-        return result
+
+        return JtxEntity(
+            entity = result,
+            binaryDataRows = original.binaryDataRows
+        )
     }
 
 
@@ -434,11 +436,11 @@ class JtxRecurringCollection(
      * exceptions and must not be treated as such. The provider sets SEQUENCE to at least 1 for any
      * sync-adapter-inserted exception.
      */
-    private fun findExceptionsByUid(uid: String): List<Entity> =
-        collection.findJtxObjects(
+    private suspend fun findExceptionsByUid(uid: String): List<Entity> =
+        collection.queryJtxObjects(
             "${JtxContract.JtxICalObject.UID}=? AND ${JtxContract.JtxICalObject.RECURID} IS NOT NULL AND ${JtxContract.JtxICalObject.SEQUENCE} > 0",
             arrayOf(uid)
-        )
+        ).toList()
 
     /**
      * Adds [JtxContract.JtxICalObject.RECURID] IS NULL to [where] to restrict queries to main objects only.

@@ -16,7 +16,6 @@ import at.bitfire.synctools.storage.TaskProvider
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import kotlinx.coroutines.runBlocking
 
 /**
  * Sync logic for jtx board
@@ -66,7 +65,11 @@ class JtxSyncer @AssistedInject constructor(
     override fun getDbSyncCollections(serviceId: Long): List<Collection> =
         collectionRepository.getSyncJtxCollections(serviceId)
 
-    override fun syncCollection(provider: ContentProviderClient, localCollection: LocalJtxCollection, remoteCollection: Collection) {
+    override suspend fun syncCollection(
+        provider: ContentProviderClient,
+        localCollection: LocalJtxCollection,
+        remoteCollection: Collection
+    ) {
         logger.info("Synchronizing jtx collection $localCollection")
 
         val syncManager = jtxSyncManagerFactory.jtxSyncManager(
@@ -77,9 +80,7 @@ class JtxSyncer @AssistedInject constructor(
             remoteCollection,
             resync
         )
-        runBlocking {
-            syncManager.performSync()
-        }
+        syncManager.performSync()
     }
 
 }

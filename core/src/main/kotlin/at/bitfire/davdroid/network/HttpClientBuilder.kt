@@ -6,33 +6,42 @@ package at.bitfire.davdroid.network
 
 import android.accounts.Account
 import androidx.annotation.WorkerThread
+import at.bitfire.dav4jvm.ktor.UrlUtils
 import at.bitfire.dav4jvm.okhttp.BasicDigestAuthHandler
-import at.bitfire.dav4jvm.okhttp.UrlUtils
+import at.bitfire.davdroid.ProductIds
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Credentials
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
-import com.google.common.net.HttpHeaders
 import com.google.errorprone.annotations.MustBeClosed
 import io.ktor.client.HttpClient
+import io.ktor.client.engine.HttpClientEngineConfig
+import io.ktor.client.engine.ProxyBuilder
 import io.ktor.client.engine.okhttp.OkHttp
+import io.ktor.client.plugins.DefaultRequest
+import io.ktor.client.plugins.HttpTimeout
+import io.ktor.client.plugins.UserAgent
+import io.ktor.client.plugins.compression.ContentEncoding
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.plugins.cookies.HttpCookies
+import io.ktor.client.plugins.logging.LogLevel
+import io.ktor.client.plugins.logging.Logging
+import io.ktor.http.HttpHeaders
+import io.ktor.http.URLBuilder
+import io.ktor.http.URLProtocol
 import io.ktor.serialization.kotlinx.json.json
+import io.ktor.util.appendIfNameAbsent
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import net.openid.appauth.AuthState
 import okhttp3.Authenticator
 import okhttp3.ConnectionSpec
-import okhttp3.CookieJar
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Protocol
-import okhttp3.brotli.BrotliInterceptor
-import okhttp3.logging.HttpLoggingInterceptor
-import java.net.InetSocketAddress
 import java.net.Proxy
-import java.util.concurrent.TimeUnit
+import java.util.Locale
 import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
@@ -52,7 +61,7 @@ class HttpClientBuilder @Inject constructor(
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val oAuthInterceptorFactory: OAuthInterceptor.Factory,
     private val settingsManager: SettingsManager,
-    private val userAgentInterceptor: UserAgentInterceptor
+    private val productIds: ProductIds
 ) {
 
     companion object {
@@ -62,32 +71,10 @@ class HttpClientBuilder @Inject constructor(
             ConscryptIntegration().initialize()
         }
 
-        /**
-         * According to [OkHttpClient] documentation, [OkHttpClient]s should be shared, which allows it to use a
-         * shared connection and thread pool.
-         *
-         * We need custom settings for each actual client, but we can use a shared client as a base. This also
-         * enables sharing resources like connection and thread pool.
-         *
-         * The shared client is available for the lifetime of the application and must not be shut down or
-         * closed (which is not necessary, according to its documentation).
-         */
-        val sharedOkHttpClient = OkHttpClient.Builder().apply {
-            configureTimeouts(this)
-        }.build()
-
-        private fun configureTimeouts(okBuilder: OkHttpClient.Builder) {
-            okBuilder
-                .connectTimeout(15, TimeUnit.SECONDS)
-                .writeTimeout(30, TimeUnit.SECONDS)
-                .readTimeout(120, TimeUnit.SECONDS)
-                .pingInterval(45, TimeUnit.SECONDS)     // avoid cancellation because of missing traffic; only works for HTTP/2
-        }
-
     }
 
     /**
-     * Flag to prevent multiple [build] calls
+     * Flag to prevent multiple [buildKtor] calls
      */
     var alreadyBuilt = false
 
@@ -99,18 +86,11 @@ class HttpClientBuilder @Inject constructor(
         return this
     }
 
-    private var loggerInterceptorLevel: HttpLoggingInterceptor.Level = HttpLoggingInterceptor.Level.BODY
+    // LogLevel.ALL logs headers + body (unlike LogLevel.BODY, which omits headers)
+    private var loggerInterceptorLevel: LogLevel = LogLevel.ALL
 
-    fun loggerInterceptorLevel(level: HttpLoggingInterceptor.Level): HttpClientBuilder {
+    fun loggerInterceptorLevel(level: LogLevel): HttpClientBuilder {
         loggerInterceptorLevel = level
-        return this
-    }
-
-    // default cookie store for non-persistent cookies (some services like Horde use cookies for session tracking)
-    private var cookieStore: CookieJar = MemoryCookieStore()
-
-    fun setCookieStore(cookieStore: CookieJar): HttpClientBuilder {
-        this.cookieStore = cookieStore
         return this
     }
 
@@ -202,65 +182,12 @@ class HttpClientBuilder @Inject constructor(
     }
 
 
-    // okhttp builder
-
-    /**
-     * Builds an [OkHttpClient] with the configured settings.
-     *
-     * [build] or [buildKtor] is usually called only once because multiple calls indicate this wrong usage pattern:
-     *
-     * ```
-     * val builder = HttpClientBuilder(/*injected*/)
-     * val client1 = builder.configure().build()
-     * val client2 = builder.configureOtherwise().build()
-     * ```
-     *
-     * However in this case the configuration of `client1` is still in `builder` and would be reused for `client2`,
-     * which is usually not desired.
-     *
-     * Closing/shutting down the client is not necessary.
-     */
-    fun build(): OkHttpClient {
-        if (alreadyBuilt)
-            logger.warning("build() should only be called once; use Provider<HttpClientBuilder> instead")
-
-        val builder = sharedOkHttpClient.newBuilder()
-        configureOkHttp(builder)
-
-        alreadyBuilt = true
-        return builder.build()
-    }
+    // client configuration
 
     private fun configureOkHttp(builder: OkHttpClient.Builder) {
-        // don't allow redirects by default because it would break PROPFIND handling
-        builder.followRedirects(followRedirects)
-
-        // add User-Agent to every request
-        builder.addInterceptor(userAgentInterceptor)
-
-        // connection-private cookie store
-        builder.cookieJar(cookieStore)
-
-        // offer Brotli and gzip compression (can be disabled per request with `Accept-Encoding: identity`)
-        builder.addInterceptor(BrotliInterceptor)
-
-        // app-wide custom proxy support
-        buildProxy(builder)
-
         // add connection security (including client certificates) and authentication
         buildConnectionSecurity(builder)
         buildAuthentication(builder)
-
-        // add network logging, if requested
-        if (logger.isLoggable(Level.FINEST)) {
-            val loggingInterceptor = HttpLoggingInterceptor { message -> logger.finest(message) }
-            loggingInterceptor.redactHeader(HttpHeaders.AUTHORIZATION)
-            loggingInterceptor.redactHeader(HttpHeaders.COOKIE)
-            loggingInterceptor.redactHeader(HttpHeaders.SET_COOKIE)
-            loggingInterceptor.redactHeader(HttpHeaders.SET_COOKIE2)
-            loggingInterceptor.level = loggerInterceptorLevel
-            builder.addNetworkInterceptor(loggingInterceptor)
-        }
     }
 
     private fun buildAuthentication(okBuilder: OkHttpClient.Builder) {
@@ -295,39 +222,36 @@ class HttpClientBuilder @Inject constructor(
             okBuilder.hostnameVerifier(securityContext.hostnameVerifier)
     }
 
-    private fun buildProxy(okBuilder: OkHttpClient.Builder) {
-        try {
-            val proxyTypeValue = settingsManager.getInt(Settings.PROXY_TYPE)
-            if (proxyTypeValue != Settings.PROXY_TYPE_SYSTEM) {
-                // we set our own proxy
-                val address by lazy {           // lazy because not required for PROXY_TYPE_NONE
-                    InetSocketAddress(
-                        settingsManager.getString(Settings.PROXY_HOST),
-                        settingsManager.getInt(Settings.PROXY_PORT)
-                    )
-                }
-                val proxy =
-                    when (proxyTypeValue) {
-                        Settings.PROXY_TYPE_NONE -> Proxy.NO_PROXY
-                        Settings.PROXY_TYPE_HTTP -> Proxy(Proxy.Type.HTTP, address)
-                        Settings.PROXY_TYPE_SOCKS -> Proxy(Proxy.Type.SOCKS, address)
-                        else -> throw IllegalArgumentException("Invalid proxy type")
-                    }
-                okBuilder.proxy(proxy)
-                logger.log(Level.INFO, "Using proxy setting", proxy)
-            }
-        } catch (e: Exception) {
-            logger.log(Level.SEVERE, "Can't set proxy, ignoring", e)
+    private fun configureProxy(engineConfig: HttpClientEngineConfig) {
+        val proxy = when (settingsManager.getInt(Settings.PROXY_TYPE)) {
+            Settings.PROXY_TYPE_SYSTEM -> null
+            Settings.PROXY_TYPE_NONE -> Proxy.NO_PROXY
+            Settings.PROXY_TYPE_HTTP -> ProxyBuilder.http(
+                URLBuilder(
+                    protocol = URLProtocol.HTTP,
+                    host = settingsManager.getString(Settings.PROXY_HOST) ?: "",
+                    port = settingsManager.getInt(Settings.PROXY_PORT)
+                ).build()
+            )
+            Settings.PROXY_TYPE_SOCKS -> ProxyBuilder.socks(
+                settingsManager.getString(Settings.PROXY_HOST) ?: "",
+                settingsManager.getInt(Settings.PROXY_PORT)
+            )
+            else -> /* Invalid proxy type, shouldn't happen */ null
+        }
+        if (proxy != null) {
+            logger.log(Level.INFO, "Using non-default proxy setting", proxy)
+            engineConfig.proxy = proxy
         }
     }
 
 
-    // Ktor builder
+    // client builder
 
     /**
      * Builds a Ktor [HttpClient] with the configured settings.
      *
-     * [buildKtor] or [build] must be called only once because multiple calls indicate this wrong usage pattern:
+     * [buildKtor] must be called only once because multiple calls indicate this wrong usage pattern:
      *
      * ```
      * val builder = HttpClientBuilder(/*injected*/)
@@ -348,20 +272,74 @@ class HttpClientBuilder @Inject constructor(
         val client = HttpClient(OkHttp) {
             // Ktor-level configuration here
 
+            // don't follow redirects by default because it would break PROPFIND handling;
+            // this controls whether Ktor's HttpRedirect plugin is active
+            followRedirects = this@HttpClientBuilder.followRedirects
+
+            // Uses AcceptAllCookiesStorage, which stores all the cookies in an in-memory map.
+            install(HttpCookies)
+
+            install(HttpTimeout) {
+                connectTimeoutMillis = 15_000
+                socketTimeoutMillis = 120_000       // covers both read and write inactivity
+            }
+
             // automatically convert JSON from/into data classes (if requested in respective code)
             install(ContentNegotiation) {
                 // use lenient parser that ignores unknown keys
                 json(lenientJson)
             }
 
-            engine {
-                // okhttp engine configuration here
+            // Set User-Agent and Accept-Language on every request
+            install(UserAgent) {
+                agent = productIds.httpUserAgent
+            }
+            install(DefaultRequest) {
+                val locale = Locale.getDefault()
+                headers.appendIfNameAbsent(
+                    HttpHeaders.AcceptLanguage,
+                    "${locale.language}-${locale.country}, ${locale.language};q=0.7, *;q=0.5"
+                )
+            }
 
+            // offer gzip/deflate compression and decompress responses transparently
+            install(ContentEncoding) {
+                gzip()
+                deflate()
+            }
+
+            // add network logging (with redaction of sensitive headers), if requested
+            if (logger.isLoggable(Level.FINEST)) {
+                install(Logging) {
+                    logger = object : io.ktor.client.plugins.logging.Logger {
+                        override fun log(message: String) {
+                            this@HttpClientBuilder.logger.finest(message)
+                        }
+                    }
+                    level = loggerInterceptorLevel
+
+                    // don't log some confidential headers
+                    val headersToIgnore = arrayOf(
+                        HttpHeaders.Authorization,
+                        HttpHeaders.Cookie,
+                        HttpHeaders.SetCookie,
+                        "Set-Cookie2"       // obsoleted, but included here for good measure
+                    )
+                    sanitizeHeader { header ->
+                        headersToIgnore.any { headerToIgnore ->
+                            header.equals(headerToIgnore, ignoreCase = true)
+                        }
+                    }
+                }
+            }
+
+            engine {
+                // app-wide custom proxy support
+                configureProxy(this)
+
+                // okhttp engine configuration here
                 config {
                     // OkHttpClient.Builder configuration here
-
-                    // we don't use the sharedOkHttpClient, so we have to apply timeouts again
-                    configureTimeouts(this)
 
                     // build most config on okhttp level
                     configureOkHttp(this)

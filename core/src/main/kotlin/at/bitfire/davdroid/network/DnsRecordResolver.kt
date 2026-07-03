@@ -8,7 +8,10 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.os.Build
 import androidx.core.content.getSystemService
+import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.withContext
 import org.xbill.DNS.ExtendedResolver
 import org.xbill.DNS.Lookup
 import org.xbill.DNS.Record
@@ -29,6 +32,7 @@ import kotlin.random.Random
  */
 class DnsRecordResolver @Inject constructor(
     @ApplicationContext val context: Context,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val logger: Logger
 ) {
 
@@ -94,10 +98,10 @@ class DnsRecordResolver @Inject constructor(
             ExtendedResolver(simpleResolvers.toTypedArray())
         }
 
-    fun resolve(query: String, type: Int): Array<out Record> {
+    suspend fun resolve(query: String, type: Int): Array<out Record> = withContext(ioDispatcher) {
         val lookup = Lookup(query, type)
         lookup.setResolver(resolver)
-        return lookup.run().orEmpty()
+        return@withContext lookup.run().orEmpty()
     }
 
 

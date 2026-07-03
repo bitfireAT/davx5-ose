@@ -12,6 +12,7 @@ import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.resource.LocalAddressBook
+import at.bitfire.davdroid.util.DavUtils.toUrl
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -19,7 +20,6 @@ import io.mockk.every
 import io.mockk.junit4.MockKRule
 import io.mockk.mockkObject
 import io.mockk.verify
-import okhttp3.HttpUrl.Companion.toHttpUrl
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -99,7 +99,7 @@ class AccountSettingsMigration18Test {
         db.collectionDao().insertOrUpdateByUrl(Collection(
             id = 100,
             serviceId = 10,
-            url = "http://example.com".toHttpUrl(),
+            url = "http://example.com".toUrl(),
             type = Collection.TYPE_ADDRESSBOOK
         ))
 

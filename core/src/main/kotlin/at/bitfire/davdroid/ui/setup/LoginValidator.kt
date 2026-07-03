@@ -8,7 +8,7 @@ import dagger.BindsOptionalOf
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import okhttp3.HttpUrl
+import io.ktor.http.Url
 
 
 /**
@@ -23,7 +23,7 @@ interface LoginValidator {
      * @param baseUrl The base URL of the server to validate
      * @return whether login/setup shall proceed (false to abort)
      */
-    fun beforeLogin(baseUrl: HttpUrl): Boolean
+    suspend fun beforeLogin(baseUrl: Url): Boolean
 
 }
 

@@ -20,6 +20,8 @@ import at.bitfire.synctools.test.withEventId
 import at.bitfire.synctools.verifyCompat
 import io.mockk.junit4.MockKRule
 import io.mockk.spyk
+import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.test.runTest
 import net.fortuna.ical4j.util.TimeZones
 import org.junit.After
 import org.junit.AfterClass
@@ -27,7 +29,6 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
-import org.junit.Assert.fail
 import org.junit.BeforeClass
 import org.junit.ClassRule
 import org.junit.Rule
@@ -80,7 +81,7 @@ class AndroidRecurringCalendarTest {
     // test CRUD
 
     @Test
-    fun testAddEventAndExceptions_and_GetById() {
+    fun testAddEventAndExceptions_and_GetById() = runTest {
         // add event and exceptions
         val (mainEventId, event) = insertRecurring()
         val addedWithId = event.withEventId(mainEventId)
@@ -96,7 +97,7 @@ class AndroidRecurringCalendarTest {
     }
 
     @Test
-    fun testFindEventAndExceptions() {
+    fun testFindEventAndExceptions() = runTest {
         val (mainEventId, event) = insertRecurring(syncId = "testFindEventAndExceptions")
         val addedWithId = event.withEventId(mainEventId)
         val result = recurringCalendar.findEventAndExceptions("${Events._SYNC_ID}=?", arrayOf("testFindEventAndExceptions"))
@@ -104,7 +105,7 @@ class AndroidRecurringCalendarTest {
     }
 
     @Test
-    fun testFindEventAndExceptions_IgnoresExceptionMatches() {
+    fun testFindEventAndExceptions_IgnoresExceptionMatches() = runTest {
         insertRecurring()
 
         val result = recurringCalendar.findEventAndExceptions("${Events.TITLE}=?", arrayOf("Exception"))
@@ -113,12 +114,12 @@ class AndroidRecurringCalendarTest {
     }
 
     @Test
-    fun testFindEventAndExceptions_NotFound() {
+    fun testFindEventAndExceptions_NotFound() = runTest {
         assertNull(recurringCalendar.findEventAndExceptions("${Events._SYNC_ID}=?", arrayOf("not-existent")))
     }
 
     @Test
-    fun testGetById_ExceptionId_ReturnsNull() {
+    fun testGetById_ExceptionId_ReturnsNull() = runTest {
         val (mainEventId, _) = insertRecurring()
         val exceptionId = calendar.findEventRow(
             arrayOf(Events._ID),
@@ -130,7 +131,7 @@ class AndroidRecurringCalendarTest {
     }
 
     @Test
-    fun testGetById_NotFound() {
+    fun testGetById_NotFound() = runTest {
         // make sure there's no event with id=1
         recurringCalendar.deleteEventAndExceptions(1)
 
@@ -138,14 +139,13 @@ class AndroidRecurringCalendarTest {
     }
 
     @Test
-    fun testIterateEventAndExceptions() {
-        val (id1, event1) = insertRecurring(syncId = "testIterateEventAndExceptions1")
-        val (id2, event2) = insertRecurring(syncId = "testIterateEventAndExceptions2")
-        val result = mutableListOf<EventAndExceptions>()
-        recurringCalendar.iterateEventAndExceptions(
+    fun testQueryEventAndExceptions() = runTest {
+        val (id1, event1) = insertRecurring(syncId = "testQueryEventAndExceptions1")
+        val (id2, event2) = insertRecurring(syncId = "testQueryEventAndExceptions2")
+        val result = recurringCalendar.queryEventsAndExceptions(
             "${Events._SYNC_ID} IN (?, ?)",
-            arrayOf("testIterateEventAndExceptions1", "testIterateEventAndExceptions2")
-        ) { result += it }
+            arrayOf("testQueryEventAndExceptions1", "testQueryEventAndExceptions2")
+        ).toList()
         val orderedResult = result.sortedBy { it.main.entityValues.getAsInteger(Events._ID) }
         assertEquals(2, orderedResult.size)
         assertEventAndExceptionsEqual(event1.withEventId(id1), orderedResult[0], onlyFieldsInExpected = true)
@@ -153,23 +153,22 @@ class AndroidRecurringCalendarTest {
     }
 
     @Test
-    fun testIterateEventAndExceptions_IgnoresExceptionMatches() {
+    fun testQueryEventAndExceptions_IgnoresExceptionMatches() = runTest {
         insertRecurring()
 
-        recurringCalendar.iterateEventAndExceptions("${Events.TITLE}=?", arrayOf("Exception")) {
-            fail("must not be called")
-        }
+        val result = recurringCalendar.queryEventsAndExceptions("${Events.TITLE}=?", arrayOf("Exception")).toList()
+        assertTrue(result.isEmpty())
     }
 
     @Test
-    fun testIterateEventAndExceptions_NotFound() {
-        recurringCalendar.iterateEventAndExceptions("${Events._SYNC_ID}=?", arrayOf("not-existent")) {
-            fail("must not be called")
-        }
+    fun testQueryEventAndExceptions_NotFound() = runTest {
+        val result =
+            recurringCalendar.queryEventsAndExceptions("${Events._SYNC_ID}=?", arrayOf("not-existent")).toList()
+        assertTrue(result.isEmpty())
     }
 
     @Test
-    fun testUpdateEventAndExceptions_NoRebuild() {
+    fun testUpdateEventAndExceptions_NoRebuild() = runTest {
         // Create initial event
         val now = 1754233504000     // Sun Aug 03 2025 15:05:04 GMT+0000
         val initialEvent = Entity(contentValuesOf(
@@ -235,7 +234,7 @@ class AndroidRecurringCalendarTest {
     }
 
     @Test
-    fun testUpdateEventAndExceptions_RebuildNeeded() {
+    fun testUpdateEventAndExceptions_RebuildNeeded() = runTest {
         // Add initial event with STATUS
         val now = 1754233504000     // Sun Aug 03 2025 15:05:04 GMT+0000
         val initialEvent = Entity(contentValuesOf(
@@ -285,7 +284,7 @@ class AndroidRecurringCalendarTest {
     }
 
     @Test
-    fun testDeleteEventAndExceptions() {
+    fun testDeleteEventAndExceptions() = runTest {
         // Add event with exceptions
         val now = 1754233504000     // Sun Aug 03 2025 15:05:04 GMT+0000
         val mainEvent = Entity(contentValuesOf(
@@ -407,7 +406,7 @@ class AndroidRecurringCalendarTest {
     // test processing dirty/deleted events and exceptions
 
     @Test
-    fun testProcessDeletedExceptions() {
+    fun testProcessDeletedExceptions() = runTest {
         val now = System.currentTimeMillis()
         val mainValues = contentValuesOf(
             Events._SYNC_ID to "testProcessDeletedExceptions",
@@ -466,7 +465,7 @@ class AndroidRecurringCalendarTest {
     }
 
     @Test
-    fun testProcessDirtyExceptions() {
+    fun testProcessDirtyExceptions() = runTest {
         val now = System.currentTimeMillis()
         val mainValues = contentValuesOf(
             Events._SYNC_ID to "testProcessDirtyExceptions",

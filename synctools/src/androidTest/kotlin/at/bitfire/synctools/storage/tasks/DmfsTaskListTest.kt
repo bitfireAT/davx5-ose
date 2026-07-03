@@ -11,6 +11,8 @@ import android.content.Entity
 import android.database.DatabaseUtils
 import androidx.core.content.contentValuesOf
 import at.bitfire.synctools.storage.TaskProvider
+import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.test.runTest
 import org.dmfs.tasks.contract.TaskContract
 import org.dmfs.tasks.contract.TaskContract.Property
 import org.dmfs.tasks.contract.TaskContract.TaskLists
@@ -276,37 +278,6 @@ class DmfsTaskListTest(providerName: TaskProvider.ProviderName) :
     }
 
     @Test
-    fun testFindTasks() {
-        val taskList = createTaskList()
-        try {
-            taskList.addTask(
-                Entity(
-                    contentValuesOf(
-                        Tasks.LIST_ID to taskList.id,
-                        Tasks.TITLE to "Task 1"
-                    )
-                )
-            )
-            taskList.addTask(
-                Entity(
-                    contentValuesOf(
-                        Tasks.LIST_ID to taskList.id,
-                        Tasks.TITLE to "Task 2"
-                    )
-                )
-            )
-
-            val tasks = taskList.findTasks()
-            assertEquals(2, tasks.size)
-
-            val titles = tasks.map { it.entityValues.getAsString(Tasks.TITLE) }.toSet()
-            assertEquals(setOf("Task 1", "Task 2"), titles)
-        } finally {
-            taskList.delete()
-        }
-    }
-
-    @Test
     fun testGetTask() {
         val taskList = createTaskList()
         try {
@@ -402,7 +373,7 @@ class DmfsTaskListTest(providerName: TaskProvider.ProviderName) :
     }
 
     @Test
-    fun testIterateTasks() {
+    fun testIterateTasks() = runTest {
         val taskList = createTaskList()
         try {
             // Add tasks directly via Entity
@@ -435,10 +406,7 @@ class DmfsTaskListTest(providerName: TaskProvider.ProviderName) :
                 )
             )
 
-            val result = mutableListOf<Entity>()
-            taskList.iterateTasks(null, null) { entity ->
-                result += entity
-            }
+            val result = taskList.queryTasks(null, null).toList()
 
             assertEquals(2, result.size)
             val uids = result.mapNotNull { it.entityValues.getAsString(Tasks._UID) }.toSet()
@@ -611,7 +579,7 @@ class DmfsTaskListTest(providerName: TaskProvider.ProviderName) :
     }
 
     @Test
-    fun testUpdateTasks() {
+    fun testUpdateTasks() = runTest {
         val taskList = createTaskList()
         try {
             // Add tasks
@@ -645,7 +613,7 @@ class DmfsTaskListTest(providerName: TaskProvider.ProviderName) :
             assertEquals(2, updatedCount)
 
             // Verify updates
-            val tasks = taskList.findTasks()
+            val tasks = taskList.queryTasks(null, null).toList()
             assertEquals(2, tasks.size)
             for (task in tasks) {
                 assertEquals("Updated Title", task.entityValues.getAsString(Tasks.TITLE))

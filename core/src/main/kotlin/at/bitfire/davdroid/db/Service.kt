@@ -8,7 +8,7 @@ import androidx.annotation.StringDef
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import okhttp3.HttpUrl
+import io.ktor.http.Url
 
 @Retention(AnnotationRetention.SOURCE)
 @StringDef(Service.TYPE_CALDAV, Service.TYPE_CARDDAV)
@@ -33,7 +33,7 @@ data class Service(
     @ServiceType
     val type: String,
 
-    val principal: HttpUrl? = null
+    val principal: Url? = null
 ) {
 
     companion object {

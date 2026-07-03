@@ -4,9 +4,10 @@
 
 package at.bitfire.davdroid.servicedetection
 
-import at.bitfire.dav4jvm.okhttp.DavResource
-import at.bitfire.dav4jvm.okhttp.Response
-import at.bitfire.dav4jvm.okhttp.exception.HttpException
+import at.bitfire.dav4jvm.ktor.DavResource
+import at.bitfire.dav4jvm.ktor.Response
+import at.bitfire.dav4jvm.ktor.exception.HttpException
+import at.bitfire.dav4jvm.ktor.resolve
 import at.bitfire.dav4jvm.property.webdav.CurrentUserPrivilegeSet
 import at.bitfire.dav4jvm.property.webdav.DisplayName
 import at.bitfire.dav4jvm.property.webdav.Owner
@@ -22,16 +23,17 @@ import at.bitfire.davdroid.settings.SettingsManager
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import okhttp3.OkHttpClient
+import io.ktor.client.HttpClient
 import java.util.logging.Level
 import java.util.logging.Logger
+import javax.annotation.WillNotClose
 
 /**
  * Used to update the list of synchronizable collections
  */
 class HomeSetRefresher @AssistedInject constructor(
     @Assisted private val service: Service,
-    @Assisted private val httpClient: OkHttpClient,
+    @Assisted @WillNotClose private val httpClient: HttpClient,
     private val db: AppDatabase,
     private val logger: Logger,
     private val collectionRepository: DavCollectionRepository,
@@ -41,7 +43,7 @@ class HomeSetRefresher @AssistedInject constructor(
 
     @AssistedFactory
     interface Factory {
-        fun create(service: Service, httpClient: OkHttpClient): HomeSetRefresher
+        fun create(service: Service, httpClient: HttpClient): HomeSetRefresher
     }
 
     /**
@@ -53,7 +55,7 @@ class HomeSetRefresher @AssistedInject constructor(
      * If a home-set URL in fact points to a collection directly, the collection will be saved with this URL,
      * and a null value for it's home-set. Refreshing of collections without home-sets is then handled by [CollectionsWithoutHomeSetRefresher.refreshCollectionsWithoutHomeSet].
      */
-    internal fun refreshHomesetsAndTheirCollections() {
+    internal suspend fun refreshHomesetsAndTheirCollections() {
         val homesets = homeSetRepository.getByServiceBlocking(service.id).associateBy { it.url }.toMutableMap()
         for ((homeSetUrl, localHomeset) in homesets) {
             logger.fine("Listing home set $homeSetUrl")

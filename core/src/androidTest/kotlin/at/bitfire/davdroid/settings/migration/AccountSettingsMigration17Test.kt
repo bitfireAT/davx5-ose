@@ -14,11 +14,11 @@ import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.sync.account.TestAccount
+import at.bitfire.davdroid.util.DavUtils.toUrl
 import at.bitfire.synctools.util.setAndVerifyUserData
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import okhttp3.HttpUrl.Companion.toHttpUrl
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -76,7 +76,7 @@ class AccountSettingsMigration17Test {
                     Collection(
                         id = 100,
                         serviceId = 1,
-                        url = url.toHttpUrl(),
+                        url = url.toUrl(),
                         type = Collection.TYPE_ADDRESSBOOK,
                         displayName = "Some Address Book"
                     )

@@ -12,6 +12,7 @@ import at.bitfire.synctools.storage.tasks.DmfsTaskList
 import io.mockk.every
 import io.mockk.mockk
 import net.fortuna.ical4j.model.property.DtStart
+import net.fortuna.ical4j.model.property.RRule
 import net.fortuna.ical4j.model.property.RecurrenceId
 import net.fortuna.ical4j.model.property.Uid
 import org.dmfs.tasks.contract.TaskContract.Tasks
@@ -20,6 +21,7 @@ import org.junit.Assert.assertNotNull
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import java.time.temporal.Temporal
 
 @RunWith(RobolectricTestRunner::class)
 class DmfsTaskBuilderTest {
@@ -55,5 +57,26 @@ class DmfsTaskBuilderTest {
         assertNotNull(result.main.entityValues.getAsString(Tasks.RDATE))
         assertEquals(null, result.exceptions.first().entityValues.getAsString(Tasks.RRULE))
         assertEquals(null, result.exceptions.first().entityValues.getAsString(Tasks.RDATE))
+    }
+
+    // Drop this test once recurring task exception support is implemented (#2357)
+    @Test
+    fun `build with main task and exceptions drops exceptions`() {
+        val main = VToDoUtil.build(
+            Uid("uid-1"),
+            DtStart(dateTimeValue("20250101T000000Z")),
+            RRule<Temporal>("FREQ=YEARLY")
+        )
+        val exception = VToDoUtil.build(
+            Uid("uid-1"),
+            DtStart(dateTimeValue("20260101T000000Z")),
+            RecurrenceId(dateTimeValue("20260101T000000Z"))
+        )
+
+        val result = builder.build(
+            AssociatedTasks(main = main, exceptions = listOf(exception))
+        )
+
+        assertEquals(0, result.exceptions.size)
     }
 }

@@ -7,42 +7,39 @@ package at.bitfire.synctools.mapping.jtx.handler
 import android.content.ContentValues
 import android.content.Entity
 import androidx.core.content.contentValuesOf
-import at.bitfire.ical4android.JtxICalObject
 import at.techbee.jtx.JtxContract
 import net.fortuna.ical4j.model.component.VToDo
-import net.fortuna.ical4j.model.property.XProperty
+import net.fortuna.ical4j.model.property.LastModified
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import kotlin.jvm.optionals.getOrNull
+import java.time.Instant
 
 @RunWith(RobolectricTestRunner::class)
-class XStatusHandlerTest {
+class LastModifiedHandlerTest {
 
-    private val handler = XStatusHandler()
+    private val handler = LastModifiedHandler()
 
     @Test
-    fun `No EXTENDED_STATUS`() {
+    fun `No LAST_MODIFIED`() {
         val input = Entity(ContentValues())
         val output = VToDo()
 
         handler.process(from = input, main = input, to = output)
 
-        assertNull(output.getProperty<XProperty>(JtxICalObject.X_PROP_XSTATUS).getOrNull())
+        assertNull(output.lastModified)
     }
 
     @Test
-    fun `EXTENDED_STATUS with value`() {
-        val input = Entity(contentValuesOf(JtxContract.JtxICalObject.EXTENDED_STATUS to "IN-PROCESS"))
+    fun `LAST_MODIFIED stores as UTC instant`() {
+        val epochMillis = 1779105600000L  // 2026-05-18T12:00:00Z
+        val input = Entity(contentValuesOf(JtxContract.JtxICalObject.LAST_MODIFIED to epochMillis))
         val output = VToDo()
 
         handler.process(from = input, main = input, to = output)
 
-        assertEquals(
-            "IN-PROCESS",
-            output.getProperty<XProperty>(JtxICalObject.X_PROP_XSTATUS).getOrNull()?.value
-        )
+        assertEquals(LastModified(Instant.ofEpochMilli(epochMillis)), output.lastModified)
     }
 }

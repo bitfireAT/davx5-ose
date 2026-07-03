@@ -9,7 +9,6 @@ import at.bitfire.dateTimeValue
 import at.bitfire.synctools.exception.ResourceMappingException
 import at.bitfire.synctools.icalendar.DatePropertyTzMapper.normalizedDate
 import at.bitfire.synctools.icalendar.DatePropertyTzMapper.normalizedDates
-import at.bitfire.synctools.util.AndroidTimeUtils.toInstant
 import net.fortuna.ical4j.data.CalendarBuilder
 import net.fortuna.ical4j.model.Component
 import net.fortuna.ical4j.model.Parameter
@@ -26,9 +25,9 @@ import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import java.io.StringReader
-import java.time.DateTimeException
 import java.time.Instant
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.OffsetDateTime
 import java.time.ZoneId
@@ -88,18 +87,19 @@ class DatePropertyTzMapperTest {
         val vEvent = cal.getComponent<VEvent>(Component.VEVENT).get()
         val dtStart = vEvent.requireDtStart<Temporal>()
 
-        // ical4j returns ZonedDatetime with custom timezone from VTIMEZONE
+        // ical4j returns ZonedDateTime with the system timezone; the custom VTIMEZONE is ignored
+        // because "Europe/Berlin" is a system-known TZID (SystemAwareTimeZoneRegistry skips registration)
         val ical4jDate = dtStart.date as ZonedDateTime
-        assertTrue(ical4jDate.zone.id.startsWith("ical4j-local-"))
+        assertEquals("Europe/Berlin", ical4jDate.zone.id)
 
-        // normalizedDate returns ZonedDatetime (with other timestamp because TZ OFFSET is different) with system time zone
+        // normalizedDate returns the same ZonedDateTime (already uses system timezone)
         val normalizedDate = dtStart.normalizedDate() as ZonedDateTime
         assertEquals(ZonedDateTime.of(
             LocalDate.of(2025, 8, 28),
             LocalTime.of(13, 0, 0),
             ZoneId.of("Europe/Berlin")
         ), normalizedDate)
-        assertNotEquals(ical4jDate.toInstant(), normalizedDate.toInstant())
+        assertEquals(ical4jDate.toInstant(), normalizedDate.toInstant())
     }
 
     @Test
@@ -186,7 +186,9 @@ class DatePropertyTzMapperTest {
     }
 
     @Test
-    fun `normalizedDate with TZID unknown and without VTIMEZONE fails`() {
+    fun `normalizedDate with TZID unknown and without VTIMEZONE uses floating time`() {
+        // ical4j 4.3.0: DateProperty.getDate() no longer throws for unknown TZID under relaxed
+        // validation; instead it returns the value as a floating LocalDateTime (TZID is ignored).
         val cal = CalendarBuilder().build(StringReader("BEGIN:VCALENDAR\r\n" +
                 "VERSION:2.0\n" +
                 "BEGIN:VEVENT\n" +
@@ -198,12 +200,10 @@ class DatePropertyTzMapperTest {
         val vEvent = cal.getComponent<VEvent>(Component.VEVENT).get()
         val dtStart = vEvent.requireDtStart<Temporal>()
 
-        assertFailsWith<DateTimeException>("Expected date call to fail with unknown timezone") {
-            dtStart.date
-        }
-        assertFailsWith<ResourceMappingException>("Expected normalizedDate call to fail with unknown timezone") {
-            dtStart.normalizedDate()
-        }
+        // ical4j returns a floating LocalDateTime (TZID ignored)
+        assertEquals(LocalDateTime.of(2025, 8, 28, 13, 0, 0), dtStart.date)
+        // normalizedDate returns the same LocalDateTime as-is (else branch)
+        assertEquals(LocalDateTime.of(2025, 8, 28, 13, 0, 0), dtStart.normalizedDate())
     }
 
     @Test

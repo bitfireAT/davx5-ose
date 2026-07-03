@@ -4,12 +4,12 @@
 
 package at.bitfire.davdroid.db
 
+import at.bitfire.davdroid.util.DavUtils.toUrl
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import okhttp3.HttpUrl.Companion.toHttpUrl
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -47,17 +47,17 @@ class HomeSetDaoTest {
     @Test
     fun testInsertOrUpdate() {
         // should insert new row or update (upsert) existing row - without changing its key!
-        val entry1 = HomeSet(id=0, serviceId=serviceId, personal=true, url="https://example.com/1".toHttpUrl())
+        val entry1 = HomeSet(id=0, serviceId=serviceId, personal=true, url="https://example.com/1".toUrl())
         val insertId1 = dao.insertOrUpdateByUrlBlocking(entry1)
         assertEquals(1L, insertId1)
         assertEquals(entry1.copy(id = 1L), dao.getById(1))
 
-        val updatedEntry1 = HomeSet(id=0, serviceId=serviceId, personal=true, url="https://example.com/1".toHttpUrl(), displayName="Updated Entry")
+        val updatedEntry1 = HomeSet(id=0, serviceId=serviceId, personal=true, url="https://example.com/1".toUrl(), displayName="Updated Entry")
         val updateId1 = dao.insertOrUpdateByUrlBlocking(updatedEntry1)
         assertEquals(1L, updateId1)
         assertEquals(updatedEntry1.copy(id = 1L), dao.getById(1))
 
-        val entry2 = HomeSet(id=0, serviceId=serviceId, personal=true, url= "https://example.com/2".toHttpUrl())
+        val entry2 = HomeSet(id=0, serviceId=serviceId, personal=true, url= "https://example.com/2".toUrl())
         val insertId2 = dao.insertOrUpdateByUrlBlocking(entry2)
         assertEquals(2L, insertId2)
         assertEquals(entry2.copy(id = 2L), dao.getById(2))
@@ -72,7 +72,7 @@ class HomeSetDaoTest {
                         HomeSet(
                             id = 0,
                             serviceId = serviceId,
-                            url = "https://example.com/".toHttpUrl(),
+                            url = "https://example.com/".toUrl(),
                             personal = true
                         )
                     )
@@ -84,7 +84,7 @@ class HomeSetDaoTest {
     @Test
     fun testDelete() {
         // should delete row with given primary key (id)
-        val entry1 = HomeSet(id=1, serviceId=serviceId, personal=true, url= "https://example.com/1".toHttpUrl())
+        val entry1 = HomeSet(id=1, serviceId=serviceId, personal=true, url= "https://example.com/1".toUrl())
 
         val insertId1 = dao.insertOrUpdateByUrlBlocking(entry1)
         assertEquals(1L, insertId1)
