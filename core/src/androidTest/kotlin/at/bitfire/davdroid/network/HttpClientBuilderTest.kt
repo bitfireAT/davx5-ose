@@ -68,8 +68,7 @@ class HttpClientBuilderTest {
 
         var callCount = 0
         val engine = MockEngine {
-            callCount++
-            when (callCount) {
+            when (++callCount) {
                 1 -> respond(
                     "Cookie set", HttpStatusCode.OK,
                     Headers.build {
