@@ -14,7 +14,6 @@ import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.plugins.PluginManager
 import org.gradle.jvm.toolchain.JavaLanguageVersion
 import org.gradle.kotlin.dsl.configure
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 import java.util.Properties
 
 /**
@@ -82,11 +81,6 @@ class CommonBuildConfigPlugin : Plugin<Project> {
             val javaExtension = extensions.findByType(JavaPluginExtension::class.java)
                 ?: error("davx5.common-buildconfig requires Java toolchain support for $pluginId")
             javaExtension.toolchain.languageVersion.set(JavaLanguageVersion.of(javaToolchainVersion))
-
-            // Add Kotlin compiler argument to specify the default annotation target
-            project.tasks.withType(KotlinCompilationTask::class.java).configureEach {
-                compilerOptions.freeCompilerArgs.add("-Xannotation-default-target=param-property")
-            }
         }
     }
 
