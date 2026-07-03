@@ -19,7 +19,6 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import io.ktor.client.HttpClient
-import kotlinx.coroutines.runBlocking
 import java.util.logging.Level
 
 /**
@@ -54,7 +53,11 @@ class AddressBookSyncer @AssistedInject constructor(
     override fun getDbSyncCollections(serviceId: Long): List<Collection> =
         collectionRepository.getByServiceAndSync(serviceId)
 
-    override fun syncCollection(provider: ContentProviderClient, localCollection: LocalAddressBook, remoteCollection: Collection) {
+    override suspend fun syncCollection(
+        provider: ContentProviderClient,
+        localCollection: LocalAddressBook,
+        remoteCollection: Collection
+    ) {
         logger.info("Synchronizing address book: ${localCollection.addressBookAccount.name}")
         syncAddressBook(
             account = account,
@@ -75,7 +78,7 @@ class AddressBookSyncer @AssistedInject constructor(
      * @param syncResult        stores hard and soft sync errors
      * @param collection        the database collection associated with this address book
      */
-    private fun syncAddressBook(
+    private suspend fun syncAddressBook(
         account: Account,
         addressBook: LocalAddressBook,
         provideHttpClient: () -> HttpClient,
@@ -113,9 +116,7 @@ class AddressBookSyncer @AssistedInject constructor(
                 resync,
                 syncFrameworkUpload
             )
-            runBlocking {
-                syncManager.performSync()
-            }
+            syncManager.performSync()
 
         } catch(e: Exception) {
             logger.log(Level.SEVERE, "Couldn't sync contacts", e)

@@ -15,7 +15,6 @@ import at.bitfire.synctools.storage.calendar.AndroidCalendarProvider
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import kotlinx.coroutines.runBlocking
 
 /**
  * Sync logic for calendars
@@ -55,7 +54,11 @@ class CalendarSyncer @AssistedInject constructor(
     override fun getDbSyncCollections(serviceId: Long): List<Collection> =
         collectionRepository.getSyncCalendars(serviceId)
 
-    override fun syncCollection(provider: ContentProviderClient, localCollection: LocalCalendar, remoteCollection: Collection) {
+    override suspend fun syncCollection(
+        provider: ContentProviderClient,
+        localCollection: LocalCalendar,
+        remoteCollection: Collection
+    ) {
         logger.info("Synchronizing calendar #${localCollection.androidCalendar.id}, DB Collection ID: ${localCollection.dbCollectionId}, URL: ${localCollection.androidCalendar.name}")
 
         val syncManager = calendarSyncManagerFactory.calendarSyncManager(
@@ -66,9 +69,7 @@ class CalendarSyncer @AssistedInject constructor(
             remoteCollection,
             resync
         )
-        runBlocking {
-            syncManager.performSync()
-        }
+        syncManager.performSync()
     }
 
 }
