@@ -22,7 +22,6 @@ import io.ktor.client.HttpClientConfig
 import io.ktor.client.engine.HttpClientEngineConfig
 import io.ktor.client.engine.ProxyBuilder
 import io.ktor.client.engine.okhttp.OkHttp
-import io.ktor.client.engine.okhttp.OkHttpConfig
 import io.ktor.client.plugins.DefaultRequest
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.UserAgent
@@ -350,11 +349,12 @@ class HttpClientBuilder @Inject constructor(
         return client
     }
 
-    private fun HttpClientConfig<OkHttpConfig>.installAuthPlugin() {
+    private fun HttpClientConfig<*>.installAuthPlugin() {
         val username = authUsername
         val password = authPassword
         val readAuthState = readAuthStateCallback
         when {
+            // prefer OAuth, if available
             readAuthState != null -> {
                 install(Auth) {
                     providers.add(
@@ -366,6 +366,7 @@ class HttpClientBuilder @Inject constructor(
                 }
             }
 
+            // otherwise use basic / digest, if available
             username != null && password != null -> {
                 install(Auth) {
                     providers.add(
