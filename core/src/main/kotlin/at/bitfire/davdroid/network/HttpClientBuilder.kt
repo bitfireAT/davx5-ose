@@ -7,13 +7,15 @@ package at.bitfire.davdroid.network
 import android.accounts.Account
 import androidx.annotation.WorkerThread
 import at.bitfire.dav4jvm.ktor.UrlUtils
-import at.bitfire.dav4jvm.okhttp.BasicDigestAuthHandler
+import at.bitfire.dav4jvm.ktor.createDomainBasicAuthProvider
+import at.bitfire.dav4jvm.ktor.createDomainDigestAuthProvider
 import at.bitfire.davdroid.ProductIds
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Credentials
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
+import at.bitfire.synctools.util.SensitiveString
 import com.google.errorprone.annotations.MustBeClosed
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.HttpClientEngineConfig
@@ -22,6 +24,7 @@ import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.DefaultRequest
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.UserAgent
+import io.ktor.client.plugins.auth.Auth
 import io.ktor.client.plugins.compression.ContentEncoding
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.cookies.HttpCookies
@@ -98,6 +101,10 @@ class HttpClientBuilder @Inject constructor(
     private var authenticator: Authenticator? = null
     private var certificateAlias: String? = null
 
+    private var authUsername: String? = null
+    private var authPassword: SensitiveString? = null
+    private var authDomain: String? = null
+
     fun authenticate(domain: String?, getCredentials: () -> Credentials, updateAuthState: ((AuthState) -> Unit)? = null): HttpClientBuilder {
         val credentials = getCredentials()
         if (credentials.authState != null) {
@@ -115,15 +122,9 @@ class HttpClientBuilder @Inject constructor(
             )
 
         } else if (credentials.username != null && credentials.password != null) {
-            // basic/digest auth
-            val authHandler = BasicDigestAuthHandler(
-                domain = domain,
-                username = credentials.username,
-                password = credentials.password.asCharArray(),
-                insecurePreemptive = true
-            )
-            authenticationInterceptor = authHandler
-            authenticator = authHandler
+            authUsername = credentials.username
+            authPassword = credentials.password
+            authDomain = domain
         }
 
         // client certificate
@@ -275,6 +276,27 @@ class HttpClientBuilder @Inject constructor(
             // don't follow redirects by default because it would break PROPFIND handling;
             // this controls whether Ktor's HttpRedirect plugin is active
             followRedirects = this@HttpClientBuilder.followRedirects
+
+            val username = authUsername
+            val password = authPassword
+            if (username != null && password != null) {
+                val basicAuthProvider = createDomainBasicAuthProvider(
+                    username = username,
+                    password = password.asString(),
+                    firstLevelDomain = authDomain,
+                    insecurePreemptive = true
+                )
+                val digestAuthProvider = createDomainDigestAuthProvider(
+                    username = username,
+                    password = password.asString(),
+                    firstLevelDomain = authDomain
+                )
+
+                install(Auth) {
+                    providers.add(basicAuthProvider)
+                    providers.add(digestAuthProvider)
+                }
+            }
 
             // Uses AcceptAllCookiesStorage, which stores all the cookies in an in-memory map.
             install(HttpCookies)
