@@ -17,7 +17,11 @@ import at.bitfire.davdroid.settings.SettingsManager
 import com.google.errorprone.annotations.MustBeClosed
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
+import io.ktor.client.engine.HttpClientEngine
+import io.ktor.client.engine.HttpClientEngineConfig
 import io.ktor.client.engine.okhttp.OkHttp
+import io.ktor.client.engine.okhttp.OkHttpConfig
+import io.ktor.client.engine.okhttp.OkHttpEngine
 import io.ktor.client.plugins.DefaultRequest
 import io.ktor.client.plugins.compression.ContentEncoding
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -305,8 +309,7 @@ class HttpClientBuilder @Inject constructor(
             logger.warning("buildKtor() should only be called once; use Provider<HttpClientBuilder> instead")
 
         val client = HttpClient(OkHttp) {
-            applyKtorPlugins()
-            engine {
+            applyKtorPlugins {
                 config {
                     // we don't use the sharedOkHttpClient, so we have to apply timeouts again
                     configureTimeouts(this)
@@ -320,24 +323,38 @@ class HttpClientBuilder @Inject constructor(
     }
 
     /**
-     * Same as [buildKtor] but uses the provided [engine] instead of [OkHttp]. Intended for tests
-     * so that a [io.ktor.client.engine.mock.MockEngine] can be injected while all Ktor-level
-     * plugins (cookies, logging, default request headers, …) are still applied.
+     * Same as [buildKtor] but uses the provided [engine] instead of [OkHttp]. Intended for tests so that a [MockEngine]
+     * can be injected while all Ktor-level plugins (cookies, logging, default request headers, …) are still applied.
      */
     @MustBeClosed
-    internal fun buildKtor(engine: io.ktor.client.engine.HttpClientEngine): HttpClient {
+    internal fun <CE: HttpClientEngine> buildKtor(engine: CE): HttpClient {
         if (alreadyBuilt)
             logger.warning("buildKtor() should only be called once; use Provider<HttpClientBuilder> instead")
 
         val client = HttpClient(engine) {
-            applyKtorPlugins()
+            applyKtorPlugins {
+                if (engine is OkHttpEngine) {
+                    this as OkHttpConfig
+
+                    config {
+                        // OkHttpClient.Builder configuration here
+
+                        configureTimeouts(this)
+
+                        // build most config on okhttp level
+                        configureOkHttp(this)
+                    }
+                }
+            }
         }
 
         alreadyBuilt = true
         return client
     }
 
-    private fun HttpClientConfig<*>.applyKtorPlugins() {
+    private fun <T : HttpClientEngineConfig> HttpClientConfig<T>.applyKtorPlugins(
+        engineConfig: T.() -> Unit = {}
+    ) {
         // don't follow redirects by default because it would break PROPFIND handling;
         // this controls whether Ktor's HttpRedirect plugin is active
         followRedirects = this@HttpClientBuilder.followRedirects
@@ -391,16 +408,8 @@ class HttpClientBuilder @Inject constructor(
             }
 
             engine {
-                // okhttp engine configuration here
-
-                config {
-                    // OkHttpClient.Builder configuration here
-
-                    configureTimeouts(this)
-
-                    // build most config on okhttp level
-                    configureOkHttp(this)
-                }
+                // configure the engine with the provided parameters
+                engineConfig()
             }
         }
     }
