@@ -34,8 +34,6 @@ import okhttp3.ConnectionSpec
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Protocol
-import okhttp3.brotli.BrotliInterceptor
-import okhttp3.logging.HttpLoggingInterceptor
 import java.net.InetSocketAddress
 import java.net.Proxy
 import java.util.Locale
@@ -43,7 +41,6 @@ import java.util.concurrent.TimeUnit
 import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
-import com.google.common.net.HttpHeaders as OkHttpHeaders
 
 /**
  * Builder for the HTTP client.
@@ -193,14 +190,8 @@ class HttpClientBuilder @Inject constructor(
     // okhttp configuration (internal: applied to the OkHttp engine of the Ktor client)
 
     private fun configureOkHttp(builder: OkHttpClient.Builder) {
-        // don't allow redirects by default because it would break PROPFIND handling
-        builder.followRedirects(followRedirects)
-
         // add User-Agent to every request
         builder.addInterceptor(userAgentInterceptor)
-
-        // offer Brotli and gzip compression (can be disabled per request with `Accept-Encoding: identity`)
-        builder.addInterceptor(BrotliInterceptor)
 
         // app-wide custom proxy support
         buildProxy(builder)
@@ -208,17 +199,6 @@ class HttpClientBuilder @Inject constructor(
         // add connection security (including client certificates) and authentication
         buildConnectionSecurity(builder)
         buildAuthentication(builder)
-
-        // add network logging, if requested
-        if (logger.isLoggable(Level.FINEST)) {
-            val loggingInterceptor = HttpLoggingInterceptor { message -> logger.finest(message) }
-            loggingInterceptor.redactHeader(OkHttpHeaders.AUTHORIZATION)
-            loggingInterceptor.redactHeader(OkHttpHeaders.COOKIE)
-            loggingInterceptor.redactHeader(OkHttpHeaders.SET_COOKIE)
-            loggingInterceptor.redactHeader(OkHttpHeaders.SET_COOKIE2)
-            loggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
-            builder.addNetworkInterceptor(loggingInterceptor)
-        }
     }
 
     private fun buildAuthentication(okBuilder: OkHttpClient.Builder) {
@@ -347,14 +327,18 @@ class HttpClientBuilder @Inject constructor(
                         }
                     }
                     level = loggerInterceptorLevel
+
+                    // don't log some confidential headers
+                    val headersToIgnore = arrayOf(
+                        HttpHeaders.Authorization,
+                        HttpHeaders.Cookie,
+                        HttpHeaders.SetCookie,
+                        "Set-Cookie2"       // obsoleted, but included here for good measure
+                    )
                     sanitizeHeader { header ->
-                        header.equals(HttpHeaders.Authorization, ignoreCase = true) ||
-                                header.equals(HttpHeaders.Cookie, ignoreCase = true) ||
-                                header.equals(HttpHeaders.SetCookie, ignoreCase = true) ||
-                                header.equals(
-                                    "Set-Cookie2",
-                                    ignoreCase = true
-                                ) // Obsoleted, but included here for good measure
+                        headersToIgnore.any { headerToIgnore ->
+                            header.equals(headerToIgnore, ignoreCase = true)
+                        }
                     }
                 }
             }
