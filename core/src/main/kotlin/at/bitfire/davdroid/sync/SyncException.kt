@@ -38,11 +38,6 @@ class SyncException(cause: Throwable) : Exception(cause) {
             }
         }
 
-        fun <T> wrapWithRemoteResource(remoteResource: Url?, body: () -> T): T =
-            runBlocking {
-                wrapWithRemoteResourceSuspending(remoteResource, body)
-            }
-
         suspend fun <T> wrapWithRemoteResourceSuspending(remoteResource: Url?, body: suspend () -> T): T {
             try {
                 return body()

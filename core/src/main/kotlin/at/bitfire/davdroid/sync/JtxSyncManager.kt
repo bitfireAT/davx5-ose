@@ -82,7 +82,7 @@ class JtxSyncManager @AssistedInject constructor(
     }
 
 
-    override fun prepare(): Boolean {
+    override suspend fun prepare(): Boolean {
         davCollection = DavCalendar(httpClient, collection.url)
 
         return true
@@ -158,7 +158,7 @@ class JtxSyncManager @AssistedInject constructor(
         SyncException.wrapWithRemoteResourceSuspending(collection.url) {
             davCollection.multiget(bunch) { response, _ ->
                 // See CalendarSyncManager for more information about the multi-get response
-                SyncException.wrapWithRemoteResource(response.href) wrapResource@{
+                SyncException.wrapWithRemoteResourceSuspending(response.href) wrapResource@{
                     if (!response.isSuccess()) {
                         logger.warning("Ignoring non-successful multi-get response for ${response.href}")
                         return@wrapResource
@@ -186,7 +186,7 @@ class JtxSyncManager @AssistedInject constructor(
         }
     }
 
-    override fun postProcess() {
+    override suspend fun postProcess() {
         localCollection.updateLastSync()
     }
 
@@ -195,7 +195,7 @@ class JtxSyncManager @AssistedInject constructor(
 
 
     @OpenForTesting
-    internal fun processICalObject(fileName: String, eTag: String, scheduleTag: String?, reader: Reader) {
+    internal suspend fun processICalObject(fileName: String, eTag: String, scheduleTag: String?, reader: Reader) {
         val calendar = ICalendarParser().parse(reader)
 
         val uidsAndJournals = CalendarUidSplitter<CalendarComponent>().associateByUid(calendar, Component.VJOURNAL)
@@ -219,7 +219,7 @@ class JtxSyncManager @AssistedInject constructor(
 
         val local = localCollection.findByName(fileName)
         if (local != null) {
-            SyncException.wrapWithLocalResource(local) {
+            SyncException.wrapWithLocalResourceSuspending(local) {
                 logger.log(Level.INFO, "Updating $fileName in local jtx collection", component)
                 local.update(jtxEntityAndExceptions)
             }

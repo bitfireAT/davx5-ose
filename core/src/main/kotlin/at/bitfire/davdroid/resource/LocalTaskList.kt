@@ -10,12 +10,8 @@ import at.bitfire.synctools.storage.tasks.DmfsRecurringTaskList
 import at.bitfire.synctools.storage.tasks.DmfsTaskList
 import at.bitfire.synctools.storage.tasks.DmfsTasksContract
 import at.bitfire.synctools.storage.tasks.TaskAndExceptions
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.buffer
-import kotlinx.coroutines.flow.channelFlow
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.map
 import org.dmfs.tasks.contract.TaskContract
 import org.dmfs.tasks.contract.TaskContract.TaskListColumns
 import org.dmfs.tasks.contract.TaskContract.Tasks
@@ -82,39 +78,16 @@ class LocalTaskList (
     override fun countModified(): Int =
         dmfsTaskList.countTasks("${Tasks._DIRTY} AND NOT ${Tasks._DELETED}", null)
 
-    override fun findDeleted(): List<LocalTask> = buildList {
-        recurringTaskList.iterateTaskAndExceptions(Tasks._DELETED, null) {
-            add(LocalTask(recurringTaskList, it))
-        }
-    }
+    override fun countDirty(): Int =
+        dmfsTaskList.countTasks(Tasks._DIRTY, null)
 
-    override fun deletedFlow(): Flow<LocalTask> {
-        return channelFlow {
-            launch(Dispatchers.IO) {
-                recurringTaskList.iterateTaskAndExceptions(Tasks._DELETED, null) {
-                    trySendBlocking(LocalTask(recurringTaskList, it))
-                }
-            }
-        }.buffer(capacity = 1)
-    }
+    override fun findDeleted(): Flow<LocalTask> =
+        recurringTaskList.queryTasksAndExceptions(Tasks._DELETED, null).map { LocalTask(recurringTaskList, it) }
 
-    override fun findDirty(): List<LocalTask> = buildList {
-        recurringTaskList.iterateTaskAndExceptions(Tasks._DIRTY, null) {
-            add(LocalTask(recurringTaskList, it))
-        }
-    }
+    override fun findDirty(): Flow<LocalTask> =
+        recurringTaskList.queryTasksAndExceptions(Tasks._DIRTY, null).map { LocalTask(recurringTaskList, it) }
 
-    override fun dirtyFlow(): Flow<LocalTask> {
-        return channelFlow {
-            launch(Dispatchers.IO) {
-                recurringTaskList.iterateTaskAndExceptions(Tasks._DIRTY, null) {
-                    trySendBlocking(LocalTask(recurringTaskList, it))
-                }
-            }
-        }.buffer(capacity = 1)
-    }
-
-    override fun findByName(name: String): LocalTask? {
+    override suspend fun findByName(name: String): LocalTask? {
         val result = recurringTaskList.findTaskAndExceptions("${Tasks._SYNC_ID}=?", arrayOf(name))
         return result?.let {
             LocalTask(recurringTaskList, it)
@@ -128,7 +101,7 @@ class LocalTaskList (
             arrayOf(dmfsTaskList.id.toString())
         )
 
-    override fun removeNotDirtyMarked(flags: Int) =
+    override suspend fun removeNotDirtyMarked(flags: Int) =
         dmfsTaskList.deleteTasks(
             "${Tasks.LIST_ID}=? AND NOT ${Tasks._DIRTY} AND ${DmfsTasksContract.COLUMN_FLAGS}=?",
             arrayOf(dmfsTaskList.id.toString(), flags.toString())

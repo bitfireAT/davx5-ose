@@ -41,7 +41,7 @@ class LocalJtxObject(
     override val flags: Int
         get() = mainValues.getAsInteger(JtxContract.JtxICalObject.FLAGS) ?: 0
 
-    fun update(data: JtxEntityAndExceptions) {
+    suspend fun update(data: JtxEntityAndExceptions) {
         recurringCollection.updateJtxObjectAndExceptions(id, data)
     }
 

@@ -19,22 +19,47 @@ class LocalTestAddressBook @Inject constructor(
     private val factory: LocalAddressBook.Factory
 ) {
 
+    private val accountManager = AccountManager.get(context)
+
     fun provide(
         account: Account,
         provider: ContentProviderClient,
         groupMethod: GroupMethod = GroupMethod.GROUP_VCARDS,
         block: (LocalAddressBook) -> Unit
     ) {
-        val accountType = context.getString(R.string.account_type_address_book)
-        val abAccount = Account("Test Address Book ${UUID.randomUUID()}", accountType)
-        AccountManager.get(context).addAccountExplicitly(abAccount, null, null)
-        val ab = factory.create(account, abAccount, provider, groupMethod)
+        val ab = create(account, provider, groupMethod)
         try {
             block(ab)
         } finally {
-            // use ab.addressBookAccount (not abAccount) to handle renames correctly
-            AccountManager.get(context).removeAccountExplicitly(ab.addressBookAccount)
+            delete(ab)
         }
+    }
+
+    /**
+     * Creates a new local address book for testing purposes.
+     *
+     * @param account The account to associate with the new address book.
+     * @param provider The content provider client to use for the new address book.
+     * @param groupMethod The method to use for grouping contacts in the address book.
+     * Defaults to [GroupMethod.GROUP_VCARDS].
+     * @return The newly created local address book.
+     */
+    fun create(
+        account: Account,
+        provider: ContentProviderClient,
+        groupMethod: GroupMethod = GroupMethod.GROUP_VCARDS
+    ): LocalAddressBook {
+        val accountType = context.getString(R.string.account_type_address_book)
+        val abAccount = Account("Test Address Book ${UUID.randomUUID()}", accountType)
+        accountManager.addAccountExplicitly(abAccount, null, null)
+        return factory.create(account, abAccount, provider, groupMethod)
+    }
+
+    /**
+     * Removes a test address book created by [create].
+     */
+    fun delete(addressBook: LocalAddressBook) {
+        accountManager.removeAccountExplicitly(addressBook.addressBookAccount)
     }
 
 }

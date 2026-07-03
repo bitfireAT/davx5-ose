@@ -178,6 +178,7 @@ dependencies {
 
     testImplementation(libs.bitfire.dav4jvm)
     testImplementation(libs.junit)
+    testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.mockk)
     testImplementation(libs.robolectric)
     testImplementation(testFixtures(project(":synctools")))

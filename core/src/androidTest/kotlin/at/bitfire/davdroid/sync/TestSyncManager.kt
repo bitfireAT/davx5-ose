@@ -53,7 +53,7 @@ class TestSyncManager @AssistedInject constructor(
         ): TestSyncManager
     }
 
-    override fun prepare(): Boolean {
+    override suspend fun prepare(): Boolean {
         davCollection = DavCollection(httpClient, collection.url)
         return true
     }
@@ -120,7 +120,7 @@ class TestSyncManager @AssistedInject constructor(
         }
     }
 
-    override fun postProcess() {
+    override suspend fun postProcess() {
     }
 
     override fun notifyInvalidResourceTitle() =
