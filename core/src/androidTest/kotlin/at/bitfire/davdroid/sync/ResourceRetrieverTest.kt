@@ -5,24 +5,27 @@
 package at.bitfire.davdroid.sync
 
 import android.accounts.Account
+import at.bitfire.davdroid.network.HttpClientBuilder
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Credentials
 import at.bitfire.davdroid.sync.account.TestAccount
 import at.bitfire.synctools.util.SensitiveString.Companion.toSensitiveString
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
+import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertArrayEquals
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import javax.inject.Inject
+import javax.inject.Provider
 
 @HiltAndroidTest
 class ResourceRetrieverTest {
@@ -35,6 +38,9 @@ class ResourceRetrieverTest {
 
     @Inject
     lateinit var resourceRetrieverFactory: ResourceRetriever.Factory
+
+    @Inject
+    lateinit var httpClientBuilder: Provider<HttpClientBuilder>
 
     lateinit var account: Account
 
@@ -71,9 +77,23 @@ class ResourceRetrieverTest {
     @Test
     fun testRetrieve_ExternalDomain() = runTest {
         val engine = MockEngine { respond("TEST", HttpStatusCode.OK) }
+        // fromAccount() restricts authentication to the given domain; build the test client the
+        // same way production code does so that restriction is actually exercised.
+        val httpClient = httpClientBuilder.get()
+            .fromAccount(account, authDomain = "example.com")
+            .buildKtor(engine)
+
         val downloader = resourceRetrieverFactory.create(account, "example.com")
-        // Request to a different domain — auth restriction is enforced by HttpClientBuilder.fromAccount()
-        val result = downloader.retrieve("https://other-domain.example.net/photo.jpg", HttpClient(engine))
+        // Request to a different domain than the account's — auth must not be sent
+        val result = downloader.retrieve("https://other-domain.example.net/photo.jpg", httpClient)
+
+        // TODO: currently fails — HttpClientBuilder's domain-based auth restriction is implemented
+        // as an OkHttp interceptor, which never runs for a MockEngine-backed client. Once auth is
+        // migrated to Ktor's own Auth plugin (https://github.com/bitfireAT/davx5-ose/issues/2587),
+        // it will apply regardless of engine and this assertion will hold.
+        val sentAuth = engine.requestHistory.first().headers[HttpHeaders.Authorization]
+        assertNull(sentAuth)
+
         assertArrayEquals("TEST".toByteArray(), result)
     }
 
@@ -94,8 +114,17 @@ class ResourceRetrieverTest {
     @Test
     fun testRetrieve_SameDomain() = runTest {
         val engine = MockEngine { respond("TEST", HttpStatusCode.OK) }
+        val httpClient = httpClientBuilder.get()
+            .fromAccount(account, authDomain = "example.com")
+            .buildKtor(engine)
+
         val downloader = resourceRetrieverFactory.create(account, "example.com")
-        val result = downloader.retrieve("https://example.com/photo.jpg", HttpClient(engine))
+        val result = downloader.retrieve("https://example.com/photo.jpg", httpClient)
+
+        // TODO: currently fails for the same reason as testRetrieve_ExternalDomain — see the TODO there.
+        val sentAuth = engine.requestHistory.first().headers[HttpHeaders.Authorization]
+        assertEquals("Basic dGVzdDp0ZXN0", sentAuth)
+
         assertArrayEquals("TEST".toByteArray(), result)
     }
 
