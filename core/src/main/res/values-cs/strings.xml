@@ -415,4 +415,5 @@
     <string name="dismiss_forever">Navždy zavřít</string>
     <string name="notification_channel_user_interaction">Uživatelská interakce</string>
     <string name="notification_channel_user_interaction_desc">Je vyžadována uživatelská interakce. Problém musí být vyřešen ručně.</string>
+    <string name="intro_tasks_tasks_org_info"><![CDATA[Některé funkce <a href="https://www.davx5.com/faq/tasks/advanced-task-features">nejsou podporovány</a>.]]></string>
 </resources>
