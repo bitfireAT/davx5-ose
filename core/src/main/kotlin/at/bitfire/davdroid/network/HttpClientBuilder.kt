@@ -18,9 +18,11 @@ import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.synctools.util.SensitiveString
 import com.google.errorprone.annotations.MustBeClosed
 import io.ktor.client.HttpClient
+import io.ktor.client.HttpClientConfig
 import io.ktor.client.engine.HttpClientEngineConfig
 import io.ktor.client.engine.ProxyBuilder
 import io.ktor.client.engine.okhttp.OkHttp
+import io.ktor.client.engine.okhttp.OkHttpConfig
 import io.ktor.client.plugins.DefaultRequest
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.UserAgent
@@ -94,7 +96,6 @@ class HttpClientBuilder @Inject constructor(
         loggerInterceptorLevel = level
         return this
     }
-
 
     private var certificateAlias: String? = null
 
@@ -272,41 +273,7 @@ class HttpClientBuilder @Inject constructor(
             // this controls whether Ktor's HttpRedirect plugin is active
             followRedirects = this@HttpClientBuilder.followRedirects
 
-            val username = authUsername
-            val password = authPassword
-            val readAuthState = readAuthStateCallback
-            when {
-                readAuthState != null -> {
-                    install(Auth) {
-                        providers.add(
-                            oAuthProviderFactory.create(
-                                readAuthState = readAuthState,
-                                writeAuthState = { authState -> updateAuthStateCallback?.invoke(authState) }
-                            ).authProvider(authDomain)
-                        )
-                    }
-                }
-
-                username != null && password != null -> {
-                    install(Auth) {
-                        providers.add(
-                            createDomainBasicAuthProvider(
-                                username = username,
-                                password = password.asString(),
-                                firstLevelDomain = authDomain,
-                                insecurePreemptive = true
-                            )
-                        )
-                        providers.add(
-                            createDomainDigestAuthProvider(
-                                username = username,
-                                password = password.asString(),
-                                firstLevelDomain = authDomain
-                            )
-                        )
-                    }
-                }
-            }
+            installAuthPlugin()
 
             // Uses AcceptAllCookiesStorage, which stores all the cookies in an in-memory map.
             install(HttpCookies)
@@ -383,4 +350,41 @@ class HttpClientBuilder @Inject constructor(
         return client
     }
 
+    private fun HttpClientConfig<OkHttpConfig>.installAuthPlugin() {
+        val username = authUsername
+        val password = authPassword
+        val readAuthState = readAuthStateCallback
+        when {
+            readAuthState != null -> {
+                install(Auth) {
+                    providers.add(
+                        oAuthProviderFactory.create(
+                            readAuthState = readAuthState,
+                            writeAuthState = { authState -> updateAuthStateCallback?.invoke(authState) }
+                        ).authProvider(authDomain)
+                    )
+                }
+            }
+
+            username != null && password != null -> {
+                install(Auth) {
+                    providers.add(
+                        createDomainBasicAuthProvider(
+                            username = username,
+                            password = password.asString(),
+                            firstLevelDomain = authDomain,
+                            insecurePreemptive = true
+                        )
+                    )
+                    providers.add(
+                        createDomainDigestAuthProvider(
+                            username = username,
+                            password = password.asString(),
+                            firstLevelDomain = authDomain
+                        )
+                    )
+                }
+            }
+        }
+    }
 }
