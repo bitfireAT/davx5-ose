@@ -75,7 +75,7 @@ class OAuthProvider @AssistedInject constructor(
 
         if (BuildConfig.DEBUG) {
             // log sensitive information (refresh/access token) only in debug builds
-            logger.log(Level.FINEST, "Using existing AuthState", authState.jsonSerializeString())
+            logger.log(Level.FINEST, "Using existing AuthState: ${authState.jsonSerializeString()}")
         }
         return BearerTokens(accessToken, authState.refreshToken)
     }
@@ -109,7 +109,7 @@ class OAuthProvider @AssistedInject constructor(
                 authState.performActionWithFreshTokens(authService) { accessToken: String?, _: String?, ex: AuthorizationException? ->
                     if (BuildConfig.DEBUG) {
                         // log sensitive information (refresh/access token) only in debug builds
-                        logger.log(Level.FINE, "Got new AuthState", authState.jsonSerializeString())
+                        logger.log(Level.FINE, "Got new AuthState: ${authState.jsonSerializeString()}")
                     }
 
                     // persist updated AuthState
