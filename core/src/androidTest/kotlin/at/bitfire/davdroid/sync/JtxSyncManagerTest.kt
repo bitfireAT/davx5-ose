@@ -14,6 +14,7 @@ import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.resource.LocalJtxCollection
 import at.bitfire.davdroid.resource.LocalJtxCollectionStore
 import at.bitfire.davdroid.sync.account.TestAccount
+import at.bitfire.davdroid.util.DavUtils.toUrl
 import at.bitfire.davdroid.util.PermissionUtils
 import at.bitfire.synctools.storage.TaskProvider
 import at.bitfire.synctools.test.GrantPermissionOrSkipRule
@@ -21,7 +22,7 @@ import at.techbee.jtx.JtxContract
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import okhttp3.HttpUrl.Companion.toHttpUrl
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assume.assumeNotNull
@@ -89,12 +90,12 @@ class JtxSyncManagerTest {
             0,
             serviceId,
             type = Collection.TYPE_CALENDAR,
-            url = "https://example.com".toHttpUrl()
+            url = "https://example.com".toUrl()
         )
         localJtxCollection = localJtxCollectionStore.create(provider, dbCollection)
         syncManager = jtxSyncManagerFactory.jtxSyncManager(
             account = account,
-            httpClient = httpClientBuilder.build(),
+            httpClient = httpClientBuilder.buildKtor(),
             syncResult = SyncResult(),
             localCollection = localJtxCollection,
             collection = dbCollection,
@@ -117,7 +118,7 @@ class JtxSyncManagerTest {
 
 
     @Test
-    fun testProcessICalObject_addsVtodo() {
+    fun testProcessICalObject_addsVtodo() = runTest {
         val calendar = "BEGIN:VCALENDAR\n" +
                 "PRODID:-Vivaldi Calendar V1.0//EN\n" +
                 "VERSION:2.0\n" +
@@ -145,7 +146,7 @@ class JtxSyncManagerTest {
     }
 
     @Test
-    fun testProcessICalObject_addsRecurringVtodo_withoutDtStart() {
+    fun testProcessICalObject_addsRecurringVtodo_withoutDtStart() = runTest {
         // Valid calendar example (See bitfireAT/davx5-ose#1265)
         // Note: We don't support starting a recurrence from DUE (RFC 5545  leaves it open to interpretation)
         val calendar = "BEGIN:VCALENDAR\n" +

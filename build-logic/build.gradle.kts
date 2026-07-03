@@ -2,15 +2,17 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  */
 
-import org.gradle.api.artifacts.VersionCatalogsExtension
+import java.util.Properties
 
 plugins {
     `kotlin-dsl`
     `java-gradle-plugin`
 }
 
-val libsCatalog = extensions.getByType<VersionCatalogsExtension>().named("libs")
-val javaToolchainVersion = libsCatalog.findVersion("java-toolchain").get().requiredVersion.toInt()
+val gradleDaemonJvmProperties = Properties().also { props ->
+    rootDir.resolve("../gradle/gradle-daemon-jvm.properties").reader().use { props.load(it) }
+}
+val javaToolchainVersion = gradleDaemonJvmProperties.getProperty("toolchainVersion").toInt()
 
 java {
     toolchain {

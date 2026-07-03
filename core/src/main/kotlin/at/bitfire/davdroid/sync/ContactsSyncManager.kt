@@ -7,10 +7,10 @@ package at.bitfire.davdroid.sync
 import android.accounts.Account
 import android.content.ContentProviderClient
 import android.text.format.Formatter
-import at.bitfire.dav4jvm.okhttp.DavAddressBook
-import at.bitfire.dav4jvm.okhttp.MultiResponseCallback
-import at.bitfire.dav4jvm.okhttp.Response
-import at.bitfire.dav4jvm.okhttp.exception.DavException
+import at.bitfire.dav4jvm.ktor.DavAddressBook
+import at.bitfire.dav4jvm.ktor.MultiResponseCallback
+import at.bitfire.dav4jvm.ktor.Response
+import at.bitfire.dav4jvm.ktor.exception.DavException
 import at.bitfire.dav4jvm.property.caldav.CalDAV
 import at.bitfire.dav4jvm.property.carddav.AddressData
 import at.bitfire.dav4jvm.property.carddav.CardDAV
@@ -22,7 +22,6 @@ import at.bitfire.dav4jvm.property.webdav.WebDAV
 import at.bitfire.davdroid.ProductIds
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
-import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.di.qualifier.SyncDispatcher
 import at.bitfire.davdroid.resource.LocalAddress
 import at.bitfire.davdroid.resource.LocalAddressBook
@@ -46,13 +45,11 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import ezvcard.VCardVersion
 import ezvcard.io.CannotParseException
+import io.ktor.client.HttpClient
+import io.ktor.http.ContentType
+import io.ktor.http.Url
+import io.ktor.http.content.TextContent
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.runInterruptible
-import okhttp3.HttpUrl
-import okhttp3.MediaType
-import okhttp3.OkHttpClient
-import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.Reader
 import java.io.StringReader
 import java.io.StringWriter
@@ -99,7 +96,7 @@ import kotlin.jvm.optionals.getOrNull
  */
 class ContactsSyncManager @AssistedInject constructor(
     @Assisted account: Account,
-    @Assisted httpClient: OkHttpClient,
+    @Assisted httpClient: HttpClient,
     @Assisted syncResult: SyncResult,
     @Assisted val provider: ContentProviderClient,
     @Assisted localAddressBook: LocalAddressBook,
@@ -108,7 +105,6 @@ class ContactsSyncManager @AssistedInject constructor(
     @Assisted val syncFrameworkUpload: Boolean,
     accountSettingsFactory: AccountSettings.Factory,
     val dirtyVerifier: Optional<ContactDirtyVerifier>,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val productIds: ProductIds,
     private val resourceRetrieverFactory: ResourceRetriever.Factory,
     @SyncDispatcher syncDispatcher: CoroutineDispatcher
@@ -127,7 +123,7 @@ class ContactsSyncManager @AssistedInject constructor(
     interface Factory {
         fun contactsSyncManager(
             account: Account,
-            httpClient: OkHttpClient,
+            httpClient: HttpClient,
             syncResult: SyncResult,
             provider: ContentProviderClient,
             localAddressBook: LocalAddressBook,
@@ -150,7 +146,7 @@ class ContactsSyncManager @AssistedInject constructor(
     }
 
 
-    override fun prepare(): Boolean {
+    override suspend fun prepare(): Boolean {
         if (dirtyVerifier.isPresent) {
             logger.info("Sync will verify dirty contacts (Android 7.x workaround)")
             if (!dirtyVerifier.get().prepareAddressBook(localCollection, isUpload = syncFrameworkUpload))
@@ -164,30 +160,28 @@ class ContactsSyncManager @AssistedInject constructor(
     }
 
     override suspend fun queryCapabilities(): SyncState? {
-        return SyncException.wrapWithRemoteResourceSuspending(collection.url) {
+        return SyncException.wrapWithRemoteResource(collection.url) {
             var syncState: SyncState? = null
-            runInterruptible {
-                davCollection.propfind(
-                    0,
-                    CardDAV.MaxResourceSize,
-                    CardDAV.SupportedAddressData,
-                    WebDAV.SupportedReportSet,
-                    CalDAV.GetCTag,
-                    WebDAV.SyncToken
-                ) { response, relation ->
-                    if (relation == Response.HrefRelation.SELF) {
-                        response[MaxResourceSize::class.java]?.maxSize?.let { maxSize ->
-                            logger.info("Address book accepts vCards up to ${Formatter.formatFileSize(context, maxSize)}")
-                        }
-
-                        response[SupportedAddressData::class.java]?.let { supported ->
-                            hasVCard4 = supported.hasVCard4()
-                        }
-                        response[SupportedReportSet::class.java]?.let { supported ->
-                            hasCollectionSync = supported.reports.contains(WebDAV.SyncCollection)
-                        }
-                        syncState = syncState(response)
+            davCollection.propfind(
+                0,
+                CardDAV.MaxResourceSize,
+                CardDAV.SupportedAddressData,
+                WebDAV.SupportedReportSet,
+                CalDAV.GetCTag,
+                WebDAV.SyncToken
+            ) { response, relation ->
+                if (relation == Response.HrefRelation.SELF) {
+                    response[MaxResourceSize::class.java]?.maxSize?.let { maxSize ->
+                        logger.info("Address book accepts vCards up to ${Formatter.formatFileSize(context, maxSize)}")
                     }
+
+                    response[SupportedAddressData::class.java]?.let { supported ->
+                        hasVCard4 = supported.hasVCard4()
+                    }
+                    response[SupportedReportSet::class.java]?.let { supported ->
+                        hasCollectionSync = supported.reports.contains(WebDAV.SyncCollection)
+                    }
+                    syncState = syncState(response)
                 }
             }
 
@@ -207,7 +201,7 @@ class ContactsSyncManager @AssistedInject constructor(
     override suspend fun processLocallyDeleted() =
             if (localCollection.readOnly) {
                 var modified = false
-                for (group in localCollection.findDeletedGroups()) {
+                localCollection.findDeletedGroups().collect { group ->
                     logger.warning("Restoring locally deleted group (read-only address book!)")
                     SyncException.wrapWithLocalResource(group) {
                         group.resetDeleted()
@@ -215,7 +209,7 @@ class ContactsSyncManager @AssistedInject constructor(
                     modified = true
                 }
 
-                for (contact in localCollection.findDeletedContacts()) {
+                localCollection.findDeletedContacts().collect { contact ->
                     logger.warning("Restoring locally deleted contact (read-only address book!)")
                     SyncException.wrapWithLocalResource(contact) {
                         contact.resetDeleted()
@@ -238,7 +232,7 @@ class ContactsSyncManager @AssistedInject constructor(
         var modified = false
 
         if (localCollection.readOnly) {
-            for (group in localCollection.findDirtyGroups()) {
+            localCollection.findDirtyGroups().collect { group ->
                 logger.warning("Resetting locally modified group to ETag=null (read-only address book!)")
                 SyncException.wrapWithLocalResource(group) {
                     group.clearDirty(Optional.empty(), null)
@@ -246,7 +240,7 @@ class ContactsSyncManager @AssistedInject constructor(
                 modified = true
             }
 
-            for (contact in localCollection.findDirtyContacts()) {
+            localCollection.findDirtyContacts().collect { contact ->
                 logger.warning("Resetting locally modified contact to ETag=null (read-only address book!)")
                 SyncException.wrapWithLocalResource(contact) {
                     contact.clearDirty(Optional.empty(), null)
@@ -287,7 +281,7 @@ class ContactsSyncManager @AssistedInject constructor(
 
         // generate vCard and convert to request body
         val writer = StringWriter()
-        val mimeType: MediaType
+        val mimeType: ContentType
         val vCardVersion: VCardVersion
         when {
             hasVCard4 -> {
@@ -303,20 +297,18 @@ class ContactsSyncManager @AssistedInject constructor(
 
         return GeneratedResource(
             suggestedFileName = DavUtils.fileNameFromUid(uid, "vcf"),
-            requestBody = writer.toString().toRequestBody(mimeType)
+            content = TextContent(text = writer.toString(), contentType = mimeType)
         )
     }
 
     override suspend fun listAllRemote(callback: MultiResponseCallback) =
-        SyncException.wrapWithRemoteResourceSuspending(collection.url) {
-            runInterruptible {
-                davCollection.propfind(1, WebDAV.ResourceType, WebDAV.GetETag, callback = callback)
-            }
+        SyncException.wrapWithRemoteResource(collection.url) {
+            davCollection.propfind(1, WebDAV.ResourceType, WebDAV.GetETag, callback = callback)
         }
 
-    override suspend fun downloadRemote(bunch: List<HttpUrl>) {
+    override suspend fun downloadRemote(bunch: List<Url>) {
         logger.info("Downloading ${bunch.size} vCard(s): $bunch")
-        SyncException.wrapWithRemoteResourceSuspending(collection.url) {
+        SyncException.wrapWithRemoteResource(collection.url) {
             val contentType: String?
             val version: String?
             when {
@@ -329,50 +321,48 @@ class ContactsSyncManager @AssistedInject constructor(
                     version = null     // 3.0 is the default version; don't request 3.0 explicitly because maybe some vCard3-only servers don't understand it
                 }
             }
-            runInterruptible {
-                davCollection.multiget(bunch, contentType, version) { response, _ ->
-                    // See CalendarSyncManager for more information about the multi-get response
-                    SyncException.wrapWithRemoteResource(response.href) wrapResource@{
-                        if (!response.isSuccess()) {
-                            logger.warning("Ignoring non-successful multi-get response for ${response.href}")
-                            return@wrapResource
-                        }
-
-                        val card = response[AddressData::class.java]?.card
-                        if (card == null) {
-                            logger.warning("Ignoring multi-get response without address-data")
-                            return@wrapResource
-                        }
-
-                        val eTag = response[GetETag::class.java]?.eTag
-                            ?: throw DavException("Received multi-get response without ETag")
-
-                        processCard(
-                            fileName = response.href.lastSegment,
-                            eTag = eTag,
-                            reader = StringReader(card),
-                            downloader = object : Contact.Downloader {
-                                override suspend fun download(url: String, accepts: String): ByteArray? {
-                                    // retrieve external resource (like a photo) from a URL (not necessarily HTTP[S])
-                                    val retriever = resourceRetrieverFactory.create(account, davCollection.location.host)
-                                    return retriever.retrieve(url)
-                                }
-                            }
-                        )
+            davCollection.multiget(bunch, contentType, version) { response, _ ->
+                // See CalendarSyncManager for more information about the multi-get response
+                SyncException.wrapWithRemoteResource(response.href) wrapResource@{
+                    if (!response.isSuccess()) {
+                        logger.warning("Ignoring non-successful multi-get response for ${response.href}")
+                        return@wrapResource
                     }
+
+                    val card = response[AddressData::class.java]?.card
+                    if (card == null) {
+                        logger.warning("Ignoring multi-get response without address-data")
+                        return@wrapResource
+                    }
+
+                    val eTag = response[GetETag::class.java]?.eTag
+                        ?: throw DavException("Received multi-get response without ETag")
+
+                    processCard(
+                        fileName = response.href.lastSegment,
+                        eTag = eTag,
+                        reader = StringReader(card),
+                        downloader = object : Contact.Downloader {
+                            override suspend fun download(url: String, accepts: String): ByteArray? {
+                                // retrieve external resource (like a photo) from a URL (not necessarily HTTP[S])
+                                val retriever = resourceRetrieverFactory.create(account, davCollection.location.host)
+                                return retriever.retrieve(url)
+                            }
+                        }
+                    )
                 }
             }
         }
     }
 
-    override fun postProcess() {
+    override suspend fun postProcess() {
         groupStrategy.postProcess()
     }
 
 
     // helpers
 
-    private fun processCard(fileName: String, eTag: String, reader: Reader, downloader: Contact.Downloader) {
+    private suspend fun processCard(fileName: String, eTag: String, reader: Reader, downloader: Contact.Downloader) {
         logger.info("Processing CardDAV resource $fileName")
 
         val newData = try {
@@ -384,9 +374,7 @@ class ContactsSyncManager @AssistedInject constructor(
             }
 
             // map to Contact
-            runBlocking(ioDispatcher) {
-                ContactReader.fromVCard(vCard, downloader)
-            }
+            ContactReader.fromVCard(vCard, downloader)
         } catch (e: CannotParseException) {
             logger.log(Level.SEVERE, "Received invalid vCard, ignoring", e)
             notifyInvalidResource(e, fileName)

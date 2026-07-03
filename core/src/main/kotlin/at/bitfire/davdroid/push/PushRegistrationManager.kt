@@ -14,7 +14,6 @@ import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkManager
 import at.bitfire.dav4jvm.HttpUtils
-import at.bitfire.dav4jvm.HttpUtils.toKtorUrl
 import at.bitfire.dav4jvm.XmlUtils
 import at.bitfire.dav4jvm.XmlUtils.insertTag
 import at.bitfire.dav4jvm.ktor.DavCollection
@@ -291,7 +290,7 @@ class PushRegistrationManager @Inject constructor(
         }
         serializer.endDocument()
 
-        DavCollection(httpClient, collection.url.toKtorUrl()).post(
+        DavCollection(httpClient, collection.url).post(
             TextContent(writer.toString(), DavResource.MIME_XML_UTF8)
         ) { response ->
             if (response.status.isSuccess()) {

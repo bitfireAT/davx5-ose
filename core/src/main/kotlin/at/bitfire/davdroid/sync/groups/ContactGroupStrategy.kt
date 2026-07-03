@@ -8,8 +8,8 @@ import at.bitfire.synctools.mapping.contacts.Contact
 
 interface ContactGroupStrategy {
 
-    fun beforeUploadDirty()
+    suspend fun beforeUploadDirty()
     fun verifyContactBeforeSaving(contact: Contact)
-    fun postProcess()
+    suspend fun postProcess()
 
 }

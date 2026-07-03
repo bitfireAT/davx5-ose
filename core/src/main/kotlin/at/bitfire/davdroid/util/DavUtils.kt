@@ -4,10 +4,12 @@
 
 package at.bitfire.davdroid.util
 
+import at.bitfire.dav4jvm.ktor.toUrlOrNull
 import at.bitfire.davdroid.util.DavUtils.generateUidIfNecessary
+import at.bitfire.davdroid.util.DavUtils.toUrlOrNull
 import io.ktor.http.ContentType
-import okhttp3.HttpUrl
-import okhttp3.MediaType.Companion.toMediaType
+import io.ktor.http.Url
+import org.jetbrains.annotations.TestOnly
 import java.net.URI
 import java.net.URISyntaxException
 import java.util.Locale
@@ -20,8 +22,8 @@ object DavUtils {
 
     const val MIME_TYPE_ACCEPT_ALL = "*/*"
 
-    val MEDIA_TYPE_OCTET_STREAM = "application/octet-stream".toMediaType()
-    val MEDIA_TYPE_VCARD = "text/vcard".toMediaType()
+    val MEDIA_TYPE_OCTET_STREAM = ContentType.Application.OctetStream
+    val MEDIA_TYPE_VCARD = ContentType.Text.VCard
 
     /**
      * Builds an HTTP `Accept` header that accepts anything (&#42;/&#42;), but optionally
@@ -115,37 +117,27 @@ object DavUtils {
 
     // extension methods
 
-    val HttpUrl.lastSegment: String
-        get() = pathSegments.lastOrNull { it.isNotEmpty() } ?: "/"
-
     /**
-     * Returns parent URL (parent folder). Always with trailing slash
+     * Safely gets the last segment of the URL, or returns `"/"` if none could be obtained.
      */
-    fun HttpUrl.parent(): HttpUrl {
-        if (pathSegments.size == 1 && pathSegments[0] == "")
-            // already root URL
-            return this
-
-        val builder = newBuilder()
-
-        if (pathSegments[pathSegments.lastIndex] == "") {
-            // URL ends with a slash ("/some/thing/" -> ["some","thing",""]), remove two segments ("" at lastIndex and "thing" at lastIndex - 1)
-            builder.removePathSegment(pathSegments.lastIndex)
-            builder.removePathSegment(pathSegments.lastIndex - 1)
-        } else
-            // URL doesn't end with a slash ("/some/thing" -> ["some","thing"]), remove one segment ("thing" at lastIndex)
-            builder.removePathSegment(pathSegments.lastIndex)
-
-        // append trailing slash
-        builder.addPathSegment("")
-
-        return builder.build()
-    }
+    val Url.lastSegment: String
+        get() = this.segments.lastOrNull { it.isNotEmpty() } ?: "/"
 
     fun String.toURIorNull(): URI? = try {
         URI(this)
     } catch (_: URISyntaxException) {
         null
     }
+
+    fun URI.toUrlOrNull(): Url? = toString().toUrlOrNull()
+
+    /**
+     * An unsafe call to convert a [String] to a [Url].
+     *
+     * Highly preferred to use [toUrlOrNull] instead, and handle nullability.
+     * @throws IllegalArgumentException If the source string is not a valid URL.
+     */
+    @TestOnly
+    fun String.toUrl(): Url = toUrlOrNull() ?: throw IllegalArgumentException("The source string ($this) is not a valid URL")
 
 }

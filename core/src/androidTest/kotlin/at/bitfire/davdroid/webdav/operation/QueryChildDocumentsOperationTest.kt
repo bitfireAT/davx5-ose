@@ -6,17 +6,16 @@ package at.bitfire.davdroid.webdav.operation
 
 import android.content.Context
 import android.security.NetworkSecurityPolicy
+import at.bitfire.dav4jvm.HttpUtils.toKtorUrl
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.WebDavDocument
 import at.bitfire.davdroid.db.WebDavMount
-import at.bitfire.davdroid.network.HttpClientBuilder
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.mockk.junit4.MockKRule
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
-import okhttp3.OkHttpClient
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -50,13 +49,9 @@ class QueryChildDocumentsOperationTest {
     lateinit var operation: QueryChildDocumentsOperation
 
     @Inject
-    lateinit var httpClientBuilder: HttpClientBuilder
-
-    @Inject
     lateinit var testDispatcher: TestDispatcher
 
     private lateinit var server: MockWebServer
-    private lateinit var client: OkHttpClient
 
     private lateinit var mount: WebDavMount
     private lateinit var rootDocument: WebDavDocument
@@ -71,14 +66,14 @@ class QueryChildDocumentsOperationTest {
             start()
         }
 
-        client = httpClientBuilder.build()
-
         // mock server delivers HTTP without encryption
         assertTrue(NetworkSecurityPolicy.getInstance().isCleartextTrafficPermitted)
 
         // create WebDAV mount and root document in DB
         runBlocking {
-            val mountId = db.webDavMountDao().insert(WebDavMount(0, "Cat food storage", server.url(PATH_WEBDAV_ROOT)))
+            val mountId = db.webDavMountDao().insert(
+                WebDavMount(0, "Cat food storage", server.url(PATH_WEBDAV_ROOT).toKtorUrl())
+            )
             mount = db.webDavMountDao().getById(mountId)
             rootDocument = db.webDavDocumentDao().getOrCreateRoot(mount)
         }

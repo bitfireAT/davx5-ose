@@ -22,7 +22,7 @@ import java.util.logging.Logger
  *
  * Also contains workarounds for:
  * - https://github.com/bitfireAT/davx5-ose/issues/2248 – NPE when receiving calendar event with invalid VTIMEZONE
- * - https://github.com/bitfireAT/davx5/issues/914 – Rare NPE in ical4j when ZoneIdPool runs out of available ZoneIds
+ * - https://github.com/bitfireAT/davx5/issues/914 – ZoneIdPool exhaustion during timezone registration.
  *
  * If more workarounds are to be added, the class should probably be split into one for the core
  * functionality and one for the workarounds.
@@ -102,10 +102,7 @@ class SystemAwareTimeZoneRegistry(
 
     /**
      * Workaround for https://github.com/bitfireAT/davx5/issues/914 that reduces
-     * the chance of an NPE during time zone registration.
-     *
-     * Attempts to free up unused Zone IDs by triggering garbage collection
-     * when the Zone ID pool is exhausted.
+     * the chance of pool exhaustion during time zone registration.
      */
     private fun triggerGcBeforeZoneIdAllocation() {
         if (ZoneRulesProviderImpl.INSTANCE.zoneIdPool.availableZoneIds() == 0) {

@@ -17,6 +17,8 @@ import androidx.core.content.contentValuesOf
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
 import at.bitfire.synctools.mapping.contacts.TestUtils
+import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.test.runTest
 import org.junit.AfterClass
 import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
@@ -109,85 +111,26 @@ class AndroidAddressBookTest {
     }
 
 
-    // iterateRawContacts
+    // queryRawContactRows
 
     @Test
-    fun testIterateRawContacts_empty() {
+    fun testQueryRawContactRows_empty() = runTest {
         val addressBook = TestAddressBook.create(provider)
         try {
-            var count = 0
-            addressBook.iterateRawContacts { count++ }
-            assertEquals(0, count)
+            val rows = addressBook.queryRawContactRows().toList()
+            assertEquals(0, rows.size)
         } finally {
             TestAddressBook.remove(addressBook)
         }
     }
 
     @Test
-    fun testIterateRawContacts_all() {
-        val addressBook = TestAddressBook.create(provider)
-        try {
-            val id1 = addressBook.addRawContact(Entity(contentValuesOf(RawContacts.DISPLAY_NAME_PRIMARY to "Iterate Contact 1")))
-            val id2 = addressBook.addRawContact(Entity(contentValuesOf(RawContacts.DISPLAY_NAME_PRIMARY to "Iterate Contact 2")))
-            val ids = mutableListOf<Long>()
-            addressBook.iterateRawContacts { entity ->
-                ids += entity.entityValues.getAsLong(RawContacts._ID)
-            }
-            assertEquals(setOf(id1, id2), ids.toSet())
-        } finally {
-            TestAddressBook.remove(addressBook)
-        }
-    }
-
-    @Test
-    fun testIterateRawContacts_filter() {
-        val addressBook = TestAddressBook.create(provider)
-        try {
-            val id1 = addressBook.addRawContact(Entity(contentValuesOf(
-                RawContacts.DISPLAY_NAME_PRIMARY to "Iterate Filter 1",
-                AddressContract.RawContactColumns.UID to "iter-uid-1"
-            )))
-            addressBook.addRawContact(
-                Entity(
-                    contentValuesOf(
-                RawContacts.DISPLAY_NAME_PRIMARY to "Iterate Filter 2",
-                AddressContract.RawContactColumns.UID to "iter-uid-2"
-            )))
-            val ids = mutableListOf<Long>()
-            addressBook.iterateRawContacts("${AddressContract.RawContactColumns.UID}=?", arrayOf("iter-uid-1")) { entity ->
-                ids += entity.entityValues.getAsLong(RawContacts._ID)
-            }
-            assertEquals(listOf(id1), ids)
-        } finally {
-            TestAddressBook.remove(addressBook)
-        }
-    }
-
-
-    // iterateRawContactRows
-
-    @Test
-    fun testIterateRawContactRows_empty() {
-        val addressBook = TestAddressBook.create(provider)
-        try {
-            var count = 0
-            addressBook.iterateRawContactRows { count++ }
-            assertEquals(0, count)
-        } finally {
-            TestAddressBook.remove(addressBook)
-        }
-    }
-
-    @Test
-    fun testIterateRawContactRows_all() {
+    fun testQueryRawContactRows_all() = runTest {
         val addressBook = TestAddressBook.create(provider)
         try {
             val id1 = addressBook.addRawContact(Entity(contentValuesOf(RawContacts.DISPLAY_NAME_PRIMARY to "Row Contact 1")))
             val id2 = addressBook.addRawContact(Entity(contentValuesOf(RawContacts.DISPLAY_NAME_PRIMARY to "Row Contact 2")))
-            val ids = mutableListOf<Long>()
-            addressBook.iterateRawContactRows { values ->
-                ids += values.getAsLong(RawContacts._ID)
-            }
+            val ids = addressBook.queryRawContactRows().toList().map { it.getAsLong(RawContacts._ID) }
             assertEquals(setOf(id1, id2), ids.toSet())
         } finally {
             TestAddressBook.remove(addressBook)
@@ -195,7 +138,7 @@ class AndroidAddressBookTest {
     }
 
     @Test
-    fun testIterateRawContactRows_filter() {
+    fun testQueryRawContactRows_filter() = runTest {
         val addressBook = TestAddressBook.create(provider)
         try {
             val id1 = addressBook.addRawContact(Entity(contentValuesOf(
@@ -208,10 +151,9 @@ class AndroidAddressBookTest {
                 RawContacts.DISPLAY_NAME_PRIMARY to "Row Filter 2",
                 AddressContract.RawContactColumns.UID to "row-uid-2"
             )))
-            val ids = mutableListOf<Long>()
-            addressBook.iterateRawContactRows("${AddressContract.RawContactColumns.UID}=?", arrayOf("row-uid-1")) { values ->
-                ids += values.getAsLong(RawContacts._ID)
-            }
+            val ids =
+                addressBook.queryRawContactRows("${AddressContract.RawContactColumns.UID}=?", arrayOf("row-uid-1"))
+                    .toList().map { it.getAsLong(RawContacts._ID) }
             assertEquals(listOf(id1), ids)
         } finally {
             TestAddressBook.remove(addressBook)
@@ -222,7 +164,7 @@ class AndroidAddressBookTest {
     // updateRawContactRows
 
     @Test
-    fun testUpdateRawContactRows_all() {
+    fun testUpdateRawContactRows_all() = runTest {
         val addressBook = TestAddressBook.create(provider)
         try {
             addressBook.addRawContact(Entity(contentValuesOf(RawContacts.DISPLAY_NAME_PRIMARY to "Update Contact 1")))
@@ -231,10 +173,8 @@ class AndroidAddressBookTest {
             addressBook.updateRawContactRows(contentValuesOf(AddressContract.RawContactColumns.UID to "updated-uid"), null, null, batch)
             batch.commit()
 
-            val uids = mutableListOf<String>()
-            addressBook.iterateRawContactRows { values ->
-                uids += values.getAsString(AddressContract.RawContactColumns.UID)
-            }
+            val uids =
+                addressBook.queryRawContactRows().toList().map { it.getAsString(AddressContract.RawContactColumns.UID) }
             assertEquals(2, uids.count { it == "updated-uid" })
         } finally {
             TestAddressBook.remove(addressBook)
@@ -242,7 +182,7 @@ class AndroidAddressBookTest {
     }
 
     @Test
-    fun testUpdateRawContactRows_filter() {
+    fun testUpdateRawContactRows_filter() = runTest {
         val addressBook = TestAddressBook.create(provider)
         try {
             val id1 = addressBook.addRawContact(Entity(contentValuesOf(RawContacts.DISPLAY_NAME_PRIMARY to "Update Filter 1")))
@@ -257,7 +197,7 @@ class AndroidAddressBookTest {
 
             var uid1: String? = "not-set"
             var uid2: String? = "not-set"
-            addressBook.iterateRawContactRows { values ->
+            addressBook.queryRawContactRows().toList().forEach { values ->
                 when (values.getAsLong(RawContacts._ID)) {
                     id1 -> uid1 = values.getAsString(AddressContract.RawContactColumns.UID)
                     id2 -> uid2 = values.getAsString(AddressContract.RawContactColumns.UID)
@@ -271,30 +211,26 @@ class AndroidAddressBookTest {
     }
 
 
-    // iterateGroups
+    // queryGroupRows
 
     @Test
-    fun testIterateGroups_empty() {
+    fun testQueryGroupRows_empty() = runTest {
         val addressBook = TestAddressBook.create(provider)
         try {
-            var count = 0
-            addressBook.iterateGroups { count++ }
-            assertEquals(0, count)
+            val rows = addressBook.queryGroupRows().toList()
+            assertEquals(0, rows.size)
         } finally {
             TestAddressBook.remove(addressBook)
         }
     }
 
     @Test
-    fun testIterateGroups_all() {
+    fun testQueryGroupRows_all() = runTest {
         val addressBook = TestAddressBook.create(provider)
         try {
             val id1 = addressBook.findOrCreateGroup("Iterate Group 1")
             val id2 = addressBook.findOrCreateGroup("Iterate Group 2")
-            val ids = mutableListOf<Long>()
-            addressBook.iterateGroups { values ->
-                ids += values.getAsLong(Groups._ID)
-            }
+            val ids = addressBook.queryGroupRows().toList().map { it.getAsLong(Groups._ID) }
             assertEquals(setOf(id1, id2), ids.toSet())
         } finally {
             TestAddressBook.remove(addressBook)
@@ -302,15 +238,13 @@ class AndroidAddressBookTest {
     }
 
     @Test
-    fun testIterateGroups_filter() {
+    fun testQueryGroupRows_filter() = runTest {
         val addressBook = TestAddressBook.create(provider)
         try {
             val id1 = addressBook.findOrCreateGroup("Iterate Filter Group 1")
             addressBook.findOrCreateGroup("Iterate Filter Group 2")
-            val ids = mutableListOf<Long>()
-            addressBook.iterateGroups(null, "${Groups._ID}=?", arrayOf(id1.toString())) { values ->
-                ids += values.getAsLong(Groups._ID)
-            }
+            val ids = addressBook.queryGroupRows(null, "${Groups._ID}=?", arrayOf(id1.toString()))
+                .toList().map { it.getAsLong(Groups._ID) }
             assertEquals(listOf(id1), ids)
         } finally {
             TestAddressBook.remove(addressBook)
@@ -590,7 +524,7 @@ class AndroidAddressBookTest {
     // deleteGroupsWithoutMembers
 
     @Test
-    fun testDeleteGroupsWithoutMembers_deletesEmpty() {
+    fun testDeleteGroupsWithoutMembers_deletesEmpty() = runTest {
         val addressBook = TestAddressBook.create(provider)
         try {
             addressBook.findOrCreateGroup("Empty Group")
@@ -606,7 +540,7 @@ class AndroidAddressBookTest {
     }
 
     @Test
-    fun testDeleteGroupsWithoutMembers_keepsNonEmpty() {
+    fun testDeleteGroupsWithoutMembers_keepsNonEmpty() = runTest {
         val addressBook = TestAddressBook.create(provider)
         try {
             val groupId = addressBook.findOrCreateGroup("Group with member")

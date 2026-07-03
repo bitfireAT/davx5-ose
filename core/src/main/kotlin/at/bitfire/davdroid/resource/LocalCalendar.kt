@@ -17,6 +17,8 @@ import at.bitfire.synctools.storage.calendar.EventsContract
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 /**
  * Application-specific subclass of [AndroidCalendar] for local calendars.
@@ -72,19 +74,16 @@ class LocalCalendar @AssistedInject constructor(
     override fun countModified(): Int =
         androidCalendar.countEvents("${Events.DIRTY} AND NOT ${Events.DELETED}", null)
 
-    override fun findDeleted(): List<LocalEvent> = buildList {
-        recurringCalendar.iterateEventAndExceptions(Events.DELETED, null) { eventAndExceptions ->
-            add(LocalEvent(recurringCalendar, eventAndExceptions))
-        }
-    }
+    override fun countDirty(): Int =
+        androidCalendar.countEvents(Events.DIRTY, null)
 
-    override fun findDirty(): List<LocalEvent> = buildList {
-        recurringCalendar.iterateEventAndExceptions(Events.DIRTY, null) { eventAndExceptions ->
-            add(LocalEvent(recurringCalendar, eventAndExceptions))
-        }
-    }
+    override fun findDeleted(): Flow<LocalEvent> =
+        recurringCalendar.queryEventsAndExceptions(Events.DELETED, null).map { LocalEvent(recurringCalendar, it) }
 
-    override fun findByName(name: String) =
+    override fun findDirty(): Flow<LocalEvent> =
+        recurringCalendar.queryEventsAndExceptions(Events.DIRTY, null).map { LocalEvent(recurringCalendar, it) }
+
+    override suspend fun findByName(name: String) =
         recurringCalendar.findEventAndExceptions("${Events._SYNC_ID}=?", arrayOf(name))?.let {
             LocalEvent(recurringCalendar, it)
         }
@@ -101,7 +100,7 @@ class LocalCalendar @AssistedInject constructor(
             arrayOf(androidCalendar.id.toString())
         )
 
-    override fun removeNotDirtyMarked(flags: Int): Int {
+    override suspend fun removeNotDirtyMarked(flags: Int): Int {
         // list all non-dirty events with the given flags and delete every row + its exceptions
         val batch = CalendarBatchOperation(androidCalendar.client)
         androidCalendar.iterateEventRows(
