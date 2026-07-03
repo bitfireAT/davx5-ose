@@ -6,8 +6,8 @@ package at.bitfire.davdroid.network
 
 import android.accounts.Account
 import androidx.annotation.WorkerThread
+import at.bitfire.dav4jvm.ktor.UrlUtils
 import at.bitfire.dav4jvm.okhttp.BasicDigestAuthHandler
-import at.bitfire.dav4jvm.okhttp.UrlUtils
 import at.bitfire.davdroid.ProductIds
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.settings.AccountSettings
@@ -16,8 +16,11 @@ import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import com.google.errorprone.annotations.MustBeClosed
 import io.ktor.client.HttpClient
+import io.ktor.client.engine.HttpClientEngineConfig
+import io.ktor.client.engine.ProxyBuilder
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.DefaultRequest
+import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.UserAgent
 import io.ktor.client.plugins.compression.ContentEncoding
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -25,6 +28,8 @@ import io.ktor.client.plugins.cookies.HttpCookies
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.http.HttpHeaders
+import io.ktor.http.URLBuilder
+import io.ktor.http.URLProtocol
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.util.appendIfNameAbsent
 import kotlinx.coroutines.CoroutineDispatcher
@@ -35,10 +40,8 @@ import okhttp3.ConnectionSpec
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Protocol
-import java.net.InetSocketAddress
 import java.net.Proxy
 import java.util.Locale
-import java.util.concurrent.TimeUnit
 import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
@@ -66,14 +69,6 @@ class HttpClientBuilder @Inject constructor(
         init {
             // make sure Conscrypt is available when the HttpClientBuilder class is loaded the first time
             ConscryptIntegration().initialize()
-        }
-
-        private fun configureTimeouts(okBuilder: OkHttpClient.Builder) {
-            okBuilder
-                .connectTimeout(15, TimeUnit.SECONDS)
-                .writeTimeout(30, TimeUnit.SECONDS)
-                .readTimeout(120, TimeUnit.SECONDS)
-                .pingInterval(45, TimeUnit.SECONDS)     // avoid cancellation because of missing traffic; only works for HTTP/2
         }
 
     }
@@ -187,12 +182,9 @@ class HttpClientBuilder @Inject constructor(
     }
 
 
-    // okhttp configuration (internal: applied to the OkHttp engine of the Ktor client)
+    // client configuration
 
     private fun configureOkHttp(builder: OkHttpClient.Builder) {
-        // app-wide custom proxy support
-        buildProxy(builder)
-
         // add connection security (including client certificates) and authentication
         buildConnectionSecurity(builder)
         buildAuthentication(builder)
@@ -230,34 +222,31 @@ class HttpClientBuilder @Inject constructor(
             okBuilder.hostnameVerifier(securityContext.hostnameVerifier)
     }
 
-    private fun buildProxy(okBuilder: OkHttpClient.Builder) {
-        try {
-            val proxyTypeValue = settingsManager.getInt(Settings.PROXY_TYPE)
-            if (proxyTypeValue != Settings.PROXY_TYPE_SYSTEM) {
-                // we set our own proxy
-                val address by lazy {           // lazy because not required for PROXY_TYPE_NONE
-                    InetSocketAddress(
-                        settingsManager.getString(Settings.PROXY_HOST),
-                        settingsManager.getInt(Settings.PROXY_PORT)
-                    )
-                }
-                val proxy =
-                    when (proxyTypeValue) {
-                        Settings.PROXY_TYPE_NONE -> Proxy.NO_PROXY
-                        Settings.PROXY_TYPE_HTTP -> Proxy(Proxy.Type.HTTP, address)
-                        Settings.PROXY_TYPE_SOCKS -> Proxy(Proxy.Type.SOCKS, address)
-                        else -> throw IllegalArgumentException("Invalid proxy type")
-                    }
-                okBuilder.proxy(proxy)
-                logger.log(Level.INFO, "Using proxy setting", proxy)
-            }
-        } catch (e: Exception) {
-            logger.log(Level.SEVERE, "Can't set proxy, ignoring", e)
+    private fun configureProxy(engineConfig: HttpClientEngineConfig) {
+        val proxy = when (settingsManager.getInt(Settings.PROXY_TYPE)) {
+            Settings.PROXY_TYPE_SYSTEM -> null
+            Settings.PROXY_TYPE_NONE -> Proxy.NO_PROXY
+            Settings.PROXY_TYPE_HTTP -> ProxyBuilder.http(
+                URLBuilder(
+                    protocol = URLProtocol.HTTP,
+                    host = settingsManager.getString(Settings.PROXY_HOST) ?: "",
+                    port = settingsManager.getInt(Settings.PROXY_PORT)
+                ).build()
+            )
+            Settings.PROXY_TYPE_SOCKS -> ProxyBuilder.socks(
+                settingsManager.getString(Settings.PROXY_HOST) ?: "",
+                settingsManager.getInt(Settings.PROXY_PORT)
+            )
+            else -> /* Invalid proxy type, shouldn't happen */ null
+        }
+        if (proxy != null) {
+            logger.log(Level.INFO, "Using non-default proxy setting", proxy)
+            engineConfig.proxy = proxy
         }
     }
 
 
-    // Ktor builder
+    // client builder
 
     /**
      * Builds a Ktor [HttpClient] with the configured settings.
@@ -289,6 +278,11 @@ class HttpClientBuilder @Inject constructor(
 
             // Uses AcceptAllCookiesStorage, which stores all the cookies in an in-memory map.
             install(HttpCookies)
+
+            install(HttpTimeout) {
+                connectTimeoutMillis = 15_000
+                socketTimeoutMillis = 120_000       // covers both read and write inactivity
+            }
 
             // automatically convert JSON from/into data classes (if requested in respective code)
             install(ContentNegotiation) {
@@ -340,12 +334,12 @@ class HttpClientBuilder @Inject constructor(
             }
 
             engine {
-                // okhttp engine configuration here
+                // app-wide custom proxy support
+                configureProxy(this)
 
+                // okhttp engine configuration here
                 config {
                     // OkHttpClient.Builder configuration here
-
-                    configureTimeouts(this)
 
                     // build most config on okhttp level
                     configureOkHttp(this)

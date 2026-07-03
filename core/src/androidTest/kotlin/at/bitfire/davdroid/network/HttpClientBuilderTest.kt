@@ -5,13 +5,22 @@
 package at.bitfire.davdroid.network
 
 import at.bitfire.davdroid.ProductIds
+import at.bitfire.davdroid.settings.Settings
+import at.bitfire.davdroid.settings.SettingsManager
+import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import io.ktor.client.engine.ProxyBuilder
+import io.ktor.client.engine.okhttp.OkHttpEngine
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpHeaders
+import io.ktor.http.Url
+import io.mockk.every
+import io.mockk.impl.annotations.MockK
+import io.mockk.junit4.MockKRule
 import kotlinx.coroutines.test.runTest
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -23,6 +32,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import java.net.Proxy
 import java.util.Locale
 import java.util.logging.Handler
 import java.util.logging.Level
@@ -37,11 +47,17 @@ class HttpClientBuilderTest {
     @get:Rule
     var hiltRule = HiltAndroidRule(this)
 
+    @get:Rule
+    val mockKRule = MockKRule(this)
+
     @Inject
     lateinit var httpClientBuilder: Provider<HttpClientBuilder>
 
     @Inject
     lateinit var productIds: ProductIds
+
+    @BindValue @MockK(relaxed = true)
+    lateinit var settingsManager: SettingsManager
 
     lateinit var server: MockWebServer
 
@@ -71,6 +87,48 @@ class HttpClientBuilderTest {
             val response = client.get(server.url("/").toString())
             assertEquals(200, response.status.value)
             assertEquals("Some Content", response.bodyAsText())
+        }
+    }
+
+    @Test
+    fun testConfigureProxy_System() = runTest {
+        every { settingsManager.getInt(Settings.PROXY_TYPE) } returns Settings.PROXY_TYPE_SYSTEM
+
+        httpClientBuilder.get().buildKtor().use { client ->
+            assertNull((client.engine as OkHttpEngine).config.proxy)
+        }
+    }
+
+    @Test
+    fun testConfigureProxy_None() = runTest {
+        every { settingsManager.getInt(Settings.PROXY_TYPE) } returns Settings.PROXY_TYPE_NONE
+
+        httpClientBuilder.get().buildKtor().use { client ->
+            assertEquals(Proxy.NO_PROXY, (client.engine as OkHttpEngine).config.proxy)
+        }
+    }
+
+    @Test
+    fun testConfigureProxy_Http() = runTest {
+        every { settingsManager.getInt(Settings.PROXY_TYPE) } returns Settings.PROXY_TYPE_HTTP
+        every { settingsManager.getString(Settings.PROXY_HOST) } returns "proxy.example.com"
+        every { settingsManager.getInt(Settings.PROXY_PORT) } returns 8080
+
+        httpClientBuilder.get().buildKtor().use { client ->
+            val proxy = (client.engine as OkHttpEngine).config.proxy
+            assertEquals(ProxyBuilder.http(Url("http://proxy.example.com:8080")), proxy)
+        }
+    }
+
+    @Test
+    fun testConfigureProxy_Socks() = runTest {
+        every { settingsManager.getInt(Settings.PROXY_TYPE) } returns Settings.PROXY_TYPE_SOCKS
+        every { settingsManager.getString(Settings.PROXY_HOST) } returns "proxy.example.com"
+        every { settingsManager.getInt(Settings.PROXY_PORT) } returns 1080
+
+        httpClientBuilder.get().buildKtor().use { client ->
+            val proxy = (client.engine as OkHttpEngine).config.proxy
+            assertEquals(ProxyBuilder.socks("proxy.example.com", 1080), proxy)
         }
     }
 
