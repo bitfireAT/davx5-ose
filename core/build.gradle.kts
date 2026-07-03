@@ -146,8 +146,6 @@ dependencies {
     implementation(libs.ktor.serialization.kotlinx.json)
     implementation(libs.mikepenz.aboutLibraries.m3)
     implementation(libs.okhttp.base)
-    implementation(libs.okhttp.brotli)
-    implementation(libs.okhttp.logging)
     implementation(libs.openid.appauth)
     implementation(libs.unifiedpush) {
         // UnifiedPush connector seems to be using a workaround by importing this library.

@@ -19,7 +19,6 @@ import at.bitfire.davdroid.resource.LocalDataStore
 import at.bitfire.davdroid.sync.account.InvalidAccountException
 import at.bitfire.synctools.storage.LocalStorageException
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.runBlocking
 import java.io.Closeable
 import java.util.Optional
 import java.util.logging.Level
@@ -84,7 +83,7 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
      * of the remaining, now up-to-date, collections.
      */
     @VisibleForTesting
-    internal fun sync(provider: ContentProviderClient) {
+    internal suspend fun sync(provider: ContentProviderClient) {
         // Collection type specific preparations
         if (!prepare(provider)) {
             logger.log(Level.WARNING, "Failed to prepare sync. Won't run sync.")
@@ -109,14 +108,14 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
      * @return The sync enabled database collections as hash map identified by their ID
      */
     @VisibleForTesting
-    internal fun getSyncEnabledCollections(): Map<Long, Collection> = runBlocking {
+    internal suspend fun getSyncEnabledCollections(): Map<Long, Collection> {
         val dbCollections = mutableMapOf<Long, Collection>()
         serviceRepository.getByAccountAndType(account.name, serviceType)?.let { service ->
             for (dbCollection in getDbSyncCollections(service.id))
                 dbCollections[dbCollection.id] = dbCollection
         }
 
-        dbCollections
+        return dbCollections
     }
 
     /**
@@ -133,7 +132,7 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
      * @return Updated list of local collections (obsolete collections removed, new collections added)
      */
     @VisibleForTesting
-    internal fun updateCollections(
+    internal suspend fun updateCollections(
         provider: ContentProviderClient,
         localCollections: List<CollectionType>,
         dbCollections: Map<Long, Collection>
@@ -178,7 +177,7 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
      * @return Newly created local collections
      */
     @VisibleForTesting
-    internal fun createLocalCollections(
+    internal suspend fun createLocalCollections(
         provider: ContentProviderClient,
         dbCollections: List<Collection>
     ): List<CollectionType> =
@@ -195,12 +194,13 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
      * @param dbCollections Remote collection information
      */
     @VisibleForTesting
-    internal fun syncCollectionContents(
+    internal suspend fun syncCollectionContents(
         provider: ContentProviderClient,
         localCollections: List<CollectionType>,
         dbCollections: Map<Long, Collection>
-    ) = localCollections.forEach { localCollection ->
-        dbCollections[localCollection.dbCollectionId]?.let { dbCollection ->
+    ) {
+        for (localCollection in localCollections) {
+            val dbCollection = dbCollections[localCollection.dbCollectionId] ?: continue
             syncCollection(provider, localCollection, dbCollection)
         }
     }
@@ -235,7 +235,11 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
      * @param remoteCollection The database collection representing the remote collection. Contains
      * remote address of the collection to be synchronized.
      */
-    abstract fun syncCollection(provider: ContentProviderClient, localCollection: CollectionType, remoteCollection: Collection)
+    abstract suspend fun syncCollection(
+        provider: ContentProviderClient,
+        localCollection: CollectionType,
+        remoteCollection: Collection
+    )
 
     /**
      * Prepares the sync:

@@ -21,6 +21,7 @@ import io.ktor.client.engine.ProxyBuilder
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.DefaultRequest
 import io.ktor.client.plugins.HttpTimeout
+import io.ktor.client.plugins.UserAgent
 import io.ktor.client.plugins.compression.ContentEncoding
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.cookies.HttpCookies
@@ -39,14 +40,11 @@ import okhttp3.ConnectionSpec
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Protocol
-import okhttp3.brotli.BrotliInterceptor
-import okhttp3.logging.HttpLoggingInterceptor
 import java.net.Proxy
 import java.util.Locale
 import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
-import com.google.common.net.HttpHeaders as OkHttpHeaders
 
 /**
  * Builder for the HTTP client.
@@ -63,8 +61,7 @@ class HttpClientBuilder @Inject constructor(
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val oAuthInterceptorFactory: OAuthInterceptor.Factory,
     private val settingsManager: SettingsManager,
-    private val productIds: ProductIds,
-    private val userAgentInterceptor: UserAgentInterceptor
+    private val productIds: ProductIds
 ) {
 
     companion object {
@@ -188,29 +185,9 @@ class HttpClientBuilder @Inject constructor(
     // client configuration
 
     private fun configureOkHttp(builder: OkHttpClient.Builder) {
-        // don't allow redirects by default because it would break PROPFIND handling
-        builder.followRedirects(followRedirects)
-
-        // add User-Agent to every request
-        builder.addInterceptor(userAgentInterceptor)
-
-        // offer Brotli and gzip compression (can be disabled per request with `Accept-Encoding: identity`)
-        builder.addInterceptor(BrotliInterceptor)
-
         // add connection security (including client certificates) and authentication
         buildConnectionSecurity(builder)
         buildAuthentication(builder)
-
-        // add network logging, if requested
-        if (logger.isLoggable(Level.FINEST)) {
-            val loggingInterceptor = HttpLoggingInterceptor { message -> logger.finest(message) }
-            loggingInterceptor.redactHeader(OkHttpHeaders.AUTHORIZATION)
-            loggingInterceptor.redactHeader(OkHttpHeaders.COOKIE)
-            loggingInterceptor.redactHeader(OkHttpHeaders.SET_COOKIE)
-            loggingInterceptor.redactHeader(OkHttpHeaders.SET_COOKIE2)
-            loggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
-            builder.addNetworkInterceptor(loggingInterceptor)
-        }
     }
 
     private fun buildAuthentication(okBuilder: OkHttpClient.Builder) {
@@ -313,13 +290,12 @@ class HttpClientBuilder @Inject constructor(
                 json(lenientJson)
             }
 
-            // Set User-Agent and Accept-Language on every request (locale is read per request)
+            // Set User-Agent and Accept-Language on every request
+            install(UserAgent) {
+                agent = productIds.httpUserAgent
+            }
             install(DefaultRequest) {
-                val userAgent = productIds.httpUserAgent
-                logger.info("Will use User-Agent: $userAgent")
-
                 val locale = Locale.getDefault()
-                headers.appendIfNameAbsent(HttpHeaders.UserAgent, userAgent)
                 headers.appendIfNameAbsent(
                     HttpHeaders.AcceptLanguage,
                     "${locale.language}-${locale.country}, ${locale.language};q=0.7, *;q=0.5"
@@ -341,14 +317,18 @@ class HttpClientBuilder @Inject constructor(
                         }
                     }
                     level = loggerInterceptorLevel
+
+                    // don't log some confidential headers
+                    val headersToIgnore = arrayOf(
+                        HttpHeaders.Authorization,
+                        HttpHeaders.Cookie,
+                        HttpHeaders.SetCookie,
+                        "Set-Cookie2"       // obsoleted, but included here for good measure
+                    )
                     sanitizeHeader { header ->
-                        header.equals(HttpHeaders.Authorization, ignoreCase = true) ||
-                                header.equals(HttpHeaders.Cookie, ignoreCase = true) ||
-                                header.equals(HttpHeaders.SetCookie, ignoreCase = true) ||
-                                header.equals(
-                                    "Set-Cookie2",
-                                    ignoreCase = true
-                                ) // Obsoleted, but included here for good measure
+                        headersToIgnore.any { headerToIgnore ->
+                            header.equals(headerToIgnore, ignoreCase = true)
+                        }
                     }
                 }
             }
