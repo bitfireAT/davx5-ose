@@ -5,8 +5,6 @@
 package at.bitfire.davdroid.network
 
 import at.bitfire.davdroid.ProductIds
-import at.bitfire.davdroid.network.CookieTestUtils.assertCookiesValues
-import at.bitfire.davdroid.network.CookieTestUtils.cookie
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.ktor.client.engine.mock.MockEngine
@@ -16,10 +14,13 @@ import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.Cookie
+import io.ktor.http.Headers
+import io.ktor.http.HeadersBuilder
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.headers
 import io.ktor.http.headersOf
+import io.ktor.http.renderSetCookieHeader
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -198,6 +199,27 @@ class HttpClientBuilderTest {
         assertFalse(log.contains("secret-cookie-value"))
         // they must be redacted
         assertTrue(log.contains("***"))
+    }
+
+
+    /**
+     * Appends a `Set-Cookie` header with the representation of [cookie].
+     */
+    fun HeadersBuilder.cookie(cookie: Cookie) {
+        append(HttpHeaders.SetCookie, renderSetCookieHeader(cookie))
+    }
+
+    /**
+     * Makes sure all the cookies in [cookies] are present in the [headers] with the expected values.
+     */
+    fun assertCookiesValues(headers: Headers, vararg cookies: Pair<String, String>) {
+        val cookieHeader = headers[HttpHeaders.Cookie] ?: return
+        val values = cookieHeader.split(';').map { it.split('=', limit = 2) }
+        println("values=$values")
+        for ((name, value) in cookies) {
+            val cookieValue = values.find { it[0].trim() == name }?.get(1)?.trim()
+            assertEquals(value, cookieValue)
+        }
     }
 
 }
