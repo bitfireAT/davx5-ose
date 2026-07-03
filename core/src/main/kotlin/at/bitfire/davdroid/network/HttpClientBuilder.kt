@@ -25,7 +25,7 @@ import io.ktor.client.plugins.DefaultRequest
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.UserAgent
 import io.ktor.client.plugins.auth.Auth
-import io.ktor.client.plugins.auth.providers.BearerAuthProvider
+import io.ktor.client.plugins.auth.AuthProvider
 import io.ktor.client.plugins.compression.ContentEncoding
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.cookies.HttpCookies
@@ -102,7 +102,7 @@ class HttpClientBuilder @Inject constructor(
     private var authUsername: String? = null
     private var authPassword: SensitiveString? = null
     private var authDomain: String? = null
-    private var oAuthProvider: BearerAuthProvider? = null
+    private var oAuthProvider: AuthProvider? = null
 
     fun authenticate(
         domain: String?,
@@ -122,7 +122,7 @@ class HttpClientBuilder @Inject constructor(
                     writeAuthState = { authState ->
                         updateAuthState?.invoke(authState)
                     }
-                ).authProvider()
+                ).authProvider(domain)
             }
 
             // basic / digest auth

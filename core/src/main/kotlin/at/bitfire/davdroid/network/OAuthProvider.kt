@@ -4,12 +4,14 @@
 
 package at.bitfire.davdroid.network
 
+import at.bitfire.dav4jvm.ktor.DomainAuthProvider
 import at.bitfire.davdroid.BuildConfig
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import io.ktor.client.plugins.auth.providers.BearerAuthProvider
 import io.ktor.client.plugins.auth.providers.BearerTokens
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.suspendCancellableCoroutine
 import net.openid.appauth.AuthState
 import net.openid.appauth.AuthorizationException
@@ -39,18 +41,23 @@ class OAuthProvider @AssistedInject constructor(
     }
 
     /**
-     * Builds a Ktor [BearerAuthProvider] that sends the current OAuth access token as a Bearer
-     * token on every request.
+     * Builds a Ktor [DomainAuthProvider]-wrapped Bearer auth provider that sends the current OAuth
+     * access token as a Bearer token.
+     *
+     * @param firstLevelDomain  restrict sending the token to this domain (and its subdomains); `null` for no restriction
      */
-    fun authProvider(): BearerAuthProvider = BearerAuthProvider(
-        refreshTokens = { loadAccessToken() },
-        loadTokens = { loadAccessToken() },
-        realm = null,
-        cacheTokens = false     // token is explicitly cached by loadAccessToken
-    )
+    fun authProvider(firstLevelDomain: String?): DomainAuthProvider {
+        val bearerAuthProvider = BearerAuthProvider(
+            loadTokens = { loadAccessToken() },
+            refreshTokens = { forceFreshAccessToken() },
+            realm = null,
+            cacheTokens = true      // Ktor caches the token and serializes loadTokens()/refreshTokens() calls
+        )
+        return DomainAuthProvider(firstLevelDomain, insecurePreemptive = true, bearerAuthProvider)
+    }
 
     /**
-     * Provides fresh Bearer tokens for authorization. Uses the current access token if it's still
+     * Provides Bearer tokens for authorization. Uses the current access token if it's still
      * valid, or requests a new one if necessary.
      *
      * @return Bearer tokens, or `null` if no valid access token is available (usually because of an error during refresh)
@@ -69,6 +76,19 @@ class OAuthProvider @AssistedInject constructor(
 
         // no cached access token, request fresh one
         logger.fine("Requesting fresh access token")
+        return getFreshToken(authState)
+    }
+
+    /**
+     * Forces a fresh access token, ignoring whether the [AuthState] locally still considers the
+     * current one valid. Used as [BearerAuthProvider]'s `refreshTokens`, which is only called after
+     * the server has already rejected the current token — so a local "not expired yet" check must
+     * not short-circuit the refresh.
+     */
+    private suspend fun forceFreshAccessToken(): BearerTokens? {
+        val authState = readAuthState() ?: return null
+        logger.fine("Forcing fresh access token after rejected request")
+        authState.needsTokenRefresh = true
         return getFreshToken(authState)
     }
 
@@ -93,7 +113,9 @@ class OAuthProvider @AssistedInject constructor(
                     }
                 }
             }
-        } catch (e: AuthorizationException) {
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
             logger.log(Level.SEVERE, "Couldn't obtain access token", e)
             return null
         } finally {
