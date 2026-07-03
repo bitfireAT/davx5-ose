@@ -16,7 +16,7 @@ import org.junit.Test
 class SyncExceptionTest {
 
     @Test
-    fun testWrapWithLocalResource_LocalResource_Exception() {
+    fun testWrapWithLocalResource_LocalResource_Exception() = runTest {
         val outer = mockk<LocalResource>()
         val inner = mockk<LocalResource>()
         val e = Exception()
@@ -34,7 +34,7 @@ class SyncExceptionTest {
     }
 
     @Test
-    fun testWrapWithLocalResource_LocalResource_SyncException() {
+    fun testWrapWithLocalResource_LocalResource_SyncException() = runTest {
         val outer = mockk<LocalResource>()
         val inner = mockk<LocalResource>()
         val e = SyncException(Exception())
@@ -57,9 +57,9 @@ class SyncExceptionTest {
         val remote = mockk<Url>()
         val e = Exception()
 
-        val result = assertSyncExceptionSuspending {
-            SyncException.wrapWithLocalResourceSuspending(local) {
-                SyncException.wrapWithRemoteResourceSuspending(remote) {
+        val result = assertSyncException {
+            SyncException.wrapWithLocalResource(local) {
+                SyncException.wrapWithRemoteResource(remote) {
                     throw e
                 }
             }
@@ -76,9 +76,9 @@ class SyncExceptionTest {
         val remote = mockk<Url>()
         val e = SyncException(Exception())
 
-        val result = assertSyncExceptionSuspending {
-            SyncException.wrapWithLocalResourceSuspending(local) {
-                SyncException.wrapWithRemoteResourceSuspending(remote) {
+        val result = assertSyncException {
+            SyncException.wrapWithLocalResource(local) {
+                SyncException.wrapWithRemoteResource(remote) {
                     throw e
                 }
             }
@@ -96,9 +96,9 @@ class SyncExceptionTest {
         val local = mockk<LocalResource>()
         val e = Exception()
 
-        val result = assertSyncExceptionSuspending {
-            SyncException.wrapWithRemoteResourceSuspending(remote) {
-                SyncException.wrapWithLocalResourceSuspending(local) {
+        val result = assertSyncException {
+            SyncException.wrapWithRemoteResource(remote) {
+                SyncException.wrapWithLocalResource(local) {
                     throw e
                 }
             }
@@ -115,9 +115,9 @@ class SyncExceptionTest {
         val local = mockk<LocalResource>()
         val e = SyncException(Exception())
 
-        val result = assertSyncExceptionSuspending {
-            SyncException.wrapWithRemoteResourceSuspending(remote) {
-                SyncException.wrapWithLocalResourceSuspending(local) {
+        val result = assertSyncException {
+            SyncException.wrapWithRemoteResource(remote) {
+                SyncException.wrapWithLocalResource(local) {
                     throw e
                 }
             }
@@ -134,9 +134,9 @@ class SyncExceptionTest {
         val inner = mockk<Url>()
         val e = Exception()
 
-        val result = assertSyncExceptionSuspending {
-            SyncException.wrapWithRemoteResourceSuspending(outer) {
-                SyncException.wrapWithRemoteResourceSuspending(inner) {
+        val result = assertSyncException {
+            SyncException.wrapWithRemoteResource(outer) {
+                SyncException.wrapWithRemoteResource(inner) {
                     throw e
                 }
             }
@@ -152,9 +152,9 @@ class SyncExceptionTest {
         val inner = mockk<Url>()
         val e = SyncException(Exception())
 
-        val result = assertSyncExceptionSuspending {
-            SyncException.wrapWithRemoteResourceSuspending(outer) {
-                SyncException.wrapWithRemoteResourceSuspending(inner) {
+        val result = assertSyncException {
+            SyncException.wrapWithRemoteResource(outer) {
+                SyncException.wrapWithRemoteResource(inner) {
                     throw e
                 }
             }
@@ -194,20 +194,10 @@ class SyncExceptionTest {
 
     // helpers
 
-    fun assertSyncException(block: () -> Unit): SyncException {
+    suspend fun assertSyncException(block: suspend () -> Unit): SyncException {
         try {
             block()
         } catch(ex: Throwable) {
-            if (ex is SyncException)
-                return ex
-        }
-        throw AssertionError("Expected SyncException")
-    }
-
-    suspend fun assertSyncExceptionSuspending(block: suspend () -> Unit): SyncException {
-        try {
-            block()
-        } catch (ex: Throwable) {
             if (ex is SyncException)
                 return ex
         }

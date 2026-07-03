@@ -106,7 +106,7 @@ class CalendarSyncManager @AssistedInject constructor(
     }
 
     override suspend fun queryCapabilities(): SyncState? =
-        SyncException.wrapWithRemoteResourceSuspending(collection.url) {
+        SyncException.wrapWithRemoteResource(collection.url) {
             var syncState: SyncState? = null
             davCollection.propfind(
                 0,
@@ -227,7 +227,7 @@ class CalendarSyncManager @AssistedInject constructor(
             ZonedDateTime.now().minusDays(pastDays.toLong()).toInstant()
         }
 
-        return SyncException.wrapWithRemoteResourceSuspending(collection.url) {
+        return SyncException.wrapWithRemoteResource(collection.url) {
             logger.info("Querying events since $limitStart")
             davCollection.calendarQuery(Component.VEVENT, limitStart, null, callback = callback)
         }
@@ -235,7 +235,7 @@ class CalendarSyncManager @AssistedInject constructor(
 
     override suspend fun downloadRemote(bunch: List<Url>) {
         logger.info("Downloading ${bunch.size} iCalendars: $bunch")
-        SyncException.wrapWithRemoteResourceSuspending(collection.url) {
+        SyncException.wrapWithRemoteResource(collection.url) {
             davCollection.multiget(bunch) { response, _ ->
                 /*
                  * Real-world servers may return:
@@ -250,7 +250,7 @@ class CalendarSyncManager @AssistedInject constructor(
                  * - ignore responses without requested calendar data (should also ignore collections and hopefully unrelated resources), and
                  * - take the last segment of the href as the file name and assume that it's in the requested collection.
                  */
-                SyncException.wrapWithRemoteResourceSuspending(response.href) wrapResource@{
+                SyncException.wrapWithRemoteResource(response.href) wrapResource@{
                     if (!response.isSuccess()) {
                         logger.warning("Ignoring non-successful multi-get response for ${response.href}")
                         return@wrapResource

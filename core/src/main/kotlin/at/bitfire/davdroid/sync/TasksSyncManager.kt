@@ -91,7 +91,7 @@ class TasksSyncManager @AssistedInject constructor(
     }
 
     override suspend fun queryCapabilities() =
-        SyncException.wrapWithRemoteResourceSuspending(collection.url) {
+        SyncException.wrapWithRemoteResource(collection.url) {
             var syncState: SyncState? = null
             davCollection.propfind(0, CalDAV.MaxResourceSize, CalDAV.GetCTag, WebDAV.SyncToken) { response, relation ->
                 if (relation == Response.HrefRelation.SELF) {
@@ -142,7 +142,7 @@ class TasksSyncManager @AssistedInject constructor(
     }
 
     override suspend fun listAllRemote(callback: MultiResponseCallback) {
-        SyncException.wrapWithRemoteResourceSuspending(collection.url) {
+        SyncException.wrapWithRemoteResource(collection.url) {
             logger.info("Querying tasks")
             davCollection.calendarQuery("VTODO", null, null, callback = callback)
         }
@@ -151,10 +151,10 @@ class TasksSyncManager @AssistedInject constructor(
     override suspend fun downloadRemote(bunch: List<Url>) {
         logger.info("Downloading ${bunch.size} iCalendars: $bunch")
         // multiple iCalendars, use calendar-multi-get
-        SyncException.wrapWithRemoteResourceSuspending(collection.url) {
+        SyncException.wrapWithRemoteResource(collection.url) {
             davCollection.multiget(bunch) { response, _ ->
                 // See CalendarSyncManager for more information about the multi-get response
-                SyncException.wrapWithRemoteResourceSuspending(response.href) wrapResource@{
+                SyncException.wrapWithRemoteResource(response.href) wrapResource@{
                     if (!response.isSuccess()) {
                         logger.warning("Ignoring non-successful multi-get response for ${response.href}")
                         return@wrapResource
