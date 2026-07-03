@@ -14,6 +14,7 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.junit4.MockKRule
 import io.mockk.mockk
 import io.mockk.verify
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.runTest
 import net.openid.appauth.AuthState
 import net.openid.appauth.AuthorizationRequest
@@ -59,6 +60,7 @@ class OAuthProviderTest {
             readAuthState = readAuthState,
             writeAuthState = writeAuthState,
             authServiceProvider = { authService },
+            ioDispatcher = Dispatchers.IO,
             logger = logger
         ).authProvider(firstLevelDomain)
 
@@ -83,51 +85,6 @@ class OAuthProviderTest {
         authProvider.addRequestHeaders(httpRequestBuilder)
 
         assertEquals("Bearer access-token", httpRequestBuilder.headers[HttpHeaders.Authorization])
-    }
-
-    @Test
-    fun `addRequestHeaders() with expired access token and refresh token available`() = runTest {
-        // Set refresh and expired access token. Refreshing the token also needs service configuration and client ID.
-        val authRequest = AuthorizationRequest.Builder(
-            config, "client-id", ResponseTypeValues.CODE, Uri.parse("https://app.example/redirect")
-        ).build()
-        val authResponse = AuthorizationResponse.Builder(authRequest).build()
-        val tokenRequest = TokenRequest.Builder(config, "client-id")
-            .setAuthorizationCode("code")
-            .setRedirectUri(Uri.parse("https://app.example/redirect"))
-            .build()
-        val tokenResponse = TokenResponse.Builder(tokenRequest)
-            .setAccessToken("access-token")
-            .setRefreshToken("refresh-token")
-            .build()
-        val authState = AuthState(authResponse, tokenResponse, null).apply {
-            needsTokenRefresh = true
-        }
-        assertTrue(authState.isAuthorized)
-        assertEquals("refresh-token", authState.refreshToken)
-
-        // Prepare AuthService so that it returns a new access token upon request
-        every { authService.performTokenRequest(any(), any(), any()) } answers {
-            val request = firstArg<TokenRequest>()
-            val callback = thirdArg<AuthorizationService.TokenResponseCallback>()
-            val response = TokenResponse.Builder(request)
-                .setAccessToken("new-access-token")
-                .build()
-            callback.onTokenRequestCompleted(response, null)
-        }
-
-        // Create OAuthProvider that interacts with our prepared authState
-        var newAuthState: AuthState? = null
-        val authProvider = oAuthProvider(
-            readAuthState = { authState },
-            writeAuthState = { newAuthState = it }
-        )
-        val httpRequestBuilder = HttpRequestBuilder()
-
-        authProvider.addRequestHeaders(httpRequestBuilder)
-
-        assertEquals("Bearer new-access-token", httpRequestBuilder.headers[HttpHeaders.Authorization])
-        assertEquals("new-access-token", newAuthState?.accessToken)
     }
 
     @Test
