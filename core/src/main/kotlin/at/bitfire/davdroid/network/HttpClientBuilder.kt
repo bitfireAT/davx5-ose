@@ -18,9 +18,11 @@ import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.synctools.util.SensitiveString
 import com.google.errorprone.annotations.MustBeClosed
 import io.ktor.client.HttpClient
+import io.ktor.client.HttpClientConfig
 import io.ktor.client.engine.HttpClientEngineConfig
 import io.ktor.client.engine.ProxyBuilder
 import io.ktor.client.engine.okhttp.OkHttp
+import io.ktor.client.engine.okhttp.OkHttpConfig
 import io.ktor.client.plugins.DefaultRequest
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.UserAgent
@@ -38,7 +40,6 @@ import io.ktor.util.appendIfNameAbsent
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import net.openid.appauth.AuthState
-import okhttp3.Authenticator
 import okhttp3.ConnectionSpec
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -97,8 +98,7 @@ class HttpClientBuilder @Inject constructor(
         return this
     }
 
-    private var authenticationInterceptor: Interceptor? = null
-    private var authenticator: Authenticator? = null
+    private var oAuthInterceptor: Interceptor? = null
     private var certificateAlias: String? = null
 
     private var authUsername: String? = null
@@ -109,7 +109,7 @@ class HttpClientBuilder @Inject constructor(
         val credentials = getCredentials()
         if (credentials.authState != null) {
             // OAuth
-            authenticationInterceptor = oAuthInterceptorFactory.create(
+            oAuthInterceptor = oAuthInterceptorFactory.create(
                 readAuthState = {
                     // We don't use the "credentials" object from above because it may contain an outdated access token
                     // when readAuthState is called. Instead, we fetch the up-to-date auth-state.
@@ -188,13 +188,11 @@ class HttpClientBuilder @Inject constructor(
     private fun configureOkHttp(builder: OkHttpClient.Builder) {
         // add connection security (including client certificates) and authentication
         buildConnectionSecurity(builder)
-        buildAuthentication(builder)
+        buildOAuthAuthentication(builder)
     }
 
-    private fun buildAuthentication(okBuilder: OkHttpClient.Builder) {
-        // basic/digest auth and OAuth
-        authenticationInterceptor?.let { okBuilder.addInterceptor(it) }
-        authenticator?.let { okBuilder.authenticator(it) }
+    private fun buildOAuthAuthentication(okBuilder: OkHttpClient.Builder) {
+        oAuthInterceptor?.let { okBuilder.addInterceptor(it) }
     }
 
     private fun buildConnectionSecurity(okBuilder: OkHttpClient.Builder) {
@@ -277,26 +275,7 @@ class HttpClientBuilder @Inject constructor(
             // this controls whether Ktor's HttpRedirect plugin is active
             followRedirects = this@HttpClientBuilder.followRedirects
 
-            val username = authUsername
-            val password = authPassword
-            if (username != null && password != null) {
-                val basicAuthProvider = createDomainBasicAuthProvider(
-                    username = username,
-                    password = password.asString(),
-                    firstLevelDomain = authDomain,
-                    insecurePreemptive = true
-                )
-                val digestAuthProvider = createDomainDigestAuthProvider(
-                    username = username,
-                    password = password.asString(),
-                    firstLevelDomain = authDomain
-                )
-
-                install(Auth) {
-                    providers.add(basicAuthProvider)
-                    providers.add(digestAuthProvider)
-                }
-            }
+            installAuthPlugin()
 
             // Uses AcceptAllCookiesStorage, which stores all the cookies in an in-memory map.
             install(HttpCookies)
@@ -373,4 +352,26 @@ class HttpClientBuilder @Inject constructor(
         return client
     }
 
+    private fun HttpClientConfig<OkHttpConfig>.installAuthPlugin() {
+        val username = authUsername
+        val password = authPassword
+        if (username != null && password != null) {
+            val basicAuthProvider = createDomainBasicAuthProvider(
+                username = username,
+                password = password.asString(),
+                firstLevelDomain = authDomain,
+                insecurePreemptive = true
+            )
+            val digestAuthProvider = createDomainDigestAuthProvider(
+                username = username,
+                password = password.asString(),
+                firstLevelDomain = authDomain
+            )
+
+            install(Auth) {
+                providers.add(basicAuthProvider)
+                providers.add(digestAuthProvider)
+            }
+        }
+    }
 }
