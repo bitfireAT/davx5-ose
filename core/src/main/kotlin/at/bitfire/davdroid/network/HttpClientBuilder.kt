@@ -96,6 +96,7 @@ class HttpClientBuilder @Inject constructor(
         return this
     }
 
+
     private var certificateAlias: String? = null
 
     private var authUsername: String? = null
@@ -114,8 +115,8 @@ class HttpClientBuilder @Inject constructor(
             credentials.authState != null -> {
                 oAuthProvider = oAuthProviderFactory.create(
                     readAuthState = {
-                        // We don't use the "credentials" object from above because it may contain an outdated access token
-                        // when readAuthState is called. Instead, we fetch the up-to-date auth-state.
+                        /* We don't use the "credentials" object from above because it may contain an outdated
+                        access token. Instead, we fetch the up-to-date auth-state on each readAuthState call. */
                         getCredentials().authState
                     },
                     writeAuthState = { authState ->
@@ -138,6 +139,7 @@ class HttpClientBuilder @Inject constructor(
 
         return this
     }
+
 
     private var followRedirects = false
 

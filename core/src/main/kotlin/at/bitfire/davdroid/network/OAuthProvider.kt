@@ -21,7 +21,7 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
 /**
- * Provides Ktor Bearer authentication (RFC 6750) with an OAuth access token.
+ * Provides Bearer authentication (RFC 6750) with an OAuth access token.
  *
  * @param readAuthState     callback that fetches an up-to-date authorization state
  * @param writeAuthState    callback that persists a new authorization state
@@ -38,7 +38,6 @@ class OAuthProvider @AssistedInject constructor(
         fun create(readAuthState: () -> AuthState?, writeAuthState: (AuthState) -> Unit): OAuthProvider
     }
 
-
     /**
      * Builds a Ktor [BearerAuthProvider] that sends the current OAuth access token as a Bearer
      * token on every request.
@@ -47,7 +46,7 @@ class OAuthProvider @AssistedInject constructor(
         refreshTokens = { loadAccessToken() },
         loadTokens = { loadAccessToken() },
         realm = null,
-        cacheTokens = false     // AuthState already tracks token freshness/expiry itself
+        cacheTokens = false     // token is explicitly cached by loadAccessToken
     )
 
     /**
@@ -57,23 +56,32 @@ class OAuthProvider @AssistedInject constructor(
      * @return Bearer tokens, or `null` if no valid access token is available (usually because of an error during refresh)
      */
     private suspend fun loadAccessToken(): BearerTokens? {
-        // if possible, use cached access token
         val authState = readAuthState() ?: return null
 
+        // if possible, use cached access token
         if (authState.isAuthorized && authState.accessToken != null && !authState.needsTokenRefresh) {
-            if (BuildConfig.DEBUG)      // log sensitive information (refresh/access token) only in debug builds
+            if (BuildConfig.DEBUG) {
+                // log sensitive information (refresh/access token) only in debug builds
                 logger.log(Level.FINEST, "Using cached AuthState", authState.jsonSerializeString())
+            }
             return BearerTokens(authState.accessToken!!, null)
         }
 
-        // request fresh access token
+        // no cached access token, request fresh one
         logger.fine("Requesting fresh access token")
+        return getFreshToken(authState)
+    }
+
+    private suspend fun getFreshToken(authState: AuthState): BearerTokens? {
         val authService = authServiceProvider.get()
         try {
+            // The AppAuth method we have to call is callback-based. We wrap it to be suspending instead.
             return suspendCancellableCoroutine { cont ->
                 authState.performActionWithFreshTokens(authService) { accessToken: String?, _: String?, ex: AuthorizationException? ->
-                    if (BuildConfig.DEBUG)
+                    if (BuildConfig.DEBUG) {
+                        // log sensitive information (refresh/access token) only in debug builds
                         logger.log(Level.FINEST, "Got new AuthState", authState.jsonSerializeString())
+                    }
 
                     // persist updated AuthState
                     writeAuthState(authState)
