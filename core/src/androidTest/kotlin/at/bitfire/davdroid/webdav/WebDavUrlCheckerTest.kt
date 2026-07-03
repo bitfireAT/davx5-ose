@@ -4,7 +4,7 @@
 
 package at.bitfire.davdroid.webdav
 
-import at.bitfire.dav4jvm.HttpUtils.toKtorUrl
+import at.bitfire.davdroid.toKtorUrl
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import junit.framework.TestCase.assertEquals
