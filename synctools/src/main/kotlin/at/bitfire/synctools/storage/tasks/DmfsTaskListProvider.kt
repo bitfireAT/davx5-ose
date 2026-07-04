@@ -15,6 +15,7 @@ import at.bitfire.synctools.storage.tasks.DmfsTasksContract.asSyncAdapter
 import at.bitfire.synctools.storage.toContentValues
 import org.dmfs.tasks.contract.TaskContract
 import java.util.LinkedList
+import java.util.logging.Level
 import java.util.logging.Logger
 
 /**
@@ -37,7 +38,7 @@ class DmfsTaskListProvider(
     // DmfsTaskList CRUD
 
     fun createTaskList(values: ContentValues): Long {
-        logger.fine("Creating ${providerName.authority} local task list with $values")
+        logger.log(Level.FINE, "Creating {0} local task list with {1}", arrayOf(providerName.authority, values))
 
         values.put(TaskContract.ACCOUNT_NAME, account.name)
         values.put(TaskContract.ACCOUNT_TYPE, account.type)
@@ -144,7 +145,7 @@ class DmfsTaskListProvider(
         }
 
     fun updateTaskList(id: Long, info: ContentValues): Int {
-        logger.fine("Updating ${providerName.authority} task list (#$id) with $info")
+        logger.log(Level.FINE, "Updating {0} task list {1} with {2}", arrayOf(providerName.authority, id, info))
         try {
             return client.update(taskListUri(id), info, null, null)
         } catch (e: RemoteException) {
@@ -158,7 +159,7 @@ class DmfsTaskListProvider(
      * @return `true` if the task list was deleted, `false` otherwise (like it was not there before the call)
      */
     fun deleteTaskList(id: Long): Boolean {
-        logger.fine("Deleting ${providerName.authority} task list (#$id)")
+        logger.log(Level.FINE, "Deleting {0} task list {1}", arrayOf<Any>(providerName.authority, id))
         try {
             return client.delete(taskListUri(id), null, null) > 0
         } catch (e: RemoteException) {

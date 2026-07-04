@@ -187,7 +187,7 @@ class CalendarSyncManager @AssistedInject constructor(
 
     override fun generateUpload(resource: LocalEvent): GeneratedResource {
         val localEvent = resource.androidEvent
-        logger.fine("Preparing upload of event #${resource.id}: $localEvent")
+        logger.log(Level.FINE, "Preparing upload of event #{0}: {1}", arrayOf(resource.id, localEvent))
 
         /* Increase SEQUENCE of main event in memory and remember new value.
         Will be written to provider later over onSuccessContext. */

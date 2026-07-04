@@ -354,7 +354,11 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
                         }
                     }
                 } else
-                    logger.info("Removing local record #${local.id} which has been deleted locally and was never uploaded")
+                    logger.log(
+                        Level.INFO,
+                        "Removing local record #{0} which has been deleted locally and was never uploaded",
+                        arrayOf(local.id)
+                    )
                 local.deleteLocal()
             }
         }
@@ -403,7 +407,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
             SyncException.wrapWithRemoteResource(uploadUrl) {
                 if (existingFileName == null || forceAsNew) {
                     // create new resource on server
-                    logger.info("Uploading new resource ${local.id} -> $fileName")
+                    logger.log(Level.INFO, "Uploading new resource {0} -> {1}", arrayOf<Any?>(local.id, fileName))
 
                     var newETag: String? = null
                     var newScheduleTag: String? = null
@@ -425,7 +429,11 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
                     val ifScheduleTag = local.scheduleTag
                     val ifETag = if (ifScheduleTag == null) local.eTag else null
 
-                    logger.info("Uploading modified resource ${local.id} -> $fileName (if ETag=$ifETag / Schedule-Tag=$ifScheduleTag)")
+                    logger.log(
+                        Level.INFO,
+                        "Uploading modified resource {0} -> {1} (if ETag={2} / Schedule-Tag={3})",
+                        arrayOf<Any?>(local.id, fileName, ifETag, ifScheduleTag)
+                    )
 
                     var updatedETag: String? = null
                     var updatedScheduleTag: String? = null

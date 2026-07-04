@@ -85,13 +85,13 @@ class AccountRepository @Inject constructor(
 
         // create Android account
         val userData = AccountSettings.initialUserData(credentials, preconfigurationUrl)
-        logger.info("Creating Android account with initial config: $account, $userData")
+        logger.log(Level.INFO, "Creating Android account {0} with initial config {1}", arrayOf(account, userData))
 
         if (!AndroidAccountUtils.createAccount(context, account, userData, credentials?.password))
             return null
 
         // add entries for account to database
-        logger.info("Writing account configuration to database: $config")
+        logger.log(Level.INFO, "Writing account configuration to database: {0}", arrayOf(config))
         try {
             if (config.cardDAV != null) {
                 // insert CardDAV service
@@ -116,7 +116,7 @@ class AccountRepository @Inject constructor(
             // set up automatic sync (processes inserted services)
             automaticSyncManager.get().updateAutomaticSync(account)
 
-        } catch(e: InvalidAccountException) {
+        } catch (e: InvalidAccountException) {
             logger.log(Level.SEVERE, "Couldn't access account settings", e)
             return null
         }
@@ -260,7 +260,11 @@ class AccountRepository @Inject constructor(
 
     // helpers
 
-    private fun insertService(accountName: String, @ServiceType type: String, info: DavResourceFinder.Configuration.ServiceInfo): Long {
+    private fun insertService(
+        accountName: String,
+        @ServiceType type: String,
+        info: DavResourceFinder.Configuration.ServiceInfo
+    ): Long {
         // insert service
         val service = Service(0, accountName, type, info.principal)
         val serviceId = serviceRepository.insertOrReplaceBlocking(service)
