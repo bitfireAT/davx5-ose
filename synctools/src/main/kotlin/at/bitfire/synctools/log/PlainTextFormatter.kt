@@ -77,7 +77,12 @@ class PlainTextFormatter(
             if (r.parameters == null)
                 r.message
             else
-                MessageFormat.format(r.message, *r.parameters)
+                try {
+                    MessageFormat.format(r.message, *r.parameters)
+                } catch (_: IllegalArgumentException) {
+                    // fall back to message when it couldn't be parsed
+                    r.message
+                }
         builder.append(truncate(formattedMessage))
 
         if (withException && r.thrown != null) {
