@@ -21,20 +21,20 @@ class PlainTextFormatterTest {
 
     @Test
     fun test_format_param_null() {
-        val result = minimum.format(LogRecord(Level.INFO, "Message").apply {
+        val result = minimum.format(LogRecord(Level.INFO, "Message {0}").apply {
             parameters = arrayOf(null)
         })
-        assertEquals("Message\n\tPARAMETER #1 = (null)", result)
+        assertEquals("Message null", result)
     }
 
     @Test
     fun test_format_param_object() {
-        val result = minimum.format(LogRecord(Level.INFO, "Message").apply {
+        val result = minimum.format(LogRecord(Level.INFO, "Message {0}").apply {
             parameters = arrayOf(object {
                 override fun toString() = "SomeObject[]"
             })
         })
-        assertEquals("Message\n\tPARAMETER #1 = SomeObject[]", result)
+        assertEquals("Message SomeObject[]", result)
     }
 
     @Test

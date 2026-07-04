@@ -79,8 +79,7 @@ open class BatchOperation internal constructor(
             if (logger.isLoggable(Level.FINE))
                 logger.log(
                     Level.FINE, "Committing {0} operation(s): {1}",
-                    queue.size,
-                    queue.mapIndexed { idx, op -> "[$idx] ${op.build()}" }.joinToString(", ")
+                    arrayOf<Any>(queue.size, queue.mapIndexed { idx, op -> "[$idx] ${op.build()}" }.joinToString(", "))
                 )
 
             results = arrayOfNulls(queue.size)
