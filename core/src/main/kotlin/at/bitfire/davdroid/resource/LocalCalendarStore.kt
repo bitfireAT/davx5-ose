@@ -24,7 +24,6 @@ import at.bitfire.synctools.storage.calendar.AndroidCalendarProvider
 import at.bitfire.synctools.storage.calendar.EventsContract.asSyncAdapter
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.time.ZoneId
-import java.util.logging.Level
 import java.util.logging.Logger
 import javax.annotation.WillNotClose
 import javax.inject.Inject
@@ -49,7 +48,7 @@ class LocalCalendarStore @Inject constructor(
             /* return */ null
     }
 
-    override fun create(client: ContentProviderClient, fromCollection: Collection): LocalCalendar? {
+    override fun create(client: ContentProviderClient, fromCollection: Collection): LocalCalendar {
         val service = serviceRepository.getBlocking(fromCollection.serviceId) ?: throw IllegalArgumentException("Couldn't fetch DB service from collection")
         val account = Account(service.accountName, context.getString(R.string.account_type))
 
@@ -77,7 +76,7 @@ class LocalCalendarStore @Inject constructor(
             put(Calendars.SYNC_EVENTS, 1)
         }
 
-        logger.log(Level.INFO, "Adding local calendar", values)
+        logger.info("Adding local calendar: $values")
         val provider = AndroidCalendarProvider(account, client)
         return localCalendarFactory.create(provider.createAndGetCalendar(values))
     }
@@ -96,7 +95,7 @@ class LocalCalendarStore @Inject constructor(
         val accountSettings = accountSettingsFactory.create(localCollection.androidCalendar.account)
         val values = valuesFromCollectionInfo(fromCollection, withColor = accountSettings.getManageCalendarColors())
 
-        logger.log(Level.FINE, "Updating local calendar ${fromCollection.url}", values)
+        logger.fine("Updating local calendar ${fromCollection.url}: $values")
         val androidCalendar = localCollection.androidCalendar
         val provider = AndroidCalendarProvider(androidCalendar.account, client)
         provider.updateCalendar(androidCalendar.id, values)
@@ -170,7 +169,7 @@ class LocalCalendarStore @Inject constructor(
     }
 
     override fun delete(localCollection: LocalCalendar) {
-        logger.log(Level.INFO, "Deleting local calendar", localCollection)
+        logger.info("Deleting local calendar: $localCollection")
         localCollection.androidCalendar.delete()
     }
 

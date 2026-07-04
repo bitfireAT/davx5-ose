@@ -192,7 +192,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
                         logger.info("Post-processing")
                         postProcess()
 
-                        logger.log(Level.INFO, "Saving sync state", remoteSyncState)
+                        logger.info("Saving sync state: $remoteSyncState")
                         localCollection.lastSyncState = remoteSyncState
                     }
 
@@ -231,7 +231,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
                                 }
                             }
 
-                            logger.log(Level.INFO, "Saving sync state", syncState)
+                            logger.info("Saving sync state: $syncState")
                             localCollection.lastSyncState = syncState
 
                             logger.info("Server has further changes: $furtherChanges")
@@ -244,7 +244,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
 
                             // remove initial sync flag
                             syncState!!.initialSync = false
-                            logger.log(Level.INFO, "Initial sync completed, saving sync state", syncState)
+                            logger.info("Initial sync completed, saving sync state: $syncState")
                             localCollection.lastSyncState = syncState
                         }
 
@@ -508,14 +508,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
         scheduleTag: String?,
         context: GeneratedResource.OnSuccessContext?
     ) {
-        logger.log(
-            Level.FINE, "Upload successful", arrayOf(
-                "File name = $newFileName",
-                "ETag = $eTag",
-                "Schedule-Tag = $scheduleTag",
-                "context = $context"
-            )
-        )
+        logger.fine("Upload successful: file=$newFileName, ETag=$eTag, Schedule-Tag=$scheduleTag, context=$context")
 
         // update SEQUENCE, if necessary
         if (context?.sequence != null)

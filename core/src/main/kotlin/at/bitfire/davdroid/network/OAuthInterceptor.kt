@@ -71,7 +71,7 @@ class OAuthInterceptor @AssistedInject constructor(
 
         if (authState.isAuthorized && authState.accessToken != null && !authState.needsTokenRefresh) {
             if (BuildConfig.DEBUG)      // log sensitive information (refresh/access token) only in debug builds
-                logger.log(Level.FINEST, "Using cached AuthState", authState.jsonSerializeString())
+                logger.finest("Using cached AuthState: ${authState.jsonSerializeString()}")
             return authState.accessToken
         }
 
@@ -83,7 +83,7 @@ class OAuthInterceptor @AssistedInject constructor(
             authState.performActionWithFreshTokens(authService) { accessToken: String?, _: String?, ex: AuthorizationException? ->
                 // appauth internally fetches the new token over HttpURLConnection in an AsyncTask
                 if (BuildConfig.DEBUG)
-                    logger.log(Level.FINEST, "Got new AuthState", authState.jsonSerializeString())
+                    logger.finest("Got new AuthState: ${authState.jsonSerializeString()}")
 
                 // persist updated AuthState
                 writeAuthState(authState)

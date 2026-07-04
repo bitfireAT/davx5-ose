@@ -110,7 +110,7 @@ class TasksSyncManager @AssistedInject constructor(
 
     override fun generateUpload(resource: LocalTask): GeneratedResource {
         val localTask = resource.taskAndExceptions
-        logger.log(Level.FINE, "Preparing upload of task #${resource.id}", localTask)
+        logger.fine("Preparing upload of task #${resource.id}: $localTask")
 
         /* Increase SEQUENCE of main task in memory and remember new value.
         Will be written to provider later over onSuccessContext. */
@@ -213,11 +213,11 @@ class TasksSyncManager @AssistedInject constructor(
         val local = localCollection.findByName(fileName)
         if (local != null) {
             SyncException.wrapWithLocalResource(local) {
-                logger.log(Level.INFO, "Updating $fileName in local task list", task)
+                logger.info("Updating $fileName in local task list: $task")
                 local.update(dmfsTask)
             }
         } else {
-            logger.log(Level.INFO, "Adding $fileName to local task list", task)
+            logger.info("Adding $fileName to local task list: $task")
             localCollection.add(dmfsTask)
         }
     }

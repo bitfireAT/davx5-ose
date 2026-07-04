@@ -18,7 +18,6 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.flow.firstOrNull
 import java.util.Optional
-import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
 import javax.inject.Provider
@@ -78,10 +77,10 @@ class Android7DirtyVerifier @Inject constructor(
             val currentHash = contactDataHashCode(contact)
             if (lastHash == currentHash) {
                 // hash is code still the same, contact is not "really dirty" (only metadata been have changed)
-                logger.log(Level.FINE, "Contact data hash has not changed, resetting dirty flag", contact)
+                logger.fine("Contact data hash has not changed, resetting dirty flag: $contact")
                 contact.resetDirty()
             } else {
-                logger.log(Level.FINE, "Contact data has changed from hash $lastHash to $currentHash", contact)
+                logger.fine("Contact data has changed from hash $lastHash to $currentHash: $contact")
                 reallyDirty++
             }
         }
@@ -118,7 +117,7 @@ class Android7DirtyVerifier @Inject constructor(
         val dataHash = ac.getContact().hashCode()
         val groupHash = ac.groupMemberships.hashCode()
         val combinedHash = dataHash xor groupHash
-        logger.log(Level.FINE, "Calculated data hash = $dataHash, group memberships hash = $groupHash → combined hash = $combinedHash", contact)
+        logger.fine("Calculated hash code for $contact: data=$dataHash, groups=$groupHash, combined=$combinedHash")
         return combinedHash
     }
 

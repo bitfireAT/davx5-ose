@@ -85,13 +85,13 @@ class AccountRepository @Inject constructor(
 
         // create Android account
         val userData = AccountSettings.initialUserData(credentials, preconfigurationUrl)
-        logger.log(Level.INFO, "Creating Android account with initial config", arrayOf(account, userData))
+        logger.info("Creating Android account with initial config: $account, $userData")
 
         if (!AndroidAccountUtils.createAccount(context, account, userData, credentials?.password))
             return null
 
         // add entries for account to database
-        logger.log(Level.INFO, "Writing account configuration to database", config)
+        logger.info("Writing account configuration to database: $config")
         try {
             if (config.cardDAV != null) {
                 // insert CardDAV service

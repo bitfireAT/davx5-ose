@@ -239,7 +239,7 @@ class HttpClientBuilder @Inject constructor(
             else -> /* Invalid proxy type, shouldn't happen */ null
         }
         if (proxy != null) {
-            logger.log(Level.INFO, "Using non-default proxy setting", proxy)
+            logger.info("Using non-default proxy setting: $proxy")
             engineConfig.proxy = proxy
         }
     }

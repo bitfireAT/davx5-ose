@@ -23,7 +23,6 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import java.time.Duration
 import java.util.concurrent.Semaphore
-import java.util.logging.Level
 import java.util.logging.Logger
 
 @HiltWorker
@@ -63,7 +62,7 @@ class AccountsCleanupWorker @AssistedInject constructor(
 
         // Delete orphaned services in DB – only necessary as long as accounts are implemented as system accounts (not in DB)
         val accounts = accountRepository.getAll()
-        logger.log(Level.INFO, "Cleaning up accounts. Currently existing accounts:", accounts)
+        logger.info("Cleaning up accounts. Currently existing accounts: $accounts")
         val serviceDao = db.serviceDao()
         if (accounts.isEmpty())
             serviceDao.deleteAll()

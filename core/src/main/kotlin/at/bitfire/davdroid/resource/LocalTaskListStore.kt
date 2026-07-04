@@ -25,7 +25,6 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import org.dmfs.tasks.contract.TaskContract.TaskListColumns
 import org.dmfs.tasks.contract.TaskContract.TaskLists
 import org.dmfs.tasks.contract.TaskContract.Tasks
-import java.util.logging.Level
 import java.util.logging.Logger
 import javax.annotation.WillNotClose
 
@@ -56,11 +55,11 @@ class LocalTaskListStore @AssistedInject constructor(
             /* return */ null
     }
 
-    override fun create(client: ContentProviderClient, fromCollection: Collection): LocalTaskList? {
+    override fun create(client: ContentProviderClient, fromCollection: Collection): LocalTaskList {
         val service = serviceDao.get(fromCollection.serviceId) ?: throw IllegalArgumentException("Couldn't fetch DB service from collection")
         val account = Account(service.accountName, context.getString(R.string.account_type))
 
-        logger.log(Level.INFO, "Adding local task list", fromCollection)
+        logger.info("Adding local task list: $fromCollection")
         val dmfsTaskList = create(account, client, providerName, fromCollection)
         return LocalTaskList(dmfsTaskList)
     }
@@ -111,7 +110,7 @@ class LocalTaskListStore @AssistedInject constructor(
             ?.let { LocalTaskList(it) }
 
     override fun update(client: ContentProviderClient, localCollection: LocalTaskList, fromCollection: Collection) {
-        logger.log(Level.FINE, "Updating local task list ${fromCollection.url}", fromCollection)
+        logger.fine("Updating local task list ${fromCollection.url}: $fromCollection")
         val accountSettings = accountSettingsFactory.create(localCollection.dmfsTaskList.account)
         localCollection.dmfsTaskList.update(valuesFromCollectionInfo(fromCollection, withColor = accountSettings.getManageCalendarColors()))
     }

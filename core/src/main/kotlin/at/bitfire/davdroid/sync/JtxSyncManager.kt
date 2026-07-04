@@ -105,7 +105,7 @@ class JtxSyncManager @AssistedInject constructor(
 
     override fun generateUpload(resource: LocalJtxObject): GeneratedResource {
         val localJtxObject = resource.jtxObjectAndExceptions
-        logger.log(Level.FINE, "Preparing upload of icalobject #${resource.id}", localJtxObject)
+        logger.fine("Preparing upload of icalobject #${resource.id}: $localJtxObject")
 
         // Map jtx object to iCalendar (also generates UID, if necessary)
         val handler = JtxObjectHandler(
@@ -220,11 +220,11 @@ class JtxSyncManager @AssistedInject constructor(
         val local = localCollection.findByName(fileName)
         if (local != null) {
             SyncException.wrapWithLocalResource(local) {
-                logger.log(Level.INFO, "Updating $fileName in local jtx collection", component)
+                logger.info("Updating $fileName in local jtx collection: $component")
                 local.update(jtxEntityAndExceptions)
             }
         } else {
-            logger.log(Level.INFO, "Adding $fileName to local jtx collection", component)
+            logger.info("Adding $fileName to local jtx collection: $component")
             localCollection.add(jtxEntityAndExceptions)
         }
     }
