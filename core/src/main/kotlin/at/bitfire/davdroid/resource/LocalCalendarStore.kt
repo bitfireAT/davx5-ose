@@ -24,6 +24,7 @@ import at.bitfire.synctools.storage.calendar.AndroidCalendarProvider
 import at.bitfire.synctools.storage.calendar.EventsContract.asSyncAdapter
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.time.ZoneId
+import java.util.logging.Level
 import java.util.logging.Logger
 import javax.annotation.WillNotClose
 import javax.inject.Inject
@@ -95,7 +96,7 @@ class LocalCalendarStore @Inject constructor(
         val accountSettings = accountSettingsFactory.create(localCollection.androidCalendar.account)
         val values = valuesFromCollectionInfo(fromCollection, withColor = accountSettings.getManageCalendarColors())
 
-        logger.fine("Updating local calendar ${fromCollection.url}: $values")
+        logger.log(Level.FINE, "Updating local calendar {0}: {1}", arrayOf(fromCollection.url, values))
         val androidCalendar = localCollection.androidCalendar
         val provider = AndroidCalendarProvider(androidCalendar.account, client)
         provider.updateCalendar(androidCalendar.id, values)

@@ -25,6 +25,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import org.dmfs.tasks.contract.TaskContract.TaskListColumns
 import org.dmfs.tasks.contract.TaskContract.TaskLists
 import org.dmfs.tasks.contract.TaskContract.Tasks
+import java.util.logging.Level
 import java.util.logging.Logger
 import javax.annotation.WillNotClose
 
@@ -110,7 +111,7 @@ class LocalTaskListStore @AssistedInject constructor(
             ?.let { LocalTaskList(it) }
 
     override fun update(client: ContentProviderClient, localCollection: LocalTaskList, fromCollection: Collection) {
-        logger.fine("Updating local task list ${fromCollection.url}: $fromCollection")
+        logger.log(Level.FINE, "Updating local task list {0}: {1}", arrayOf(fromCollection.url, fromCollection))
         val accountSettings = accountSettingsFactory.create(localCollection.dmfsTaskList.account)
         localCollection.dmfsTaskList.update(valuesFromCollectionInfo(fromCollection, withColor = accountSettings.getManageCalendarColors()))
     }

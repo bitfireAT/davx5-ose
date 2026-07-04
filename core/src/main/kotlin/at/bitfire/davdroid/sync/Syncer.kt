@@ -159,7 +159,7 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
         // Create local collections which are in DB, but don't exist locally yet
         if (newDbCollections.isNotEmpty()) {
             val toBeCreated = newDbCollections.values.toList()
-            logger.info("Creating new local collections: ${toBeCreated.joinToString()}")
+            logger.log(Level.INFO, "Creating new local collections: {0}", arrayOf(toBeCreated.joinToString()))
             val newLocalCollections = createLocalCollections(provider, toBeCreated)
             // Add the newly created collections to the updated list
             updatedLocalCollections.addAll(newLocalCollections)

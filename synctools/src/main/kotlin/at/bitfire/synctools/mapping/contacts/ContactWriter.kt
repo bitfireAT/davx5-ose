@@ -365,7 +365,7 @@ class ContactWriter(
             val msgs = LinkedList<String>()
             for ((key, warnings) in validation)
                 msgs += "  * " + key?.javaClass?.simpleName + " - " + warnings?.joinToString(" | ")
-            logger.warning("vCard validation warnings: ${msgs.joinToString(",")}")
+            logger.log(Level.WARNING, "vCard validation warnings: {0}", arrayOf(msgs.joinToString(",")))
         }
     }
 
