@@ -136,7 +136,10 @@ object DatePropertyTzMapper {
             val origDateInstant = origDate.toInstant()
             val resultInstant = result.toInstant()
             if (origDateInstant != resultInstant)
-                logger.warning("Different timestamps of normalized $result (${resultInstant.toEpochMilli()}) and original $origDate (${origDateInstant.toEpochMilli()}) ZonedDateTime")
+                logger.log(
+                    Level.WARNING, "Different timestamps of normalized {0} ({1}) and original {2} ({3}) ZonedDateTime",
+                    arrayOf(result, resultInstant.toEpochMilli(), origDate, origDateInstant.toEpochMilli())
+                )
 
             return result
 

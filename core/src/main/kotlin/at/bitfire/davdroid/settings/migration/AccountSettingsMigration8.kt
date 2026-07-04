@@ -18,7 +18,6 @@ import dagger.hilt.components.SingletonComponent
 import dagger.multibindings.IntKey
 import dagger.multibindings.IntoMap
 import org.dmfs.tasks.contract.TaskContract
-import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
 
@@ -52,7 +51,7 @@ class AccountSettingsMigration8 @Inject constructor(
                         TaskContract.Tasks.SYNC1 to null,
                         TaskContract.Tasks.SYNC2 to null
                     )
-                    logger.log(Level.FINE, "Updating task $id", values)
+                    logger.fine("Updating task $id: $values")
                     client.update(
                         ContentUris.withAppendedId(tasksUri, id).asSyncAdapter(account),
                         values, null, null)

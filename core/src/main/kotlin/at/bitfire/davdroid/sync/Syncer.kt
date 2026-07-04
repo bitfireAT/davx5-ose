@@ -86,7 +86,7 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
     internal suspend fun sync(provider: ContentProviderClient) {
         // Collection type specific preparations
         if (!prepare(provider)) {
-            logger.log(Level.WARNING, "Failed to prepare sync. Won't run sync.")
+            logger.warning("Failed to prepare sync. Won't run sync.")
             return
         }
 
@@ -145,12 +145,20 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
             val dbCollection = dbCollections.getOrDefault(localCollection.dbCollectionId, null)
             if (dbCollection == null) {
                 // Collection not available in db = on server (anymore), delete and remove from the updated list
-                logger.info("Deleting local collection ${localCollection.title} without matching remote collection")
+                logger.log(
+                    Level.INFO,
+                    "Deleting local collection {0} without matching remote collection",
+                    arrayOf(localCollection.title)
+                )
                 dataStore.delete(localCollection)
                 updatedLocalCollections -= localCollection
             } else {
                 // Collection exists locally, update local collection and remove it from "to be created" map
-                logger.fine("Updating local collection ${localCollection.title} with $dbCollection")
+                logger.log(
+                    Level.FINE,
+                    "Updating local collection {0} with {1}",
+                    arrayOf(localCollection.title, dbCollection)
+                )
                 dataStore.update(provider, localCollection, dbCollection)
                 newDbCollections -= dbCollection.id
             }
@@ -159,7 +167,7 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
         // Create local collections which are in DB, but don't exist locally yet
         if (newDbCollections.isNotEmpty()) {
             val toBeCreated = newDbCollections.values.toList()
-            logger.log(Level.INFO, "Creating new local collections", toBeCreated.toTypedArray())
+            logger.log(Level.INFO, "Creating new local collections: {0}", arrayOf(toBeCreated.joinToString()))
             val newLocalCollections = createLocalCollections(provider, toBeCreated)
             // Add the newly created collections to the updated list
             updatedLocalCollections.addAll(newLocalCollections)

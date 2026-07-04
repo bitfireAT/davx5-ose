@@ -269,7 +269,7 @@ class ContactsSyncManager @AssistedInject constructor(
             is LocalGroup -> resource.androidGroup.getContact()
             else -> throw IllegalArgumentException("resource must be LocalContact or LocalGroup")
         }
-        logger.log(Level.FINE, "Preparing upload of vCard #${resource.id}", contact)
+        logger.log(Level.FINE, "Preparing upload of vCard #{0}: {1}", arrayOf(resource.id, contact))
 
         // get/create UID
         val (uid, uidIsGenerated) = DavUtils.generateUidIfNecessary(contact.uid)
@@ -389,14 +389,14 @@ class ContactsSyncManager @AssistedInject constructor(
         if (existing == null) {
             // create new contact/group
             if (newData.group) {
-                logger.log(Level.INFO, "Creating local group", newData)
+                logger.info("Creating local group: $newData")
                 val newGroup = localCollection.addGroup(newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT)
                 SyncException.wrapWithLocalResource(newGroup) {
                     updated = newGroup
                 }
 
             } else {
-                logger.log(Level.INFO, "Creating local contact", newData)
+                logger.info("Creating local contact: $newData")
                 val newContact = localCollection.addContact(newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT)
                 SyncException.wrapWithLocalResource(newContact) {
                     updated = newContact
@@ -405,7 +405,7 @@ class ContactsSyncManager @AssistedInject constructor(
 
         } else {
             // update existing local contact/group
-            logger.log(Level.INFO, "Updating $fileName in local address book", newData)
+            logger.info("Updating $fileName in local address book: $newData")
 
             SyncException.wrapWithLocalResource(existing) {
                 if ((existing is LocalGroup && newData.group) || (existing is LocalContact && !newData.group)) {
@@ -425,14 +425,14 @@ class ContactsSyncManager @AssistedInject constructor(
                     existing.deleteLocal()
 
                     if (newData.group) {
-                        logger.log(Level.INFO, "Creating local group (was contact before)", newData)
+                        logger.info("Creating local group (was contact before): $newData")
                         val newGroup = localCollection.addGroup(newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT)
                         SyncException.wrapWithLocalResource(newGroup) {
                             updated = newGroup
                         }
 
                     } else {
-                        logger.log(Level.INFO, "Creating local contact (was group before)", newData)
+                        logger.info("Creating local contact (was group before): $newData")
                         val newContact = localCollection.addContact(newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT)
                         SyncException.wrapWithLocalResource(newContact) {
                             updated = newContact

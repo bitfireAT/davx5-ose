@@ -13,6 +13,7 @@ import at.bitfire.synctools.storage.BatchOperation
 import at.bitfire.synctools.storage.contacts.AddressContract.asSyncAdapter
 import at.bitfire.synctools.storage.contacts.ContactsBatchOperation
 import java.io.FileNotFoundException
+import java.util.logging.Level
 import java.util.logging.Logger
 
 class VCard4Strategy(val addressBook: LocalAddressBook): ContactGroupStrategy {
@@ -30,7 +31,11 @@ class VCard4Strategy(val addressBook: LocalAddressBook): ContactGroupStrategy {
         val batch = ContactsBatchOperation(addressBook.ab.provider)
         addressBook.findDirtyContacts().collect { contact ->
             try {
-                logger.fine("Looking for changed group memberships of contact ${contact.fileName}")
+                logger.log(
+                    Level.FINE,
+                    "Looking for changed group memberships of contact {0}",
+                    arrayOf(contact.fileName)
+                )
                 val cachedGroups = contact.androidContact.getCachedGroupMemberships()
                 val currentGroups = contact.androidContact.getGroupMemberships()
                 for (groupID in cachedGroups disjunct currentGroups) {

@@ -145,7 +145,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
         }
 
         try {
-            logger.info("Refreshing ${service.type} collections of service #$service")
+            logger.log(Level.INFO, "Refreshing {0} collections of service #{1}", arrayOf(service.type, service))
 
             // cancel previous notification
             NotificationManagerCompat.from(applicationContext)

@@ -444,7 +444,7 @@ class AndroidAddressBook(
             .appendPath(rawContactId.toString())
             .appendPath(RawContacts.DisplayPhoto.CONTENT_DIRECTORY)
             .build()
-        logger.log(Level.FINE, "Writing photo to $uri (${photo.size} bytes)")
+        logger.log(Level.FINE, "Writing photo to {0} ({1} bytes)", arrayOf(uri, photo.size))
         provider.openAssetFile(uri, "w")?.use { fd ->
             try {
                 fd.createOutputStream()?.use { os ->
