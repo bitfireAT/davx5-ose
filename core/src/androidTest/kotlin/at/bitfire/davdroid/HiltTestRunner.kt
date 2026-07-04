@@ -27,8 +27,7 @@ class HiltTestRunner : AndroidJUnitRunner() {
         // set root logger to adb Logcat
         val rootLogger = Logger.getLogger("")
         rootLogger.level = Level.ALL
-        rootLogger.handlers.forEach { rootLogger.removeHandler(it) }
-        rootLogger.addHandler(LogcatHandler(javaClass.name))
+        rootLogger.addHandler(LogcatHandler())
 
         // MockK requirements
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P)

@@ -26,7 +26,7 @@ class LoggingTestRunner: AndroidJUnitRunner() {
         rootLogger.level = Level.ALL
 
         // log to logcat
-        rootLogger.addHandler(LogcatHandler(BuildConfig.LIBRARY_PACKAGE_NAME))
+        rootLogger.addHandler(LogcatHandler())
     }
 
 }
