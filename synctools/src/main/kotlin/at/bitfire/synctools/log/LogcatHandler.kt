@@ -22,7 +22,8 @@ import java.util.logging.LogRecord
 class LogcatHandler : Handler() {
 
     init {
-        formatter = PlainTextFormatter.LOGCAT
+        // use PlainTextFormatter by default
+        formatter = PlainTextFormatter.FOR_LOGCAT
     }
 
     override fun publish(r: LogRecord) {

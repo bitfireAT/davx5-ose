@@ -12,7 +12,7 @@ import java.util.logging.LogRecord
 class PlainTextFormatterTest {
 
     private val minimum = PlainTextFormatter(
-        withTime = false,
+        withTimeAndThreadId = false,
         withSource = false,
         padSource = 0,
         withException = false,
