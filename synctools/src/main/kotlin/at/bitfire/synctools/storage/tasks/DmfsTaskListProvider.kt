@@ -63,7 +63,8 @@ class DmfsTaskListProvider(
      */
     fun createAndGetTaskList(values: ContentValues): DmfsTaskList {
         val id = createTaskList(values)
-        return getTaskList(id) ?: throw LocalStorageException("Couldn't query ${providerName.authority} task list that was just created")
+        return getTaskList(id)
+            ?: throw LocalStorageException("Couldn't query ${providerName.authority} task list that was just created")
     }
 
     /**
@@ -76,7 +77,11 @@ class DmfsTaskListProvider(
      * @return list of task lists
      * @throws LocalStorageException when the content provider returns an error
      */
-    fun findTaskLists(where: String? = null, whereArgs: Array<String>? = null, sortOrder: String? = null): List<DmfsTaskList> {
+    fun findTaskLists(
+        where: String? = null,
+        whereArgs: Array<String>? = null,
+        sortOrder: String? = null
+    ): List<DmfsTaskList> {
         val result = LinkedList<DmfsTaskList>()
         try {
             client.query(taskListsUri, null, where, whereArgs, sortOrder)?.use { cursor ->
