@@ -371,7 +371,7 @@ class AndroidAddressBook(
 
     suspend fun deleteGroupsWithoutMembers() {
         queryGroups(null, null).filter { it.getMembers().isEmpty() }.collect { group ->
-            logger.log(Level.FINE, "Deleting empty group", group)
+            logger.fine("Deleting empty group $group")
             group.delete()
         }
     }

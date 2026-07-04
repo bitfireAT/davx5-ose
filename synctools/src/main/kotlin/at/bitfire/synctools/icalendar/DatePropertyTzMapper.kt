@@ -136,15 +136,14 @@ object DatePropertyTzMapper {
             val origDateInstant = origDate.toInstant()
             val resultInstant = result.toInstant()
             if (origDateInstant != resultInstant)
-                logger.log(Level.WARNING, "Different timestamps of normalized $result (${resultInstant.toEpochMilli()}) " +
-                        "and original $origDate (${origDateInstant.toEpochMilli()}) ZonedDateTime")
+                logger.warning("Different timestamps of normalized $result (${resultInstant.toEpochMilli()}) and original $origDate (${origDateInstant.toEpochMilli()}) ZonedDateTime")
 
             return result
 
         } else {
             // Timezone ID unknown or timezone not known by system, fall back to same timestamp, but
             // with system default timezone.
-            logger.log(Level.WARNING, "ZonedDateTime ($origDate) with unknown timezone ($tzId), using calculated timestamp in system default timezone")
+            logger.warning("ZonedDateTime ($origDate) with unknown timezone ($tzId), using calculated timestamp in system default timezone")
             return origDate.withZoneSameInstant(ZoneId.systemDefault())
         }
     }

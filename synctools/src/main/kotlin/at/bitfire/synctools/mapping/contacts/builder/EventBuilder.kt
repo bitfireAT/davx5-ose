@@ -19,7 +19,6 @@ import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.util.LinkedList
 import java.util.Locale
-import java.util.logging.Level
 
 class EventBuilder(dataRowUri: Uri, rawContactId: Long?, contact: Contact, readOnly: Boolean)
     : DataRowBuilder(Factory.mimeType(), dataRowUri, rawContactId, contact, readOnly) {
@@ -87,7 +86,7 @@ class EventBuilder(dataRowUri: Uri, rawContactId: Long?, contact: Contact, readO
                     null
             }
         if (androidStr == null) {
-            logger.log(Level.WARNING, "Ignoring date/time without supported (partial) date", dateOrTime)
+            logger.warning("Ignoring date/time without supported (partial) date: $dateOrTime")
             return null
         }
 
