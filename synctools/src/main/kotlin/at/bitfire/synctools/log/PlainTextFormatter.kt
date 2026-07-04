@@ -19,9 +19,9 @@ import java.util.logging.LogRecord
 class PlainTextFormatter(
     private val withTime: Boolean,
     private val withSource: Boolean,
-    private val padSource: Int = 0,
     private val withException: Boolean,
-    private val lineSeparator: String?
+    private val padSource: Int = 0,
+    private val lineSeparator: String? = System.lineSeparator()
 ): Formatter() {
 
     companion object {
@@ -30,10 +30,10 @@ class PlainTextFormatter(
          * Formatter intended for logcat output.
          */
         val LOGCAT = PlainTextFormatter(
-            withTime = false,
-            withSource = false,
-            withException = false,
-            lineSeparator = null
+            withTime = false,       // logged by logcat, not needed in text
+            withSource = false,     // source class is used as tag in LogcatHandler, not needed in text
+            withException = false,  // exception is attached natively by LogcatHandler, not needed in text
+            lineSeparator = null    // omit line separators for logcat
         )
 
         /**
@@ -42,9 +42,8 @@ class PlainTextFormatter(
         val DEFAULT = PlainTextFormatter(
             withTime = true,
             withSource = true,
-            padSource = 35,
             withException = true,
-            lineSeparator = System.lineSeparator()
+            padSource = 35
         )
 
         /**
@@ -97,28 +96,6 @@ class PlainTextFormatter(
             builder.append(lineSeparator)
 
         return builder.toString()
-    }
-
-    fun shortClassName(className: String): String {
-        // remove $... that is appended for anonymous classes
-        val withoutSuffix = className.replace(Regex("\\$.*$"), "")
-
-        // shorten all but the last part of the package name
-        val parts = withoutSuffix.split('.')
-        val shortened =
-            if (parts.isNotEmpty()) {
-                val lastIdx = parts.size - 1
-                val shortenedParts = parts.mapIndexed { idx, part ->
-                    if (idx == lastIdx)
-                        part
-                    else
-                        part[0]
-                }
-                shortenedParts.joinToString(".")
-            } else
-                ""
-
-        return shortened
     }
 
     private fun stackTrace(ex: Throwable): String {

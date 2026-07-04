@@ -22,26 +22,21 @@ class LogcatHandler(
     private val fallbackTag: String
 ): Handler() {
 
-    val logcatFormatter = PlainTextFormatter.LOGCAT
-
     init {
-        setFormatter(logcatFormatter)
+        formatter = PlainTextFormatter.LOGCAT
     }
 
     override fun publish(r: LogRecord) {
         val level = r.level.intValue()
-        val text = logcatFormatter.format(r)
-
-        // log tag has to be truncated to 23 characters on Android <8, see Log documentation
-        val tagLimited = Build.VERSION.SDK_INT < Build.VERSION_CODES.O
+        val text = formatter.format(r)
 
         // get class name that calls the logger (or fall back to package name)
         val tag = if (r.sourceClassName != null)
-            ClassNameUtils.shortenClassName(r.sourceClassName, classNameFirst = tagLimited)
+            ClassNameUtils.shortenClassName(r.sourceClassName, classNameFirst = tagLengthRestricted)
         else
             fallbackTag
 
-        val tagOrTruncated = if (tagLimited)
+        val tagOrTruncated = if (tagLengthRestricted)
             Ascii.truncate(tag, 23, "")
         else
             tag
@@ -66,5 +61,13 @@ class LogcatHandler(
 
     override fun flush() {}
     override fun close() {}
+
+
+    companion object {
+
+        /** log tag has to be truncated to 23 characters on Android <8, see Log documentation */
+        val tagLengthRestricted = Build.VERSION.SDK_INT < Build.VERSION_CODES.O
+
+    }
 
 }

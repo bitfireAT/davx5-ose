@@ -10,6 +10,10 @@ import at.bitfire.synctools.log.LogcatHandler
 import java.util.logging.Level
 import java.util.logging.Logger
 
+/**
+ * Custom test runner that enables verbose logging to Android logcat during tests.
+ */
+@Suppress("unused")
 class LoggingTestRunner: AndroidJUnitRunner() {
 
     override fun onCreate(arguments: Bundle?) {
@@ -17,8 +21,11 @@ class LoggingTestRunner: AndroidJUnitRunner() {
 
         // enable verbose logging during tests
         val rootLogger = Logger.getLogger("")
+
+        // verbose logging
         rootLogger.level = Level.ALL
-        rootLogger.handlers.forEach { rootLogger.removeHandler(it) }
+
+        // log to logcat
         rootLogger.addHandler(LogcatHandler(BuildConfig.LIBRARY_PACKAGE_NAME))
     }
 

@@ -44,20 +44,4 @@ class PlainTextFormatterTest {
         assertEquals(10000, result.length)
     }
 
-
-    @Test
-    fun test_shortClassName_Empty() {
-        assertEquals("", PlainTextFormatter.DEFAULT.shortClassName(""))
-    }
-
-    @Test
-    fun test_shortClassName_NoDot_Anonymous() {
-        assertEquals("NoDot", PlainTextFormatter.DEFAULT.shortClassName("NoDot\$Anonymous"))
-    }
-
-    @Test
-    fun test_shortClassName_MultipleParts() {
-        assertEquals("a.b.s.l.PlainTextFormatterTest", PlainTextFormatter.DEFAULT.shortClassName(javaClass.name))
-    }
-
 }
