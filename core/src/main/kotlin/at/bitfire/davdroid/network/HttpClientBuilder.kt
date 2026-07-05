@@ -157,6 +157,7 @@ class HttpClientBuilder private constructor(
      * @param updateAuthState Optional callback to update the OAuth auth-state.
      * @return new builder with updated config (chainable)
      */
+    @CheckReturnValue
     fun authenticate(
         domain: String?,
         getCredentials: () -> Credentials,
