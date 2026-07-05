@@ -39,7 +39,7 @@ class CopyDocumentOperation @Inject constructor(
             throw UnsupportedOperationException("Can't COPY between WebDAV servers")
 
         httpClientBuilder
-            .buildKtor(srcDoc.mountId)
+            .build(srcDoc.mountId)
             .use { httpClient ->
                 val dav = DavResource(httpClient, srcDoc.toKtorUrl(db))
                 val dstUrl = URLBuilder(dstFolder.toKtorUrl(db))

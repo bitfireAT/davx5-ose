@@ -33,7 +33,7 @@ class RenameDocumentOperation @Inject constructor(
         val doc = documentDao.get(documentId.toLong()) ?: throw FileNotFoundException()
 
         httpClientBuilder
-            .buildKtor(doc.mountId)
+            .build(doc.mountId)
             .use { httpClient ->
                 for (attempt in 0..DocumentProviderUtils.MAX_DISPLAYNAME_TO_MEMBERNAME_ATTEMPTS) {
                     val newName = displayNameToMemberName(displayName, attempt)

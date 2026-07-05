@@ -102,7 +102,7 @@ class OpenDocumentThumbnailOperation @Inject constructor(
 
     private suspend fun downloadAndCreateThumbnail(doc: WebDavDocument, db: AppDatabase, sizeHint: Point): ByteArray? =
         httpClientBuilder
-            .buildKtor(doc.mountId, logBody = false)
+            .build(doc.mountId, logBody = false)
             .use { httpClient ->
             val url = doc.toKtorUrl(db)
             try {

@@ -127,7 +127,7 @@ class QueryChildDocumentsOperation @Inject constructor(
 
         val parentUrl = parent.toKtorUrl(db)
         try {
-            httpClientBuilder.buildKtor(parent.mountId).use { client ->
+            httpClientBuilder.build(parent.mountId).use { client ->
                 val folder = DavCollection(client, parentUrl)
                 folder.propfind(1, *DAV_FILE_FIELDS) { response, relation ->
                     logger.fine("$relation $response")

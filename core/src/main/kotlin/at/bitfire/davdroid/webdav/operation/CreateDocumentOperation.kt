@@ -42,7 +42,7 @@ class CreateDocumentOperation @Inject constructor(
 
         var docId: Long?
         val parentUrl = parent.toKtorUrl(db)
-        httpClientBuilder.buildKtor(parent.mountId).use { client ->
+        httpClientBuilder.build(parent.mountId).use { client ->
             for (attempt in 0..DocumentProviderUtils.MAX_DISPLAYNAME_TO_MEMBERNAME_ATTEMPTS) {
                 val newName = displayNameToMemberName(displayName, attempt)
                 val newLocation = URLBuilder(parentUrl).appendPathSegments(newName).build()

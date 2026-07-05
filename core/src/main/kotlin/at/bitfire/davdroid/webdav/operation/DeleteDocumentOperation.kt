@@ -31,7 +31,7 @@ class DeleteDocumentOperation @Inject constructor(
         val doc = documentDao.get(documentId.toLong()) ?: throw FileNotFoundException()
 
         try {
-            httpClientBuilder.buildKtor(doc.mountId).use { client ->
+            httpClientBuilder.build(doc.mountId).use { client ->
                 val dav = DavResource(client, doc.toKtorUrl(db))
                 dav.delete {
                     // successfully deleted

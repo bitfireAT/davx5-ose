@@ -37,7 +37,7 @@ class MoveDocumentOperation @Inject constructor(
             throw UnsupportedOperationException("Can't MOVE between WebDAV servers")
 
         httpClientBuilder
-            .buildKtor(doc.mountId)
+            .build(doc.mountId)
             .use { httpClient ->
                 val newLocation = URLBuilder(dstParent.toKtorUrl(db))
                     .appendPathSegments(doc.name)
