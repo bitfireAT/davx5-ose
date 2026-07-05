@@ -131,7 +131,7 @@ class NextcloudLoginFlow @Inject constructor(
     private fun createClient(): HttpClient =
         httpClientBuilder
             .followRedirects(true)
-            .buildKtor()
+            .build()
 
 
     /**

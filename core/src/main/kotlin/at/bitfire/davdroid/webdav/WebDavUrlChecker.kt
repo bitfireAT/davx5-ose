@@ -38,7 +38,7 @@ class WebDavUrlChecker @Inject constructor(
             )
 
         var webdavUrl: Url? = null
-        builder.buildKtor().use { httpClient ->
+        builder.build().use { httpClient ->
             val dav = DavResource(httpClient, url)
             dav.options(followRedirects = true) { davCapabilities, _ ->
                 if (davCapabilities.any { it in validVersions })

@@ -301,7 +301,7 @@ class HttpClientBuilder private constructor(
      * @return the new HttpClient (with [OkHttp] engine) which **must be closed by the caller**
      */
     @MustBeClosed
-    fun buildKtor(): HttpClient {
+    fun build(): HttpClient {
         val client = HttpClient(OkHttp) {
             // Ktor-level configuration here
 

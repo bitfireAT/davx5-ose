@@ -129,7 +129,7 @@ class DavResourceFinderTest {
         FileLoggerFactory.forFile(logFile).use { fileLoggerContext ->
             httpClientBuilder
                 .logTo(fileLoggerContext.logger)
-                .buildKtor()
+                .build()
                 .use { httpClient ->
                     resourceFinderFactory.create(
                         URI("http://localhost"), null, httpClient, fileLoggerContext.logger

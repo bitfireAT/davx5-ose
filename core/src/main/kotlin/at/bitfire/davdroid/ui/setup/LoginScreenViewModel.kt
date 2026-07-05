@@ -265,7 +265,7 @@ class LoginScreenViewModel @AssistedInject constructor(
                     else
                         builder
                 }
-                .buildKtor()
+                .build()
                 .use { httpClient ->
                     val finder = resourceFinderFactory.create(
                         baseUri,

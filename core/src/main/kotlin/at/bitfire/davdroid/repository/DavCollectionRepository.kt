@@ -195,7 +195,7 @@ class DavCollectionRepository @Inject constructor(
 
         httpClientBuilder
             .fromAccountAsync(account)
-            .buildKtor()
+            .build()
             .use { httpClient ->
                 try {
                     DavResource(httpClient, collection.url).delete {
@@ -340,7 +340,7 @@ class DavCollectionRepository @Inject constructor(
     private suspend fun createOnServer(account: Account, url: Url, method: String, xmlBody: String) {
         httpClientBuilder
             .fromAccountAsync(account)
-            .buildKtor()
+            .build()
             .use { httpClient ->
                 DavResource(httpClient, url).mkCol(
                     xmlBody = xmlBody,

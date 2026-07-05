@@ -77,7 +77,7 @@ class ResourceRetriever @AssistedInject constructor(
         httpClientBuilder
             .fromAccount(account, authDomain = originalHost)  // restricts authentication to original domain
             .followRedirects(true)      // allow redirects
-            .buildKtor()
+            .build()
             .use { httpClient ->
                 val response = httpClient.get(url)
                 if (response.status.isSuccess())

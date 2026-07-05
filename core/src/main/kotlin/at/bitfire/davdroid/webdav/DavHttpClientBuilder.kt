@@ -25,7 +25,7 @@ class DavHttpClientBuilder @Inject constructor(
     @MustBeClosed
     fun buildKtor(mountId: Long, logBody: Boolean = true): HttpClient {
         val builder = createBuilder(mountId, logBody)
-        return builder.buildKtor()
+        return builder.build()
     }
 
     /**

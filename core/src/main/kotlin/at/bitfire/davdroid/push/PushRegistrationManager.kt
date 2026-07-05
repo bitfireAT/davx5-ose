@@ -200,7 +200,7 @@ class PushRegistrationManager @Inject constructor(
         val account = accountRepository.get().fromName(service.accountName)
         httpClientBuilder
             .fromAccountAsync(account)
-            .buildKtor()
+            .build()
             .use { httpClient ->
             for (collection in subscribeTo) {
                 // update push subscription for the given collection
@@ -328,7 +328,7 @@ class PushRegistrationManager @Inject constructor(
         val account = accountRepository.get().fromName(service.accountName)
         httpClientBuilder
             .fromAccountAsync(account)
-            .buildKtor()
+            .build()
             .use { httpClient ->
             for (collection in from)
                 collection.pushSubscription?.toUrlOrNull()?.let { url ->
