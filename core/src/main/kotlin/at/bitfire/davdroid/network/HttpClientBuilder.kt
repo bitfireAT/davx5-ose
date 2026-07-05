@@ -353,6 +353,7 @@ class HttpClientBuilder @Inject constructor(
         val username = authUsername
         val password = authPassword
         val readAuthState = readAuthStateCallback
+        val updateAuthState = updateAuthStateCallback
         when {
             // prefer OAuth, if available
             readAuthState != null -> {
@@ -360,7 +361,7 @@ class HttpClientBuilder @Inject constructor(
                     providers.add(
                         oAuthProviderFactory.create(
                             readAuthState = readAuthState,
-                            writeAuthState = { authState -> updateAuthStateCallback?.invoke(authState) }
+                            writeAuthState = { authState -> updateAuthState?.invoke(authState) }
                         ).authProvider(authDomain)
                     )
                 }
