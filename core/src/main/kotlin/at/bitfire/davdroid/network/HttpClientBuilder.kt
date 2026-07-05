@@ -60,7 +60,7 @@ import javax.inject.Inject
 class HttpClientBuilder private constructor(
     private val accountSettingsFactory: AccountSettings.Factory,
     private val connectionSecurityManager: ConnectionSecurityManager,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
+    private val ioDispatcher: CoroutineDispatcher,
     private val oAuthProviderFactory: OAuthProvider.Factory,
     private val settingsManager: SettingsManager,
     private val productIds: ProductIds,
@@ -74,18 +74,18 @@ class HttpClientBuilder private constructor(
         accountSettingsFactory: AccountSettings.Factory,
         connectionSecurityManager: ConnectionSecurityManager,
         defaultLogger: Logger,
-        ioDispatcher: CoroutineDispatcher,
+        @IoDispatcher ioDispatcher: CoroutineDispatcher,
         oAuthProviderFactory: OAuthProvider.Factory,
         settingsManager: SettingsManager,
         productIds: ProductIds
     ) : this(
-        accountSettingsFactory,
-        connectionSecurityManager,
-        ioDispatcher,
-        oAuthProviderFactory,
-        settingsManager,
-        productIds,
-        Config(logger = defaultLogger)
+        accountSettingsFactory = accountSettingsFactory,
+        connectionSecurityManager = connectionSecurityManager,
+        ioDispatcher = ioDispatcher,
+        oAuthProviderFactory = oAuthProviderFactory,
+        settingsManager = settingsManager,
+        productIds = productIds,
+        config = Config(logger = defaultLogger)
     )
 
 
