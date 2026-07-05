@@ -16,7 +16,6 @@ import at.bitfire.davdroid.settings.Credentials
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.synctools.util.SensitiveString
-import com.google.errorprone.annotations.CheckReturnValue
 import com.google.errorprone.annotations.MustBeClosed
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
@@ -47,6 +46,7 @@ import java.net.Proxy
 import java.util.Locale
 import java.util.logging.Level
 import java.util.logging.Logger
+import javax.annotation.CheckReturnValue
 import javax.inject.Inject
 
 /**

@@ -137,7 +137,6 @@ dependencies {
     // third-party libs
     implementation(libs.conscrypt)
     implementation(libs.dnsjava)
-    implementation(libs.error.prone.annotations)
     implementation(libs.guava)
     implementation(libs.ktor.client.auth)
     implementation(libs.ktor.client.content.negotiation)

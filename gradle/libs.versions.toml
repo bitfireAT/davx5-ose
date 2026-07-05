@@ -25,7 +25,6 @@ compose-accompanist = "0.37.3"
 compose-bom = "2026.06.01"
 conscrypt = "2.5.3"
 dnsjava = "3.6.5"
-errorprone-annotations = "2.47.0"
 ezvcard = "0.12.2"
 ical4j = "4.3.0"
 glance = "1.1.1"
@@ -43,6 +42,7 @@ openid-appauth = "0.11.1"
 robolectric = "4.16.1"
 room = "2.8.4"
 slf4j = "2.0.18"
+spotbugs = "4.10.2"
 unifiedpush = "3.3.3"
 unifiedpush-fcm = "3.1.0"
 
@@ -98,7 +98,6 @@ commons-lang = { module = "org.apache.commons:commons-lang3", version.ref = "com
 compose-accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "compose-accompanist" }
 conscrypt = { module = "org.conscrypt:conscrypt-android", version.ref = "conscrypt" }
 dnsjava = { module = "dnsjava:dnsjava", version.ref = "dnsjava" }
-error-prone-annotations = { module = "com.google.errorprone:error_prone_annotations", version.ref = "errorprone-annotations" }
 ezvcard = { module = "com.googlecode.ez-vcard:ez-vcard", version.ref = "ezvcard" }
 guava = { module = "com.google.guava:guava", version.ref = "guava" }
 ical4j = { module = "org.mnode.ical4j:ical4j", version.ref = "ical4j" }
@@ -128,6 +127,7 @@ okhttp-mockwebserver = { module = "com.squareup.okhttp3:mockwebserver", version.
 openid-appauth = { module = "net.openid:appauth", version.ref = "openid-appauth" }
 robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
 slf4j-jdk = { module = "org.slf4j:slf4j-jdk14", version.ref = "slf4j" }
+spotbugs-annotations = { module = "com.github.spotbugs:spotbugs-annotations", version.ref = "spotbugs" }
 unifiedpush = { module = "org.unifiedpush.android:connector", version.ref = "unifiedpush" }
 unifiedpush-fcm = { module = "org.unifiedpush.android:embedded-fcm-distributor", version.ref = "unifiedpush-fcm" }
 
