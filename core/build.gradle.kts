@@ -154,6 +154,7 @@ dependencies {
         // See: https://codeberg.org/UnifiedPush/android-connector/src/commit/28cb0d622ed0a972996041ab9cc85b701abc48c6/connector/build.gradle#L56-L59
         exclude(group = "com.google.crypto.tink", module = "tink")
     }
+    implementation(libs.spotbugs.annotations)
     implementation(libs.unifiedpush.fcm)
 
     // force some versions for compatibility with our minSdk level (see version catalog for details)

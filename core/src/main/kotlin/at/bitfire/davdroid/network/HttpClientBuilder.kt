@@ -10,12 +10,14 @@ import at.bitfire.dav4jvm.ktor.UrlUtils
 import at.bitfire.dav4jvm.ktor.createDomainBasicAuthProvider
 import at.bitfire.dav4jvm.ktor.createDomainDigestAuthProvider
 import at.bitfire.davdroid.ProductIds
+import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Credentials
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.synctools.util.SensitiveString
 import com.google.errorprone.annotations.MustBeClosed
+import edu.umd.cs.findbugs.annotations.CheckReturnValue
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.engine.HttpClientEngineConfig
@@ -35,7 +37,7 @@ import io.ktor.http.URLBuilder
 import io.ktor.http.URLProtocol
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.util.appendIfNameAbsent
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import net.openid.appauth.AuthState
 import okhttp3.ConnectionSpec
@@ -50,7 +52,7 @@ import javax.inject.Inject
 /**
  * Immutable/chainable builder for the HTTP client.
  *
- * Every configuration method (`setLogger`, `authenticate`, `followRedirects`, ...) returns
+ * Every configuration method (`logTo`, `authenticate`, `followRedirects`, ...) returns
  * a new instance with the change applied.
  *
  * Also makes sure that [ConscryptIntegration] is initialized.
@@ -58,6 +60,7 @@ import javax.inject.Inject
 class HttpClientBuilder private constructor(
     private val accountSettingsFactory: AccountSettings.Factory,
     private val connectionSecurityManager: ConnectionSecurityManager,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val oAuthProviderFactory: OAuthProvider.Factory,
     private val settingsManager: SettingsManager,
     private val productIds: ProductIds,
@@ -71,12 +74,14 @@ class HttpClientBuilder private constructor(
         accountSettingsFactory: AccountSettings.Factory,
         connectionSecurityManager: ConnectionSecurityManager,
         defaultLogger: Logger,
+        ioDispatcher: CoroutineDispatcher,
         oAuthProviderFactory: OAuthProvider.Factory,
         settingsManager: SettingsManager,
         productIds: ProductIds
     ) : this(
         accountSettingsFactory,
         connectionSecurityManager,
+        ioDispatcher,
         oAuthProviderFactory,
         settingsManager,
         productIds,
@@ -110,6 +115,7 @@ class HttpClientBuilder private constructor(
     private fun withConfig(update: (Config) -> Config) = HttpClientBuilder(
         accountSettingsFactory,
         connectionSecurityManager,
+        ioDispatcher,
         oAuthProviderFactory,
         settingsManager,
         productIds,
@@ -122,6 +128,7 @@ class HttpClientBuilder private constructor(
      * @param follow true to follow redirects, false otherwise
      * @return new builder with updated config (chainable)
      */
+    @CheckReturnValue
     fun followRedirects(follow: Boolean): HttpClientBuilder = withConfig { it.copy(followRedirects = follow) }
 
     /**
@@ -130,6 +137,7 @@ class HttpClientBuilder private constructor(
      * @param logger The logger to be used for logging HTTP operations.
      * @return new builder with updated config (chainable)
      */
+    @CheckReturnValue
     fun logTo(logger: Logger): HttpClientBuilder = withConfig { it.copy(logger = logger) }
 
     /**
@@ -138,6 +146,7 @@ class HttpClientBuilder private constructor(
      * @param level The desired log level for traffic logs.
      * @return new builder with updated config (chainable)
      */
+    @CheckReturnValue
     fun trafficLogLevel(level: LogLevel): HttpClientBuilder = withConfig { it.copy(trafficLogLevel = level) }
 
     /**
@@ -223,7 +232,7 @@ class HttpClientBuilder private constructor(
      * @throws at.bitfire.davdroid.sync.account.InvalidAccountException     when the account doesn't exist
      */
     suspend fun fromAccountAsync(account: Account, onlyHost: String? = null): HttpClientBuilder =
-        withContext(Dispatchers.IO) {
+        withContext(ioDispatcher) {
             fromAccount(account, onlyHost)
         }
 

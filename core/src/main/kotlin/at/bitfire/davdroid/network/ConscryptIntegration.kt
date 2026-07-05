@@ -20,8 +20,6 @@ class ConscryptIntegration {
     private val logger
         get() = Logger.getLogger(javaClass.name)
 
-    private var initialized = false
-
     /**
      * Loads and initializes Conscrypt (if not already done). Safe to be called multiple times.
      */
@@ -53,5 +51,11 @@ class ConscryptIntegration {
     @VisibleForTesting
     internal fun conscryptInstalled() =
         Security.getProviders().any { Conscrypt.isConscrypt(it) }
+
+
+    companion object {
+        /** whether Conscrypt is already initialized */
+        private var initialized = false
+    }
 
 }
