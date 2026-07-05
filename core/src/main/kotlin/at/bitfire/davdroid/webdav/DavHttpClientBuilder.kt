@@ -38,7 +38,7 @@ class DavHttpClientBuilder @Inject constructor(
     private fun createBuilder(mountId: Long, logBody: Boolean = true): HttpClientBuilder {
         var builder = httpClientBuilder
             // Ktor's LogLevel.ALL logs headers + body (unlike LogLevel.BODY, which omits headers)
-            .loggerInterceptorLevel(if (logBody) LogLevel.ALL else LogLevel.HEADERS)
+            .trafficLogLevel(if (logBody) LogLevel.ALL else LogLevel.HEADERS)
 
         credentialsStore.getCredentials(mountId)?.let { credentials ->
             builder = builder.authenticate(

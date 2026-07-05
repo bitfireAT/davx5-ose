@@ -258,7 +258,7 @@ class LoginScreenViewModel @AssistedInject constructor(
         val result = FileLoggerFactory.forFile(logFile).use { fileLoggerContext ->
             val credentials = loginInfo.credentials
             httpClientBuilder
-                .setLogger(fileLoggerContext.logger)    // log HTTP calls to logFile
+                .logTo(fileLoggerContext.logger)    // log HTTP calls to logFile
                 .let { builder ->
                     if (credentials != null)
                         builder.authenticate(domain = null, getCredentials = { credentials })

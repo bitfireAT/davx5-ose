@@ -90,7 +90,7 @@ class HttpClientBuilderTest {
     }
 
     @Test
-    fun testConfigureProxy_System() = runTest {
+    fun testBuildProxy_System() = runTest {
         every { settingsManager.getInt(Settings.PROXY_TYPE) } returns Settings.PROXY_TYPE_SYSTEM
 
         httpClientBuilder.buildKtor().use { client ->
@@ -99,7 +99,7 @@ class HttpClientBuilderTest {
     }
 
     @Test
-    fun testConfigureProxy_None() = runTest {
+    fun testBuildProxy_None() = runTest {
         every { settingsManager.getInt(Settings.PROXY_TYPE) } returns Settings.PROXY_TYPE_NONE
 
         httpClientBuilder.buildKtor().use { client ->
@@ -108,7 +108,7 @@ class HttpClientBuilderTest {
     }
 
     @Test
-    fun testConfigureProxy_Http() = runTest {
+    fun testBuildProxy_Http() = runTest {
         every { settingsManager.getInt(Settings.PROXY_TYPE) } returns Settings.PROXY_TYPE_HTTP
         every { settingsManager.getString(Settings.PROXY_HOST) } returns "proxy.example.com"
         every { settingsManager.getInt(Settings.PROXY_PORT) } returns 8080
@@ -120,7 +120,7 @@ class HttpClientBuilderTest {
     }
 
     @Test
-    fun testConfigureProxy_Socks() = runTest {
+    fun testBuildProxy_Socks() = runTest {
         every { settingsManager.getInt(Settings.PROXY_TYPE) } returns Settings.PROXY_TYPE_SOCKS
         every { settingsManager.getString(Settings.PROXY_HOST) } returns "proxy.example.com"
         every { settingsManager.getInt(Settings.PROXY_PORT) } returns 1080
@@ -238,8 +238,8 @@ class HttpClientBuilderTest {
         )
 
         httpClientBuilder
-            .setLogger(logger)
-            .loggerInterceptorLevel(LogLevel.ALL)
+            .logTo(logger)
+            .trafficLogLevel(LogLevel.ALL)
             .buildKtor().use { client ->
                 client.get(server.url("/").toString()) {
                     header(HttpHeaders.Authorization, secret)

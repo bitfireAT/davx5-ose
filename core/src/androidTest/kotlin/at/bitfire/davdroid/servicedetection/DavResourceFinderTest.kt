@@ -128,7 +128,7 @@ class DavResourceFinderTest {
         val logFile = tempFolder.newFile()
         FileLoggerFactory.forFile(logFile).use { fileLoggerContext ->
             httpClientBuilder
-                .setLogger(fileLoggerContext.logger)
+                .logTo(fileLoggerContext.logger)
                 .buildKtor()
                 .use { httpClient ->
                     resourceFinderFactory.create(

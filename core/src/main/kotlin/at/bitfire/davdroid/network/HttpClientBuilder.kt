@@ -10,7 +10,6 @@ import at.bitfire.dav4jvm.ktor.UrlUtils
 import at.bitfire.dav4jvm.ktor.createDomainBasicAuthProvider
 import at.bitfire.dav4jvm.ktor.createDomainDigestAuthProvider
 import at.bitfire.davdroid.ProductIds
-import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Credentials
 import at.bitfire.davdroid.settings.Settings
@@ -36,7 +35,7 @@ import io.ktor.http.URLBuilder
 import io.ktor.http.URLProtocol
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.util.appendIfNameAbsent
-import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import net.openid.appauth.AuthState
 import okhttp3.ConnectionSpec
@@ -59,66 +58,69 @@ import javax.inject.Inject
 class HttpClientBuilder private constructor(
     private val accountSettingsFactory: AccountSettings.Factory,
     private val connectionSecurityManager: ConnectionSecurityManager,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val oAuthProviderFactory: OAuthProvider.Factory,
     private val settingsManager: SettingsManager,
     private val productIds: ProductIds,
+    /** current configuration of this builder instance (immutable) */
     private val config: Config
 ) {
 
+    // public constructor, delegating to private constructor with empty Config()
     @Inject
     constructor(
         accountSettingsFactory: AccountSettings.Factory,
         connectionSecurityManager: ConnectionSecurityManager,
         defaultLogger: Logger,
-        @IoDispatcher ioDispatcher: CoroutineDispatcher,
         oAuthProviderFactory: OAuthProvider.Factory,
         settingsManager: SettingsManager,
         productIds: ProductIds
     ) : this(
         accountSettingsFactory,
         connectionSecurityManager,
-        ioDispatcher,
         oAuthProviderFactory,
         settingsManager,
         productIds,
         Config(logger = defaultLogger)
     )
 
+
+    // methods to set configuration
+
+    /**
+     * Immutable snapshot of everything that can be configured on a [HttpClientBuilder] plus default config.
+     */
     private data class Config(
+        val followRedirects: Boolean = false,
         val logger: Logger,
-        // LogLevel.ALL logs headers + body (unlike LogLevel.BODY, which omits headers)
-        val loggerInterceptorLevel: LogLevel = LogLevel.ALL,
+        val trafficLogLevel: LogLevel = LogLevel.ALL,
         val certificateAlias: String? = null,
         val authUsername: String? = null,
         val authPassword: SensitiveString? = null,
         val authDomain: String? = null,
         val readAuthStateCallback: (() -> AuthState?)? = null,
-        val updateAuthStateCallback: ((AuthState) -> Unit)? = null,
-        val followRedirects: Boolean = false
+        val updateAuthStateCallback: ((AuthState) -> Unit)? = null
     )
 
-    private fun copy(newConfig: Config) = HttpClientBuilder(
+    private fun withConfig(update: (Config) -> Config) = HttpClientBuilder(
         accountSettingsFactory,
         connectionSecurityManager,
-        ioDispatcher,
         oAuthProviderFactory,
         settingsManager,
         productIds,
-        newConfig
+        update(config)
     )
 
-    // property setters/getters
+    fun followRedirects(follow: Boolean): HttpClientBuilder = withConfig { it.copy(followRedirects = follow) }
 
-    fun setLogger(logger: Logger): HttpClientBuilder = copy(config.copy(logger = logger))
+    fun logTo(logger: Logger): HttpClientBuilder = withConfig { it.copy(logger = logger) }
 
-    fun loggerInterceptorLevel(level: LogLevel): HttpClientBuilder = copy(config.copy(loggerInterceptorLevel = level))
+    fun trafficLogLevel(level: LogLevel): HttpClientBuilder = withConfig { it.copy(trafficLogLevel = level) }
 
     fun authenticate(
         domain: String?,
         getCredentials: () -> Credentials,
         updateAuthState: ((AuthState) -> Unit)? = null
-    ): HttpClientBuilder {
+    ): HttpClientBuilder = withConfig { config ->
         val credentials = getCredentials()
         var newConfig = config
         when {
@@ -149,11 +151,8 @@ class HttpClientBuilder private constructor(
         if (credentials.certificateAlias != null)
             newConfig = newConfig.copy(certificateAlias = credentials.certificateAlias)
 
-        return copy(newConfig)
+        return@withConfig newConfig
     }
-
-
-    fun followRedirects(follow: Boolean): HttpClientBuilder = copy(config.copy(followRedirects = follow))
 
 
     // convenience builders from other classes
@@ -192,14 +191,14 @@ class HttpClientBuilder private constructor(
      * @throws at.bitfire.davdroid.sync.account.InvalidAccountException     when the account doesn't exist
      */
     suspend fun fromAccountAsync(account: Account, onlyHost: String? = null): HttpClientBuilder =
-        withContext(ioDispatcher) {
+        withContext(Dispatchers.IO) {
             fromAccount(account, onlyHost)
         }
 
 
-    // client configuration
+    // actual client building
 
-    private fun configureConnectionSecurity(okBuilder: OkHttpClient.Builder) {
+    private fun buildConnectionSecurity(okBuilder: OkHttpClient.Builder) {
         // Allow cleartext and TLS 1.2+
         okBuilder.connectionSpecs(
             listOf(
@@ -227,7 +226,7 @@ class HttpClientBuilder private constructor(
             okBuilder.hostnameVerifier(securityContext.hostnameVerifier)
     }
 
-    private fun configureProxy(engineConfig: HttpClientEngineConfig) {
+    private fun buildProxy(engineConfig: HttpClientEngineConfig) {
         val proxy = when (settingsManager.getInt(Settings.PROXY_TYPE)) {
             Settings.PROXY_TYPE_SYSTEM -> null
             Settings.PROXY_TYPE_NONE -> Proxy.NO_PROXY
@@ -250,8 +249,46 @@ class HttpClientBuilder private constructor(
         }
     }
 
+    private fun HttpClientConfig<*>.installAuthPlugin() {
+        val username = config.authUsername
+        val password = config.authPassword
+        val readAuthState = config.readAuthStateCallback
+        val updateAuthState = config.updateAuthStateCallback
+        when {
+            // prefer OAuth, if available
+            readAuthState != null -> {
+                install(Auth) {
+                    providers.add(
+                        oAuthProviderFactory.create(
+                            readAuthState = readAuthState,
+                            writeAuthState = { authState -> updateAuthState?.invoke(authState) }
+                        ).authProvider(config.authDomain)
+                    )
+                }
+            }
 
-    // client builder
+            // otherwise use basic / digest, if available
+            username != null && password != null -> {
+                install(Auth) {
+                    providers.add(
+                        createDomainBasicAuthProvider(
+                            username = username,
+                            password = password.asString(),
+                            firstLevelDomain = config.authDomain,
+                            insecurePreemptive = true
+                        )
+                    )
+                    providers.add(
+                        createDomainDigestAuthProvider(
+                            username = username,
+                            password = password.asString(),
+                            firstLevelDomain = config.authDomain
+                        )
+                    )
+                }
+            }
+        }
+    }
 
     /**
      * Builds a Ktor [HttpClient] with the configured settings.
@@ -314,7 +351,7 @@ class HttpClientBuilder private constructor(
                             config.logger.finest(message)
                         }
                     }
-                    level = config.loggerInterceptorLevel
+                    level = config.trafficLogLevel
 
                     // don't log some confidential headers
                     val headersToIgnore = arrayOf(
@@ -333,60 +370,19 @@ class HttpClientBuilder private constructor(
 
             engine {
                 // app-wide custom proxy support
-                configureProxy(this)
+                buildProxy(this)
 
                 // okhttp engine configuration here
                 config {
                     // OkHttpClient.Builder configuration here
 
                     // TLS settings
-                    configureConnectionSecurity(this)
+                    buildConnectionSecurity(this)
                 }
             }
         }
 
         return client
-    }
-
-    private fun HttpClientConfig<*>.installAuthPlugin() {
-        val username = config.authUsername
-        val password = config.authPassword
-        val readAuthState = config.readAuthStateCallback
-        val updateAuthState = config.updateAuthStateCallback
-        when {
-            // prefer OAuth, if available
-            readAuthState != null -> {
-                install(Auth) {
-                    providers.add(
-                        oAuthProviderFactory.create(
-                            readAuthState = readAuthState,
-                            writeAuthState = { authState -> updateAuthState?.invoke(authState) }
-                        ).authProvider(config.authDomain)
-                    )
-                }
-            }
-
-            // otherwise use basic / digest, if available
-            username != null && password != null -> {
-                install(Auth) {
-                    providers.add(
-                        createDomainBasicAuthProvider(
-                            username = username,
-                            password = password.asString(),
-                            firstLevelDomain = config.authDomain,
-                            insecurePreemptive = true
-                        )
-                    )
-                    providers.add(
-                        createDomainDigestAuthProvider(
-                            username = username,
-                            password = password.asString(),
-                            firstLevelDomain = config.authDomain
-                        )
-                    )
-                }
-            }
-        }
     }
 
 
