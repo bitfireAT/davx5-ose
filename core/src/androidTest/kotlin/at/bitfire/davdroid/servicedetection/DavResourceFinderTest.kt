@@ -33,7 +33,6 @@ import org.junit.Test
 import org.junit.rules.TemporaryFolder
 import java.net.URI
 import javax.inject.Inject
-import javax.inject.Provider
 
 @HiltAndroidTest
 class DavResourceFinderTest {
@@ -65,7 +64,7 @@ class DavResourceFinderTest {
     val tempFolder = TemporaryFolder()
 
     @Inject
-    lateinit var httpClientBuilderProvider: Provider<HttpClientBuilder>
+    lateinit var httpClientBuilder: HttpClientBuilder
 
     @Inject
     lateinit var resourceFinderFactory: DavResourceFinder.Factory
@@ -128,7 +127,7 @@ class DavResourceFinderTest {
     fun testFindInitialConfiguration_logsOutput() = runTest {
         val logFile = tempFolder.newFile()
         FileLoggerFactory.forFile(logFile).use { fileLoggerContext ->
-            httpClientBuilderProvider.get()
+            httpClientBuilder
                 .setLogger(fileLoggerContext.logger)
                 .buildKtor()
                 .use { httpClient ->

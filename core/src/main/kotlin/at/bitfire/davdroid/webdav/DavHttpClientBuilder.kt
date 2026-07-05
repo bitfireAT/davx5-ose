@@ -9,11 +9,10 @@ import com.google.errorprone.annotations.MustBeClosed
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.logging.LogLevel
 import javax.inject.Inject
-import javax.inject.Provider
 
 class DavHttpClientBuilder @Inject constructor(
     private val credentialsStore: CredentialsStore,
-    private val httpClientBuilder: Provider<HttpClientBuilder>,
+    private val httpClientBuilder: HttpClientBuilder,
 ) {
 
     /**
@@ -37,12 +36,12 @@ class DavHttpClientBuilder @Inject constructor(
      * @return configured HttpClientBuilder ready for building
      */
     private fun createBuilder(mountId: Long, logBody: Boolean = true): HttpClientBuilder {
-        val builder = httpClientBuilder.get()
+        var builder = httpClientBuilder
             // Ktor's LogLevel.ALL logs headers + body (unlike LogLevel.BODY, which omits headers)
             .loggerInterceptorLevel(if (logBody) LogLevel.ALL else LogLevel.HEADERS)
 
         credentialsStore.getCredentials(mountId)?.let { credentials ->
-            builder.authenticate(
+            builder = builder.authenticate(
                 domain = null,
                 getCredentials = { credentials }
             )

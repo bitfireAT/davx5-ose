@@ -39,7 +39,6 @@ import java.util.logging.Level
 import java.util.logging.LogRecord
 import java.util.logging.Logger
 import javax.inject.Inject
-import javax.inject.Provider
 
 @HiltAndroidTest
 class HttpClientBuilderTest {
@@ -51,7 +50,7 @@ class HttpClientBuilderTest {
     val mockKRule = MockKRule(this)
 
     @Inject
-    lateinit var httpClientBuilder: Provider<HttpClientBuilder>
+    lateinit var httpClientBuilder: HttpClientBuilder
 
     @Inject
     lateinit var productIds: ProductIds
@@ -83,7 +82,7 @@ class HttpClientBuilderTest {
                 .setBody("Some Content")
         )
 
-        httpClientBuilder.get().buildKtor().use { client ->
+        httpClientBuilder.buildKtor().use { client ->
             val response = client.get(server.url("/").toString())
             assertEquals(200, response.status.value)
             assertEquals("Some Content", response.bodyAsText())
@@ -94,7 +93,7 @@ class HttpClientBuilderTest {
     fun testConfigureProxy_System() = runTest {
         every { settingsManager.getInt(Settings.PROXY_TYPE) } returns Settings.PROXY_TYPE_SYSTEM
 
-        httpClientBuilder.get().buildKtor().use { client ->
+        httpClientBuilder.buildKtor().use { client ->
             assertNull((client.engine as OkHttpEngine).config.proxy)
         }
     }
@@ -103,7 +102,7 @@ class HttpClientBuilderTest {
     fun testConfigureProxy_None() = runTest {
         every { settingsManager.getInt(Settings.PROXY_TYPE) } returns Settings.PROXY_TYPE_NONE
 
-        httpClientBuilder.get().buildKtor().use { client ->
+        httpClientBuilder.buildKtor().use { client ->
             assertEquals(Proxy.NO_PROXY, (client.engine as OkHttpEngine).config.proxy)
         }
     }
@@ -114,7 +113,7 @@ class HttpClientBuilderTest {
         every { settingsManager.getString(Settings.PROXY_HOST) } returns "proxy.example.com"
         every { settingsManager.getInt(Settings.PROXY_PORT) } returns 8080
 
-        httpClientBuilder.get().buildKtor().use { client ->
+        httpClientBuilder.buildKtor().use { client ->
             val proxy = (client.engine as OkHttpEngine).config.proxy
             assertEquals(ProxyBuilder.http(Url("http://proxy.example.com:8080")), proxy)
         }
@@ -126,7 +125,7 @@ class HttpClientBuilderTest {
         every { settingsManager.getString(Settings.PROXY_HOST) } returns "proxy.example.com"
         every { settingsManager.getInt(Settings.PROXY_PORT) } returns 1080
 
-        httpClientBuilder.get().buildKtor().use { client ->
+        httpClientBuilder.buildKtor().use { client ->
             val proxy = (client.engine as OkHttpEngine).config.proxy
             assertEquals(ProxyBuilder.socks("proxy.example.com", 1080), proxy)
         }
@@ -138,7 +137,7 @@ class HttpClientBuilderTest {
         // so they're only stored/sent by the Ktor client, not the raw OkHttp client.
         val url = server.url("/test").toString()
 
-        httpClientBuilder.get().buildKtor().use { client ->
+        httpClientBuilder.buildKtor().use { client ->
             // set cookie for root path (/) and /test path in first response
             server.enqueue(
                 MockResponse()
@@ -179,7 +178,7 @@ class HttpClientBuilderTest {
                 .addHeader(HttpHeaders.Location, server.url("/redirected").toString())
         )
 
-        httpClientBuilder.get().buildKtor().use { client ->
+        httpClientBuilder.buildKtor().use { client ->
             val response = client.get(server.url("/").toString())
             // redirect is not followed, so we get the 302 response directly
             assertEquals(302, response.status.value)
@@ -201,7 +200,7 @@ class HttpClientBuilderTest {
                 .setBody("Target")
         )
 
-        httpClientBuilder.get().followRedirects(true).buildKtor().use { client ->
+        httpClientBuilder.followRedirects(true).buildKtor().use { client ->
             val response = client.get(server.url("/").toString())
             assertEquals(200, response.status.value)
             assertEquals("Target", response.bodyAsText())
@@ -238,7 +237,7 @@ class HttpClientBuilderTest {
                 .setBody("OK")
         )
 
-        httpClientBuilder.get()
+        httpClientBuilder
             .setLogger(logger)
             .loggerInterceptorLevel(LogLevel.ALL)
             .buildKtor().use { client ->
@@ -263,7 +262,7 @@ class HttpClientBuilderTest {
         try {
             Locale.setDefault(Locale.GERMANY)
 
-            httpClientBuilder.get().buildKtor().use { client ->
+            httpClientBuilder.buildKtor().use { client ->
                 client.get(server.url("/").toString())
             }
 

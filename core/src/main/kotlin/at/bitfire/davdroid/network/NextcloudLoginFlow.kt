@@ -25,7 +25,6 @@ import io.ktor.http.path
 import kotlinx.serialization.Serializable
 import java.net.URI
 import javax.inject.Inject
-import javax.inject.Provider
 
 /**
  * Implements Nextcloud Login Flow v2.
@@ -33,7 +32,7 @@ import javax.inject.Provider
  * See https://docs.nextcloud.com/server/latest/developer_manual/client_apis/LoginFlow/index.html#login-flow-v2
  */
 class NextcloudLoginFlow @Inject constructor(
-    private val httpClientBuilder: Provider<HttpClientBuilder>
+    private val httpClientBuilder: HttpClientBuilder
 ) {
 
     // Login flow state
@@ -130,7 +129,7 @@ class NextcloudLoginFlow @Inject constructor(
      * Creates a Ktor HTTP client that follows redirects.
      */
     private fun createClient(): HttpClient =
-        httpClientBuilder.get()
+        httpClientBuilder
             .followRedirects(true)
             .buildKtor()
 

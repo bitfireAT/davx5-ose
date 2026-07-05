@@ -49,60 +49,70 @@ import java.util.logging.Logger
 import javax.inject.Inject
 
 /**
- * Builder for the HTTP client.
+ * Immutable/chainable builder for the HTTP client.
  *
- * **Attention:** If the builder is injected, it shouldn't be used from multiple locations to generate different clients because then
- * there's only one [HttpClientBuilder] object and setting properties from one location would influence the others.
+ * Every configuration method (`setLogger`, `authenticate`, `followRedirects`, ...) returns
+ * a new instance with the change applied.
  *
- * To generate multiple clients, inject and use `Provider<HttpClientBuilder>` instead.
+ * Also makes sure that [ConscryptIntegration] is initialized.
  */
-class HttpClientBuilder @Inject constructor(
+class HttpClientBuilder private constructor(
     private val accountSettingsFactory: AccountSettings.Factory,
     private val connectionSecurityManager: ConnectionSecurityManager,
-    defaultLogger: Logger,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val oAuthProviderFactory: OAuthProvider.Factory,
     private val settingsManager: SettingsManager,
-    private val productIds: ProductIds
+    private val productIds: ProductIds,
+    private val config: Config
 ) {
 
-    companion object {
+    @Inject
+    constructor(
+        accountSettingsFactory: AccountSettings.Factory,
+        connectionSecurityManager: ConnectionSecurityManager,
+        defaultLogger: Logger,
+        @IoDispatcher ioDispatcher: CoroutineDispatcher,
+        oAuthProviderFactory: OAuthProvider.Factory,
+        settingsManager: SettingsManager,
+        productIds: ProductIds
+    ) : this(
+        accountSettingsFactory,
+        connectionSecurityManager,
+        ioDispatcher,
+        oAuthProviderFactory,
+        settingsManager,
+        productIds,
+        Config(logger = defaultLogger)
+    )
 
-        init {
-            // make sure Conscrypt is available when the HttpClientBuilder class is loaded the first time
-            ConscryptIntegration().initialize()
-        }
+    private data class Config(
+        val logger: Logger,
+        // LogLevel.ALL logs headers + body (unlike LogLevel.BODY, which omits headers)
+        val loggerInterceptorLevel: LogLevel = LogLevel.ALL,
+        val certificateAlias: String? = null,
+        val authUsername: String? = null,
+        val authPassword: SensitiveString? = null,
+        val authDomain: String? = null,
+        val readAuthStateCallback: (() -> AuthState?)? = null,
+        val updateAuthStateCallback: ((AuthState) -> Unit)? = null,
+        val followRedirects: Boolean = false
+    )
 
-    }
-
-    /**
-     * Flag to prevent multiple [buildKtor] calls
-     */
-    var alreadyBuilt = false
+    private fun copy(newConfig: Config) = HttpClientBuilder(
+        accountSettingsFactory,
+        connectionSecurityManager,
+        ioDispatcher,
+        oAuthProviderFactory,
+        settingsManager,
+        productIds,
+        newConfig
+    )
 
     // property setters/getters
 
-    private var logger: Logger = defaultLogger
-    fun setLogger(logger: Logger): HttpClientBuilder {
-        this.logger = logger
-        return this
-    }
+    fun setLogger(logger: Logger): HttpClientBuilder = copy(config.copy(logger = logger))
 
-    // LogLevel.ALL logs headers + body (unlike LogLevel.BODY, which omits headers)
-    private var loggerInterceptorLevel: LogLevel = LogLevel.ALL
-
-    fun loggerInterceptorLevel(level: LogLevel): HttpClientBuilder {
-        loggerInterceptorLevel = level
-        return this
-    }
-
-    private var certificateAlias: String? = null
-
-    private var authUsername: String? = null
-    private var authPassword: SensitiveString? = null
-    private var authDomain: String? = null
-    private var readAuthStateCallback: (() -> AuthState?)? = null
-    private var updateAuthStateCallback: ((AuthState) -> Unit)? = null
+    fun loggerInterceptorLevel(level: LogLevel): HttpClientBuilder = copy(config.copy(loggerInterceptorLevel = level))
 
     fun authenticate(
         domain: String?,
@@ -110,40 +120,40 @@ class HttpClientBuilder @Inject constructor(
         updateAuthState: ((AuthState) -> Unit)? = null
     ): HttpClientBuilder {
         val credentials = getCredentials()
+        var newConfig = config
         when {
             // OAuth
             credentials.authState != null -> {
-                readAuthStateCallback = {
-                    // We don't use the "credentials" object from above because it may contain an outdated
-                    // access token. Instead, we fetch the up-to-date auth-state on each readAuthState call.
-                    getCredentials().authState
-                }
-                updateAuthStateCallback = updateAuthState
-                authDomain = domain
+                newConfig = newConfig.copy(
+                    readAuthStateCallback = {
+                        // We don't use the "credentials" object from above because it may contain an outdated
+                        // access token. Instead, we fetch the up-to-date auth-state on each readAuthState call.
+                        getCredentials().authState
+                    },
+                    updateAuthStateCallback = updateAuthState,
+                    authDomain = domain
+                )
             }
 
             // basic / digest auth
             credentials.username != null && credentials.password != null -> {
-                authUsername = credentials.username
-                authPassword = credentials.password
-                authDomain = domain
+                newConfig = newConfig.copy(
+                    authUsername = credentials.username,
+                    authPassword = credentials.password,
+                    authDomain = domain
+                )
             }
         }
 
         // client certificate
         if (credentials.certificateAlias != null)
-            certificateAlias = credentials.certificateAlias
+            newConfig = newConfig.copy(certificateAlias = credentials.certificateAlias)
 
-        return this
+        return copy(newConfig)
     }
 
 
-    private var followRedirects = false
-
-    fun followRedirects(follow: Boolean): HttpClientBuilder {
-        followRedirects = follow
-        return this
-    }
+    fun followRedirects(follow: Boolean): HttpClientBuilder = copy(config.copy(followRedirects = follow))
 
 
     // convenience builders from other classes
@@ -165,7 +175,7 @@ class HttpClientBuilder @Inject constructor(
     @WorkerThread
     fun fromAccount(account: Account, authDomain: String? = null): HttpClientBuilder {
         val accountSettings = accountSettingsFactory.create(account)
-        authenticate(
+        return authenticate(
             domain = UrlUtils.hostToDomain(authDomain),
             getCredentials = {
                 accountSettings.credentials()
@@ -174,7 +184,6 @@ class HttpClientBuilder @Inject constructor(
                 accountSettings.updateAuthState(authState)
             }
         )
-        return this
     }
 
     /**
@@ -206,7 +215,7 @@ class HttpClientBuilder @Inject constructor(
          * b. we need to cache the instances because otherwise, HTTPS connection are not used
          *    correctly. okhttp checks the SSLSocketFactory/TrustManager of a connection in the pool
          *    and creates a new connection when they have changed. */
-        val securityContext = connectionSecurityManager.getContext(certificateAlias)
+        val securityContext = connectionSecurityManager.getContext(config.certificateAlias)
 
         if (securityContext.disableHttp2)
             okBuilder.protocols(listOf(Protocol.HTTP_1_1))
@@ -236,7 +245,7 @@ class HttpClientBuilder @Inject constructor(
             else -> /* Invalid proxy type, shouldn't happen */ null
         }
         if (proxy != null) {
-            logger.info("Using non-default proxy setting: $proxy")
+            config.logger.info("Using non-default proxy setting: $proxy")
             engineConfig.proxy = proxy
         }
     }
@@ -247,30 +256,21 @@ class HttpClientBuilder @Inject constructor(
     /**
      * Builds a Ktor [HttpClient] with the configured settings.
      *
-     * [buildKtor] must be called only once because multiple calls indicate this wrong usage pattern:
-     *
-     * ```
-     * val builder = HttpClientBuilder(/*injected*/)
-     * val client1 = builder.configure().buildKtor()
-     * val client2 = builder.configureOtherwise().buildKtor()
-     * ```
-     *
-     * However in this case the configuration of `client1` is still in `builder` and would be reused for `client2`,
-     * which is usually not desired.
+     * Since [HttpClientBuilder] is immutable, this can be called any number of times — on this
+     * builder or on any builder derived from it via the configuration methods — and each call
+     * produces an independent [HttpClient] that only reflects the configuration of the builder
+     * it was called on.
      *
      * @return the new HttpClient (with [OkHttp] engine) which **must be closed by the caller**
      */
     @MustBeClosed
     fun buildKtor(): HttpClient {
-        if (alreadyBuilt)
-            logger.warning("buildKtor() should only be called once; use Provider<HttpClientBuilder> instead")
-
         val client = HttpClient(OkHttp) {
             // Ktor-level configuration here
 
             // don't follow redirects by default because it would break PROPFIND handling;
             // this controls whether Ktor's HttpRedirect plugin is active
-            followRedirects = this@HttpClientBuilder.followRedirects
+            followRedirects = config.followRedirects
 
             installAuthPlugin()
 
@@ -307,14 +307,14 @@ class HttpClientBuilder @Inject constructor(
             }
 
             // add network logging (with redaction of sensitive headers), if requested
-            if (logger.isLoggable(Level.FINEST)) {
+            if (config.logger.isLoggable(Level.FINEST)) {
                 install(Logging) {
                     logger = object : io.ktor.client.plugins.logging.Logger {
                         override fun log(message: String) {
-                            this@HttpClientBuilder.logger.finest(message)
+                            config.logger.finest(message)
                         }
                     }
-                    level = loggerInterceptorLevel
+                    level = config.loggerInterceptorLevel
 
                     // don't log some confidential headers
                     val headersToIgnore = arrayOf(
@@ -345,15 +345,14 @@ class HttpClientBuilder @Inject constructor(
             }
         }
 
-        alreadyBuilt = true
         return client
     }
 
     private fun HttpClientConfig<*>.installAuthPlugin() {
-        val username = authUsername
-        val password = authPassword
-        val readAuthState = readAuthStateCallback
-        val updateAuthState = updateAuthStateCallback
+        val username = config.authUsername
+        val password = config.authPassword
+        val readAuthState = config.readAuthStateCallback
+        val updateAuthState = config.updateAuthStateCallback
         when {
             // prefer OAuth, if available
             readAuthState != null -> {
@@ -362,7 +361,7 @@ class HttpClientBuilder @Inject constructor(
                         oAuthProviderFactory.create(
                             readAuthState = readAuthState,
                             writeAuthState = { authState -> updateAuthState?.invoke(authState) }
-                        ).authProvider(authDomain)
+                        ).authProvider(config.authDomain)
                     )
                 }
             }
@@ -374,7 +373,7 @@ class HttpClientBuilder @Inject constructor(
                         createDomainBasicAuthProvider(
                             username = username,
                             password = password.asString(),
-                            firstLevelDomain = authDomain,
+                            firstLevelDomain = config.authDomain,
                             insecurePreemptive = true
                         )
                     )
@@ -382,11 +381,22 @@ class HttpClientBuilder @Inject constructor(
                         createDomainDigestAuthProvider(
                             username = username,
                             password = password.asString(),
-                            firstLevelDomain = authDomain
+                            firstLevelDomain = config.authDomain
                         )
                     )
                 }
             }
         }
     }
+
+
+    companion object {
+
+        init {
+            // make sure Conscrypt is available when the HttpClientBuilder class is loaded the first time
+            ConscryptIntegration().initialize()
+        }
+
+    }
+
 }
