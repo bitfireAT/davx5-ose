@@ -81,9 +81,9 @@ class OAuthProvider @AssistedInject constructor(
     }
 
     /**
-     * Requests a fresh access token.
+     * Requests a fresh access token. Ignores whether [AuthState] still considers the current token valid.
      *
-     * Ignores whether [AuthState] still considers the current token valid.
+     * Calls to this method are serialized by the global [refreshMutex].
      *
      * @param oldTokens the tokens Ktor cached and that just got rejected
      */
@@ -93,7 +93,7 @@ class OAuthProvider @AssistedInject constructor(
         val currentAccessToken = authState.accessToken
 
         /* If the persisted access token is already different to the rejected one,
-        another caller refreshed it while we were waiting for the lock, and we can simply return it. */
+        another caller refreshed it while we were waiting for the lock, and we can simply return the new one. */
         if (currentAccessToken != null && currentAccessToken != oldTokens?.accessToken)
             return@withLock BearerTokens(currentAccessToken, authState.refreshToken)
 
