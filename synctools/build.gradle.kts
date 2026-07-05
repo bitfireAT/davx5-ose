@@ -91,7 +91,6 @@ dependencies {
     implementation(libs.androidx.core)
     implementation(libs.guava)
     implementation(libs.kotlinx.coroutines)
-    implementation(libs.spotbugs.annotations)
 
     // ical4j/ez-vcard
     api(libs.ical4j)
@@ -106,6 +105,7 @@ dependencies {
     testFixturesImplementation(libs.androidx.test.rules)
 
     // instrumented tests
+    androidTestImplementation(libs.androidx.test.rules)
     androidTestImplementation(libs.androidx.test.runner)
     androidTestImplementation(libs.kotlinx.coroutines.test)
     androidTestImplementation(libs.mockk.android)

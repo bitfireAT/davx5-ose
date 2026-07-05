@@ -16,8 +16,8 @@ import at.bitfire.davdroid.settings.Credentials
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.synctools.util.SensitiveString
+import com.google.errorprone.annotations.CheckReturnValue
 import com.google.errorprone.annotations.MustBeClosed
-import edu.umd.cs.findbugs.annotations.CheckReturnValue
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.engine.HttpClientEngineConfig
@@ -54,8 +54,6 @@ import javax.inject.Inject
  *
  * Every configuration method (`logTo`, `authenticate`, `followRedirects`, ...) returns
  * a new instance with the change applied.
- *
- * Also makes sure that [ConscryptIntegration] is initialized.
  */
 class HttpClientBuilder private constructor(
     private val accountSettingsFactory: AccountSettings.Factory,
@@ -169,13 +167,15 @@ class HttpClientBuilder private constructor(
             // OAuth
             credentials.authState != null -> {
                 newConfig = newConfig.copy(
+                    authUsername = null,
+                    authPassword = null,
+                    authDomain = domain,
                     readAuthStateCallback = {
                         // We don't use the "credentials" object from above because it may contain an outdated
                         // access token. Instead, we fetch the up-to-date auth-state on each readAuthState call.
                         getCredentials().authState
                     },
-                    updateAuthStateCallback = updateAuthState,
-                    authDomain = domain
+                    updateAuthStateCallback = updateAuthState
                 )
             }
 
@@ -184,7 +184,9 @@ class HttpClientBuilder private constructor(
                 newConfig = newConfig.copy(
                     authUsername = credentials.username,
                     authPassword = credentials.password,
-                    authDomain = domain
+                    authDomain = domain,
+                    readAuthStateCallback = null,
+                    updateAuthStateCallback = null
                 )
             }
         }
@@ -241,9 +243,6 @@ class HttpClientBuilder private constructor(
     // actual client building
 
     private fun buildConnectionSecurity(okBuilder: OkHttpClient.Builder) {
-        // make sure Conscrypt is available
-        ConscryptIntegration().initialize()
-
         // Allow cleartext and TLS 1.2+
         okBuilder.connectionSpecs(
             listOf(
