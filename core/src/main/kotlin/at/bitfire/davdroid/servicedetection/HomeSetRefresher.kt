@@ -24,7 +24,6 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import io.ktor.client.HttpClient
-import java.util.logging.Level
 import java.util.logging.Logger
 import javax.annotation.WillNotClose
 
@@ -94,7 +93,7 @@ class HomeSetRefresher @AssistedInject constructor(
                             ?.let { principalUrl -> Principal.fromServiceAndUrl(service, principalUrl) }
                             ?.let { principal -> db.principalDao().insertOrUpdate(service.id, principal) }
                     )
-                    logger.log(Level.FINE, "Found collection", collection)
+                    logger.fine("Found collection: $collection")
 
                     // save or update collection if usable (ignore it otherwise)
                     if (ServiceDetectionUtils.isUsableCollection(service, collection))

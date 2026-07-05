@@ -17,7 +17,6 @@ import net.fortuna.ical4j.model.property.Trigger
 import java.time.Duration
 import java.time.Instant
 import java.time.temporal.TemporalAmount
-import java.util.logging.Level
 import java.util.logging.Logger
 import kotlin.jvm.optionals.getOrNull
 
@@ -69,8 +68,7 @@ object AlarmTriggerCalculator {
                 refStart
             )
         } else {
-            logger.log(Level.WARNING, "VALARM TRIGGER type is not DURATION or DATE-TIME " +
-                    "(requires event DTSTART for Android), ignoring alarm", alarm)
+            logger.warning("VALARM TRIGGER type is not DURATION or DATE-TIME (requires event DTSTART for Android), ignoring alarm: $alarm")
             null
         }
     }

@@ -15,7 +15,6 @@ import at.bitfire.synctools.storage.toContentValues
 import at.techbee.jtx.JtxContract
 import at.techbee.jtx.JtxContract.asSyncAdapter
 import java.util.LinkedList
-import java.util.logging.Level
 import java.util.logging.Logger
 
 /**
@@ -43,7 +42,7 @@ class JtxCollectionProvider(
      * @throws LocalStorageException when the content provider returns nothing or an error
      */
     fun createCollection(values: ContentValues): Long {
-        logger.log(Level.FINE, "Creating jtx collection", values)
+        logger.fine("Creating jtx collection with $values")
 
         values.put(JtxContract.JtxCollection.ACCOUNT_NAME, account.name)
         values.put(JtxContract.JtxCollection.ACCOUNT_TYPE, account.type)
@@ -142,7 +141,7 @@ class JtxCollectionProvider(
      * @throws LocalStorageException when the content provider returns an error
      */
     fun updateCollection(id: Long, values: ContentValues): Int {
-        logger.log(Level.FINE, "Updating jtx collection #$id", values)
+        logger.fine("Updating jtx collection #$id with $values")
         try {
             return client.update(collectionUri(id), values, null, null)
         } catch (e: RemoteException) {

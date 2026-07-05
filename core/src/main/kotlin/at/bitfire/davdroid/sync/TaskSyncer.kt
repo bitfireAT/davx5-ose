@@ -16,6 +16,7 @@ import at.bitfire.synctools.storage.TaskProvider
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import java.util.logging.Level
 
 /**
  * Sync logic for tasks in CalDAV collections ({@code VTODO}).
@@ -71,7 +72,11 @@ class TaskSyncer @AssistedInject constructor(
         localCollection: LocalTaskList,
         remoteCollection: Collection
     ) {
-        logger.info("Synchronizing task list ${localCollection.dmfsTaskList.id} with database collection ID: ${localCollection.dbCollectionId}")
+        logger.log(
+            Level.INFO,
+            "Synchronizing task list {0} with database collection ID: {1}",
+            arrayOf(localCollection.dmfsTaskList.id, localCollection.dbCollectionId)
+        )
 
         val syncManager = tasksSyncManagerFactory.tasksSyncManager(
             account,

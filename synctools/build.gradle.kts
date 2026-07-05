@@ -133,6 +133,9 @@ dependencies {
 }
 
 tasks.withType<Test>().configureEach {
+    // activate verbose logging for tests
+    systemProperty("java.util.logging.config.file", "$projectDir/src/test/resources/logging.properties")
+
     options {
         // Prevent Robolectric from instrumenting ical4j classes to avoid problems with registering
         // ical4j's ZoneRulesProviderImpl more than once with Java's ZoneRulesProvider.

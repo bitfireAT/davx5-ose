@@ -40,6 +40,7 @@ import net.fortuna.ical4j.model.property.ProdId
 import net.fortuna.ical4j.model.property.immutable.ImmutableVersion
 import java.io.StringWriter
 import java.util.UUID
+import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
 import javax.inject.Provider
@@ -205,7 +206,11 @@ class DavCollectionRepository @Inject constructor(
                 } catch (e: HttpException) {
                     if (e is NotFoundException || e is GoneException) {
                         // HTTP 404 Not Found or 410 Gone (collection is not there anymore) -> delete locally, too
-                        logger.info("Collection ${collection.url} not found on server, deleting locally")
+                        logger.log(
+                            Level.INFO,
+                            "Collection {0} not found on server, deleting locally",
+                            arrayOf(collection.url)
+                        )
                         delete(collection)
                     } else
                         throw e

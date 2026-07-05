@@ -15,6 +15,7 @@ import at.bitfire.synctools.storage.calendar.AndroidCalendarProvider
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import java.util.logging.Level
 
 /**
  * Sync logic for calendars
@@ -59,7 +60,15 @@ class CalendarSyncer @AssistedInject constructor(
         localCollection: LocalCalendar,
         remoteCollection: Collection
     ) {
-        logger.info("Synchronizing calendar #${localCollection.androidCalendar.id}, DB Collection ID: ${localCollection.dbCollectionId}, URL: ${localCollection.androidCalendar.name}")
+        logger.log(
+            Level.INFO,
+            "Synchronizing calendar #{0}, DB Collection ID: {1}, URL: {2}",
+            arrayOf<Any?>(
+                localCollection.androidCalendar.id,
+                localCollection.dbCollectionId,
+                localCollection.androidCalendar.name
+            )
+        )
 
         val syncManager = calendarSyncManagerFactory.calendarSyncManager(
             account,

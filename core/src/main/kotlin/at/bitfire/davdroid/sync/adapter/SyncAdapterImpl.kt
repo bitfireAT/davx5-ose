@@ -115,7 +115,7 @@ class SyncAdapterImpl @Inject constructor(
         }
 
         logger.fine("Starting OneTimeSyncWorker for $account $authority and waiting for it")
-        val workerName = syncWorkerManager.enqueueOneTime(account, dataType = SyncDataType.Companion.fromAuthority(authority), fromUpload = upload)
+        val workerName = syncWorkerManager.enqueueOneTime(account, dataType = SyncDataType.fromAuthority(authority), fromUpload = upload)
 
         // Android 14+ does not handle pending sync state correctly.
         // As a defensive workaround, we can cancel specifically this still pending sync only
@@ -158,11 +158,11 @@ class SyncAdapterImpl @Inject constructor(
             logger.fine("Not waiting for OneTimeSyncWorker anymore.")
         }
 
-        logger.log(Level.INFO, "Returning to sync framework.", syncResult)
+        logger.info("Returning to sync framework: $syncResult")
     }
 
     override fun onSecurityException(account: Account, extras: Bundle, authority: String, syncResult: SyncResult) {
-        logger.log(Level.WARNING, "Security exception for $account/$authority")
+        logger.warning("Security exception for $account/$authority")
     }
 
     override fun onSyncCanceled() {

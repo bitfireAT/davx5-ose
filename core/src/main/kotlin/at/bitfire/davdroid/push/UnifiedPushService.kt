@@ -13,6 +13,7 @@ import org.unifiedpush.android.connector.FailedReason
 import org.unifiedpush.android.connector.PushService
 import org.unifiedpush.android.connector.data.PushEndpoint
 import org.unifiedpush.android.connector.data.PushMessage
+import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
 
@@ -44,7 +45,7 @@ class UnifiedPushService : PushService() {
 
     override fun onNewEndpoint(endpoint: PushEndpoint, instance: String) {
         val serviceId = instance.toLongOrNull() ?: return
-        logger.warning("Got UnifiedPush endpoint for service $serviceId: ${endpoint.url}")
+        logger.log(Level.INFO, "Got UnifiedPush endpoint {0} for service {1}", arrayOf<Any>(endpoint.url, serviceId))
 
         // register new endpoint at CalDAV/CardDAV servers
         applicationScope.launch {
@@ -64,7 +65,7 @@ class UnifiedPushService : PushService() {
 
     override fun onUnregistered(instance: String) {
         val serviceId = instance.toLongOrNull() ?: return
-        logger.warning("UnifiedPush unregistered for service $serviceId")
+        logger.info("UnifiedPush unregistered for service $serviceId")
 
         applicationScope.launch {
             pushRegistrationManager.get().removeSubscription(serviceId)

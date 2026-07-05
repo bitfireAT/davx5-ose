@@ -184,3 +184,8 @@ dependencies {
     testImplementation(libs.robolectric)
     testImplementation(testFixtures(project(":synctools")))
 }
+
+tasks.withType<Test>().configureEach {
+    // activate verbose logging for tests
+    systemProperty("java.util.logging.config.file", "$projectDir/src/test/resources/logging.properties")
+}

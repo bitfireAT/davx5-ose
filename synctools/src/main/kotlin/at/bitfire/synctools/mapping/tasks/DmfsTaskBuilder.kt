@@ -43,6 +43,7 @@ import at.bitfire.synctools.mapping.tasks.builder.UrlBuilder
 import at.bitfire.synctools.storage.tasks.DmfsTaskList
 import at.bitfire.synctools.storage.tasks.TaskAndExceptions
 import net.fortuna.ical4j.model.component.VToDo
+import java.util.logging.Level
 import java.util.logging.Logger
 
 class DmfsTaskBuilder(
@@ -104,7 +105,11 @@ class DmfsTaskBuilder(
         /* Recurring task exceptions are not yet supported. Passing them to OpenTasks
         without ORIGINAL_INSTANCE_TIME causes problems, so drop them. */
         if (associatedTasks.exceptions.isNotEmpty())
-            logger.warning("Ignoring ${associatedTasks.exceptions.size} exception(s) of recurring task (not yet supported, see #2357)")
+            logger.log(
+                Level.WARNING,
+                "Ignoring {0} exception(s) of recurring task (not yet supported, see #2357)",
+                arrayOf(associatedTasks.exceptions.size)
+            )
 
         return TaskAndExceptions(
             main = buildTask(from = mainVToDo, main = mainVToDo),

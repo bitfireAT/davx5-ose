@@ -36,27 +36,29 @@ import javax.inject.Inject
 class LogFileHandler @Inject constructor(
     @ApplicationContext val context: Context,
     private val debugDirectory: DebugDirectory,
-    private val logger: Logger,
+    logger: Logger,
     private val notificationRegistry: NotificationRegistry
 ): Handler(), Closeable {
 
-    companion object {
-        val LOG_FILE_NAME = DebugDirectory.FileName("davx5-log.txt")
-    }
-
+    /**
+     * file handler we're delegating actual file access to
+     */
     private var fileHandler: FileHandler? = null
     private val notificationManager = NotificationManagerCompat.from(context)
 
     private val logFile = debugDirectory.resolve(LOG_FILE_NAME)
 
     init {
+        // use PlainTextFormatter by default
+        formatter = PlainTextFormatter.FOR_FILE
+
         if (logFile != null) {
             if (logFile.createNewFile())
                 logFile.writeText("Log file created at ${Date()}; PID ${Process.myPid()}; UID ${Process.myUid()}\n")
 
             // actual logging is handled by a FileHandler
-            fileHandler = FileHandler(logFile.toString(), true).apply {
-                formatter = PlainTextFormatter.DEFAULT
+            fileHandler = FileHandler(logFile.toString(), true).also { fh ->
+                fh.formatter = formatter
             }
 
             showNotification()
@@ -142,6 +144,10 @@ class LogFileHandler @Inject constructor(
 
     private fun removeNotification() {
         notificationManager.cancel(NotificationRegistry.NOTIFY_VERBOSE_LOGGING)
+    }
+
+    companion object {
+        val LOG_FILE_NAME = DebugDirectory.FileName("davx5-log.txt")
     }
 
 }

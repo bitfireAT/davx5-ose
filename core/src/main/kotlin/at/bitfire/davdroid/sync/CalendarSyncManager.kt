@@ -187,7 +187,7 @@ class CalendarSyncManager @AssistedInject constructor(
 
     override fun generateUpload(resource: LocalEvent): GeneratedResource {
         val localEvent = resource.androidEvent
-        logger.log(Level.FINE, "Preparing upload of event #${resource.id}", localEvent)
+        logger.log(Level.FINE, "Preparing upload of event #{0}: {1}", arrayOf(resource.id, localEvent))
 
         /* Increase SEQUENCE of main event in memory and remember new value.
         Will be written to provider later over onSuccessContext. */
@@ -310,7 +310,7 @@ class CalendarSyncManager @AssistedInject constructor(
 
         // add default reminder (if desired)
         accountSettings.getDefaultAlarm()?.let { minBefore ->
-            logger.log(Level.INFO, "Adding default alarm ($minBefore min before)", event)
+            logger.info("Adding default alarm ($minBefore min before) to $event")
             DefaultReminderBuilder(minBefore = minBefore).add(to = androidEvent)
         }
 
@@ -318,11 +318,11 @@ class CalendarSyncManager @AssistedInject constructor(
         val local = localCollection.findByName(fileName)
         if (local != null) {
             SyncException.wrapWithLocalResource(local) {
-                logger.log(Level.INFO, "Updating $fileName in local calendar", event)
+                logger.info("Updating $fileName in local calendar: $event")
                 local.update(androidEvent)
             }
         } else {
-            logger.log(Level.INFO, "Adding $fileName to local calendar", event)
+            logger.info("Adding $fileName to local calendar: $event")
             localCollection.add(androidEvent)
         }
     }

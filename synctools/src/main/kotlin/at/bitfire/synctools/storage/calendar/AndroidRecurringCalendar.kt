@@ -18,7 +18,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
-import java.util.logging.Level
 import java.util.logging.Logger
 
 /**
@@ -215,7 +214,7 @@ class AndroidRecurringCalendar(
             // 2. main event not recurring → exceptions are useless, ignore them
 
             if (original.exceptions.isNotEmpty())
-                logger.log(Level.WARNING, "Dropping exceptions of event because event is not recurring or _SYNC_ID is not set", main)
+                logger.warning("Dropping exceptions of event because event is not recurring or _SYNC_ID is not set: $main")
 
             return EventAndExceptions(main = main, exceptions = emptyList())
         }
