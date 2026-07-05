@@ -101,6 +101,12 @@ class HttpClientBuilder private constructor(
         val updateAuthStateCallback: ((AuthState) -> Unit)? = null
     )
 
+    /**
+     * Creates a new [HttpClientBuilder] with updated configuration.
+     *
+     * @param update block that takes the current Config and returns a new Config with desired changes
+     * @return new instance with updated config
+     */
     private fun withConfig(update: (Config) -> Config) = HttpClientBuilder(
         accountSettingsFactory,
         connectionSecurityManager,
@@ -110,12 +116,38 @@ class HttpClientBuilder private constructor(
         update(config)
     )
 
+    /**
+     * Sets whether the HTTP client should automatically follow redirects.
+     *
+     * @param follow true to follow redirects, false otherwise
+     * @return new builder with updated config (chainable)
+     */
     fun followRedirects(follow: Boolean): HttpClientBuilder = withConfig { it.copy(followRedirects = follow) }
 
+    /**
+     * Sets the logger for the HTTP client (mainly used to log HTTP traffic).
+     *
+     * @param logger The logger to be used for logging HTTP operations.
+     * @return new builder with updated config (chainable)
+     */
     fun logTo(logger: Logger): HttpClientBuilder = withConfig { it.copy(logger = logger) }
 
+    /**
+     * Sets the log level for HTTP traffic logging.
+     *
+     * @param level The desired log level for traffic logs.
+     * @return new builder with updated config (chainable)
+     */
     fun trafficLogLevel(level: LogLevel): HttpClientBuilder = withConfig { it.copy(trafficLogLevel = level) }
 
+    /**
+     * Configures authentication for the HTTP client.
+     *
+     * @param domain Domain for which the credentials are valid. If null, credentials are sent for all domains.
+     * @param getCredentials Provider function that returns the credentials to use.
+     * @param updateAuthState Optional callback to update the OAuth auth-state.
+     * @return new builder with updated config (chainable)
+     */
     fun authenticate(
         domain: String?,
         getCredentials: () -> Credentials,
@@ -199,6 +231,9 @@ class HttpClientBuilder private constructor(
     // actual client building
 
     private fun buildConnectionSecurity(okBuilder: OkHttpClient.Builder) {
+        // make sure Conscrypt is available
+        ConscryptIntegration().initialize()
+
         // Allow cleartext and TLS 1.2+
         okBuilder.connectionSpecs(
             listOf(
@@ -383,16 +418,6 @@ class HttpClientBuilder private constructor(
         }
 
         return client
-    }
-
-
-    companion object {
-
-        init {
-            // make sure Conscrypt is available when the HttpClientBuilder class is loaded the first time
-            ConscryptIntegration().initialize()
-        }
-
     }
 
 }
