@@ -42,7 +42,7 @@ class QueryChildDocumentsOperation @Inject constructor(
     @ApplicationContext private val context: Context,
     private val db: AppDatabase,
     private val documentSortByMapper: Lazy<DocumentSortByMapper>,
-    private val httpClientBuilder: DavHttpClientBuilder,
+    private val davClientBuilder: DavHttpClientBuilder,
     private val logger: Logger
 ) {
 
@@ -127,7 +127,7 @@ class QueryChildDocumentsOperation @Inject constructor(
 
         val parentUrl = parent.toKtorUrl(db)
         try {
-            httpClientBuilder.build(parent.mountId).use { client ->
+            davClientBuilder.build(parent.mountId).use { client ->
                 val folder = DavCollection(client, parentUrl)
                 folder.propfind(1, *DAV_FILE_FIELDS) { response, relation ->
                     logger.fine("$relation $response")

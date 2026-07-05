@@ -31,7 +31,7 @@ import javax.inject.Inject
 class OpenDocumentOperation @Inject constructor(
     @ApplicationContext private val context: Context,
     private val db: AppDatabase,
-    private val httpClientBuilder: DavHttpClientBuilder,
+    private val davClientBuilder: DavHttpClientBuilder,
     private val logger: Logger,
     private val randomAccessCallbackWrapperFactory: RandomAccessCallbackWrapper.Factory,
     private val streamingFileDescriptorFactory: StreamingFileDescriptor.Factory
@@ -44,7 +44,7 @@ class OpenDocumentOperation @Inject constructor(
 
         val doc = documentDao.get(documentId.toLong()) ?: throw FileNotFoundException()
         val url = doc.toKtorUrl(db)
-        val client = httpClientBuilder.build(doc.mountId, logBody = false)
+        val client = davClientBuilder.build(doc.mountId, logBody = false)
 
         val readOnlyMode = when (mode) {
             "r" -> true

@@ -22,7 +22,7 @@ import javax.inject.Inject
 class MoveDocumentOperation @Inject constructor(
     @ApplicationContext private val context: Context,
     private val db: AppDatabase,
-    private val httpClientBuilder: DavHttpClientBuilder,
+    private val davClientBuilder: DavHttpClientBuilder,
     private val logger: Logger
 ) {
 
@@ -36,7 +36,7 @@ class MoveDocumentOperation @Inject constructor(
         if (doc.mountId != dstParent.mountId)
             throw UnsupportedOperationException("Can't MOVE between WebDAV servers")
 
-        httpClientBuilder
+        davClientBuilder
             .build(doc.mountId)
             .use { httpClient ->
                 val newLocation = URLBuilder(dstParent.toKtorUrl(db))
