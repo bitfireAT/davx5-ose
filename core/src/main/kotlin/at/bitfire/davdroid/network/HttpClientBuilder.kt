@@ -58,7 +58,7 @@ import javax.inject.Inject
 class HttpClientBuilder private constructor(
     private val accountSettingsFactory: AccountSettings.Factory,
     private val connectionSecurityManager: ConnectionSecurityManager,
-    private val ioDispatcher: CoroutineDispatcher,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val oAuthProviderFactory: OAuthProvider.Factory,
     private val settingsManager: SettingsManager,
     private val productIds: ProductIds,
@@ -428,5 +428,6 @@ class HttpClientBuilder private constructor(
 
         return client
     }
+
 
 }
