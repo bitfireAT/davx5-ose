@@ -74,7 +74,7 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
 
     @WillCloseWhenClosed
     val httpClient by lazy {
-        httpClientBuilder.fromAccount(account).buildKtor()
+        httpClientBuilder.fromAccount(account).build()
     }
 
     /**

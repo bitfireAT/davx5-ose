@@ -52,7 +52,6 @@ import java.util.concurrent.TimeUnit
 import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
-import javax.inject.Provider
 
 /**
  * Manages push registrations and subscriptions.
@@ -69,7 +68,7 @@ class PushRegistrationManager @Inject constructor(
     private val distributorManager: PushDistributorManager,
     private val notificationManager: PushNotificationManager,
     private val notificationRegistry: NotificationRegistry,
-    private val httpClientBuilder: Provider<HttpClientBuilder>,
+    private val httpClientBuilder: HttpClientBuilder,
     private val logger: Logger,
     private val serviceRepository: DavServiceRepository
 ) {
@@ -199,9 +198,9 @@ class PushRegistrationManager @Inject constructor(
         val nextWorkerRun = Instant.now() + Duration.ofDays(2 * WORKER_INTERVAL_DAYS)
 
         val account = accountRepository.get().fromName(service.accountName)
-        httpClientBuilder.get()
+        httpClientBuilder
             .fromAccountAsync(account)
-            .buildKtor()
+            .build()
             .use { httpClient ->
             for (collection in subscribeTo) {
                 // update push subscription for the given collection
@@ -327,9 +326,9 @@ class PushRegistrationManager @Inject constructor(
             return
 
         val account = accountRepository.get().fromName(service.accountName)
-        httpClientBuilder.get()
+        httpClientBuilder
             .fromAccountAsync(account)
-            .buildKtor()
+            .build()
             .use { httpClient ->
             for (collection in from)
                 collection.pushSubscription?.toUrlOrNull()?.let { url ->

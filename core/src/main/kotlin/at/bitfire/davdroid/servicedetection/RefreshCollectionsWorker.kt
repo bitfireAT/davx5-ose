@@ -154,7 +154,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
             // create authenticating HttpClient (credentials taken from account settings)
             httpClientBuilder
                 .fromAccount(account)
-                .buildKtor()
+                .build()
                 .use { httpClient ->
                     val refresher = collectionsWithoutHomeSetRefresherFactory.create(service, httpClient)
 

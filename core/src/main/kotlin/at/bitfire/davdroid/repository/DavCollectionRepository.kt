@@ -43,7 +43,6 @@ import java.util.UUID
 import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
-import javax.inject.Provider
 
 /**
  * Repository for managing collections.
@@ -52,7 +51,7 @@ class DavCollectionRepository @Inject constructor(
     @ApplicationContext private val context: Context,
     private val db: AppDatabase,
     private val logger: Logger,
-    private val httpClientBuilder: Provider<HttpClientBuilder>,
+    private val httpClientBuilder: HttpClientBuilder,
     private val productIds: Lazy<ProductIds>,
     private val serviceRepository: DavServiceRepository
 ) {
@@ -194,9 +193,9 @@ class DavCollectionRepository @Inject constructor(
         val service = serviceRepository.getBlocking(collection.serviceId) ?: throw IllegalArgumentException("Service not found")
         val account = Account(service.accountName, context.getString(R.string.account_type))
 
-        httpClientBuilder.get()
+        httpClientBuilder
             .fromAccountAsync(account)
-            .buildKtor()
+            .build()
             .use { httpClient ->
                 try {
                     DavResource(httpClient, collection.url).delete {
@@ -339,9 +338,9 @@ class DavCollectionRepository @Inject constructor(
      * @param xmlBody XML body containing collection metadata (e.g., display name, properties).
      */
     private suspend fun createOnServer(account: Account, url: Url, method: String, xmlBody: String) {
-        httpClientBuilder.get()
+        httpClientBuilder
             .fromAccountAsync(account)
-            .buildKtor()
+            .build()
             .use { httpClient ->
                 DavResource(httpClient, url).mkCol(
                     xmlBody = xmlBody,

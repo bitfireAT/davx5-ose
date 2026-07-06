@@ -46,103 +46,157 @@ import java.net.Proxy
 import java.util.Locale
 import java.util.logging.Level
 import java.util.logging.Logger
+import javax.annotation.CheckReturnValue
 import javax.inject.Inject
 
 /**
- * Builder for the HTTP client.
+ * Immutable/chainable builder for the HTTP client.
  *
- * **Attention:** If the builder is injected, it shouldn't be used from multiple locations to generate different clients because then
- * there's only one [HttpClientBuilder] object and setting properties from one location would influence the others.
- *
- * To generate multiple clients, inject and use `Provider<HttpClientBuilder>` instead.
+ * Every configuration method (`logTo`, `authenticate`, `followRedirects`, ...) returns
+ * a new instance with the change applied.
  */
-class HttpClientBuilder @Inject constructor(
+class HttpClientBuilder private constructor(
+    // below are coming from Hilt
     private val accountSettingsFactory: AccountSettings.Factory,
     private val connectionSecurityManager: ConnectionSecurityManager,
-    defaultLogger: Logger,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val oAuthProviderFactory: OAuthProvider.Factory,
+    private val productIds: ProductIds,
     private val settingsManager: SettingsManager,
-    private val productIds: ProductIds
+    // except the current configuration of this builder instance (immutable)
+    private val config: Config
 ) {
 
-    companion object {
+    // public constructor, delegating to private constructor with empty Config()
+    @Inject
+    constructor(
+        accountSettingsFactory: AccountSettings.Factory,
+        connectionSecurityManager: ConnectionSecurityManager,
+        defaultLogger: Logger,
+        @IoDispatcher ioDispatcher: CoroutineDispatcher,
+        oAuthProviderFactory: OAuthProvider.Factory,
+        productIds: ProductIds,
+        settingsManager: SettingsManager
+    ) : this(
+        accountSettingsFactory = accountSettingsFactory,
+        connectionSecurityManager = connectionSecurityManager,
+        ioDispatcher = ioDispatcher,
+        oAuthProviderFactory = oAuthProviderFactory,
+        productIds = productIds,
+        settingsManager = settingsManager,
+        config = Config(logger = defaultLogger)
+    )
 
-        init {
-            // make sure Conscrypt is available when the HttpClientBuilder class is loaded the first time
-            ConscryptIntegration().initialize()
-        }
 
-    }
+    // methods to set configuration
 
     /**
-     * Flag to prevent multiple [buildKtor] calls
+     * Immutable snapshot of everything that can be configured on a [HttpClientBuilder] plus default config.
      */
-    var alreadyBuilt = false
+    private data class Config(
+        val followRedirects: Boolean = false,
+        val logger: Logger,
+        val trafficLogLevel: LogLevel = LogLevel.ALL,
+        val certificateAlias: String? = null,
+        val authUsername: String? = null,
+        val authPassword: SensitiveString? = null,
+        val authDomain: String? = null,
+        val readAuthStateCallback: (() -> AuthState?)? = null,
+        val updateAuthStateCallback: ((AuthState) -> Unit)? = null
+    )
 
-    // property setters/getters
+    /**
+     * Creates a new [HttpClientBuilder] with updated configuration.
+     *
+     * @param update block that takes the current Config and returns a new Config with desired changes
+     * @return new instance with updated config
+     */
+    private fun withConfig(update: (Config) -> Config) = HttpClientBuilder(
+        accountSettingsFactory,
+        connectionSecurityManager,
+        ioDispatcher,
+        oAuthProviderFactory,
+        productIds,
+        settingsManager,
+        update(config)
+    )
 
-    private var logger: Logger = defaultLogger
-    fun setLogger(logger: Logger): HttpClientBuilder {
-        this.logger = logger
-        return this
-    }
+    /**
+     * Sets whether the HTTP client should automatically follow redirects.
+     *
+     * @param follow true to follow redirects, false otherwise
+     * @return new builder with updated config (chainable)
+     */
+    @CheckReturnValue
+    fun followRedirects(follow: Boolean): HttpClientBuilder = withConfig { it.copy(followRedirects = follow) }
 
-    // LogLevel.ALL logs headers + body (unlike LogLevel.BODY, which omits headers)
-    private var loggerInterceptorLevel: LogLevel = LogLevel.ALL
+    /**
+     * Sets the logger for the HTTP client (mainly used to log HTTP traffic).
+     *
+     * @param logger The logger to be used for logging HTTP operations.
+     * @return new builder with updated config (chainable)
+     */
+    @CheckReturnValue
+    fun logTo(logger: Logger): HttpClientBuilder = withConfig { it.copy(logger = logger) }
 
-    fun loggerInterceptorLevel(level: LogLevel): HttpClientBuilder {
-        loggerInterceptorLevel = level
-        return this
-    }
+    /**
+     * Sets the log level for HTTP traffic logging.
+     *
+     * @param level The desired log level for traffic logs.
+     * @return new builder with updated config (chainable)
+     */
+    @CheckReturnValue
+    fun trafficLogLevel(level: LogLevel): HttpClientBuilder = withConfig { it.copy(trafficLogLevel = level) }
 
-    private var certificateAlias: String? = null
-
-    private var authUsername: String? = null
-    private var authPassword: SensitiveString? = null
-    private var authDomain: String? = null
-    private var readAuthStateCallback: (() -> AuthState?)? = null
-    private var updateAuthStateCallback: ((AuthState) -> Unit)? = null
-
+    /**
+     * Configures authentication for the HTTP client.
+     *
+     * @param domain Domain for which the credentials are valid. If null, credentials are sent for all domains.
+     * @param getCredentials Provider function that returns the credentials to use.
+     * @param updateAuthState Optional callback to update the OAuth auth-state.
+     * @return new builder with updated config (chainable)
+     */
+    @CheckReturnValue
     fun authenticate(
         domain: String?,
         getCredentials: () -> Credentials,
         updateAuthState: ((AuthState) -> Unit)? = null
-    ): HttpClientBuilder {
+    ): HttpClientBuilder = withConfig { config ->
         val credentials = getCredentials()
+        var newConfig = config
         when {
             // OAuth
             credentials.authState != null -> {
-                readAuthStateCallback = {
-                    // We don't use the "credentials" object from above because it may contain an outdated
-                    // access token. Instead, we fetch the up-to-date auth-state on each readAuthState call.
-                    getCredentials().authState
-                }
-                updateAuthStateCallback = updateAuthState
-                authDomain = domain
+                newConfig = newConfig.copy(
+                    authUsername = null,
+                    authPassword = null,
+                    authDomain = domain,
+                    readAuthStateCallback = {
+                        // We don't use the "credentials" object from above because it may contain an outdated
+                        // access token. Instead, we fetch the up-to-date auth-state on each readAuthState call.
+                        getCredentials().authState
+                    },
+                    updateAuthStateCallback = updateAuthState
+                )
             }
 
             // basic / digest auth
             credentials.username != null && credentials.password != null -> {
-                authUsername = credentials.username
-                authPassword = credentials.password
-                authDomain = domain
+                newConfig = newConfig.copy(
+                    authUsername = credentials.username,
+                    authPassword = credentials.password,
+                    authDomain = domain,
+                    readAuthStateCallback = null,
+                    updateAuthStateCallback = null
+                )
             }
         }
 
         // client certificate
         if (credentials.certificateAlias != null)
-            certificateAlias = credentials.certificateAlias
+            newConfig = newConfig.copy(certificateAlias = credentials.certificateAlias)
 
-        return this
-    }
-
-
-    private var followRedirects = false
-
-    fun followRedirects(follow: Boolean): HttpClientBuilder {
-        followRedirects = follow
-        return this
+        return@withConfig newConfig
     }
 
 
@@ -165,7 +219,7 @@ class HttpClientBuilder @Inject constructor(
     @WorkerThread
     fun fromAccount(account: Account, authDomain: String? = null): HttpClientBuilder {
         val accountSettings = accountSettingsFactory.create(account)
-        authenticate(
+        return authenticate(
             domain = UrlUtils.hostToDomain(authDomain),
             getCredentials = {
                 accountSettings.credentials()
@@ -174,7 +228,6 @@ class HttpClientBuilder @Inject constructor(
                 accountSettings.updateAuthState(authState)
             }
         )
-        return this
     }
 
     /**
@@ -188,9 +241,9 @@ class HttpClientBuilder @Inject constructor(
         }
 
 
-    // client configuration
+    // actual client building
 
-    private fun configureConnectionSecurity(okBuilder: OkHttpClient.Builder) {
+    private fun buildConnectionSecurity(okBuilder: OkHttpClient.Builder) {
         // Allow cleartext and TLS 1.2+
         okBuilder.connectionSpecs(
             listOf(
@@ -206,7 +259,7 @@ class HttpClientBuilder @Inject constructor(
          * b. we need to cache the instances because otherwise, HTTPS connection are not used
          *    correctly. okhttp checks the SSLSocketFactory/TrustManager of a connection in the pool
          *    and creates a new connection when they have changed. */
-        val securityContext = connectionSecurityManager.getContext(certificateAlias)
+        val securityContext = connectionSecurityManager.getContext(config.certificateAlias)
 
         if (securityContext.disableHttp2)
             okBuilder.protocols(listOf(Protocol.HTTP_1_1))
@@ -218,7 +271,7 @@ class HttpClientBuilder @Inject constructor(
             okBuilder.hostnameVerifier(securityContext.hostnameVerifier)
     }
 
-    private fun configureProxy(engineConfig: HttpClientEngineConfig) {
+    private fun buildProxy(engineConfig: HttpClientEngineConfig) {
         val proxy = when (settingsManager.getInt(Settings.PROXY_TYPE)) {
             Settings.PROXY_TYPE_SYSTEM -> null
             Settings.PROXY_TYPE_NONE -> Proxy.NO_PROXY
@@ -236,41 +289,70 @@ class HttpClientBuilder @Inject constructor(
             else -> /* Invalid proxy type, shouldn't happen */ null
         }
         if (proxy != null) {
-            logger.info("Using non-default proxy setting: $proxy")
+            config.logger.info("Using non-default proxy setting: $proxy")
             engineConfig.proxy = proxy
         }
     }
 
+    private fun HttpClientConfig<*>.installAuthPlugin() {
+        val username = config.authUsername
+        val password = config.authPassword
+        val readAuthState = config.readAuthStateCallback
+        val updateAuthState = config.updateAuthStateCallback
+        when {
+            // prefer OAuth, if available
+            readAuthState != null -> {
+                install(Auth) {
+                    providers.add(
+                        oAuthProviderFactory.create(
+                            readAuthState = readAuthState,
+                            writeAuthState = { authState -> updateAuthState?.invoke(authState) }
+                        ).authProvider(config.authDomain)
+                    )
+                }
+            }
 
-    // client builder
+            // otherwise use basic / digest, if available
+            username != null && password != null -> {
+                install(Auth) {
+                    providers.add(
+                        createDomainBasicAuthProvider(
+                            username = username,
+                            password = password.asString(),
+                            firstLevelDomain = config.authDomain,
+                            insecurePreemptive = true
+                        )
+                    )
+                    providers.add(
+                        createDomainDigestAuthProvider(
+                            username = username,
+                            password = password.asString(),
+                            firstLevelDomain = config.authDomain
+                        )
+                    )
+                }
+            }
+        }
+    }
 
     /**
      * Builds a Ktor [HttpClient] with the configured settings.
      *
-     * [buildKtor] must be called only once because multiple calls indicate this wrong usage pattern:
-     *
-     * ```
-     * val builder = HttpClientBuilder(/*injected*/)
-     * val client1 = builder.configure().buildKtor()
-     * val client2 = builder.configureOtherwise().buildKtor()
-     * ```
-     *
-     * However in this case the configuration of `client1` is still in `builder` and would be reused for `client2`,
-     * which is usually not desired.
+     * Since [HttpClientBuilder] is immutable, this can be called any number of times — on this
+     * builder or on any builder derived from it via the configuration methods — and each call
+     * produces an independent [HttpClient] that only reflects the configuration of the builder
+     * it was called on.
      *
      * @return the new HttpClient (with [OkHttp] engine) which **must be closed by the caller**
      */
     @MustBeClosed
-    fun buildKtor(): HttpClient {
-        if (alreadyBuilt)
-            logger.warning("buildKtor() should only be called once; use Provider<HttpClientBuilder> instead")
-
+    fun build(): HttpClient {
         val client = HttpClient(OkHttp) {
             // Ktor-level configuration here
 
             // don't follow redirects by default because it would break PROPFIND handling;
             // this controls whether Ktor's HttpRedirect plugin is active
-            followRedirects = this@HttpClientBuilder.followRedirects
+            followRedirects = config.followRedirects
 
             installAuthPlugin()
 
@@ -307,14 +389,14 @@ class HttpClientBuilder @Inject constructor(
             }
 
             // add network logging (with redaction of sensitive headers), if requested
-            if (logger.isLoggable(Level.FINEST)) {
+            if (config.logger.isLoggable(Level.FINEST)) {
                 install(Logging) {
                     logger = object : io.ktor.client.plugins.logging.Logger {
                         override fun log(message: String) {
-                            this@HttpClientBuilder.logger.finest(message)
+                            config.logger.finest(message)
                         }
                     }
-                    level = loggerInterceptorLevel
+                    level = config.trafficLogLevel
 
                     // don't log some confidential headers
                     val headersToIgnore = arrayOf(
@@ -333,60 +415,20 @@ class HttpClientBuilder @Inject constructor(
 
             engine {
                 // app-wide custom proxy support
-                configureProxy(this)
+                buildProxy(this)
 
                 // okhttp engine configuration here
                 config {
                     // OkHttpClient.Builder configuration here
 
                     // TLS settings
-                    configureConnectionSecurity(this)
+                    buildConnectionSecurity(this)
                 }
             }
         }
 
-        alreadyBuilt = true
         return client
     }
 
-    private fun HttpClientConfig<*>.installAuthPlugin() {
-        val username = authUsername
-        val password = authPassword
-        val readAuthState = readAuthStateCallback
-        val updateAuthState = updateAuthStateCallback
-        when {
-            // prefer OAuth, if available
-            readAuthState != null -> {
-                install(Auth) {
-                    providers.add(
-                        oAuthProviderFactory.create(
-                            readAuthState = readAuthState,
-                            writeAuthState = { authState -> updateAuthState?.invoke(authState) }
-                        ).authProvider(authDomain)
-                    )
-                }
-            }
 
-            // otherwise use basic / digest, if available
-            username != null && password != null -> {
-                install(Auth) {
-                    providers.add(
-                        createDomainBasicAuthProvider(
-                            username = username,
-                            password = password.asString(),
-                            firstLevelDomain = authDomain,
-                            insecurePreemptive = true
-                        )
-                    )
-                    providers.add(
-                        createDomainDigestAuthProvider(
-                            username = username,
-                            password = password.asString(),
-                            firstLevelDomain = authDomain
-                        )
-                    )
-                }
-            }
-        }
-    }
 }

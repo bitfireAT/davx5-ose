@@ -41,7 +41,6 @@ import java.net.URI
 import java.util.Optional
 import java.util.logging.Level
 import java.util.logging.Logger
-import javax.inject.Provider
 
 @HiltViewModel(assistedFactory = LoginScreenViewModel.Factory::class)
 class LoginScreenViewModel @AssistedInject constructor(
@@ -51,7 +50,7 @@ class LoginScreenViewModel @AssistedInject constructor(
     private val accountRepository: AccountRepository,
     @ApplicationContext val context: Context,
     private val debugDirectory: DebugDirectory,
-    private val httpClientBuilderProvider: Provider<HttpClientBuilder>,
+    private val httpClientBuilder: HttpClientBuilder,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val logger: Logger,
     val loginTypesProvider: LoginTypesProvider,
@@ -258,13 +257,15 @@ class LoginScreenViewModel @AssistedInject constructor(
 
         val result = FileLoggerFactory.forFile(logFile).use { fileLoggerContext ->
             val credentials = loginInfo.credentials
-            httpClientBuilderProvider.get()
-                .setLogger(fileLoggerContext.logger)    // log HTTP calls to logFile
-                .apply {
+            httpClientBuilder
+                .logTo(fileLoggerContext.logger)    // log HTTP calls to logFile
+                .let { builder ->
                     if (credentials != null)
-                        authenticate(domain = null, getCredentials = { credentials })
+                        builder.authenticate(domain = null, getCredentials = { credentials })
+                    else
+                        builder
                 }
-                .buildKtor()
+                .build()
                 .use { httpClient ->
                     val finder = resourceFinderFactory.create(
                         baseUri,
