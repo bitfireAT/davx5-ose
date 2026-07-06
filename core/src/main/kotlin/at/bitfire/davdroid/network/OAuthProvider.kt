@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid.network
 
+import androidx.annotation.MainThread
 import at.bitfire.dav4jvm.ktor.DomainAuthProvider
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
@@ -15,14 +16,15 @@ import io.ktor.client.HttpClient
 import io.ktor.client.plugins.auth.providers.BearerAuthProvider
 import io.ktor.client.plugins.auth.providers.BearerTokens
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.runInterruptible
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.future.await
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import net.openid.appauth.AuthState
 import net.openid.appauth.AuthorizationException
 import net.openid.appauth.AuthorizationService
 import java.util.concurrent.CompletableFuture
-import java.util.concurrent.ExecutionException
 import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Provider
@@ -97,34 +99,36 @@ class OAuthProvider @AssistedInject constructor(
         if (currentAccessToken != null && currentAccessToken != oldTokens?.accessToken)
             return@withLock BearerTokens(currentAccessToken, authState.refreshToken)
 
-        logger.fine("Forcing fresh access token after rejected request")
+        logger.fine("Requesting fresh access token after rejected request")
         authState.needsTokenRefresh = true
 
         val authService = authServiceProvider.get()
         try {
-            // AppAuth's method is callback-based and blocks its own worker thread until it's done;
-            // runInterruptible lets coroutine cancellation propagate as a thread interrupt.
-            return@withLock runInterruptible(ioDispatcher) {
-                val future = CompletableFuture<BearerTokens?>()
-                authState.performActionWithFreshTokens(authService) { accessToken: String?, _: String?, ex: AuthorizationException? ->
-                    if (BuildConfig.DEBUG) {
-                        // log sensitive information (refresh/access token) only in debug builds
-                        logger.log(Level.FINE, "Got new AuthState: ${authState.jsonSerializeString()}")
-                    }
+            /* AppAuth uses an AsyncTask and can't be canceled properly. Note that the AuthStateAction callback is run
+            from AsyncTask.onPostExecute and thus on main thread! So we launch a coroutine to avoid blocking the main thread. */
+            val future = CompletableFuture<BearerTokens?>()
+            coroutineScope {
+                authState.performActionWithFreshTokens(authService) @MainThread { accessToken: String?, _: String?, ex: AuthorizationException? ->
+                    launch(ioDispatcher) {
+                        if (BuildConfig.DEBUG) {
+                            // log sensitive information (refresh/access token) only in debug builds
+                            logger.log(Level.FINE, "Got new AuthState: ${authState.jsonSerializeString()}")
+                        }
 
-                    // persist updated AuthState
-                    writeAuthState(authState)
+                        // persist updated AuthState (I/O operation)
+                        writeAuthState(authState)
 
-                    when {
-                        ex != null -> future.completeExceptionally(ex)
-                        accessToken != null -> future.complete(BearerTokens(accessToken, authState.refreshToken))
-                        else -> future.complete(null)
+                        when {
+                            ex != null -> future.completeExceptionally(ex)
+                            accessToken != null -> future.complete(BearerTokens(accessToken, authState.refreshToken))
+                            else -> future.complete(null)
+                        }
                     }
                 }
-                future.get()
+                future.await()  // suspending wait until AppAuth and our callback have finished
             }
-        } catch (e: ExecutionException) {
-            logger.log(Level.SEVERE, "Couldn't obtain access token", e.cause)
+        } catch (e: AuthorizationException) {
+            logger.log(Level.SEVERE, "Couldn't obtain access token", e)
             return@withLock null
         } finally {
             authService.dispose()
