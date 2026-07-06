@@ -5,12 +5,12 @@
 package at.bitfire.davdroid.webdav.operation
 
 import android.security.NetworkSecurityPolicy
-import at.bitfire.dav4jvm.HttpUtils.toKtorUrl
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.WebDavDocument
 import at.bitfire.davdroid.db.WebDavDocumentDao
 import at.bitfire.davdroid.db.WebDavMount
 import at.bitfire.davdroid.db.WebDavMountDao
+import at.bitfire.davdroid.toKtorUrl
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.runBlocking
