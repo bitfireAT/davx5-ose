@@ -22,7 +22,6 @@ import io.ktor.client.HttpClientConfig
 import io.ktor.client.engine.HttpClientEngineConfig
 import io.ktor.client.engine.ProxyBuilder
 import io.ktor.client.engine.okhttp.OkHttp
-import io.ktor.client.engine.okhttp.OkHttpConfig
 import io.ktor.client.plugins.DefaultRequest
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.UserAgent
@@ -41,7 +40,6 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import net.openid.appauth.AuthState
 import okhttp3.ConnectionSpec
-import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Protocol
 import java.net.Proxy
@@ -63,7 +61,7 @@ class HttpClientBuilder @Inject constructor(
     private val connectionSecurityManager: ConnectionSecurityManager,
     defaultLogger: Logger,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
-    private val oAuthInterceptorFactory: OAuthInterceptor.Factory,
+    private val oAuthProviderFactory: OAuthProvider.Factory,
     private val settingsManager: SettingsManager,
     private val productIds: ProductIds
 ) {
@@ -98,33 +96,38 @@ class HttpClientBuilder @Inject constructor(
         return this
     }
 
-    private var oAuthInterceptor: Interceptor? = null
     private var certificateAlias: String? = null
 
     private var authUsername: String? = null
     private var authPassword: SensitiveString? = null
     private var authDomain: String? = null
+    private var readAuthStateCallback: (() -> AuthState?)? = null
+    private var updateAuthStateCallback: ((AuthState) -> Unit)? = null
 
-    fun authenticate(domain: String?, getCredentials: () -> Credentials, updateAuthState: ((AuthState) -> Unit)? = null): HttpClientBuilder {
+    fun authenticate(
+        domain: String?,
+        getCredentials: () -> Credentials,
+        updateAuthState: ((AuthState) -> Unit)? = null
+    ): HttpClientBuilder {
         val credentials = getCredentials()
-        if (credentials.authState != null) {
+        when {
             // OAuth
-            oAuthInterceptor = oAuthInterceptorFactory.create(
-                readAuthState = {
-                    // We don't use the "credentials" object from above because it may contain an outdated access token
-                    // when readAuthState is called. Instead, we fetch the up-to-date auth-state.
+            credentials.authState != null -> {
+                readAuthStateCallback = {
+                    // We don't use the "credentials" object from above because it may contain an outdated
+                    // access token. Instead, we fetch the up-to-date auth-state on each readAuthState call.
                     getCredentials().authState
-                },
-                writeAuthState = { authState ->
-                    updateAuthState?.invoke(authState)
                 }
+                updateAuthStateCallback = updateAuthState
+                authDomain = domain
+            }
 
-            )
-
-        } else if (credentials.username != null && credentials.password != null) {
-            authUsername = credentials.username
-            authPassword = credentials.password
-            authDomain = domain
+            // basic / digest auth
+            credentials.username != null && credentials.password != null -> {
+                authUsername = credentials.username
+                authPassword = credentials.password
+                authDomain = domain
+            }
         }
 
         // client certificate
@@ -133,6 +136,7 @@ class HttpClientBuilder @Inject constructor(
 
         return this
     }
+
 
     private var followRedirects = false
 
@@ -178,29 +182,22 @@ class HttpClientBuilder @Inject constructor(
      *
      * @throws at.bitfire.davdroid.sync.account.InvalidAccountException     when the account doesn't exist
      */
-    suspend fun fromAccountAsync(account: Account, onlyHost: String? = null): HttpClientBuilder = withContext(ioDispatcher) {
-        fromAccount(account, onlyHost)
-    }
+    suspend fun fromAccountAsync(account: Account, onlyHost: String? = null): HttpClientBuilder =
+        withContext(ioDispatcher) {
+            fromAccount(account, onlyHost)
+        }
 
 
     // client configuration
 
-    private fun configureOkHttp(builder: OkHttpClient.Builder) {
-        // add connection security (including client certificates) and authentication
-        buildConnectionSecurity(builder)
-        buildOAuthAuthentication(builder)
-    }
-
-    private fun buildOAuthAuthentication(okBuilder: OkHttpClient.Builder) {
-        oAuthInterceptor?.let { okBuilder.addInterceptor(it) }
-    }
-
-    private fun buildConnectionSecurity(okBuilder: OkHttpClient.Builder) {
+    private fun configureConnectionSecurity(okBuilder: OkHttpClient.Builder) {
         // Allow cleartext and TLS 1.2+
-        okBuilder.connectionSpecs(listOf(
-            ConnectionSpec.CLEARTEXT,
-            ConnectionSpec.MODERN_TLS
-        ))
+        okBuilder.connectionSpecs(
+            listOf(
+                ConnectionSpec.CLEARTEXT,
+                ConnectionSpec.MODERN_TLS
+            )
+        )
 
         /* Set SSLSocketFactory, TrustManager and HostnameVerifier (if needed).
          * We shouldn't create these things here, because
@@ -342,8 +339,8 @@ class HttpClientBuilder @Inject constructor(
                 config {
                     // OkHttpClient.Builder configuration here
 
-                    // build most config on okhttp level
-                    configureOkHttp(this)
+                    // TLS settings
+                    configureConnectionSecurity(this)
                 }
             }
         }
@@ -352,25 +349,43 @@ class HttpClientBuilder @Inject constructor(
         return client
     }
 
-    private fun HttpClientConfig<OkHttpConfig>.installAuthPlugin() {
+    private fun HttpClientConfig<*>.installAuthPlugin() {
         val username = authUsername
         val password = authPassword
-        if (username != null && password != null) {
-            val basicAuthProvider = createDomainBasicAuthProvider(
-                username = username,
-                password = password.asString(),
-                firstLevelDomain = authDomain,
-                insecurePreemptive = true
-            )
-            val digestAuthProvider = createDomainDigestAuthProvider(
-                username = username,
-                password = password.asString(),
-                firstLevelDomain = authDomain
-            )
+        val readAuthState = readAuthStateCallback
+        val updateAuthState = updateAuthStateCallback
+        when {
+            // prefer OAuth, if available
+            readAuthState != null -> {
+                install(Auth) {
+                    providers.add(
+                        oAuthProviderFactory.create(
+                            readAuthState = readAuthState,
+                            writeAuthState = { authState -> updateAuthState?.invoke(authState) }
+                        ).authProvider(authDomain)
+                    )
+                }
+            }
 
-            install(Auth) {
-                providers.add(basicAuthProvider)
-                providers.add(digestAuthProvider)
+            // otherwise use basic / digest, if available
+            username != null && password != null -> {
+                install(Auth) {
+                    providers.add(
+                        createDomainBasicAuthProvider(
+                            username = username,
+                            password = password.asString(),
+                            firstLevelDomain = authDomain,
+                            insecurePreemptive = true
+                        )
+                    )
+                    providers.add(
+                        createDomainDigestAuthProvider(
+                            username = username,
+                            password = password.asString(),
+                            firstLevelDomain = authDomain
+                        )
+                    )
+                }
             }
         }
     }
