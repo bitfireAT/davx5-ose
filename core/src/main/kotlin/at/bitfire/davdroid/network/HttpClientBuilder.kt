@@ -56,13 +56,14 @@ import javax.inject.Inject
  * a new instance with the change applied.
  */
 class HttpClientBuilder private constructor(
+    // below are coming from Hilt
     private val accountSettingsFactory: AccountSettings.Factory,
     private val connectionSecurityManager: ConnectionSecurityManager,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val oAuthProviderFactory: OAuthProvider.Factory,
-    private val settingsManager: SettingsManager,
     private val productIds: ProductIds,
-    /** current configuration of this builder instance (immutable) */
+    private val settingsManager: SettingsManager,
+    // except the current configuration of this builder instance (immutable)
     private val config: Config
 ) {
 
@@ -74,15 +75,15 @@ class HttpClientBuilder private constructor(
         defaultLogger: Logger,
         @IoDispatcher ioDispatcher: CoroutineDispatcher,
         oAuthProviderFactory: OAuthProvider.Factory,
-        settingsManager: SettingsManager,
-        productIds: ProductIds
+        productIds: ProductIds,
+        settingsManager: SettingsManager
     ) : this(
         accountSettingsFactory = accountSettingsFactory,
         connectionSecurityManager = connectionSecurityManager,
         ioDispatcher = ioDispatcher,
         oAuthProviderFactory = oAuthProviderFactory,
-        settingsManager = settingsManager,
         productIds = productIds,
+        settingsManager = settingsManager,
         config = Config(logger = defaultLogger)
     )
 
@@ -115,8 +116,8 @@ class HttpClientBuilder private constructor(
         connectionSecurityManager,
         ioDispatcher,
         oAuthProviderFactory,
-        settingsManager,
         productIds,
+        settingsManager,
         update(config)
     )
 
