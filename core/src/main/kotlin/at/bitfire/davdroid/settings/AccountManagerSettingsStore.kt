@@ -31,7 +31,7 @@ import java.util.logging.Logger
 import javax.inject.Provider
 
 class AccountManagerSettingsStore @AssistedInject constructor(
-    @Assisted override val account: Account,
+    @Assisted val account: Account,
     @Assisted val abortOnMissingMigration: Boolean,
     private val automaticSyncManager: AutomaticSyncManager,
     @ApplicationContext private val context: Context,
