@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.ui.account
 
 import android.accounts.Account
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
@@ -19,7 +20,13 @@ import dagger.hilt.android.AndroidEntryPoint
 class CreateCalendarActivity: AppCompatActivity() {
 
     companion object {
-        const val EXTRA_ACCOUNT = "account"
+        private const val EXTRA_ACCOUNT = "account"
+        
+        fun createIntent(context: Context, account: Account): Intent {
+            return Intent(context, CreateCalendarActivity::class.java).apply { 
+                putExtra(EXTRA_ACCOUNT, account)
+            }
+        }
     }
 
     val account by lazy {

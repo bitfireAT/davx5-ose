@@ -58,8 +58,7 @@ class AccountActivity : AppCompatActivity() {
                     startActivity(intent)
                 },
                 onCreateCalendar = {
-                    val intent = Intent(this, CreateCalendarActivity::class.java)
-                    intent.putExtra(CreateCalendarActivity.EXTRA_ACCOUNT, account)
+                    val intent = CreateCalendarActivity.createIntent(this, account)
                     startActivity(intent)
                 },
                 onCollectionDetails = { collection ->
