@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.ui.account
 
 import android.accounts.Account
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
@@ -18,8 +19,15 @@ import dagger.hilt.android.AndroidEntryPoint
 class CollectionActivity: AppCompatActivity() {
 
     companion object {
-        const val EXTRA_ACCOUNT = "account"
-        const val EXTRA_COLLECTION_ID = "collection_id"
+        private const val EXTRA_ACCOUNT = "account"
+        private const val EXTRA_COLLECTION_ID = "collection_id"
+        
+        fun createIntent(context: Context, account: Account, collectionId: Long): Intent {
+            return Intent(context, CollectionActivity::class.java).apply {
+                putExtra(EXTRA_ACCOUNT, account)
+                putExtra(EXTRA_COLLECTION_ID, collectionId)
+            }
+        }
     }
 
     val account by lazy {

@@ -63,9 +63,7 @@ class AccountActivity : AppCompatActivity() {
                     startActivity(intent)
                 },
                 onCollectionDetails = { collection ->
-                    val intent = Intent(this, CollectionActivity::class.java)
-                    intent.putExtra(CollectionActivity.EXTRA_ACCOUNT, account)
-                    intent.putExtra(CollectionActivity.EXTRA_COLLECTION_ID, collection.id)
+                    val intent = CollectionActivity.createIntent(this, account, collection.id)
                     startActivity(intent, null)
                 },
                 onNavUp = ::onSupportNavigateUp,
