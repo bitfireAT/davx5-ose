@@ -131,8 +131,6 @@ class HttpClientBuilderTest {
         val url = "https://example.com/test"
 
         val queue = MockEngineQueue()
-            // Enqueue a blank default response
-            .enqueue()
             // Enqueue a "cookie send" request
             .enqueue(
                 headers = headers {
@@ -147,6 +145,8 @@ class HttpClientBuilderTest {
                     cookie(Cookie("cookie2", "2a"))
                 }
             )
+            // Enqueue a blank default response
+            .enqueue()
 
         httpClientBuilder.build(queue.engine).use { client ->
             // Cookies are handled by Ktor's HttpCookies plugin (AcceptAllCookiesStorage),
