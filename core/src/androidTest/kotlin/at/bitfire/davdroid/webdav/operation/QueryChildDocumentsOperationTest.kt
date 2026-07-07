@@ -15,9 +15,13 @@ import dagger.hilt.android.testing.HiltAndroidTest
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
+import io.ktor.http.ContentType
+import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.Url
 import io.ktor.http.headersOf
+import io.ktor.http.withCharset
+import io.ktor.utils.io.charsets.Charsets
 import io.mockk.every
 import io.mockk.junit4.MockKRule
 import io.mockk.mockk
@@ -170,7 +174,7 @@ class QueryChildDocumentsOperationTest {
 
     // mock engine
 
-    private val xmlHeaders = headersOf("Content-Type", "application/xml; charset=UTF-8")
+    private val xmlHeaders = headersOf(HttpHeaders.ContentType, ContentType.Application.Xml.withCharset(Charsets.UTF_8).toString())
 
     private fun buildDefaultEngine() = MockEngine { request ->
         val requestPath = request.url.encodedPath.trimEnd('/')
