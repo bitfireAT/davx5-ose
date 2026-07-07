@@ -5,7 +5,6 @@
 package at.bitfire.davdroid.sync
 
 import android.accounts.Account
-import androidx.annotation.VisibleForTesting
 import at.bitfire.davdroid.network.HttpClientBuilder
 import at.bitfire.davdroid.util.DavUtils.toURIorNull
 import dagger.assisted.Assisted
@@ -16,10 +15,9 @@ import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.statement.bodyAsBytes
 import io.ktor.http.isSuccess
-import io.ktor.utils.io.core.Closeable
 import java.util.logging.Level
 import java.util.logging.Logger
-import javax.annotation.WillCloseWhenClosed
+import javax.annotation.WillNotClose
 
 /**
  * Downloads a separate resource that is referenced during synchronization, for instance in
@@ -36,21 +34,16 @@ import javax.annotation.WillCloseWhenClosed
 class ResourceRetriever @AssistedInject constructor(
     @Assisted private val account: Account,
     @Assisted private val originalHost: String,
-    httpClientBuilder: HttpClientBuilder,
+    @Assisted private val httpClient: HttpClient?,
+    private val httpClientBuilder: HttpClientBuilder,
     private val logger: Logger
-): Closeable {
+) {
 
     @AssistedFactory
     interface Factory {
-        fun create(account: Account, originalHost: String): ResourceRetriever
+        fun create(account: Account, originalHost: String, @WillNotClose httpClient: HttpClient? = null): ResourceRetriever
     }
 
-    @WillCloseWhenClosed
-    private val httpClient = httpClientBuilder
-        .fromAccount(account, authDomain = originalHost)
-        .followRedirects(true)
-        .build()
-
     /**
      * Retrieves the given resource and returns it as an in-memory blob.
      * Supports HTTP/HTTPS (→ will download) and data (→ will decode) URLs.
@@ -61,27 +54,17 @@ class ResourceRetriever @AssistedInject constructor(
      *
      * @return blob of requested resource, or `null` on error or when the URL scheme is not supported
      */
-    suspend fun retrieve(url: String): ByteArray? = retrieve(url, httpClient)
-
-    /**
-     * Retrieves the given resource and returns it as an in-memory blob.
-     * Supports HTTP/HTTPS (→ will download) and data (→ will decode) URLs.
-     *
-     * Authentication is handled as described in [ResourceRetriever].
-     *
-     * @param url        URL of the resource to download (`http`, `https` or `data` scheme)
-     * @param httpClient The HTTP Client to use to make the download.
-     *
-     * @return blob of requested resource, or `null` on error or when the URL scheme is not supported
-     */
-    @VisibleForTesting
-    internal suspend fun retrieve(url: String, httpClient: HttpClient = this.httpClient): ByteArray? =
+    suspend fun retrieve(url: String): ByteArray? =
         try {
             when (url.toURIorNull()?.scheme?.lowercase()) {
                 "data" ->
                     DataUri.parse(url).data
 
                 "http", "https" -> {
+                    val httpClient = httpClient ?: httpClientBuilder
+                        .fromAccount(account, authDomain = originalHost)
+                        .followRedirects(true)
+                        .build()
                     val response = httpClient.get(url)
                     if (response.status.isSuccess())
                         response.bodyAsBytes()
@@ -98,9 +81,5 @@ class ResourceRetriever @AssistedInject constructor(
             logger.log(Level.SEVERE, "Couldn't retrieve resource", e)
             null
         }
-
-    override fun close() {
-        httpClient.close()
-    }
 
 }

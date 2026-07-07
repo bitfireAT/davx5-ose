@@ -60,73 +60,69 @@ class ResourceRetrieverTest {
 
     @Test
     fun testRetrieve_DataUri() = runTest {
-        resourceRetrieverFactory.create(account, "example.com").use {
-            val result = it.retrieve("data:image/png;base64,dGVzdA==")
-            assertArrayEquals("test".toByteArray(), result)
-        }
+        val retriever = resourceRetrieverFactory.create(account, "example.com")
+        val result = retriever.retrieve("data:image/png;base64,dGVzdA==")
+        assertArrayEquals("test".toByteArray(), result)
     }
 
     @Test
     fun testRetrieve_DataUri_Invalid() = runTest {
-        resourceRetrieverFactory.create(account, "example.com").use {
-            val result = it.retrieve("data:;INVALID,INVALID")
-            assertNull(result)
-        }
+        val retriever = resourceRetrieverFactory.create(account, "example.com")
+        val result = retriever.retrieve("data:;INVALID,INVALID")
+        assertNull(result)
     }
 
     @Test
     fun testRetrieve_ExternalDomain() = runTest {
         MockEngine.basic("TEST").use { engine ->
-            // fromAccount() restricts authentication to the given domain; build the test client the
-            // same way production code does so that restriction is actually exercised.
-            val httpClient = httpClientBuilder
+            httpClientBuilder
+                // fromAccount() restricts authentication to the given domain; build the test client the
+                // same way production code does so that restriction is actually exercised.
                 .fromAccount(account, authDomain = "example.com")
                 .build(engine)
+                .use { httpClient ->
+                    val retriever = resourceRetrieverFactory.create(account, "example.com", httpClient)
+                    // Request to a different domain than the account's — auth must not be sent
+                    val result = retriever.retrieve("https://other-domain.example.net/photo.jpg")
 
-            val result = resourceRetrieverFactory.create(account, "example.com").use {
-                // Request to a different domain than the account's — auth must not be sent
-                it.retrieve("https://other-domain.example.net/photo.jpg", httpClient)
-            }
+                    val sentAuth = engine.requestHistory.first().headers[HttpHeaders.Authorization]
+                    assertNull(sentAuth)
 
-            val sentAuth = engine.requestHistory.first().headers[HttpHeaders.Authorization]
-            assertNull(sentAuth)
-
-            assertArrayEquals("TEST".toByteArray(), result)
+                    assertArrayEquals("TEST".toByteArray(), result)
+                }
         }
-    }
-
-    @Test
-    fun testRetrieve_FtpUrl() = runTest {
-        val result = resourceRetrieverFactory.create(account, "example.com").use {
-            it.retrieve("ftp://example.com/photo.jpg")
-        }
-        assertNull(result)
-    }
-
-    @Test
-    fun testRetrieve_RelativeHttpsUrl() = runTest {
-        val result = resourceRetrieverFactory.create(account, "example.com").use {
-            it.retrieve("https:photo.jpg")
-        }
-        assertNull(result)
     }
 
     @Test
     fun testRetrieve_SameDomain() = runTest {
         MockEngine.basic("TEST").use { engine ->
-            val httpClient = httpClientBuilder
+            httpClientBuilder
                 .fromAccount(account, authDomain = "example.com")
                 .build(engine)
+                .use { httpClient ->
+                    val retriever = resourceRetrieverFactory.create(account, "example.com", httpClient)
+                    val result = retriever.retrieve("https://example.com/photo.jpg")
 
-            val result = resourceRetrieverFactory.create(account, "example.com").use {
-                it.retrieve("https://example.com/photo.jpg", httpClient)
-            }
+                    val sentAuth = engine.requestHistory.first().headers[HttpHeaders.Authorization]
+                    assertEquals("Basic dGVzdDp0ZXN0", sentAuth)
 
-            val sentAuth = engine.requestHistory.first().headers[HttpHeaders.Authorization]
-            assertEquals("Basic dGVzdDp0ZXN0", sentAuth)
-
-            assertArrayEquals("TEST".toByteArray(), result)
+                    assertArrayEquals("TEST".toByteArray(), result)
+                }
         }
+    }
+
+    @Test
+    fun testRetrieve_FtpUrl() = runTest {
+        val retriever = resourceRetrieverFactory.create(account, "example.com")
+        val result = retriever.retrieve("ftp://example.com/photo.jpg")
+        assertNull(result)
+    }
+
+    @Test
+    fun testRetrieve_RelativeHttpsUrl() = runTest {
+        val retriever = resourceRetrieverFactory.create(account, "example.com")
+        val result = retriever.retrieve("https:photo.jpg")
+        assertNull(result)
     }
 
 }
