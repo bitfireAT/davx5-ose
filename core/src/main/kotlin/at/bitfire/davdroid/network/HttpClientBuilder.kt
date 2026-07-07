@@ -11,7 +11,7 @@ import at.bitfire.dav4jvm.ktor.createDomainBasicAuthProvider
 import at.bitfire.dav4jvm.ktor.createDomainDigestAuthProvider
 import at.bitfire.davdroid.ProductIds
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
-import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.settings.AccountManagerSettingsStore
 import at.bitfire.davdroid.settings.Credentials
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
@@ -57,7 +57,7 @@ import javax.inject.Inject
  */
 class HttpClientBuilder private constructor(
     // below are coming from Hilt
-    private val accountSettingsFactory: AccountSettings.Factory,
+    private val accountSettingsFactory: AccountManagerSettingsStore.Factory,
     private val connectionSecurityManager: ConnectionSecurityManager,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val oAuthProviderFactory: OAuthProvider.Factory,
@@ -70,7 +70,7 @@ class HttpClientBuilder private constructor(
     // public constructor, delegating to private constructor with empty Config()
     @Inject
     constructor(
-        accountSettingsFactory: AccountSettings.Factory,
+        accountSettingsFactory: AccountManagerSettingsStore.Factory,
         connectionSecurityManager: ConnectionSecurityManager,
         defaultLogger: Logger,
         @IoDispatcher ioDispatcher: CoroutineDispatcher,
@@ -205,7 +205,7 @@ class HttpClientBuilder private constructor(
     /**
      * Takes authentication (basic/digest or OAuth and client certificate) from a given account.
      *
-     * **Must not be run on main thread, because it creates [AccountSettings]!** Use [fromAccountAsync] if possible.
+     * **Must not be run on main thread, because it creates [AccountManagerSettingsStore]!** Use [fromAccountAsync] if possible.
      *
      * @param account       the account to take authentication from
      * @param authDomain    (optional) Send credentials only for the hosts of the given domain. Can be:

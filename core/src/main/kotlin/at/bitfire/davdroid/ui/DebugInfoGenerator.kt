@@ -38,7 +38,7 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.resource.LocalAddressBook
-import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.settings.AccountManagerSettingsStore
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.account.InvalidAccountException
@@ -69,7 +69,7 @@ import at.techbee.jtx.JtxContract.asSyncAdapter as asJtxSyncAdapter
 @WorkerThread
 class DebugInfoGenerator @Inject constructor(
     private val accountRepository: AccountRepository,
-    private val accountSettingsFactory: AccountSettings.Factory,
+    private val accountSettingsFactory: AccountManagerSettingsStore.Factory,
     @ApplicationContext private val context: Context,
     private val db: AppDatabase,
     private val logger: Logger,

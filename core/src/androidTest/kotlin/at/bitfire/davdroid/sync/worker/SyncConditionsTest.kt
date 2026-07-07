@@ -16,7 +16,7 @@ import android.net.NetworkCapabilities.TRANSPORT_WIFI
 import android.net.wifi.WifiInfo
 import android.net.wifi.WifiManager
 import androidx.core.content.getSystemService
-import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.settings.AccountSettingsStore
 import at.bitfire.davdroid.sync.SyncConditions
 import at.bitfire.davdroid.util.PermissionUtils
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -61,7 +61,7 @@ class SyncConditionsTest {
     lateinit var network2: Network
 
 
-    private lateinit var accountSettings: AccountSettings
+    private lateinit var accountSettings: AccountSettingsStore
 
     private lateinit var conditions: SyncConditions
 
@@ -72,7 +72,7 @@ class SyncConditionsTest {
         hiltRule.inject()
 
         // prepare accountSettings with some necessary data
-        accountSettings = mockk<AccountSettings> {
+        accountSettings = mockk<AccountSettingsStore> {
             every { account } returns Account("test", "test")
             every { getIgnoreVpns() } returns false     // default value
         }

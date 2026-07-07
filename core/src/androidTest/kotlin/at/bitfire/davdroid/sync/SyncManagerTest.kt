@@ -17,7 +17,7 @@ import at.bitfire.davdroid.TestUtils.assertWithin
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.repository.DavSyncStatsRepository
 import at.bitfire.davdroid.resource.SyncState
-import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.settings.AccountManagerSettingsStore
 import at.bitfire.davdroid.sync.account.TestAccount
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.BindValue
@@ -60,7 +60,7 @@ class SyncManagerTest {
     val mockKRule = MockKRule(this)
 
     @Inject
-    lateinit var accountSettingsFactory: AccountSettings.Factory
+    lateinit var accountSettingsFactory: AccountManagerSettingsStore.Factory
 
     @Inject @ApplicationContext
     lateinit var context: Context

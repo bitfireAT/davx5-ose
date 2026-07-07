@@ -12,7 +12,7 @@ import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalAddressBookStore
-import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.settings.AccountManagerSettingsStore
 import at.bitfire.synctools.storage.contacts.AddressContract.asSyncAdapter
 import at.bitfire.synctools.util.setAndVerifyUserData
 import dagger.assisted.Assisted
@@ -30,7 +30,7 @@ class AddressBookSyncer @AssistedInject constructor(
     @Assisted val syncFrameworkUpload: Boolean,
     @Assisted syncResult: SyncResult,
     addressBookStore: LocalAddressBookStore,
-    private val accountSettingsFactory: AccountSettings.Factory,
+    private val accountSettingsFactory: AccountManagerSettingsStore.Factory,
     private val contactsSyncManagerFactory: ContactsSyncManager.Factory
 ): Syncer<LocalAddressBookStore, LocalAddressBook>(account, resync, syncResult) {
 

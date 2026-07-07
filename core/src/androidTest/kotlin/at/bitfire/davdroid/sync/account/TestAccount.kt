@@ -7,7 +7,7 @@ import android.accounts.Account
 import android.accounts.AccountManager
 import androidx.test.platform.app.InstrumentationRegistry
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.settings.AccountManagerSettingsStore
 import at.bitfire.davdroid.sync.account.TestAccount.remove
 import at.bitfire.synctools.util.AndroidAccountUtils
 import org.junit.Assert.assertEquals
@@ -22,13 +22,13 @@ object TestAccount {
      *
      * Remove it with [remove].
      */
-    fun create(version: Int = AccountSettings.CURRENT_VERSION, accountName: String = "Test Account"): Account {
+    fun create(version: Int = AccountManagerSettingsStore.CURRENT_VERSION, accountName: String = "Test Account"): Account {
         val accountType = targetContext.getString(R.string.account_type)
         val account = Account(accountName, accountType)
 
-        val initialData = AccountSettings.initialUserData(null, null).toMutableMap()
+        val initialData = AccountManagerSettingsStore.initialUserData(null, null).toMutableMap()
         // overwrite settings version
-        initialData[AccountSettings.KEY_SETTINGS_VERSION] = version.toString()
+        initialData[AccountManagerSettingsStore.KEY_SETTINGS_VERSION] = version.toString()
 
         assertTrue(AndroidAccountUtils.createAccount(targetContext, account, initialData))
         return account
@@ -55,7 +55,7 @@ object TestAccount {
     /**
      * Convenience method to create a test account and remove it after executing the block.
      */
-    fun provide(version: Int = AccountSettings.CURRENT_VERSION, block: (Account) -> Unit) {
+    fun provide(version: Int = AccountManagerSettingsStore.CURRENT_VERSION, block: (Account) -> Unit) {
         val account = create(version)
         try {
             block(account)

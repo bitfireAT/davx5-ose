@@ -26,7 +26,7 @@ import at.bitfire.davdroid.repository.DavSyncStatsRepository
 import at.bitfire.davdroid.resource.LocalAddressBookStore
 import at.bitfire.davdroid.resource.LocalCalendarStore
 import at.bitfire.davdroid.resource.LocalDataStore
-import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.settings.AccountManagerSettingsStore
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.sync.TasksAppManager
@@ -63,7 +63,7 @@ import java.util.logging.Logger
 class CollectionScreenViewModel @AssistedInject constructor(
     @ApplicationContext val context: Context,
     private val accountRepository: AccountRepository,
-    private val accountSettingsFactory: AccountSettings.Factory,
+    private val accountSettingsFactory: AccountManagerSettingsStore.Factory,
     @Assisted val collectionId: Long,
     private val collectionRepository: DavCollectionRepository,
     private val collectionSelectedUseCase: Lazy<CollectionSelectedUseCase>,

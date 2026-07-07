@@ -18,7 +18,7 @@ import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.repository.DavServiceRepository
-import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.settings.AccountManagerSettingsStore
 import at.bitfire.davdroid.util.DavUtils.lastSegment
 import at.bitfire.synctools.storage.calendar.AndroidCalendarProvider
 import at.bitfire.synctools.storage.calendar.EventsContract.asSyncAdapter
@@ -31,7 +31,7 @@ import javax.inject.Inject
 
 class LocalCalendarStore @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val accountSettingsFactory: AccountSettings.Factory,
+    private val accountSettingsFactory: AccountManagerSettingsStore.Factory,
     private val localCalendarFactory: LocalCalendar.Factory,
     private val logger: Logger,
     private val serviceRepository: DavServiceRepository

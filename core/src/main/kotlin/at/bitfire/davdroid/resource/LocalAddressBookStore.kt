@@ -17,7 +17,7 @@ import androidx.core.content.contentValuesOf
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.repository.DavServiceRepository
-import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.settings.AccountManagerSettingsStore
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.util.DavUtils.lastSegment
@@ -32,7 +32,7 @@ import java.util.logging.Logger
 import javax.inject.Inject
 
 class LocalAddressBookStore @Inject constructor(
-    private val accountSettingsFactory: AccountSettings.Factory,
+    private val accountSettingsFactory: AccountManagerSettingsStore.Factory,
     @ApplicationContext private val context: Context,
     private val localAddressBookFactory: LocalAddressBook.Factory,
     private val logger: Logger,

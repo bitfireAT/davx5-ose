@@ -11,7 +11,7 @@ import androidx.annotation.WorkerThread
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.resource.LocalAddressBookStore
-import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.settings.AccountManagerSettingsStore
 import at.bitfire.davdroid.sync.adapter.SyncFrameworkIntegration
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
 import kotlinx.coroutines.runBlocking
@@ -30,7 +30,7 @@ import javax.inject.Provider
  * Automatic synchronization stands in contrast to manual synchronization, which is only triggered by the user.
  */
 class AutomaticSyncManager @Inject constructor(
-    private val accountSettingsFactory: AccountSettings.Factory,
+    private val accountSettingsFactory: AccountManagerSettingsStore.Factory,
     private val localAddressBookStore: LocalAddressBookStore,
     private val serviceRepository: DavServiceRepository,
     private val syncFramework: SyncFrameworkIntegration,
@@ -68,7 +68,7 @@ class AutomaticSyncManager @Inject constructor(
         val accountSettings = accountSettingsFactory.create(account)
         val syncInterval = accountSettings.getSyncInterval(dataType)
 
-        // 1. Update sync workers (needs already updated sync interval in AccountSettings).
+        // 1. Update sync workers (needs already updated sync interval in AccountManagerSettingsStore).
         if (syncInterval != null) {
             val wifiOnly = accountSettings.getSyncWifiOnly()
             workerManager.enablePeriodic(account, dataType, syncInterval, wifiOnly)
@@ -110,7 +110,7 @@ class AutomaticSyncManager @Inject constructor(
     /**
      * Updates automatic synchronization of the given account and all data types according to the account settings.
      *
-     * If there's a [Service] for the given account and data type, automatic sync is enabled (with details from [AccountSettings]).
+     * If there's a [Service] for the given account and data type, automatic sync is enabled (with details from [AccountManagerSettingsStore]).
      * Otherwise, automatic synchronization is disabled.
      *
      * @param account   account for which automatic synchronization shall be updated
@@ -125,7 +125,7 @@ class AutomaticSyncManager @Inject constructor(
      * Updates automatic synchronization of the given account and data type according to the account services and settings.
      *
      * If there's a [Service] for the given account and data type, automatic sync may be enabled if sync interval is set
-     * in [AccountSettings].
+     * in [AccountManagerSettingsStore].
      * Otherwise, automatic synchronization is disabled.
      *
      * @param account   account for which automatic synchronization shall be updated

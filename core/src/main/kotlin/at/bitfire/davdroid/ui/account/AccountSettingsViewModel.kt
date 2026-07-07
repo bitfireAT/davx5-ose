@@ -13,7 +13,7 @@ import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.di.qualifier.DefaultDispatcher
 import at.bitfire.davdroid.network.OAuthIntegration
-import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.settings.AccountManagerSettingsStore
 import at.bitfire.davdroid.settings.Credentials
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.sync.ResyncType
@@ -43,7 +43,7 @@ import java.util.logging.Logger
 @HiltViewModel(assistedFactory = AccountSettingsViewModel.Factory::class)
 class AccountSettingsViewModel @AssistedInject constructor(
     @Assisted val account: Account,
-    private val accountSettingsFactory: AccountSettings.Factory,
+    private val accountSettingsFactory: AccountManagerSettingsStore.Factory,
     private val authService: AuthorizationService,
     @ApplicationContext val context: Context,
     db: AppDatabase,

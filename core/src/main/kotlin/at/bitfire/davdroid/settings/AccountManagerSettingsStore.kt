@@ -31,7 +31,7 @@ import java.util.logging.Logger
 import javax.inject.Provider
 
 class AccountManagerSettingsStore @AssistedInject constructor(
-    @Assisted val account: Account,
+    @Assisted override val account: Account,
     @Assisted val abortOnMissingMigration: Boolean,
     private val automaticSyncManager: AutomaticSyncManager,
     @ApplicationContext private val context: Context,
@@ -43,26 +43,26 @@ class AccountManagerSettingsStore @AssistedInject constructor(
     @AssistedFactory
     interface Factory {
         /**
-         * **Must not be called on main thread. Throws exceptions!** See [AccountSettings] for details.
+         * **Must not be called on main thread. Throws exceptions!** See [AccountManagerSettingsStore] for details.
          */
         @WorkerThread
-        fun create(account: Account, abortOnMissingMigration: Boolean = false): AccountSettings
+        fun create(account: Account, abortOnMissingMigration: Boolean = false): AccountManagerSettingsStore
     }
 
     init {
         if (Looper.getMainLooper() == Looper.myLooper())
-            throw IllegalThreadStateException("AccountSettings may not be used on main thread")
+            throw IllegalThreadStateException("AccountManagerSettingsStore may not be used on main thread")
     }
 
     val accountManager: AccountManager = AccountManager.get(context)
     init {
         if (account.type != context.getString(R.string.account_type))
-            throw IllegalArgumentException("Invalid account type for AccountSettings(): ${account.type}")
+            throw IllegalArgumentException("Invalid account type for AccountManagerSettingsStore(): ${account.type}")
 
         // synchronize because account migration must only be run one time
         synchronized(currentlyUpdating) {
             if (currentlyUpdating.contains(account))
-                logger.warning("AccountSettings created during migration of $account – not running update()")
+                logger.warning("AccountManagerSettingsStore created during migration of $account – not running update()")
             else {
                 val versionStr = accountManager.getUserData(account, KEY_SETTINGS_VERSION) ?: throw InvalidAccountException(account)
                 var version = 0
@@ -121,7 +121,7 @@ class AccountManagerSettingsStore @AssistedInject constructor(
      * Returns whether users can modify credentials from the account settings screen.
      * Checks the value of [CREDENTIALS_LOCK] to be `0` or not equal to [CREDENTIALS_LOCK_AT_LOGIN_AND_SETTINGS].
      */
-    fun changingCredentialsAllowed(): Boolean {
+    override fun changingCredentialsAllowed(): Boolean {
         val credentialsLock = settingsManager.getIntOrNull(CREDENTIALS_LOCK)
         return credentialsLock == null || credentialsLock != CREDENTIALS_LOCK_AT_LOGIN_AND_SETTINGS
     }
@@ -319,9 +319,9 @@ class AccountManagerSettingsStore @AssistedInject constructor(
 
             val migration = migrations[toVersion]
             if (migration == null) {
-                logger.severe("No AccountSettings migration $fromVersion → $toVersion")
+                logger.severe("No AccountManagerSettingsStore migration $fromVersion → $toVersion")
                 if (abortOnMissingMigration)
-                    throw IllegalArgumentException("Missing AccountSettings migration $fromVersion → $toVersion")
+                    throw IllegalArgumentException("Missing AccountManagerSettingsStore migration $fromVersion → $toVersion")
             } else {
                 try {
                     migration.get().migrate(account)
@@ -329,7 +329,7 @@ class AccountManagerSettingsStore @AssistedInject constructor(
                     logger.info("Account settings version update to $toVersion successful")
                     accountManager.setAndVerifyUserData(account, KEY_SETTINGS_VERSION, toVersion.toString())
                 } catch (e: Exception) {
-                    logger.log(Level.SEVERE, "Couldn't run AccountSettings migration $fromVersion → $toVersion", e)
+                    logger.log(Level.SEVERE, "Couldn't run AccountManagerSettingsStore migration $fromVersion → $toVersion", e)
                 }
             }
         }

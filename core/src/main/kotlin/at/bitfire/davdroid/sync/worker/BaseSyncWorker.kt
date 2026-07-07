@@ -17,7 +17,7 @@ import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.push.PushNotificationManager
-import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.settings.AccountManagerSettingsStore
 import at.bitfire.davdroid.sync.AddressBookSyncer
 import at.bitfire.davdroid.sync.CalendarSyncer
 import at.bitfire.davdroid.sync.JtxSyncer
@@ -47,7 +47,7 @@ abstract class BaseSyncWorker(
 ) : CoroutineWorker(context, workerParams) {
 
     @Inject
-    lateinit var accountSettingsFactory: AccountSettings.Factory
+    lateinit var accountSettingsFactory: AccountManagerSettingsStore.Factory
 
     @Inject
     lateinit var addressBookSyncer: AddressBookSyncer.Factory

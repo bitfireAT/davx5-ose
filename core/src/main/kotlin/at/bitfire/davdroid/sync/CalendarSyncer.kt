@@ -10,7 +10,7 @@ import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.resource.LocalCalendar
 import at.bitfire.davdroid.resource.LocalCalendarStore
-import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.settings.AccountManagerSettingsStore
 import at.bitfire.synctools.storage.calendar.AndroidCalendarProvider
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -25,7 +25,7 @@ class CalendarSyncer @AssistedInject constructor(
     @Assisted resync: ResyncType?,
     @Assisted syncResult: SyncResult,
     calendarStore: LocalCalendarStore,
-    private val accountSettingsFactory: AccountSettings.Factory,
+    private val accountSettingsFactory: AccountManagerSettingsStore.Factory,
     private val calendarSyncManagerFactory: CalendarSyncManager.Factory
 ): Syncer<LocalCalendarStore, LocalCalendar>(account, resync, syncResult) {
 

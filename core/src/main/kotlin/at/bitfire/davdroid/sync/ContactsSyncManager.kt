@@ -30,7 +30,7 @@ import at.bitfire.davdroid.resource.LocalGroup
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.resource.SyncState
 import at.bitfire.davdroid.resource.workaround.ContactDirtyVerifier
-import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.settings.AccountManagerSettingsStore
 import at.bitfire.davdroid.sync.groups.CategoriesStrategy
 import at.bitfire.davdroid.sync.groups.VCard4Strategy
 import at.bitfire.davdroid.util.DavUtils
@@ -103,7 +103,7 @@ class ContactsSyncManager @AssistedInject constructor(
     @Assisted collection: Collection,
     @Assisted resync: ResyncType?,
     @Assisted val syncFrameworkUpload: Boolean,
-    accountSettingsFactory: AccountSettings.Factory,
+    accountSettingsFactory: AccountManagerSettingsStore.Factory,
     val dirtyVerifier: Optional<ContactDirtyVerifier>,
     private val productIds: ProductIds,
     private val resourceRetrieverFactory: ResourceRetriever.Factory,

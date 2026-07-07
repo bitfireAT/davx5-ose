@@ -13,7 +13,7 @@ import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
-import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.settings.AccountManagerSettingsStore
 import at.bitfire.davdroid.util.DavUtils.lastSegment
 import at.bitfire.synctools.storage.TaskProvider
 import at.bitfire.synctools.storage.tasks.DmfsTaskList
@@ -31,7 +31,7 @@ import javax.annotation.WillNotClose
 
 class LocalTaskListStore @AssistedInject constructor(
     @Assisted private val providerName: TaskProvider.ProviderName,
-    val accountSettingsFactory: AccountSettings.Factory,
+    val accountSettingsFactory: AccountManagerSettingsStore.Factory,
     @ApplicationContext val context: Context,
     val db: AppDatabase,
     val logger: Logger

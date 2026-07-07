@@ -4,11 +4,15 @@
 
 package at.bitfire.davdroid.settings
 
+import android.accounts.Account
 import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.synctools.vcard.GroupMethod
 import net.openid.appauth.AuthState
 
 interface AccountSettingsStore {
+
+    /** The account these settings belong to */
+    val account: Account
 
     //<editor-fold desc="authentication settings">
 
@@ -17,6 +21,11 @@ interface AccountSettingsStore {
     fun credentials(credentials: Credentials)
 
     fun updateAuthState(authState: AuthState)
+
+    /**
+     * Returns whether users can modify credentials from the account settings screen.
+     */
+    fun changingCredentialsAllowed(): Boolean
 
     //</editor-fold>
 
@@ -38,7 +47,7 @@ interface AccountSettingsStore {
      */
     fun setSyncInterval(dataType: SyncDataType, seconds: Long?)
 
-    fun getSyncWifiOnly(): Boolean?
+    fun getSyncWifiOnly(): Boolean
 
     fun setSyncWiFiOnly(wiFiOnly: Boolean)
 
@@ -80,11 +89,11 @@ interface AccountSettingsStore {
      */
     fun setDefaultAlarm(minBefore: Int?)
 
-    fun getManageCalendarColors(): Boolean?
+    fun getManageCalendarColors(): Boolean
 
     fun setManageCalendarColors(manage: Boolean)
 
-    fun getEventColors(): Boolean?
+    fun getEventColors(): Boolean
 
     fun setEventColors(useColors: Boolean)
 

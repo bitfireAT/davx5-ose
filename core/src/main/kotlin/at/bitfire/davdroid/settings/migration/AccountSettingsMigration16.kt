@@ -7,7 +7,7 @@ package at.bitfire.davdroid.settings.migration
 import android.accounts.Account
 import android.content.Context
 import androidx.work.WorkManager
-import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.settings.AccountManagerSettingsStore
 import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
 import dagger.Binds
@@ -26,7 +26,7 @@ import javax.inject.Inject
  * name and no new workers were enqueued). Here we enqueue all periodic sync workers again with the correct class name.
  */
 class AccountSettingsMigration16 @Inject constructor(
-    private val accountSettingsFactory: AccountSettings.Factory,
+    private val accountSettingsFactory: AccountManagerSettingsStore.Factory,
     @ApplicationContext private val context: Context,
     private val logger: Logger,
     private val syncWorkerManager: SyncWorkerManager

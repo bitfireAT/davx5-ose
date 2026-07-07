@@ -10,7 +10,7 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.net.wifi.WifiManager
 import androidx.core.content.getSystemService
-import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.settings.AccountSettingsStore
 import at.bitfire.davdroid.ui.NotificationRegistry
 import at.bitfire.davdroid.ui.account.WifiPermissionsActivity
 import at.bitfire.davdroid.util.PermissionUtils
@@ -25,7 +25,7 @@ import java.util.logging.Logger
  * Provides methods to check whether a sync shall be run for a given account.
  */
 class SyncConditions @AssistedInject constructor(
-    @Assisted private val accountSettings: AccountSettings,
+    @Assisted private val accountSettings: AccountSettingsStore,
     @ApplicationContext private val context: Context,
     private val logger: Logger,
     private val notificationRegistry: NotificationRegistry
@@ -33,7 +33,7 @@ class SyncConditions @AssistedInject constructor(
 
     @AssistedFactory
     interface Factory {
-        fun create(accountSettings: AccountSettings): SyncConditions
+        fun create(accountSettings: AccountSettingsStore): SyncConditions
     }
 
 
@@ -82,7 +82,7 @@ class SyncConditions @AssistedInject constructor(
      * However in special occasions (when syncing over a VPN without validated Internet on the
      * underlying connection) we do not want to exclude VPNs.
      *
-     * This method uses [AccountSettings.getIgnoreVpns]: if `true`, it filters VPN connections in the Internet check;
+     * This method uses [AccountSettingsStore.getIgnoreVpns]: if `true`, it filters VPN connections in the Internet check;
      * `false` allows them as valid connection.
      *
      * @return whether we are connected to the Internet
