@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.webdav.operation
 
-import android.security.NetworkSecurityPolicy
 import at.bitfire.davdroid.MockEngineUtils.basic
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.WebDavDocument
@@ -31,7 +30,6 @@ import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
-import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -63,9 +61,6 @@ class QueryChildDocumentsOperationTest {
     fun setUp() {
         hiltRule.inject()
         every { httpClientBuilder.build(any(), any()) } answers { HttpClient(buildDefaultEngine()) }
-
-        // mock server delivers HTTP without encryption
-        assertTrue(NetworkSecurityPolicy.getInstance().isCleartextTrafficPermitted)
 
         // create WebDAV mount and root document in DB
         runBlocking {
