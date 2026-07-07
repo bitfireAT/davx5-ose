@@ -44,8 +44,7 @@ class AccountsActivity: AppCompatActivity() {
                     startActivity(Intent(this, LoginActivity::class.java))
                 },
                 onShowAccount = { account ->
-                    val intent = Intent(this, AccountActivity::class.java)
-                    intent.putExtra(AccountActivity.EXTRA_ACCOUNT, account)
+                    val intent = AccountActivity.createIntent(this, account)
                     startActivity(intent)
                 },
                 onManagePermissions = {

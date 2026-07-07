@@ -51,9 +51,8 @@ class SyncConditions @AssistedInject constructor(
             // check required permissions and location status
             if (!PermissionUtils.canAccessWifiSsid(context)) {
                 // not all permissions granted; show notification
-                val intent = Intent(context, WifiPermissionsActivity::class.java)
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                intent.putExtra(WifiPermissionsActivity.EXTRA_ACCOUNT, accountSettings.account)
+                val intent = WifiPermissionsActivity.createIntent(context, accountSettings.account)
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 notificationRegistry.notifyPermissions(intent)
 
                 logger.warning("Can't access WiFi SSID, aborting sync")
