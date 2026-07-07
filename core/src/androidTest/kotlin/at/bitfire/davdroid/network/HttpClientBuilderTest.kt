@@ -138,7 +138,7 @@ class HttpClientBuilderTest {
                     cookie(Cookie("cookie2", "2"))
                 }
             )
-            // Equeue an expired cookie send request
+            // Enqueue an expired cookie send request
             .enqueue(
                 headers = headers {
                     cookie(Cookie("cookie1", "1a", path = "/", maxAge = 0))
