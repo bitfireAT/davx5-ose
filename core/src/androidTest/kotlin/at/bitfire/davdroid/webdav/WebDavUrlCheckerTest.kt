@@ -39,7 +39,9 @@ class WebDavUrlCheckerTest {
     @Test
     fun getWebDavUrl_NoDavHeader() = runTest {
         val result = MockEngine.Default.use { engine ->
-            webDavUrlChecker.checkWebDavUrl(HttpClient(engine), url)
+            HttpClient(engine).use { httpClient ->
+                webDavUrlChecker.checkWebDavUrl(httpClient, url)
+            }
         }
         assertNull(result)
     }
@@ -47,7 +49,9 @@ class WebDavUrlCheckerTest {
     @Test
     fun getWebDavUrl_DavClass1() = runTest {
         val result = MockEngine.basic(headers = headersOf("DAV", "1")).use { engine ->
-            webDavUrlChecker.checkWebDavUrl(HttpClient(engine), url)
+            HttpClient(engine).use { httpClient ->
+                webDavUrlChecker.checkWebDavUrl(httpClient, url)
+            }
         }
         assertEquals(url, result)
     }
@@ -55,7 +59,9 @@ class WebDavUrlCheckerTest {
     @Test
     fun getWebDavUrl_DavClass2() = runTest {
         val result = MockEngine.basic(headers = headersOf("DAV", "1, 2")).use { engine ->
-            webDavUrlChecker.checkWebDavUrl(HttpClient(engine), url)
+            HttpClient(engine).use { httpClient ->
+                webDavUrlChecker.checkWebDavUrl(httpClient, url)
+            }
         }
         assertEquals(url, result)
     }
@@ -63,7 +69,9 @@ class WebDavUrlCheckerTest {
     @Test
     fun getWebDavUrl_DavClass3() = runTest {
         val result = MockEngine.basic(headers = headersOf("DAV", "1, 3")).use { engine ->
-            webDavUrlChecker.checkWebDavUrl(HttpClient(engine), url)
+            HttpClient(engine).use { httpClient ->
+                webDavUrlChecker.checkWebDavUrl(httpClient, url)
+            }
         }
         assertEquals(url, result)
     }
