@@ -60,16 +60,18 @@ class ResourceRetrieverTest {
 
     @Test
     fun testRetrieve_DataUri() = runTest {
-        val downloader = resourceRetrieverFactory.create(account, "example.com")
-        val result = downloader.retrieve("data:image/png;base64,dGVzdA==")
-        assertArrayEquals("test".toByteArray(), result)
+        resourceRetrieverFactory.create(account, "example.com").use {
+            val result = it.retrieve("data:image/png;base64,dGVzdA==")
+            assertArrayEquals("test".toByteArray(), result)
+        }
     }
 
     @Test
     fun testRetrieve_DataUri_Invalid() = runTest {
-        val downloader = resourceRetrieverFactory.create(account, "example.com")
-        val result = downloader.retrieve("data:;INVALID,INVALID")
-        assertNull(result)
+        resourceRetrieverFactory.create(account, "example.com").use {
+            val result = it.retrieve("data:;INVALID,INVALID")
+            assertNull(result)
+        }
     }
 
     @Test
@@ -81,9 +83,10 @@ class ResourceRetrieverTest {
             .fromAccount(account, authDomain = "example.com")
             .build(engine)
 
-        val downloader = resourceRetrieverFactory.create(account, "example.com")
-        // Request to a different domain than the account's — auth must not be sent
-        val result = downloader.retrieve("https://other-domain.example.net/photo.jpg", httpClient)
+        val result = resourceRetrieverFactory.create(account, "example.com").use {
+            // Request to a different domain than the account's — auth must not be sent
+            it.retrieve("https://other-domain.example.net/photo.jpg", httpClient)
+        }
 
         val sentAuth = engine.requestHistory.first().headers[HttpHeaders.Authorization]
         assertNull(sentAuth)
@@ -93,15 +96,17 @@ class ResourceRetrieverTest {
 
     @Test
     fun testRetrieve_FtpUrl() = runTest {
-        val downloader = resourceRetrieverFactory.create(account, "example.com")
-        val result = downloader.retrieve("ftp://example.com/photo.jpg")
+        val result = resourceRetrieverFactory.create(account, "example.com").use {
+            it.retrieve("ftp://example.com/photo.jpg")
+        }
         assertNull(result)
     }
 
     @Test
     fun testRetrieve_RelativeHttpsUrl() = runTest {
-        val downloader = resourceRetrieverFactory.create(account, "example.com")
-        val result = downloader.retrieve("https:photo.jpg")
+        val result = resourceRetrieverFactory.create(account, "example.com").use {
+            it.retrieve("https:photo.jpg")
+        }
         assertNull(result)
     }
 
@@ -112,8 +117,9 @@ class ResourceRetrieverTest {
             .fromAccount(account, authDomain = "example.com")
             .build(engine)
 
-        val downloader = resourceRetrieverFactory.create(account, "example.com")
-        val result = downloader.retrieve("https://example.com/photo.jpg", httpClient)
+        val result = resourceRetrieverFactory.create(account, "example.com").use {
+            it.retrieve("https://example.com/photo.jpg", httpClient)
+        }
 
         val sentAuth = engine.requestHistory.first().headers[HttpHeaders.Authorization]
         assertEquals("Basic dGVzdDp0ZXN0", sentAuth)

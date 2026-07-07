@@ -345,8 +345,9 @@ class ContactsSyncManager @AssistedInject constructor(
                         downloader = object : Contact.Downloader {
                             override suspend fun download(url: String, accepts: String): ByteArray? {
                                 // retrieve external resource (like a photo) from a URL (not necessarily HTTP[S])
-                                val retriever = resourceRetrieverFactory.create(account, davCollection.location.host)
-                                return retriever.retrieve(url)
+                                return resourceRetrieverFactory.create(account, davCollection.location.host).use { retriever ->
+                                    retriever.retrieve(url)
+                                }
                             }
                         }
                     )
