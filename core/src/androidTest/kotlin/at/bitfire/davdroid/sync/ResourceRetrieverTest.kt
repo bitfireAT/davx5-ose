@@ -81,7 +81,7 @@ class ResourceRetrieverTest {
         // same way production code does so that restriction is actually exercised.
         val httpClient = httpClientBuilder.get()
             .fromAccount(account, authDomain = "example.com")
-            .buildKtor(engine)
+            .build(engine)
 
         val downloader = resourceRetrieverFactory.create(account, "example.com")
         // Request to a different domain than the account's — auth must not be sent
@@ -116,7 +116,7 @@ class ResourceRetrieverTest {
         val engine = MockEngine { respond("TEST", HttpStatusCode.OK) }
         val httpClient = httpClientBuilder.get()
             .fromAccount(account, authDomain = "example.com")
-            .buildKtor(engine)
+            .build(engine)
 
         val downloader = resourceRetrieverFactory.create(account, "example.com")
         val result = downloader.retrieve("https://example.com/photo.jpg", httpClient)

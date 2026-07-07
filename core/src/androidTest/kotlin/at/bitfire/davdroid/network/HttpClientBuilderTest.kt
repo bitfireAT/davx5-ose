@@ -71,10 +71,10 @@ class HttpClientBuilderTest {
 
 
     @Test
-    fun testBuildKtor_CreatesWorkingClient() = runTest {
+    fun testBuild_CreatesWorkingClient() = runTest {
         val engine = MockEngine { respond("Some Content", HttpStatusCode.OK) }
 
-        httpClientBuilder.buildKtor(engine).use { client ->
+        httpClientBuilder.build(engine).use { client ->
             val response = client.get("https://example.com/")
             assertEquals(200, response.status.value)
             assertEquals("Some Content", response.bodyAsText())
@@ -148,7 +148,7 @@ class HttpClientBuilderTest {
             }
         }
 
-        httpClientBuilder.buildKtor(engine).use { client ->
+        httpClientBuilder.build(engine).use { client ->
             // Cookies are handled by Ktor's HttpCookies plugin (AcceptAllCookiesStorage),
             // so they're stored/sent by the Ktor client.
             client.get(url)
@@ -172,7 +172,7 @@ class HttpClientBuilderTest {
         try {
             Locale.setDefault(Locale.GERMANY)
 
-            httpClientBuilder.buildKtor(engine).use { client ->
+            httpClientBuilder.build(engine).use { client ->
                 client.get("https://example.com/")
             }
 
@@ -197,7 +197,7 @@ class HttpClientBuilderTest {
             }
         }
 
-        httpClientBuilder.buildKtor(engine).use { client ->
+        httpClientBuilder.build(engine).use { client ->
             val response = client.get("https://example.com/")
             // redirect is not followed, so we get the 302 response directly
             assertEquals(HttpStatusCode.Found, response.status)
@@ -216,7 +216,7 @@ class HttpClientBuilderTest {
             }
         }
 
-        httpClientBuilder.followRedirects(true).buildKtor(engine).use { client ->
+        httpClientBuilder.followRedirects(true).build(engine).use { client ->
             val response = client.get("https://example.com/")
             assertEquals(HttpStatusCode.OK, response.status)
             assertEquals("Target", response.bodyAsText())
@@ -252,7 +252,7 @@ class HttpClientBuilderTest {
         httpClientBuilder
             .logTo(logger)
             .trafficLogLevel(LogLevel.ALL)
-            .buildKtor(engine).use { client ->
+            .build(engine).use { client ->
                 client.get("https://example.com/") {
                     header(HttpHeaders.Authorization, secret)
                 }

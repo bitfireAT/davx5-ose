@@ -339,7 +339,7 @@ class HttpClientBuilder private constructor(
     /**
      * Installs all Ktor-level plugins (cookies, timeouts, content negotiation, user agent,
      * compression, auth, logging) that are shared between [build] (real [OkHttp] engine) and
-     * [buildKtor] (arbitrary engine, used for tests).
+     * [build] (arbitrary engine, used for tests).
      */
     private fun HttpClientConfig<*>.installPlugins() {
         // don't follow redirects by default because it would break PROPFIND handling;
@@ -446,7 +446,7 @@ class HttpClientBuilder private constructor(
      * @return the new HttpClient (with the provided [engine]) which **must be closed by the caller**
      */
     @MustBeClosed
-    internal fun <CE : HttpClientEngine> buildKtor(engine: CE): HttpClient =
+    internal fun <CE : HttpClientEngine> build(engine: CE): HttpClient =
         HttpClient(engine) {
             installPlugins()
         }
