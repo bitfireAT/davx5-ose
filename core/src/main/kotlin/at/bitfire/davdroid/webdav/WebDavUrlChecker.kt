@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid.webdav
 
+import androidx.annotation.VisibleForTesting
 import at.bitfire.dav4jvm.ktor.DavResource
 import at.bitfire.davdroid.network.HttpClientBuilder
 import at.bitfire.davdroid.settings.Credentials
@@ -40,9 +41,10 @@ class WebDavUrlChecker @Inject constructor(
 
     /**
      * Performs the actual WebDAV OPTIONS check using a pre-built [httpClient].
-     * Separated from [getWebDavUrl] to allow tests to inject a [io.ktor.client.engine.mock.MockEngine].
+     * Separated from [getWebDavUrl] to allow tests to inject a `MockEngine`.
      */
-    internal suspend fun checkWebDavUrl(httpClient: HttpClient, url: Url): Url? {
+    @VisibleForTesting
+    suspend fun checkWebDavUrl(httpClient: HttpClient, url: Url): Url? {
         val validVersions = arrayOf("1", "2", "3")
         var webdavUrl: Url? = null
         val dav = DavResource(httpClient, url)

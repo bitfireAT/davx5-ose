@@ -33,7 +33,7 @@ import java.util.logging.Logger
 class ResourceRetriever @AssistedInject constructor(
     @Assisted private val account: Account,
     @Assisted private val originalHost: String,
-    private val httpClientBuilder: HttpClientBuilder,
+    httpClientBuilder: HttpClientBuilder,
     private val logger: Logger
 ) {
 
@@ -41,6 +41,11 @@ class ResourceRetriever @AssistedInject constructor(
     interface Factory {
         fun create(account: Account, originalHost: String): ResourceRetriever
     }
+
+    private val httpClient = httpClientBuilder
+        .fromAccount(account, authDomain = originalHost)
+        .followRedirects(true)
+        .build()
 
     /**
      * Retrieves the given resource and returns it as an in-memory blob.
@@ -52,19 +57,7 @@ class ResourceRetriever @AssistedInject constructor(
      *
      * @return blob of requested resource, or `null` on error or when the URL scheme is not supported
      */
-    suspend fun retrieve(url: String): ByteArray? {
-        val httpClient = httpClientBuilder
-            .fromAccount(account, authDomain = originalHost)
-            .followRedirects(true)
-            .build()
-        return httpClient.use { retrieve(url, it) }
-    }
-
-    /**
-     * Same as [retrieve] but uses a pre-built [httpClient]. Intended for tests so that a
-     * [io.ktor.client.engine.mock.MockEngine]-backed client can be injected.
-     */
-    internal suspend fun retrieve(url: String, httpClient: HttpClient): ByteArray? =
+    suspend fun retrieve(url: String, httpClient: HttpClient = this.httpClient): ByteArray? =
         try {
             when (url.toURIorNull()?.scheme?.lowercase()) {
                 "data" ->

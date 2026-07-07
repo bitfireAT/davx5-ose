@@ -4,12 +4,12 @@
 
 package at.bitfire.davdroid.webdav
 
+import at.bitfire.davdroid.MockEngineUtils.Default
+import at.bitfire.davdroid.MockEngineUtils.basic
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
-import io.ktor.client.engine.mock.respond
-import io.ktor.http.HttpStatusCode
 import io.ktor.http.Url
 import io.ktor.http.headersOf
 import junit.framework.TestCase.assertEquals
@@ -38,28 +38,28 @@ class WebDavUrlCheckerTest {
 
     @Test
     fun getWebDavUrl_NoDavHeader() = runTest {
-        val engine = MockEngine { respond("", HttpStatusCode.OK) }
+        val engine = MockEngine.Default
         val result = webDavUrlChecker.checkWebDavUrl(HttpClient(engine), url)
         assertNull(result)
     }
 
     @Test
     fun getWebDavUrl_DavClass1() = runTest {
-        val engine = MockEngine { respond("", HttpStatusCode.OK, headersOf("DAV", "1")) }
+        val engine = MockEngine.basic(headers = headersOf("DAV", "1"))
         val result = webDavUrlChecker.checkWebDavUrl(HttpClient(engine), url)
         assertEquals(url, result)
     }
 
     @Test
     fun getWebDavUrl_DavClass2() = runTest {
-        val engine = MockEngine { respond("", HttpStatusCode.OK, headersOf("DAV", "1, 2")) }
+        val engine = MockEngine.basic(headers = headersOf("DAV", "1, 2"))
         val result = webDavUrlChecker.checkWebDavUrl(HttpClient(engine), url)
         assertEquals(url, result)
     }
 
     @Test
     fun getWebDavUrl_DavClass3() = runTest {
-        val engine = MockEngine { respond("", HttpStatusCode.OK, headersOf("DAV", "1, 3")) }
+        val engine = MockEngine.basic(headers = headersOf("DAV", "1, 3"))
         val result = webDavUrlChecker.checkWebDavUrl(HttpClient(engine), url)
         assertEquals(url, result)
     }

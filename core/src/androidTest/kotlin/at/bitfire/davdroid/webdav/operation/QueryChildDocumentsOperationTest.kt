@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.webdav.operation
 
 import android.security.NetworkSecurityPolicy
+import at.bitfire.davdroid.MockEngineUtils.basic
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.WebDavDocument
 import at.bitfire.davdroid.db.WebDavMount
@@ -141,7 +142,7 @@ class QueryChildDocumentsOperationTest {
         assertNotNull(db.webDavDocumentDao().get(childId))
 
         every { httpClientBuilder.build(any(), any()) } answers {
-            HttpClient(MockEngine { respond("", HttpStatusCode.InternalServerError) })
+            HttpClient(MockEngine.basic(statusCode = HttpStatusCode.InternalServerError))
         }
 
         // Query - PROPFIND fails
