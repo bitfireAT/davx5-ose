@@ -85,10 +85,6 @@ class ResourceRetrieverTest {
         // Request to a different domain than the account's — auth must not be sent
         val result = downloader.retrieve("https://other-domain.example.net/photo.jpg", httpClient)
 
-        // TODO: currently fails — HttpClientBuilder's domain-based auth restriction is implemented
-        // as an OkHttp interceptor, which never runs for a MockEngine-backed client. Once auth is
-        // migrated to Ktor's own Auth plugin (https://github.com/bitfireAT/davx5-ose/issues/2587),
-        // it will apply regardless of engine and this assertion will hold.
         val sentAuth = engine.requestHistory.first().headers[HttpHeaders.Authorization]
         assertNull(sentAuth)
 
