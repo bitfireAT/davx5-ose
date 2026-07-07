@@ -5,19 +5,31 @@
 package at.bitfire.davdroid.ui.account
 
 import android.accounts.Account
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.TaskStackBuilder
 import androidx.core.content.IntentCompat
+import at.bitfire.davdroid.ui.account.AccountActivity.Companion.editAccountActivityIntent
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class AccountSettingsActivity: AppCompatActivity() {
 
     companion object {
-        const val EXTRA_ACCOUNT = "account"
+        private const val EXTRA_ACCOUNT = "account"
+        
+        fun createIntent(context: Context, account: Account): Intent {
+            return Intent(context, AccountSettingsActivity::class.java).apply { 
+                putExtra(EXTRA_ACCOUNT, account)
+            }
+        }
+        
+        fun Intent.editAccountSettingsActivityIntent(account: Account) {
+            putExtra(EXTRA_ACCOUNT, account)
+        }
     }
 
     private val account by lazy {
@@ -33,8 +45,7 @@ class AccountSettingsActivity: AppCompatActivity() {
             AccountSettingsScreen(
                 account = account,
                 onNavWifiPermissionsScreen = {
-                    val intent = Intent(this, WifiPermissionsActivity::class.java)
-                    intent.putExtra(WifiPermissionsActivity.EXTRA_ACCOUNT, account)
+                    val intent = WifiPermissionsActivity.createIntent(this, account)
                     startActivity(intent)
                 },
                 onNavUp = ::onSupportNavigateUp,
@@ -45,7 +56,7 @@ class AccountSettingsActivity: AppCompatActivity() {
     override fun supportShouldUpRecreateTask(targetIntent: Intent) = true
 
     override fun onPrepareSupportNavigateUpTaskStack(builder: TaskStackBuilder) {
-        builder.editIntentAt(builder.intentCount - 1)?.putExtra(AccountActivity.EXTRA_ACCOUNT, account)
+        builder.editIntentAt(builder.intentCount - 1)?.editAccountActivityIntent(account)
     }
 
 }

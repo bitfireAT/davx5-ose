@@ -183,8 +183,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
         } catch (e: UnauthorizedException) {
             logger.log(Level.SEVERE, "Not authorized (anymore)", e)
             // notify that we need to re-authenticate in the account settings
-            val settingsIntent = Intent(applicationContext, AccountSettingsActivity::class.java)
-                .putExtra(AccountSettingsActivity.EXTRA_ACCOUNT, account)
+            val settingsIntent = AccountSettingsActivity.createIntent(applicationContext, account)
             notifyRefreshError(
                 applicationContext.getString(R.string.sync_error_authentication_failed),
                 settingsIntent

@@ -6,6 +6,7 @@ package at.bitfire.davdroid.ui.account
 
 import AccountScreen
 import android.accounts.Account
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
@@ -48,24 +49,19 @@ class AccountActivity : AppCompatActivity() {
             AccountScreen(
                 account = account,
                 onAccountSettings = {
-                    val intent = Intent(this, AccountSettingsActivity::class.java)
-                    intent.putExtra(AccountSettingsActivity.EXTRA_ACCOUNT, account)
+                    val intent = AccountSettingsActivity.createIntent(this, account)
                     startActivity(intent, null)
                 },
                 onCreateAddressBook = {
-                    val intent = Intent(this, CreateAddressBookActivity::class.java)
-                    intent.putExtra(CreateAddressBookActivity.EXTRA_ACCOUNT, account)
+                    val intent = CreateAddressBookActivity.createIntent(this, account)
                     startActivity(intent)
                 },
                 onCreateCalendar = {
-                    val intent = Intent(this, CreateCalendarActivity::class.java)
-                    intent.putExtra(CreateCalendarActivity.EXTRA_ACCOUNT, account)
+                    val intent = CreateCalendarActivity.createIntent(this, account)
                     startActivity(intent)
                 },
                 onCollectionDetails = { collection ->
-                    val intent = Intent(this, CollectionActivity::class.java)
-                    intent.putExtra(CollectionActivity.EXTRA_ACCOUNT, account)
-                    intent.putExtra(CollectionActivity.EXTRA_COLLECTION_ID, collection.id)
+                    val intent = CollectionActivity.createIntent(this, account, collection.id)
                     startActivity(intent, null)
                 },
                 onNavUp = ::onSupportNavigateUp,
@@ -75,7 +71,17 @@ class AccountActivity : AppCompatActivity() {
     }
 
     companion object {
-        const val EXTRA_ACCOUNT = "account"
+        private const val EXTRA_ACCOUNT = "account"
+        
+        fun createIntent(context: Context, account: Account): Intent {
+            return Intent(context, AccountActivity::class.java).apply { 
+                putExtra(EXTRA_ACCOUNT, account)
+            }
+        }
+        
+        fun Intent.editAccountActivityIntent(account: Account) {
+            putExtra(EXTRA_ACCOUNT, account)
+        }
     }
 
 }
