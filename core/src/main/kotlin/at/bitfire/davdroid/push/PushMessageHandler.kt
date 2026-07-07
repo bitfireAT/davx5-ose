@@ -42,7 +42,7 @@ class PushMessageHandler @Inject constructor(
             return
         }
         val messageXml = message.content.toString(Charsets.UTF_8)
-        logger.log(Level.INFO, "Received push message", messageXml)
+        logger.log(Level.FINE, "Received push message: {0}", arrayOf(messageXml))
 
         // parse push notification
         val topic = parse(messageXml)

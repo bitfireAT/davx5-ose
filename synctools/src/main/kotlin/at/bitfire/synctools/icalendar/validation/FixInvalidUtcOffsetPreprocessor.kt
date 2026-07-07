@@ -5,7 +5,6 @@
 package at.bitfire.synctools.icalendar.validation
 
 import androidx.annotation.VisibleForTesting
-import java.util.logging.Level
 import java.util.logging.Logger
 
 
@@ -26,7 +25,7 @@ class FixInvalidUtcOffsetPreprocessor: StreamPreprocessor {
 
     override fun repairLine(line: String) =
         line.replace(regexpForProblem) {
-            logger.log(Level.FINE, "Applying Synology WebDAV fix to invalid utc-offset", it.value)
+            logger.fine("Applying Synology WebDAV fix to invalid utc-offset: ${it.value}")
             "${it.groupValues[1]}00${it.groupValues[3]}"
         }
 

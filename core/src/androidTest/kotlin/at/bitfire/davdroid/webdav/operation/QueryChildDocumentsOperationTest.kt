@@ -57,7 +57,7 @@ class QueryChildDocumentsOperationTest {
     @Before
     fun setUp() {
         hiltRule.inject()
-        every { httpClientBuilder.buildKtor(any(), any()) } answers { HttpClient(buildDefaultEngine()) }
+        every { httpClientBuilder.build(any(), any()) } answers { HttpClient(buildDefaultEngine()) }
 
         // mock server delivers HTTP without encryption
         assertTrue(NetworkSecurityPolicy.getInstance().isCleartextTrafficPermitted)
@@ -136,7 +136,7 @@ class QueryChildDocumentsOperationTest {
         )
         assertNotNull(db.webDavDocumentDao().get(childId))
 
-        every { httpClientBuilder.buildKtor(any(), any()) } answers {
+        every { httpClientBuilder.build(any(), any()) } answers {
             HttpClient(MockEngine { respond("", HttpStatusCode.InternalServerError) })
         }
 

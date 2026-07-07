@@ -61,7 +61,7 @@ class MoveDocumentOperationTest {
     @Before
     fun setUp() {
         hiltRule.inject()
-        every { httpClientBuilder.buildKtor(any(), any()) } answers { HttpClient(mockEngine) }
+        every { httpClientBuilder.build(any(), any()) } answers { HttpClient(mockEngine) }
 
         mountDao = db.webDavMountDao()
         runBlocking {

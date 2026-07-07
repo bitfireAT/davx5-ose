@@ -138,6 +138,7 @@ dependencies {
     implementation(libs.conscrypt)
     implementation(libs.dnsjava)
     implementation(libs.guava)
+    implementation(libs.ktor.client.auth)
     implementation(libs.ktor.client.content.negotiation)
     implementation(libs.ktor.client.core)
     implementation(libs.ktor.client.encoding)
@@ -146,8 +147,6 @@ dependencies {
     implementation(libs.ktor.serialization.kotlinx.json)
     implementation(libs.mikepenz.aboutLibraries.m3)
     implementation(libs.okhttp.base)
-    implementation(libs.okhttp.brotli)
-    implementation(libs.okhttp.logging)
     implementation(libs.openid.appauth)
     implementation(libs.unifiedpush) {
         // UnifiedPush connector seems to be using a workaround by importing this library.
@@ -182,4 +181,9 @@ dependencies {
     testImplementation(libs.mockk)
     testImplementation(libs.robolectric)
     testImplementation(testFixtures(project(":synctools")))
+}
+
+tasks.withType<Test>().configureEach {
+    // activate verbose logging for tests
+    systemProperty("java.util.logging.config.file", "$projectDir/src/test/resources/logging.properties")
 }

@@ -22,7 +22,6 @@ import at.bitfire.dav4jvm.property.webdav.WebDAV
 import at.bitfire.davdroid.ProductIds
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
-import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.di.qualifier.SyncDispatcher
 import at.bitfire.davdroid.resource.LocalAddress
 import at.bitfire.davdroid.resource.LocalAddressBook
@@ -51,7 +50,6 @@ import io.ktor.http.ContentType
 import io.ktor.http.Url
 import io.ktor.http.content.TextContent
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.runBlocking
 import java.io.Reader
 import java.io.StringReader
 import java.io.StringWriter
@@ -107,7 +105,6 @@ class ContactsSyncManager @AssistedInject constructor(
     @Assisted val syncFrameworkUpload: Boolean,
     accountSettingsFactory: AccountSettings.Factory,
     val dirtyVerifier: Optional<ContactDirtyVerifier>,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val productIds: ProductIds,
     private val resourceRetrieverFactory: ResourceRetriever.Factory,
     @SyncDispatcher syncDispatcher: CoroutineDispatcher
@@ -163,7 +160,7 @@ class ContactsSyncManager @AssistedInject constructor(
     }
 
     override suspend fun queryCapabilities(): SyncState? {
-        return SyncException.wrapWithRemoteResourceSuspending(collection.url) {
+        return SyncException.wrapWithRemoteResource(collection.url) {
             var syncState: SyncState? = null
             davCollection.propfind(
                 0,
@@ -272,7 +269,7 @@ class ContactsSyncManager @AssistedInject constructor(
             is LocalGroup -> resource.androidGroup.getContact()
             else -> throw IllegalArgumentException("resource must be LocalContact or LocalGroup")
         }
-        logger.log(Level.FINE, "Preparing upload of vCard #${resource.id}", contact)
+        logger.log(Level.FINE, "Preparing upload of vCard #{0}: {1}", arrayOf(resource.id, contact))
 
         // get/create UID
         val (uid, uidIsGenerated) = DavUtils.generateUidIfNecessary(contact.uid)
@@ -305,13 +302,13 @@ class ContactsSyncManager @AssistedInject constructor(
     }
 
     override suspend fun listAllRemote(callback: MultiResponseCallback) =
-        SyncException.wrapWithRemoteResourceSuspending(collection.url) {
+        SyncException.wrapWithRemoteResource(collection.url) {
             davCollection.propfind(1, WebDAV.ResourceType, WebDAV.GetETag, callback = callback)
         }
 
     override suspend fun downloadRemote(bunch: List<Url>) {
         logger.info("Downloading ${bunch.size} vCard(s): $bunch")
-        SyncException.wrapWithRemoteResourceSuspending(collection.url) {
+        SyncException.wrapWithRemoteResource(collection.url) {
             val contentType: String?
             val version: String?
             when {
@@ -326,7 +323,7 @@ class ContactsSyncManager @AssistedInject constructor(
             }
             davCollection.multiget(bunch, contentType, version) { response, _ ->
                 // See CalendarSyncManager for more information about the multi-get response
-                SyncException.wrapWithRemoteResourceSuspending(response.href) wrapResource@{
+                SyncException.wrapWithRemoteResource(response.href) wrapResource@{
                     if (!response.isSuccess()) {
                         logger.warning("Ignoring non-successful multi-get response for ${response.href}")
                         return@wrapResource
@@ -377,9 +374,7 @@ class ContactsSyncManager @AssistedInject constructor(
             }
 
             // map to Contact
-            runBlocking(ioDispatcher) {
-                ContactReader.fromVCard(vCard, downloader)
-            }
+            ContactReader.fromVCard(vCard, downloader)
         } catch (e: CannotParseException) {
             logger.log(Level.SEVERE, "Received invalid vCard, ignoring", e)
             notifyInvalidResource(e, fileName)
@@ -394,14 +389,14 @@ class ContactsSyncManager @AssistedInject constructor(
         if (existing == null) {
             // create new contact/group
             if (newData.group) {
-                logger.log(Level.INFO, "Creating local group", newData)
+                logger.info("Creating local group: $newData")
                 val newGroup = localCollection.addGroup(newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT)
                 SyncException.wrapWithLocalResource(newGroup) {
                     updated = newGroup
                 }
 
             } else {
-                logger.log(Level.INFO, "Creating local contact", newData)
+                logger.info("Creating local contact: $newData")
                 val newContact = localCollection.addContact(newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT)
                 SyncException.wrapWithLocalResource(newContact) {
                     updated = newContact
@@ -410,7 +405,7 @@ class ContactsSyncManager @AssistedInject constructor(
 
         } else {
             // update existing local contact/group
-            logger.log(Level.INFO, "Updating $fileName in local address book", newData)
+            logger.info("Updating $fileName in local address book: $newData")
 
             SyncException.wrapWithLocalResource(existing) {
                 if ((existing is LocalGroup && newData.group) || (existing is LocalContact && !newData.group)) {
@@ -430,14 +425,14 @@ class ContactsSyncManager @AssistedInject constructor(
                     existing.deleteLocal()
 
                     if (newData.group) {
-                        logger.log(Level.INFO, "Creating local group (was contact before)", newData)
+                        logger.info("Creating local group (was contact before): $newData")
                         val newGroup = localCollection.addGroup(newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT)
                         SyncException.wrapWithLocalResource(newGroup) {
                             updated = newGroup
                         }
 
                     } else {
-                        logger.log(Level.INFO, "Creating local contact (was group before)", newData)
+                        logger.info("Creating local contact (was group before): $newData")
                         val newContact = localCollection.addContact(newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT)
                         SyncException.wrapWithLocalResource(newContact) {
                             updated = newContact

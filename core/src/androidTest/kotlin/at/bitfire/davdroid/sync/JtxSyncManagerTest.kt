@@ -95,7 +95,7 @@ class JtxSyncManagerTest {
         localJtxCollection = localJtxCollectionStore.create(provider, dbCollection)
         syncManager = jtxSyncManagerFactory.jtxSyncManager(
             account = account,
-            httpClient = httpClientBuilder.buildKtor(),
+            httpClient = httpClientBuilder.build(),
             syncResult = SyncResult(),
             localCollection = localJtxCollection,
             collection = dbCollection,

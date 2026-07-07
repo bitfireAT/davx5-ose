@@ -91,7 +91,7 @@ class TasksSyncManager @AssistedInject constructor(
     }
 
     override suspend fun queryCapabilities() =
-        SyncException.wrapWithRemoteResourceSuspending(collection.url) {
+        SyncException.wrapWithRemoteResource(collection.url) {
             var syncState: SyncState? = null
             davCollection.propfind(0, CalDAV.MaxResourceSize, CalDAV.GetCTag, WebDAV.SyncToken) { response, relation ->
                 if (relation == Response.HrefRelation.SELF) {
@@ -110,7 +110,7 @@ class TasksSyncManager @AssistedInject constructor(
 
     override fun generateUpload(resource: LocalTask): GeneratedResource {
         val localTask = resource.taskAndExceptions
-        logger.log(Level.FINE, "Preparing upload of task #${resource.id}", localTask)
+        logger.log(Level.FINE, "Preparing upload of task #{0}: {1}", arrayOf(resource.id, localTask))
 
         /* Increase SEQUENCE of main task in memory and remember new value.
         Will be written to provider later over onSuccessContext. */
@@ -142,7 +142,7 @@ class TasksSyncManager @AssistedInject constructor(
     }
 
     override suspend fun listAllRemote(callback: MultiResponseCallback) {
-        SyncException.wrapWithRemoteResourceSuspending(collection.url) {
+        SyncException.wrapWithRemoteResource(collection.url) {
             logger.info("Querying tasks")
             davCollection.calendarQuery("VTODO", null, null, callback = callback)
         }
@@ -151,10 +151,10 @@ class TasksSyncManager @AssistedInject constructor(
     override suspend fun downloadRemote(bunch: List<Url>) {
         logger.info("Downloading ${bunch.size} iCalendars: $bunch")
         // multiple iCalendars, use calendar-multi-get
-        SyncException.wrapWithRemoteResourceSuspending(collection.url) {
+        SyncException.wrapWithRemoteResource(collection.url) {
             davCollection.multiget(bunch) { response, _ ->
                 // See CalendarSyncManager for more information about the multi-get response
-                SyncException.wrapWithRemoteResourceSuspending(response.href) wrapResource@{
+                SyncException.wrapWithRemoteResource(response.href) wrapResource@{
                     if (!response.isSuccess()) {
                         logger.warning("Ignoring non-successful multi-get response for ${response.href}")
                         return@wrapResource
@@ -213,11 +213,11 @@ class TasksSyncManager @AssistedInject constructor(
         val local = localCollection.findByName(fileName)
         if (local != null) {
             SyncException.wrapWithLocalResource(local) {
-                logger.log(Level.INFO, "Updating $fileName in local task list", task)
+                logger.info("Updating $fileName in local task list: $task")
                 local.update(dmfsTask)
             }
         } else {
-            logger.log(Level.INFO, "Adding $fileName to local task list", task)
+            logger.info("Adding $fileName to local task list: $task")
             localCollection.add(dmfsTask)
         }
     }

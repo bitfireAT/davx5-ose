@@ -17,7 +17,6 @@ import io.ktor.client.statement.bodyAsBytes
 import io.ktor.http.isSuccess
 import java.util.logging.Level
 import java.util.logging.Logger
-import javax.inject.Provider
 
 /**
  * Downloads a separate resource that is referenced during synchronization, for instance in
@@ -34,7 +33,7 @@ import javax.inject.Provider
 class ResourceRetriever @AssistedInject constructor(
     @Assisted private val account: Account,
     @Assisted private val originalHost: String,
-    private val httpClientBuilder: Provider<HttpClientBuilder>,
+    private val httpClientBuilder: HttpClientBuilder,
     private val logger: Logger
 ) {
 
@@ -55,10 +54,9 @@ class ResourceRetriever @AssistedInject constructor(
      */
     suspend fun retrieve(url: String): ByteArray? {
         val httpClient = httpClientBuilder
-            .get()
             .fromAccount(account, authDomain = originalHost)
             .followRedirects(true)
-            .buildKtor()
+            .build()
         return httpClient.use { retrieve(url, it) }
     }
 

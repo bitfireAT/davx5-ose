@@ -12,36 +12,31 @@ import java.util.logging.Level
 import java.util.logging.LogRecord
 
 /**
- * Logging handler that logs to Android logcat.
+ * Logging handler that logs to Android logcat ([Log]).
  *
- * Log level mapping: https://source.android.com/docs/core/tests/debug/understanding-logging#log-standards
+ * Maps log level according to [Android docs](https://source.android.com/docs/core/tests/debug/understanding-logging#log-standards).
  *
- * @param fallbackTag   adb tag to use if class name can't be determined
+ * Logs source class and exception natively over logcat, so the formatter is configured
+ * to omit those.
  */
-class LogcatHandler(
-    private val fallbackTag: String
-): Handler() {
-
-    val logcatFormatter = PlainTextFormatter.LOGCAT
+class LogcatHandler : Handler() {
 
     init {
-        setFormatter(logcatFormatter)
+        // use PlainTextFormatter by default
+        formatter = PlainTextFormatter.FOR_LOGCAT
     }
 
     override fun publish(r: LogRecord) {
         val level = r.level.intValue()
-        val text = logcatFormatter.format(r)
+        val text = formatter.format(r)
 
-        // log tag has to be truncated to 23 characters on Android <8, see Log documentation
-        val tagLimited = Build.VERSION.SDK_INT < Build.VERSION_CODES.O
-
-        // get class name that calls the logger (or fall back to package name)
+        // use class name (or fallbackTag, if not available) as logcat tag
         val tag = if (r.sourceClassName != null)
-            ClassNameUtils.shortenClassName(r.sourceClassName, classNameFirst = tagLimited)
+            ClassNameUtils.shortenClassName(r.sourceClassName, classNameFirst = tagLengthRestricted)
         else
-            fallbackTag
+            FALLBACK_TAG
 
-        val tagOrTruncated = if (tagLimited)
+        val tagOrTruncated = if (tagLengthRestricted)
             Ascii.truncate(tag, 23, "")
         else
             tag
@@ -66,5 +61,15 @@ class LogcatHandler(
 
     override fun flush() {}
     override fun close() {}
+
+
+    companion object {
+
+        private const val FALLBACK_TAG: String = "at.bitfire"
+
+        /** log tag has to be truncated to 23 characters on Android <8, see Log documentation */
+        val tagLengthRestricted = Build.VERSION.SDK_INT < Build.VERSION_CODES.O
+
+    }
 
 }

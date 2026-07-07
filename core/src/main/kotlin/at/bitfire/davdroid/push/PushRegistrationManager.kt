@@ -52,7 +52,6 @@ import java.util.concurrent.TimeUnit
 import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
-import javax.inject.Provider
 
 /**
  * Manages push registrations and subscriptions.
@@ -69,7 +68,7 @@ class PushRegistrationManager @Inject constructor(
     private val distributorManager: PushDistributorManager,
     private val notificationManager: PushNotificationManager,
     private val notificationRegistry: NotificationRegistry,
-    private val httpClientBuilder: Provider<HttpClientBuilder>,
+    private val httpClientBuilder: HttpClientBuilder,
     private val logger: Logger,
     private val serviceRepository: DavServiceRepository
 ) {
@@ -199,9 +198,9 @@ class PushRegistrationManager @Inject constructor(
         val nextWorkerRun = Instant.now() + Duration.ofDays(2 * WORKER_INTERVAL_DAYS)
 
         val account = accountRepository.get().fromName(service.accountName)
-        httpClientBuilder.get()
+        httpClientBuilder
             .fromAccountAsync(account)
-            .buildKtor()
+            .build()
             .use { httpClient ->
             for (collection in subscribeTo) {
                 // update push subscription for the given collection
@@ -211,15 +210,23 @@ class PushRegistrationManager @Inject constructor(
                     // ... and also check whether endpoint has changed
                     val endpointChanged = collection.pushRegisteredEndpoint == null || collection.pushRegisteredEndpoint != endpoint.url
                     if (!endpointChanged && !subscriptionAboutToExpire)
-                        logger.fine("Push subscription for ${collection.url} is still valid until ${collection.pushSubscriptionExpires}")
+                        logger.log(
+                            Level.FINE,
+                            "Push subscription for {0} is still valid until {1}",
+                            arrayOf(collection.url, collection.pushSubscriptionExpires)
+                        )
                     else {
                         if (endpointChanged) {
-                            logger.fine("Push endpoint changed for ${collection.url}, unsubscribing from old endpoint first")
+                            logger.log(
+                                Level.FINE,
+                                "Push endpoint changed for {0}, unsubscribing from old endpoint first",
+                                arrayOf(collection.url)
+                            )
                             collection.pushSubscription?.toUrlOrNull()?.let { oldUrl ->
                                 unsubscribe(httpClient, collection, oldUrl)
                             }
                         }
-                        logger.fine("Registering push subscription for ${collection.url}")
+                        logger.log(Level.FINE, "Registering push subscription for {0}", arrayOf(collection.url))
                         subscribe(httpClient, collection, endpoint)
                     }
                 } catch (e: Exception) {
@@ -307,7 +314,7 @@ class PushRegistrationManager @Inject constructor(
                     expires = expires?.epochSecond
                 )
             } else
-                logger.warning("Couldn't register push for ${collection.url}: $response")
+                logger.log(Level.WARNING, "Couldn't register push for {0}: {1}", arrayOf(collection.url, response))
         }
     }
 
@@ -319,13 +326,13 @@ class PushRegistrationManager @Inject constructor(
             return
 
         val account = accountRepository.get().fromName(service.accountName)
-        httpClientBuilder.get()
+        httpClientBuilder
             .fromAccountAsync(account)
-            .buildKtor()
+            .build()
             .use { httpClient ->
             for (collection in from)
                 collection.pushSubscription?.toUrlOrNull()?.let { url ->
-                    logger.info("Unsubscribing Push from ${collection.url}")
+                    logger.log(Level.INFO, "Unsubscribing Push from {0}", arrayOf(collection.url))
                     unsubscribe(httpClient, collection, url)
                 }
         }

@@ -192,7 +192,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
                         logger.info("Post-processing")
                         postProcess()
 
-                        logger.log(Level.INFO, "Saving sync state", remoteSyncState)
+                        logger.info("Saving sync state: $remoteSyncState")
                         localCollection.lastSyncState = remoteSyncState
                     }
 
@@ -231,7 +231,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
                                 }
                             }
 
-                            logger.log(Level.INFO, "Saving sync state", syncState)
+                            logger.info("Saving sync state: $syncState")
                             localCollection.lastSyncState = syncState
 
                             logger.info("Server has further changes: $furtherChanges")
@@ -244,7 +244,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
 
                             // remove initial sync flag
                             syncState!!.initialSync = false
-                            logger.log(Level.INFO, "Initial sync completed, saving sync state", syncState)
+                            logger.info("Initial sync completed, saving sync state: $syncState")
                             localCollection.lastSyncState = syncState
                         }
 
@@ -332,7 +332,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
         // Remove locally deleted entries from server (if they have a name, i.e. if they were uploaded before),
         // but only if they don't have changed on the server. Then finally remove them from the local address book.
         localCollection.findDeleted().collect { local ->
-            SyncException.wrapWithLocalResourceSuspending(local) {
+            SyncException.wrapWithLocalResource(local) {
                 val fileName = local.fileName
                 if (fileName != null) {
                     val lastScheduleTag = local.scheduleTag
@@ -341,7 +341,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
 
                     val url = URLBuilder(collection.url).appendPathSegments(fileName, encodeSlash = true).build()
                     val remote = DavResource(httpClient, url)
-                    SyncException.wrapWithRemoteResourceSuspending(url) {
+                    SyncException.wrapWithRemoteResource(url) {
                         try {
                             remote.delete(
                                 ifETag = lastETag,
@@ -354,7 +354,11 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
                         }
                     }
                 } else
-                    logger.info("Removing local record #${local.id} which has been deleted locally and was never uploaded")
+                    logger.log(
+                        Level.INFO,
+                        "Removing local record #{0} which has been deleted locally and was never uploaded",
+                        arrayOf(local.id)
+                    )
                 local.deleteLocal()
             }
         }
@@ -374,7 +378,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
         var numUploaded = 0
 
         localCollection.findDirty().collect { local ->
-            SyncException.wrapWithLocalResourceSuspending(local) {
+            SyncException.wrapWithLocalResource(local) {
                 uploadDirty(local)
                 numUploaded++
             }
@@ -400,10 +404,10 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
         val remote = DavResource(httpClient, uploadUrl)
 
         try {
-            SyncException.wrapWithRemoteResourceSuspending(uploadUrl) {
+            SyncException.wrapWithRemoteResource(uploadUrl) {
                 if (existingFileName == null || forceAsNew) {
                     // create new resource on server
-                    logger.info("Uploading new resource ${local.id} -> $fileName")
+                    logger.log(Level.INFO, "Uploading new resource {0} -> {1}", arrayOf<Any?>(local.id, fileName))
 
                     var newETag: String? = null
                     var newScheduleTag: String? = null
@@ -425,7 +429,11 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
                     val ifScheduleTag = local.scheduleTag
                     val ifETag = if (ifScheduleTag == null) local.eTag else null
 
-                    logger.info("Uploading modified resource ${local.id} -> $fileName (if ETag=$ifETag / Schedule-Tag=$ifScheduleTag)")
+                    logger.log(
+                        Level.INFO,
+                        "Uploading modified resource {0} -> {1} (if ETag={2} / Schedule-Tag={3})",
+                        arrayOf<Any?>(local.id, fileName, ifETag, ifScheduleTag)
+                    )
 
                     var updatedETag: String? = null
                     var updatedScheduleTag: String? = null
@@ -508,14 +516,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
         scheduleTag: String?,
         context: GeneratedResource.OnSuccessContext?
     ) {
-        logger.log(
-            Level.FINE, "Upload successful", arrayOf(
-                "File name = $newFileName",
-                "ETag = $eTag",
-                "Schedule-Tag = $scheduleTag",
-                "context = $context"
-            )
-        )
+        logger.fine("Upload successful: file=$newFileName, ETag=$eTag, Schedule-Tag=$scheduleTag, context=$context")
 
         // update SEQUENCE, if necessary
         if (context?.sequence != null)

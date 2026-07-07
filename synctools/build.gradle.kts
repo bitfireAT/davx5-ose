@@ -92,19 +92,17 @@ dependencies {
     implementation(libs.guava)
     implementation(libs.kotlinx.coroutines)
 
-    compileOnly(libs.spotbugs.annotations)
-
     // ical4j/ez-vcard
     api(libs.ical4j)
     implementation(libs.slf4j.jdk)       // ical4j uses slf4j, this module uses java.util.Logger
     api(libs.ezvcard)
 
+    // useful annotations
+    compileOnly(libs.spotbugs.annotations)
+
     // force some versions for compatibility with our minSdk level (see version catalog for details)
     implementation(libs.commons.codec)
     implementation(libs.commons.lang)
-
-    // useful annotations
-    api(libs.spotbugs.annotations)
 
     // test fixtures
     testFixturesImplementation(libs.androidx.test.rules)
@@ -133,6 +131,9 @@ dependencies {
 }
 
 tasks.withType<Test>().configureEach {
+    // activate verbose logging for tests
+    systemProperty("java.util.logging.config.file", "$projectDir/src/test/resources/logging.properties")
+
     options {
         // Prevent Robolectric from instrumenting ical4j classes to avoid problems with registering
         // ical4j's ZoneRulesProviderImpl more than once with Java's ZoneRulesProvider.

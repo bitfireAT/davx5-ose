@@ -89,7 +89,7 @@ class JtxSyncManager @AssistedInject constructor(
     }
 
     override suspend fun queryCapabilities() =
-        SyncException.wrapWithRemoteResourceSuspending(collection.url) {
+        SyncException.wrapWithRemoteResource(collection.url) {
             var syncState: SyncState? = null
             davCollection.propfind(0, CalDAV.GetCTag, CalDAV.MaxResourceSize, WebDAV.SyncToken) { response, relation ->
                 if (relation == Response.HrefRelation.SELF) {
@@ -105,7 +105,7 @@ class JtxSyncManager @AssistedInject constructor(
 
     override fun generateUpload(resource: LocalJtxObject): GeneratedResource {
         val localJtxObject = resource.jtxObjectAndExceptions
-        logger.log(Level.FINE, "Preparing upload of icalobject #${resource.id}", localJtxObject)
+        logger.log(Level.FINE, "Preparing upload of icalobject #{0}: {1}", arrayOf(resource.id, localJtxObject))
 
         // Map jtx object to iCalendar (also generates UID, if necessary)
         val handler = JtxObjectHandler(
@@ -139,7 +139,7 @@ class JtxSyncManager @AssistedInject constructor(
     override fun syncAlgorithm() = SyncAlgorithm.PROPFIND_REPORT
 
     override suspend fun listAllRemote(callback: MultiResponseCallback) {
-        SyncException.wrapWithRemoteResourceSuspending(collection.url) {
+        SyncException.wrapWithRemoteResource(collection.url) {
             if (localCollection.supportsVTODO) {
                 logger.info("Querying tasks")
                 davCollection.calendarQuery("VTODO", null, null, callback = callback)
@@ -155,10 +155,10 @@ class JtxSyncManager @AssistedInject constructor(
     override suspend fun downloadRemote(bunch: List<Url>) {
         logger.info("Downloading ${bunch.size} iCalendars: $bunch")
         // multiple iCalendars, use calendar-multi-get
-        SyncException.wrapWithRemoteResourceSuspending(collection.url) {
+        SyncException.wrapWithRemoteResource(collection.url) {
             davCollection.multiget(bunch) { response, _ ->
                 // See CalendarSyncManager for more information about the multi-get response
-                SyncException.wrapWithRemoteResourceSuspending(response.href) wrapResource@{
+                SyncException.wrapWithRemoteResource(response.href) wrapResource@{
                     if (!response.isSuccess()) {
                         logger.warning("Ignoring non-successful multi-get response for ${response.href}")
                         return@wrapResource
@@ -219,12 +219,12 @@ class JtxSyncManager @AssistedInject constructor(
 
         val local = localCollection.findByName(fileName)
         if (local != null) {
-            SyncException.wrapWithLocalResourceSuspending(local) {
-                logger.log(Level.INFO, "Updating $fileName in local jtx collection", component)
+            SyncException.wrapWithLocalResource(local) {
+                logger.info("Updating $fileName in local jtx collection: $component")
                 local.update(jtxEntityAndExceptions)
             }
         } else {
-            logger.log(Level.INFO, "Adding $fileName to local jtx collection", component)
+            logger.info("Adding $fileName to local jtx collection: $component")
             localCollection.add(jtxEntityAndExceptions)
         }
     }

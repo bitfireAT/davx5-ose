@@ -21,7 +21,6 @@ import at.bitfire.synctools.storage.calendar.AndroidCalendarProvider.Companion.C
 import at.bitfire.synctools.storage.calendar.EventsContract.asSyncAdapter
 import at.bitfire.synctools.storage.toContentValues
 import java.util.LinkedList
-import java.util.logging.Level
 import java.util.logging.Logger
 
 /**
@@ -49,7 +48,7 @@ class AndroidCalendarProvider(
      * @throws LocalStorageException when the content provider returns nothing or an error
      */
     fun createCalendar(values: ContentValues): Long {
-        logger.log(Level.FINE, "Creating local calendar", values)
+        logger.fine("Creating local calendar with $values")
 
         values.put(Calendars.ACCOUNT_NAME, account.name)
         values.put(Calendars.ACCOUNT_TYPE, account.type)
@@ -155,7 +154,7 @@ class AndroidCalendarProvider(
      * @throws LocalStorageException when the content provider returns an error
      */
     fun updateCalendar(id: Long, values: ContentValues, where: String? = null, whereArgs: Array<String>? = null): Int {
-        logger.log(Level.FINE, "Updating local calendar #$id", values)
+        logger.fine("Updating local calendar #$id with $values")
         try {
             return client.update(calendarUri(id), values, where, whereArgs)
         } catch (e: RemoteException) {

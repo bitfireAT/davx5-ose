@@ -16,7 +16,7 @@ import at.bitfire.synctools.storage.TaskProvider
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import kotlinx.coroutines.runBlocking
+import java.util.logging.Level
 
 /**
  * Sync logic for tasks in CalDAV collections ({@code VTODO}).
@@ -67,8 +67,16 @@ class TaskSyncer @AssistedInject constructor(
     override fun getDbSyncCollections(serviceId: Long): List<Collection> =
         collectionRepository.getSyncTaskLists(serviceId)
 
-    override fun syncCollection(provider: ContentProviderClient, localCollection: LocalTaskList, remoteCollection: Collection) {
-        logger.info("Synchronizing task list ${localCollection.dmfsTaskList.id} with database collection ID: ${localCollection.dbCollectionId}")
+    override suspend fun syncCollection(
+        provider: ContentProviderClient,
+        localCollection: LocalTaskList,
+        remoteCollection: Collection
+    ) {
+        logger.log(
+            Level.INFO,
+            "Synchronizing task list {0} with database collection ID: {1}",
+            arrayOf(localCollection.dmfsTaskList.id, localCollection.dbCollectionId)
+        )
 
         val syncManager = tasksSyncManagerFactory.tasksSyncManager(
             account,
@@ -78,9 +86,7 @@ class TaskSyncer @AssistedInject constructor(
             remoteCollection,
             resync
         )
-        runBlocking {
-            syncManager.performSync()
-        }
+        syncManager.performSync()
     }
 
 }

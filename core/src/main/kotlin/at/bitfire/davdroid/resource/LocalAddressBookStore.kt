@@ -28,7 +28,6 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
-import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
 
@@ -142,7 +141,7 @@ class LocalAddressBookStore @Inject constructor(
 
     override fun update(client: ContentProviderClient, localCollection: LocalAddressBook, fromCollection: Collection) {
         var currentAccount = localCollection.addressBookAccount
-        logger.log(Level.INFO, "Updating local address book $currentAccount from collection $fromCollection")
+        logger.info("Updating local address book $currentAccount from collection $fromCollection")
 
         // Update the account name
         val newAccountName = accountName(fromCollection)

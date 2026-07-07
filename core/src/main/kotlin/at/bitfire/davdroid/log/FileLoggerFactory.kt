@@ -39,7 +39,7 @@ object FileLoggerFactory {
     @MustBeClosed
     fun forFile(file: File): FileLoggerContext {
         val fileHandler = FileHandler(file.absolutePath, 1_000_000, 1, false).apply {
-            formatter = PlainTextFormatter.DEFAULT
+            formatter = PlainTextFormatter.FOR_FILE
         }
         val logger = Logger.getAnonymousLogger().apply {
             level = Level.ALL

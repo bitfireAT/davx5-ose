@@ -20,7 +20,7 @@ import javax.inject.Inject
 class DeleteDocumentOperation @Inject constructor(
     @ApplicationContext private val context: Context,
     private val db: AppDatabase,
-    private val httpClientBuilder: DavHttpClientBuilder,
+    private val davClientBuilder: DavHttpClientBuilder,
     private val logger: Logger
 ) {
 
@@ -31,7 +31,7 @@ class DeleteDocumentOperation @Inject constructor(
         val doc = documentDao.get(documentId.toLong()) ?: throw FileNotFoundException()
 
         try {
-            httpClientBuilder.buildKtor(doc.mountId).use { client ->
+            davClientBuilder.build(doc.mountId).use { client ->
                 val dav = DavResource(client, doc.toKtorUrl(db))
                 dav.delete {
                     // successfully deleted
