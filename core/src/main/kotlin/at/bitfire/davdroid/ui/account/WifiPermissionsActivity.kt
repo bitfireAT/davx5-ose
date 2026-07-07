@@ -15,6 +15,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.core.app.TaskStackBuilder
 import androidx.core.content.IntentCompat
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.ui.account.AccountSettingsActivity.Companion.editAccountSettingsActivityIntent
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -49,7 +50,7 @@ class WifiPermissionsActivity: AppCompatActivity() {
     override fun supportShouldUpRecreateTask(targetIntent: Intent) = true
 
     override fun onPrepareSupportNavigateUpTaskStack(builder: TaskStackBuilder) {
-        builder.editIntentAt(builder.intentCount - 1)?.putExtra(AccountSettingsActivity.EXTRA_ACCOUNT, account)
+        builder.editIntentAt(builder.intentCount - 1)?.editAccountSettingsActivityIntent(account)
     }
 
 }

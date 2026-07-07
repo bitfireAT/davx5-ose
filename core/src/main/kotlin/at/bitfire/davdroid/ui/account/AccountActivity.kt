@@ -49,8 +49,7 @@ class AccountActivity : AppCompatActivity() {
             AccountScreen(
                 account = account,
                 onAccountSettings = {
-                    val intent = Intent(this, AccountSettingsActivity::class.java)
-                    intent.putExtra(AccountSettingsActivity.EXTRA_ACCOUNT, account)
+                    val intent = AccountSettingsActivity.createIntent(this, account)
                     startActivity(intent, null)
                 },
                 onCreateAddressBook = {
