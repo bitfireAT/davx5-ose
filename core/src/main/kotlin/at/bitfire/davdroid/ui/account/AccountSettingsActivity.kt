@@ -45,8 +45,7 @@ class AccountSettingsActivity: AppCompatActivity() {
             AccountSettingsScreen(
                 account = account,
                 onNavWifiPermissionsScreen = {
-                    val intent = Intent(this, WifiPermissionsActivity::class.java)
-                    intent.putExtra(WifiPermissionsActivity.EXTRA_ACCOUNT, account)
+                    val intent = WifiPermissionsActivity.createIntent(this, account)
                     startActivity(intent)
                 },
                 onNavUp = ::onSupportNavigateUp,

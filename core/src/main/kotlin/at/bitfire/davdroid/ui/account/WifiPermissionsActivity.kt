@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.ui.account
 
 import android.accounts.Account
+import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -22,7 +23,13 @@ import dagger.hilt.android.AndroidEntryPoint
 class WifiPermissionsActivity: AppCompatActivity() {
 
     companion object {
-        const val EXTRA_ACCOUNT = "account"
+        private const val EXTRA_ACCOUNT = "account"
+        
+        fun createIntent(context: Context, account: Account): Intent {
+            return Intent(context, WifiPermissionsActivity::class.java).apply { 
+                putExtra(EXTRA_ACCOUNT, account)
+            }
+        }
     }
 
     private val account by lazy { IntentCompat.getParcelableExtra(intent, EXTRA_ACCOUNT, Account::class.java) ?: throw IllegalArgumentException("EXTRA_ACCOUNT must be set") }
