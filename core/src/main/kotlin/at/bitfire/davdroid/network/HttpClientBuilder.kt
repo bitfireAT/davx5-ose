@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.network
 
 import android.accounts.Account
+import androidx.annotation.VisibleForTesting
 import androidx.annotation.WorkerThread
 import at.bitfire.dav4jvm.ktor.UrlUtils
 import at.bitfire.dav4jvm.ktor.createDomainBasicAuthProvider
@@ -446,6 +447,7 @@ class HttpClientBuilder private constructor(
      * @return the new HttpClient (with the provided [engine]) which **must be closed by the caller**
      */
     @MustBeClosed
+    @VisibleForTesting
     internal fun <CE : HttpClientEngine> build(engine: CE): HttpClient =
         HttpClient(engine) {
             installPlugins()
