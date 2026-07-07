@@ -1,6 +1,7 @@
 /*
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  */
+
 package at.bitfire.davdroid.settings
 
 import android.accounts.Account
@@ -9,8 +10,8 @@ import android.content.Context
 import android.os.Looper
 import androidx.annotation.WorkerThread
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.settings.AccountSettings.Companion.CREDENTIALS_LOCK
-import at.bitfire.davdroid.settings.AccountSettings.Companion.CREDENTIALS_LOCK_AT_LOGIN_AND_SETTINGS
+import at.bitfire.davdroid.settings.AccountManagerSettingsStore.Companion.CREDENTIALS_LOCK
+import at.bitfire.davdroid.settings.AccountManagerSettingsStore.Companion.CREDENTIALS_LOCK_AT_LOGIN_AND_SETTINGS
 import at.bitfire.davdroid.settings.migration.AccountSettingsMigration
 import at.bitfire.davdroid.sync.AutomaticSyncManager
 import at.bitfire.davdroid.sync.SyncDataType
@@ -29,23 +30,7 @@ import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Provider
 
-/**
- * Manages settings of an account.
- *
- * **Must not be called from main thread as it uses blocking I/O and may run migrations.**
- *
- * @param account                   account to take settings from
- * @param abortOnMissingMigration   whether to throw an [IllegalArgumentException] when migrations are missing (useful for testing)
- *
- * @throws InvalidAccountException   on construction when the account doesn't exist (anymore)
- * @throws IllegalArgumentException  when the account is not a DAVx5 account or migrations are missing and [abortOnMissingMigration] is set
- */
-@WorkerThread
-@Deprecated(
-    "Use AccountManagerSettingsStore",
-    replaceWith = ReplaceWith("AccountManagerSettingsStore", "at.bitfire.davdroid.settings.AccountManagerSettingsStore")
-)
-class AccountSettings @AssistedInject constructor(
+class AccountManagerSettingsStore @AssistedInject constructor(
     @Assisted val account: Account,
     @Assisted val abortOnMissingMigration: Boolean,
     private val automaticSyncManager: AutomaticSyncManager,
@@ -53,7 +38,7 @@ class AccountSettings @AssistedInject constructor(
     private val logger: Logger,
     private val migrations: Map<Int, @JvmSuppressWildcards Provider<AccountSettingsMigration>>,
     private val settingsManager: SettingsManager
-) {
+) : AccountSettingsStore {
 
     @AssistedFactory
     interface Factory {
@@ -103,7 +88,7 @@ class AccountSettings @AssistedInject constructor(
 
     // authentication settings
 
-    fun credentials() = Credentials(
+    override fun credentials() = Credentials(
         accountManager.getUserData(account, KEY_USERNAME),
         accountManager.getPassword(account)?.toSensitiveString(),
 
@@ -114,7 +99,7 @@ class AccountSettings @AssistedInject constructor(
         }
     )
 
-    fun credentials(credentials: Credentials) {
+    override fun credentials(credentials: Credentials) {
         // Basic/Digest auth
         accountManager.setAndVerifyUserData(account, KEY_USERNAME, credentials.username)
         accountManager.setPassword(account, credentials.password?.asString())
@@ -128,7 +113,7 @@ class AccountSettings @AssistedInject constructor(
         }
     }
 
-    fun updateAuthState(authState: AuthState) {
+    override fun updateAuthState(authState: AuthState) {
         accountManager.setAndVerifyUserData(account, KEY_AUTH_STATE, authState.jsonSerializeString())
     }
 
@@ -150,7 +135,7 @@ class AccountSettings @AssistedInject constructor(
      * @param dataType  data type of desired sync interval
      * @return sync interval in seconds, or `null` if not set (not applicable or only manual sync)
      */
-    fun getSyncInterval(dataType: SyncDataType): Long? {
+    override fun getSyncInterval(dataType: SyncDataType): Long? {
         val key = when (dataType) {
             SyncDataType.CONTACTS -> KEY_SYNC_INTERVAL_ADDRESSBOOKS
             SyncDataType.EVENTS -> KEY_SYNC_INTERVAL_CALENDARS
@@ -170,7 +155,7 @@ class AccountSettings @AssistedInject constructor(
      * @param dataType              data type of the sync interval to set
      * @param seconds               sync interval in seconds; _null_ for no periodic sync
      */
-    fun setSyncInterval(dataType: SyncDataType, seconds: Long?) {
+    override fun setSyncInterval(dataType: SyncDataType, seconds: Long?) {
         val key = when (dataType) {
             SyncDataType.CONTACTS -> KEY_SYNC_INTERVAL_ADDRESSBOOKS
             SyncDataType.EVENTS -> KEY_SYNC_INTERVAL_CALENDARS
@@ -182,18 +167,18 @@ class AccountSettings @AssistedInject constructor(
         automaticSyncManager.updateAutomaticSync(account, dataType)
     }
 
-    fun getSyncWifiOnly() =
+    override fun getSyncWifiOnly() =
         if (settingsManager.containsKey(KEY_WIFI_ONLY))
             settingsManager.getBoolean(KEY_WIFI_ONLY)
         else
             accountManager.getUserData(account, KEY_WIFI_ONLY) != null
 
-    fun setSyncWiFiOnly(wiFiOnly: Boolean) {
+    override fun setSyncWiFiOnly(wiFiOnly: Boolean) {
         accountManager.setAndVerifyUserData(account, KEY_WIFI_ONLY, if (wiFiOnly) "1" else null)
         automaticSyncManager.updateAutomaticSync(account)
     }
 
-    fun getSyncWifiOnlySSIDs(): List<String>? =
+    override fun getSyncWifiOnlySSIDs(): List<String>? =
         if (getSyncWifiOnly()) {
             val strSsids = if (settingsManager.containsKey(KEY_WIFI_ONLY_SSIDS))
                 settingsManager.getString(KEY_WIFI_ONLY_SSIDS)
@@ -202,23 +187,23 @@ class AccountSettings @AssistedInject constructor(
             strSsids?.split(',')
         } else
             null
-    fun setSyncWifiOnlySSIDs(ssids: List<String>?) =
+    override fun setSyncWifiOnlySSIDs(ssids: List<String>?) =
         accountManager.setAndVerifyUserData(account, KEY_WIFI_ONLY_SSIDS, ssids?.joinToString(",").trimToNull())
 
-    fun getIgnoreVpns(): Boolean =
+    override fun getIgnoreVpns(): Boolean =
         when (accountManager.getUserData(account, KEY_IGNORE_VPNS)) {
             null -> settingsManager.getBoolean(KEY_IGNORE_VPNS)
             "0" -> false
             else -> true
         }
 
-    fun setIgnoreVpns(ignoreVpns: Boolean) =
+    override fun setIgnoreVpns(ignoreVpns: Boolean) =
         accountManager.setAndVerifyUserData(account, KEY_IGNORE_VPNS, if (ignoreVpns) "1" else "0")
 
 
     // CalDAV settings
 
-    fun getTimeRangePastDays(): Int? {
+    override fun getTimeRangePastDays(): Int? {
         val strDays = accountManager.getUserData(account, KEY_TIME_RANGE_PAST_DAYS)
         return if (strDays != null) {
             val days = strDays.toInt()
@@ -230,7 +215,7 @@ class AccountSettings @AssistedInject constructor(
             DEFAULT_TIME_RANGE_PAST_DAYS
     }
 
-    fun setTimeRangePastDays(days: Int?) =
+    override fun setTimeRangePastDays(days: Int?) =
         accountManager.setAndVerifyUserData(account, KEY_TIME_RANGE_PAST_DAYS, (days ?: -1).toString())
 
     /**
@@ -242,7 +227,7 @@ class AccountSettings @AssistedInject constructor(
      * @return A default reminder shall be created this number of minutes before the start of every
      * non-full-day event without reminder. *null*: No default reminders shall be created.
      */
-    fun getDefaultAlarm() =
+    override fun getDefaultAlarm() =
         accountManager.getUserData(account, KEY_DEFAULT_ALARM)?.toInt() ?:
         settingsManager.getIntOrNull(KEY_DEFAULT_ALARM)?.takeIf { it != -1 }
 
@@ -255,34 +240,34 @@ class AccountSettings @AssistedInject constructor(
      * @param minBefore The number of minutes a default reminder shall be created before the
      * start of every non-full-day event without reminder. *null*: No default reminders shall be created.
      */
-    fun setDefaultAlarm(minBefore: Int?) =
+    override fun setDefaultAlarm(minBefore: Int?) =
         accountManager.setAndVerifyUserData(account, KEY_DEFAULT_ALARM,
-                if (minBefore == settingsManager.getIntOrNull(KEY_DEFAULT_ALARM)?.takeIf { it != -1 })
-                    null
-                else
-                    minBefore?.toString())
+            if (minBefore == settingsManager.getIntOrNull(KEY_DEFAULT_ALARM)?.takeIf { it != -1 })
+                null
+            else
+                minBefore?.toString())
 
-    fun getManageCalendarColors() =
+    override fun getManageCalendarColors() =
         if (settingsManager.containsKey(KEY_MANAGE_CALENDAR_COLORS))
             settingsManager.getBoolean(KEY_MANAGE_CALENDAR_COLORS)
         else
             accountManager.getUserData(account, KEY_MANAGE_CALENDAR_COLORS) == null
-    fun setManageCalendarColors(manage: Boolean) =
-            accountManager.setAndVerifyUserData(account, KEY_MANAGE_CALENDAR_COLORS, if (manage) null else "0")
+    override fun setManageCalendarColors(manage: Boolean) =
+        accountManager.setAndVerifyUserData(account, KEY_MANAGE_CALENDAR_COLORS, if (manage) null else "0")
 
-    fun getEventColors() =
+    override fun getEventColors() =
         if (settingsManager.containsKey(KEY_EVENT_COLORS))
             settingsManager.getBoolean(KEY_EVENT_COLORS)
         else
             accountManager.getUserData(account, KEY_EVENT_COLORS) != null
-    fun setEventColors(useColors: Boolean) =
-            accountManager.setAndVerifyUserData(account, KEY_EVENT_COLORS, if (useColors) "1" else null)
+    override fun setEventColors(useColors: Boolean) =
+        accountManager.setAndVerifyUserData(account, KEY_EVENT_COLORS, if (useColors) "1" else null)
 
     // CardDAV settings
 
-    fun getGroupMethod(): GroupMethod {
+    override fun getGroupMethod(): GroupMethod {
         val name = settingsManager.getString(KEY_CONTACT_GROUP_METHOD) ?:
-                accountManager.getUserData(account, KEY_CONTACT_GROUP_METHOD)
+        accountManager.getUserData(account, KEY_CONTACT_GROUP_METHOD)
         if (name != null)
             try {
                 return GroupMethod.valueOf(name)
@@ -292,7 +277,7 @@ class AccountSettings @AssistedInject constructor(
         return GroupMethod.GROUP_VCARDS
     }
 
-    fun setGroupMethod(method: GroupMethod) {
+    override fun setGroupMethod(method: GroupMethod) {
         accountManager.setAndVerifyUserData(account, KEY_CONTACT_GROUP_METHOD, method.name)
     }
 
@@ -304,7 +289,7 @@ class AccountSettings @AssistedInject constructor(
      *
      * @return *true* if only personal collections shall be shown; *false* otherwise
      */
-    fun getShowOnlyPersonal(): Boolean = when (settingsManager.getIntOrNull(KEY_SHOW_ONLY_PERSONAL)) {
+    override fun getShowOnlyPersonal(): Boolean = when (settingsManager.getIntOrNull(KEY_SHOW_ONLY_PERSONAL)) {
         0 -> false
         1 -> true
         else /* including -1 */ -> accountManager.getUserData(account, KEY_SHOW_ONLY_PERSONAL) != null
@@ -315,12 +300,12 @@ class AccountSettings @AssistedInject constructor(
      *
      * @return *true* if the setting is locked; *false* otherwise
      */
-    fun getShowOnlyPersonalLocked(): Boolean = when (settingsManager.getIntOrNull(KEY_SHOW_ONLY_PERSONAL)) {
+    override fun getShowOnlyPersonalLocked(): Boolean = when (settingsManager.getIntOrNull(KEY_SHOW_ONLY_PERSONAL)) {
         0, 1 -> true
         else /* including -1 */ -> false
     }
 
-    fun setShowOnlyPersonal(showOnlyPersonal: Boolean) {
+    override fun setShowOnlyPersonal(showOnlyPersonal: Boolean) {
         accountManager.setAndVerifyUserData(account, KEY_SHOW_ONLY_PERSONAL, if (showOnlyPersonal) "1" else null)
     }
 
