@@ -278,7 +278,6 @@ class HttpClientBuilderTest {
     fun assertCookiesValues(headers: Headers, vararg cookies: Pair<String, String>) {
         val cookieHeader = headers[HttpHeaders.Cookie] ?: return
         val values = cookieHeader.split(';').map { it.split('=', limit = 2) }
-        println("values=$values")
         for ((name, value) in cookies) {
             val cookieValue = values.find { it[0].trim() == name }?.get(1)?.trim()
             assertEquals(value, cookieValue)
