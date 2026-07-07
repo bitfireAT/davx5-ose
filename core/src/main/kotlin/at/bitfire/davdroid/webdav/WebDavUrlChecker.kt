@@ -43,8 +43,8 @@ class WebDavUrlChecker @Inject constructor(
      * Performs the actual WebDAV OPTIONS check using a pre-built [httpClient].
      * Separated from [getWebDavUrl] to allow tests to inject a `MockEngine`.
      */
-    @VisibleForTesting
-    suspend fun checkWebDavUrl(httpClient: HttpClient, url: Url): Url? {
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    internal suspend fun checkWebDavUrl(httpClient: HttpClient, url: Url): Url? {
         val validVersions = arrayOf("1", "2", "3")
         var webdavUrl: Url? = null
         val dav = DavResource(httpClient, url)
