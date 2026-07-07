@@ -76,22 +76,23 @@ class ResourceRetrieverTest {
 
     @Test
     fun testRetrieve_ExternalDomain() = runTest {
-        val engine = MockEngine.basic("TEST")
-        // fromAccount() restricts authentication to the given domain; build the test client the
-        // same way production code does so that restriction is actually exercised.
-        val httpClient = httpClientBuilder
-            .fromAccount(account, authDomain = "example.com")
-            .build(engine)
+        MockEngine.basic("TEST").use { engine ->
+            // fromAccount() restricts authentication to the given domain; build the test client the
+            // same way production code does so that restriction is actually exercised.
+            val httpClient = httpClientBuilder
+                .fromAccount(account, authDomain = "example.com")
+                .build(engine)
 
-        val result = resourceRetrieverFactory.create(account, "example.com").use {
-            // Request to a different domain than the account's — auth must not be sent
-            it.retrieve("https://other-domain.example.net/photo.jpg", httpClient)
+            val result = resourceRetrieverFactory.create(account, "example.com").use {
+                // Request to a different domain than the account's — auth must not be sent
+                it.retrieve("https://other-domain.example.net/photo.jpg", httpClient)
+            }
+
+            val sentAuth = engine.requestHistory.first().headers[HttpHeaders.Authorization]
+            assertNull(sentAuth)
+
+            assertArrayEquals("TEST".toByteArray(), result)
         }
-
-        val sentAuth = engine.requestHistory.first().headers[HttpHeaders.Authorization]
-        assertNull(sentAuth)
-
-        assertArrayEquals("TEST".toByteArray(), result)
     }
 
     @Test
@@ -112,19 +113,20 @@ class ResourceRetrieverTest {
 
     @Test
     fun testRetrieve_SameDomain() = runTest {
-        val engine = MockEngine.basic("TEST")
-        val httpClient = httpClientBuilder
-            .fromAccount(account, authDomain = "example.com")
-            .build(engine)
+        MockEngine.basic("TEST").use { engine ->
+            val httpClient = httpClientBuilder
+                .fromAccount(account, authDomain = "example.com")
+                .build(engine)
 
-        val result = resourceRetrieverFactory.create(account, "example.com").use {
-            it.retrieve("https://example.com/photo.jpg", httpClient)
+            val result = resourceRetrieverFactory.create(account, "example.com").use {
+                it.retrieve("https://example.com/photo.jpg", httpClient)
+            }
+
+            val sentAuth = engine.requestHistory.first().headers[HttpHeaders.Authorization]
+            assertEquals("Basic dGVzdDp0ZXN0", sentAuth)
+
+            assertArrayEquals("TEST".toByteArray(), result)
         }
-
-        val sentAuth = engine.requestHistory.first().headers[HttpHeaders.Authorization]
-        assertEquals("Basic dGVzdDp0ZXN0", sentAuth)
-
-        assertArrayEquals("TEST".toByteArray(), result)
     }
 
 }
