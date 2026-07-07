@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.sync
 
 import android.accounts.Account
+import at.bitfire.davdroid.MockEngineUtils.basic
 import at.bitfire.davdroid.network.HttpClientBuilder
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Credentials
@@ -13,9 +14,7 @@ import at.bitfire.synctools.util.SensitiveString.Companion.toSensitiveString
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.ktor.client.engine.mock.MockEngine
-import io.ktor.client.engine.mock.respond
 import io.ktor.http.HttpHeaders
-import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertArrayEquals
@@ -25,7 +24,6 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import javax.inject.Inject
-import javax.inject.Provider
 
 @HiltAndroidTest
 class ResourceRetrieverTest {
@@ -40,7 +38,7 @@ class ResourceRetrieverTest {
     lateinit var resourceRetrieverFactory: ResourceRetriever.Factory
 
     @Inject
-    lateinit var httpClientBuilder: Provider<HttpClientBuilder>
+    lateinit var httpClientBuilder: HttpClientBuilder
 
     lateinit var account: Account
 
@@ -76,10 +74,10 @@ class ResourceRetrieverTest {
 
     @Test
     fun testRetrieve_ExternalDomain() = runTest {
-        val engine = MockEngine { respond("TEST", HttpStatusCode.OK) }
+        val engine = MockEngine.basic("TEST")
         // fromAccount() restricts authentication to the given domain; build the test client the
         // same way production code does so that restriction is actually exercised.
-        val httpClient = httpClientBuilder.get()
+        val httpClient = httpClientBuilder
             .fromAccount(account, authDomain = "example.com")
             .build(engine)
 
@@ -113,8 +111,8 @@ class ResourceRetrieverTest {
 
     @Test
     fun testRetrieve_SameDomain() = runTest {
-        val engine = MockEngine { respond("TEST", HttpStatusCode.OK) }
-        val httpClient = httpClientBuilder.get()
+        val engine = MockEngine.basic("TEST")
+        val httpClient = httpClientBuilder
             .fromAccount(account, authDomain = "example.com")
             .build(engine)
 

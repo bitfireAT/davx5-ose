@@ -4,6 +4,9 @@
 
 package at.bitfire.davdroid.network
 
+import at.bitfire.davdroid.MockEngineQueue
+import at.bitfire.davdroid.MockEngineUtils.Default
+import at.bitfire.davdroid.MockEngineUtils.basic
 import at.bitfire.davdroid.ProductIds
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
@@ -72,7 +75,7 @@ class HttpClientBuilderTest {
 
     @Test
     fun testBuild_CreatesWorkingClient() = runTest {
-        val engine = MockEngine { respond("Some Content", HttpStatusCode.OK) }
+        val engine = MockEngine.basic("Some Content")
 
         httpClientBuilder.build(engine).use { client ->
             val response = client.get("https://example.com/")
@@ -127,46 +130,43 @@ class HttpClientBuilderTest {
     fun testCookies() = runTest {
         val url = "https://example.com/test"
 
-        var callCount = 0
-        val engine = MockEngine {
-            when (++callCount) {
-                1 -> respond(
-                    "Cookie set", HttpStatusCode.OK,
-                    headers {
-                        cookie(Cookie("cookie1", "1", path = "/"))
-                        cookie(Cookie("cookie2", "2"))
-                    }
-                )
-                2 -> respond(
-                    "", HttpStatusCode.OK,
-                    headers {
-                        cookie(Cookie("cookie1", "1a", path = "/", maxAge = 0))
-                        cookie(Cookie("cookie2", "2a"))
-                    }
-                )
-                else -> respond("", HttpStatusCode.OK)
-            }
-        }
+        val queue = MockEngineQueue()
+            // Enqueue a blank default response
+            .enqueue()
+            // Enqueue a "cookie send" request
+            .enqueue(
+                headers = headers {
+                    cookie(Cookie("cookie1", "1", path = "/"))
+                    cookie(Cookie("cookie2", "2"))
+                }
+            )
+            // Equeue an expired cookie send request
+            .enqueue(
+                headers = headers {
+                    cookie(Cookie("cookie1", "1a", path = "/", maxAge = 0))
+                    cookie(Cookie("cookie2", "2a"))
+                }
+            )
 
-        httpClientBuilder.build(engine).use { client ->
+        httpClientBuilder.build(queue.engine).use { client ->
             // Cookies are handled by Ktor's HttpCookies plugin (AcceptAllCookiesStorage),
             // so they're stored/sent by the Ktor client.
             client.get(url)
-            assertNull(engine.requestHistory[0].headers[HttpHeaders.Cookie])
+            assertNull(queue.engine.requestHistory[0].headers[HttpHeaders.Cookie])
 
             // cookie should be sent with second request
             client.get(url)
-            assertCookiesValues(engine.requestHistory[1].headers, "cookie1" to "1", "cookie2" to "2")
+            assertCookiesValues(queue.engine.requestHistory[1].headers, "cookie1" to "1", "cookie2" to "2")
 
             // second response let first cookie expire and overwrote second cookie
             client.get(url)
-            assertCookiesValues(engine.requestHistory[2].headers, "cookie2" to "2a")
+            assertCookiesValues(queue.engine.requestHistory[2].headers, "cookie2" to "2a")
         }
     }
 
     @Test
     fun testDefaultRequest_SetsUserAgentAndAcceptLanguage() = runTest {
-        val engine = MockEngine { respond("", HttpStatusCode.OK) }
+        val engine = MockEngine.Default
 
         val origLocale = Locale.getDefault()
         try {
@@ -245,9 +245,7 @@ class HttpClientBuilderTest {
             addHandler(captureHandler)
         }
 
-        val engine = MockEngine {
-            respond("OK", HttpStatusCode.OK, headersOf(HttpHeaders.SetCookie, "session=secret-cookie-value"))
-        }
+        val engine = MockEngine.basic(headers = headersOf(HttpHeaders.SetCookie, "session=secret-cookie-value"))
 
         httpClientBuilder
             .logTo(logger)

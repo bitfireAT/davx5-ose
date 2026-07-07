@@ -15,7 +15,7 @@ import io.ktor.http.HttpStatusCode
  *
  * Enqueue responses with [enqueue]; each response is consumed in order when the engine
  * receives a request. Access [engine] to pass to [io.ktor.client.HttpClient].
- * Inspect [engine.requestHistory] to verify the requests that were received.
+ * Inspect [engine]'s [MockEngine.requestHistory] to verify the requests that were received.
  */
 class MockEngineQueue {
 
@@ -29,16 +29,17 @@ class MockEngineQueue {
 
     /** Schedules the next HTTP response to return. Responses are consumed in FIFO order. */
     fun enqueue(
-        status: HttpStatusCode,
+        status: HttpStatusCode = HttpStatusCode.OK,
         body: String = "",
         headers: Headers = Headers.Empty
-    ) {
+    ): MockEngineQueue {
         queue.addLast(Response(status, body, headers))
+        return this
     }
 
     val engine: MockEngine = MockEngine { request ->
         val response = queue.removeFirstOrNull()
-            ?: error("MockEngineQueue: unexpected request to ${request.url} — queue is empty")
+            ?: error("MockEngineQueue: unexpected request to ${request.url} - queue is empty")
         respond(response.body, response.status, response.headers)
     }
 }
