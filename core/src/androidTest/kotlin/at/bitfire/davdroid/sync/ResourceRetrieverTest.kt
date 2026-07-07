@@ -115,7 +115,6 @@ class ResourceRetrieverTest {
         val downloader = resourceRetrieverFactory.create(account, "example.com")
         val result = downloader.retrieve("https://example.com/photo.jpg", httpClient)
 
-        // TODO: currently fails for the same reason as testRetrieve_ExternalDomain — see the TODO there.
         val sentAuth = engine.requestHistory.first().headers[HttpHeaders.Authorization]
         assertEquals("Basic dGVzdDp0ZXN0", sentAuth)
 
