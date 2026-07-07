@@ -116,11 +116,7 @@ class SyncNotificationManager @AssistedInject constructor(
     ) = notificationRegistry.notifyIfPossible(NotificationRegistry.NOTIFY_SYNC_ERROR, tag = notificationTag) {
         val contentIntent: Intent
         if (e is UnauthorizedException) {
-            contentIntent = Intent(context, AccountSettingsActivity::class.java)
-            contentIntent.putExtra(
-                AccountSettingsActivity.EXTRA_ACCOUNT,
-                account
-            )
+            contentIntent = AccountSettingsActivity.createIntent(context, account)
         } else {
             contentIntent = buildDebugInfoIntent(syncDataType, e, local, remote)
         }
