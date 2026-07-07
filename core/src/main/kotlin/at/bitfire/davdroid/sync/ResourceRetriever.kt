@@ -70,7 +70,7 @@ class ResourceRetriever @AssistedInject constructor(
      * Authentication is handled as described in [ResourceRetriever].
      *
      * @param url        URL of the resource to download (`http`, `https` or `data` scheme)
-     * @param httpClient The HTTP Client to use to make the download. Will be closed when done.
+     * @param httpClient The HTTP Client to use to make the download.
      *
      * @return blob of requested resource, or `null` on error or when the URL scheme is not supported
      */
