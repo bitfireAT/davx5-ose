@@ -11,6 +11,7 @@ import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.TaskStackBuilder
 import androidx.core.content.IntentCompat
+import at.bitfire.davdroid.ui.account.AccountActivity.Companion.editAccountActivityIntent
 import at.bitfire.davdroid.ui.composable.AppTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -43,7 +44,7 @@ class CreateCalendarActivity: AppCompatActivity() {
     override fun supportShouldUpRecreateTask(targetIntent: Intent) = true
 
     override fun onPrepareSupportNavigateUpTaskStack(builder: TaskStackBuilder) {
-        builder.editIntentAt(builder.intentCount - 1)?.putExtra(AccountActivity.EXTRA_ACCOUNT, account)
+        builder.editIntentAt(builder.intentCount - 1)?.editAccountActivityIntent(account)
     }
 
 }

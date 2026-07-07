@@ -6,6 +6,7 @@ package at.bitfire.davdroid.ui.account
 
 import AccountScreen
 import android.accounts.Account
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
@@ -75,7 +76,17 @@ class AccountActivity : AppCompatActivity() {
     }
 
     companion object {
-        const val EXTRA_ACCOUNT = "account"
+        private const val EXTRA_ACCOUNT = "account"
+        
+        fun createIntent(context: Context, account: Account): Intent {
+            return Intent(context, AccountActivity::class.java).apply { 
+                putExtra(EXTRA_ACCOUNT, account)
+            }
+        }
+        
+        fun Intent.editAccountActivityIntent(account: Account) {
+            putExtra(EXTRA_ACCOUNT, account)
+        }
     }
 
 }
