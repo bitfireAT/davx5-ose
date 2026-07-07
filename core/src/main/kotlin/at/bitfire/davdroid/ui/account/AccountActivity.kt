@@ -53,8 +53,7 @@ class AccountActivity : AppCompatActivity() {
                     startActivity(intent, null)
                 },
                 onCreateAddressBook = {
-                    val intent = Intent(this, CreateAddressBookActivity::class.java)
-                    intent.putExtra(CreateAddressBookActivity.EXTRA_ACCOUNT, account)
+                    val intent = CreateAddressBookActivity.createIntent(this, account)
                     startActivity(intent)
                 },
                 onCreateCalendar = {
