@@ -17,6 +17,7 @@ import io.ktor.client.statement.bodyAsBytes
 import io.ktor.http.isSuccess
 import java.util.logging.Level
 import java.util.logging.Logger
+import javax.annotation.WillClose
 
 /**
  * Downloads a separate resource that is referenced during synchronization, for instance in
@@ -33,7 +34,7 @@ import java.util.logging.Logger
 class ResourceRetriever @AssistedInject constructor(
     @Assisted private val account: Account,
     @Assisted private val originalHost: String,
-    httpClientBuilder: HttpClientBuilder,
+    private val httpClientBuilder: HttpClientBuilder,
     private val logger: Logger
 ) {
 
@@ -42,7 +43,7 @@ class ResourceRetriever @AssistedInject constructor(
         fun create(account: Account, originalHost: String): ResourceRetriever
     }
 
-    private val httpClient = httpClientBuilder
+    private val httpClient get() = httpClientBuilder
         .fromAccount(account, authDomain = originalHost)
         .followRedirects(true)
         .build()
@@ -53,11 +54,12 @@ class ResourceRetriever @AssistedInject constructor(
      *
      * Authentication is handled as described in [ResourceRetriever].
      *
-     * @param url       URL of the resource to download (`http`, `https` or `data` scheme)
+     * @param url        URL of the resource to download (`http`, `https` or `data` scheme)
+     * @param httpClient The HTTP Client to use to make the download. Will be closed when done.
      *
      * @return blob of requested resource, or `null` on error or when the URL scheme is not supported
      */
-    suspend fun retrieve(url: String, httpClient: HttpClient = this.httpClient): ByteArray? =
+    suspend fun retrieve(url: String, @WillClose httpClient: HttpClient = this.httpClient): ByteArray? =
         try {
             when (url.toURIorNull()?.scheme?.lowercase()) {
                 "data" ->
@@ -79,6 +81,8 @@ class ResourceRetriever @AssistedInject constructor(
         } catch (e: Exception) {
             logger.log(Level.SEVERE, "Couldn't retrieve resource", e)
             null
+        } finally {
+            httpClient.close()
         }
 
 }
