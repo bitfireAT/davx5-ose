@@ -138,7 +138,7 @@ class HttpClientBuilderTest {
                     cookie(Cookie("cookie2", "2"))
                 }
             )
-            // Equeue an expired cookie send request
+            // Enqueue an expired cookie send request
             .enqueue(
                 headers = headers {
                     cookie(Cookie("cookie1", "1a", path = "/", maxAge = 0))
@@ -276,10 +276,11 @@ class HttpClientBuilderTest {
      * Makes sure all the cookies in [cookies] are present in the [headers] with the expected values.
      */
     fun assertCookiesValues(headers: Headers, vararg cookies: Pair<String, String>) {
-        val cookieHeader = headers[HttpHeaders.Cookie] ?: return
-        val values = cookieHeader.split(';').map { it.split('=', limit = 2) }
+        val cookieHeader = headers[HttpHeaders.Cookie]
+        assertTrue("Expected Cookie header to be present", cookieHeader != null)
+        val values = cookieHeader!!.split(';').map { it.split('=', limit = 2) }
         for ((name, value) in cookies) {
-            val cookieValue = values.find { it[0].trim() == name }?.get(1)?.trim()
+            val cookieValue = values.find { it[0].trim() == name }?.getOrNull(1)?.trim()
             assertEquals(value, cookieValue)
         }
     }
