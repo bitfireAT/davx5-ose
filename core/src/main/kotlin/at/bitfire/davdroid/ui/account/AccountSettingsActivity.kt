@@ -12,6 +12,8 @@ import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.TaskStackBuilder
 import androidx.core.content.IntentCompat
+import at.bitfire.davdroid.settings.AccountManagerSettingsStore
+import at.bitfire.davdroid.settings.AccountSettingsStore
 import at.bitfire.davdroid.ui.account.AccountActivity.Companion.editAccountActivityIntent
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -20,6 +22,15 @@ class AccountSettingsActivity: AppCompatActivity() {
 
     companion object {
         private const val EXTRA_ACCOUNT = "account"
+
+        fun createIntent(context: Context, accountSettingsStore: AccountSettingsStore): Intent {
+            val account = when(accountSettingsStore) {
+                is AccountManagerSettingsStore -> accountSettingsStore.account
+                else -> throw UnsupportedOperationException("AccountSettingsStore type ${accountSettingsStore::class.java.simpleName} is not supported")
+            }
+
+            return createIntent(context, account)
+        }
         
         fun createIntent(context: Context, account: Account): Intent {
             return Intent(context, AccountSettingsActivity::class.java).apply { 

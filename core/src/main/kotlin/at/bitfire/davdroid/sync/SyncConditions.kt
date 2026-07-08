@@ -51,7 +51,7 @@ class SyncConditions @AssistedInject constructor(
             // check required permissions and location status
             if (!PermissionUtils.canAccessWifiSsid(context)) {
                 // not all permissions granted; show notification
-                val intent = WifiPermissionsActivity.createIntent(context, accountSettings.account)
+                val intent = WifiPermissionsActivity.createIntent(context, accountSettings)
                     .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 notificationRegistry.notifyPermissions(intent)
 
