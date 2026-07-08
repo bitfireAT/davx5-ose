@@ -20,7 +20,8 @@ import at.bitfire.dav4jvm.property.webdav.WebDAV
 import at.bitfire.davdroid.ProductIds
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
-import at.bitfire.davdroid.di.qualifier.SyncDispatcher
+import at.bitfire.davdroid.di.qualifier.IoDispatcher
+import at.bitfire.davdroid.di.qualifier.SyncTransferSemaphore
 import at.bitfire.davdroid.resource.LocalJtxCollection
 import at.bitfire.davdroid.resource.LocalJtxObject
 import at.bitfire.davdroid.resource.LocalResource
@@ -41,6 +42,7 @@ import io.ktor.client.HttpClient
 import io.ktor.http.Url
 import io.ktor.http.content.TextContent
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.sync.Semaphore
 import net.fortuna.ical4j.model.Component
 import net.fortuna.ical4j.model.component.CalendarComponent
 import net.fortuna.ical4j.model.property.ProdId
@@ -56,8 +58,9 @@ class JtxSyncManager @AssistedInject constructor(
     @Assisted localCollection: LocalJtxCollection,
     @Assisted collection: Collection,
     @Assisted resync: ResyncType?,
+    @IoDispatcher ioDispatcher: CoroutineDispatcher,
     private val productIds: ProductIds,
-    @SyncDispatcher syncDispatcher: CoroutineDispatcher
+    @SyncTransferSemaphore syncTransferSemaphore: Semaphore
 ): SyncManager<LocalJtxObject, LocalJtxCollection, DavCalendar>(
     account,
     httpClient,
@@ -66,7 +69,8 @@ class JtxSyncManager @AssistedInject constructor(
     localCollection,
     collection,
     resync,
-    syncDispatcher
+    ioDispatcher,
+    syncTransferSemaphore
 ) {
 
     @AssistedFactory

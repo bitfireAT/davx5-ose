@@ -11,7 +11,8 @@ import at.bitfire.dav4jvm.ktor.Response
 import at.bitfire.dav4jvm.property.caldav.CalDAV
 import at.bitfire.dav4jvm.property.caldav.GetCTag
 import at.bitfire.davdroid.db.Collection
-import at.bitfire.davdroid.di.qualifier.SyncDispatcher
+import at.bitfire.davdroid.di.qualifier.IoDispatcher
+import at.bitfire.davdroid.di.qualifier.SyncTransferSemaphore
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.resource.SyncState
 import at.bitfire.davdroid.util.DavUtils.lastSegment
@@ -22,6 +23,7 @@ import io.ktor.client.HttpClient
 import io.ktor.http.Url
 import io.ktor.http.content.ByteArrayContent
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.sync.Semaphore
 import org.junit.Assert.assertEquals
 
 class TestSyncManager @AssistedInject constructor(
@@ -30,7 +32,8 @@ class TestSyncManager @AssistedInject constructor(
     @Assisted syncResult: SyncResult,
     @Assisted localCollection: LocalTestCollection,
     @Assisted collection: Collection,
-    @SyncDispatcher syncDispatcher: CoroutineDispatcher
+    @IoDispatcher ioDispatcher: CoroutineDispatcher,
+    @SyncTransferSemaphore syncTransferSemaphore: Semaphore
 ): SyncManager<LocalTestResource, LocalTestCollection, DavCollection>(
     account,
     httpClient,
@@ -39,7 +42,8 @@ class TestSyncManager @AssistedInject constructor(
     localCollection,
     collection,
     resync = null,
-    syncDispatcher
+    ioDispatcher,
+    syncTransferSemaphore
 ) {
 
     @AssistedFactory

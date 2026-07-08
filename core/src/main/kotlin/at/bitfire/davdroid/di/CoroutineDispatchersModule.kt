@@ -7,13 +7,14 @@ package at.bitfire.davdroid.di
 import at.bitfire.davdroid.di.qualifier.DefaultDispatcher
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.di.qualifier.MainDispatcher
-import at.bitfire.davdroid.di.qualifier.SyncDispatcher
+import at.bitfire.davdroid.di.qualifier.SyncTransferSemaphore
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.sync.Semaphore
 import javax.inject.Singleton
 
 @Module
@@ -33,19 +34,15 @@ class CoroutineDispatchersModule {
     fun mainDispatcher(): CoroutineDispatcher = Dispatchers.Main
 
     /**
-     * A dispatcher for background sync operations. They're not run on [ioDispatcher] because there can
-     * be many long-blocking operations at the same time which should never block other I/O operations
-     * like database access for the UI.
-     *
-     * It uses the I/O dispatcher and limits the number of parallel operations to the number of available processors.
-     *
-     * **Never use the syncDispatcher outside the SyncManager because this can cause deadlocks!**
-     * For instance don't use it for sync-related I/O.
+     * Limits how many sync uploads/downloads may run at the same time, app-wide, so that a sync
+     * of a huge collection doesn't open an unbounded number of concurrent HTTP requests / local
+     * storage writes. Only meant to be acquired around the actual network transfer of a resource
+     * (upload or download) — not around unrelated sync work like listing or local lookups, so
+     * that a slow/blocking transfer can't starve unrelated sync operations.
      */
     @Provides
-    @SyncDispatcher
+    @SyncTransferSemaphore
     @Singleton
-    fun syncDispatcher(): CoroutineDispatcher =
-        Dispatchers.IO.limitedParallelism(Runtime.getRuntime().availableProcessors())
+    fun syncTransferSemaphore(): Semaphore = Semaphore(Runtime.getRuntime().availableProcessors())
 
 }

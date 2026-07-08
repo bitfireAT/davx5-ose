@@ -56,13 +56,14 @@ import io.ktor.util.appendAll
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.sync.withPermit
 import kotlinx.coroutines.withContext
 import java.io.IOException
 import java.security.cert.CertificateException
-import java.util.LinkedList
 import java.util.Optional
 import java.util.concurrent.CancellationException
-import java.util.concurrent.LinkedBlockingQueue
+import java.util.concurrent.atomic.AtomicInteger
 import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
@@ -91,7 +92,8 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
     val localCollection: CollectionType,
     val collection: Collection,
     val resync: ResyncType?,
-    val syncDispatcher: CoroutineDispatcher
+    val ioDispatcher: CoroutineDispatcher,
+    val syncTransferSemaphore: Semaphore
 ) {
 
     enum class SyncAlgorithm {
@@ -140,7 +142,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
         } ?: emptyMap()
     }
 
-    suspend fun performSync() = withContext(syncDispatcher) {
+    suspend fun performSync() = withContext(ioDispatcher) {
         // dismiss previous error notifications
         syncNotificationManager.dismissCollectionError(localCollectionTag = localCollection.tag)
 
@@ -374,17 +376,22 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
      *
      * @return whether local resources have been processed so that a synchronization is always necessary
      */
-    protected open suspend fun uploadDirty(): Boolean {
-        var numUploaded = 0
+    protected open suspend fun uploadDirty(): Boolean = coroutineScope {    // structured concurrency
+        val numUploaded = AtomicInteger(0)
 
         localCollection.findDirty().collect { local ->
-            SyncException.wrapWithLocalResource(local) {
-                uploadDirty(local)
-                numUploaded++
+            launch {
+                syncTransferSemaphore.withPermit {
+                    SyncException.wrapWithLocalResource(local) {
+                        uploadDirty(local)
+                        numUploaded.incrementAndGet()
+                    }
+                }
             }
         }
-        logger.info("Sent $numUploaded record(s) to server")
-        return numUploaded > 0
+
+        logger.info("Sent ${numUploaded.get()} record(s) to server")
+        numUploaded.get() > 0
     }
 
     /**
@@ -590,19 +597,10 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
      * @param listRemote function to list remote resources (for instance, all since a certain sync-token)
      */
     protected open suspend fun syncRemote(listRemote: suspend (MultiResponseCallback) -> Unit) = coroutineScope {    // structured concurrency
-        // download queue
-        val toDownload = LinkedBlockingQueue<Url>()
-        fun download(url: Url?) {
-            if (url != null)
-                toDownload += url
-
-            if (toDownload.size >= MAX_MULTIGET_RESOURCES || url == null) {
-                while (toDownload.isNotEmpty()) {
-                    val bunch = LinkedList<Url>()
-                    toDownload.drainTo(bunch, MAX_MULTIGET_RESOURCES)
-                    launch {
-                        downloadRemote(bunch)
-                    }
+        val batchDownloader = BatchDownloader(batchSize = MAX_MULTIGET_RESOURCES) { bunch ->
+            launch {
+                syncTransferSemaphore.withPermit {
+                    downloadRemote(bunch)
                 }
             }
         }
@@ -627,7 +625,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
                         SyncException.wrapWithLocalResource(local) {
                             if (local == null) {
                                 logger.info("$name has been added remotely, queueing download")
-                                download(response.href)
+                                batchDownloader += response.href
                             } else {
                                 val localETag = local.eTag
                                 val remoteETag = response[GetETag::class.java]?.eTag
@@ -636,7 +634,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
                                     logger.info("$name has not been changed on server (ETag still $remoteETag)")
                                 } else {
                                     logger.info("$name has been changed on server (current ETag=$remoteETag, last known ETag=$localETag)")
-                                    download(response.href)
+                                    batchDownloader += response.href
                                 }
 
                                 // mark as remotely present, so that this resource won't be deleted at the end
@@ -660,7 +658,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
         }
 
         // download remaining resources
-        download(null)
+        batchDownloader.flush()
     }
 
     protected abstract suspend fun listAllRemote(callback: MultiResponseCallback)
