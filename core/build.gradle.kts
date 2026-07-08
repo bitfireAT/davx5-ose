@@ -173,14 +173,12 @@ dependencies {
     androidTestImplementation(libs.kotlinx.coroutines.test)
     androidTestImplementation(libs.ktor.client.mock)
     androidTestImplementation(libs.mockk.android)
-    androidTestImplementation(libs.okhttp.mockwebserver)
     androidTestImplementation(testFixtures(project(":synctools")))
 
     testImplementation(libs.bitfire.dav4jvm)
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.mockk)
-    testImplementation(libs.okhttp.mockwebserver)
     testImplementation(libs.robolectric)
     testImplementation(testFixtures(project(":synctools")))
 }
