@@ -7,7 +7,6 @@ package at.bitfire.davdroid.di
 import at.bitfire.davdroid.di.qualifier.DefaultDispatcher
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.di.qualifier.MainDispatcher
-import at.bitfire.davdroid.di.qualifier.SyncTransferSemaphore
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.components.SingletonComponent
@@ -15,7 +14,6 @@ import dagger.hilt.testing.TestInstallIn
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestCoroutineScheduler
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -47,10 +45,6 @@ object TestCoroutineDispatchersModule {
     @Provides
     @MainDispatcher
     fun mainDispatcher(): CoroutineDispatcher = StandardTestDispatcher(testScheduler)
-
-    @Provides
-    @SyncTransferSemaphore
-    fun syncTransferSemaphore(): Semaphore = Semaphore(Runtime.getRuntime().availableProcessors())
 
     @OptIn(ExperimentalCoroutinesApi::class)
     fun initMainDispatcher() {
