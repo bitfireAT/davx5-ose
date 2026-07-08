@@ -188,6 +188,20 @@ class HttpClientBuilderTest {
     }
 
     @Test
+    fun testContentEncoding_HandlesIdentityEncoding() = runTest {
+        val engine = MockEngine.basic(
+            "Some Content",
+            headers = headersOf(HttpHeaders.ContentEncoding, "identity")
+        )
+
+        httpClientBuilder.build(engine).use { client ->
+            val response = client.get("https://example.com/")
+            assertEquals(200, response.status.value)
+            assertEquals("Some Content", response.bodyAsText())
+        }
+    }
+
+    @Test
     fun testFollowRedirects_DisabledByDefault() = runTest {
         val engine = MockEngine { request ->
             if (request.url.encodedPath == "/") {

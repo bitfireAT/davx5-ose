@@ -375,11 +375,8 @@ class HttpClientBuilder private constructor(
             )
         }
 
-        // offer gzip/deflate compression and decompress responses transparently
-        install(ContentEncoding) {
-            gzip()
-            deflate()
-        }
+        // offer gzip/deflate/identity compression and decompress responses transparently
+        ContentEncoding()
 
         // add network logging (with redaction of sensitive headers), if requested
         if (config.logger.isLoggable(Level.FINEST)) {
