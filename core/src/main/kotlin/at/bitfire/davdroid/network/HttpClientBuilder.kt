@@ -33,6 +33,7 @@ import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.cookies.HttpCookies
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logging
+import io.ktor.client.plugins.logging.LoggingFormat
 import io.ktor.http.HttpHeaders
 import io.ktor.http.URLBuilder
 import io.ktor.http.URLProtocol
@@ -356,6 +357,38 @@ class HttpClientBuilder private constructor(
         }
     }
 
+    private fun HttpClientConfig<*>.installLoggingPlugin() {
+        install(Logging) {
+            // log to configured java.util.Logger with "finest"
+            logger = object : io.ktor.client.plugins.logging.Logger {
+                override fun log(message: String) {
+                    config.logger.finest(message)
+                }
+            }
+
+            // use configured log level (with/without body)
+            level = config.trafficLogLevel
+
+            // LoggingFormat.Default shows multiple list headers with ";"
+            // https://github.com/bitfireAT/davx5-ose/issues/2630 / https://youtrack.jetbrains.com/issue/KTOR-8385
+            format = LoggingFormat.OkHttp
+
+            // don't log some confidential headers
+            val headersToIgnore = arrayOf(
+                HttpHeaders.Authorization,
+                HttpHeaders.Cookie,
+                HttpHeaders.SetCookie,
+                "Set-Cookie2"       // obsoleted, but included here for good measure
+            )
+            sanitizeHeader { header ->
+                headersToIgnore.any { headerToIgnore ->
+                    header.equals(headerToIgnore, ignoreCase = true)
+                }
+            }
+        }
+
+    }
+
     /**
      * Installs all Ktor-level plugins (cookies, timeouts, content negotiation, user agent,
      * compression, auth, logging) that are shared between [build] (real [OkHttp] engine) and
@@ -400,29 +433,8 @@ class HttpClientBuilder private constructor(
         ContentEncoding()
 
         // add network logging (with redaction of sensitive headers), if requested
-        if (config.logger.isLoggable(Level.FINEST)) {
-            install(Logging) {
-                logger = object : io.ktor.client.plugins.logging.Logger {
-                    override fun log(message: String) {
-                        config.logger.finest(message)
-                    }
-                }
-                level = config.trafficLogLevel
-
-                // don't log some confidential headers
-                val headersToIgnore = arrayOf(
-                    HttpHeaders.Authorization,
-                    HttpHeaders.Cookie,
-                    HttpHeaders.SetCookie,
-                    "Set-Cookie2"       // obsoleted, but included here for good measure
-                )
-                sanitizeHeader { header ->
-                    headersToIgnore.any { headerToIgnore ->
-                        header.equals(headerToIgnore, ignoreCase = true)
-                    }
-                }
-            }
-        }
+        if (config.logger.isLoggable(Level.FINEST))
+            installLoggingPlugin()
     }
 
     /**
