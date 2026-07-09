@@ -26,7 +26,7 @@ import java.util.logging.Logger
  * Provides methods to check whether a sync shall be run for a given account.
  */
 class SyncConditions @AssistedInject constructor(
-    @Assisted private val accountSettings: AccountSettingsStore,
+    @Assisted private val accountSettings: AccountSettingsStore<*>,
     @ApplicationContext private val context: Context,
     private val logger: Logger,
     private val notificationRegistry: NotificationRegistry
@@ -34,7 +34,7 @@ class SyncConditions @AssistedInject constructor(
 
     @AssistedFactory
     interface Factory {
-        fun create(accountSettings: AccountSettingsStore): SyncConditions
+        fun create(accountSettings: AccountSettingsStore<*>): SyncConditions
     }
 
 

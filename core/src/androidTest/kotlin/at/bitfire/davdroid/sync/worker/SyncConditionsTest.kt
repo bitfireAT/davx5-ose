@@ -17,7 +17,6 @@ import android.net.wifi.WifiInfo
 import android.net.wifi.WifiManager
 import androidx.core.content.getSystemService
 import at.bitfire.davdroid.accounts.LegacyAccount
-import at.bitfire.davdroid.settings.AccountManagerSettingsStore
 import at.bitfire.davdroid.settings.AccountSettingsStore
 import at.bitfire.davdroid.sync.SyncConditions
 import at.bitfire.davdroid.util.PermissionUtils
@@ -63,7 +62,7 @@ class SyncConditionsTest {
     lateinit var network2: Network
 
 
-    private lateinit var accountSettings: AccountSettingsStore
+    private lateinit var accountSettings: AccountSettingsStore<*>
 
     private lateinit var conditions: SyncConditions
 
@@ -74,7 +73,7 @@ class SyncConditionsTest {
         hiltRule.inject()
 
         // prepare accountSettings with some necessary data
-        accountSettings = mockk<AccountManagerSettingsStore> {
+        accountSettings = mockk<AccountSettingsStore<*>> {
             every { accountId } returns LegacyAccount(Account("test", "test"))
             every { getIgnoreVpns() } returns false     // default value
         }
