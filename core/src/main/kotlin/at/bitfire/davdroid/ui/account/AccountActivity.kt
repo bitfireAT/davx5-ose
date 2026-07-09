@@ -13,6 +13,7 @@ import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.IntentCompat
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.accounts.toAccountId
 import at.bitfire.davdroid.ui.AccountsActivity
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.logging.Logger
@@ -57,11 +58,11 @@ class AccountActivity : AppCompatActivity() {
                     startActivity(intent)
                 },
                 onCreateCalendar = {
-                    val intent = CreateCalendarActivity.createIntent(this, account)
+                    val intent = CreateCalendarActivity.createIntent(this, account.toAccountId())
                     startActivity(intent)
                 },
                 onCollectionDetails = { collection ->
-                    val intent = CollectionActivity.createIntent(this, account, collection.id)
+                    val intent = CollectionActivity.createIntent(this, account.toAccountId(), collection.id)
                     startActivity(intent, null)
                 },
                 onNavUp = ::onSupportNavigateUp,

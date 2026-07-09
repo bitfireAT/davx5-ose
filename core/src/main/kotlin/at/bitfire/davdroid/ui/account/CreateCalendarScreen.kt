@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.ui.account
 
-import android.accounts.Account
 import android.annotation.SuppressLint
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -59,6 +58,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import at.bitfire.dav4jvm.ktor.toUrlOrNull
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.ui.composable.AppTheme
 import at.bitfire.davdroid.ui.composable.ExceptionInfoDialog
@@ -68,13 +68,13 @@ import at.bitfire.synctools.icalendar.Css3Color
 
 @Composable
 fun CreateCalendarScreen(
-    account: Account,
+    accountId: AccountId,
     onFinish: () -> Unit,
     onNavUp: () -> Unit
 ) {
     val model: CreateCalendarViewModel = hiltViewModel(
         creationCallback = { factory: CreateCalendarViewModel.Factory ->
-            factory.create(account)
+            factory.create(accountId)
         }
     )
     val uiState = model.uiState
