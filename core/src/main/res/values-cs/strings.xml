@@ -416,4 +416,127 @@
     <string name="notification_channel_user_interaction">Uživatelská interakce</string>
     <string name="notification_channel_user_interaction_desc">Je vyžadována uživatelská interakce. Problém musí být vyřešen ručně.</string>
     <string name="intro_tasks_tasks_org_info"><![CDATA[Některé funkce <a href="https://www.davx5.com/faq/tasks/advanced-task-features">nejsou podporovány</a>.]]></string>
+    <string name="intro_autostart_text">Firmware určitých výrobců může blokovat synchronizaci. Pokud se vás to týká, můžete tento problém vyřešit pouze ručně.</string>
+    <string name="intro_backups_title">Připomínka záloh</string>
+    <string name="intro_backups_important">Pro zabránění ztrátě dat je důležité pravidelně zálohovat důležitá data (včetně kontaktů a kalendářů).</string>
+    <string name="intro_backups_something_wrong">Vždy se může něco pokazit, ať už na serveru, v aplikaci %s nebo v jiných aplikacích, které například mohou nechtěně smazat všechny události z kalendáře. (Tato smazání jsou následně synchronizována na server.)</string>
+    <string name="intro_backups_accept">Již mám funkční strategii zálohování nebo ji nepotřebuji.</string>
+    <string name="intro_open_source_dont_show">Nepřipomínat</string>
+    <plurals name="intro_open_source_dont_show_months">
+        <item quantity="one">%d měsíc</item>
+        <item quantity="few">%d měsíce</item>
+        <item quantity="many">%d měsíců</item>
+        <item quantity="other">%d měsíců</item>
+    </plurals>
+    <string name="wifi_permissions_background_location_disclaimer">%s používá data o poloze (pouze SSID sítí Wi-Fi) pouze k omezení synchronizace na konkrétní SSID sítí Wi-Fi. To se stane, když synchronizace probíhá na pozadí.</string>
+    <string name="wifi_permissions_background_location_disclaimer2">Všechna data o poloze (pouze SSID sítí Wi-Fi) jsou používána pouze lokálně a nejsou nikam odesílána.</string>
+    <string name="about_translations_thanks">❤️ Děkujeme všem, kteří přispěli překladem aplikace!</string>
+    <string name="about_translations_over_transifex">Přes Transifex</string>
+    <string name="about_translations_over_weblate">Přes Weblate</string>
+    <string name="about_translations_contribute">Pomozte s překladem</string>
+    <string name="navigation_drawer_managed">Pro organizace</string>
+    <string name="account_list_welcome">Vítejte v DAVx⁵!</string>
+    <string name="account_list_empty">Připojte se ke svému serveru a synchronizujte své kalendáře a kontakty.</string>
+    <string name="keep_android_open"><![CDATA[Otevřenost systému Android je ohrožena. Zjistěte, jak můžete pomoci, na stránce <a href="%s">keepandroidopen.org</a>.]]></string>
+    <string name="sync_warning_no_internet">Automatická synchronizace není aktivní (žádné ověřené připojení k internetu).</string>
+    <string name="sync_warning_calendar_storage_disabled_title">Poskytovatel kalendáře chybí</string>
+    <string name="sync_warning_calendar_storage_disabled_description">Nezakázali jste systémovou aplikaci „Úložiště kalendáře“ („Calendar storage“)?</string>
+    <string name="sync_warning_contacts_storage_disabled_title">Poskytovatel kontaktů chybí</string>
+    <string name="sync_warning_contacts_storage_disabled_description">Nezakázali jste systémovou aplikaci „Úložiště kontaktů“ („Contacts storage“)?</string>
+    <string name="sync_warning_manage_apps">Spravovat aplikace</string>
+    <string name="app_settings_show_debug_info_details">Zobrazit/sdílet podrobnosti o konfiguraci a protokoly</string>
+    <string name="app_settings_logging_on">Protokolování je aktivní. Protokoly si můžete zobrazit jako součást ladicích informací.</string>
+    <string name="app_settings_distrust_system_certs_dialog_message">Pokud je toto nastavení aktivní, nejsou systémové certifikáty považovány za důvěryhodné. To znamená, že budete muset ručně přijmout každý certifikát (také když server obnoví svůj certifikát), jinak nebude nastavení účtu a synchronizace fungovat.</string>
+    <string name="app_settings_unifiedpush_no_endpoint">Není nastaven žádný koncový bod</string>
+    <string name="app_settings_unifiedpush_distributor_fcm">FCM (Google Play)</string>
+    <string name="app_settings_push_enabled_summary">Zapnuto, %s</string>
+    <string name="app_settings_push_disabled_summary">Vypnuto</string>
+    <string name="app_settings_push_title">Push</string>
+    <string name="app_settings_push_description">Použijte Push, aby mohly servery CalDAV/CardDAV/WebDAV okamžitě informovat aplikaci %s o dostupných změnách vašich dat na serveru.</string>
+    <string name="app_settings_push_use_push">Použít Push</string>
+    <string name="app_settings_push_no_push_services_found"><![CDATA[Nenalezeny žádné služby Push. Navštivte <a href="%1$s">%2$s</a> pro seznam distribučních aplikací.]]></string>
+    <string name="app_settings_push_info_text"><![CDATA[Zprávy Push jsou vždy šifrovány. Více informací o WebDAV-Push zjistíte v <a href="%s">manuálu</a>.]]></string>
+    <string name="app_settings_push_push_services">Služba Push</string>
+    <string name="app_settings_push_default_distributor_text">(výchozí systémová)</string>
+    <string name="app_settings_push_capability_none">Žádná z vašich synchronizovaných sbírek v současné době nepodporuje WebDAV-Push.</string>
+    <string name="app_settings_push_capability_some">Pouze některé z vašich synchronizovaných sbírek v současné době podporují WebDAV-Push.</string>
+    <string name="app_settings_push_select_default_distributor_description">Máte nainstalováno několik distribučních aplikací UnifiedPush. Zde můžete nastavit výchozí systémovou službu, aby se aplikace podporující UnifiedPush nemusely ptát, kterou mají použít.</string>
+    <string name="app_settings_push_select_default_distributor_action">Nastavit výchozí</string>
+    <string name="account_invalid_account">Účet byl odstraněn</string>
+    <string name="account_contacts">kontakty</string>
+    <string name="account_task_list">úkoly</string>
+    <string name="login_privacy_hint"><![CDATA[Všechna data budou přenášena pouze mezi vaším serverem a vaším zařízením. Aplikace %1$s je nebude odesílat nikam jinam. Viz <a href="%2$s">zásady ochrany osobních údajů</a>.]]></string>
+    <string name="login_password_optional">Heslo (nepovinné)</string>
+    <string name="login_user_name_optional">Uživatelské jméno (nepovinné)</string>
+    <string name="login_base_url_info"><![CDATA[Základní URL bude zkontrolována napřímo, <a href="%s">služby jsou ale také objeveny</a> pomocí záznamů DNS a známých adres URL.]]></string>
+    <string name="login_account_not_added">Nepodařilo se přidat účet</string>
+    <string name="login_finish">Dokončit</string>
+    <string name="login_no_client_certificate_optional">Žádný klientský certifikát (nepovinné)</string>
+    <string name="login_fastmail">Fastmail</string>
+    <string name="login_fastmail_account">Účet Fastmail</string>
+    <string name="login_fastmail_sign_in">Přihlásit se přes Fastmail</string>
+    <string name="login_no_service_info">Základní adresa URL nejspíše není přístupnou adresou CalDAV/CardDAV a detekce služby nebyla úspěšná.</string>
+    <string name="login_invalid_use_case">Neplatné použití</string>
+    <string name="login_invalid_use_case_info"><![CDATA[Variantu aplikace %s lze použít pouze s vybranými službami.]]></string>
+    <string name="login_download_regular_davx5"><![CDATA[Místo toho prosím použijte aplikaci <a href="%s">DAVx⁵</a>, kterou lze použít se všemi službami.]]></string>
+    <string name="login_download_button">Stáhnout DAVx⁵</string>
+    <string name="settings_password">Heslo nebo aplikační heslo</string>
+    <string name="settings_app_password_hint"><![CDATA[Možná budete chtít použít <a href="%1$s">aplikační heslo</a>.]]></string>
+    <string name="settings_reauthorize_oauth">Znovu autorizovat (OAuth)</string>
+    <string name="settings_reauthorize_oauth_summary">Použijte při zamítnutí přístupu</string>
+    <string name="settings_reauthorize_oauth_success">Autorizace byla úspěšná</string>
+    <string name="create_calendar_time_zone_optional">Výchozí časové pásmo (nepovinné)</string>
+    <string name="collection_datatype_contacts">kontakty</string>
+    <string name="collection_datatype_events">události</string>
+    <string name="collection_datatype_tasks">úkoly</string>
+    <string name="collection_datatype_contacts_count">%1$d kontaktů</string>
+    <string name="collection_datatype_events_count">%1$d událostí</string>
+    <string name="collection_datatype_tasks_count">%1$d úkolů</string>
+    <string name="collection_read_only_by_setting">Pouze pro čtení (dle zásad)</string>
+    <string name="collection_synced_items_title">Počet lokálních položek</string>
+    <plurals name="collection_synced_items_total">
+        <item quantity="one">%1$d položka v %2$s</item>
+        <item quantity="few">%1$d položky v %2$s</item>
+        <item quantity="many">%1$d položek v %2$s</item>
+        <item quantity="other">%1$d položek v %2$s</item>
+    </plurals>
+    <plurals name="collection_synced_items_modified">
+        <item quantity="one">├ %d nesynchronizované oznámení</item>
+        <item quantity="few">├ %d nesynchronizovaná oznámení</item>
+        <item quantity="many">├ %d nesynchronizovaných oznámení</item>
+        <item quantity="other">├ %d nesynchronizovaných oznámení</item>
+    </plurals>
+    <plurals name="collection_synced_items_deleted">
+        <item quantity="one">└ %d nesynchronizované smazání</item>
+        <item quantity="few">└ %d nesynchronizovaná smazání</item>
+        <item quantity="many">└ %d nesynchronizovaných smazání</item>
+        <item quantity="other">└ %d nesynchronizovaných smazání</item>
+    </plurals>
+    <plurals name="collection_synced_items_past_event_time_limit">
+        <item quantity="one">Položky starší než %d den nejsou synchronizovány (viz nastavení účtu).</item>
+        <item quantity="few">Položky starší než %d dny nejsou synchronizovány (viz nastavení účtu).</item>
+        <item quantity="many">Položky starší než %d dní nejsou synchronizovány (viz nastavení účtu).</item>
+        <item quantity="other">Položky starší než %d dní nejsou synchronizovány (viz nastavení účtu).</item>
+    </plurals>
+    <string name="collection_push_subscribed_at">Odběr vytvořen %1$s, vyprší %2$s</string>
+    <string name="debug_info_http_403_description">Požadavek byl zamítnut serverem.</string>
+    <string name="debug_info_http_404_description">Požadovaný zdroj (již) neexistuje.</string>
+    <string name="debug_info_http_405_description">Server nepovoluje požadovaný typ operace.</string>
+    <string name="debug_info_http_5xx_description">Došlo k problému na straně serveru. Kontaktujte prosím podporu vašeho serveru.</string>
+    <string name="debug_info_unexpected_error">Došlo k neočekávané chybě. Pro více informací se podívejte na ladicí informace.</string>
+    <string name="debug_info_view_local_resource">Prozkoumat zdroj</string>
+    <string name="debug_info_privacy_warning_title">Informace o soukromí</string>
+    <string name="debug_info_privacy_warning_description">Protokoly a ladicí informace mohou obsahovat soukromé informace. Při veřejném sdílení to prosím mějte na paměti.</string>
+    <string name="debug_info_can_not_view_resource">Nepodařilo se zobrazit zdroj</string>
+    <string name="webdav_add_mount_empty_more_info"><![CDATA[Pro více informací o tom, <a href="%1$s">jak funguje připojování WebDAV</a>, se podívejte do manuálu.]]></string>
+    <string name="webdav_add_mount_mountpoint_displayname">Připojovaný bod a zobrazovaný název</string>
+    <string name="webdav_add_mount_username_optional">Uživatelské jméno (nepovinné)</string>
+    <string name="webdav_add_mount_password_optional">Heslo (nepovinné)</string>
+    <string name="sync_notification_pending_push_title">Čekající synchronizace</string>
+    <string name="sync_notification_pending_push_message">Vzdálená data se změnila</string>
+    <string name="push_distributor_selection_required_title">Vyžadován výběr distributora</string>
+    <string name="push_distributor_selection_required_message">Nepodařilo se zjistit výchozího distributora UnifiedPush. Klepněte pro jeho výběr.</string>
+    <string name="widget_labeled_sync_label">Tlačítko synchronizace s názvem</string>
+    <string name="widget_icon_sync_label">Tlačítko synchronizace s ikonou</string>
+    <string name="widget_sync_description">Klepněte pro ruční spuštění synchronizace.</string>
 </resources>
