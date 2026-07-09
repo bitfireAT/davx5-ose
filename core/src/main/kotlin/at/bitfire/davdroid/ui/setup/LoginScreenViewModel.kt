@@ -17,7 +17,7 @@ import at.bitfire.davdroid.log.FileLoggerFactory
 import at.bitfire.davdroid.network.HttpClientBuilder
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.servicedetection.DavResourceFinder
-import at.bitfire.davdroid.settings.AccountManagerSettingsStore
+import at.bitfire.davdroid.settings.AccountSettingsStore
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.util.DavUtils.toUrlOrNull
 import at.bitfire.synctools.vcard.GroupMethod
@@ -302,7 +302,7 @@ class LoginScreenViewModel @AssistedInject constructor(
     }
 
     private val forcedGroupMethod = settingsManager
-        .getStringFlow(AccountManagerSettingsStore.KEY_CONTACT_GROUP_METHOD)
+        .getStringFlow(AccountSettingsStore.KEY_CONTACT_GROUP_METHOD)
         .map { groupMethodName ->
             // map group method name to GroupMethod
             if (groupMethodName != null)

@@ -8,6 +8,8 @@ import android.accounts.Account
 import android.provider.CalendarContract
 import android.provider.ContactsContract
 import androidx.annotation.WorkerThread
+import at.bitfire.davdroid.accounts.AccountId
+import at.bitfire.davdroid.accounts.LegacyAccount
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.resource.LocalAddressBookStore
@@ -107,6 +109,13 @@ class AutomaticSyncManager @Inject constructor(
         }
     }
 
+    @WorkerThread
+    fun updateAutomaticSync(accountId: AccountId) {
+        val account = accountId as? LegacyAccount
+            ?: throw IllegalArgumentException("Account must be a LegacyAccount, but was $accountId")
+        updateAutomaticSync(account.androidAccount)
+    }
+
     /**
      * Updates automatic synchronization of the given account and all data types according to the account settings.
      *
@@ -119,6 +128,13 @@ class AutomaticSyncManager @Inject constructor(
     fun updateAutomaticSync(account: Account) {
         for (dataType in SyncDataType.entries)
             updateAutomaticSync(account, dataType)
+    }
+
+    @WorkerThread
+    fun updateAutomaticSync(account: AccountId, dataType: SyncDataType) {
+        val account = account as? LegacyAccount
+            ?: throw IllegalArgumentException("Account must be a LegacyAccount, but was $account")
+        updateAutomaticSync(account.androidAccount, dataType)
     }
 
     /**

@@ -8,7 +8,7 @@ import android.accounts.Account
 import android.accounts.AccountManager
 import android.content.Context
 import android.provider.CalendarContract
-import at.bitfire.davdroid.settings.AccountManagerSettingsStore
+import at.bitfire.davdroid.settings.AccountSettingsStore
 import at.bitfire.synctools.storage.calendar.AndroidCalendarProvider
 import at.bitfire.synctools.util.setAndVerifyUserData
 import dagger.Binds
@@ -34,7 +34,7 @@ class AccountSettingsMigration7 @Inject constructor(
         // update allowed WiFi settings key
         val accountManager = AccountManager.get(context)
         val onlySSID = accountManager.getUserData(account, "wifi_only_ssid")
-        accountManager.setAndVerifyUserData(account, AccountManagerSettingsStore.KEY_WIFI_ONLY_SSIDS, onlySSID)
+        accountManager.setAndVerifyUserData(account, AccountSettingsStore.KEY_WIFI_ONLY_SSIDS, onlySSID)
         accountManager.setAndVerifyUserData(account, "wifi_only_ssid", null)
     }
 

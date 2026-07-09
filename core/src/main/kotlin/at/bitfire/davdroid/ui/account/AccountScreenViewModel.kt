@@ -19,7 +19,6 @@ import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.settings.AccountManagerSettingsStore
-import at.bitfire.davdroid.settings.AccountSettingsStore
 import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.TasksAppManager
 import at.bitfire.davdroid.sync.account.InvalidAccountException
@@ -69,7 +68,7 @@ class AccountScreenViewModel @AssistedInject constructor(
     /**
      * Only acquire account settings on a worker thread!
      */
-    private val accountSettings: AccountSettingsStore? by lazy {
+    private val accountSettings: AccountManagerSettingsStore? by lazy {
         try {
             accountSettingsFactory.create(account)
         } catch (_: InvalidAccountException) {
