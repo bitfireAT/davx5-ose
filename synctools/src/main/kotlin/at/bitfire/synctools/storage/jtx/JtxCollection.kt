@@ -122,13 +122,15 @@ class JtxCollection(
     /**
      * Inserts a list of jtx objects into this collection.
      *
-     * @param jtxEntities objects to insert
+     * @param jtxEntities objects to insert (must not be empty)
      *
      * @return ID of the first inserted object
      *
+     * @throws IllegalArgumentException when [jtxEntities] is empty
      * @throws LocalStorageException when the content provider returns an error
      */
     fun addJtxObjects(jtxEntities: List<JtxEntity>): Long {
+        require(jtxEntities.isNotEmpty()) { "jtxEntities must not be empty" }
         try {
             val batch = JtxBatchOperation(client)
 
