@@ -123,7 +123,6 @@ mikepenz-aboutLibraries-m3 = { module = "com.mikepenz:aboutlibraries-compose-m3"
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 mockk-android = { module = "io.mockk:mockk-android", version.ref = "mockk" }
 okhttp-base = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
-okhttp-mockwebserver = { module = "com.squareup.okhttp3:mockwebserver", version.ref = "okhttp" }
 openid-appauth = { module = "net.openid:appauth", version.ref = "openid-appauth" }
 robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
 slf4j-jdk = { module = "org.slf4j:slf4j-jdk14", version.ref = "slf4j" }

@@ -5,16 +5,17 @@
 package at.bitfire.davdroid.sync
 
 import android.accounts.Account
-import at.bitfire.davdroid.settings.AccountManagerSettingsStore
+import at.bitfire.davdroid.MockEngineUtils.basic
+import at.bitfire.davdroid.network.HttpClientBuilder
+import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Credentials
 import at.bitfire.davdroid.sync.account.TestAccount
 import at.bitfire.synctools.util.SensitiveString.Companion.toSensitiveString
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import io.ktor.client.engine.mock.MockEngine
 import io.ktor.http.HttpHeaders
 import kotlinx.coroutines.test.runTest
-import okhttp3.mockwebserver.MockResponse
-import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
 import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
@@ -22,7 +23,6 @@ import org.junit.Assert.assertNull
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import java.net.InetAddress
 import javax.inject.Inject
 
 @HiltAndroidTest
@@ -32,21 +32,19 @@ class ResourceRetrieverTest {
     val hiltRule = HiltAndroidRule(this)
 
     @Inject
-    lateinit var accountSettingsFactory: AccountManagerSettingsStore.Factory
+    lateinit var accountSettingsFactory: AccountSettings.Factory
 
     @Inject
     lateinit var resourceRetrieverFactory: ResourceRetriever.Factory
 
+    @Inject
+    lateinit var httpClientBuilder: HttpClientBuilder
+
     lateinit var account: Account
-    lateinit var server: MockWebServer
 
     @Before
     fun setUp() {
         hiltRule.inject()
-        server = MockWebServer().apply {
-            start()
-        }
-
         account = TestAccount.create()
 
         // add credentials to test account so that we can check whether they have been sent
@@ -57,79 +55,74 @@ class ResourceRetrieverTest {
     @After
     fun tearDown() {
         TestAccount.remove(account)
-        server.close()
     }
 
 
     @Test
     fun testRetrieve_DataUri() = runTest {
-        val downloader = resourceRetrieverFactory.create(account, "example.com")
-        val result = downloader.retrieve("data:image/png;base64,dGVzdA==")
+        val retriever = resourceRetrieverFactory.create(account, "example.com")
+        val result = retriever.retrieve("data:image/png;base64,dGVzdA==")
         assertArrayEquals("test".toByteArray(), result)
     }
 
     @Test
     fun testRetrieve_DataUri_Invalid() = runTest {
-        val downloader = resourceRetrieverFactory.create(account, "example.com")
-        val result = downloader.retrieve("data:;INVALID,INVALID")
+        val retriever = resourceRetrieverFactory.create(account, "example.com")
+        val result = retriever.retrieve("data:;INVALID,INVALID")
         assertNull(result)
     }
 
     @Test
     fun testRetrieve_ExternalDomain() = runTest {
-        val baseUrl = server.url("/")
-        val localhostIp = InetAddress.getByName(baseUrl.host).hostAddress!!
+        MockEngine.basic("TEST").use { engine ->
+            httpClientBuilder
+                // fromAccount() restricts authentication to the given domain; build the test client the
+                // same way production code does so that restriction is actually exercised.
+                .fromAccount(account, authDomain = "example.com")
+                .build(engine)
+                .use { httpClient ->
+                    val retriever = resourceRetrieverFactory.create(account, "example.com", httpClient)
+                    // Request to a different domain than the account's — auth must not be sent
+                    val result = retriever.retrieve("https://other-domain.example.net/photo.jpg")
 
-        // URL should be http://localhost, replace with http://127.0.0.1 to have other domain
-        val baseUrlIp = baseUrl.newBuilder()
-            .host(localhostIp)
-            .build()
+                    val sentAuth = engine.requestHistory.first().headers[HttpHeaders.Authorization]
+                    assertNull(sentAuth)
 
-        server.enqueue(MockResponse()
-            .setResponseCode(200)
-            .setBody("TEST"))
+                    assertArrayEquals("TEST".toByteArray(), result)
+                }
+        }
+    }
 
-        val downloader = resourceRetrieverFactory.create(account, baseUrl.host)
-        val result = downloader.retrieve(baseUrlIp.toString())
+    @Test
+    fun testRetrieve_SameDomain() = runTest {
+        MockEngine.basic("TEST").use { engine ->
+            httpClientBuilder
+                .fromAccount(account, authDomain = "example.com")
+                .build(engine)
+                .use { httpClient ->
+                    val retriever = resourceRetrieverFactory.create(account, "example.com", httpClient)
+                    val result = retriever.retrieve("https://example.com/photo.jpg")
 
-        // authentication was NOT sent because request is not for original domain
-        val sentAuth = server.takeRequest().getHeader(HttpHeaders.Authorization)
-        assertNull(sentAuth)
+                    val sentAuth = engine.requestHistory.first().headers[HttpHeaders.Authorization]
+                    assertEquals("Basic dGVzdDp0ZXN0", sentAuth)
 
-        // and result is OK
-        assertArrayEquals("TEST".toByteArray(), result)
+                    assertArrayEquals("TEST".toByteArray(), result)
+                }
+        }
     }
 
     @Test
     fun testRetrieve_FtpUrl() = runTest {
-        val downloader = resourceRetrieverFactory.create(account, "example.com")
-        val result = downloader.retrieve("ftp://example.com/photo.jpg")
+        val retriever = resourceRetrieverFactory.create(account, "example.com")
+        val result = retriever.retrieve("ftp://example.com/photo.jpg")
         assertNull(result)
     }
 
     @Test
     fun testRetrieve_RelativeHttpsUrl() = runTest {
-        val downloader = resourceRetrieverFactory.create(account, "example.com")
-        val result = downloader.retrieve("https:photo.jpg")
+        val retriever = resourceRetrieverFactory.create(account, "example.com")
+        val result = retriever.retrieve("https:photo.jpg")
         assertNull(result)
-    }
-
-    @Test
-    fun testRetrieve_SameDomain() = runTest {
-        server.enqueue(MockResponse()
-            .setResponseCode(200)
-            .setBody("TEST"))
-
-        val baseUrl = server.url("/")
-        val downloader = resourceRetrieverFactory.create(account, baseUrl.host)
-        val result = downloader.retrieve(baseUrl.toString())
-
-        // authentication was sent
-        val sentAuth = server.takeRequest().getHeader(HttpHeaders.Authorization)
-        assertEquals("Basic dGVzdDp0ZXN0", sentAuth)
-
-        // and result is OK
-        assertArrayEquals("TEST".toByteArray(), result)
     }
 
 }

@@ -146,32 +146,6 @@ class JtxRecurringCollectionTest {
     }
 
     @Test
-    fun testUpdateJtxObjectAndExceptions_withExceptionId_throws() = runTest {
-        val uid = "testUpdateJtxObjectAndExceptions_withExceptionId"
-        insertRecurring(uid = uid)
-
-        val exceptionId = collection.findJtxObject(
-            "${JtxContract.JtxICalObject.UID}=? AND ${JtxContract.JtxICalObject.RECURID} IS NOT NULL AND ${JtxContract.JtxICalObject.SEQUENCE} > 0",
-            arrayOf(uid)
-        )!!.entityValues.getAsLong(JtxContract.JtxICalObject.ID)
-
-        try {
-            recurringCollection.updateJtxObjectAndExceptions(exceptionId, JtxEntityAndExceptions(
-                main = JtxEntity(Entity(contentValuesOf(
-                    JtxContract.JtxICalObject.ICALOBJECT_COLLECTIONID to collection.id,
-                    JtxContract.JtxICalObject.COMPONENT to Component.VTODO.name,
-                    JtxContract.JtxICalObject.UID to uid,
-                    JtxContract.JtxICalObject.SUMMARY to "Should not work"
-                ))),
-                exceptions = emptyList()
-            ))
-            fail("updateJtxObjectAndExceptions must throw when called with an exception ID")
-        } catch (_: LocalStorageException) {
-            // expected
-        }
-    }
-
-    @Test
     fun testIterateJtxObjectAndExceptions() = runTest {
         val uid1 = "testIterateJtxObjectAndExceptions1"
         val uid2 = "testIterateJtxObjectAndExceptions2"
@@ -266,6 +240,86 @@ class JtxRecurringCollectionTest {
     }
 
     @Test
+    fun testUpdateJtxObjectAndExceptions_NonRecurring() = runTest {
+        // reproduces https://github.com/bitfireAT/davx5-ose/discussions/2617:
+        // updating a non-recurring jtx object (no RRULE/RDATE, so cleanUp() drops exceptions
+        // and leaves an empty list) must not crash. addJtxObjects() used to unconditionally call
+        // getResult(0), which throws ArrayIndexOutOfBoundsException when nothing was inserted.
+        val uid = "testUpdateJtxObjectAndExceptions_NonRecurring"
+        val addedId = recurringCollection.addJtxEntityAndExceptions(
+            JtxEntityAndExceptions(
+                main = JtxEntity(
+                    Entity(
+                        contentValuesOf(
+                            JtxContract.JtxICalObject.ICALOBJECT_COLLECTIONID to collection.id,
+                            JtxContract.JtxICalObject.COMPONENT to Component.VTODO.name,
+                            JtxContract.JtxICalObject.UID to uid,
+                            JtxContract.JtxICalObject.SUMMARY to "Non-recurring Main"
+                            // no RRULE/RDATE -> not recurring
+                        )
+                    )
+                ),
+                exceptions = emptyList()
+            )
+        )
+
+        val updatedMain = JtxEntity(
+            Entity(
+                contentValuesOf(
+                    JtxContract.JtxICalObject.ICALOBJECT_COLLECTIONID to collection.id,
+                    JtxContract.JtxICalObject.COMPONENT to Component.VTODO.name,
+                    JtxContract.JtxICalObject.UID to uid,
+                    JtxContract.JtxICalObject.SUMMARY to "Updated Non-recurring Main"
+                )
+            )
+        )
+
+        recurringCollection.updateJtxObjectAndExceptions(
+            addedId,
+            JtxEntityAndExceptions(main = updatedMain, exceptions = emptyList())
+        )
+
+        val result = recurringCollection.getById(addedId)
+        assertEquals(
+            "Updated Non-recurring Main",
+            result!!.main.entityValues.getAsString(JtxContract.JtxICalObject.SUMMARY)
+        )
+        assertTrue(result.exceptions.isEmpty())
+    }
+
+    @Test
+    fun testUpdateJtxObjectAndExceptions_withExceptionId_throws() = runTest {
+        val uid = "testUpdateJtxObjectAndExceptions_withExceptionId"
+        insertRecurring(uid = uid)
+
+        val exceptionId = collection.findJtxObject(
+            "${JtxContract.JtxICalObject.UID}=? AND ${JtxContract.JtxICalObject.RECURID} IS NOT NULL AND ${JtxContract.JtxICalObject.SEQUENCE} > 0",
+            arrayOf(uid)
+        )!!.entityValues.getAsLong(JtxContract.JtxICalObject.ID)
+
+        try {
+            recurringCollection.updateJtxObjectAndExceptions(
+                exceptionId, JtxEntityAndExceptions(
+                    main = JtxEntity(
+                        Entity(
+                            contentValuesOf(
+                                JtxContract.JtxICalObject.ICALOBJECT_COLLECTIONID to collection.id,
+                                JtxContract.JtxICalObject.COMPONENT to Component.VTODO.name,
+                                JtxContract.JtxICalObject.UID to uid,
+                                JtxContract.JtxICalObject.SUMMARY to "Should not work"
+                            )
+                        )
+                    ),
+                    exceptions = emptyList()
+                )
+            )
+            fail("updateJtxObjectAndExceptions must throw when called with an exception ID")
+        } catch (_: LocalStorageException) {
+            // expected
+        }
+    }
+
+    @Test
     fun testDeleteJtxObjectAndExceptions_batch() = runTest {
         val now = 1754233504000L
         val uid = "testDeleteJtxObjectAndExceptions_batch"
@@ -356,23 +410,6 @@ class JtxRecurringCollectionTest {
         assertEquals(0, collection.countJtxObjects(
             "${JtxContract.JtxICalObject.UID}=?", arrayOf(uid)
         ))
-    }
-
-
-    @Test
-    fun testFindExceptionRow() {
-        val uid = "testFindExceptionRow"
-        insertRecurring(uid = uid)
-
-        val result = recurringCollection.findExceptionRow(uid, "20250804T150504Z")
-        assertNotNull(result)
-        assertEquals(uid, result!!.getAsString(JtxContract.JtxICalObject.UID))
-        assertEquals("20250804T150504Z", result.getAsString(JtxContract.JtxICalObject.RECURID))
-    }
-
-    @Test
-    fun testFindExceptionRow_NotFound() {
-        assertNull(recurringCollection.findExceptionRow("does-not-exist", "20250804T150504Z"))
     }
 
 
@@ -600,6 +637,22 @@ class JtxRecurringCollectionTest {
                 }))
             ), result, onlyFieldsInExpected = true
         )
+    }
+
+    @Test
+    fun testFindExceptionRow() {
+        val uid = "testFindExceptionRow"
+        insertRecurring(uid = uid)
+
+        val result = recurringCollection.findExceptionRow(uid, "20250804T150504Z")
+        assertNotNull(result)
+        assertEquals(uid, result!!.getAsString(JtxContract.JtxICalObject.UID))
+        assertEquals("20250804T150504Z", result.getAsString(JtxContract.JtxICalObject.RECURID))
+    }
+
+    @Test
+    fun testFindExceptionRow_NotFound() {
+        assertNull(recurringCollection.findExceptionRow("does-not-exist", "20250804T150504Z"))
     }
 
 

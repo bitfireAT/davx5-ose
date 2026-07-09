@@ -168,7 +168,8 @@ class JtxRecurringCollection(
             collection.updateJtxObject(id, cleaned.main)
 
             // add updated exceptions
-            collection.addJtxObjects(cleaned.exceptions)
+            if (cleaned.exceptions.isNotEmpty())
+                collection.addJtxObjects(cleaned.exceptions)
 
             return id
         } catch (e: RemoteException) {

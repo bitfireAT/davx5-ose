@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.network
 
 import android.accounts.Account
+import androidx.annotation.VisibleForTesting
 import androidx.annotation.WorkerThread
 import at.bitfire.dav4jvm.ktor.UrlUtils
 import at.bitfire.dav4jvm.ktor.createDomainBasicAuthProvider
@@ -19,6 +20,7 @@ import at.bitfire.synctools.util.SensitiveString
 import com.google.errorprone.annotations.MustBeClosed
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
+import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.engine.HttpClientEngineConfig
 import io.ktor.client.engine.ProxyBuilder
 import io.ktor.client.engine.okhttp.OkHttp
@@ -336,6 +338,73 @@ class HttpClientBuilder private constructor(
     }
 
     /**
+     * Installs all Ktor-level plugins (cookies, timeouts, content negotiation, user agent,
+     * compression, auth, logging) that are shared between [build] (real [OkHttp] engine) and
+     * [build] (arbitrary engine, used for tests).
+     */
+    private fun HttpClientConfig<*>.installPlugins() {
+        // don't follow redirects by default because it would break PROPFIND handling;
+        // this controls whether Ktor's HttpRedirect plugin is active
+        followRedirects = config.followRedirects
+
+        installAuthPlugin()
+
+        // Uses AcceptAllCookiesStorage, which stores all the cookies in an in-memory map.
+        install(HttpCookies)
+
+        install(HttpTimeout) {
+            connectTimeoutMillis = 15_000
+            socketTimeoutMillis = 120_000       // covers both read and write inactivity
+        }
+
+        // automatically convert JSON from/into data classes (if requested in respective code)
+        install(ContentNegotiation) {
+            // use lenient parser that ignores unknown keys
+            json(lenientJson)
+        }
+
+        // Set User-Agent and Accept-Language on every request
+        install(UserAgent) {
+            agent = productIds.httpUserAgent
+        }
+        install(DefaultRequest) {
+            val locale = Locale.getDefault()
+            headers.appendIfNameAbsent(
+                HttpHeaders.AcceptLanguage,
+                "${locale.language}-${locale.country}, ${locale.language};q=0.7, *;q=0.5"
+            )
+        }
+
+        // offer gzip/deflate/identity compression and decompress responses transparently
+        ContentEncoding()
+
+        // add network logging (with redaction of sensitive headers), if requested
+        if (config.logger.isLoggable(Level.FINEST)) {
+            install(Logging) {
+                logger = object : io.ktor.client.plugins.logging.Logger {
+                    override fun log(message: String) {
+                        config.logger.finest(message)
+                    }
+                }
+                level = config.trafficLogLevel
+
+                // don't log some confidential headers
+                val headersToIgnore = arrayOf(
+                    HttpHeaders.Authorization,
+                    HttpHeaders.Cookie,
+                    HttpHeaders.SetCookie,
+                    "Set-Cookie2"       // obsoleted, but included here for good measure
+                )
+                sanitizeHeader { header ->
+                    headersToIgnore.any { headerToIgnore ->
+                        header.equals(headerToIgnore, ignoreCase = true)
+                    }
+                }
+            }
+        }
+    }
+
+    /**
      * Builds a Ktor [HttpClient] with the configured settings.
      *
      * Since [HttpClientBuilder] is immutable, this can be called any number of times — on this
@@ -348,70 +417,7 @@ class HttpClientBuilder private constructor(
     @MustBeClosed
     fun build(): HttpClient {
         val client = HttpClient(OkHttp) {
-            // Ktor-level configuration here
-
-            // don't follow redirects by default because it would break PROPFIND handling;
-            // this controls whether Ktor's HttpRedirect plugin is active
-            followRedirects = config.followRedirects
-
-            installAuthPlugin()
-
-            // Uses AcceptAllCookiesStorage, which stores all the cookies in an in-memory map.
-            install(HttpCookies)
-
-            install(HttpTimeout) {
-                connectTimeoutMillis = 15_000
-                socketTimeoutMillis = 120_000       // covers both read and write inactivity
-            }
-
-            // automatically convert JSON from/into data classes (if requested in respective code)
-            install(ContentNegotiation) {
-                // use lenient parser that ignores unknown keys
-                json(lenientJson)
-            }
-
-            // Set User-Agent and Accept-Language on every request
-            install(UserAgent) {
-                agent = productIds.httpUserAgent
-            }
-            install(DefaultRequest) {
-                val locale = Locale.getDefault()
-                headers.appendIfNameAbsent(
-                    HttpHeaders.AcceptLanguage,
-                    "${locale.language}-${locale.country}, ${locale.language};q=0.7, *;q=0.5"
-                )
-            }
-
-            // offer gzip/deflate compression and decompress responses transparently
-            install(ContentEncoding) {
-                gzip()
-                deflate()
-            }
-
-            // add network logging (with redaction of sensitive headers), if requested
-            if (config.logger.isLoggable(Level.FINEST)) {
-                install(Logging) {
-                    logger = object : io.ktor.client.plugins.logging.Logger {
-                        override fun log(message: String) {
-                            config.logger.finest(message)
-                        }
-                    }
-                    level = config.trafficLogLevel
-
-                    // don't log some confidential headers
-                    val headersToIgnore = arrayOf(
-                        HttpHeaders.Authorization,
-                        HttpHeaders.Cookie,
-                        HttpHeaders.SetCookie,
-                        "Set-Cookie2"       // obsoleted, but included here for good measure
-                    )
-                    sanitizeHeader { header ->
-                        headersToIgnore.any { headerToIgnore ->
-                            header.equals(headerToIgnore, ignoreCase = true)
-                        }
-                    }
-                }
-            }
+            installPlugins()
 
             engine {
                 // app-wide custom proxy support
@@ -430,5 +436,18 @@ class HttpClientBuilder private constructor(
         return client
     }
 
+    /**
+     * Same as [build] but uses the provided [engine] instead of [OkHttp]. Intended for tests so
+     * that a `MockEngine` can be injected while all Ktor-level plugins (cookies, logging, default
+     * request headers, …) are still applied.
+     *
+     * @return the new HttpClient (with the provided [engine]) which **must be closed by the caller**
+     */
+    @MustBeClosed
+    @VisibleForTesting
+    internal fun <CE : HttpClientEngine> build(engine: CE): HttpClient =
+        HttpClient(engine) {
+            installPlugins()
+        }
 
 }

@@ -11,11 +11,13 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import ezvcard.util.DataUri
+import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.statement.bodyAsBytes
 import io.ktor.http.isSuccess
 import java.util.logging.Level
 import java.util.logging.Logger
+import javax.annotation.WillNotClose
 
 /**
  * Downloads a separate resource that is referenced during synchronization, for instance in
@@ -32,13 +34,14 @@ import java.util.logging.Logger
 class ResourceRetriever @AssistedInject constructor(
     @Assisted private val account: Account,
     @Assisted private val originalHost: String,
+    @Assisted private val httpClient: HttpClient?,
     private val httpClientBuilder: HttpClientBuilder,
     private val logger: Logger
 ) {
 
     @AssistedFactory
     interface Factory {
-        fun create(account: Account, originalHost: String): ResourceRetriever
+        fun create(account: Account, originalHost: String, @WillNotClose httpClient: HttpClient? = null): ResourceRetriever
     }
 
     /**
@@ -47,7 +50,7 @@ class ResourceRetriever @AssistedInject constructor(
      *
      * Authentication is handled as described in [ResourceRetriever].
      *
-     * @param url       URL of the resource to download (`http`, `https` or `data` scheme)
+     * @param url        URL of the resource to download (`http`, `https` or `data` scheme)
      *
      * @return blob of requested resource, or `null` on error or when the URL scheme is not supported
      */
@@ -55,10 +58,21 @@ class ResourceRetriever @AssistedInject constructor(
         try {
             when (url.toURIorNull()?.scheme?.lowercase()) {
                 "data" ->
-                    DataUri.parse(url).data     // may throw IllegalArgumentException
+                    DataUri.parse(url).data
 
-                "http", "https" ->
-                    download(url)                   // may throw various exceptions
+                "http", "https" -> {
+                    val httpClient = httpClient ?: httpClientBuilder
+                        .fromAccount(account, authDomain = originalHost)
+                        .followRedirects(true)
+                        .build()
+                    val response = httpClient.get(url)
+                    if (response.status.isSuccess())
+                        response.bodyAsBytes()
+                    else {
+                        logger.warning("Couldn't download external resource (${response.status})")
+                        null
+                    }
+                }
 
                 else ->
                     null
@@ -67,25 +81,5 @@ class ResourceRetriever @AssistedInject constructor(
             logger.log(Level.SEVERE, "Couldn't retrieve resource", e)
             null
         }
-
-    /**
-     * Downloads the resource from the given HTTP/HTTPS URL.
-     *
-     * Doesn't catch any exceptions!
-     */
-    private suspend fun download(url: String): ByteArray? =
-        httpClientBuilder
-            .fromAccount(account, authDomain = originalHost)  // restricts authentication to original domain
-            .followRedirects(true)      // allow redirects
-            .build()
-            .use { httpClient ->
-                val response = httpClient.get(url)
-                if (response.status.isSuccess())
-                    return response.bodyAsBytes()
-                else {
-                    logger.warning("Couldn't download external resource (${response.status})")
-                    null
-                }
-            }
 
 }
