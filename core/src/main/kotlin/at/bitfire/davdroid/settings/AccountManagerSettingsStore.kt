@@ -10,6 +10,8 @@ import android.content.Context
 import android.os.Looper
 import androidx.annotation.WorkerThread
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.accounts.AccountId
+import at.bitfire.davdroid.accounts.LegacyAccount
 import at.bitfire.davdroid.settings.AccountManagerSettingsStore.Companion.CREDENTIALS_LOCK
 import at.bitfire.davdroid.settings.AccountManagerSettingsStore.Companion.CREDENTIALS_LOCK_AT_LOGIN_AND_SETTINGS
 import at.bitfire.davdroid.settings.migration.AccountSettingsMigration
@@ -31,7 +33,7 @@ import java.util.logging.Logger
 import javax.inject.Provider
 
 class AccountManagerSettingsStore @AssistedInject constructor(
-    @Assisted val account: Account,
+    @Assisted override val accountId: AccountId,
     @Assisted val abortOnMissingMigration: Boolean,
     private val automaticSyncManager: AutomaticSyncManager,
     @ApplicationContext private val context: Context,
@@ -46,12 +48,20 @@ class AccountManagerSettingsStore @AssistedInject constructor(
          * **Must not be called on main thread. Throws exceptions!** See [AccountManagerSettingsStore] for details.
          */
         @WorkerThread
-        fun create(account: Account, abortOnMissingMigration: Boolean = false): AccountManagerSettingsStore
+        fun create(accountId: AccountId, abortOnMissingMigration: Boolean = false): AccountManagerSettingsStore
+
+        @WorkerThread
+        @Deprecated("Use AccountId overload directly")
+        fun create(account: Account, abortOnMissingMigration: Boolean = false) = create(LegacyAccount(account), abortOnMissingMigration)
     }
 
     init {
         if (Looper.getMainLooper() == Looper.myLooper())
             throw IllegalThreadStateException("AccountManagerSettingsStore may not be used on main thread")
+    }
+
+    private val account: Account = when(accountId) {
+        is LegacyAccount -> accountId.androidAccount
     }
 
     val accountManager: AccountManager = AccountManager.get(context)

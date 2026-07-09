@@ -4,11 +4,14 @@
 
 package at.bitfire.davdroid.settings
 
+import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.synctools.vcard.GroupMethod
 import net.openid.appauth.AuthState
 
 interface AccountSettingsStore {
+
+    val accountId: AccountId
 
     //<editor-fold desc="authentication settings">
 

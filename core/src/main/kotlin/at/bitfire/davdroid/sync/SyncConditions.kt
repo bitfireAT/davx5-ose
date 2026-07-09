@@ -10,6 +10,7 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.net.wifi.WifiManager
 import androidx.core.content.getSystemService
+import at.bitfire.davdroid.accounts.LegacyAccount
 import at.bitfire.davdroid.settings.AccountSettingsStore
 import at.bitfire.davdroid.ui.NotificationRegistry
 import at.bitfire.davdroid.ui.account.WifiPermissionsActivity
@@ -50,8 +51,12 @@ class SyncConditions @AssistedInject constructor(
         accountSettings.getSyncWifiOnlySSIDs()?.let { onlySSIDs ->
             // check required permissions and location status
             if (!PermissionUtils.canAccessWifiSsid(context)) {
+                val account = when (val id = accountSettings.accountId) {
+                    is LegacyAccount -> id.androidAccount
+                }
+
                 // not all permissions granted; show notification
-                val intent = WifiPermissionsActivity.createIntent(context, accountSettings)
+                val intent = WifiPermissionsActivity.createIntent(context, account)
                     .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 notificationRegistry.notifyPermissions(intent)
 

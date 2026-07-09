@@ -16,6 +16,7 @@ import android.net.NetworkCapabilities.TRANSPORT_WIFI
 import android.net.wifi.WifiInfo
 import android.net.wifi.WifiManager
 import androidx.core.content.getSystemService
+import at.bitfire.davdroid.accounts.LegacyAccount
 import at.bitfire.davdroid.settings.AccountManagerSettingsStore
 import at.bitfire.davdroid.settings.AccountSettingsStore
 import at.bitfire.davdroid.sync.SyncConditions
@@ -74,7 +75,7 @@ class SyncConditionsTest {
 
         // prepare accountSettings with some necessary data
         accountSettings = mockk<AccountManagerSettingsStore> {
-            every { account } returns Account("test", "test")
+            every { accountId } returns LegacyAccount(Account("test", "test"))
             every { getIgnoreVpns() } returns false     // default value
         }
 
