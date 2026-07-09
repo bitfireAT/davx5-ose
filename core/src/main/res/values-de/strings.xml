@@ -512,4 +512,17 @@
     <string name="app_settings_push_enabled_summary">Ein, %s</string>
     <string name="app_settings_push_disabled_summary">Aus</string>
     <string name="app_settings_push_default_distributor_text">(Systemstandard)</string>
+    <string name="notification_channel_user_interaction_desc">Benutzereingriff erforderlich. Ein Problem oder eine Störung muss manuell behoben werden.</string>
+    <string name="app_settings_push_info_text"><![CDATA[Push-Nachrichten sind stets verschlüsselt. Weitere Informationen zu WebDAV-Push finden Sie unter <a href="%s">im Handbuch</a>.]]></string>
+    <string name="app_settings_push_capability_some">Derzeit unterstützen nur einige Ihrer synchronisierungsfähigen Server-Sammlungen WebDAV-Push.</string>
+    <string name="app_settings_push_select_default_distributor_description">Es sind mehrere UnifiedPush-Distributor-Apps installiert. Hier können Sie eine systemweite Standardeinstellung festlegen, damit andere UnifiedPush-fähige Apps nicht jedes Mal nachfragen müssen, welche davon verwendet werden soll.</string>
+    <string name="app_settings_push_select_default_distributor_action">Als Standard festlegen</string>
+    <string name="push_distributor_selection_required_title">Auswahl des Händlers erforderlich</string>
+    <string name="push_distributor_selection_required_message">Ein Standard-UnifiedPush-Verteiler konnte nicht ermittelt werden. Tippen Sie hier, um einen auszuwählen.</string>
+    <string name="app_settings_push_title">Push</string>
+    <string name="app_settings_push_description">Verwenden Sie „Push“, damit CalDAV-/CardDAV-/WebDAV-Server %s sofort über verfügbare Änderungen an Ihren Daten auf dem Server benachrichtigen.</string>
+    <string name="app_settings_push_use_push">„Push“ verwenden</string>
+    <string name="app_settings_push_no_push_services_found"><![CDATA[Es wurden keine Push-Dienste gefunden. Eine Liste der Distributor-Apps finden Sie unter <a href="%1$s">%2$s</a>.]]></string>
+    <string name="app_settings_push_push_services">Push-Dienst</string>
+    <string name="app_settings_push_capability_none">Keine Ihrer synchronisierungsfähigen Server-Sammlungen unterstützt derzeit WebDAV-Push.</string>
 </resources>
