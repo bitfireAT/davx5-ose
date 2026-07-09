@@ -96,15 +96,19 @@ class HttpClientBuilder private constructor(
      * Immutable snapshot of everything that can be configured on a [HttpClientBuilder] plus default config.
      */
     private data class Config(
-        val followRedirects: Boolean = false,
+        // logging
         val logger: Logger,
         val trafficLogLevel: LogLevel = LogLevel.ALL,
+        // authentication
         val certificateAlias: String? = null,
         val authUsername: String? = null,
         val authPassword: SensitiveString? = null,
         val authDomain: String? = null,
         val readAuthStateCallback: (() -> AuthState?)? = null,
-        val updateAuthStateCallback: ((AuthState) -> Unit)? = null
+        val updateAuthStateCallback: ((AuthState) -> Unit)? = null,
+        // request/response handling
+        val contentNegotiationJson: Boolean = false,
+        val followRedirects: Boolean = false
     )
 
     /**
@@ -122,15 +126,6 @@ class HttpClientBuilder private constructor(
         settingsManager,
         update(config)
     )
-
-    /**
-     * Sets whether the HTTP client should automatically follow redirects.
-     *
-     * @param follow true to follow redirects, false otherwise
-     * @return new builder with updated config (chainable)
-     */
-    @CheckReturnValue
-    fun followRedirects(follow: Boolean): HttpClientBuilder = withConfig { it.copy(followRedirects = follow) }
 
     /**
      * Sets the logger for the HTTP client (mainly used to log HTTP traffic).
@@ -200,6 +195,30 @@ class HttpClientBuilder private constructor(
 
         return@withConfig newConfig
     }
+
+    /**
+     * Sets whether the HTTP client should automatically convert JSON responses using
+     * the [ContentNegotiation] plugin with [lenientJson].
+     *
+     * - Adds `Accept: application/json` header to each request.
+     * - Allows to automatically deserialize a JSON response to a `@Serializable` data class.
+     * See Ktor content negotiation docs for more info.
+     *
+     * @param negotiateJson true to enable automatic JSON content negotiation
+     * @return new builder with updated config (chainable)
+     */
+    @CheckReturnValue
+    fun contentNegotiation(negotiateJson: Boolean): HttpClientBuilder =
+        withConfig { it.copy(contentNegotiationJson = negotiateJson) }
+
+    /**
+     * Sets whether the HTTP client should automatically follow redirects.
+     *
+     * @param follow true to follow redirects, false otherwise
+     * @return new builder with updated config (chainable)
+     */
+    @CheckReturnValue
+    fun followRedirects(follow: Boolean): HttpClientBuilder = withConfig { it.copy(followRedirects = follow) }
 
 
     // convenience builders from other classes
@@ -357,10 +376,12 @@ class HttpClientBuilder private constructor(
             socketTimeoutMillis = 120_000       // covers both read and write inactivity
         }
 
-        // automatically convert JSON from/into data classes (if requested in respective code)
-        install(ContentNegotiation) {
-            // use lenient parser that ignores unknown keys
-            json(lenientJson)
+        if (config.contentNegotiationJson) {
+            // allows to convert JSON from/into data classes automatically
+            install(ContentNegotiation) {
+                // use lenient parser that ignores unknown keys
+                json(lenientJson)
+            }
         }
 
         // Set User-Agent and Accept-Language on every request

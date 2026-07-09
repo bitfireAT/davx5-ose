@@ -126,11 +126,12 @@ class NextcloudLoginFlow @Inject constructor(
     }
 
     /**
-     * Creates a Ktor HTTP client that follows redirects.
+     * Creates a Ktor HTTP client that follows redirects and auto-negotiates JSON.
      */
     private fun createClient(): HttpClient =
         httpClientBuilder
             .followRedirects(true)
+            .contentNegotiation(negotiateJson = true)
             .build()
 
 
