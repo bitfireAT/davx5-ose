@@ -7,7 +7,7 @@ package at.bitfire.davdroid.sync
 import android.accounts.Account
 import at.bitfire.davdroid.MockEngineUtils.basic
 import at.bitfire.davdroid.network.HttpClientBuilder
-import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.settings.AccountManagerSettingsStore
 import at.bitfire.davdroid.settings.Credentials
 import at.bitfire.davdroid.sync.account.TestAccount
 import at.bitfire.synctools.util.SensitiveString.Companion.toSensitiveString
@@ -32,7 +32,7 @@ class ResourceRetrieverTest {
     val hiltRule = HiltAndroidRule(this)
 
     @Inject
-    lateinit var accountSettingsFactory: AccountSettings.Factory
+    lateinit var accountSettingsFactory: AccountManagerSettingsStore.Factory
 
     @Inject
     lateinit var resourceRetrieverFactory: ResourceRetriever.Factory
