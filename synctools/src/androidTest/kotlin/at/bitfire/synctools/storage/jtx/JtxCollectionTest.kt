@@ -200,6 +200,11 @@ class JtxCollectionTest {
         assertEquals("TWO", attachmentDataTwo)
     }
 
+    @Test(expected = IllegalArgumentException::class)
+    fun testAddJtxObjects_emptyList_throws() {
+        collection.addJtxObjects(emptyList())
+    }
+
     @Test
     fun testCountJtxObjects_empty() {
         assertEquals(0, collection.countJtxObjects(null, null))
