@@ -188,6 +188,31 @@ class HttpClientBuilderTest {
     }
 
     @Test
+    fun testContentNegotiation_DisabledByDefault() = runTest {
+        val engine = MockEngine.Default
+
+        httpClientBuilder.build(engine).use { client ->
+            client.get("https://example.com/")
+        }
+
+        val request = engine.requestHistory.first()
+        // without content negotiation, Ktor only sends its generic default Accept header
+        assertEquals("*/*", request.headers[HttpHeaders.Accept])
+    }
+
+    @Test
+    fun testContentNegotiation_EnabledWhenRequested() = runTest {
+        val engine = MockEngine.Default
+
+        httpClientBuilder.contentNegotiation(negotiateJson = true).build(engine).use { client ->
+            client.get("https://example.com/")
+        }
+
+        val request = engine.requestHistory.first()
+        assertTrue(request.headers[HttpHeaders.Accept]?.contains("application/json") == true)
+    }
+
+    @Test
     fun testContentEncoding_HandlesIdentityEncoding() = runTest {
         val engine = MockEngine.basic(
             "Some Content",
