@@ -4,14 +4,15 @@
 
 package at.bitfire.davdroid.ui.account
 
-import android.accounts.Account
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.TaskStackBuilder
-import androidx.core.content.IntentCompat
+import at.bitfire.davdroid.accounts.AccountId
+import at.bitfire.davdroid.accounts.AccountIdIntentSerializer
+import at.bitfire.davdroid.accounts.toAndroidAccount
 import at.bitfire.davdroid.ui.account.AccountActivity.Companion.editAccountActivityIntent
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -22,16 +23,17 @@ class CollectionActivity: AppCompatActivity() {
         private const val EXTRA_ACCOUNT = "account"
         private const val EXTRA_COLLECTION_ID = "collection_id"
         
-        fun createIntent(context: Context, account: Account, collectionId: Long): Intent {
+        fun createIntent(context: Context, accountId: AccountId, collectionId: Long): Intent {
             return Intent(context, CollectionActivity::class.java).apply {
-                putExtra(EXTRA_ACCOUNT, account)
+                AccountIdIntentSerializer.addExtra(this, EXTRA_ACCOUNT, accountId)
                 putExtra(EXTRA_COLLECTION_ID, collectionId)
             }
         }
     }
 
-    val account by lazy {
-        IntentCompat.getParcelableExtra(intent, EXTRA_ACCOUNT, Account::class.java) ?: throw IllegalArgumentException("EXTRA_ACCOUNT must be set")
+    val accountId by lazy {
+        AccountIdIntentSerializer.fromIntent(intent, EXTRA_ACCOUNT) 
+            ?: throw IllegalArgumentException("EXTRA_ACCOUNT must be set")
     }
     val collectionId by lazy { intent.getLongExtra(EXTRA_COLLECTION_ID, -1) }
 
@@ -51,7 +53,7 @@ class CollectionActivity: AppCompatActivity() {
     override fun supportShouldUpRecreateTask(targetIntent: Intent) = true
 
     override fun onPrepareSupportNavigateUpTaskStack(builder: TaskStackBuilder) {
-        builder.editIntentAt(builder.intentCount - 1)?.editAccountActivityIntent(account)
+        builder.editIntentAt(builder.intentCount - 1)?.editAccountActivityIntent(accountId.toAndroidAccount())
     }
 
 }

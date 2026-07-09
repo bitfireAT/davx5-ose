@@ -4,11 +4,12 @@
 
 package at.bitfire.davdroid.ui.account
 
-import android.accounts.Account
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import at.bitfire.davdroid.accounts.AccountId
+import at.bitfire.davdroid.accounts.toAndroidAccount
 import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavHomeSetRepository
@@ -31,17 +32,17 @@ import java.util.Locale
 
 @HiltViewModel(assistedFactory = CreateCalendarViewModel.Factory::class)
 class CreateCalendarViewModel @AssistedInject constructor(
-    @Assisted val account: Account,
+    @Assisted val accountId: AccountId,
     private val collectionRepository: DavCollectionRepository,
     homeSetRepository: DavHomeSetRepository
 ): ViewModel() {
 
     @AssistedFactory
     interface Factory {
-        fun create(account: Account): CreateCalendarViewModel
+        fun create(accountId: AccountId): CreateCalendarViewModel
     }
 
-    val calendarHomeSets = homeSetRepository.getCalendarHomeSetsFlow(account)
+    val calendarHomeSets = homeSetRepository.getCalendarHomeSetsFlow(accountId)
 
     data class TimeZoneInfo(
         val id: String,
@@ -137,7 +138,7 @@ class CreateCalendarViewModel @AssistedInject constructor(
         createCollectionScope.launch {
             uiState = try {
                 collectionRepository.createCalendar(
-                    account = account,
+                    account = accountId.toAndroidAccount(),
                     homeSet = homeSet,
                     color = uiState.color,
                     displayName = uiState.displayName,
