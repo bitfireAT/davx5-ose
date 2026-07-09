@@ -50,7 +50,7 @@ class AccountActivity : AppCompatActivity() {
             AccountScreen(
                 account = account,
                 onAccountSettings = {
-                    val intent = AccountSettingsActivity.createIntent(this, account)
+                    val intent = AccountSettingsActivity.createIntent(this, account.toAccountId())
                     startActivity(intent, null)
                 },
                 onCreateAddressBook = {
