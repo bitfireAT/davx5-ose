@@ -73,9 +73,7 @@ class PushNotificationManager @Inject constructor(
             title = context.getString(R.string.sync_notification_pending_push_title),
             text = context.getString(R.string.sync_notification_pending_push_message),
             subText = account.name,
-            intent = Intent(context, AccountActivity::class.java).apply {
-                putExtra(AccountActivity.EXTRA_ACCOUNT, account)
-            }
+            intent = AccountActivity.createIntent(context, account)
         )
     }
 

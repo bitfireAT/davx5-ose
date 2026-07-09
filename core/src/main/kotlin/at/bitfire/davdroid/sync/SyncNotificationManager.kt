@@ -30,7 +30,6 @@ import dagger.assisted.AssistedInject
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.ktor.http.Url
 import java.io.IOException
-import java.util.logging.Level
 import java.util.logging.Logger
 
 class SyncNotificationManager @AssistedInject constructor(
@@ -60,7 +59,7 @@ class SyncNotificationManager @AssistedInject constructor(
                 R.string.sync_warning_calendar_storage_disabled_title to
                 R.string.sync_warning_calendar_storage_disabled_description
             else -> {
-                logger.log(Level.WARNING, "Content provider error for unknown authority: $authority")
+                logger.warning("Content provider error for unknown authority: $authority")
                 return
             }
         }
@@ -117,11 +116,7 @@ class SyncNotificationManager @AssistedInject constructor(
     ) = notificationRegistry.notifyIfPossible(NotificationRegistry.NOTIFY_SYNC_ERROR, tag = notificationTag) {
         val contentIntent: Intent
         if (e is UnauthorizedException) {
-            contentIntent = Intent(context, AccountSettingsActivity::class.java)
-            contentIntent.putExtra(
-                AccountSettingsActivity.EXTRA_ACCOUNT,
-                account
-            )
+            contentIntent = AccountSettingsActivity.createIntent(context, account)
         } else {
             contentIntent = buildDebugInfoIntent(syncDataType, e, local, remote)
         }

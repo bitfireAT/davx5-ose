@@ -4,13 +4,16 @@
 
 package at.bitfire.davdroid.ui.account
 
-import android.accounts.Account
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.TaskStackBuilder
-import androidx.core.content.IntentCompat
+import at.bitfire.davdroid.accounts.AccountId
+import at.bitfire.davdroid.accounts.AccountIdIntentSerializer
+import at.bitfire.davdroid.accounts.toAndroidAccount
+import at.bitfire.davdroid.ui.account.AccountActivity.Companion.editAccountActivityIntent
 import at.bitfire.davdroid.ui.composable.AppTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -18,11 +21,18 @@ import dagger.hilt.android.AndroidEntryPoint
 class CreateCalendarActivity: AppCompatActivity() {
 
     companion object {
-        const val EXTRA_ACCOUNT = "account"
+        private const val EXTRA_ACCOUNT = "account"
+        
+        fun createIntent(context: Context, accountId: AccountId): Intent {
+            return Intent(context, CreateCalendarActivity::class.java).apply {
+                AccountIdIntentSerializer.addExtra(this, EXTRA_ACCOUNT, accountId)
+            }
+        }
     }
 
-    val account by lazy {
-        IntentCompat.getParcelableExtra(intent, EXTRA_ACCOUNT, Account::class.java) ?: throw IllegalArgumentException("EXTRA_ACCOUNT must be set")
+    val accountId by lazy {
+        AccountIdIntentSerializer.fromIntent(intent, EXTRA_ACCOUNT) 
+            ?: throw IllegalArgumentException("EXTRA_ACCOUNT must be set")
     }
 
 
@@ -32,7 +42,7 @@ class CreateCalendarActivity: AppCompatActivity() {
         setContent {
             AppTheme {
                 CreateCalendarScreen(
-                    account = account,
+                    accountId = accountId,
                     onNavUp = ::onSupportNavigateUp,
                     onFinish = ::finish
                 )
@@ -43,7 +53,7 @@ class CreateCalendarActivity: AppCompatActivity() {
     override fun supportShouldUpRecreateTask(targetIntent: Intent) = true
 
     override fun onPrepareSupportNavigateUpTaskStack(builder: TaskStackBuilder) {
-        builder.editIntentAt(builder.intentCount - 1)?.putExtra(AccountActivity.EXTRA_ACCOUNT, account)
+        builder.editIntentAt(builder.intentCount - 1)?.editAccountActivityIntent(accountId.toAndroidAccount())
     }
 
 }

@@ -38,7 +38,7 @@ class DmfsTaskListProvider(
     // DmfsTaskList CRUD
 
     fun createTaskList(values: ContentValues): Long {
-        logger.log(Level.FINE, "Creating ${providerName.authority} local task list", values)
+        logger.log(Level.FINE, "Creating {0} local task list with {1}", arrayOf(providerName.authority, values))
 
         values.put(TaskContract.ACCOUNT_NAME, account.name)
         values.put(TaskContract.ACCOUNT_TYPE, account.type)
@@ -63,7 +63,8 @@ class DmfsTaskListProvider(
      */
     fun createAndGetTaskList(values: ContentValues): DmfsTaskList {
         val id = createTaskList(values)
-        return getTaskList(id) ?: throw LocalStorageException("Couldn't query ${providerName.authority} task list that was just created")
+        return getTaskList(id)
+            ?: throw LocalStorageException("Couldn't query ${providerName.authority} task list that was just created")
     }
 
     /**
@@ -76,7 +77,11 @@ class DmfsTaskListProvider(
      * @return list of task lists
      * @throws LocalStorageException when the content provider returns an error
      */
-    fun findTaskLists(where: String? = null, whereArgs: Array<String>? = null, sortOrder: String? = null): List<DmfsTaskList> {
+    fun findTaskLists(
+        where: String? = null,
+        whereArgs: Array<String>? = null,
+        sortOrder: String? = null
+    ): List<DmfsTaskList> {
         val result = LinkedList<DmfsTaskList>()
         try {
             client.query(taskListsUri, null, where, whereArgs, sortOrder)?.use { cursor ->
@@ -145,7 +150,7 @@ class DmfsTaskListProvider(
         }
 
     fun updateTaskList(id: Long, info: ContentValues): Int {
-        logger.log(Level.FINE, "Updating ${providerName.authority} task list (#$id)", info)
+        logger.log(Level.FINE, "Updating {0} task list {1} with {2}", arrayOf(providerName.authority, id, info))
         try {
             return client.update(taskListUri(id), info, null, null)
         } catch (e: RemoteException) {
@@ -159,7 +164,7 @@ class DmfsTaskListProvider(
      * @return `true` if the task list was deleted, `false` otherwise (like it was not there before the call)
      */
     fun deleteTaskList(id: Long): Boolean {
-        logger.log(Level.FINE, "Deleting ${providerName.authority} task list (#$id)")
+        logger.log(Level.FINE, "Deleting {0} task list {1}", arrayOf<Any>(providerName.authority, id))
         try {
             return client.delete(taskListUri(id), null, null) > 0
         } catch (e: RemoteException) {

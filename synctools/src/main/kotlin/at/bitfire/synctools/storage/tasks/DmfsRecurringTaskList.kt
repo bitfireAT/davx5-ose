@@ -19,7 +19,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
 import org.dmfs.tasks.contract.TaskContract
 import org.dmfs.tasks.contract.TaskContract.Tasks
-import java.util.logging.Level
 import java.util.logging.Logger
 
 /**
@@ -188,7 +187,7 @@ class DmfsRecurringTaskList(
 
         if (!recurring) {
             if (original.exceptions.isNotEmpty())
-                logger.log(Level.WARNING, "Dropping exceptions of task because task is not recurring", main)
+                logger.warning("Dropping exceptions of task because task is not recurring: $main")
             return TaskAndExceptions(main = main, exceptions = emptyList())
         }
 

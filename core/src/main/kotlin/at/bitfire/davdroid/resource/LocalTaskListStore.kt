@@ -56,11 +56,11 @@ class LocalTaskListStore @AssistedInject constructor(
             /* return */ null
     }
 
-    override fun create(client: ContentProviderClient, fromCollection: Collection): LocalTaskList? {
+    override fun create(client: ContentProviderClient, fromCollection: Collection): LocalTaskList {
         val service = serviceDao.get(fromCollection.serviceId) ?: throw IllegalArgumentException("Couldn't fetch DB service from collection")
         val account = Account(service.accountName, context.getString(R.string.account_type))
 
-        logger.log(Level.INFO, "Adding local task list", fromCollection)
+        logger.info("Adding local task list: $fromCollection")
         val dmfsTaskList = create(account, client, providerName, fromCollection)
         return LocalTaskList(dmfsTaskList)
     }
@@ -111,7 +111,7 @@ class LocalTaskListStore @AssistedInject constructor(
             ?.let { LocalTaskList(it) }
 
     override fun update(client: ContentProviderClient, localCollection: LocalTaskList, fromCollection: Collection) {
-        logger.log(Level.FINE, "Updating local task list ${fromCollection.url}", fromCollection)
+        logger.log(Level.FINE, "Updating local task list {0}: {1}", arrayOf(fromCollection.url, fromCollection))
         val accountSettings = accountSettingsFactory.create(localCollection.dmfsTaskList.account)
         localCollection.dmfsTaskList.update(valuesFromCollectionInfo(fromCollection, withColor = accountSettings.getManageCalendarColors()))
     }

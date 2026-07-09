@@ -15,7 +15,6 @@ import at.techbee.jtx.JtxContract
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
-import java.util.logging.Level
 import java.util.logging.Logger
 
 /**
@@ -169,7 +168,8 @@ class JtxRecurringCollection(
             collection.updateJtxObject(id, cleaned.main)
 
             // add updated exceptions
-            collection.addJtxObjects(cleaned.exceptions)
+            if (cleaned.exceptions.isNotEmpty())
+                collection.addJtxObjects(cleaned.exceptions)
 
             return id
         } catch (e: RemoteException) {
@@ -237,7 +237,7 @@ class JtxRecurringCollection(
             // without a UID, exceptions cannot be associated to the main object in the jtx provider
             // and without recurrence fields, exceptions are meaningless
             if (original.exceptions.isNotEmpty())
-                logger.log(Level.WARNING, "Dropping exceptions of jtx object because it is not recurring or UID is not set", main)
+                logger.warning("Dropping exceptions of jtx object because it is not recurring or UID is not set: $main")
 
             return JtxEntityAndExceptions(main = main, exceptions = emptyList())
         }

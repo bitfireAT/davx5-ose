@@ -22,7 +22,7 @@ import javax.inject.Inject
 class RenameDocumentOperation @Inject constructor(
     @ApplicationContext private val context: Context,
     private val db: AppDatabase,
-    private val httpClientBuilder: DavHttpClientBuilder,
+    private val davClientBuilder: DavHttpClientBuilder,
     private val logger: Logger
 ) {
 
@@ -32,8 +32,8 @@ class RenameDocumentOperation @Inject constructor(
         logger.fine("WebDAV renameDocument $documentId $displayName")
         val doc = documentDao.get(documentId.toLong()) ?: throw FileNotFoundException()
 
-        httpClientBuilder
-            .buildKtor(doc.mountId)
+        davClientBuilder
+            .build(doc.mountId)
             .use { httpClient ->
                 for (attempt in 0..DocumentProviderUtils.MAX_DISPLAYNAME_TO_MEMBERNAME_ATTEMPTS) {
                     val newName = displayNameToMemberName(displayName, attempt)

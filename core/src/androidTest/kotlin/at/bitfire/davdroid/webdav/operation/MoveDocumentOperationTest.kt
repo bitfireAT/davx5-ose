@@ -4,24 +4,26 @@
 
 package at.bitfire.davdroid.webdav.operation
 
-import android.security.NetworkSecurityPolicy
-import at.bitfire.dav4jvm.HttpUtils.toKtorUrl
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.WebDavDocument
-import at.bitfire.davdroid.db.WebDavDocumentDao
 import at.bitfire.davdroid.db.WebDavMount
 import at.bitfire.davdroid.db.WebDavMountDao
+import at.bitfire.davdroid.webdav.DavHttpClientBuilder
+import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.mock.MockEngine
+import io.ktor.client.engine.mock.respond
+import io.ktor.http.HttpStatusCode
+import io.ktor.http.Url
+import io.mockk.every
+import io.mockk.junit4.MockKRule
+import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
-import okhttp3.mockwebserver.Dispatcher
-import okhttp3.mockwebserver.MockResponse
-import okhttp3.mockwebserver.MockWebServer
-import okhttp3.mockwebserver.RecordedRequest
 import org.junit.After
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -33,53 +35,50 @@ class MoveDocumentOperationTest {
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
 
+    @get:Rule
+    val mockkRule = MockKRule(this)
+
     @Inject
     lateinit var db: AppDatabase
 
     @Inject
     lateinit var operation: MoveDocumentOperation
 
-    private lateinit var server: MockWebServer
+    private val mockEngine = MockEngine { request ->
+        when {
+            request.method.value.equals("MOVE", ignoreCase = true) -> respond("", HttpStatusCode.NoContent)
+            else -> respond("", HttpStatusCode.NotFound)
+        }
+    }
 
-    private lateinit var documentDao: WebDavDocumentDao
+    @BindValue
+    @JvmField
+    val httpClientBuilder: DavHttpClientBuilder = mockk()
+
     private lateinit var mountDao: WebDavMountDao
     private lateinit var mount: WebDavMount
 
     @Before
     fun setUp() {
         hiltRule.inject()
-        documentDao = db.webDavDocumentDao()
+        every { httpClientBuilder.build(any(), any()) } answers { HttpClient(mockEngine) }
+
         mountDao = db.webDavMountDao()
-
-        server = MockWebServer().apply {
-            dispatcher = object : Dispatcher() {
-                override fun dispatch(request: RecordedRequest): MockResponse =
-                    when {
-                        request.method.equals("MOVE", ignoreCase = true) -> MockResponse().setResponseCode(204)
-                        else -> MockResponse().setResponseCode(404)
-                    }
-            }
-            start()
-        }
-
-        assertTrue(NetworkSecurityPolicy.getInstance().isCleartextTrafficPermitted)
-
-        // set up WebDAV mount
         runBlocking {
-            val mountId = mountDao.insert(WebDavMount(0, "Test Mount", server.url("/webdav/").toKtorUrl()))
+            val mountId = mountDao.insert(WebDavMount(0, "Test Mount", Url("https://mock.example.com/webdav/")))
             mount = mountDao.getById(mountId)
         }
     }
 
     @After
     fun tearDown() {
-        server.shutdown()
         runBlocking { mountDao.deleteAsync(mount) }
     }
 
 
     @Test
     fun testMove_updatesDb() = runTest {
+        val documentDao = db.webDavDocumentDao()
         val root = documentDao.getOrCreateRoot(mount)
 
         // folder and file to move

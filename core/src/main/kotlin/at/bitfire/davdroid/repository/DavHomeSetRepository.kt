@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.repository
 
 import android.accounts.Account
+import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.db.Service
@@ -25,8 +26,8 @@ class DavHomeSetRepository @Inject constructor(
 
     fun getByServiceBlocking(serviceId: Long) = dao.getByService(serviceId)
 
-    fun getCalendarHomeSetsFlow(account: Account) =
-        dao.getBindableByAccountAndServiceTypeFlow(account.name, Service.TYPE_CALDAV)
+    fun getCalendarHomeSetsFlow(accountId: AccountId) =
+        dao.getBindableByAccountAndServiceTypeFlow(accountId, Service.TYPE_CALDAV)
 
     fun insertOrUpdateByUrlBlocking(homeSet: HomeSet): Long =
         dao.insertOrUpdateByUrlBlocking(homeSet)

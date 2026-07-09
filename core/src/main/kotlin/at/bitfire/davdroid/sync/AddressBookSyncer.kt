@@ -58,7 +58,7 @@ class AddressBookSyncer @AssistedInject constructor(
         localCollection: LocalAddressBook,
         remoteCollection: Collection
     ) {
-        logger.info("Synchronizing address book: ${localCollection.addressBookAccount.name}")
+        logger.log(Level.INFO, "Synchronizing address book: {0}", arrayOf(localCollection.addressBookAccount.name))
         syncAddressBook(
             account = account,
             addressBook = localCollection,

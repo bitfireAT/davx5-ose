@@ -25,7 +25,6 @@ import at.bitfire.synctools.mapping.contacts.handler.UnknownPropertiesHandler
 import at.bitfire.synctools.mapping.contacts.handler.WebsiteHandler
 import at.bitfire.synctools.storage.contacts.AddressContract
 import at.bitfire.synctools.storage.contacts.AndroidContact
-import java.util.logging.Level
 import java.util.logging.Logger
 
 class RawContactHandler(
@@ -81,7 +80,7 @@ class RawContactHandler(
                 handler.handle(values, contact)
         else {
             val logger = Logger.getLogger(javaClass.name)
-            logger.log(Level.WARNING, "No registered handler for $mimeType", values)
+            logger.warning("No registered handler for $mimeType: $values")
         }
     }
 

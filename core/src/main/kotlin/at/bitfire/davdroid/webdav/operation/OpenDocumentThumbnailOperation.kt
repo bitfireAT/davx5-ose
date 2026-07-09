@@ -41,7 +41,7 @@ import kotlin.use
 class OpenDocumentThumbnailOperation @Inject constructor(
     @ApplicationContext private val context: Context,
     private val db: AppDatabase,
-    private val httpClientBuilder: DavHttpClientBuilder,
+    private val davClientBuilder: DavHttpClientBuilder,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val logger: Logger,
     private val thumbnailCache: ThumbnailCache
@@ -101,8 +101,8 @@ class OpenDocumentThumbnailOperation @Inject constructor(
         }
 
     private suspend fun downloadAndCreateThumbnail(doc: WebDavDocument, db: AppDatabase, sizeHint: Point): ByteArray? =
-        httpClientBuilder
-            .buildKtor(doc.mountId, logBody = false)
+        davClientBuilder
+            .build(doc.mountId, logBody = false)
             .use { httpClient ->
             val url = doc.toKtorUrl(db)
             try {

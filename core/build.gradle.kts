@@ -138,6 +138,7 @@ dependencies {
     implementation(libs.conscrypt)
     implementation(libs.dnsjava)
     implementation(libs.guava)
+    implementation(libs.ktor.client.auth)
     implementation(libs.ktor.client.content.negotiation)
     implementation(libs.ktor.client.core)
     implementation(libs.ktor.client.encoding)
@@ -172,14 +173,17 @@ dependencies {
     androidTestImplementation(libs.kotlinx.coroutines.test)
     androidTestImplementation(libs.ktor.client.mock)
     androidTestImplementation(libs.mockk.android)
-    androidTestImplementation(libs.okhttp.mockwebserver)
     androidTestImplementation(testFixtures(project(":synctools")))
 
     testImplementation(libs.bitfire.dav4jvm)
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.mockk)
-    testImplementation(libs.okhttp.mockwebserver)
     testImplementation(libs.robolectric)
     testImplementation(testFixtures(project(":synctools")))
+}
+
+tasks.withType<Test>().configureEach {
+    // activate verbose logging for tests
+    systemProperty("java.util.logging.config.file", "$projectDir/src/test/resources/logging.properties")
 }

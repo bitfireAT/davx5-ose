@@ -41,8 +41,7 @@ class LoginActivity @Inject constructor(): AppCompatActivity() {
                     finish()
 
                     newAccount?.let { newAccount ->
-                        val intent = Intent(this, AccountActivity::class.java)
-                        intent.putExtra(AccountActivity.EXTRA_ACCOUNT, newAccount)
+                        val intent = AccountActivity.createIntent(this, newAccount)
                         startActivity(intent)
                     }
                 }

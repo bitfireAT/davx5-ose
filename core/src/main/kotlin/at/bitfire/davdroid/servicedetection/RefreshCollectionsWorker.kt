@@ -145,7 +145,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
         }
 
         try {
-            logger.info("Refreshing ${service.type} collections of service #$service")
+            logger.log(Level.INFO, "Refreshing {0} collections of service #{1}", arrayOf(service.type, service))
 
             // cancel previous notification
             NotificationManagerCompat.from(applicationContext)
@@ -154,7 +154,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
             // create authenticating HttpClient (credentials taken from account settings)
             httpClientBuilder
                 .fromAccount(account)
-                .buildKtor()
+                .build()
                 .use { httpClient ->
                     val refresher = collectionsWithoutHomeSetRefresherFactory.create(service, httpClient)
 
@@ -183,8 +183,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
         } catch (e: UnauthorizedException) {
             logger.log(Level.SEVERE, "Not authorized (anymore)", e)
             // notify that we need to re-authenticate in the account settings
-            val settingsIntent = Intent(applicationContext, AccountSettingsActivity::class.java)
-                .putExtra(AccountSettingsActivity.EXTRA_ACCOUNT, account)
+            val settingsIntent = AccountSettingsActivity.createIntent(applicationContext, account)
             notifyRefreshError(
                 applicationContext.getString(R.string.sync_error_authentication_failed),
                 settingsIntent
