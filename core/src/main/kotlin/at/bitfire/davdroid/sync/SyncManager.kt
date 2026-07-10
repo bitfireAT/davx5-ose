@@ -597,10 +597,10 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
      * @param listRemote function to list remote resources (for instance, all since a certain sync-token)
      */
     protected open suspend fun syncRemote(listRemote: suspend (MultiResponseCallback) -> Unit) = coroutineScope {    // structured concurrency
-        val batchDownloader = BatchDownloader(batchSize = MAX_MULTIGET_RESOURCES) { bunch ->
+        val batchDownloader = BatchDownloader { batch ->
             launch {
                 syncTransferSemaphore.withPermit {
-                    downloadRemote(bunch)
+                    downloadRemote(batch)
                 }
             }
         }
@@ -625,7 +625,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
                         SyncException.wrapWithLocalResource(local) {
                             if (local == null) {
                                 logger.info("$name has been added remotely, queueing download")
-                                batchDownloader += response.href
+                                batchDownloader.enqueue(response.href)
                             } else {
                                 val localETag = local.eTag
                                 val remoteETag = response[GetETag::class.java]?.eTag
@@ -634,7 +634,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
                                     logger.info("$name has not been changed on server (ETag still $remoteETag)")
                                 } else {
                                     logger.info("$name has been changed on server (current ETag=$remoteETag, last known ETag=$localETag)")
-                                    batchDownloader += response.href
+                                    batchDownloader.enqueue(response.href)
                                 }
 
                                 // mark as remotely present, so that this resource won't be deleted at the end
@@ -872,14 +872,6 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
             },
             callback = callback
         )
-    }
-
-
-    companion object {
-
-        /** Maximum number of resources that are requested with one multiget request. */
-        const val MAX_MULTIGET_RESOURCES = 20
-
     }
 
 }

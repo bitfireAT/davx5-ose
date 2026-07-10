@@ -89,7 +89,7 @@ class BatchDownloaderTest {
         val batches = mutableListOf<List<Url>>()
         val downloader = BatchDownloader(batchSize = 1) { batches += it }
 
-        downloader += url(1)
+        downloader.enqueue(url(1))
 
         assertEquals(listOf(listOf(url(1))), batches)
     }
