@@ -63,7 +63,6 @@ import java.io.IOException
 import java.security.cert.CertificateException
 import java.util.Optional
 import java.util.concurrent.CancellationException
-import java.util.concurrent.atomic.AtomicInteger
 import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
@@ -376,22 +375,18 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
      *
      * @return whether local resources have been processed so that a synchronization is always necessary
      */
-    protected open suspend fun uploadDirty(): Boolean = coroutineScope {    // structured concurrency
-        val numUploaded = AtomicInteger(0)
+    protected open suspend fun uploadDirty(): Boolean {
+        var numUploaded = 0
 
         localCollection.findDirty().collect { local ->
-            launch {
-                syncTransferSemaphore.withPermit {
-                    SyncException.wrapWithLocalResource(local) {
-                        uploadDirty(local)
-                        numUploaded.incrementAndGet()
-                    }
-                }
+            SyncException.wrapWithLocalResource(local) {
+                uploadDirty(local)
+                numUploaded++
             }
         }
 
-        logger.info("Sent ${numUploaded.get()} record(s) to server")
-        numUploaded.get() > 0
+        logger.info("Sent $numUploaded record(s) to server")
+        return numUploaded > 0
     }
 
     /**

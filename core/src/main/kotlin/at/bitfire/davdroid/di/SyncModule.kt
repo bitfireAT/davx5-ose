@@ -17,15 +17,11 @@ import javax.inject.Singleton
 class SyncModule {
 
     /**
-     * Limits how many sync uploads/downloads may run at the same time, app-wide, so that a sync
-     * of a huge collection doesn't open an unbounded number of concurrent HTTP requests / local
-     * storage writes. Only meant to be acquired around the actual network transfer of a resource
-     * (upload or download) — not around unrelated sync work like listing or local lookups, so
-     * that a slow/blocking transfer can't starve unrelated sync operations.
+     * Semaphore to limit concurrent sync downloads/uploads, app-wide. (Currently only used for downloads.)
      *
-     * Sized to the number of available processors, but at least 2 (so single-core devices still
-     * get some overlap between transfers) and at most 8 (to avoid opening too many concurrent
-     * requests/local writes on very high-core-count devices).
+     * Sized to the number of available processors, clamped to
+     * - 2 (some overlap even on single-core devices) to
+     * - 8 (avoid too many concurrent requests/local writes on high-core-count devices).
      */
     @Provides
     @SyncTransferSemaphore

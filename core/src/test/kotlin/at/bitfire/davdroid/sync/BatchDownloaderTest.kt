@@ -63,29 +63,7 @@ class BatchDownloaderTest {
     }
 
     @Test
-    fun testFlush_NonEmptyRemainder_DownloadsRemainder() = runTest {
-        val batches = mutableListOf<List<Url>>()
-        val downloader = BatchDownloader(batchSize = 10) { batches += it }
-
-        downloader.enqueue(url(1))
-        downloader.enqueue(url(2))
-        downloader.flush()
-
-        assertEquals(listOf(listOf(url(1), url(2))), batches)
-    }
-
-    @Test
-    fun testFlush_EmptyQueue_DoesNotDownload() = runTest {
-        val batches = mutableListOf<List<Url>>()
-        val downloader = BatchDownloader(batchSize = 10) { batches += it }
-
-        downloader.flush()
-
-        assertTrue(batches.isEmpty())
-    }
-
-    @Test
-    fun testPlusAssign_BehavesLikeEnqueue() = runTest {
+    fun testEnqueue_BatchSizeOne_DownloadsImmediately() = runTest {
         val batches = mutableListOf<List<Url>>()
         val downloader = BatchDownloader(batchSize = 1) { batches += it }
 
@@ -107,6 +85,28 @@ class BatchDownloaderTest {
 
         assertEquals(urls.size, downloaded.size)
         assertEquals(urls.toSet(), downloaded.toSet())
+    }
+
+    @Test
+    fun testFlush_NonEmptyRemainder_DownloadsRemainder() = runTest {
+        val batches = mutableListOf<List<Url>>()
+        val downloader = BatchDownloader(batchSize = 10) { batches += it }
+
+        downloader.enqueue(url(1))
+        downloader.enqueue(url(2))
+        downloader.flush()
+
+        assertEquals(listOf(listOf(url(1), url(2))), batches)
+    }
+
+    @Test
+    fun testFlush_EmptyQueue_DoesNotDownload() = runTest {
+        val batches = mutableListOf<List<Url>>()
+        val downloader = BatchDownloader(batchSize = 10) { batches += it }
+
+        downloader.flush()
+
+        assertTrue(batches.isEmpty())
     }
 
 }
