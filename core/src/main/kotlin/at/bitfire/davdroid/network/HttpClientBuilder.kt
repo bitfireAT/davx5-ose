@@ -7,9 +7,9 @@ package at.bitfire.davdroid.network
 import android.accounts.Account
 import androidx.annotation.VisibleForTesting
 import androidx.annotation.WorkerThread
+import at.bitfire.dav4jvm.ktor.DomainAuthProvider
+import at.bitfire.dav4jvm.ktor.PreemptiveBasicDigestAuthProvider
 import at.bitfire.dav4jvm.ktor.UrlUtils
-import at.bitfire.dav4jvm.ktor.createDomainBasicAuthProvider
-import at.bitfire.dav4jvm.ktor.createDomainDigestAuthProvider
 import at.bitfire.davdroid.ProductIds
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.settings.AccountSettings
@@ -322,7 +322,7 @@ class HttpClientBuilder private constructor(
         val readAuthState = config.readAuthStateCallback
         val updateAuthState = config.updateAuthStateCallback
         when {
-            // prefer OAuth, if available
+            // prefer OAuth, if auth state is available
             readAuthState != null -> {
                 install(Auth) {
                     providers.add(
@@ -334,22 +334,13 @@ class HttpClientBuilder private constructor(
                 }
             }
 
-            // otherwise use basic / digest, if available
+            // otherwise use basic / digest, if username / password are available
             username != null && password != null -> {
                 install(Auth) {
                     providers.add(
-                        createDomainBasicAuthProvider(
-                            username = username,
-                            password = password.asString(),
-                            firstLevelDomain = config.authDomain,
-                            insecurePreemptive = true
-                        )
-                    )
-                    providers.add(
-                        createDomainDigestAuthProvider(
-                            username = username,
-                            password = password.asString(),
-                            firstLevelDomain = config.authDomain
+                        DomainAuthProvider(
+                            config.authDomain,
+                            PreemptiveBasicDigestAuthProvider(username, password.asString())
                         )
                     )
                 }
