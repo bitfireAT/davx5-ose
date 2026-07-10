@@ -64,7 +64,7 @@ class OAuthProvider @AssistedInject constructor(
             realm = null,
             cacheTokens = true
         )
-        return DomainAuthProvider(firstLevelDomain, insecurePreemptive = true, bearerAuthProvider)
+        return DomainAuthProvider(firstLevelDomain, bearerAuthProvider)
     }
 
     /**
