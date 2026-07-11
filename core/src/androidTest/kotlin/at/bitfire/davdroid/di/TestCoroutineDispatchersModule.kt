@@ -7,7 +7,6 @@ package at.bitfire.davdroid.di
 import at.bitfire.davdroid.di.qualifier.DefaultDispatcher
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.di.qualifier.MainDispatcher
-import at.bitfire.davdroid.di.qualifier.SyncDispatcher
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.components.SingletonComponent
@@ -46,10 +45,6 @@ object TestCoroutineDispatchersModule {
     @Provides
     @MainDispatcher
     fun mainDispatcher(): CoroutineDispatcher = StandardTestDispatcher(testScheduler)
-
-    @Provides
-    @SyncDispatcher
-    fun syncDispatcher(): CoroutineDispatcher = StandardTestDispatcher(testScheduler)
 
     @OptIn(ExperimentalCoroutinesApi::class)
     fun initMainDispatcher() {
