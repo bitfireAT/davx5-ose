@@ -7,7 +7,7 @@ package at.bitfire.davdroid.sync
 import android.accounts.Account
 import android.text.format.Formatter
 import at.bitfire.dav4jvm.ktor.DavCalendar
-import at.bitfire.dav4jvm.ktor.MultiResponseCallback
+import at.bitfire.dav4jvm.ktor.MultiStatusItem
 import at.bitfire.dav4jvm.ktor.Response
 import at.bitfire.dav4jvm.ktor.exception.DavException
 import at.bitfire.dav4jvm.property.caldav.CalDAV
@@ -44,6 +44,9 @@ import io.ktor.client.HttpClient
 import io.ktor.http.Url
 import io.ktor.http.content.TextContent
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.sync.Semaphore
 import net.fortuna.ical4j.model.Component
 import net.fortuna.ical4j.model.component.VEvent
@@ -117,8 +120,9 @@ class CalendarSyncManager @AssistedInject constructor(
                 WebDAV.SupportedReportSet,
                 CalDAV.GetCTag,
                 WebDAV.SyncToken
-            ) { response, relation ->
-                if (relation == Response.HrefRelation.SELF) {
+            ).collect { item ->
+                if (item is MultiStatusItem.Response && item.relation == Response.HrefRelation.SELF) {
+                    val response = item.response
                     response[MaxResourceSize::class.java]?.maxSize?.let { maxSize ->
                         logger.info("Calendar accepts events up to ${Formatter.formatFileSize(context, maxSize)}")
                     }
@@ -176,22 +180,25 @@ class CalendarSyncManager @AssistedInject constructor(
         )
     }
 
-    override suspend fun listAllRemote(callback: MultiResponseCallback) {
+    override fun listAllRemote(): Flow<MultiStatusItem> = flow {
         // calculate time range limits
         val limitStart = accountSettings.getTimeRangePastDays()?.let { pastDays ->
             ZonedDateTime.now().minusDays(pastDays.toLong()).toInstant()
         }
 
-        return SyncException.wrapWithRemoteResource(collection.url) {
+        SyncException.wrapWithRemoteResource(collection.url) {
             logger.info("Querying events since $limitStart")
-            davCollection.calendarQuery(Component.VEVENT, limitStart, null, callback = callback)
+            emitAll(davCollection.calendarQuery(Component.VEVENT, limitStart, null))
         }
     }
 
     override suspend fun downloadRemote(bunch: List<Url>) {
         logger.info("Downloading ${bunch.size} iCalendars: $bunch")
         SyncException.wrapWithRemoteResource(collection.url) {
-            davCollection.multiget(bunch) { response, _ ->
+            davCollection.multiget(bunch).collect { item ->
+                if (item !is MultiStatusItem.Response) return@collect
+                val response = item.response
+
                 /*
                  * Real-world servers may return:
                  *

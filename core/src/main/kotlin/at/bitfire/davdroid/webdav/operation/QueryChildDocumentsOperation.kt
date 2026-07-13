@@ -8,6 +8,7 @@ import android.content.Context
 import android.provider.DocumentsContract.Document
 import android.provider.DocumentsContract.buildChildDocumentsUri
 import at.bitfire.dav4jvm.ktor.DavCollection
+import at.bitfire.dav4jvm.ktor.MultiStatusItem
 import at.bitfire.dav4jvm.ktor.Response
 import at.bitfire.dav4jvm.ktor.toContentTypeOrNull
 import at.bitfire.dav4jvm.property.webdav.CurrentUserPrivilegeSet
@@ -131,7 +132,9 @@ class QueryChildDocumentsOperation @Inject constructor(
         try {
             davClientBuilder.build(parent.mountId).use { client ->
                 val folder = DavCollection(client, parentUrl)
-                folder.propfind(1, *DAV_FILE_FIELDS) { response, relation ->
+                folder.propfind(1, *DAV_FILE_FIELDS).collect { item ->
+                    if (item !is MultiStatusItem.Response) return@collect
+                    val (response, relation) = item
                     logger.fine("$relation $response")
 
                     val resource: WebDavDocument =
@@ -145,7 +148,7 @@ class QueryChildDocumentsOperation @Inject constructor(
                             else -> {
                                 // we didn't request this; log a warning and ignore it
                                 logger.warning("Ignoring unexpected $response $relation in $parentUrl")
-                                return@propfind
+                                return@collect
                             }
                         }
 

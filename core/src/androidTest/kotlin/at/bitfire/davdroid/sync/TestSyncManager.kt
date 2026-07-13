@@ -6,7 +6,7 @@ package at.bitfire.davdroid.sync
 
 import android.accounts.Account
 import at.bitfire.dav4jvm.ktor.DavCollection
-import at.bitfire.dav4jvm.ktor.MultiResponseCallback
+import at.bitfire.dav4jvm.ktor.MultiStatusItem
 import at.bitfire.dav4jvm.ktor.Response
 import at.bitfire.dav4jvm.property.caldav.CalDAV
 import at.bitfire.dav4jvm.property.caldav.GetCTag
@@ -23,6 +23,8 @@ import io.ktor.client.HttpClient
 import io.ktor.http.Url
 import io.ktor.http.content.ByteArrayContent
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.sync.Semaphore
 import org.junit.Assert.assertEquals
 
@@ -69,9 +71,9 @@ class TestSyncManager @AssistedInject constructor(
         didQueryCapabilities = true
 
         var cTag: SyncState? = null
-        davCollection.propfind(0, CalDAV.GetCTag) { response, rel ->
-            if (rel == Response.HrefRelation.SELF)
-                response[GetCTag::class.java]?.cTag?.let {
+        davCollection.propfind(0, CalDAV.GetCTag).collect { item ->
+            if (item is MultiStatusItem.Response && item.relation == Response.HrefRelation.SELF)
+                item.response[GetCTag::class.java]?.cTag?.let {
                     cTag = SyncState(SyncState.Type.CTAG, it)
                 }
         }
@@ -95,12 +97,12 @@ class TestSyncManager @AssistedInject constructor(
 
     var listAllRemoteResult = emptyList<Pair<Response, Response.HrefRelation>>()
     var didListAllRemote = false
-    override suspend fun listAllRemote(callback: MultiResponseCallback) {
+    override fun listAllRemote(): Flow<MultiStatusItem> = flow {
         if (didListAllRemote)
             throw IllegalStateException("listAllRemote() must not be called twice")
         didListAllRemote = true
         for (result in listAllRemoteResult)
-            callback.onResponse(result.first, result.second)
+            emit(MultiStatusItem.Response(result.first, result.second))
     }
 
     var assertDownloadRemote = emptyMap<Url, String>()

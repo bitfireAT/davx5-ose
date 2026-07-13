@@ -8,7 +8,7 @@ import android.accounts.Account
 import android.text.format.Formatter
 import androidx.annotation.OpenForTesting
 import at.bitfire.dav4jvm.ktor.DavCalendar
-import at.bitfire.dav4jvm.ktor.MultiResponseCallback
+import at.bitfire.dav4jvm.ktor.MultiStatusItem
 import at.bitfire.dav4jvm.ktor.Response
 import at.bitfire.dav4jvm.ktor.exception.DavException
 import at.bitfire.dav4jvm.property.caldav.CalDAV
@@ -42,6 +42,9 @@ import io.ktor.client.HttpClient
 import io.ktor.http.Url
 import io.ktor.http.content.TextContent
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.sync.Semaphore
 import net.fortuna.ical4j.model.Component
 import net.fortuna.ical4j.model.component.CalendarComponent
@@ -95,8 +98,9 @@ class JtxSyncManager @AssistedInject constructor(
     override suspend fun queryCapabilities() =
         SyncException.wrapWithRemoteResource(collection.url) {
             var syncState: SyncState? = null
-            davCollection.propfind(0, CalDAV.GetCTag, CalDAV.MaxResourceSize, WebDAV.SyncToken) { response, relation ->
-                if (relation == Response.HrefRelation.SELF) {
+            davCollection.propfind(0, CalDAV.GetCTag, CalDAV.MaxResourceSize, WebDAV.SyncToken).collect { item ->
+                if (item is MultiStatusItem.Response && item.relation == Response.HrefRelation.SELF) {
+                    val response = item.response
                     response[MaxResourceSize::class.java]?.maxSize?.let { maxSize ->
                         logger.info("Collection accepts resources up to ${Formatter.formatFileSize(context, maxSize)}")
                     }
@@ -142,16 +146,16 @@ class JtxSyncManager @AssistedInject constructor(
 
     override fun syncAlgorithm() = SyncAlgorithm.PROPFIND_REPORT
 
-    override suspend fun listAllRemote(callback: MultiResponseCallback) {
+    override fun listAllRemote(): Flow<MultiStatusItem> = flow {
         SyncException.wrapWithRemoteResource(collection.url) {
             if (localCollection.supportsVTODO) {
                 logger.info("Querying tasks")
-                davCollection.calendarQuery("VTODO", null, null, callback = callback)
+                emitAll(davCollection.calendarQuery("VTODO", null, null))
             }
 
             if (localCollection.supportsVJOURNAL) {
                 logger.info("Querying journals")
-                davCollection.calendarQuery("VJOURNAL", null, null, callback = callback)
+                emitAll(davCollection.calendarQuery("VJOURNAL", null, null))
             }
         }
     }
@@ -160,7 +164,10 @@ class JtxSyncManager @AssistedInject constructor(
         logger.info("Downloading ${bunch.size} iCalendars: $bunch")
         // multiple iCalendars, use calendar-multi-get
         SyncException.wrapWithRemoteResource(collection.url) {
-            davCollection.multiget(bunch) { response, _ ->
+            davCollection.multiget(bunch).collect { item ->
+                if (item !is MultiStatusItem.Response) return@collect
+                val response = item.response
+
                 // See CalendarSyncManager for more information about the multi-get response
                 SyncException.wrapWithRemoteResource(response.href) wrapResource@{
                     if (!response.isSuccess()) {

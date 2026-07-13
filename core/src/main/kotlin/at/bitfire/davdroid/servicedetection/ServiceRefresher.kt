@@ -6,6 +6,7 @@ package at.bitfire.davdroid.servicedetection
 
 import at.bitfire.dav4jvm.Property
 import at.bitfire.dav4jvm.ktor.DavResource
+import at.bitfire.dav4jvm.ktor.MultiStatusItem
 import at.bitfire.dav4jvm.ktor.exception.HttpException
 import at.bitfire.dav4jvm.ktor.parent
 import at.bitfire.dav4jvm.ktor.resolve
@@ -108,7 +109,10 @@ class ServiceRefresher @AssistedInject constructor(
         val principal = DavResource(httpClient, principalUrl)
         val personal = level == 0
         try {
-            principal.propfind(0, *homeSetProperties) { davResponse, _ ->
+            principal.propfind(0, *homeSetProperties).collect { item ->
+                if (item !is MultiStatusItem.Response) return@collect
+                val davResponse = item.response
+
                 alreadyQueriedPrincipals += davResponse.href
 
                 // If response holds home sets, save them
@@ -158,6 +162,7 @@ class ServiceRefresher @AssistedInject constructor(
                         relatedResources += davResponse.href.parent()
                 }
             }
+
         } catch (e: HttpException) {
             if (e.isClientError)
                 logger.log(Level.INFO, "Ignoring Client Error 4xx while looking for ${service.type} home sets", e)

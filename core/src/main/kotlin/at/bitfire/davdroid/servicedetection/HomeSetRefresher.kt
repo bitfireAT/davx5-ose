@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.servicedetection
 
 import at.bitfire.dav4jvm.ktor.DavResource
+import at.bitfire.dav4jvm.ktor.MultiStatusItem
 import at.bitfire.dav4jvm.ktor.Response
 import at.bitfire.dav4jvm.ktor.exception.HttpException
 import at.bitfire.dav4jvm.ktor.resolve
@@ -68,10 +69,13 @@ class HomeSetRefresher @AssistedInject constructor(
 
             try {
                 val collectionProperties = ServiceDetectionUtils.collectionQueryProperties(service.type)
-                DavResource(httpClient, homeSetUrl).propfind(1, *collectionProperties) { response, relation ->
-                    // Note: This callback may be called multiple times ([MultiResponseCallback])
+                DavResource(httpClient, homeSetUrl).propfind(1, *collectionProperties).collect { item ->
+                    // Note: this may be called multiple times (one MultiStatusItem.Response per <response> element)
+                    if (item !is MultiStatusItem.Response) return@collect
+                    val (response, relation) = item
+
                     if (!response.isSuccess())
-                        return@propfind
+                        return@collect
 
                     if (relation == Response.HrefRelation.SELF)
                     // this response is about the home set itself
@@ -83,7 +87,7 @@ class HomeSetRefresher @AssistedInject constructor(
                         )
 
                     // in any case, check whether the response is about a usable collection
-                    var collection = Collection.fromDavResponse(response) ?: return@propfind
+                    var collection = Collection.fromDavResponse(response) ?: return@collect
                     collection = collection.copy(
                         serviceId = service.id,
                         homeSetId = localHomeset.id,

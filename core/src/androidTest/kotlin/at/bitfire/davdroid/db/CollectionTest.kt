@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.db
 
 import at.bitfire.dav4jvm.ktor.DavResource
+import at.bitfire.dav4jvm.ktor.MultiStatusItem
 import at.bitfire.dav4jvm.property.webdav.WebDAV
 import at.bitfire.davdroid.util.DavUtils.toUrl
 import io.ktor.client.HttpClient
@@ -47,8 +48,9 @@ class CollectionTest {
         ).use { client ->
             val davResource = DavResource(client, baseUrl)
             var collectionFromResponse: Collection? = null
-            davResource.propfind(0, WebDAV.ResourceType) { response, _ ->
-                collectionFromResponse = Collection.fromDavResponse(response)
+            davResource.propfind(0, WebDAV.ResourceType).collect { item ->
+                if (item is MultiStatusItem.Response)
+                    collectionFromResponse = Collection.fromDavResponse(item.response)
             }
             assertNotNull(collectionFromResponse)
             val collection = collectionFromResponse!!
@@ -103,8 +105,9 @@ class CollectionTest {
         ).use { client ->
             val davResource = DavResource(client, baseUrl)
             var collectionFromResponse: Collection? = null
-            davResource.propfind(0, WebDAV.ResourceType) { response, _ ->
-                collectionFromResponse = Collection.fromDavResponse(response)
+            davResource.propfind(0, WebDAV.ResourceType).collect { item ->
+                if (item is MultiStatusItem.Response)
+                    collectionFromResponse = Collection.fromDavResponse(item.response)
             }
             assertNotNull(collectionFromResponse)
             val collection = collectionFromResponse!!
@@ -139,8 +142,9 @@ class CollectionTest {
         ).use { client ->
             val davResource = DavResource(client, baseUrl)
             var collectionFromResponse: Collection? = null
-            davResource.propfind(0, WebDAV.ResourceType) { response, _ ->
-                collectionFromResponse = Collection.fromDavResponse(response)
+            davResource.propfind(0, WebDAV.ResourceType).collect { item ->
+                if (item is MultiStatusItem.Response)
+                    collectionFromResponse = Collection.fromDavResponse(item.response)
             }
             assertNotNull(collectionFromResponse)
             val collection = collectionFromResponse!!
@@ -173,8 +177,9 @@ class CollectionTest {
         ).use { client ->
             val davResource = DavResource(client, baseUrl)
             var collectionFromResponse: Collection? = null
-            davResource.propfind(0, WebDAV.ResourceType) { response, _ ->
-                collectionFromResponse = Collection.fromDavResponse(response)
+            davResource.propfind(0, WebDAV.ResourceType).collect { item ->
+                if (item is MultiStatusItem.Response)
+                    collectionFromResponse = Collection.fromDavResponse(item.response)
             }
             assertNotNull(collectionFromResponse)
             val collection = collectionFromResponse!!
