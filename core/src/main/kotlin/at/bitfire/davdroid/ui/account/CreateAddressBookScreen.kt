@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.ui.account
 
-import android.accounts.Account
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -37,6 +36,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import at.bitfire.dav4jvm.ktor.toUrlOrNull
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.ui.composable.AppTheme
 import at.bitfire.davdroid.ui.composable.ExceptionInfoDialog
@@ -44,13 +44,13 @@ import at.bitfire.davdroid.ui.composable.ProgressBar
 
 @Composable
 fun CreateAddressBookScreen(
-    account: Account,
+    accountId: AccountId,
     onNavUp: () -> Unit = {},
     onFinish: () -> Unit = {}
 ) {
     val model: CreateAddressBookViewModel = hiltViewModel(
         creationCallback = { factory: CreateAddressBookViewModel.Factory ->
-            factory.create(account)
+            factory.create(accountId)
         }
     )
     val uiState = model.uiState

@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.repository
 
-import android.accounts.Account
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.HomeSet
@@ -17,8 +16,8 @@ class DavHomeSetRepository @Inject constructor(
 
     private val dao = db.homeSetDao()
 
-    fun getAddressBookHomeSetsFlow(account: Account) =
-        dao.getBindableByAccountAndServiceTypeFlow(account.name, Service.TYPE_CARDDAV)
+    fun getAddressBookHomeSetsFlow(accountId: AccountId) =
+        dao.getBindableByAccountAndServiceTypeFlow(accountId, Service.TYPE_CARDDAV)
 
     fun getBindableByServiceFlow(serviceId: Long) = dao.getBindableByServiceFlow(serviceId)
 
