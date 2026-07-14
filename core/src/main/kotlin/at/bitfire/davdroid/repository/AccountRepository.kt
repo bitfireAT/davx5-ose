@@ -12,6 +12,7 @@ import androidx.annotation.WorkerThread
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.accounts.LegacyAccount
+import at.bitfire.davdroid.accounts.toAndroidAccount
 import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.db.ServiceType
@@ -150,25 +151,25 @@ class AccountRepository @Inject constructor(
         return account
     }
 
-    suspend fun delete(accountName: String): Boolean {
-        val account = fromName(accountName)
+    suspend fun delete(accountId: AccountId): Boolean {
+        val account = accountId.toAndroidAccount()
         // remove account directly (bypassing the authenticator, which is our own)
         return try {
             accountManager.removeAccountExplicitly(account)
 
             // delete address books (= address book accounts)
-            serviceRepository.getByAccountAndType(accountName, Service.TYPE_CARDDAV)?.let { service ->
+            serviceRepository.getByAccountAndType(accountId, Service.TYPE_CARDDAV)?.let { service ->
                 collectionRepository.getByService(service.id).forEach { collection ->
                     localAddressBookStore.get().deleteByCollectionId(collection.id)
                 }
             }
 
             // delete from database
-            serviceRepository.deleteByAccount(accountName)
+            serviceRepository.deleteByAccount(accountId)
 
             true
         } catch (e: Exception) {
-            logger.log(Level.WARNING, "Couldn't remove account $accountName", e)
+            logger.log(Level.WARNING, "Couldn't remove account $accountId", e)
             false
         }
     }
@@ -283,6 +284,12 @@ class AccountRepository @Inject constructor(
         } finally {
             // release AccountsCleanupWorker mutex at the end of this async coroutine
             AccountsCleanupWorker.unlockAccountsCleanup()
+        }
+    }
+
+    suspend fun rename(accountId: AccountId, newName: String) {
+        when (accountId) {
+            is LegacyAccount -> rename(accountId.androidAccount.name, newName)
         }
     }
 

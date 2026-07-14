@@ -13,6 +13,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.TaskStackBuilder
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.accounts.toAccountId
 import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.ui.NotificationRegistry
 import at.bitfire.davdroid.ui.account.AccountActivity
@@ -73,7 +74,7 @@ class PushNotificationManager @Inject constructor(
             title = context.getString(R.string.sync_notification_pending_push_title),
             text = context.getString(R.string.sync_notification_pending_push_message),
             subText = account.name,
-            intent = AccountActivity.createIntent(context, account)
+            intent = AccountActivity.createIntent(context, account.toAccountId())
         )
     }
 

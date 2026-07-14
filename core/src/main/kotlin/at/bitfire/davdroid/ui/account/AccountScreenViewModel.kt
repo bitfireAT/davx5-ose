@@ -12,6 +12,8 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.accounts.AccountId
+import at.bitfire.davdroid.accounts.toAndroidAccount
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.di.qualifier.DefaultDispatcher
 import at.bitfire.davdroid.repository.AccountRepository
@@ -44,7 +46,7 @@ import java.util.logging.Logger
 
 @HiltViewModel(assistedFactory = AccountScreenViewModel.Factory::class)
 class AccountScreenViewModel @AssistedInject constructor(
-    @Assisted val account: Account,
+    @Assisted val accountId: AccountId,
     private val accountRepository: AccountRepository,
     accountProgressUseCase: AccountProgressUseCase,
     private val accountSettingsFactory: AccountSettings.Factory,
@@ -62,7 +64,7 @@ class AccountScreenViewModel @AssistedInject constructor(
 
     @AssistedFactory
     interface Factory {
-        fun create(account: Account): AccountScreenViewModel
+        fun create(accountId: AccountId): AccountScreenViewModel
     }
 
     /**
@@ -70,7 +72,7 @@ class AccountScreenViewModel @AssistedInject constructor(
      */
     private val accountSettings: AccountSettings? by lazy {
         try {
-            accountSettingsFactory.create(account)
+            accountSettingsFactory.create(accountId.toAndroidAccount())
         } catch (_: InvalidAccountException) {
             null
         }
@@ -78,7 +80,7 @@ class AccountScreenViewModel @AssistedInject constructor(
 
     /** whether the account is invalid and the screen shall be closed */
     val invalidAccount = accountRepository.getAllFlow().map { accounts ->
-        !accounts.contains(account)
+        !accounts.contains(accountId.toAndroidAccount())
     }
 
     /**
@@ -109,6 +111,8 @@ class AccountScreenViewModel @AssistedInject constructor(
         }
     }
 
+    val accountName = accountRepository.getAccountNameFlow(accountId)
+
     init {
         viewModelScope.launch {
             reloadShowOnlyPersonal()
@@ -117,14 +121,14 @@ class AccountScreenViewModel @AssistedInject constructor(
     }
 
     val cardDavSvc = serviceRepository
-        .getCardDavServiceFlow(account.name)
+        .getCardDavServiceFlow(accountId)
         .stateIn(viewModelScope, initialValue = null, started = SharingStarted.Eagerly)
     private val bindableAddressBookHomesets = getBindableHomesetsFromService(cardDavSvc)
     val canCreateAddressBook = bindableAddressBookHomesets.map { homeSets ->
         homeSets.isNotEmpty()
     }
     val cardDavProgress: Flow<AccountProgress> = accountProgressUseCase(
-        account = account,
+        accountId = accountId,
         serviceFlow = cardDavSvc,
         dataTypes = listOf(SyncDataType.CONTACTS)
     )
@@ -136,7 +140,7 @@ class AccountScreenViewModel @AssistedInject constructor(
     )
 
     val calDavSvc = serviceRepository
-        .getCalDavServiceFlow(account.name)
+        .getCalDavServiceFlow(accountId)
         .stateIn(viewModelScope, initialValue = null, started = SharingStarted.Eagerly)
     private val bindableCalendarHomesets = getBindableHomesetsFromService(calDavSvc)
     val canCreateCalendar = bindableCalendarHomesets.map { homeSets ->
@@ -144,7 +148,7 @@ class AccountScreenViewModel @AssistedInject constructor(
     }
     val tasksProvider = tasksAppManager.currentProviderFlow()
     val calDavProgress = accountProgressUseCase(
-        account = account,
+        accountId = accountId,
         serviceFlow = calDavSvc,
         dataTypes = listOf(SyncDataType.EVENTS, SyncDataType.TASKS)
     )
@@ -180,7 +184,7 @@ class AccountScreenViewModel @AssistedInject constructor(
     /** Deletes the account from the system (won't touch collections on the server). */
     fun deleteAccount() {
         viewModelScope.launch {
-            accountRepository.delete(account.name)
+            accountRepository.delete(accountId)
         }
     }
 
@@ -194,14 +198,14 @@ class AccountScreenViewModel @AssistedInject constructor(
     }
 
     /**
-     * Renames the [account] to given name.
+     * Renames the [accountId] to given name.
      *
      * @param newName new account name
      */
     fun renameAccount(newName: String) {
         viewModelScope.launch {
             try {
-                accountRepository.rename(account.name, newName)
+                accountRepository.rename(accountId, newName)
 
                 // synchronize again
                 val newAccount = Account(newName, context.getString(R.string.account_type))
@@ -221,7 +225,7 @@ class AccountScreenViewModel @AssistedInject constructor(
     }
 
     fun sync() {
-        syncWorkerManager.enqueueOneTimeAllAuthorities(account, manual = true)
+        syncWorkerManager.enqueueOneTimeAllAuthorities(accountId.toAndroidAccount(), manual = true)
     }
 
 }
