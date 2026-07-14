@@ -7,9 +7,9 @@ package at.bitfire.davdroid.network
 import android.accounts.Account
 import androidx.annotation.VisibleForTesting
 import androidx.annotation.WorkerThread
+import at.bitfire.dav4jvm.ktor.DomainAuthProvider
+import at.bitfire.dav4jvm.ktor.PreemptiveBasicDigestAuthProvider
 import at.bitfire.dav4jvm.ktor.UrlUtils
-import at.bitfire.dav4jvm.ktor.createDomainBasicAuthProvider
-import at.bitfire.dav4jvm.ktor.createDomainDigestAuthProvider
 import at.bitfire.davdroid.ProductIds
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.settings.AccountManagerSettingsStore
@@ -33,6 +33,7 @@ import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.cookies.HttpCookies
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logging
+import io.ktor.client.plugins.logging.LoggingFormat
 import io.ktor.http.HttpHeaders
 import io.ktor.http.URLBuilder
 import io.ktor.http.URLProtocol
@@ -96,15 +97,19 @@ class HttpClientBuilder private constructor(
      * Immutable snapshot of everything that can be configured on a [HttpClientBuilder] plus default config.
      */
     private data class Config(
-        val followRedirects: Boolean = false,
+        // logging
         val logger: Logger,
         val trafficLogLevel: LogLevel = LogLevel.ALL,
+        // authentication
         val certificateAlias: String? = null,
         val authUsername: String? = null,
         val authPassword: SensitiveString? = null,
         val authDomain: String? = null,
         val readAuthStateCallback: (() -> AuthState?)? = null,
-        val updateAuthStateCallback: ((AuthState) -> Unit)? = null
+        val updateAuthStateCallback: ((AuthState) -> Unit)? = null,
+        // request/response handling
+        val contentNegotiationJson: Boolean = false,
+        val followRedirects: Boolean = false
     )
 
     /**
@@ -122,15 +127,6 @@ class HttpClientBuilder private constructor(
         settingsManager,
         update(config)
     )
-
-    /**
-     * Sets whether the HTTP client should automatically follow redirects.
-     *
-     * @param follow true to follow redirects, false otherwise
-     * @return new builder with updated config (chainable)
-     */
-    @CheckReturnValue
-    fun followRedirects(follow: Boolean): HttpClientBuilder = withConfig { it.copy(followRedirects = follow) }
 
     /**
      * Sets the logger for the HTTP client (mainly used to log HTTP traffic).
@@ -200,6 +196,30 @@ class HttpClientBuilder private constructor(
 
         return@withConfig newConfig
     }
+
+    /**
+     * Sets whether the HTTP client should automatically convert JSON responses using
+     * the [ContentNegotiation] plugin with [lenientJson].
+     *
+     * - Adds `Accept: application/json` header to each request.
+     * - Allows to automatically deserialize a JSON response to a `@Serializable` data class.
+     * See Ktor content negotiation docs for more info.
+     *
+     * @param negotiateJson true to enable automatic JSON content negotiation
+     * @return new builder with updated config (chainable)
+     */
+    @CheckReturnValue
+    fun contentNegotiation(negotiateJson: Boolean): HttpClientBuilder =
+        withConfig { it.copy(contentNegotiationJson = negotiateJson) }
+
+    /**
+     * Sets whether the HTTP client should automatically follow redirects.
+     *
+     * @param follow true to follow redirects, false otherwise
+     * @return new builder with updated config (chainable)
+     */
+    @CheckReturnValue
+    fun followRedirects(follow: Boolean): HttpClientBuilder = withConfig { it.copy(followRedirects = follow) }
 
 
     // convenience builders from other classes
@@ -302,7 +322,7 @@ class HttpClientBuilder private constructor(
         val readAuthState = config.readAuthStateCallback
         val updateAuthState = config.updateAuthStateCallback
         when {
-            // prefer OAuth, if available
+            // prefer OAuth, if auth state is available
             readAuthState != null -> {
                 install(Auth) {
                     providers.add(
@@ -314,27 +334,50 @@ class HttpClientBuilder private constructor(
                 }
             }
 
-            // otherwise use basic / digest, if available
+            // otherwise use basic / digest, if username / password are available
             username != null && password != null -> {
                 install(Auth) {
                     providers.add(
-                        createDomainBasicAuthProvider(
-                            username = username,
-                            password = password.asString(),
-                            firstLevelDomain = config.authDomain,
-                            insecurePreemptive = true
-                        )
-                    )
-                    providers.add(
-                        createDomainDigestAuthProvider(
-                            username = username,
-                            password = password.asString(),
-                            firstLevelDomain = config.authDomain
+                        DomainAuthProvider(
+                            config.authDomain,
+                            PreemptiveBasicDigestAuthProvider(username, password.asString())
                         )
                     )
                 }
             }
         }
+    }
+
+    private fun HttpClientConfig<*>.installLoggingPlugin() {
+        install(Logging) {
+            // log to configured java.util.Logger with "finest"
+            logger = object : io.ktor.client.plugins.logging.Logger {
+                override fun log(message: String) {
+                    config.logger.finest(message)
+                }
+            }
+
+            // use configured log level (with/without body)
+            level = config.trafficLogLevel
+
+            // LoggingFormat.Default shows multiple list headers with ";"
+            // https://github.com/bitfireAT/davx5-ose/issues/2630 / https://youtrack.jetbrains.com/issue/KTOR-8385
+            format = LoggingFormat.OkHttp
+
+            // don't log some confidential headers
+            val headersToIgnore = arrayOf(
+                HttpHeaders.Authorization,
+                HttpHeaders.Cookie,
+                HttpHeaders.SetCookie,
+                "Set-Cookie2"       // obsoleted, but included here for good measure
+            )
+            sanitizeHeader { header ->
+                headersToIgnore.any { headerToIgnore ->
+                    header.equals(headerToIgnore, ignoreCase = true)
+                }
+            }
+        }
+
     }
 
     /**
@@ -357,10 +400,12 @@ class HttpClientBuilder private constructor(
             socketTimeoutMillis = 120_000       // covers both read and write inactivity
         }
 
-        // automatically convert JSON from/into data classes (if requested in respective code)
-        install(ContentNegotiation) {
-            // use lenient parser that ignores unknown keys
-            json(lenientJson)
+        if (config.contentNegotiationJson) {
+            // allows to convert JSON from/into data classes automatically
+            install(ContentNegotiation) {
+                // use lenient parser that ignores unknown keys
+                json(lenientJson)
+            }
         }
 
         // Set User-Agent and Accept-Language on every request
@@ -379,29 +424,8 @@ class HttpClientBuilder private constructor(
         ContentEncoding()
 
         // add network logging (with redaction of sensitive headers), if requested
-        if (config.logger.isLoggable(Level.FINEST)) {
-            install(Logging) {
-                logger = object : io.ktor.client.plugins.logging.Logger {
-                    override fun log(message: String) {
-                        config.logger.finest(message)
-                    }
-                }
-                level = config.trafficLogLevel
-
-                // don't log some confidential headers
-                val headersToIgnore = arrayOf(
-                    HttpHeaders.Authorization,
-                    HttpHeaders.Cookie,
-                    HttpHeaders.SetCookie,
-                    "Set-Cookie2"       // obsoleted, but included here for good measure
-                )
-                sanitizeHeader { header ->
-                    headersToIgnore.any { headerToIgnore ->
-                        header.equals(headerToIgnore, ignoreCase = true)
-                    }
-                }
-            }
-        }
+        if (config.logger.isLoggable(Level.FINEST))
+            installLoggingPlugin()
     }
 
     /**

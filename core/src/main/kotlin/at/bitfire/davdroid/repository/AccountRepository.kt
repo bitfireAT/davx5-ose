@@ -10,6 +10,8 @@ import android.accounts.OnAccountsUpdateListener
 import android.content.Context
 import androidx.annotation.WorkerThread
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.accounts.AccountId
+import at.bitfire.davdroid.accounts.LegacyAccount
 import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.db.ServiceType
@@ -32,7 +34,10 @@ import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
 import java.util.logging.Level
 import java.util.logging.Logger
@@ -62,6 +67,28 @@ class AccountRepository @Inject constructor(
     private val accountType = context.getString(R.string.account_type)
     private val accountManager = AccountManager.get(context)
 
+    private val accountRenameFlow = MutableSharedFlow<AccountRename>()
+    
+    fun getAccountNameFlow(accountId: AccountId): Flow<String> {
+        return flow {
+            var currentName = getAccountName(accountId)
+            emit(currentName)
+            
+            accountRenameFlow.collect { accountRename -> 
+                if (accountRename.oldName == currentName) {
+                    currentName = accountRename.newName
+                    emit(currentName)
+                }
+            }
+        }
+    }
+    
+    private fun getAccountName(accountId: AccountId): String {
+        return when (accountId) {
+            is LegacyAccount -> accountId.androidAccount.name
+        }
+    }
+    
     /**
      * Creates a new account with discovered services and enables periodic syncs with
      * default sync interval times.
@@ -212,6 +239,8 @@ class AccountRepository @Inject constructor(
             if (newNameFromApi.name != newName)
                 throw IllegalStateException("renameAccount returned ${newNameFromApi.name} instead of $newName")
 
+            accountRenameFlow.emit(AccountRename(oldAccount.name, newName))
+            
             // account renamed, cancel maybe running synchronization of old account
             syncWorkerManager.get().cancelAllWork(oldAccount)
 
@@ -281,4 +310,5 @@ class AccountRepository @Inject constructor(
         return serviceId
     }
 
+    private data class AccountRename(val oldName: String, val newName: String)
 }

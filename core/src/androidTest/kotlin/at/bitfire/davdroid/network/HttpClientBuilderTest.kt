@@ -35,7 +35,6 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.junit4.MockKRule
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -188,6 +187,31 @@ class HttpClientBuilderTest {
     }
 
     @Test
+    fun testContentNegotiation_DisabledByDefault() = runTest {
+        val engine = MockEngine.Default
+
+        httpClientBuilder.build(engine).use { client ->
+            client.get("https://example.com/")
+        }
+
+        val request = engine.requestHistory.first()
+        // without content negotiation, Ktor only sends its generic default Accept header
+        assertEquals("*/*", request.headers[HttpHeaders.Accept])
+    }
+
+    @Test
+    fun testContentNegotiation_EnabledWhenRequested() = runTest {
+        val engine = MockEngine.Default
+
+        httpClientBuilder.contentNegotiation(negotiateJson = true).build(engine).use { client ->
+            client.get("https://example.com/")
+        }
+
+        val request = engine.requestHistory.first()
+        assertTrue(request.headers[HttpHeaders.Accept]?.contains("application/json") == true)
+    }
+
+    @Test
     fun testContentEncoding_HandlesIdentityEncoding() = runTest {
         val engine = MockEngine.basic(
             "Some Content",
@@ -271,11 +295,9 @@ class HttpClientBuilderTest {
             }
 
         val log = messages.joinToString("\n")
-        // sensitive header values must not be logged
-        assertFalse(log.contains("super-secret-token-12345"))
-        assertFalse(log.contains("secret-cookie-value"))
-        // they must be redacted
-        assertTrue(log.contains("***"))
+        // sensitive header values must be redacted
+        assertTrue(log.contains("Authorization: ██\n"))
+        assertTrue(log.contains("Set-Cookie: ██\n"))
     }
 
 

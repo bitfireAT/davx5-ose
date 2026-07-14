@@ -18,6 +18,7 @@ import androidx.core.net.toUri
 import at.bitfire.dav4jvm.ktor.exception.UnauthorizedException
 import at.bitfire.dav4jvm.ktor.resolve
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.accounts.toAccountId
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.resource.LocalCollection
 import at.bitfire.davdroid.resource.LocalResource
@@ -116,7 +117,7 @@ class SyncNotificationManager @AssistedInject constructor(
     ) = notificationRegistry.notifyIfPossible(NotificationRegistry.NOTIFY_SYNC_ERROR, tag = notificationTag) {
         val contentIntent: Intent
         if (e is UnauthorizedException) {
-            contentIntent = AccountSettingsActivity.createIntent(context, account)
+            contentIntent = AccountSettingsActivity.createIntent(context, account.toAccountId())
         } else {
             contentIntent = buildDebugInfoIntent(syncDataType, e, local, remote)
         }

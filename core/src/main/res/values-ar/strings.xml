@@ -221,4 +221,7 @@
     <string name="intro_tasks_tasks_org_info"><![CDATA[بعض الميزات <a href="https://www.davx5.com/faq/tasks/advanced-task-features">غير مدعومة</a>.]]></string>
     <string name="intro_backups_title">تذكير بالنسخ الاحتياطية</string>
     <string name="intro_backups_important">من المهم إجراء نسخ احتياطي لبياناتك (بما في ذلك جهات الاتصال والتقويمات) بانتظام لتجنب احتمال فقدان البيانات.</string>
+    <string name="intro_backups_something_wrong">قد يحدث خطأ ما في أي وقت، سواء على الخادم، أو داخل %s، أو في تطبيقات أخرى، مما قد يؤدي، على سبيل المثال، إلى حذف جميع إدخالات التقويم عن غير قصد. (وعندئذٍ ستُزامن عمليات الحذف هذه مع الخادم.)</string>
+    <string name="intro_backups_accept">لديّ بالفعل استراتيجية نسخ احتياطي فعّالة، أو أنني لست بحاجة إلى واحدة.</string>
+    <string name="intro_open_source_dont_show">لا تذكرني بـ</string>
 </resources>
