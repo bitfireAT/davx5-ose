@@ -24,6 +24,7 @@ import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import at.bitfire.dav4jvm.ktor.exception.UnauthorizedException
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.accounts.toAccountId
 import at.bitfire.davdroid.network.HttpClientBuilder
 import at.bitfire.davdroid.push.PushRegistrationManager
 import at.bitfire.davdroid.repository.DavServiceRepository
@@ -183,7 +184,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
         } catch (e: UnauthorizedException) {
             logger.log(Level.SEVERE, "Not authorized (anymore)", e)
             // notify that we need to re-authenticate in the account settings
-            val settingsIntent = AccountSettingsActivity.createIntent(applicationContext, account)
+            val settingsIntent = AccountSettingsActivity.createIntent(applicationContext, account.toAccountId())
             notifyRefreshError(
                 applicationContext.getString(R.string.sync_error_authentication_failed),
                 settingsIntent

@@ -8,6 +8,8 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import at.bitfire.davdroid.accounts.AccountId
+import at.bitfire.davdroid.accounts.LegacyAccount
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -15,6 +17,12 @@ interface ServiceDao {
 
     @Query("SELECT * FROM service WHERE accountName=:accountName AND type=:type")
     suspend fun getByAccountAndType(accountName: String, @ServiceType type: String): Service?
+
+    suspend fun getByAccountAndType(accountId: AccountId, @ServiceType type: String): Service? {
+        return when (accountId) {
+            is LegacyAccount -> getByAccountAndType(accountId.androidAccount.name, type)
+        }
+    }
 
     @Query("SELECT * FROM service WHERE accountName=:accountName AND type=:type")
     fun getByAccountAndTypeFlow(accountName: String, @ServiceType type: String): Flow<Service?>
