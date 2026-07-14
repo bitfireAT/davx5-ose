@@ -32,8 +32,6 @@ class ReadOnlyPolicyTest {
     lateinit var collection: LocalCollection<LocalResource>
 
 
-    // resetDeleted
-
     @Test
     fun `resetDeleted() with no deleted resources returns false and keeps sync state`() = runTest {
         every { collection.findDeleted() } returns flowOf()
@@ -55,8 +53,6 @@ class ReadOnlyPolicyTest {
         verify { collection.lastSyncState = null }
     }
 
-
-    // resetDirty
 
     @Test
     fun `resetDirty() with no dirty resources returns false and keeps sync state`() = runTest {

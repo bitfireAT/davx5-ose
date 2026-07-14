@@ -18,7 +18,7 @@ class ReadOnlyPolicy @Inject constructor(
 ) {
 
     /**
-     * Restores locally deleted resources instead of deleting them from the (read-only) server.
+     * Restores locally deleted resources from the server instead of deleting them from the (read-only) server.
      *
      * @return whether local resources have been restored so that a synchronization is always necessary
      */
@@ -32,8 +32,9 @@ class ReadOnlyPolicy @Inject constructor(
             modified = true
         }
 
-        // When a resource has been inserted to a read-only collection it's not enough to force
-        // synchronization (by returning true), we also need to make sure all resources are downloaded again.
+        /* When a resource has been inserted to a read-only collection it's not enough to force
+        synchronization (by returning true), we also need to make sure all resources are downloaded again
+        (force full re-sync) so that local additions are deleted again because they're not on the server. */
         if (modified)
             collection.lastSyncState = null
 
@@ -55,7 +56,9 @@ class ReadOnlyPolicy @Inject constructor(
             modified = true
         }
 
-        // see resetDeleted
+        /* When a resource has been inserted to a read-only collection it's not enough to force
+        synchronization (by returning true), we also need to make sure all resources are downloaded again
+        (force full re-sync) so that local additions are overwritten by the server items. */
         if (modified)
             collection.lastSyncState = null
 
