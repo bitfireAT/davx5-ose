@@ -328,6 +328,9 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
      * @return whether local resources have been processed so that a synchronization is always necessary
      */
     protected open suspend fun processLocallyDeleted(): Boolean {
+        if (localCollection.readOnly)
+            return restoreDeletedForReadOnly()
+
         var numDeleted = 0
 
         // Remove locally deleted entries from server (if they have a name, i.e. if they were uploaded before),
@@ -368,6 +371,30 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
     }
 
     /**
+     * Restores locally deleted entries instead of deleting them from the (read-only) server.
+     *
+     * @return whether local resources have been restored so that a synchronization is always necessary
+     */
+    private suspend fun restoreDeletedForReadOnly(): Boolean {
+        var modified = false
+        localCollection.findDeleted().collect { local ->
+            logger.warning("Restoring locally deleted resource (read-only collection!)")
+            SyncException.wrapWithLocalResource(local) {
+                local.resetDeleted()
+            }
+            modified = true
+        }
+
+        // This is unfortunately ugly: When a resource has been inserted to a read-only collection
+        // it's not enough to force synchronization (by returning true),
+        // but we also need to make sure all resources are downloaded again.
+        if (modified)
+            localCollection.lastSyncState = null
+
+        return modified
+    }
+
+    /**
      * Processes locally modified resources to the server. This can mean:
      *
      * - uploading them to the server (HTTP `PUT`)
@@ -376,6 +403,9 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
      * @return whether local resources have been processed so that a synchronization is always necessary
      */
     protected open suspend fun uploadDirty(): Boolean {
+        if (localCollection.readOnly)
+            return resetDirtyForReadOnly()
+
         var numUploaded = 0
 
         localCollection.findDirty().collect { local ->
@@ -387,6 +417,28 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
 
         logger.info("Sent $numUploaded record(s) to server")
         return numUploaded > 0
+    }
+
+    /**
+     * Resets locally modified entries to ETag=null instead of uploading them to the (read-only) server.
+     *
+     * @return whether local resources have been reset so that a synchronization is always necessary
+     */
+    private suspend fun resetDirtyForReadOnly(): Boolean {
+        var modified = false
+        localCollection.findDirty().collect { local ->
+            logger.warning("Resetting locally modified resource to ETag=null (read-only collection!)")
+            SyncException.wrapWithLocalResource(local) {
+                local.clearDirty(Optional.empty(), null, null)
+            }
+            modified = true
+        }
+
+        // see restoreDeletedForReadOnly
+        if (modified)
+            localCollection.lastSyncState = null
+
+        return modified
     }
 
     /**

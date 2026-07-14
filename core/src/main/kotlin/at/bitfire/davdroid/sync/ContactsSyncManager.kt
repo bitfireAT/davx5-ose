@@ -202,69 +202,12 @@ class ContactsSyncManager @AssistedInject constructor(
         else
             SyncAlgorithm.PROPFIND_REPORT
 
-    override suspend fun processLocallyDeleted() =
-            if (localCollection.readOnly) {
-                var modified = false
-                localCollection.findDeletedGroups().collect { group ->
-                    logger.warning("Restoring locally deleted group (read-only address book!)")
-                    SyncException.wrapWithLocalResource(group) {
-                        group.resetDeleted()
-                    }
-                    modified = true
-                }
-
-                localCollection.findDeletedContacts().collect { contact ->
-                    logger.warning("Restoring locally deleted contact (read-only address book!)")
-                    SyncException.wrapWithLocalResource(contact) {
-                        contact.resetDeleted()
-                    }
-                    modified = true
-                }
-
-                /* This is unfortunately dirty: When a contact has been inserted to a read-only address book
-                   that supports Collection Sync, it's not enough to force synchronization (by returning true),
-                   but we also need to make sure all contacts are downloaded again. */
-                if (modified)
-                    localCollection.lastSyncState = null
-
-                modified
-            } else
-                // mirror deletions to remote collection (DELETE)
-                super.processLocallyDeleted()
-
     override suspend fun uploadDirty(): Boolean {
-        var modified = false
-
-        if (localCollection.readOnly) {
-            localCollection.findDirtyGroups().collect { group ->
-                logger.warning("Resetting locally modified group to ETag=null (read-only address book!)")
-                SyncException.wrapWithLocalResource(group) {
-                    group.clearDirty(Optional.empty(), null)
-                }
-                modified = true
-            }
-
-            localCollection.findDirtyContacts().collect { contact ->
-                logger.warning("Resetting locally modified contact to ETag=null (read-only address book!)")
-                SyncException.wrapWithLocalResource(contact) {
-                    contact.clearDirty(Optional.empty(), null)
-                }
-                modified = true
-            }
-
-            // see same position in processLocallyDeleted
-            if (modified)
-                localCollection.lastSyncState = null
-
-        } else
+        if (!localCollection.readOnly)
             // we only need to handle changes in groups when the address book is read/write
             groupStrategy.beforeUploadDirty()
 
-        // generate UID/file name for newly created contacts
-        val superModified = super.uploadDirty()
-
-        // return true when any operation returned true
-        return modified or superModified
+        return super.uploadDirty()
     }
 
     override fun generateUpload(resource: LocalAddress): GeneratedResource {
