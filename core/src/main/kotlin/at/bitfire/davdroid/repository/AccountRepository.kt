@@ -231,7 +231,7 @@ class AccountRepository @Inject constructor(
             3. Now the services would be renamed, but they're not here anymore. */
             AccountsCleanupWorker.lockAccountsCleanup()
 
-            // rename account (also moves account settings)
+            // rename account (also moves AccountSettings)
             val future = accountManager.renameAccount(oldAccount, newName, null, null)
 
             // wait for operation to complete (blocks calling thread)

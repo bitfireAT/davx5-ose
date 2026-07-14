@@ -70,7 +70,7 @@ class AutomaticSyncManager @Inject constructor(
         val accountSettings = accountSettingsFactory.create(account)
         val syncInterval = accountSettings.getSyncInterval(dataType)
 
-        // 1. Update sync workers (needs already updated sync interval in AccountManagerSettingsStore).
+        // 1. Update sync workers (needs already updated sync interval in AccountSettings).
         if (syncInterval != null) {
             val wifiOnly = accountSettings.getSyncWifiOnly()
             workerManager.enablePeriodic(account, dataType, syncInterval, wifiOnly)
