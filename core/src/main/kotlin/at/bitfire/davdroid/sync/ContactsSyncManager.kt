@@ -203,9 +203,13 @@ class ContactsSyncManager @AssistedInject constructor(
             SyncAlgorithm.PROPFIND_REPORT
 
     override suspend fun uploadDirty(): Boolean {
-        if (!localCollection.readOnly)
-            // we only need to handle changes in groups when the address book is read/write
+        // local group housekeeping is needed regardless of whether we're actually uploading
+        groupStrategy.resolveLocalGroupChanges()
+
+        if (!localCollection.readOnly) {
+            // preparing groups for upload is only relevant when local changes are pushed
             groupStrategy.beforeUploadDirty()
+        }
 
         return super.uploadDirty()
     }
