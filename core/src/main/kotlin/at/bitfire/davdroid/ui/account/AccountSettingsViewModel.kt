@@ -16,7 +16,6 @@ import at.bitfire.davdroid.di.qualifier.DefaultDispatcher
 import at.bitfire.davdroid.network.OAuthIntegration
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.settings.AccountSettings
-import at.bitfire.davdroid.settings.AccountManagerSettingsStore
 import at.bitfire.davdroid.settings.Credentials
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.sync.ResyncType
@@ -47,7 +46,7 @@ import java.util.logging.Logger
 class AccountSettingsViewModel @AssistedInject constructor(
     @Assisted val accountId: AccountId,
     private val accountRepository: AccountRepository,
-    private val accountSettingsFactory: AccountManagerSettingsStore.Factory,
+    private val accountSettingsFactory: AccountSettings.Factory,
     private val authService: AuthorizationService,
     @ApplicationContext val context: Context,
     db: AppDatabase,

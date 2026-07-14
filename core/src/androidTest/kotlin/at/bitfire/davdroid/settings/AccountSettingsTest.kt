@@ -23,13 +23,13 @@ import org.junit.Test
 import javax.inject.Inject
 
 @HiltAndroidTest
-class AccountManagerSettingsStoreTest {
+class AccountSettingsTest {
 
     @Inject @ApplicationContext
     lateinit var context: Context
 
     @Inject
-    lateinit var accountSettingsFactory: AccountManagerSettingsStore.Factory
+    lateinit var accountSettingsFactory: AccountSettings.Factory
 
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
@@ -158,15 +158,15 @@ class AccountManagerSettingsStoreTest {
             accountSettingsFactory.create(account, abortOnMissingMigration = true)
 
             val accountManager = AccountManager.get(context)
-            val version = accountManager.getUserData(account, AccountManagerSettingsStore.KEY_SETTINGS_VERSION).toInt()
-            assertEquals(AccountManagerSettingsStore.CURRENT_VERSION, version)
+            val version = accountManager.getUserData(account, AccountSettings.KEY_SETTINGS_VERSION).toInt()
+            assertEquals(AccountSettings.CURRENT_VERSION, version)
         }
     }
 
     @Test
     fun test_initialUserData() {
-        AccountManagerSettingsStore.initialUserData(null, null).let { userData ->
-            assertEquals(AccountManagerSettingsStore.CURRENT_VERSION.toString(), userData[AccountManagerSettingsStore.KEY_SETTINGS_VERSION])
+        AccountSettings.initialUserData(null, null).let { userData ->
+            assertEquals(AccountSettings.CURRENT_VERSION.toString(), userData[AccountSettings.KEY_SETTINGS_VERSION])
 
             // Credentials
             assertNull(userData[AccountSettingsStore.KEY_USERNAME])
@@ -181,8 +181,8 @@ class AccountManagerSettingsStoreTest {
     @Test
     fun test_initialUserData_credentials() {
         val credentials = Credentials("username", null, "alias", AuthState())
-        AccountManagerSettingsStore.initialUserData(credentials, null).let { userData ->
-            assertEquals(AccountManagerSettingsStore.CURRENT_VERSION.toString(), userData[AccountManagerSettingsStore.KEY_SETTINGS_VERSION])
+        AccountSettings.initialUserData(credentials, null).let { userData ->
+            assertEquals(AccountSettings.CURRENT_VERSION.toString(), userData[AccountSettings.KEY_SETTINGS_VERSION])
 
             // Credentials
             assertEquals("username", userData[AccountSettingsStore.KEY_USERNAME])
@@ -196,8 +196,8 @@ class AccountManagerSettingsStoreTest {
 
     @Test
     fun test_initialUserData_preconfigurationUrl() {
-        AccountManagerSettingsStore.initialUserData(null, "https://example.com").let { userData ->
-            assertEquals(AccountManagerSettingsStore.CURRENT_VERSION.toString(), userData[AccountManagerSettingsStore.KEY_SETTINGS_VERSION])
+        AccountSettings.initialUserData(null, "https://example.com").let { userData ->
+            assertEquals(AccountSettings.CURRENT_VERSION.toString(), userData[AccountSettings.KEY_SETTINGS_VERSION])
 
             // Credentials
             assertNull(userData[AccountSettingsStore.KEY_USERNAME])

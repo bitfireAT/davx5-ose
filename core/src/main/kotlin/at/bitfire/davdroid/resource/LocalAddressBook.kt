@@ -15,7 +15,7 @@ import android.provider.ContactsContract.RawContacts
 import androidx.annotation.OpenForTesting
 import androidx.core.content.contentValuesOf
 import at.bitfire.davdroid.resource.workaround.ContactDirtyVerifier
-import at.bitfire.davdroid.settings.AccountManagerSettingsStore
+import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.adapter.SyncFrameworkIntegration
 import at.bitfire.synctools.mapping.contacts.Contact
@@ -60,7 +60,7 @@ open class LocalAddressBook @AssistedInject constructor(
     @Assisted("addressBookAccount") _addressBookAccount: Account,
     @Assisted provider: ContentProviderClient,
     @Assisted val groupMethod: GroupMethod,
-    private val accountSettingsFactory: AccountManagerSettingsStore.Factory,
+    private val accountSettingsFactory: AccountSettings.Factory,
     @ApplicationContext private val context: Context,
     internal val dirtyVerifier: Optional<ContactDirtyVerifier>,
     private val logger: Logger,

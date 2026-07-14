@@ -13,7 +13,7 @@ import at.bitfire.davdroid.TestUtils
 import at.bitfire.davdroid.resource.LocalAddressBookStore
 import at.bitfire.davdroid.resource.LocalCalendarStore
 import at.bitfire.davdroid.resource.LocalDataStore
-import at.bitfire.davdroid.settings.AccountManagerSettingsStore
+import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.AutomaticSyncManager
 import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.TasksAppManager
@@ -62,7 +62,7 @@ class AccountRepositoryTest {
     lateinit var context: Context
 
     @Inject
-    lateinit var accountSettingsFactory: AccountManagerSettingsStore.Factory
+    lateinit var accountSettingsFactory: AccountSettings.Factory
 
     @Inject
     lateinit var workerFactory: HiltWorkerFactory

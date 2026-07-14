@@ -13,7 +13,7 @@ import at.bitfire.davdroid.accounts.LegacyAccount
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.resource.LocalAddressBookStore
-import at.bitfire.davdroid.settings.AccountManagerSettingsStore
+import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.adapter.SyncFrameworkIntegration
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
 import kotlinx.coroutines.runBlocking
@@ -32,7 +32,7 @@ import javax.inject.Provider
  * Automatic synchronization stands in contrast to manual synchronization, which is only triggered by the user.
  */
 class AutomaticSyncManager @Inject constructor(
-    private val accountSettingsFactory: AccountManagerSettingsStore.Factory,
+    private val accountSettingsFactory: AccountSettings.Factory,
     private val localAddressBookStore: LocalAddressBookStore,
     private val serviceRepository: DavServiceRepository,
     private val syncFramework: SyncFrameworkIntegration,
@@ -119,7 +119,7 @@ class AutomaticSyncManager @Inject constructor(
     /**
      * Updates automatic synchronization of the given account and all data types according to the account settings.
      *
-     * If there's a [Service] for the given account and data type, automatic sync is enabled (with details from [AccountManagerSettingsStore]).
+     * If there's a [Service] for the given account and data type, automatic sync is enabled (with details from [AccountSettings]).
      * Otherwise, automatic synchronization is disabled.
      *
      * @param account   account for which automatic synchronization shall be updated
@@ -141,7 +141,7 @@ class AutomaticSyncManager @Inject constructor(
      * Updates automatic synchronization of the given account and data type according to the account services and settings.
      *
      * If there's a [Service] for the given account and data type, automatic sync may be enabled if sync interval is set
-     * in [AccountManagerSettingsStore].
+     * in [AccountSettings].
      * Otherwise, automatic synchronization is disabled.
      *
      * @param account   account for which automatic synchronization shall be updated

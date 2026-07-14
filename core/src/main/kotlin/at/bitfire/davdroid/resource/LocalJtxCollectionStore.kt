@@ -14,7 +14,7 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.repository.PrincipalRepository
-import at.bitfire.davdroid.settings.AccountManagerSettingsStore
+import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.util.DavUtils.lastSegment
 import at.bitfire.synctools.storage.jtx.JtxCollectionProvider
 import at.techbee.jtx.JtxContract
@@ -26,7 +26,7 @@ import javax.inject.Inject
 
 class LocalJtxCollectionStore @Inject constructor(
     @ApplicationContext val context: Context,
-    val accountSettingsFactory: AccountManagerSettingsStore.Factory,
+    val accountSettingsFactory: AccountSettings.Factory,
     db: AppDatabase,
     val principalRepository: PrincipalRepository
 ): LocalDataStore<LocalJtxCollection> {

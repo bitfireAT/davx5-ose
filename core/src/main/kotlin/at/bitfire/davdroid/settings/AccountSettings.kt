@@ -30,7 +30,7 @@ import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Provider
 
-class AccountManagerSettingsStore @AssistedInject constructor(
+class AccountSettings @AssistedInject constructor(
     @Assisted override val accountId: LegacyAccount,
     @Assisted val abortOnMissingMigration: Boolean,
     override val automaticSyncManager: AutomaticSyncManager,
@@ -43,10 +43,10 @@ class AccountManagerSettingsStore @AssistedInject constructor(
     @AssistedFactory
     interface Factory {
         /**
-         * **Must not be called on main thread. Throws exceptions!** See [AccountManagerSettingsStore] for details.
+         * **Must not be called on main thread. Throws exceptions!** See [AccountSettings] for details.
          */
         @WorkerThread
-        fun create(accountId: LegacyAccount, abortOnMissingMigration: Boolean = false): AccountManagerSettingsStore
+        fun create(accountId: LegacyAccount, abortOnMissingMigration: Boolean = false): AccountSettings
 
         @WorkerThread
         @Deprecated("Use AccountId overload directly")

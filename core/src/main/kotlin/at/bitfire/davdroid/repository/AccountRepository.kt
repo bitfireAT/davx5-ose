@@ -20,7 +20,7 @@ import at.bitfire.davdroid.resource.LocalAddressBookStore
 import at.bitfire.davdroid.resource.LocalCalendarStore
 import at.bitfire.davdroid.servicedetection.DavResourceFinder
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
-import at.bitfire.davdroid.settings.AccountManagerSettingsStore
+import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Credentials
 import at.bitfire.davdroid.sync.AutomaticSyncManager
 import at.bitfire.davdroid.sync.SyncDataType
@@ -50,7 +50,7 @@ import javax.inject.Inject
  * [at.bitfire.davdroid.resource.LocalAddressBook].
  */
 class AccountRepository @Inject constructor(
-    private val accountSettingsFactory: AccountManagerSettingsStore.Factory,
+    private val accountSettingsFactory: AccountSettings.Factory,
     private val automaticSyncManager: Lazy<AutomaticSyncManager>,
     @ApplicationContext private val context: Context,
     private val collectionRepository: DavCollectionRepository,
@@ -111,7 +111,7 @@ class AccountRepository @Inject constructor(
         val account = fromName(accountName)
 
         // create Android account
-        val userData = AccountManagerSettingsStore.initialUserData(credentials, preconfigurationUrl)
+        val userData = AccountSettings.initialUserData(credentials, preconfigurationUrl)
         logger.log(Level.INFO, "Creating Android account {0} with initial config {1}", arrayOf(account, userData))
 
         if (!AndroidAccountUtils.createAccount(context, account, userData, credentials?.password))

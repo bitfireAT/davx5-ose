@@ -20,7 +20,7 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.resource.LocalAddressBook
-import at.bitfire.davdroid.settings.AccountManagerSettingsStore
+import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.SyncConditions
 import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.account.InvalidAccountException
@@ -55,7 +55,7 @@ import javax.inject.Inject
  * All Sync Adapter Framework related interaction should happen inside [SyncFrameworkIntegration].
  */
 class SyncAdapterImpl @Inject constructor(
-    private val accountSettingsFactory: AccountManagerSettingsStore.Factory,
+    private val accountSettingsFactory: AccountSettings.Factory,
     private val collectionRepository: DavCollectionRepository,
     private val serviceRepository: DavServiceRepository,
     @ApplicationContext context: Context,

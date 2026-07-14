@@ -26,7 +26,7 @@ import at.bitfire.davdroid.resource.LocalCalendar
 import at.bitfire.davdroid.resource.LocalEvent
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.resource.SyncState
-import at.bitfire.davdroid.settings.AccountManagerSettingsStore
+import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.davdroid.util.DavUtils.lastSegment
 import at.bitfire.synctools.exception.InvalidResourceException
@@ -64,7 +64,7 @@ class CalendarSyncManager @AssistedInject constructor(
     @Assisted localCalendar: LocalCalendar,
     @Assisted collection: Collection,
     @Assisted resync: ResyncType?,
-    accountSettingsFactory: AccountManagerSettingsStore.Factory,
+    accountSettingsFactory: AccountSettings.Factory,
     @IoDispatcher ioDispatcher: CoroutineDispatcher,
     private val productIds: ProductIds,
     @SyncTransferSemaphore syncTransferSemaphore: Semaphore
