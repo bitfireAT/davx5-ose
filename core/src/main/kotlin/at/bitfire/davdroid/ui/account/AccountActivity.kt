@@ -11,8 +11,9 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.IntentCompat
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.accounts.AccountId
+import at.bitfire.davdroid.accounts.AccountIdIntentSerializer
 import at.bitfire.davdroid.accounts.toAccountId
 import at.bitfire.davdroid.ui.AccountsActivity
 import dagger.hilt.android.AndroidEntryPoint
@@ -28,12 +29,11 @@ class AccountActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val account =
-            IntentCompat.getParcelableExtra(intent, EXTRA_ACCOUNT, Account::class.java) ?:
-            intent.getStringExtra(EXTRA_ACCOUNT)?.let { Account(it, getString(R.string.account_type)) }
+        val accountId = AccountIdIntentSerializer.fromIntent(intent, EXTRA_ACCOUNT)
+            ?: intent.getStringExtra(EXTRA_ACCOUNT)?.let { Account(it, getString(R.string.account_type)).toAccountId() }
 
         // If account is not passed, log warning and redirect to accounts overview
-        if (account == null) {
+        if (accountId == null) {
             logger.warning("AccountActivity requires EXTRA_ACCOUNT")
 
             // Redirect to accounts overview activity
@@ -48,21 +48,21 @@ class AccountActivity : AppCompatActivity() {
 
         setContent {
             AccountScreen(
-                account = account,
+                accountId = accountId,
                 onAccountSettings = {
-                    val intent = AccountSettingsActivity.createIntent(this, account.toAccountId())
+                    val intent = AccountSettingsActivity.createIntent(this, accountId)
                     startActivity(intent, null)
                 },
                 onCreateAddressBook = {
-                    val intent = CreateAddressBookActivity.createIntent(this, account.toAccountId())
+                    val intent = CreateAddressBookActivity.createIntent(this, accountId)
                     startActivity(intent)
                 },
                 onCreateCalendar = {
-                    val intent = CreateCalendarActivity.createIntent(this, account.toAccountId())
+                    val intent = CreateCalendarActivity.createIntent(this, accountId)
                     startActivity(intent)
                 },
                 onCollectionDetails = { collection ->
-                    val intent = CollectionActivity.createIntent(this, account.toAccountId(), collection.id)
+                    val intent = CollectionActivity.createIntent(this, accountId, collection.id)
                     startActivity(intent, null)
                 },
                 onNavUp = ::onSupportNavigateUp,
@@ -74,14 +74,14 @@ class AccountActivity : AppCompatActivity() {
     companion object {
         private const val EXTRA_ACCOUNT = "account"
         
-        fun createIntent(context: Context, account: Account): Intent {
-            return Intent(context, AccountActivity::class.java).apply { 
-                putExtra(EXTRA_ACCOUNT, account)
+        fun createIntent(context: Context, accountId: AccountId): Intent {
+            return Intent(context, AccountActivity::class.java).apply {
+                AccountIdIntentSerializer.addExtra(this, EXTRA_ACCOUNT, accountId)
             }
         }
         
-        fun Intent.editAccountActivityIntent(account: Account) {
-            putExtra(EXTRA_ACCOUNT, account)
+        fun Intent.editAccountActivityIntent(accountId: AccountId) {
+            AccountIdIntentSerializer.addExtra(this, EXTRA_ACCOUNT, accountId)
         }
     }
 
