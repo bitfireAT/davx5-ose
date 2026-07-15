@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid.network
 
+import androidx.test.platform.app.InstrumentationRegistry
 import at.bitfire.davdroid.MockEngineQueue
 import at.bitfire.davdroid.MockEngineUtils.Default
 import at.bitfire.davdroid.MockEngineUtils.basic
@@ -123,6 +124,44 @@ class HttpClientBuilderTest {
             val proxy = (client.engine as OkHttpEngine).config.proxy
             assertEquals(ProxyBuilder.socks("proxy.example.com", 1080), proxy)
         }
+    }
+
+    @Test
+    fun testBuildProxy_HttpDoesNotThrowOnMainThread() {
+        every { settingsManager.getInt(Settings.PROXY_TYPE) } returns Settings.PROXY_TYPE_HTTP
+        every { settingsManager.getString(Settings.PROXY_HOST) } returns "proxy.example.com"
+        every { settingsManager.getInt(Settings.PROXY_PORT) } returns 8080
+
+        // ProxyBuilder.http resolves DNS, which throws NetworkOnMainThreadException if called
+        // directly on the main thread. The fix wraps it in withContext(Dispatchers.IO).
+        var caught: Throwable? = null
+        InstrumentationRegistry.getInstrumentation().runOnMainSync {
+            try {
+                httpClientBuilder.build().close()
+            } catch (t: Throwable) {
+                caught = t
+            }
+        }
+        caught?.let { throw it }
+    }
+
+    @Test
+    fun testBuildProxy_SocksDoesNotThrowOnMainThread() {
+        every { settingsManager.getInt(Settings.PROXY_TYPE) } returns Settings.PROXY_TYPE_SOCKS
+        every { settingsManager.getString(Settings.PROXY_HOST) } returns "proxy.example.com"
+        every { settingsManager.getInt(Settings.PROXY_PORT) } returns 1080
+
+        // ProxyBuilder.socks resolves DNS, which throws NetworkOnMainThreadException if called
+        // directly on the main thread. The fix wraps it in withContext(Dispatchers.IO).
+        var caught: Throwable? = null
+        InstrumentationRegistry.getInstrumentation().runOnMainSync {
+            try {
+                httpClientBuilder.build().close()
+            } catch (t: Throwable) {
+                caught = t
+            }
+        }
+        caught?.let { throw it }
     }
 
     @Test
