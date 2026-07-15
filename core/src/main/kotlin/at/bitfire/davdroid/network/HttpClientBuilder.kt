@@ -300,7 +300,7 @@ class HttpClientBuilder private constructor(
         val proxy = when (settingsManager.getInt(Settings.PROXY_TYPE)) {
             Settings.PROXY_TYPE_SYSTEM -> null
             Settings.PROXY_TYPE_NONE -> Proxy.NO_PROXY
-            Settings.PROXY_TYPE_HTTP -> withContext(Dispatchers.IO) {
+            Settings.PROXY_TYPE_HTTP -> withContext(ioDispatcher) {
                 ProxyBuilder.http(
                     URLBuilder(
                         protocol = URLProtocol.HTTP,
