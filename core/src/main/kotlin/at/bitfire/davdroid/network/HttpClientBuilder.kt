@@ -295,12 +295,13 @@ class HttpClientBuilder private constructor(
             okBuilder.hostnameVerifier(securityContext.hostnameVerifier)
     }
 
-    private suspend fun buildProxy(engineConfig: HttpClientEngineConfig) {
-        // HTTP and Socks may make DNS queries, so they need to run on the IO dispatcher
+    private fun buildProxy(engineConfig: HttpClientEngineConfig) {
+        // ProxyBuilder.http/socks are blocking calls (they resolve DNS via InetSocketAddress),
+        // so they must run on a real background thread, not the (possibly virtual-time, test-fakeable) injected ioDispatcher.
         val proxy = when (settingsManager.getInt(Settings.PROXY_TYPE)) {
             Settings.PROXY_TYPE_SYSTEM -> null
             Settings.PROXY_TYPE_NONE -> Proxy.NO_PROXY
-            Settings.PROXY_TYPE_HTTP -> withContext(ioDispatcher) {
+            Settings.PROXY_TYPE_HTTP -> runBlocking(Dispatchers.IO) {
                 ProxyBuilder.http(
                     URLBuilder(
                         protocol = URLProtocol.HTTP,
@@ -309,7 +310,7 @@ class HttpClientBuilder private constructor(
                     ).build()
                 )
             }
-            Settings.PROXY_TYPE_SOCKS -> withContext(ioDispatcher) {
+            Settings.PROXY_TYPE_SOCKS -> runBlocking(Dispatchers.IO) {
                 ProxyBuilder.socks(
                     settingsManager.getString(Settings.PROXY_HOST) ?: "",
                     settingsManager.getInt(Settings.PROXY_PORT)
@@ -452,7 +453,7 @@ class HttpClientBuilder private constructor(
 
             engine {
                 // app-wide custom proxy support
-                runBlocking { buildProxy(this@engine) }
+                buildProxy(this@engine)
 
                 // okhttp engine configuration here
                 config {
