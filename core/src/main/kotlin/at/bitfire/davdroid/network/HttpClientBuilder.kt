@@ -40,6 +40,8 @@ import io.ktor.http.URLProtocol
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.util.appendIfNameAbsent
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import net.openid.appauth.AuthState
 import okhttp3.ConnectionSpec
@@ -293,21 +295,26 @@ class HttpClientBuilder private constructor(
             okBuilder.hostnameVerifier(securityContext.hostnameVerifier)
     }
 
-    private fun buildProxy(engineConfig: HttpClientEngineConfig) {
+    private suspend fun buildProxy(engineConfig: HttpClientEngineConfig) {
+        // HTTP and Socks may make DNS queries, so they need to run on the IO dispatcher
         val proxy = when (settingsManager.getInt(Settings.PROXY_TYPE)) {
             Settings.PROXY_TYPE_SYSTEM -> null
             Settings.PROXY_TYPE_NONE -> Proxy.NO_PROXY
-            Settings.PROXY_TYPE_HTTP -> ProxyBuilder.http(
-                URLBuilder(
-                    protocol = URLProtocol.HTTP,
-                    host = settingsManager.getString(Settings.PROXY_HOST) ?: "",
-                    port = settingsManager.getInt(Settings.PROXY_PORT)
-                ).build()
-            )
-            Settings.PROXY_TYPE_SOCKS -> ProxyBuilder.socks(
-                settingsManager.getString(Settings.PROXY_HOST) ?: "",
-                settingsManager.getInt(Settings.PROXY_PORT)
-            )
+            Settings.PROXY_TYPE_HTTP -> withContext(Dispatchers.IO) {
+                ProxyBuilder.http(
+                    URLBuilder(
+                        protocol = URLProtocol.HTTP,
+                        host = settingsManager.getString(Settings.PROXY_HOST) ?: "",
+                        port = settingsManager.getInt(Settings.PROXY_PORT)
+                    ).build()
+                )
+            }
+            Settings.PROXY_TYPE_SOCKS -> withContext(Dispatchers.IO) {
+                ProxyBuilder.socks(
+                    settingsManager.getString(Settings.PROXY_HOST) ?: "",
+                    settingsManager.getInt(Settings.PROXY_PORT)
+                )
+            }
             else -> /* Invalid proxy type, shouldn't happen */ null
         }
         if (proxy != null) {
@@ -445,7 +452,7 @@ class HttpClientBuilder private constructor(
 
             engine {
                 // app-wide custom proxy support
-                buildProxy(this)
+                runBlocking { buildProxy(this@engine) }
 
                 // okhttp engine configuration here
                 config {
