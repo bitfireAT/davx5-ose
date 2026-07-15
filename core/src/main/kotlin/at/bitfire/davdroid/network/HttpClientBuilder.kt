@@ -309,7 +309,7 @@ class HttpClientBuilder private constructor(
                     ).build()
                 )
             }
-            Settings.PROXY_TYPE_SOCKS -> withContext(Dispatchers.IO) {
+            Settings.PROXY_TYPE_SOCKS -> withContext(ioDispatcher) {
                 ProxyBuilder.socks(
                     settingsManager.getString(Settings.PROXY_HOST) ?: "",
                     settingsManager.getInt(Settings.PROXY_PORT)
