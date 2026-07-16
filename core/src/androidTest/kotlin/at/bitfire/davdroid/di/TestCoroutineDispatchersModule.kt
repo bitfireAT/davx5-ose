@@ -6,7 +6,6 @@ package at.bitfire.davdroid.di
 
 import android.os.Handler
 import android.os.Looper
-import at.bitfire.davdroid.di.TestCoroutineDispatchersModule.testScheduler
 import at.bitfire.davdroid.di.qualifier.DefaultDispatcher
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.di.qualifier.RealMainDispatcher
@@ -26,7 +25,7 @@ import kotlinx.coroutines.test.setMain
 /**
  * Provides test dispatchers to be injected instead of the normal ones.
  *
- * [DefaultDispatcher]/[IoDispatcher] and [Dispatchers.Main] (whichs is used by
+ * [DefaultDispatcher]/[IoDispatcher] and [Dispatchers.Main] (which is used by
  * [androidx.lifecycle.viewModelScope] by default) are synchronized with [testScheduler],
  * so that [kotlinx.coroutines.test.runTest] can determine when launched coroutines are done etc.
  *
@@ -63,13 +62,17 @@ object TestCoroutineDispatchersModule {
     }
 
 
-    // Android Looper
+    // dispatcher for real Android main Looper
+
+    private val realMainDispatcher = Handler(Looper.getMainLooper()).asCoroutineDispatcher()
 
     /** Dispatcher that is bound to the real main [Looper] with its restrictions, like that no
-     * network traffic is allowed. See also class KDoc. */
+     * network traffic is allowed. See also class KDoc.
+     *
+     * _Not synchronized_ with the other dispatchers ([defaultDispatcher], [ioDispatcher],
+     * [Dispatchers.Main]). */
     @Provides
     @RealMainDispatcher
-    fun realMainDispatcher(): CoroutineDispatcher =
-        Handler(Looper.getMainLooper()).asCoroutineDispatcher()
+    fun realMainDispatcher(): CoroutineDispatcher = realMainDispatcher
 
 }
