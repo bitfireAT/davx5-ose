@@ -4,11 +4,10 @@
 
 package at.bitfire.davdroid.di
 
-import android.os.Handler
 import android.os.Looper
+import at.bitfire.davdroid.di.TestCoroutineDispatchersModule.testScheduler
 import at.bitfire.davdroid.di.qualifier.DefaultDispatcher
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
-import at.bitfire.davdroid.di.qualifier.RealMainDispatcher
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.components.SingletonComponent
@@ -16,7 +15,6 @@ import dagger.hilt.testing.TestInstallIn
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.android.asCoroutineDispatcher
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestCoroutineScheduler
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -29,8 +27,8 @@ import kotlinx.coroutines.test.setMain
  * [androidx.lifecycle.viewModelScope] by default) are synchronized with [testScheduler],
  * so that [kotlinx.coroutines.test.runTest] can determine when launched coroutines are done etc.
  *
- * In contrast, [RealMainDispatcher] can be used to test code that needs to run
- * on the main [Looper] and for instance must not do network I/O there.
+ * To test code that needs to run on the main [Looper] and for instance must not do network I/O there,
+ * directly use [androidx.test.annotation.UiThreadTest] or [android.app.Instrumentation.runOnMainSync].
  */
 @Module
 @TestInstallIn(
@@ -60,19 +58,5 @@ object TestCoroutineDispatchersModule {
     fun initMainDispatcher() {
         Dispatchers.setMain(mainDispatcher)
     }
-
-
-    // dispatcher for real Android main Looper
-
-    private val realMainDispatcher = Handler(Looper.getMainLooper()).asCoroutineDispatcher()
-
-    /** Dispatcher that is bound to the real main [Looper] with its restrictions, like that no
-     * network traffic is allowed. See also class KDoc.
-     *
-     * _Not synchronized_ with the other dispatchers ([defaultDispatcher], [ioDispatcher],
-     * [Dispatchers.Main]). */
-    @Provides
-    @RealMainDispatcher
-    fun realMainDispatcher(): CoroutineDispatcher = realMainDispatcher
 
 }
