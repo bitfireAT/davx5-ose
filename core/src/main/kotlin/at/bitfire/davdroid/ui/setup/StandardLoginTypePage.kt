@@ -8,6 +8,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
@@ -17,6 +19,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.fromHtml
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.text.HtmlCompat
@@ -25,6 +29,7 @@ import at.bitfire.davdroid.ui.ExternalUris
 import at.bitfire.davdroid.ui.ExternalUris.withStatParams
 import at.bitfire.davdroid.ui.UiUtils.toAnnotatedString
 import at.bitfire.davdroid.ui.composable.Assistant
+import at.bitfire.davdroid.ui.composable.IconCard
 
 @Composable
 fun StandardLoginTypePage(
@@ -42,11 +47,18 @@ fun StandardLoginTypePage(
         onNext = onContinue
     ) {
         Column(Modifier.padding(8.dp)) {
-            Text(
-                stringResource(R.string.login_generic_login),
-                style = MaterialTheme.typography.headlineSmall,
-                modifier = Modifier.padding(vertical = 8.dp)
-            )
+            IconCard(icon = Icons.Default.Info) {
+                val testedWith = ExternalUris.Homepage.baseUrl.buildUpon()
+                    .appendPath(ExternalUris.Homepage.PATH_TESTED_SERVICES)
+                    .withStatParams(LocalContext.current, screen = "StandardLoginTypePage")
+                    .build()
+                Text(
+                    AnnotatedString.fromHtml(stringResource(R.string.login_see_tested_with, testedWith.toString())),
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.padding(vertical = 8.dp)
+                )
+            }
+
             for (type in StandardLoginTypesProvider.genericLoginTypes)
                 LoginTypeSelector(
                     title = stringResource(type.title),
