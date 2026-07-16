@@ -63,7 +63,8 @@ log/          Logging infrastructure
 
 ### `:synctools` (`synctools/`)
 
-A standalone Android library for bidirectional conversion between iCalendar/vCard data and Android content providers (Calendar, Contacts, Tasks, Jtx). It is consumed by `:core` and can be published independently.
+Technically a standalone Android library for bidirectional conversion between iCalendar/vCard data and Android content
+providers (Calendar, Contacts, Tasks, Jtx). It is only consumed by `:core`.
 
 **No Hilt or Dagger.** This is a pure library — no DI framework, no Android application components. Dependencies are passed via constructors or obtained directly (e.g. `ContentResolver`). Keep it that way. For logging, use `val logger\nget() = java.util.Logger.getLogger(javaClass.name)`.
 
