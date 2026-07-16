@@ -24,13 +24,10 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.ui.ExternalUris
-import at.bitfire.davdroid.ui.ExternalUris.withStatParams
 import at.bitfire.davdroid.ui.composable.AppTheme
 
 @Composable
@@ -90,16 +87,11 @@ fun LoginScreenContent(
                         Text(stringResource(R.string.login_title))
                     },
                     actions = {
-                        val specificHelpUri = helpUri ?: ExternalUris.Homepage.baseUrl.buildUpon()
-                            .appendPath(ExternalUris.Homepage.PATH_TESTED_SERVICES)
-                            .withStatParams(LocalContext.current, "LoginScreen")
-                            .build()
-                        val uriHandler = LocalUriHandler.current
-                        IconButton(onClick = {
-                            // show tested-with page
-                            uriHandler.openUri(specificHelpUri.toString())
-                        }) {
-                            Icon(Icons.AutoMirrored.Default.Help, stringResource(R.string.help))
+                        if (helpUri != null) {
+                            val uriHandler = LocalUriHandler.current
+                            IconButton(onClick = { uriHandler.openUri(helpUri.toString()) }) {
+                                Icon(Icons.AutoMirrored.Default.Help, stringResource(R.string.help))
+                            }
                         }
                     }
                 )
