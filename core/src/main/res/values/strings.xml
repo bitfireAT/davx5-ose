@@ -290,7 +290,7 @@
 
     <!-- AddAccountActivity -->
     <string name="login_title">Add account</string>
-    <string name="login_see_tested_with"><![CDATA[If you\'re unsure what to choose, consult your provider\'s documentation and our <a href="%s>tested services</a> page.]]></string>
+    <string name="login_see_tested_with"><![CDATA[If you\'re unsure what to choose, consult your provider\'s documentation and our <a href="%s">tested services</a> page.]]></string>
     <string name="login_privacy_hint"><![CDATA[All data will only be transferred between your server and your device. %1$s will not send them anywhere else. See <a href=\"%2$s\">privacy policy</a>.]]></string>
     <string name="login_generic_login">Generic login</string>
     <string name="login_provider_login">Provider-specific login</string>
