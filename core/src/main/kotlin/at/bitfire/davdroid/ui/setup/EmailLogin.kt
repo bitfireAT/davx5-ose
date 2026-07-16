@@ -95,7 +95,8 @@ fun EmailLoginScreen(
 
             LoginDetailsHelpCard(
                 includeEmailBaseUrl = true,
-                includeServiceDiscovery = true
+                includeServiceDiscovery = true,
+                screenName = "EmailLogin"
             )
 
             OutlinedTextField(

@@ -108,7 +108,7 @@ fun AdvancedLoginScreen(
                     .padding(vertical = 8.dp)
             )
 
-            LoginDetailsHelpCard(includeServiceDiscovery = true)
+            LoginDetailsHelpCard(includeServiceDiscovery = true, screenName = "AdvancedLogin")
 
             OutlinedTextField(
                 value = url,

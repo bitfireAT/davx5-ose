@@ -18,11 +18,9 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.fromHtml
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.text.HtmlCompat
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.ExternalUris
 import at.bitfire.davdroid.ui.ExternalUris.withStatParams
-import at.bitfire.davdroid.ui.UiUtils.toAnnotatedString
 import at.bitfire.davdroid.ui.composable.IconCard
 
 @Composable
@@ -51,23 +49,19 @@ fun LoginDetailsHelpCard(
                     .fragment(ExternalUris.Manual.FRAGMENT_SERVICE_DISCOVERY)
                     .withStatParams(context, screen = screenName)
                     .build()
-                val urlInfo = HtmlCompat.fromHtml(
-                    stringResource(R.string.login_base_url_info, manualUrl),
-                    HtmlCompat.FROM_HTML_MODE_COMPACT
-                )
                 Text(
-                    text = urlInfo.toAnnotatedString(),
+                    text = AnnotatedString.fromHtml(stringResource(R.string.login_base_url_info, manualUrl)),
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
             }
 
-            val testedWith = ExternalUris.Homepage.baseUrl.buildUpon()
+            val testedWithUrl = ExternalUris.Homepage.baseUrl.buildUpon()
                 .appendPath(ExternalUris.Homepage.PATH_TESTED_SERVICES)
                 .withStatParams(context, screen = screenName)
-                .build()
+                .build().toString()
             Text(
-                AnnotatedString.fromHtml(stringResource(R.string.login_see_tested_with, testedWith.toString())),
+                AnnotatedString.fromHtml(stringResource(R.string.login_see_tested_with, testedWithUrl)),
                 style = MaterialTheme.typography.bodyMedium
             )
         }

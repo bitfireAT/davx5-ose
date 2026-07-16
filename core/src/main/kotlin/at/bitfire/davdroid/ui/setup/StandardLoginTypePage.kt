@@ -42,7 +42,7 @@ fun StandardLoginTypePage(
         onNext = onContinue
     ) {
         Column(Modifier.padding(8.dp)) {
-            LoginDetailsHelpCard()
+            LoginDetailsHelpCard(screenName = "StandardLoginTypePage")
 
             for (type in StandardLoginTypesProvider.genericLoginTypes)
                 LoginTypeSelector(
