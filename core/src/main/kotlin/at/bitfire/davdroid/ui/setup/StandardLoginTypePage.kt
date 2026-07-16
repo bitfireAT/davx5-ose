@@ -42,6 +42,12 @@ fun StandardLoginTypePage(
         onNext = onContinue
     ) {
         Column(Modifier.padding(8.dp)) {
+            Text(
+                stringResource(R.string.login_generic_login),
+                style = MaterialTheme.typography.headlineSmall,
+                modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
+            )
+
             LoginDetailsHelpCard(screenName = "StandardLoginTypePage")
 
             for (type in StandardLoginTypesProvider.genericLoginTypes)
