@@ -259,6 +259,29 @@ class LocalAddressBookTest {
         }
     }
 
+    /**
+     * Tests that group memberships are read back as vCard CATEGORIES when the address book uses
+     * [GroupMethod.CATEGORIES] (regression test for https://github.com/bitfireAT/davx5/issues/934).
+     */
+    @Test
+    fun test_groupMethodCategories_includesGroupAsCategory() {
+        localTestAddressBook.provide(account, provider, GroupMethod.CATEGORIES) { localAddressBook ->
+            val group = localAddressBook.addGroup(Contact().apply { displayName = "Test Category" }, null, null, 0)
+            val contact = localAddressBook.addContact(Contact().apply {
+                uid = "categories-test"
+                displayName = "Test Contact"
+            }, "categories-test.vcf", null, 0)
+
+            val batch = ContactsBatchOperation(localAddressBook.ab.provider)
+            contact.androidContact.addToGroup(batch, group.id!!)
+            batch.commit()
+
+            val result = localAddressBook.findContactById(contact.id!!)
+            val readContact = result.androidContact.getContact()
+            assertEquals(listOf("Test Category"), readContact.categories)
+        }
+    }
+
 
     // helpers
 
