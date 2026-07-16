@@ -93,7 +93,10 @@ fun EmailLoginScreen(
                     .padding(vertical = 8.dp)
             )
 
-            LoginDetailsHelpCard(includeServiceDiscovery = true)
+            LoginDetailsHelpCard(
+                includeEmailBaseUrl = true,
+                includeServiceDiscovery = true
+            )
 
             OutlinedTextField(
                 value = email,

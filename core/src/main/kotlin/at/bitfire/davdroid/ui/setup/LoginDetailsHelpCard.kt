@@ -28,6 +28,7 @@ import at.bitfire.davdroid.ui.composable.IconCard
 @Composable
 @Preview
 fun LoginDetailsHelpCard(
+    includeEmailBaseUrl: Boolean = false,
     includeServiceDiscovery: Boolean = false,
     screenName: String? = null
 ) {
@@ -37,6 +38,13 @@ fun LoginDetailsHelpCard(
     ) {
         val context = LocalContext.current
         Column {
+            if (includeEmailBaseUrl)
+                Text(
+                    stringResource(R.string.login_email_address_info),
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+
             if (includeServiceDiscovery) {
                 val manualUrl = ExternalUris.Manual.baseUrl.buildUpon()
                     .appendPath(ExternalUris.Manual.PATH_ACCOUNTS_COLLECTIONS)
@@ -56,7 +64,7 @@ fun LoginDetailsHelpCard(
 
             val testedWith = ExternalUris.Homepage.baseUrl.buildUpon()
                 .appendPath(ExternalUris.Homepage.PATH_TESTED_SERVICES)
-                .withStatParams(context, screen = "UrlLoginScreen")
+                .withStatParams(context, screen = screenName)
                 .build()
             Text(
                 AnnotatedString.fromHtml(stringResource(R.string.login_see_tested_with, testedWith.toString())),
@@ -68,6 +76,9 @@ fun LoginDetailsHelpCard(
 
 @Composable
 @Preview
-fun LoginDetailsHelpCard_Preview_IncludingServiceDiscovery() {
-    LoginDetailsHelpCard(includeServiceDiscovery = true)
+fun LoginDetailsHelpCard_Preview_IncludingEverything() {
+    LoginDetailsHelpCard(
+        includeEmailBaseUrl = true,
+        includeServiceDiscovery = true
+    )
 }
