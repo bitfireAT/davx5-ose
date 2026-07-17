@@ -208,7 +208,7 @@
     <string name="login_type_email">Přihlášení se e-mailovou adresou</string>
     <string name="login_email_address">E-mailová adresa</string>
     <string name="login_email_address_error">Vyžadován platný e-mail</string>
-    <string name="login_email_address_info"><![CDATA[E-maiová doména je použita jako základní URL. <a href="%s">Služby jsou objevovány</a> pomocí záznamů DNS a dobře známých URL.]]></string>
+    <string name="login_email_address_info">E-maiová doména je použita jako základní URL. <a href="%s">Služby jsou objevovány</a> pomocí záznamů DNS a dobře známých URL.</string>
     <string name="login_password">Heslo</string>
     <string name="login_password_hide">Skrýt heslo</string>
     <string name="login_password_show">Zobrazit heslo</string>
