@@ -145,7 +145,8 @@ class DmfsRecurringTaskListTest(providerName: TaskProvider.ProviderName) :
                 Tasks._SYNC_ID to syncId,
                 Tasks.TITLE to "Dirty Local Task",
                 Tasks.DTSTART to now + 3600000,
-                Tasks.TZ to timeZoneId
+                Tasks.TZ to timeZoneId,
+                Tasks._DIRTY to 1,
                 // No SYNC1 (eTag) — simulates a task that was never uploaded.
             )
         )

@@ -107,13 +107,12 @@ class DmfsRecurringTaskList(
      * @param syncId    value of [Tasks._SYNC_ID] to search for
      * @return list of all matching tasks (each with their exceptions); may be empty
      */
-    fun findAllTasksWithSyncId(syncId: String): List<TaskAndExceptions> {
-        val result = mutableListOf<TaskAndExceptions>()
-        iterateTaskAndExceptions("${Tasks._SYNC_ID}=?", arrayOf(syncId)) { taskAndExceptions ->
-            result += taskAndExceptions
+    fun findAllTasksWithSyncId(syncId: String): List<TaskAndExceptions> =
+        buildList {
+            iterateTaskAndExceptions("${Tasks._SYNC_ID}=?", arrayOf(syncId)) {
+                add(it)
+            }
         }
-        return result
-    }
 
     /**
      * Iterates through main tasks in [taskList] together with their exceptions.

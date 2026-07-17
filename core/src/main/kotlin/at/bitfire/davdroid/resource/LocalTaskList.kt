@@ -27,6 +27,8 @@ class LocalTaskList (
     internal val dmfsTaskList: DmfsTaskList
 ): LocalCollection<LocalTask> {
 
+    private val logger = Logger.getLogger(javaClass.name)
+
     override val readOnly
         get() = dmfsTaskList.accessLevel.let {
             it != TaskListColumns.ACCESS_LEVEL_UNDEFINED && it <= TaskListColumns.ACCESS_LEVEL_READ
@@ -106,7 +108,6 @@ class LocalTaskList (
         // locally with a UID that already exists on the server: one entry is already synced (has
         // an eTag) and another was never successfully uploaded (dirty, no eTag). Reassign the
         // dirty/no-eTag duplicate a fresh UUID so it can be uploaded as a genuinely new resource.
-        val logger = Logger.getLogger(javaClass.name)
         for (task in matches) {
             val values = task.main.entityValues
             val isDirty = (values.getAsInteger(Tasks._DIRTY) ?: 0) != 0
@@ -119,12 +120,14 @@ class LocalTaskList (
             }
         }
 
-        // Return the first match that still has the original name (i.e. the synced one with an eTag).
-        val synced = matches.firstOrNull { task ->
-            val values = task.main.entityValues
-            val hasETag = values.getAsString(DmfsTasksContract.COLUMN_ETAG) != null
-            hasETag
-        } ?: matches.first()
+        // Return the first remaining match with the original name, preferring one with an eTag.
+        val remainingMatches = recurringTaskList.findAllTasksWithSyncId(name)
+        val synced =
+            remainingMatches.firstOrNull { task ->
+                val values = task.main.entityValues
+                val hasETag = values.getAsString(DmfsTasksContract.COLUMN_ETAG) != null
+                hasETag
+            } ?: remainingMatches.firstOrNull() ?: return null
         return LocalTask(recurringTaskList, synced)
     }
 
