@@ -235,7 +235,7 @@
     <string name="login_type_email">用 Email 地址登入</string>
     <string name="login_email_address">Email 地址</string>
     <string name="login_email_address_error">請輸入有效的 Email 地址</string>
-    <string name="login_email_address_info"><![CDATA[電子郵件網域將用作基礎 URL。<a href="%s">服務會透過 DNS 紀錄與 well-known URL 自動探索</a>。]]></string>
+    <string name="login_email_address_info">電子郵件網域將用作基礎 URL。<a href="%s">服務會透過 DNS 紀錄與 well-known URL 自動探索</a>。</string>
     <string name="login_password">密碼</string>
     <string name="login_password_hide">隱藏密碼</string>
     <string name="login_password_show">顯示密碼</string>
