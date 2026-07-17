@@ -4,15 +4,17 @@
 
 package at.bitfire.davdroid.ui.account
 
-import android.accounts.Account
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.accounts.AccountId
+import at.bitfire.davdroid.accounts.toAndroidAccount
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Service
-import at.bitfire.davdroid.di.qualifier.DefaultDispatcher
+import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.network.OAuthIntegration
+import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Credentials
 import at.bitfire.davdroid.settings.SettingsManager
@@ -42,12 +44,13 @@ import java.util.logging.Logger
 
 @HiltViewModel(assistedFactory = AccountSettingsViewModel.Factory::class)
 class AccountSettingsViewModel @AssistedInject constructor(
-    @Assisted val account: Account,
+    @Assisted val accountId: AccountId,
+    private val accountRepository: AccountRepository,
     private val accountSettingsFactory: AccountSettings.Factory,
     private val authService: AuthorizationService,
     @ApplicationContext val context: Context,
     db: AppDatabase,
-    @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val logger: Logger,
     private val oAuthIntegration: OAuthIntegration,
     private val settings: SettingsManager,
@@ -57,11 +60,12 @@ class AccountSettingsViewModel @AssistedInject constructor(
 
     @AssistedFactory
     interface Factory {
-        fun create(account: Account): AccountSettingsViewModel
+        fun create(accountId: AccountId): AccountSettingsViewModel
     }
 
     // settings
     data class UiState(
+        val accountName: String = "",
         val status: String? = null,
 
         val hasContactsSync: Boolean = false,
@@ -96,13 +100,19 @@ class AccountSettingsViewModel @AssistedInject constructor(
     /**
      * Only acquire account settings on a worker thread!
      */
-    private val accountSettings by lazy { accountSettingsFactory.create(account) }
+    private val accountSettings by lazy { accountSettingsFactory.create(accountId.toAndroidAccount()) }
 
 
     init {
         settings.addOnChangeListener(this)
         viewModelScope.launch {
             reload()
+            
+            accountRepository.getAccountNameFlow(accountId).collect { accountName ->
+                _uiState.update { 
+                    it.copy(accountName = accountName)
+                }
+            }
         }
     }
 
@@ -117,68 +127,72 @@ class AccountSettingsViewModel @AssistedInject constructor(
         }
     }
 
-    private suspend fun reload() = withContext(defaultDispatcher) {
-        val hasContactsSync = serviceDao.getByAccountAndType(account.name, Service.TYPE_CARDDAV) != null
-        val hasCalendarSync = serviceDao.getByAccountAndType(account.name, Service.TYPE_CALDAV) != null
+    private suspend fun reload() = withContext(ioDispatcher) {
+        val hasContactsSync = serviceDao.getByAccountAndType(accountId, Service.TYPE_CARDDAV) != null
+        val hasCalendarSync = serviceDao.getByAccountAndType(accountId, Service.TYPE_CALDAV) != null
         val hasTasksSync = hasCalendarSync && tasksProvider != null
 
-        _uiState.value = UiState(
-            hasContactsSync = hasContactsSync,
-            syncIntervalContacts = accountSettings.getSyncInterval(SyncDataType.CONTACTS),
-            hasCalendarsSync = hasCalendarSync,
-            syncIntervalCalendars = accountSettings.getSyncInterval(SyncDataType.EVENTS),
-            hasTasksSync = hasTasksSync,
-            syncIntervalTasks = accountSettings.getSyncInterval(SyncDataType.TASKS),
+        _uiState.update { 
+            it.copy(
+                status = null,
 
-            syncWifiOnly = accountSettings.getSyncWifiOnly(),
-            syncWifiOnlySSIDs = accountSettings.getSyncWifiOnlySSIDs(),
-            ignoreVpns = accountSettings.getIgnoreVpns(),
+                hasContactsSync = hasContactsSync,
+                syncIntervalContacts = accountSettings.getSyncInterval(SyncDataType.CONTACTS),
+                hasCalendarsSync = hasCalendarSync,
+                syncIntervalCalendars = accountSettings.getSyncInterval(SyncDataType.EVENTS),
+                hasTasksSync = hasTasksSync,
+                syncIntervalTasks = accountSettings.getSyncInterval(SyncDataType.TASKS),
 
-            credentials = accountSettings.credentials(),
-            allowCredentialsChange = accountSettings.changingCredentialsAllowed(),
+                syncWifiOnly = accountSettings.getSyncWifiOnly(),
+                syncWifiOnlySSIDs = accountSettings.getSyncWifiOnlySSIDs(),
+                ignoreVpns = accountSettings.getIgnoreVpns(),
 
-            timeRangePastDays = accountSettings.getTimeRangePastDays(),
-            defaultAlarmMinBefore = accountSettings.getDefaultAlarm(),
-            manageCalendarColors = accountSettings.getManageCalendarColors(),
-            eventColors = accountSettings.getEventColors(),
+                credentials = accountSettings.credentials(),
+                allowCredentialsChange = accountSettings.changingCredentialsAllowed(),
 
-            contactGroupMethod = accountSettings.getGroupMethod(),
-        )
+                timeRangePastDays = accountSettings.getTimeRangePastDays(),
+                defaultAlarmMinBefore = accountSettings.getDefaultAlarm(),
+                manageCalendarColors = accountSettings.getManageCalendarColors(),
+                eventColors = accountSettings.getEventColors(),
+
+                contactGroupMethod = accountSettings.getGroupMethod(),
+            )
+        }
     }
 
 
     fun updateContactsSyncInterval(syncInterval: Long) {
-        CoroutineScope(defaultDispatcher).launch {
+        CoroutineScope(ioDispatcher).launch {
             accountSettings.setSyncInterval(SyncDataType.CONTACTS, syncInterval.takeUnless { it == -1L })
             reload()
         }
     }
 
     fun updateCalendarSyncInterval(syncInterval: Long) {
-        CoroutineScope(defaultDispatcher).launch {
+        CoroutineScope(ioDispatcher).launch {
             accountSettings.setSyncInterval(SyncDataType.EVENTS, syncInterval.takeUnless { it == -1L })
             reload()
         }
     }
 
     fun updateTasksSyncInterval(syncInterval: Long) {
-        CoroutineScope(defaultDispatcher).launch {
+        CoroutineScope(ioDispatcher).launch {
             accountSettings.setSyncInterval(SyncDataType.TASKS, syncInterval.takeUnless { it == -1L })
             reload()
         }
     }
 
-    fun updateSyncWifiOnly(wifiOnly: Boolean) = CoroutineScope(defaultDispatcher).launch {
+    fun updateSyncWifiOnly(wifiOnly: Boolean) = CoroutineScope(ioDispatcher).launch {
         accountSettings.setSyncWiFiOnly(wifiOnly)
         reload()
     }
 
-    fun updateSyncWifiOnlySSIDs(ssids: List<String>?) = CoroutineScope(defaultDispatcher).launch {
+    fun updateSyncWifiOnlySSIDs(ssids: List<String>?) = CoroutineScope(ioDispatcher).launch {
         accountSettings.setSyncWifiOnlySSIDs(ssids)
         reload()
     }
 
-    fun updateIgnoreVpns(ignoreVpns: Boolean) = CoroutineScope(defaultDispatcher).launch {
+    fun updateIgnoreVpns(ignoreVpns: Boolean) = CoroutineScope(ioDispatcher).launch {
         accountSettings.setIgnoreVpns(ignoreVpns)
         reload()
     }
@@ -190,7 +204,7 @@ class AccountSettingsViewModel @AssistedInject constructor(
         accountSettings.credentials().authState?.lastAuthorizationResponse?.request
 
     fun authenticate(authResponse: AuthorizationResponse) {
-        CoroutineScope(defaultDispatcher).launch {
+        CoroutineScope(ioDispatcher).launch {
             try {
                 // save new credentials
                 val authState = oAuthIntegration.authenticate(authService, authResponse)
@@ -214,13 +228,13 @@ class AccountSettingsViewModel @AssistedInject constructor(
         }
     }
 
-    fun updateCredentials(credentials: Credentials) = CoroutineScope(defaultDispatcher).launch {
+    fun updateCredentials(credentials: Credentials) = CoroutineScope(ioDispatcher).launch {
         accountSettings.credentials(credentials)
         reload()
     }
 
 
-    fun updateTimeRangePastDays(days: Int?) = CoroutineScope(defaultDispatcher).launch {
+    fun updateTimeRangePastDays(days: Int?) = CoroutineScope(ioDispatcher).launch {
         accountSettings.setTimeRangePastDays(days)
         reload()
 
@@ -235,21 +249,21 @@ class AccountSettingsViewModel @AssistedInject constructor(
         )
     }
 
-    fun updateDefaultAlarm(minBefore: Int?) = CoroutineScope(defaultDispatcher).launch {
+    fun updateDefaultAlarm(minBefore: Int?) = CoroutineScope(ioDispatcher).launch {
         accountSettings.setDefaultAlarm(minBefore)
         reload()
 
         resyncCalendars(resync = ResyncType.RESYNC_ENTRIES, tasks = false)
     }
 
-    fun updateManageCalendarColors(manage: Boolean) = CoroutineScope(defaultDispatcher).launch {
+    fun updateManageCalendarColors(manage: Boolean) = CoroutineScope(ioDispatcher).launch {
         accountSettings.setManageCalendarColors(manage)
         reload()
 
         resyncCalendars(resync = ResyncType.RESYNC_LIST, tasks = true)
     }
 
-    fun updateEventColors(manageColors: Boolean) = CoroutineScope(defaultDispatcher).launch {
+    fun updateEventColors(manageColors: Boolean) = CoroutineScope(ioDispatcher).launch {
         accountSettings.setEventColors(manageColors)
         reload()
 
@@ -257,7 +271,7 @@ class AccountSettingsViewModel @AssistedInject constructor(
     }
 
 
-    fun updateContactGroupMethod(groupMethod: GroupMethod) = CoroutineScope(defaultDispatcher).launch {
+    fun updateContactGroupMethod(groupMethod: GroupMethod) = CoroutineScope(ioDispatcher).launch {
         accountSettings.setGroupMethod(groupMethod)
         reload()
 
@@ -285,7 +299,7 @@ class AccountSettingsViewModel @AssistedInject constructor(
      *                  themselves (full resync) shall be downloaded again
      */
     private fun resync(dataType: SyncDataType, resync: ResyncType) {
-        syncWorkerManager.enqueueOneTime(account, dataType = dataType, resync = resync)
+        syncWorkerManager.enqueueOneTime(accountId.toAndroidAccount(), dataType = dataType, resync = resync)
     }
 
 }

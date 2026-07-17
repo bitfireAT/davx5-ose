@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.ui.account
 
-import android.accounts.Account
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.security.KeyChain
@@ -57,6 +56,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.settings.AccountSettings.Companion.SYNC_INTERVAL_MANUALLY
 import at.bitfire.davdroid.settings.Credentials
 import at.bitfire.davdroid.ui.ExternalUris
@@ -75,11 +75,11 @@ import kotlinx.coroutines.launch
 @Composable
 fun AccountSettingsScreen(
     onNavUp: () -> Unit,
-    account: Account,
+    accountId: AccountId,
     onNavWifiPermissionsScreen: () -> Unit
 ) {
     val model = hiltViewModel { factory: AccountSettingsViewModel.Factory ->
-        factory.create(account)
+        factory.create(accountId)
     }
     val uiState by model.uiState.collectAsState()
     val canAccessWifiSsid by PermissionUtils.rememberCanAccessWifiSsid()
@@ -94,7 +94,7 @@ fun AccountSettingsScreen(
 
     AppTheme {
         AccountSettingsScreen(
-            accountName = account.name,
+            accountName = uiState.accountName,
             onNavUp = onNavUp,
             status = uiState.status,
 

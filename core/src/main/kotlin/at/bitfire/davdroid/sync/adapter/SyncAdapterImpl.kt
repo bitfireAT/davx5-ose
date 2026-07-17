@@ -73,7 +73,7 @@ class SyncAdapterImpl @Inject constructor(
      * Scope used to wait until the synchronization is finished. Will be cancelled when the sync framework
      * requests cancellation.
      */
-    private val waitScope = CoroutineScope(Dispatchers.Default)
+    private val waitScope = CoroutineScope(Dispatchers.IO)
 
     override fun onPerformSync(accountOrAddressBookAccount: Account, extras: Bundle, authority: String, provider: ContentProviderClient, syncResult: SyncResult) {
         // We have to pass this old SyncFramework extra for an Android 7 workaround

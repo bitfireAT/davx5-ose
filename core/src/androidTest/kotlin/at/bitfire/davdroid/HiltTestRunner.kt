@@ -32,7 +32,7 @@ class HiltTestRunner : AndroidJUnitRunner() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P)
             throw AssertionError("MockK requires Android P [https://mockk.io/ANDROID.html]")
 
-        // set main dispatcher for tests (especially runTest)
+        // set synchronized main dispatcher for tests (especially runTest)
         TestCoroutineDispatchersModule.initMainDispatcher()
     }
 

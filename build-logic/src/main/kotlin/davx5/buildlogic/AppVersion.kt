@@ -4,6 +4,10 @@
 
 package davx5.buildlogic
 
+import davx5.buildlogic.AppVersion.CODE
+import davx5.buildlogic.AppVersion.NAME
+
+
 /**
  * Centralized version information for DAVx5 app variants.
  *
@@ -20,10 +24,13 @@ package davx5.buildlogic
  * - IIII an increasing number (four decimal digits) that starts with `0000` and is increased for
  *   every release with the same major/minor/patch version (alpha-1, alpha-2, beta-1, ..., final).
  *   So usually the first pre-release has `0000` and the final version has the greatest number.
+ *
+ * _Note:_ the [CODE] and [NAME] lines are directly grep-ed by F-Droid:
+ * [see `UpdateCheckData`](https://gitlab.com/fdroid/fdroiddata/-/blob/master/metadata/at.bitfire.davdroid.yml).
  */
 object AppVersion {
 
-    const val CODE: Int = 405170000
-    const val NAME: String = "4.5.17-alpha.1"
+    const val CODE: Int = 405180000
+    const val NAME: String = "4.5.18-alpha.1"
 
 }

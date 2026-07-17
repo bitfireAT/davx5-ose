@@ -22,7 +22,8 @@ import at.bitfire.dav4jvm.property.webdav.WebDAV
 import at.bitfire.davdroid.ProductIds
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
-import at.bitfire.davdroid.di.qualifier.SyncDispatcher
+import at.bitfire.davdroid.di.qualifier.IoDispatcher
+import at.bitfire.davdroid.di.qualifier.SyncTransferSemaphore
 import at.bitfire.davdroid.resource.LocalAddress
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalContact
@@ -50,6 +51,7 @@ import io.ktor.http.ContentType
 import io.ktor.http.Url
 import io.ktor.http.content.TextContent
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.sync.Semaphore
 import java.io.Reader
 import java.io.StringReader
 import java.io.StringWriter
@@ -105,9 +107,10 @@ class ContactsSyncManager @AssistedInject constructor(
     @Assisted val syncFrameworkUpload: Boolean,
     accountSettingsFactory: AccountSettings.Factory,
     val dirtyVerifier: Optional<ContactDirtyVerifier>,
+    @IoDispatcher ioDispatcher: CoroutineDispatcher,
     private val productIds: ProductIds,
     private val resourceRetrieverFactory: ResourceRetriever.Factory,
-    @SyncDispatcher syncDispatcher: CoroutineDispatcher
+    @SyncTransferSemaphore syncTransferSemaphore: Semaphore
 ): SyncManager<LocalAddress, LocalAddressBook, DavAddressBook>(
     account,
     httpClient,
@@ -116,7 +119,8 @@ class ContactsSyncManager @AssistedInject constructor(
     localAddressBook,
     collection,
     resync,
-    syncDispatcher
+    ioDispatcher,
+    syncTransferSemaphore
 ) {
 
     @AssistedFactory
@@ -198,69 +202,16 @@ class ContactsSyncManager @AssistedInject constructor(
         else
             SyncAlgorithm.PROPFIND_REPORT
 
-    override suspend fun processLocallyDeleted() =
-            if (localCollection.readOnly) {
-                var modified = false
-                localCollection.findDeletedGroups().collect { group ->
-                    logger.warning("Restoring locally deleted group (read-only address book!)")
-                    SyncException.wrapWithLocalResource(group) {
-                        group.resetDeleted()
-                    }
-                    modified = true
-                }
-
-                localCollection.findDeletedContacts().collect { contact ->
-                    logger.warning("Restoring locally deleted contact (read-only address book!)")
-                    SyncException.wrapWithLocalResource(contact) {
-                        contact.resetDeleted()
-                    }
-                    modified = true
-                }
-
-                /* This is unfortunately dirty: When a contact has been inserted to a read-only address book
-                   that supports Collection Sync, it's not enough to force synchronization (by returning true),
-                   but we also need to make sure all contacts are downloaded again. */
-                if (modified)
-                    localCollection.lastSyncState = null
-
-                modified
-            } else
-                // mirror deletions to remote collection (DELETE)
-                super.processLocallyDeleted()
-
     override suspend fun uploadDirty(): Boolean {
-        var modified = false
+        // local group housekeeping is needed regardless of whether we're actually uploading
+        groupStrategy.resolveLocalGroupChanges()
 
-        if (localCollection.readOnly) {
-            localCollection.findDirtyGroups().collect { group ->
-                logger.warning("Resetting locally modified group to ETag=null (read-only address book!)")
-                SyncException.wrapWithLocalResource(group) {
-                    group.clearDirty(Optional.empty(), null)
-                }
-                modified = true
-            }
-
-            localCollection.findDirtyContacts().collect { contact ->
-                logger.warning("Resetting locally modified contact to ETag=null (read-only address book!)")
-                SyncException.wrapWithLocalResource(contact) {
-                    contact.clearDirty(Optional.empty(), null)
-                }
-                modified = true
-            }
-
-            // see same position in processLocallyDeleted
-            if (modified)
-                localCollection.lastSyncState = null
-
-        } else
-            // we only need to handle changes in groups when the address book is read/write
+        if (!localCollection.readOnly) {
+            // preparing groups for upload is only relevant when local changes are pushed
             groupStrategy.beforeUploadDirty()
+        }
 
-        // generate UID/file name for newly created contacts
-        val superModified = super.uploadDirty()
-
-        // return true when any operation returned true
-        return modified or superModified
+        return super.uploadDirty()
     }
 
     override fun generateUpload(resource: LocalAddress): GeneratedResource {

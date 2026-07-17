@@ -7,9 +7,9 @@ package at.bitfire.davdroid.network
 import android.accounts.Account
 import androidx.annotation.VisibleForTesting
 import androidx.annotation.WorkerThread
+import at.bitfire.dav4jvm.ktor.DomainAuthProvider
+import at.bitfire.dav4jvm.ktor.PreemptiveBasicDigestAuthProvider
 import at.bitfire.dav4jvm.ktor.UrlUtils
-import at.bitfire.dav4jvm.ktor.createDomainBasicAuthProvider
-import at.bitfire.dav4jvm.ktor.createDomainDigestAuthProvider
 import at.bitfire.davdroid.ProductIds
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.settings.AccountSettings
@@ -22,7 +22,6 @@ import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.engine.HttpClientEngineConfig
-import io.ktor.client.engine.ProxyBuilder
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.DefaultRequest
 import io.ktor.client.plugins.HttpTimeout
@@ -33,9 +32,8 @@ import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.cookies.HttpCookies
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logging
+import io.ktor.client.plugins.logging.LoggingFormat
 import io.ktor.http.HttpHeaders
-import io.ktor.http.URLBuilder
-import io.ktor.http.URLProtocol
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.util.appendIfNameAbsent
 import kotlinx.coroutines.CoroutineDispatcher
@@ -44,6 +42,7 @@ import net.openid.appauth.AuthState
 import okhttp3.ConnectionSpec
 import okhttp3.OkHttpClient
 import okhttp3.Protocol
+import java.net.InetSocketAddress
 import java.net.Proxy
 import java.util.Locale
 import java.util.logging.Level
@@ -293,19 +292,24 @@ class HttpClientBuilder private constructor(
     }
 
     private fun buildProxy(engineConfig: HttpClientEngineConfig) {
+        // Create the proxies with InetSocketAddress.createUnresolved so that no DNS resolving is done here.
+        // If needed, it will be done when required, in the IO thread.
         val proxy = when (settingsManager.getInt(Settings.PROXY_TYPE)) {
             Settings.PROXY_TYPE_SYSTEM -> null
             Settings.PROXY_TYPE_NONE -> Proxy.NO_PROXY
-            Settings.PROXY_TYPE_HTTP -> ProxyBuilder.http(
-                URLBuilder(
-                    protocol = URLProtocol.HTTP,
-                    host = settingsManager.getString(Settings.PROXY_HOST) ?: "",
-                    port = settingsManager.getInt(Settings.PROXY_PORT)
-                ).build()
+            Settings.PROXY_TYPE_HTTP -> Proxy(
+                Proxy.Type.HTTP,
+                InetSocketAddress.createUnresolved(
+                    settingsManager.getString(Settings.PROXY_HOST) ?: "",
+                    settingsManager.getInt(Settings.PROXY_PORT)
+                )
             )
-            Settings.PROXY_TYPE_SOCKS -> ProxyBuilder.socks(
-                settingsManager.getString(Settings.PROXY_HOST) ?: "",
-                settingsManager.getInt(Settings.PROXY_PORT)
+            Settings.PROXY_TYPE_SOCKS -> Proxy(
+                Proxy.Type.SOCKS,
+                InetSocketAddress.createUnresolved(
+                    settingsManager.getString(Settings.PROXY_HOST) ?: "",
+                    settingsManager.getInt(Settings.PROXY_PORT)
+                )
             )
             else -> /* Invalid proxy type, shouldn't happen */ null
         }
@@ -321,7 +325,7 @@ class HttpClientBuilder private constructor(
         val readAuthState = config.readAuthStateCallback
         val updateAuthState = config.updateAuthStateCallback
         when {
-            // prefer OAuth, if available
+            // prefer OAuth, if auth state is available
             readAuthState != null -> {
                 install(Auth) {
                     providers.add(
@@ -333,27 +337,50 @@ class HttpClientBuilder private constructor(
                 }
             }
 
-            // otherwise use basic / digest, if available
+            // otherwise use basic / digest, if username / password are available
             username != null && password != null -> {
                 install(Auth) {
                     providers.add(
-                        createDomainBasicAuthProvider(
-                            username = username,
-                            password = password.asString(),
-                            firstLevelDomain = config.authDomain,
-                            insecurePreemptive = true
-                        )
-                    )
-                    providers.add(
-                        createDomainDigestAuthProvider(
-                            username = username,
-                            password = password.asString(),
-                            firstLevelDomain = config.authDomain
+                        DomainAuthProvider(
+                            config.authDomain,
+                            PreemptiveBasicDigestAuthProvider(username, password.asString())
                         )
                     )
                 }
             }
         }
+    }
+
+    private fun HttpClientConfig<*>.installLoggingPlugin() {
+        install(Logging) {
+            // log to configured java.util.Logger with "finest"
+            logger = object : io.ktor.client.plugins.logging.Logger {
+                override fun log(message: String) {
+                    config.logger.finest(message)
+                }
+            }
+
+            // use configured log level (with/without body)
+            level = config.trafficLogLevel
+
+            // LoggingFormat.Default shows multiple list headers with ";"
+            // https://github.com/bitfireAT/davx5-ose/issues/2630 / https://youtrack.jetbrains.com/issue/KTOR-8385
+            format = LoggingFormat.OkHttp
+
+            // don't log some confidential headers
+            val headersToIgnore = arrayOf(
+                HttpHeaders.Authorization,
+                HttpHeaders.Cookie,
+                HttpHeaders.SetCookie,
+                "Set-Cookie2"       // obsoleted, but included here for good measure
+            )
+            sanitizeHeader { header ->
+                headersToIgnore.any { headerToIgnore ->
+                    header.equals(headerToIgnore, ignoreCase = true)
+                }
+            }
+        }
+
     }
 
     /**
@@ -400,29 +427,8 @@ class HttpClientBuilder private constructor(
         ContentEncoding()
 
         // add network logging (with redaction of sensitive headers), if requested
-        if (config.logger.isLoggable(Level.FINEST)) {
-            install(Logging) {
-                logger = object : io.ktor.client.plugins.logging.Logger {
-                    override fun log(message: String) {
-                        config.logger.finest(message)
-                    }
-                }
-                level = config.trafficLogLevel
-
-                // don't log some confidential headers
-                val headersToIgnore = arrayOf(
-                    HttpHeaders.Authorization,
-                    HttpHeaders.Cookie,
-                    HttpHeaders.SetCookie,
-                    "Set-Cookie2"       // obsoleted, but included here for good measure
-                )
-                sanitizeHeader { header ->
-                    headersToIgnore.any { headerToIgnore ->
-                        header.equals(headerToIgnore, ignoreCase = true)
-                    }
-                }
-            }
-        }
+        if (config.logger.isLoggable(Level.FINEST))
+            installLoggingPlugin()
     }
 
     /**
@@ -442,7 +448,7 @@ class HttpClientBuilder private constructor(
 
             engine {
                 // app-wide custom proxy support
-                buildProxy(this)
+                buildProxy(this@engine)
 
                 // okhttp engine configuration here
                 config {

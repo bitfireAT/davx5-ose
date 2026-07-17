@@ -10,10 +10,12 @@ import android.accounts.OnAccountsUpdateListener
 import android.content.Context
 import androidx.annotation.WorkerThread
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.accounts.AccountId
+import at.bitfire.davdroid.accounts.LegacyAccount
 import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.db.ServiceType
-import at.bitfire.davdroid.di.qualifier.DefaultDispatcher
+import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.resource.LocalAddressBookStore
 import at.bitfire.davdroid.resource.LocalCalendarStore
 import at.bitfire.davdroid.servicedetection.DavResourceFinder
@@ -32,7 +34,10 @@ import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
 import java.util.logging.Level
 import java.util.logging.Logger
@@ -49,7 +54,7 @@ class AccountRepository @Inject constructor(
     private val automaticSyncManager: Lazy<AutomaticSyncManager>,
     @ApplicationContext private val context: Context,
     private val collectionRepository: DavCollectionRepository,
-    @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val homeSetRepository: DavHomeSetRepository,
     private val localCalendarStore: Lazy<LocalCalendarStore>,
     private val localAddressBookStore: Lazy<LocalAddressBookStore>,
@@ -62,6 +67,28 @@ class AccountRepository @Inject constructor(
     private val accountType = context.getString(R.string.account_type)
     private val accountManager = AccountManager.get(context)
 
+    private val accountRenameFlow = MutableSharedFlow<AccountRename>()
+    
+    fun getAccountNameFlow(accountId: AccountId): Flow<String> {
+        return flow {
+            var currentName = getAccountName(accountId)
+            emit(currentName)
+            
+            accountRenameFlow.collect { accountRename -> 
+                if (accountRename.oldName == currentName) {
+                    currentName = accountRename.newName
+                    emit(currentName)
+                }
+            }
+        }
+    }
+    
+    private fun getAccountName(accountId: AccountId): String {
+        return when (accountId) {
+            is LegacyAccount -> accountId.androidAccount.name
+        }
+    }
+    
     /**
      * Creates a new account with discovered services and enables periodic syncs with
      * default sync interval times.
@@ -163,7 +190,7 @@ class AccountRepository @Inject constructor(
         val listener = OnAccountsUpdateListener { accounts ->
             trySend(accounts.filter { it.type == accountType }.toSet())
         }
-        withContext(defaultDispatcher) {  // causes disk I/O
+        withContext(ioDispatcher) {  // causes disk I/O
             accountManager.addOnAccountsUpdatedListener(listener, null, true)
         }
 
@@ -185,7 +212,7 @@ class AccountRepository @Inject constructor(
      * @throws IllegalArgumentException if the new account name already exists
      * @throws Exception (or sub-classes) on other errors
      */
-    suspend fun rename(oldName: String, newName: String): Unit = withContext(defaultDispatcher) {
+    suspend fun rename(oldName: String, newName: String): Unit = withContext(ioDispatcher) {
         val oldAccount = fromName(oldName)
         val newAccount = fromName(newName)
 
@@ -212,6 +239,8 @@ class AccountRepository @Inject constructor(
             if (newNameFromApi.name != newName)
                 throw IllegalStateException("renameAccount returned ${newNameFromApi.name} instead of $newName")
 
+            accountRenameFlow.emit(AccountRename(oldAccount.name, newName))
+            
             // account renamed, cancel maybe running synchronization of old account
             syncWorkerManager.get().cancelAllWork(oldAccount)
 
@@ -281,4 +310,5 @@ class AccountRepository @Inject constructor(
         return serviceId
     }
 
+    private data class AccountRename(val oldName: String, val newName: String)
 }

@@ -20,7 +20,8 @@ import at.bitfire.dav4jvm.property.webdav.WebDAV
 import at.bitfire.davdroid.ProductIds
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
-import at.bitfire.davdroid.di.qualifier.SyncDispatcher
+import at.bitfire.davdroid.di.qualifier.IoDispatcher
+import at.bitfire.davdroid.di.qualifier.SyncTransferSemaphore
 import at.bitfire.davdroid.resource.LocalCalendar
 import at.bitfire.davdroid.resource.LocalEvent
 import at.bitfire.davdroid.resource.LocalResource
@@ -43,13 +44,13 @@ import io.ktor.client.HttpClient
 import io.ktor.http.Url
 import io.ktor.http.content.TextContent
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.sync.Semaphore
 import net.fortuna.ical4j.model.Component
 import net.fortuna.ical4j.model.component.VEvent
 import java.io.Reader
 import java.io.StringReader
 import java.io.StringWriter
 import java.time.ZonedDateTime
-import java.util.Optional
 import java.util.logging.Level
 
 /**
@@ -63,8 +64,9 @@ class CalendarSyncManager @AssistedInject constructor(
     @Assisted collection: Collection,
     @Assisted resync: ResyncType?,
     accountSettingsFactory: AccountSettings.Factory,
+    @IoDispatcher ioDispatcher: CoroutineDispatcher,
     private val productIds: ProductIds,
-    @SyncDispatcher syncDispatcher: CoroutineDispatcher
+    @SyncTransferSemaphore syncTransferSemaphore: Semaphore
 ) : SyncManager<LocalEvent, LocalCalendar, DavCalendar>(
     account,
     httpClient,
@@ -73,7 +75,8 @@ class CalendarSyncManager @AssistedInject constructor(
     localCalendar,
     collection,
     resync,
-    syncDispatcher
+    ioDispatcher,
+    syncTransferSemaphore
 ) {
 
     @AssistedFactory
@@ -136,54 +139,6 @@ class CalendarSyncManager @AssistedInject constructor(
             SyncAlgorithm.PROPFIND_REPORT
         else
             SyncAlgorithm.COLLECTION_SYNC
-
-    override suspend fun processLocallyDeleted(): Boolean {
-        if (localCollection.readOnly) {
-            var modified = false
-            localCollection.findDeleted().collect { event ->
-                logger.warning("Restoring locally deleted event (read-only calendar!)")
-                SyncException.wrapWithLocalResource(event) {
-                    event.resetDeleted()
-                }
-                modified = true
-            }
-
-            // This is unfortunately ugly: When an event has been inserted to a read-only calendar
-            // it's not enough to force synchronization (by returning true),
-            // but we also need to make sure all events are downloaded again.
-            if (modified)
-                localCollection.lastSyncState = null
-
-            return modified
-        }
-        // mirror deletions to remote collection (DELETE)
-        return super.processLocallyDeleted()
-    }
-
-    override suspend fun uploadDirty(): Boolean {
-        var modified = false
-        if (localCollection.readOnly) {
-            localCollection.findDirty().collect { event ->
-                logger.warning("Resetting locally modified event to ETag=null (read-only calendar!)")
-                SyncException.wrapWithLocalResource(event) {
-                    event.clearDirty(Optional.empty(), null, null)
-                }
-                modified = true
-            }
-
-            // This is unfortunately ugly: When an event has been inserted to a read-only calendar
-            // it's not enough to force synchronization (by returning true),
-            // but we also need to make sure all events are downloaded again.
-            if (modified)
-                localCollection.lastSyncState = null
-        }
-
-        // generate UID/file name for newly created events
-        val superModified = super.uploadDirty()
-
-        // return true when any operation returned true
-        return modified or superModified
-    }
 
     override fun generateUpload(resource: LocalEvent): GeneratedResource {
         val localEvent = resource.androidEvent
