@@ -210,7 +210,7 @@
     <string name="login_type_email">Acceder con cuenta de correo</string>
     <string name="login_email_address">Dirección de correo</string>
     <string name="login_email_address_error">Se requiere una dirección de correo válida</string>
-    <string name="login_email_address_info"><![CDATA[El dominio del email se usa como URL base. <a href="%s">Los servicios son detectados</a> usando registros DNS y URLs well-known.]]></string>
+    <string name="login_email_address_info">El dominio del email se usa como URL base. <a href="%s">Los servicios son detectados</a> usando registros DNS y URLs well-known.</string>
     <string name="login_password">Contraseña</string>
     <string name="login_password_hide">Esconder contraseña</string>
     <string name="login_password_show">Mostrar contraseña</string>
