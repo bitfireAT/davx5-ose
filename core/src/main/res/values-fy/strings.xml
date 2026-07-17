@@ -167,7 +167,7 @@
     <string name="login_type_email">Ynlogge mei mailadres</string>
     <string name="login_email_address">Mailadres</string>
     <string name="login_email_address_error">Mailadres moat jildich wêze</string>
-    <string name="login_email_address_info"><![CDATA[It emaildomein wurd brûkt as basis foar de URL. <a href="%s">Mooglikheden wurde ûntdutsen</a> troch DNS-gegevens en bekende URL\'s.]]></string>
+    <string name="login_email_address_info">It emaildomein wurd brûkt as basis foar de URL. <a href="%s">Mooglikheden wurde ûntdutsen</a> troch DNS-gegevens en bekende URL\'s.</string>
     <string name="login_password">Wachtwurd</string>
     <string name="login_password_hide">Wachtwurd ferbergje</string>
     <string name="login_password_show">Wachtwurd sjen litte</string>
