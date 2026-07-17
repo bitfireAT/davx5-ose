@@ -35,8 +35,8 @@ import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit4.MockKRule
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.withContext
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
@@ -106,7 +106,7 @@ class HttpClientBuilderTest {
 
     @Test
     @UiThreadTest
-    fun testBuildProxy_Http() = runTest {
+    fun testBuildProxy_Http() {
         every { settingsManager.getInt(Settings.PROXY_TYPE) } returns Settings.PROXY_TYPE_HTTP
         every { settingsManager.getString(Settings.PROXY_HOST) } returns "proxy.example.com"
         every { settingsManager.getInt(Settings.PROXY_PORT) } returns 8080
@@ -115,14 +115,14 @@ class HttpClientBuilderTest {
         httpClientBuilder.build().use { client ->
             val proxy = (client.engine as OkHttpEngine).config.proxy
             // However, for the test, ProxyBuilder.http requires Internet connection, so should be done in IO
-            val expectedProxy = withContext(Dispatchers.IO) { ProxyBuilder.http(Url("http://proxy.example.com:8080")) }
+            val expectedProxy = runBlocking(Dispatchers.IO) { ProxyBuilder.http(Url("http://proxy.example.com:8080")) }
             assertEquals(expectedProxy, proxy)
         }
     }
 
     @Test
     @UiThreadTest
-    fun testBuildProxy_Socks() = runTest {
+    fun testBuildProxy_Socks() {
         every { settingsManager.getInt(Settings.PROXY_TYPE) } returns Settings.PROXY_TYPE_SOCKS
         every { settingsManager.getString(Settings.PROXY_HOST) } returns "proxy.example.com"
         every { settingsManager.getInt(Settings.PROXY_PORT) } returns 1080
@@ -131,7 +131,7 @@ class HttpClientBuilderTest {
         httpClientBuilder.build().use { client ->
             val proxy = (client.engine as OkHttpEngine).config.proxy
             // However, for the test, ProxyBuilder.socks requires Internet connection, so should be done in IO
-            val expectedProxy = withContext(Dispatchers.IO) { ProxyBuilder.socks("proxy.example.com", 1080) }
+            val expectedProxy = runBlocking(Dispatchers.IO) { ProxyBuilder.socks("proxy.example.com", 1080) }
             assertEquals(expectedProxy, proxy)
         }
     }
