@@ -232,7 +232,7 @@
     <string name="login_type_email">Conectar con enderezo de correo-e</string>
     <string name="login_email_address">Enderezo de correo-e</string>
     <string name="login_email_address_error">Requíre un enderezo de correo válido</string>
-    <string name="login_email_address_info"><![CDATA[O dominio do correo úsase como URL base. Descúbrense os <a href="%s">Servizos</a> usando rexistros DNS de URLs tipo well-known.]]></string>
+    <string name="login_email_address_info">O dominio do correo úsase como URL base. Descúbrense os <a href="%s">Servizos</a> usando rexistros DNS de URLs tipo well-known.</string>
     <string name="login_password">Contrasinal</string>
     <string name="login_password_hide">Agochar contrasinal</string>
     <string name="login_password_show">Mostrar contrasinal</string>
