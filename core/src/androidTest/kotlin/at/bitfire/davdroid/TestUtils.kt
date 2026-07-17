@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid
 
-import android.app.Instrumentation
 import android.content.Context
 import android.util.Log
 import androidx.work.Configuration
@@ -55,13 +54,5 @@ object TestUtils {
             WorkInfo.State.RUNNING,
             WorkInfo.State.SUCCEEDED
         ))
-
-    fun <T> Instrumentation.runOnMain(block: () -> T): T {
-        var result: T? = null
-        runOnMainSync {
-            result = block()
-        }
-        return result!!
-    }
 
 }

@@ -4,12 +4,10 @@
 
 package at.bitfire.davdroid.network
 
-import androidx.test.platform.app.InstrumentationRegistry
 import at.bitfire.davdroid.MockEngineQueue
 import at.bitfire.davdroid.MockEngineUtils.Default
 import at.bitfire.davdroid.MockEngineUtils.basic
 import at.bitfire.davdroid.ProductIds
-import at.bitfire.davdroid.TestUtils.runOnMain
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import dagger.hilt.android.testing.BindValue
@@ -35,7 +33,9 @@ import io.ktor.http.renderSetCookieHeader
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit4.MockKRule
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.withContext
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
@@ -111,7 +111,7 @@ class HttpClientBuilderTest {
 
         // ProxyBuilder.http resolves DNS, which throws NetworkOnMainThreadException if called directly on the main thread.
         // The build method should handle threading automatically.
-        InstrumentationRegistry.getInstrumentation().runOnMain { httpClientBuilder.build() }.use { client ->
+        withContext(Dispatchers.Main) { httpClientBuilder.build() }.use { client ->
             val proxy = (client.engine as OkHttpEngine).config.proxy
             assertEquals(ProxyBuilder.http(Url("http://proxy.example.com:8080")), proxy)
         }
@@ -125,7 +125,7 @@ class HttpClientBuilderTest {
 
         // ProxyBuilder.socks resolves DNS, which throws NetworkOnMainThreadException if called directly on the main thread.
         // The build method should handle threading automatically.
-        InstrumentationRegistry.getInstrumentation().runOnMain { httpClientBuilder.build() }.use { client ->
+        withContext(Dispatchers.Main) { httpClientBuilder.build() }.use { client ->
             val proxy = (client.engine as OkHttpEngine).config.proxy
             assertEquals(ProxyBuilder.socks("proxy.example.com", 1080), proxy)
         }
