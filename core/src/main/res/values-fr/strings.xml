@@ -223,7 +223,7 @@
     <string name="login_type_email">Connexion avec une adresse de courriel</string>
     <string name="login_email_address">Adresse de courriel</string>
     <string name="login_email_address_error">Une adresse de courriel valide est requise</string>
-    <string name="login_email_address_info"><![CDATA[Le domaine de l\'adresse de courriel est utilisé comme URL de base. <a href="%s">Les services sont découverts</a> en utilisant les enregistrements DNS et les URL connues.]]></string>
+    <string name="login_email_address_info">Le domaine de l\'adresse de courriel est utilisé comme URL de base. <a href="%s">Les services sont découverts</a> en utilisant les enregistrements DNS et les URL connues.</string>
     <string name="login_password">Mot de passe</string>
     <string name="login_password_hide">Cacher le mot de passe</string>
     <string name="login_password_show">Montrer le mot de passe</string>
