@@ -51,7 +51,11 @@ class ReadOnlyPolicy @Inject constructor(
         collection.findDirty().collect { local ->
             logger.warning("Resetting locally modified resource to ETag=null (read-only collection!)")
             SyncException.wrapWithLocalResource(local) {
-                local.clearDirty(Optional.empty(), null, null)
+                local.clearDirty(
+                    fileName = Optional.empty(),
+                    eTag = null,
+                    scheduleTag = null
+                )
             }
             modified = true
         }
