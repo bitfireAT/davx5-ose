@@ -59,7 +59,9 @@ class SyncWorkerManager @Inject constructor(
     val tasksAppManager: Lazy<TasksAppManager>
 ) {
 
-    private val enqueueSemaphore = Semaphore(1)
+    private companion object {
+        val enqueueSemaphore = Semaphore(1)
+    }
 
     // one-time sync workers
 
