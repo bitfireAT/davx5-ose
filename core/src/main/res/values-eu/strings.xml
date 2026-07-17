@@ -237,7 +237,7 @@
     <string name="login_type_email">Saioa hasi helbide elektronikoarekin</string>
     <string name="login_email_address">Helbide elektornikoa</string>
     <string name="login_email_address_error">Baliozko eposta beharrezkoa da</string>
-    <string name="login_email_address_info"><![CDATA[Posta elektronikoaren domeinua oinarrizko URL gisa erabiltzen da. <a href="%s">Zerbitzuak aurkitzen dira</a> DNS erregistroak eta URL ezagunak erabilita.]]></string>
+    <string name="login_email_address_info">Posta elektronikoaren domeinua oinarrizko URL gisa erabiltzen da. <a href="%s">Zerbitzuak aurkitzen dira</a> DNS erregistroak eta URL ezagunak erabilita.</string>
     <string name="login_password">Pasahitza</string>
     <string name="login_password_hide">Ezkutatu pasahitza</string>
     <string name="login_password_show">Erakutsi pasahitza</string>
