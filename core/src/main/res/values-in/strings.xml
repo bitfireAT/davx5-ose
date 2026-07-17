@@ -219,7 +219,7 @@
     <string name="login_type_email">Masuk dengan alamat email</string>
     <string name="login_email_address">Alamat email</string>
     <string name="login_email_address_error">Diperlukan alamat email yang valid</string>
-    <string name="login_email_address_info"><![CDATA[Domain email digunakan sebagai URL dasar. <a href="%s">Layanan ditemukan</a> menggunakan catatan DNS dan URL yang dikenal.]]></string>
+    <string name="login_email_address_info">Domain email digunakan sebagai URL dasar. <a href="%s">Layanan ditemukan</a> menggunakan catatan DNS dan URL yang dikenal.</string>
     <string name="login_password">Kata sandi</string>
     <string name="login_password_hide">Sembunyikan kata sandi</string>
     <string name="login_password_show">Tampilkan kata sandi</string>
