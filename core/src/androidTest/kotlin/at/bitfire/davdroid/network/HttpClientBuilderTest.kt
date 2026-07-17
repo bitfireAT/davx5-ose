@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid.network
 
+import androidx.test.annotation.UiThreadTest
 import at.bitfire.davdroid.MockEngineQueue
 import at.bitfire.davdroid.MockEngineUtils.Default
 import at.bitfire.davdroid.MockEngineUtils.basic
@@ -104,30 +105,34 @@ class HttpClientBuilderTest {
     }
 
     @Test
+    @UiThreadTest
     fun testBuildProxy_Http() = runTest {
         every { settingsManager.getInt(Settings.PROXY_TYPE) } returns Settings.PROXY_TYPE_HTTP
         every { settingsManager.getString(Settings.PROXY_HOST) } returns "proxy.example.com"
         every { settingsManager.getInt(Settings.PROXY_PORT) } returns 8080
 
-        // ProxyBuilder.http resolves DNS, which throws NetworkOnMainThreadException if called directly on the main thread.
-        // The build method should handle threading automatically.
-        withContext(Dispatchers.Main) { httpClientBuilder.build() }.use { client ->
+        // HttpClientBuilder.build should be safe to run on the main thread. No network requests should be made
+        httpClientBuilder.build().use { client ->
             val proxy = (client.engine as OkHttpEngine).config.proxy
-            assertEquals(ProxyBuilder.http(Url("http://proxy.example.com:8080")), proxy)
+            // However, for the test, ProxyBuilder.http requires Internet connection, so should be done in IO
+            val expectedProxy = withContext(Dispatchers.IO) { ProxyBuilder.http(Url("http://proxy.example.com:8080")) }
+            assertEquals(expectedProxy, proxy)
         }
     }
 
     @Test
+    @UiThreadTest
     fun testBuildProxy_Socks() = runTest {
         every { settingsManager.getInt(Settings.PROXY_TYPE) } returns Settings.PROXY_TYPE_SOCKS
         every { settingsManager.getString(Settings.PROXY_HOST) } returns "proxy.example.com"
         every { settingsManager.getInt(Settings.PROXY_PORT) } returns 1080
 
-        // ProxyBuilder.socks resolves DNS, which throws NetworkOnMainThreadException if called directly on the main thread.
-        // The build method should handle threading automatically.
-        withContext(Dispatchers.Main) { httpClientBuilder.build() }.use { client ->
+        // HttpClientBuilder.build should be safe to run on the main thread. No network requests should be made
+        httpClientBuilder.build().use { client ->
             val proxy = (client.engine as OkHttpEngine).config.proxy
-            assertEquals(ProxyBuilder.socks("proxy.example.com", 1080), proxy)
+            // However, for the test, ProxyBuilder.socks requires Internet connection, so should be done in IO
+            val expectedProxy = withContext(Dispatchers.IO) { ProxyBuilder.socks("proxy.example.com", 1080) }
+            assertEquals(expectedProxy, proxy)
         }
     }
 

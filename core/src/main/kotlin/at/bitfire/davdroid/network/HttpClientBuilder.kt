@@ -292,8 +292,8 @@ class HttpClientBuilder private constructor(
     }
 
     private fun buildProxy(engineConfig: HttpClientEngineConfig) {
-        // ProxyBuilder.http/socks are blocking calls (they resolve DNS via InetSocketAddress),
-        // so they must run on a real background thread, not the (possibly virtual-time, test-fakeable) injected ioDispatcher.
+        // Create the proxies with InetSocketAddress.createUnresolved so that no DNS resolving is done here.
+        // If needed, it will be done when required, in the IO thread.
         val proxy = when (settingsManager.getInt(Settings.PROXY_TYPE)) {
             Settings.PROXY_TYPE_SYSTEM -> null
             Settings.PROXY_TYPE_NONE -> Proxy.NO_PROXY
