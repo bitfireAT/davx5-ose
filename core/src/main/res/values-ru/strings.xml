@@ -238,7 +238,7 @@
     <string name="login_type_email">Войти c адресом email</string>
     <string name="login_email_address">Адрес email</string>
     <string name="login_email_address_error">Требуется действительный адрес email</string>
-    <string name="login_email_address_info"><![CDATA[Домен электронной почты используется в качестве базового URL.<a href="%s">Сервисы обнаруживаются</a> по записям DNS и известным URL-адресам.]]></string>
+    <string name="login_email_address_info">Домен электронной почты используется в качестве базового URL.<a href="%s">Сервисы обнаруживаются</a> по записям DNS и известным URL-адресам.</string>
     <string name="login_password">Пароль</string>
     <string name="login_password_hide">Скрыть пароль</string>
     <string name="login_password_show">Показать пароль</string>
