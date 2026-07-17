@@ -236,7 +236,7 @@
     <string name="login_type_email">Mit E-Mail-Adresse anmelden</string>
     <string name="login_email_address">E-Mail-Adresse</string>
     <string name="login_email_address_error">Gültige E-Mail-Adresse benötigt</string>
-    <string name="login_email_address_info"><![CDATA[Die E-Mail-Domäne wird als Basis-URL verwendet. <a href="%s">Dienst-Erkennung</a> erfolgt über DNS-Einträge und well-known-URLs.]]></string>
+    <string name="login_email_address_info">Die E-Mail-Domäne wird als Basis-URL verwendet. <a href="%s">Dienst-Erkennung</a> erfolgt über DNS-Einträge und well-known-URLs.</string>
     <string name="login_password">Passwort</string>
     <string name="login_password_hide">Passwort ausblenden</string>
     <string name="login_password_show">Passwort anzeigen</string>
