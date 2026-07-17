@@ -238,7 +238,7 @@
     <string name="login_type_email">Logowanie za pomocą adresu e‑mail</string>
     <string name="login_email_address">Adres e‑mail</string>
     <string name="login_email_address_error">Wymagany poprawny adres e‑mail</string>
-    <string name="login_email_address_info"><![CDATA[Domena adresu e-mail jest używana jako podstawowy adres URL. <a href="%s">Usługi są wykrywane</a> używając rekordów DNS oraz znanych adresów URL.]]></string>
+    <string name="login_email_address_info">Domena adresu e-mail jest używana jako podstawowy adres URL. <a href="%s">Usługi są wykrywane</a> używając rekordów DNS oraz znanych adresów URL.</string>
     <string name="login_password">Hasło</string>
     <string name="login_password_hide">Ukryj hasło</string>
     <string name="login_password_show">Pokaż hasło</string>
