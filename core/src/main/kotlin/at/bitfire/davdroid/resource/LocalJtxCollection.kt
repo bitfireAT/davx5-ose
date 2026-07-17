@@ -23,7 +23,7 @@ class LocalJtxCollection(internal val jtxCollection: JtxCollection) :
     LocalCollection<LocalJtxObject> {
 
     override val readOnly: Boolean
-        get() = throw NotImplementedError()
+        get() = jtxCollection.readonly
 
     override val tag: String
         get() = "jtx-${jtxCollection.account.name}-${jtxCollection.id}"

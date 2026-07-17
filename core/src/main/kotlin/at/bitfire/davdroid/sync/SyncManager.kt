@@ -115,6 +115,9 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
     lateinit var logger: Logger
 
     @Inject
+    lateinit var readOnlyPolicy: ReadOnlyPolicy
+
+    @Inject
     lateinit var syncStatsRepository: DavSyncStatsRepository
 
     @Inject
@@ -328,6 +331,9 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
      * @return whether local resources have been processed so that a synchronization is always necessary
      */
     protected open suspend fun processLocallyDeleted(): Boolean {
+        if (localCollection.readOnly)
+            return readOnlyPolicy.resetDeleted(localCollection)
+
         var numDeleted = 0
 
         // Remove locally deleted entries from server (if they have a name, i.e. if they were uploaded before),
@@ -376,6 +382,9 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
      * @return whether local resources have been processed so that a synchronization is always necessary
      */
     protected open suspend fun uploadDirty(): Boolean {
+        if (localCollection.readOnly)
+            return readOnlyPolicy.resetDirty(localCollection)
+
         var numUploaded = 0
 
         localCollection.findDirty().collect { local ->

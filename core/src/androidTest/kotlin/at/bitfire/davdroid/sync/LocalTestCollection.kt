@@ -19,8 +19,7 @@ class LocalTestCollection(
 
     val entries = mutableListOf<LocalTestResource>()
 
-    override val readOnly: Boolean
-        get() = throw NotImplementedError()
+    override val readOnly = false
 
     override fun findDeleted() = entries.filter { it.deleted }.asFlow()
 
