@@ -237,7 +237,7 @@
     <string name="login_type_email">Conectează-te cu adresa de e-mail</string>
     <string name="login_email_address">Adresa de e-mail</string>
     <string name="login_email_address_error">Este necesară o adresă de e-mail validă</string>
-    <string name="login_email_address_info"><![CDATA[Domeniul de e-mail este folosit ca URL de bază. <a href="%s">Serviciile sunt descoperite</a> folosind înregistrări DNS și adrese URL bine-cunoscute.]]></string>
+    <string name="login_email_address_info">Domeniul de e-mail este folosit ca URL de bază. <a href="%s">Serviciile sunt descoperite</a> folosind înregistrări DNS și adrese URL bine-cunoscute.</string>
     <string name="login_password">Parolă</string>
     <string name="login_password_hide">Ascunde parola</string>
     <string name="login_password_show">Afișează parola</string>
