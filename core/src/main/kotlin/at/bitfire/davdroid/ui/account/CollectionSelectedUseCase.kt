@@ -5,7 +5,7 @@
 package at.bitfire.davdroid.ui.account
 
 import android.accounts.Account
-import at.bitfire.davdroid.di.qualifier.DefaultDispatcher
+import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.push.PushRegistrationManager
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavCollectionRepository
@@ -31,7 +31,7 @@ import javax.inject.Singleton
 class CollectionSelectedUseCase @Inject constructor(
     private val accountRepository: AccountRepository,
     private val collectionRepository: DavCollectionRepository,
-    @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val pushRegistrationManager: PushRegistrationManager,
     private val serviceRepository: DavServiceRepository,
     private val syncWorkerManager: SyncWorkerManager
@@ -60,7 +60,7 @@ class CollectionSelectedUseCase @Inject constructor(
             // Stop previous delay, if exists
             previousJob?.cancel()
 
-            scope.launch(defaultDispatcher) {
+            scope.launch(ioDispatcher) {
                 // wait
                 delay(DELAY_MS)
 

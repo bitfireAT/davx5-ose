@@ -11,7 +11,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import at.bitfire.davdroid.di.qualifier.DefaultDispatcher
+import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.sync.TasksAppManager
 import at.bitfire.davdroid.util.packageChangedFlow
@@ -26,7 +26,7 @@ import javax.inject.Inject
 @HiltViewModel
 class TasksViewModel @Inject constructor(
     @ApplicationContext val context: Context,
-    @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val settings: SettingsManager,
     private val tasksAppManager: TasksAppManager
 ) : ViewModel() {
@@ -77,7 +77,7 @@ class TasksViewModel @Inject constructor(
             false
         }
 
-    fun selectProvider(provider: TaskProvider.ProviderName) = viewModelScope.launch(defaultDispatcher) {
+    fun selectProvider(provider: TaskProvider.ProviderName) = viewModelScope.launch(ioDispatcher) {
         tasksAppManager.selectProvider(provider)
     }
 

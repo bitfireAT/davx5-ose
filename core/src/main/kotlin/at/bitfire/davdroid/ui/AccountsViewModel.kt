@@ -185,7 +185,7 @@ class AccountsViewModel @AssistedInject constructor(
         }
 
         emit(anyShowAlwaysPage)
-    }.flowOn(Dispatchers.Default)
+    }.flowOn(Dispatchers.IO)
 
 
     // warnings
