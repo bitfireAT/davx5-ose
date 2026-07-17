@@ -208,7 +208,7 @@
     <string name="login_type_email">ელ. ფოსტის მისამართით შესვლა</string>
     <string name="login_email_address">ელ. ფოსტის მისამართი</string>
     <string name="login_email_address_error">საჭიროა სწორი ელ. ფოსტის მისამართი</string>
-    <string name="login_email_address_info"><![CDATA[ელ. ფოსტის დომენი გამოიყენება საბაზო URL-ად. <a href="%s">აღმოჩენილია სერვისები</a> DNS ჩანაწერების და კარგად ცნობილი URL-ების მეშვეობით.]]></string>
+    <string name="login_email_address_info">ელ. ფოსტის დომენი გამოიყენება საბაზო URL-ად. <a href="%s">აღმოჩენილია სერვისები</a> DNS ჩანაწერების და კარგად ცნობილი URL-ების მეშვეობით.</string>
     <string name="login_password">პაროლი</string>
     <string name="login_password_hide">პაროლის დამალვა</string>
     <string name="login_password_show">პაროლის ჩვენება</string>
