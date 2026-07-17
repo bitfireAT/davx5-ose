@@ -237,7 +237,7 @@
     <string name="login_type_email">Logga in med e-postadress</string>
     <string name="login_email_address">E-postadress</string>
     <string name="login_email_address_error">Giltig e-postadress krävs</string>
-    <string name="login_email_address_info"><![CDATA[E-post domänen används som en bas URL. <a href="%s">Tjänster är upptäckta</a> genom DNS-uppslag och välkända URL:er.]]></string>
+    <string name="login_email_address_info">E-post domänen används som en bas URL. <a href="%s">Tjänster är upptäckta</a> genom DNS-uppslag och välkända URL:er.</string>
     <string name="login_password">Lösenord</string>
     <string name="login_password_hide">Dölj lösenord</string>
     <string name="login_password_show">Visa lösenord</string>
