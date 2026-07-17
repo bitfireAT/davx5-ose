@@ -11,8 +11,10 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.junit4.MockKRule
 import io.mockk.mockk
 import io.mockk.verify
+import junit.framework.AssertionFailedError
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import java.util.Optional
@@ -27,6 +29,13 @@ class CategoriesStrategyTest {
 
     private val strategy by lazy { CategoriesStrategy(addressBook) }
 
+    @Before
+    fun setUp() {
+        /* CategoriesStrategy is called by orchestrator depending on whether the collection is read-only;
+        but it doesn't check itself. */
+        every { addressBook.readOnly } throws AssertionFailedError()
+    }
+
 
     // resolveLocalGroupChanges
 
@@ -36,7 +45,6 @@ class CategoriesStrategyTest {
         every { addressBook.findDeletedGroups() } returns flowOf(group)
         every { addressBook.findDirtyGroups() } returns flowOf()
 
-        // must not depend on whether the address book is read-only: this is pure local housekeeping
         strategy.resolveLocalGroupChanges()
 
         verify { group.markMembersDirty() }
