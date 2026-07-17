@@ -235,7 +235,7 @@
     <string name="login_type_email">メールアドレスでログイン</string>
     <string name="login_email_address">メールアドレス</string>
     <string name="login_email_address_error">有効なメールアドレスが必要です</string>
-    <string name="login_email_address_info"><![CDATA[メールアドレスのドメインをベース URL とします。DNS レコードと well-known URL を使用して<a href="%s">サービスを検出</a>します。]]></string>
+    <string name="login_email_address_info">メールアドレスのドメインをベース URL とします。DNS レコードと well-known URL を使用して<a href="%s">サービスを検出</a>します。</string>
     <string name="login_password">パスワード</string>
     <string name="login_password_hide">パスワードを非表示</string>
     <string name="login_password_show">パスワードを表示</string>
