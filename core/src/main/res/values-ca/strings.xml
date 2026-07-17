@@ -237,7 +237,7 @@
     <string name="login_type_email">Inici de sessió amb una adreça de correu electrònic</string>
     <string name="login_email_address">Adreça de correu electrònic</string>
     <string name="login_email_address_error">Es requereix una adreça vàlida de correu electrònic</string>
-    <string name="login_email_address_info"><![CDATA[El domini de correu electrònic es fa servir com a URL base. Els <a href="%s">serveis es descobreixen</a> utilitzant el registres de DNS i els URL ben coneguts.]]></string>
+    <string name="login_email_address_info">El domini de correu electrònic es fa servir com a URL base. Els <a href="%s">serveis es descobreixen</a> utilitzant el registres de DNS i els URL ben coneguts.</string>
     <string name="login_password">Contrasenya</string>
     <string name="login_password_hide">Oculta la contrasenya</string>
     <string name="login_password_show">Mostra la contrasenya</string>
