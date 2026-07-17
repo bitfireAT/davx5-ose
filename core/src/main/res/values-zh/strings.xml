@@ -235,7 +235,7 @@
     <string name="login_type_email">使用邮箱地址登录</string>
     <string name="login_email_address">Email 地址</string>
     <string name="login_email_address_error">请输入有效 Email 地址</string>
-    <string name="login_email_address_info"><![CDATA[该邮件域被用作基URL。<a href="%s">服务发现</a> 通过 DNS 记录和已知URLs 进行。]]></string>
+    <string name="login_email_address_info">该邮件域被用作基URL。<a href="%s">服务发现</a> 通过 DNS 记录和已知URLs 进行。</string>
     <string name="login_password">密码</string>
     <string name="login_password_hide">隐藏密码</string>
     <string name="login_password_show">显示密码</string>
