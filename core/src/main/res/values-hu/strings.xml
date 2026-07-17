@@ -232,7 +232,7 @@
     <string name="login_type_email">Bejelentkezés e-mail-cím segítségével</string>
     <string name="login_email_address">E-mail-cím</string>
     <string name="login_email_address_error">Érvényes e-mail-cím szükséges</string>
-    <string name="login_email_address_info"><![CDATA[Az e-mail-tartomány lesz alapwebcímként használva. A <a href="%s">szolgáltatások felfedezése</a> DNS rekordok és jól ismert webcímek alapján történik.]]></string>
+    <string name="login_email_address_info">Az e-mail-tartomány lesz alapwebcímként használva. A <a href="%s">szolgáltatások felfedezése</a> DNS rekordok és jól ismert webcímek alapján történik.</string>
     <string name="login_password">Jelszó</string>
     <string name="login_password_hide">Jelszó elrejtése</string>
     <string name="login_password_show">Jelszó megjelenítése</string>
