@@ -232,7 +232,7 @@
     <string name="login_type_email">이메일 주소로 로그인</string>
     <string name="login_email_address">이메일 주소</string>
     <string name="login_email_address_error">올바른 이메일 주소가 필요합니다.</string>
-    <string name="login_email_address_info"><![CDATA[이메일 도메인이 기본 URL로 사용됩니다. <a href="%s">이 서비스</a> 는 DNS 레코드와 잘 알려진 URL을 통해 탐색됩니다.]]></string>
+    <string name="login_email_address_info">이메일 도메인이 기본 URL로 사용됩니다. <a href="%s">이 서비스</a> 는 DNS 레코드와 잘 알려진 URL을 통해 탐색됩니다.</string>
     <string name="login_password">비밀번호</string>
     <string name="login_password_hide">비밀번호 숨기기</string>
     <string name="login_password_show">비밀번호 표시</string>
