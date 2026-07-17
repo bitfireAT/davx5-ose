@@ -79,7 +79,7 @@ open class LocalAddressBook @AssistedInject constructor(
 
     private val accountManager by lazy { AccountManager.get(context) }
 
-    internal val ab = AndroidAddressBook(context, _addressBookAccount, provider)
+    internal val ab = AndroidAddressBook(context, _addressBookAccount, provider, groupMethod)
 
     var addressBookAccount: Account by ab::addressBookAccount
 
