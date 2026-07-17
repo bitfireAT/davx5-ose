@@ -236,7 +236,7 @@
     <string name="login_type_email">Inloggen met e-mailadres</string>
     <string name="login_email_address">E-mailadres</string>
     <string name="login_email_address_error">Geldig e-mailadres vereist</string>
-    <string name="login_email_address_info"><![CDATA[Het e-maildomein wordt gebruikt als basis-URL. <a href="%s">Diensten worden ontdekt</a> met behulp van DNS-records en bekende URL\'s.]]></string>
+    <string name="login_email_address_info">Het e-maildomein wordt gebruikt als basis-URL. <a href="%s">Diensten worden ontdekt</a> met behulp van DNS-records en bekende URL\'s.</string>
     <string name="login_password">Wachtwoord</string>
     <string name="login_password_hide">Wachtwoord verbergen</string>
     <string name="login_password_show">Wachtwoord tonen</string>
