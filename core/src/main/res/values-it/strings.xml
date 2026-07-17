@@ -202,7 +202,7 @@
     <string name="login_type_email">Accedi con indirizzo email</string>
     <string name="login_email_address">Indirizzo email</string>
     <string name="login_email_address_error">È necessario un indirizzo email valido</string>
-    <string name="login_email_address_info"><![CDATA[Viene usato il dominio dell\'email come URL base. <a href="%s">I servizi sono individuati </a> usando record DNS e le URL well-known.]]></string>
+    <string name="login_email_address_info">Viene usato il dominio dell\'email come URL base. <a href="%s">I servizi sono individuati </a> usando record DNS e le URL well-known.</string>
     <string name="login_password">Password</string>
     <string name="login_password_hide">Nascondi password</string>
     <string name="login_password_show">Mostra password</string>
