@@ -22,7 +22,6 @@ import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.engine.HttpClientEngineConfig
-import io.ktor.client.engine.ProxyBuilder
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.DefaultRequest
 import io.ktor.client.plugins.HttpTimeout
@@ -35,18 +34,15 @@ import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.plugins.logging.LoggingFormat
 import io.ktor.http.HttpHeaders
-import io.ktor.http.URLBuilder
-import io.ktor.http.URLProtocol
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.util.appendIfNameAbsent
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import net.openid.appauth.AuthState
 import okhttp3.ConnectionSpec
 import okhttp3.OkHttpClient
 import okhttp3.Protocol
+import java.net.InetSocketAddress
 import java.net.Proxy
 import java.util.Locale
 import java.util.logging.Level
@@ -301,21 +297,20 @@ class HttpClientBuilder private constructor(
         val proxy = when (settingsManager.getInt(Settings.PROXY_TYPE)) {
             Settings.PROXY_TYPE_SYSTEM -> null
             Settings.PROXY_TYPE_NONE -> Proxy.NO_PROXY
-            Settings.PROXY_TYPE_HTTP -> runBlocking(Dispatchers.IO) {
-                ProxyBuilder.http(
-                    URLBuilder(
-                        protocol = URLProtocol.HTTP,
-                        host = settingsManager.getString(Settings.PROXY_HOST) ?: "",
-                        port = settingsManager.getInt(Settings.PROXY_PORT)
-                    ).build()
-                )
-            }
-            Settings.PROXY_TYPE_SOCKS -> runBlocking(Dispatchers.IO) {
-                ProxyBuilder.socks(
+            Settings.PROXY_TYPE_HTTP -> Proxy(
+                Proxy.Type.HTTP,
+                InetSocketAddress.createUnresolved(
                     settingsManager.getString(Settings.PROXY_HOST) ?: "",
                     settingsManager.getInt(Settings.PROXY_PORT)
                 )
-            }
+            )
+            Settings.PROXY_TYPE_SOCKS -> Proxy(
+                Proxy.Type.SOCKS,
+                InetSocketAddress.createUnresolved(
+                    settingsManager.getString(Settings.PROXY_HOST) ?: "",
+                    settingsManager.getInt(Settings.PROXY_PORT)
+                )
+            )
             else -> /* Invalid proxy type, shouldn't happen */ null
         }
         if (proxy != null) {
