@@ -285,7 +285,7 @@ class AccountSettingsViewModel @AssistedInject constructor(
      *                  themselves (full resync) shall be downloaded again
      * @param tasks     whether tasks shall be synchronized, too (false: only events, true: events and tasks)
      */
-    private fun resyncCalendars(resync: ResyncType, tasks: Boolean) {
+    private suspend fun resyncCalendars(resync: ResyncType, tasks: Boolean) {
         resync(SyncDataType.EVENTS, resync)
         if (tasks)
             resync(SyncDataType.TASKS, resync)
@@ -298,7 +298,7 @@ class AccountSettingsViewModel @AssistedInject constructor(
      * @param resync    whether only the list of entries (resync) or also all entries
      *                  themselves (full resync) shall be downloaded again
      */
-    private fun resync(dataType: SyncDataType, resync: ResyncType) {
+    private suspend fun resync(dataType: SyncDataType, resync: ResyncType) {
         syncWorkerManager.enqueueOneTime(accountId.toAndroidAccount(), dataType = dataType, resync = resync)
     }
 

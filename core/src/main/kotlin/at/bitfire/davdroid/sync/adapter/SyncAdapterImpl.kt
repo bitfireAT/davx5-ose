@@ -35,7 +35,9 @@ import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.future.asCompletableFuture
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
@@ -115,7 +117,9 @@ class SyncAdapterImpl @Inject constructor(
         }
 
         logger.fine("Starting OneTimeSyncWorker for $account $authority and waiting for it")
-        val workerName = syncWorkerManager.enqueueOneTime(account, dataType = SyncDataType.fromAuthority(authority), fromUpload = upload)
+        val workerName = waitScope.async {
+            syncWorkerManager.enqueueOneTime(account, dataType = SyncDataType.fromAuthority(authority), fromUpload = upload)
+        }.asCompletableFuture().get()
 
         // Android 14+ does not handle pending sync state correctly.
         // As a defensive workaround, we can cancel specifically this still pending sync only

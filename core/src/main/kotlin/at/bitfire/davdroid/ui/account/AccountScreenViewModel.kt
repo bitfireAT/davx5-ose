@@ -30,7 +30,6 @@ import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -221,7 +220,9 @@ class AccountScreenViewModel @AssistedInject constructor(
     }
 
     fun sync() {
-        syncWorkerManager.enqueueOneTimeAllAuthorities(account, manual = true)
+        viewModelScope.launch {
+            syncWorkerManager.enqueueOneTimeAllAuthorities(account, manual = true)
+        }
     }
 
 }
