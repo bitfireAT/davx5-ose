@@ -15,7 +15,7 @@ import at.bitfire.davdroid.accounts.LegacyAccount
 import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.db.ServiceType
-import at.bitfire.davdroid.di.qualifier.DefaultDispatcher
+import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.resource.LocalAddressBookStore
 import at.bitfire.davdroid.resource.LocalCalendarStore
 import at.bitfire.davdroid.servicedetection.DavResourceFinder
@@ -54,7 +54,7 @@ class AccountRepository @Inject constructor(
     private val automaticSyncManager: Lazy<AutomaticSyncManager>,
     @ApplicationContext private val context: Context,
     private val collectionRepository: DavCollectionRepository,
-    @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val homeSetRepository: DavHomeSetRepository,
     private val localCalendarStore: Lazy<LocalCalendarStore>,
     private val localAddressBookStore: Lazy<LocalAddressBookStore>,
@@ -190,7 +190,7 @@ class AccountRepository @Inject constructor(
         val listener = OnAccountsUpdateListener { accounts ->
             trySend(accounts.filter { it.type == accountType }.toSet())
         }
-        withContext(defaultDispatcher) {  // causes disk I/O
+        withContext(ioDispatcher) {  // causes disk I/O
             accountManager.addOnAccountsUpdatedListener(listener, null, true)
         }
 
@@ -212,7 +212,7 @@ class AccountRepository @Inject constructor(
      * @throws IllegalArgumentException if the new account name already exists
      * @throws Exception (or sub-classes) on other errors
      */
-    suspend fun rename(oldName: String, newName: String): Unit = withContext(defaultDispatcher) {
+    suspend fun rename(oldName: String, newName: String): Unit = withContext(ioDispatcher) {
         val oldAccount = fromName(oldName)
         val newAccount = fromName(newName)
 
