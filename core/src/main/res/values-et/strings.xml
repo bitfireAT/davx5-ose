@@ -236,7 +236,7 @@
     <string name="login_type_email">Logi sisse e-posti aadressiga</string>
     <string name="login_email_address">E-posti aadress</string>
     <string name="login_email_address_error">Nõutav on korrektne e-posti aadress</string>
-    <string name="login_email_address_info"><![CDATA[E-posti aadressi domeeni alusel leiame alustuseks mõeldud võrguaadressi. <a href="%s">Teenused tuvastame</a> nimeserveri kirjete ning „.well-known“ tunnusaadresside abil.]]></string>
+    <string name="login_email_address_info">E-posti aadressi domeeni alusel leiame alustuseks mõeldud võrguaadressi. <a href="%s">Teenused tuvastame</a> nimeserveri kirjete ning „.well-known“ tunnusaadresside abil.</string>
     <string name="login_password">Salasõna</string>
     <string name="login_password_hide">Peida salasõna</string>
     <string name="login_password_show">Näita salasõna</string>
