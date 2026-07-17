@@ -237,7 +237,7 @@
     <string name="login_type_email">Entrar com endereço de e-mail</string>
     <string name="login_email_address">Endereço de e-mail</string>
     <string name="login_email_address_error">Um endereço de e-mail válido é necessário</string>
-    <string name="login_email_address_info"><![CDATA[O domínio do e-mail é usado como o URL base. <a href="%s">Os serviços são descobertos</a> usando registros de DNS e URLs well-known.]]></string>
+    <string name="login_email_address_info">O domínio do e-mail é usado como o URL base. <a href="%s">Os serviços são descobertos</a> usando registros de DNS e URLs well-known.</string>
     <string name="login_password">Senha</string>
     <string name="login_password_hide">Ocultar senha</string>
     <string name="login_password_show">Mostrar senha</string>
