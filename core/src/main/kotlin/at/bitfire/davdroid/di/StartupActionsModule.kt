@@ -15,7 +15,7 @@ import dagger.multibindings.IntoSet
 
 @Module
 @InstallIn(SingletonComponent::class)
-interface StartupPluginsModule {
+interface StartupActionsModule {
 
     @Binds
     @IntoSet

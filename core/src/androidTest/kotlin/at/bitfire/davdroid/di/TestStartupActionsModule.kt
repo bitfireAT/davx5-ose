@@ -13,9 +13,9 @@ import dagger.multibindings.Multibinds
 @Module
 @TestInstallIn(
     components = [SingletonComponent::class],
-    replaces = [StartupPluginsModule::class]
+    replaces = [StartupActionsModule::class]
 )
-abstract class TestStartupPluginsModule {
+abstract class TestStartupActionsModule {
 
     // provides empty set of startup plugins so that nothing interferes with tests
     @Multibinds

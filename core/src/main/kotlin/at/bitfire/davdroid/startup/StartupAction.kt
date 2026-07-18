@@ -12,7 +12,7 @@ interface StartupAction {
     }
 
     /**
-     * Priority of this plugin's [onAppCreate]. Lower values are executed first.
+     * Priority of this action's [onAppCreate]. Lower values are executed first.
      * `null` if this action has no synchronous startup work.
      */
     fun priority(): Int? = null
@@ -31,7 +31,7 @@ interface StartupAction {
     }
 
     /**
-     * Priority of this plugin's [onAppCreateAsync]. Lower values are executed first.
+     * Priority of this action's [onAppCreateAsync]. Lower values are executed first.
      * `null` if this action has no asynchronous startup work.
      */
     fun priorityAsync(): Int? = null
