@@ -6,11 +6,13 @@ package at.bitfire.davdroid.startup
 
 import android.content.Context
 import at.bitfire.davdroid.di.qualifier.ApplicationScope
+import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.startup.StartupAction.Companion.PRIORITY_DEFAULT
 import at.bitfire.davdroid.sync.TasksAppManager
 import at.bitfire.davdroid.util.packageChangedFlow
 import at.bitfire.synctools.storage.TaskProvider
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.util.logging.Logger
@@ -24,6 +26,7 @@ import javax.inject.Provider
 class TasksAppWatcher @Inject constructor(
     @ApplicationScope private val applicationScope: CoroutineScope,
     @ApplicationContext private val context: Context,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val logger: Logger,
     private val tasksAppManager: Provider<TasksAppManager>
 ) : StartupAction {
@@ -31,8 +34,8 @@ class TasksAppWatcher @Inject constructor(
     override fun priorityAsync() = PRIORITY_DEFAULT
 
     override fun onAppCreateAsync() {
-        applicationScope.launch {
-            logger.info("Watching for package changes in order to detect tasks app changes")
+        logger.info("Watching for package changes in order to detect tasks app changes")
+        applicationScope.launch(ioDispatcher) {
             packageChangedFlow(context).collect {
                 onPackageChanged()
             }

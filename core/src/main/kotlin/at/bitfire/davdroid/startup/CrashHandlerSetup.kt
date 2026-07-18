@@ -17,8 +17,8 @@ import kotlin.jvm.optionals.getOrNull
  * Sets up the uncaught exception (crash) handler and enables StrictMode in debug builds.
  */
 class CrashHandlerSetup @Inject constructor(
-    private val logger: Logger,
-    private val crashHandler: Optional<Thread.UncaughtExceptionHandler>
+    private val crashHandler: Optional<Thread.UncaughtExceptionHandler>,
+    private val logger: Logger
 ) : StartupAction {
 
     override fun priority() = PRIORITY_FIRST

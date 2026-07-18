@@ -46,10 +46,11 @@ abstract class CoreApp: Application() {
                                  // some current activity and causes an IllegalStateException in rare cases
 
         // run synchronous startup actions
-        actions.filter { it.priority() != null }.sortedBy { it.priority() }.forEach { action ->
-            logger.fine("Running blocking startup action: $action.onAppCreate()")
-            action.onAppCreate()
-        }
+        runActions(
+            label = "blocking",
+            priority = StartupAction::priority,
+            run = StartupAction::onAppCreate
+        )
 
         /* Don't block app startup for some background tasks. A thread is used instead of coroutines
         because neither the scope nor the dispatcher should be set here. There may also be non-suspending
@@ -62,10 +63,25 @@ abstract class CoreApp: Application() {
             UiUtils.updateShortcuts(this@CoreApp)
 
             // run asynchronous startup actions
-            actions.filter { it.priorityAsync() != null }.sortedBy { it.priorityAsync() }.forEach { action ->
-                logger.fine("Running background startup action: $action.onAppCreateAsync()")
-                action.onAppCreateAsync()
-            }
+            runActions(
+                label = "background",
+                priority = StartupAction::priorityAsync,
+                run = StartupAction::onAppCreateAsync
+            )
+        }
+    }
+
+    /**
+     * Executes startup actions with non-null priority in priority order (lowest number first).
+     *
+     * @param label Descriptive label for logging purposes.
+     * @param priority Function to determine the priority of a [StartupAction].
+     * @param run Function to execute the action.
+     */
+    private fun runActions(label: String, priority: (StartupAction) -> Int?, run: (StartupAction) -> Unit) {
+        actions.filter { priority(it) != null }.sortedBy { priority(it) }.forEach { action ->
+            logger.fine("Running $label startup action: $action")
+            run(action)
         }
     }
 
