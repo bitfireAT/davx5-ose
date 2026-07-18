@@ -10,11 +10,11 @@ import android.os.Build
 import androidx.annotation.IntDef
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.work.CoroutineWorker
 import androidx.work.Data
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
+import at.bitfire.davdroid.IoCoroutineWorker
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.push.PushNotificationManager
 import at.bitfire.davdroid.settings.AccountSettings
@@ -44,7 +44,7 @@ import kotlin.time.Duration.Companion.seconds
 abstract class BaseSyncWorker(
     context: Context,
     private val workerParams: WorkerParameters
-) : CoroutineWorker(context, workerParams) {
+) : IoCoroutineWorker(context, workerParams) {
 
     @Inject
     lateinit var accountSettingsFactory: AccountSettings.Factory
@@ -76,8 +76,7 @@ abstract class BaseSyncWorker(
     @Inject
     lateinit var taskSyncer: TaskSyncer.Factory
 
-
-    override suspend fun doWork(): Result {
+    override suspend fun doIoWork(): Result {
         // ensure we got the required arguments
         val account = Account(
             inputData.getString(INPUT_ACCOUNT_NAME) ?: throw IllegalArgumentException("INPUT_ACCOUNT_NAME required"),

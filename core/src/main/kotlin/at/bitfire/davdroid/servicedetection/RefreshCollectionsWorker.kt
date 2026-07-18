@@ -12,7 +12,6 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.TaskStackBuilder
 import androidx.hilt.work.HiltWorker
-import androidx.work.CoroutineWorker
 import androidx.work.Data
 import androidx.work.ExistingWorkPolicy
 import androidx.work.ForegroundInfo
@@ -23,6 +22,7 @@ import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import at.bitfire.dav4jvm.ktor.exception.UnauthorizedException
+import at.bitfire.davdroid.IoCoroutineWorker
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.toAccountId
 import at.bitfire.davdroid.network.HttpClientBuilder
@@ -71,7 +71,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
     private val pushRegistrationManager: PushRegistrationManager,
     private val serviceRefresherFactory: ServiceRefresher.Factory,
     serviceRepository: DavServiceRepository
-): CoroutineWorker(appContext, workerParams) {
+) : IoCoroutineWorker(appContext, workerParams) {
 
     companion object {
 
@@ -139,7 +139,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
         Account(service.accountName, applicationContext.getString(R.string.account_type))
     }
 
-    override suspend fun doWork(): Result {
+    override suspend fun doIoWork(): Result {
         if (service == null || account == null) {
             logger.warning("Missing service or account with service ID: $serviceId")
             return Result.failure()
