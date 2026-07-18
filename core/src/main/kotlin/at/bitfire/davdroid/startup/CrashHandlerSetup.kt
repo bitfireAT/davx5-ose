@@ -7,7 +7,7 @@ package at.bitfire.davdroid.startup
 import android.os.Build
 import android.os.StrictMode
 import at.bitfire.davdroid.BuildConfig
-import at.bitfire.davdroid.startup.StartupAction.Companion.PRIORITY_LAST
+import at.bitfire.davdroid.startup.StartupAction.Companion.PRIORITY_FIRST
 import java.util.Optional
 import java.util.logging.Logger
 import javax.inject.Inject
@@ -21,7 +21,7 @@ class CrashHandlerSetup @Inject constructor(
     private val crashHandler: Optional<Thread.UncaughtExceptionHandler>
 ) : StartupAction {
 
-    override fun priority() = PRIORITY_LAST
+    override fun priority() = PRIORITY_FIRST
 
     override fun onAppCreate() {
         if (BuildConfig.DEBUG) {

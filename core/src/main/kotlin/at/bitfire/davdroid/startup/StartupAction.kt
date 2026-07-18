@@ -7,8 +7,8 @@ package at.bitfire.davdroid.startup
 interface StartupAction {
 
     companion object {
+        const val PRIORITY_FIRST = 0
         const val PRIORITY_DEFAULT = 100
-        const val PRIORITY_LAST = 1000
     }
 
     /**
