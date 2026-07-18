@@ -76,10 +76,13 @@ class DavDocumentsProvider : DocumentsProvider() {
     }
 
     override fun queryChildDocuments(parentDocumentId: String, projection: Array<out String>?, sortOrder: String?) =
+        runBlocking {
         entryPoint.queryChildDocumentsOperation().invoke(parentDocumentId, projection, sortOrder)
+        }
 
-    override fun isChildDocument(parentDocumentId: String, documentId: String) =
+    override fun isChildDocument(parentDocumentId: String, documentId: String) = runBlocking {
         entryPoint.isChildDocumentOperation().invoke(parentDocumentId, documentId)
+    }
 
 
     /*** copy/create/delete/move/rename ***/
@@ -119,7 +122,8 @@ class DavDocumentsProvider : DocumentsProvider() {
         entryPoint.openDocumentOperation().invoke(documentId, mode, signal)
     }
 
-    override fun openDocumentThumbnail(documentId: String, sizeHint: Point, signal: CancellationSignal?) =
+    override fun openDocumentThumbnail(documentId: String, sizeHint: Point, signal: CancellationSignal?) = runBlocking {
         entryPoint.openDocumentThumbnailOperation().invoke(documentId, sizeHint, signal)
+    }
 
 }

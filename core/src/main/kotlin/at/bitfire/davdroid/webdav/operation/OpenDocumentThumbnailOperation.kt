@@ -49,7 +49,11 @@ class OpenDocumentThumbnailOperation @Inject constructor(
 
     private val documentDao = db.webDavDocumentDao()
 
-    operator fun invoke(documentId: String, sizeHint: Point, signal: CancellationSignal?): AssetFileDescriptor? {
+    suspend operator fun invoke(
+        documentId: String,
+        sizeHint: Point,
+        signal: CancellationSignal?
+    ): AssetFileDescriptor? {
         logger.info("openDocumentThumbnail documentId=$documentId sizeHint=$sizeHint signal=$signal")
 
         // don't download the large images just to create a thumbnail on metered networks
