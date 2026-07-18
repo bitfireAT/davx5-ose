@@ -28,7 +28,7 @@ class AccountSettingsMigration13 @Inject constructor(
     @ApplicationContext private val context: Context
 ): AccountSettingsMigration {
 
-    override fun migrate(account: Account) {
+    override suspend fun migrate(account: Account) {
         // proxy settings are managed by SharedPreferencesProvider
         val preferences = PreferenceManager.getDefaultSharedPreferences(context)
 

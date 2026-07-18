@@ -27,7 +27,7 @@ class AccountSettingsMigration14 @Inject constructor(
     private val logger: Logger
 ): AccountSettingsMigration {
 
-    override fun migrate(account: Account) {
+    override suspend fun migrate(account: Account) {
         // Cancel any potentially running syncs for this account (sync framework)
         ContentResolver.cancelSync(account, null)
 

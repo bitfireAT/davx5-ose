@@ -92,7 +92,7 @@ class AccountsCleanupWorkerTest {
 
     @Test
     fun testCleanUpServices_oneAccount() {
-        TestAccount.provide { existingAccount ->
+        TestAccount.provideBlocking { existingAccount ->
             // Insert services, one that reference the existing account and one that references an invalid account
             db.serviceDao().insertOrReplace(Service(id = 1, accountName = existingAccount.name, type = Service.TYPE_CALDAV, principal = null))
             assertNotNull(db.serviceDao().get(1))
@@ -131,7 +131,7 @@ class AccountsCleanupWorkerTest {
 
     @Test
     fun testCleanUpAddressBooks_keepsAddressBookWithAccount() {
-        TestAccount.provide { existingAccount ->
+        TestAccount.provideBlocking { existingAccount ->
             // Create address book account _with_ corresponding account and verify
             val userData = Bundle(2).apply {
                 putString(LocalAddressBook.USER_DATA_ACCOUNT_NAME, existingAccount.name)

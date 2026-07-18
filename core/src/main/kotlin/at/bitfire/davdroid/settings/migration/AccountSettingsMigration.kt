@@ -21,6 +21,6 @@ interface AccountSettingsMigration {
      *
      * @param   account          The account to migrate
      */
-    fun migrate(account: Account)
+    suspend fun migrate(account: Account)
 
 }

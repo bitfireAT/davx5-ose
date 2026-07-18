@@ -32,7 +32,7 @@ class AccountSettingsMigration16 @Inject constructor(
     private val syncWorkerManager: SyncWorkerManager
 ): AccountSettingsMigration {
 
-    override fun migrate(account: Account) {
+    override suspend fun migrate(account: Account) {
         for (dataType in SyncDataType.entries) {
             logger.info("Re-enqueuing periodic sync workers for $account/$dataType, if necessary")
 

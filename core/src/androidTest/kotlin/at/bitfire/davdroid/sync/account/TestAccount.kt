@@ -55,7 +55,19 @@ object TestAccount {
     /**
      * Convenience method to create a test account and remove it after executing the block.
      */
-    fun provide(version: Int = AccountSettings.CURRENT_VERSION, block: (Account) -> Unit) {
+    fun provideBlocking(version: Int = AccountSettings.CURRENT_VERSION, block: (Account) -> Unit) {
+        val account = create(version)
+        try {
+            block(account)
+        } finally {
+            remove(account)
+        }
+    }
+
+    /**
+     * Convenience method to create a test account and remove it after executing the (suspending) block.
+     */
+    suspend fun provide(version: Int = AccountSettings.CURRENT_VERSION, block: suspend (Account) -> Unit) {
         val account = create(version)
         try {
             block(account)

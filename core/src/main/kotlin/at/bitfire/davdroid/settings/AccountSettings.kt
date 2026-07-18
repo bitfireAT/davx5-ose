@@ -23,6 +23,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.runBlocking
 import net.openid.appauth.AuthState
 import java.util.Collections
 import java.util.logging.Level
@@ -87,7 +88,9 @@ class AccountSettings @AssistedInject constructor(
                 if (version < CURRENT_VERSION) {
                     currentlyUpdating += account
                     try {
-                        update(version, abortOnMissingMigration)
+                        runBlocking {
+                            update(version, abortOnMissingMigration)
+                        }
                     } finally {
                         currentlyUpdating -= account
                     }
@@ -152,8 +155,7 @@ class AccountSettings @AssistedInject constructor(
             SyncDataType.EVENTS -> KEY_SYNC_INTERVAL_CALENDARS
             SyncDataType.TASKS -> KEY_SYNC_INTERVAL_TASKS
         }
-        val seconds = accountManager.getUserData(account, key)?.toLong()
-        return when (seconds) {
+        return when (val seconds = accountManager.getUserData(account, key)?.toLong()) {
             null -> settingsManager.getLongOrNull(Settings.DEFAULT_SYNC_INTERVAL)   // no setting → default value
             SYNC_INTERVAL_MANUALLY -> null      // manual sync
             else -> seconds
@@ -323,7 +325,7 @@ class AccountSettings @AssistedInject constructor(
 
     // update from previous account settings
 
-    private fun update(baseVersion: Int, abortOnMissingMigration: Boolean) {
+    private suspend fun update(baseVersion: Int, abortOnMissingMigration: Boolean) {
         for (toVersion in baseVersion+1 ..CURRENT_VERSION) {
             val fromVersion = toVersion - 1
             logger.info("Updating account ${account.name} settings version $fromVersion → $toVersion")

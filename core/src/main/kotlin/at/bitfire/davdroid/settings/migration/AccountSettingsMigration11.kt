@@ -30,7 +30,7 @@ class AccountSettingsMigration11 @Inject constructor(
     private val tasksAppManager: TasksAppManager
 ): AccountSettingsMigration {
 
-    override fun migrate(account: Account) {
+    override suspend fun migrate(account: Account) {
         val accountManager: AccountManager = AccountManager.get(context)
         tasksAppManager.currentProvider()?.let { provider ->
             val interval = getSyncFrameworkInterval(account, provider.authority)

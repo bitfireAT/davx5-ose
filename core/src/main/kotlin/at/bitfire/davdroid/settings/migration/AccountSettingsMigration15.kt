@@ -24,7 +24,7 @@ class AccountSettingsMigration15 @Inject constructor(
     private val automaticSyncManager: AutomaticSyncManager
 ): AccountSettingsMigration {
 
-    override fun migrate(account: Account) {
+    override suspend fun migrate(account: Account) {
         automaticSyncManager.updateAutomaticSync(account)
     }
 

@@ -19,6 +19,7 @@ import at.bitfire.synctools.util.setAndVerifyUserData
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -52,7 +53,7 @@ class AccountSettingsMigration17Test {
 
 
     @Test
-    fun testMigrate_OldAddressBook_CollectionInDB() {
+    fun testMigrate_OldAddressBook_CollectionInDB() = runTest {
         val localAddressBookUserDataUrl = "url"
         TestAccount.provide(version = 16) { account ->
             val accountManager = AccountManager.get(context)

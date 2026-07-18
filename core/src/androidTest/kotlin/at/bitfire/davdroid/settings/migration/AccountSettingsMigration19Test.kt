@@ -20,6 +20,7 @@ import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit4.MockKRule
 import io.mockk.mockkObject
 import io.mockk.verify
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -62,7 +63,7 @@ class AccountSettingsMigration19Test {
 
 
     @Test
-    fun testMigrate_CancelsOldWorkersAndUpdatesAutomaticSync() {
+    fun testMigrate_CancelsOldWorkersAndUpdatesAutomaticSync() = runTest {
         val workManager = WorkManager.getInstance(context)
         mockkObject(workManager)
 

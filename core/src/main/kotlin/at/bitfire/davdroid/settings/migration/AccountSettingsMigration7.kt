@@ -24,7 +24,7 @@ class AccountSettingsMigration7 @Inject constructor(
     @ApplicationContext private val context: Context
 ): AccountSettingsMigration {
 
-    override fun migrate(account: Account) {
+    override suspend fun migrate(account: Account) {
         // add calendar colors
         context.contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)?.use { client ->
             val provider = AndroidCalendarProvider(account, client)

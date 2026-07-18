@@ -20,6 +20,7 @@ import io.mockk.every
 import io.mockk.junit4.MockKRule
 import io.mockk.mockkObject
 import io.mockk.verify
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -51,7 +52,7 @@ class AccountSettingsMigration18Test {
 
 
     @Test
-    fun testMigrate_AddressBook_InvalidCollection() {
+    fun testMigrate_AddressBook_InvalidCollection() = runTest {
         val addressBookAccountType = context.getString(R.string.account_type_address_book)
         var addressBookAccount = Account("Address Book", addressBookAccountType)
 
@@ -69,7 +70,7 @@ class AccountSettingsMigration18Test {
     }
 
     @Test
-    fun testMigrate_AddressBook_NoCollection() {
+    fun testMigrate_AddressBook_NoCollection() = runTest {
         val addressBookAccountType = context.getString(R.string.account_type_address_book)
         var addressBookAccount = Account("Address Book", addressBookAccountType)
 
@@ -87,7 +88,7 @@ class AccountSettingsMigration18Test {
     }
 
     @Test
-    fun testMigrate_AddressBook_ValidCollection() {
+    fun testMigrate_AddressBook_ValidCollection() = runTest {
         val account = Account("test", "test")
 
         db.serviceDao().insertOrReplace(Service(

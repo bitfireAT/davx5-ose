@@ -38,7 +38,7 @@ class AccountSettingsMigration21 @Inject constructor(
     /**
      * Cancel any possibly forever pending account syncs of the different authorities
      */
-    override fun migrate(account: Account) {
+    override suspend fun migrate(account: Account) {
         if (Build.VERSION.SDK_INT >= 34) {
             // Request new dummy syncs (yes, seems like this is needed)
             val extras = Bundle().apply {

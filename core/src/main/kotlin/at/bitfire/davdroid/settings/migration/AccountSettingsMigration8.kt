@@ -30,7 +30,7 @@ class AccountSettingsMigration8 @Inject constructor(
      * There is a mistake in this method. [TaskContract.Tasks.SYNC_VERSION] is used to store the
      * SEQUENCE and should not be used for the eTag.
      */
-    override fun migrate(account: Account) {
+    override suspend fun migrate(account: Account) {
         val providerName = TaskProvider.ProviderName.OpenTasks
         TaskProvider.acquireRecentClient(context, providerName)?.use { client ->
             // ETag is now in sync_version instead of sync1

@@ -30,7 +30,7 @@ class AccountSettingsMigration19 @Inject constructor(
     private val automaticSyncManager: AutomaticSyncManager
 ): AccountSettingsMigration {
 
-    override fun migrate(account: Account) {
+    override suspend fun migrate(account: Account) {
         // cancel old workers
         val workManager = WorkManager.getInstance(context)
         val authorities = listOf(

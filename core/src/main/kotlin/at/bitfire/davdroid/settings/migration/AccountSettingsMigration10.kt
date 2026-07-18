@@ -35,7 +35,7 @@ class AccountSettingsMigration10 @Inject constructor(
     @ApplicationContext private val context: Context
 ): AccountSettingsMigration {
 
-    override fun migrate(account: Account) {
+    override suspend fun migrate(account: Account) {
         val providerName = TaskProvider.ProviderName.OpenTasks
         TaskProvider.acquireRecentClient(context, providerName)?.use { client ->
             val tasksUri = TaskContract.Tasks.getContentUri(providerName.authority)!!.asSyncAdapter(account)

@@ -41,7 +41,7 @@ class AccountSettingsTest {
 
     @Test(expected = IllegalArgumentException::class)
     fun testUpdate_MissingMigrations() {
-        TestAccount.provide(version = 1) { account ->
+        TestAccount.provideBlocking(version = 1) { account ->
             // will run AccountSettings.update
             accountSettingsFactory.create(account, abortOnMissingMigration = true)
         }
@@ -49,7 +49,7 @@ class AccountSettingsTest {
 
     @Test
     fun testUpdate_RunAllMigrations() {
-        TestAccount.provide(version = 6) { account ->
+        TestAccount.provideBlocking(version = 6) { account ->
             // will run AccountSettings.update
             accountSettingsFactory.create(account, abortOnMissingMigration = true)
 
