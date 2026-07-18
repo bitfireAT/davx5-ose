@@ -35,6 +35,7 @@ class UnifiedPushService : PushService() {
     @ApplicationScope
     lateinit var applicationScope: CoroutineScope
 
+    @Inject
     @IoDispatcher
     lateinit var ioDispatcher: CoroutineDispatcher
 
