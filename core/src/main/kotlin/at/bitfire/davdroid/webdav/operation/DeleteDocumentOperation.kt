@@ -12,7 +12,6 @@ import at.bitfire.davdroid.webdav.DavHttpClientBuilder
 import at.bitfire.davdroid.webdav.DocumentProviderUtils
 import at.bitfire.davdroid.webdav.throwForDocumentProvider
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.runBlocking
 import java.io.FileNotFoundException
 import java.util.logging.Logger
 import javax.inject.Inject
@@ -26,7 +25,7 @@ class DeleteDocumentOperation @Inject constructor(
 
     private val documentDao = db.webDavDocumentDao()
 
-    operator fun invoke(documentId: String) = runBlocking {
+    suspend operator fun invoke(documentId: String) {
         logger.fine("WebDAV removeDocument $documentId")
         val doc = documentDao.get(documentId.toLong()) ?: throw FileNotFoundException()
 
