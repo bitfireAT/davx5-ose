@@ -31,7 +31,7 @@ class TasksAppWatcher @Inject constructor(
     private val tasksAppManager: Provider<TasksAppManager>
 ) : StartupAction {
 
-    override fun priorityAsync() = PRIORITY_DEFAULT
+    override val priorityAsync = PRIORITY_DEFAULT
 
     override fun onAppCreateAsync() {
         logger.info("Watching for package changes in order to detect tasks app changes")

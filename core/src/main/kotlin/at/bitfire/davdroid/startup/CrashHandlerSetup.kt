@@ -21,7 +21,7 @@ class CrashHandlerSetup @Inject constructor(
     private val logger: Logger
 ) : StartupAction {
 
-    override fun priority() = PRIORITY_FIRST
+    override val priority = PRIORITY_FIRST
 
     override fun onAppCreate() {
         if (BuildConfig.DEBUG) {

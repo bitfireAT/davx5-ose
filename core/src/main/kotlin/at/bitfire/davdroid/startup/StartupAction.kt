@@ -15,7 +15,7 @@ interface StartupAction {
      * Priority of this action's [onAppCreate]. Lower values are executed first.
      * `null` if this action has no synchronous startup work.
      */
-    fun priority(): Int? = null
+    val priority: Int? get() = null
 
     /**
      * Synchronous startup action that will be run during [at.bitfire.davdroid.CoreApp.onCreate]
@@ -34,7 +34,8 @@ interface StartupAction {
      * Priority of this action's [onAppCreateAsync]. Lower values are executed first.
      * `null` if this action has no asynchronous startup work.
      */
-    fun priorityAsync(): Int? = null
+    val priorityAsync: Int?
+        get() = null
 
     /**
      * Runs on a background thread after [at.bitfire.davdroid.CoreApp.onCreate]. Use for startup tasks that
