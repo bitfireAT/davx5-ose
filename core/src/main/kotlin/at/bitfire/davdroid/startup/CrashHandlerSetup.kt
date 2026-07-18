@@ -4,13 +4,10 @@
 
 package at.bitfire.davdroid.startup
 
-import android.content.Context
 import android.os.Build
 import android.os.StrictMode
 import at.bitfire.davdroid.BuildConfig
-import at.bitfire.davdroid.startup.StartupAction.Companion.PRIORITY_DEFAULT
-import at.bitfire.davdroid.startup.StartupAction.Companion.PRIORITY_HIGHEST
-import dagger.hilt.android.qualifiers.ApplicationContext
+import at.bitfire.davdroid.startup.StartupAction.Companion.PRIORITY_LAST
 import java.util.Optional
 import java.util.logging.Logger
 import javax.inject.Inject
@@ -20,10 +17,11 @@ import kotlin.jvm.optionals.getOrNull
  * Sets up the uncaught exception (crash) handler and enables StrictMode in debug builds.
  */
 class CrashHandlerSetup @Inject constructor(
-    @ApplicationContext private val context: Context,
     private val logger: Logger,
     private val crashHandler: Optional<Thread.UncaughtExceptionHandler>
 ) : StartupAction {
+
+    override fun priority() = PRIORITY_LAST
 
     override fun onAppCreate() {
         if (BuildConfig.DEBUG) {
@@ -60,12 +58,5 @@ class CrashHandlerSetup @Inject constructor(
                 logger.info("Using default uncaught exception handler")
         }
    }
-
-    override fun priority() = PRIORITY_HIGHEST
-
-    override suspend fun onAppCreateAsync() {
-    }
-
-    override fun priorityAsync(): Int = PRIORITY_DEFAULT
 
 }
