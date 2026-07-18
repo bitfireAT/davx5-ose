@@ -5,7 +5,7 @@
 package at.bitfire.davdroid.di
 
 import at.bitfire.davdroid.startup.CrashHandlerSetup
-import at.bitfire.davdroid.startup.StartupPlugin
+import at.bitfire.davdroid.startup.StartupAction
 import at.bitfire.davdroid.startup.TasksAppWatcher
 import dagger.Binds
 import dagger.Module
@@ -19,10 +19,10 @@ interface StartupPluginsModule {
 
     @Binds
     @IntoSet
-    fun crashHandlerSetup(impl: CrashHandlerSetup): StartupPlugin
+    fun crashHandlerSetup(impl: CrashHandlerSetup): StartupAction
 
     @Binds
     @IntoSet
-    fun tasksAppWatcher(impl: TasksAppWatcher): StartupPlugin
+    fun tasksAppWatcher(impl: TasksAppWatcher): StartupAction
 
 }

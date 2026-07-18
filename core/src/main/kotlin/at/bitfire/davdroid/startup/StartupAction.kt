@@ -4,7 +4,7 @@
 
 package at.bitfire.davdroid.startup
 
-interface StartupPlugin {
+interface StartupAction {
 
     companion object {
         const val PRIORITY_DEFAULT = 100

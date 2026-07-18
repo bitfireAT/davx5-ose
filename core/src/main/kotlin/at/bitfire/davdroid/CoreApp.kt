@@ -8,7 +8,7 @@ import android.app.Application
 import androidx.hilt.work.HiltWorkerFactory
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.log.LogManager
-import at.bitfire.davdroid.startup.StartupPlugin
+import at.bitfire.davdroid.startup.StartupAction
 import at.bitfire.davdroid.sync.account.AccountsCleanupWorker
 import at.bitfire.davdroid.ui.UiUtils
 import kotlinx.coroutines.CoroutineDispatcher
@@ -38,7 +38,7 @@ abstract class CoreApp: Application() {
     lateinit var ioDispatcher: CoroutineDispatcher
 
     @Inject
-    lateinit var plugins: Set<@JvmSuppressWildcards StartupPlugin>
+    lateinit var plugins: Set<@JvmSuppressWildcards StartupAction>
 
     @Inject
     lateinit var workerFactory: HiltWorkerFactory

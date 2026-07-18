@@ -8,8 +8,8 @@ import android.content.Context
 import android.os.Build
 import android.os.StrictMode
 import at.bitfire.davdroid.BuildConfig
-import at.bitfire.davdroid.startup.StartupPlugin.Companion.PRIORITY_DEFAULT
-import at.bitfire.davdroid.startup.StartupPlugin.Companion.PRIORITY_HIGHEST
+import at.bitfire.davdroid.startup.StartupAction.Companion.PRIORITY_DEFAULT
+import at.bitfire.davdroid.startup.StartupAction.Companion.PRIORITY_HIGHEST
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.util.Optional
 import java.util.logging.Logger
@@ -23,7 +23,7 @@ class CrashHandlerSetup @Inject constructor(
     @ApplicationContext private val context: Context,
     private val logger: Logger,
     private val crashHandler: Optional<Thread.UncaughtExceptionHandler>
-): StartupPlugin {
+) : StartupAction {
 
     override fun onAppCreate() {
         if (BuildConfig.DEBUG) {

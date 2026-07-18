@@ -5,7 +5,7 @@
 package at.bitfire.davdroid.startup
 
 import android.content.Context
-import at.bitfire.davdroid.startup.StartupPlugin.Companion.PRIORITY_DEFAULT
+import at.bitfire.davdroid.startup.StartupAction.Companion.PRIORITY_DEFAULT
 import at.bitfire.davdroid.sync.TasksAppManager
 import at.bitfire.davdroid.util.packageChangedFlow
 import at.bitfire.synctools.storage.TaskProvider
@@ -22,7 +22,7 @@ class TasksAppWatcher @Inject constructor(
     @ApplicationContext private val context: Context,
     private val logger: Logger,
     private val tasksAppManager: Provider<TasksAppManager>
-): StartupPlugin {
+) : StartupAction {
 
     override fun onAppCreate() {
     }
