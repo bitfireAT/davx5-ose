@@ -40,6 +40,7 @@ import java.util.UUID
 
 class DmfsTaskHandler(
     private val prodId: ProdId,
+    private val providerName: TaskProvider.ProviderName
 ) {
     private val entityHandlers = arrayOf<DmfsTaskEntityHandler>(
         UidHandler(),
@@ -103,7 +104,7 @@ class DmfsTaskHandler(
         val mappedTasks = AssociatedTasks(
             main = main,
             exceptions = exceptions,
-            prodId = prodId.withUserAgents(listOf(TaskProvider.ProviderName.JtxBoard.packageName))
+            prodId = prodId.withUserAgents(listOf(providerName.packageName))
         )
 
         return MappingResult(

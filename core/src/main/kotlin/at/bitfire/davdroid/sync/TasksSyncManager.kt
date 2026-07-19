@@ -121,7 +121,10 @@ class TasksSyncManager @AssistedInject constructor(
         val updatedSequence = SequenceUpdater().increaseSequence(localTask.main)
 
         // map Android event to iCalendar (also generates UID, if necessary)
-        val handler = DmfsTaskHandler(ProdId(productIds.iCalProdId))
+        val handler = DmfsTaskHandler(
+            prodId = ProdId(productIds.iCalProdId),
+            providerName = localCollection.dmfsTaskList.providerName
+        )
         val mappedVToDos = handler.mapToVToDos(localTask)
 
         // persist UID if it was generated
