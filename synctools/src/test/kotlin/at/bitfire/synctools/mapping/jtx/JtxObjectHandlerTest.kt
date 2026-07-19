@@ -6,6 +6,7 @@ package at.bitfire.synctools.mapping.jtx
 
 import android.content.Entity
 import androidx.core.content.contentValuesOf
+import at.bitfire.synctools.storage.TaskProvider
 import at.bitfire.synctools.storage.jtx.JtxObjectAndExceptions
 import at.techbee.jtx.JtxContract
 import net.fortuna.ical4j.model.component.VJournal
@@ -27,6 +28,26 @@ class JtxObjectHandlerTest {
         prodId = ProdId(javaClass.simpleName),
         attachmentFetcher = FakeAttachmentFetcher()
     )
+
+    @Test
+    fun `mapToCalendarComponents sets PRODID with jtx Board package name`() {
+        val jtxObjectAndExceptions = JtxObjectAndExceptions(
+            main = Entity(
+                contentValuesOf(
+                    JtxContract.JtxICalObject.COMPONENT to "VTODO",
+                    JtxContract.JtxICalObject.UID to "uid"
+                )
+            ),
+            exceptions = emptyList()
+        )
+
+        val result = handler.mapToCalendarComponents(jtxObjectAndExceptions)
+
+        assertEquals(
+            ProdId("${javaClass.simpleName} (${TaskProvider.ProviderName.JtxBoard.packageName})"),
+            result.associatedComponents.prodId
+        )
+    }
 
     @Test
     fun `mapToCalendarComponents maps VTODO component`() {

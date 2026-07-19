@@ -41,6 +41,13 @@ import java.time.LocalDate
 
 class ContactWriterTest {
 
+    @Test
+    fun testGenerate_SetsProductId() {
+        val vCard = generate { }
+        assertEquals(testProductId, vCard.productId.value)
+    }
+
+
     // test specific fields
 
     @Test
@@ -471,7 +478,7 @@ class ContactWriterTest {
 
     @Test
     fun testXPhoneticName() {
-        val vCard = generate() {
+        val vCard = generate {
             phoneticGivenName = "Given"
             phoneticMiddleName = "Middle"
             phoneticFamilyName = "Family"
