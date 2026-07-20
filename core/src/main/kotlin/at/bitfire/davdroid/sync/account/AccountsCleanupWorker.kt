@@ -112,6 +112,8 @@ class AccountsCleanupWorker @AssistedInject constructor(
 
         /**
          * Enqueues [AccountsCleanupWorker] to be run regularly (but not necessarily now).
+         *
+         * Non-blocking ([WorkManager.enqueueUniquePeriodicWork]).
          */
         fun enable(context: Context) {
             // run every day

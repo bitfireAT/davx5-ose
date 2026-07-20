@@ -14,9 +14,8 @@ interface StartupAction {
 
     /**
      * Priority of this action's [onAppCreate]. Lower values are executed first.
-     * `null` if this action has no synchronous startup work.
      */
-    val priority: Int?
+    val priority: Int
 
     /**
      * Run during [at.bitfire.davdroid.CoreApp.onCreate].
