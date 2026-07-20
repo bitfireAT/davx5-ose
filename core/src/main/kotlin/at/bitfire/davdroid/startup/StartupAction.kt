@@ -15,42 +15,19 @@ interface StartupAction {
      * Priority of this action's [onAppCreate]. Lower values are executed first.
      * `null` if this action has no synchronous startup work.
      */
-    val priority: Int? get() = null
+    val priority: Int?
 
     /**
-     * Synchronous startup action that will be run during [at.bitfire.davdroid.CoreApp.onCreate]
-     * and before [onAppCreateAsync].
+     * Run during [at.bitfire.davdroid.CoreApp.onCreate].
      *
-     * Will only be run when [priority] is not null (see there for order of execution).
+     * Keep the runtime of this method at a minimum; it directly increases app startup
+     * time which is a critical measure.
      *
-     * **Must only be used for tasks that must be completed before the app
-     * can run. Causes the app to start slower.**
+     * If ever possible, implementations should do work asynchronously by launching a
+     * coroutine in [at.bitfire.davdroid.di.qualifier.ApplicationScope] and doing it there.
+     * (Don't forget to off-load blocking code to the I/O dispatcher.)
      */
-    fun onAppCreate() {
-        // default implementation is empty so that implementations don't have to override it
-    }
+    fun onAppCreate()
 
-    /**
-     * Priority of this action's [onAppCreateAsync]. Lower values are executed first.
-     * `null` if this action has no asynchronous startup work.
-     */
-    val priorityAsync: Int?
-        get() = null
-
-    /**
-     * Runs on a background thread after [at.bitfire.davdroid.CoreApp.onCreate]. Use for startup tasks that
-     * don't need to complete before the app can run.
-     *
-     * Will be run in a separate thread that is launched at the end of [at.bitfire.davdroid.CoreApp.onCreate].
-     *
-     * Will only be run if [priorityAsync] is not null (see there for order of execution).
-     *
-     * If the action uses coroutines, it shall choose its scope (like
-     * [at.bitfire.davdroid.di.qualifier.ApplicationScope]) and dispatcher explicitly, so this method
-     * is non-suspending.
-     */
-    fun onAppCreateAsync() {
-        // default implementation is empty so that implementations don't have to override it
-    }
 
 }

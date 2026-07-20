@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.startup
 
 import android.content.Context
+import androidx.annotation.WorkerThread
 import at.bitfire.davdroid.di.qualifier.ApplicationScope
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.startup.StartupAction.Companion.PRIORITY_DEFAULT
@@ -15,6 +16,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.logging.Logger
 import javax.inject.Inject
 import javax.inject.Provider
@@ -31,18 +33,20 @@ class TasksAppWatcher @Inject constructor(
     private val tasksAppManager: Provider<TasksAppManager>
 ) : StartupAction {
 
-    override val priorityAsync = PRIORITY_DEFAULT
+    override val priority = PRIORITY_DEFAULT
 
-    override fun onAppCreateAsync() {
+    override fun onAppCreate() {
         logger.info("Watching for package changes in order to detect tasks app changes")
         applicationScope.launch(ioDispatcher) {
             packageChangedFlow(context).collect {
-                onPackageChanged()
+                withContext(ioDispatcher) {
+                    onPackageChanged()
+                }
             }
         }
     }
 
-
+    @WorkerThread
     private fun onPackageChanged() {
         val manager = tasksAppManager.get()
         val currentProvider = manager.currentProvider()
@@ -50,7 +54,7 @@ class TasksAppWatcher @Inject constructor(
 
         if (currentProvider == null) {
             // Iterate through all supported providers and select one, if available.
-            var newProvider = TaskProvider.ProviderName.entries
+            val newProvider = TaskProvider.ProviderName.entries
                 .firstOrNull { provider ->
                     context.packageManager.resolveContentProvider(provider.authority, 0) != null
                 }
