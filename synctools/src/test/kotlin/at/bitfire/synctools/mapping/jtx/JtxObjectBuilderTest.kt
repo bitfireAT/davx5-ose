@@ -274,6 +274,43 @@ class JtxObjectBuilderTest {
         }
     }
 
+    @Test
+    fun `build() with VToDo exception and without main component`() {
+        val exception = VToDo().apply {
+            this += RecurrenceId(Instant.now())
+        }
+        val component = AssociatedComponents<CalendarComponent>(
+            main = null,
+            exceptions = listOf(exception)
+        )
+
+        val result = builder.build(component)
+
+        assertNotNull(result.main)
+        assertFalse(result.exceptions.isEmpty())
+        assertEquals("VTODO", result.main.entity.entityValues.get(JtxContract.JtxICalObject.COMPONENT))
+        assertEquals("VTODO", result.exceptions.single().entity.entityValues.get(JtxContract.JtxICalObject.COMPONENT))
+    }
+
+    @Test
+    fun `build() with VJournal exception and without main component`() {
+        val exception = VJournal().apply {
+            this += RecurrenceId(Instant.now())
+        }
+        val component = AssociatedComponents<CalendarComponent>(
+            main = null,
+            exceptions = listOf(exception)
+        )
+
+        val result = builder.build(component)
+
+        assertNotNull(result.main)
+        assertFalse(result.exceptions.isEmpty())
+        println(result.main)
+        assertEquals("VJOURNAL", result.main.entity.entityValues.get(JtxContract.JtxICalObject.COMPONENT))
+        assertEquals("VJOURNAL", result.exceptions.single().entity.entityValues.get(JtxContract.JtxICalObject.COMPONENT))
+    }
+
     private fun assertSubValue(
         subValues: List<Entity.NamedContentValues>,
         uri: Uri,
