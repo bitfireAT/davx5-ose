@@ -17,7 +17,7 @@ import dagger.multibindings.Multibinds
 )
 abstract class TestStartupActionsModule {
 
-    // provides empty set of startup plugins so that nothing interferes with tests
+    // provides empty set of startup actions so that nothing interferes with tests
     @Multibinds
     abstract fun empty(): Set<StartupAction>
 
