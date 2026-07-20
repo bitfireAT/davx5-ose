@@ -8,11 +8,8 @@ import android.app.Application
 import androidx.hilt.work.HiltWorkerFactory
 import at.bitfire.davdroid.log.LogManager
 import at.bitfire.davdroid.startup.StartupAction
-import at.bitfire.davdroid.sync.account.AccountsCleanupWorker
-import at.bitfire.davdroid.ui.UiUtils
 import java.util.logging.Logger
 import javax.inject.Inject
-import kotlin.concurrent.thread
 
 /**
  * The actual app should extend this class. The derived class must then be set
@@ -41,24 +38,10 @@ abstract class CoreApp: Application() {
 
         logger.fine("Logging using LogManager $logManager")
 
-        // set light/dark mode
-        UiUtils.updateTheme(this)   // when this is called in the asynchronous thread below, it recreates
-                                 // some current activity and causes an IllegalStateException in rare cases
-
         // run startup actions synchronously (they launch a coroutine if possible)
         actions.sortedBy { it.priority }.forEach { action ->
             logger.fine("Running startup action: $action")
-        }
-
-        /* Don't block app startup for some background tasks. A thread is used instead of coroutines
-        because neither the scope nor the dispatcher should be set here. There may also be non-suspending
-        actions that may still need some time, like updating dynamic shortcuts etc. */
-        thread {
-            // clean up orphaned accounts in DB from time to time
-            AccountsCleanupWorker.enable(this@CoreApp)
-
-            // create/update app shortcuts
-            UiUtils.updateShortcuts(this@CoreApp)
+            action.onAppCreate()
         }
     }
 
