@@ -5,10 +5,8 @@
 package at.bitfire.davdroid.push
 
 import at.bitfire.davdroid.di.qualifier.ApplicationScope
-import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import dagger.Lazy
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.unifiedpush.android.connector.FailedReason
@@ -36,10 +34,6 @@ class UnifiedPushService : PushService() {
     lateinit var applicationScope: CoroutineScope
 
     @Inject
-    @IoDispatcher
-    lateinit var ioDispatcher: CoroutineDispatcher
-
-    @Inject
     lateinit var logger: Logger
 
     @Inject
@@ -54,7 +48,7 @@ class UnifiedPushService : PushService() {
         logger.log(Level.INFO, "Got UnifiedPush endpoint {0} for service {1}", arrayOf<Any>(endpoint.url, serviceId))
 
         // register new endpoint at CalDAV/CardDAV servers
-        applicationScope.launch(ioDispatcher) {
+        applicationScope.launch {
             pushRegistrationManager.get().processSubscription(serviceId, endpoint)
         }
     }
