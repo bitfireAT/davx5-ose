@@ -41,8 +41,8 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.guava.await
-import kotlinx.coroutines.sync.Semaphore
-import kotlinx.coroutines.sync.withPermit
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import java.util.concurrent.TimeUnit
 import java.util.logging.Logger
 import javax.inject.Inject
@@ -60,7 +60,11 @@ class SyncWorkerManager @Inject constructor(
 ) {
 
     private companion object {
-        val enqueueSemaphore = Semaphore(1)
+        /**
+         * Makes sure job appending works correctly, and that there are no multiple places trying to enqueue jobs at
+         * the same time.
+         */
+        val enqueueMutex = Mutex()
     }
 
     // one-time sync workers
@@ -165,7 +169,7 @@ class SyncWorkerManager @Inject constructor(
         appended work, stop adding more work. */
 
         val workManager = WorkManager.getInstance(context)
-        enqueueSemaphore.withPermit {
+        enqueueMutex.withLock {
             val currentWork = workManager.getWorkInfosForUniqueWork(name).await()
             val alreadyAppended = currentWork.any {
                 it.state in setOf(WorkInfo.State.BLOCKED, WorkInfo.State.ENQUEUED)
