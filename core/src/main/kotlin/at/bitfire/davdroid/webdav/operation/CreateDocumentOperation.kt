@@ -21,7 +21,6 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.URLBuilder
 import io.ktor.http.appendPathSegments
 import io.ktor.http.headersOf
-import kotlinx.coroutines.runBlocking
 import java.io.FileNotFoundException
 import java.util.logging.Logger
 import javax.inject.Inject
@@ -35,7 +34,7 @@ class CreateDocumentOperation @Inject constructor(
 
     private val documentDao = db.webDavDocumentDao()
 
-    operator fun invoke(parentDocumentId: String, mimeType: String, displayName: String): String? = runBlocking {
+    suspend operator fun invoke(parentDocumentId: String, mimeType: String, displayName: String): String? {
         logger.fine("WebDAV createDocument $parentDocumentId $mimeType $displayName")
         val parent = documentDao.get(parentDocumentId.toLong()) ?: throw FileNotFoundException()
         val createDirectory = mimeType == Document.MIME_TYPE_DIR
@@ -75,14 +74,14 @@ class CreateDocumentOperation @Inject constructor(
 
                     DocumentProviderUtils.notifyFolderChanged(context, parentDocumentId)
 
-                    return@runBlocking docId.toString()
+                    return docId.toString()
                 } catch (e: HttpException) {
                     e.throwForDocumentProvider(context, ignorePreconditionFailed = true)
                 }
             }
         }
 
-        null
+        return null
     }
 
 }

@@ -32,6 +32,8 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import java.io.FileNotFoundException
 import java.util.concurrent.ConcurrentHashMap
 import java.util.logging.Level
@@ -51,12 +53,12 @@ class QueryChildDocumentsOperation @Inject constructor(
 
     private val backgroundScope = CoroutineScope(SupervisorJob())
 
-    operator fun invoke(parentDocumentId: String, projection: Array<out String>?, sortOrder: String?) =
-        synchronized(QueryChildDocumentsOperation::class.java) {
+    suspend operator fun invoke(parentDocumentId: String, projection: Array<out String>?, sortOrder: String?) =
+        mutex.withLock {
             queryChildDocuments(parentDocumentId, projection, sortOrder)
         }
 
-    private fun queryChildDocuments(
+    private suspend fun queryChildDocuments(
         parentDocumentId: String,
         projection: Array<out String>?,
         sortOrder: String?
@@ -203,6 +205,9 @@ class QueryChildDocumentsOperation @Inject constructor(
          *  Value: whether the runner is still running (*true*) or has already finished (*false*).
          */
         private val runningQueryChildren = ConcurrentHashMap<Long, Boolean>()
+
+        /** Serializes [queryChildDocuments] across all instances. */
+        private val mutex = Mutex()
 
     }
 

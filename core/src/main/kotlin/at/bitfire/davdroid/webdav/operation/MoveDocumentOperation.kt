@@ -14,7 +14,6 @@ import at.bitfire.davdroid.webdav.throwForDocumentProvider
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.ktor.http.URLBuilder
 import io.ktor.http.appendPathSegments
-import kotlinx.coroutines.runBlocking
 import java.io.FileNotFoundException
 import java.util.logging.Logger
 import javax.inject.Inject
@@ -28,7 +27,11 @@ class MoveDocumentOperation @Inject constructor(
 
     private val documentDao = db.webDavDocumentDao()
 
-    operator fun invoke(sourceDocumentId: String, sourceParentDocumentId: String, targetParentDocumentId: String): String = runBlocking {
+    suspend operator fun invoke(
+        sourceDocumentId: String,
+        sourceParentDocumentId: String,
+        targetParentDocumentId: String
+    ): String {
         logger.fine("WebDAV moveDocument $sourceDocumentId $sourceParentDocumentId $targetParentDocumentId")
         val doc = documentDao.get(sourceDocumentId.toLong()) ?: throw FileNotFoundException()
         val dstParent = documentDao.get(targetParentDocumentId.toLong()) ?: throw FileNotFoundException()
@@ -58,7 +61,7 @@ class MoveDocumentOperation @Inject constructor(
                 }
             }
 
-        doc.id.toString()
+        return doc.id.toString()
     }
 
 }
