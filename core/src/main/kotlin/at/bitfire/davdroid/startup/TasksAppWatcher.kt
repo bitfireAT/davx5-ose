@@ -37,7 +37,7 @@ class TasksAppWatcher @Inject constructor(
 
     override fun onAppCreate() {
         logger.info("Watching for package changes in order to detect tasks app changes")
-        applicationScope.launch(ioDispatcher) {
+        applicationScope.launch {
             packageChangedFlow(context).collect {
                 withContext(ioDispatcher) {
                     onPackageChanged()
