@@ -6,6 +6,7 @@ package at.bitfire.synctools.mapping.jtx
 
 import android.content.Entity
 import at.bitfire.synctools.icalendar.AssociatedComponents
+import at.bitfire.synctools.icalendar.withUserAgents
 import at.bitfire.synctools.mapping.jtx.handler.AttachmentFetcher
 import at.bitfire.synctools.mapping.jtx.handler.AttachmentsHandler
 import at.bitfire.synctools.mapping.jtx.handler.AttendeesHandler
@@ -17,6 +18,7 @@ import at.bitfire.synctools.mapping.jtx.handler.CompletedHandler
 import at.bitfire.synctools.mapping.jtx.handler.ContactHandler
 import at.bitfire.synctools.mapping.jtx.handler.CreatedHandler
 import at.bitfire.synctools.mapping.jtx.handler.DescriptionHandler
+import at.bitfire.synctools.mapping.jtx.handler.ExtendedStatusHandler
 import at.bitfire.synctools.mapping.jtx.handler.GeoHandler
 import at.bitfire.synctools.mapping.jtx.handler.JtxObjectEntityHandler
 import at.bitfire.synctools.mapping.jtx.handler.LastModifiedHandler
@@ -35,7 +37,7 @@ import at.bitfire.synctools.mapping.jtx.handler.TimeFieldsHandler
 import at.bitfire.synctools.mapping.jtx.handler.UidHandler
 import at.bitfire.synctools.mapping.jtx.handler.UnknownPropertiesHandler
 import at.bitfire.synctools.mapping.jtx.handler.UrlHandler
-import at.bitfire.synctools.mapping.jtx.handler.ExtendedStatusHandler
+import at.bitfire.synctools.storage.TaskProvider
 import at.bitfire.synctools.storage.jtx.JtxObjectAndExceptions
 import at.techbee.jtx.JtxContract
 import net.fortuna.ical4j.model.Property
@@ -132,7 +134,7 @@ class JtxObjectHandler(
             associatedComponents = AssociatedComponents(
                 main = main,
                 exceptions = exceptions,
-                prodId = prodId
+                prodId = prodId.withUserAgents(listOf(TaskProvider.ProviderName.JtxBoard.packageName))
             ),
             uid = uid,
             generatedUid = generatedUid
