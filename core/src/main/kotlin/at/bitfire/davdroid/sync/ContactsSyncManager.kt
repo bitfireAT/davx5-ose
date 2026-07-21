@@ -179,18 +179,18 @@ class ContactsSyncManager @AssistedInject constructor(
             ).filterSelfResponse()
 
             var syncState: SyncState? = null
-            response?.let {
-                it[MaxResourceSize::class.java]?.maxSize?.let { maxSize ->
+            if (response != null) {
+                response[MaxResourceSize::class.java]?.maxSize?.let { maxSize ->
                     logger.info("Address book accepts vCards up to ${Formatter.formatFileSize(context, maxSize)}")
                 }
 
-                it[SupportedAddressData::class.java]?.let { supported ->
+                response[SupportedAddressData::class.java]?.let { supported ->
                     hasVCard4 = supported.hasVCard4()
                 }
-                it[SupportedReportSet::class.java]?.let { supported ->
+                response[SupportedReportSet::class.java]?.let { supported ->
                     hasCollectionSync = supported.reports.contains(WebDAV.SyncCollection)
                 }
-                syncState = syncState(it)
+                syncState = syncState(response)
             }
 
             logger.info("Address book supports vCard4: $hasVCard4")

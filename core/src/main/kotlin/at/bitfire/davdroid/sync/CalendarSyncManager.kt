@@ -123,15 +123,15 @@ class CalendarSyncManager @AssistedInject constructor(
             ).filterSelfResponse()
 
             var syncState: SyncState? = null
-            response?.let {
-                it[MaxResourceSize::class.java]?.maxSize?.let { maxSize ->
+            if (response != null) {
+                response[MaxResourceSize::class.java]?.maxSize?.let { maxSize ->
                     logger.info("Calendar accepts events up to ${Formatter.formatFileSize(context, maxSize)}")
                 }
 
-                it[SupportedReportSet::class.java]?.let { supported ->
+                response[SupportedReportSet::class.java]?.let { supported ->
                     hasCollectionSync = supported.reports.contains(WebDAV.SyncCollection)
                 }
-                syncState = syncState(it)
+                syncState = syncState(response)
             }
 
             logger.info("Calendar supports Collection Sync: $hasCollectionSync")

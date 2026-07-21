@@ -74,38 +74,39 @@ class HomeSetRefresher @AssistedInject constructor(
                 DavResource(httpClient, homeSetUrl).propfind(1, *collectionProperties)
                     .filterIsInstance<MultiStatusItem.Response>()
                     .collect { (response, relation) ->
-                    if (!response.isSuccess())
-                        return@collect
+                        if (!response.isSuccess())
+                            return@collect
 
-                    if (relation == Response.HrefRelation.SELF)
-                    // this response is about the home set itself
-                        homeSetRepository.insertOrUpdateByUrlBlocking(
-                            localHomeset.copy(
-                                displayName = response[DisplayName::class.java]?.displayName,
-                                privBind = response[CurrentUserPrivilegeSet::class.java]?.mayBind != false
+                        if (relation == Response.HrefRelation.SELF) {
+                            // this response is about the home set itself
+                            homeSetRepository.insertOrUpdateByUrlBlocking(
+                                localHomeset.copy(
+                                    displayName = response[DisplayName::class.java]?.displayName,
+                                    privBind = response[CurrentUserPrivilegeSet::class.java]?.mayBind != false
+                                )
                             )
+                        }
+
+                        // in any case, check whether the response is about a usable collection
+                        var collection = Collection.fromDavResponse(response) ?: return@collect
+                        collection = collection.copy(
+                            serviceId = service.id,
+                            homeSetId = localHomeset.id,
+                            sync = shouldPreselect(collection, homesets.values),
+                            ownerId = response[Owner::class.java]?.href  // save the principal id (collection owner)
+                                ?.let { response.href.resolve(it) }
+                                ?.let { principalUrl -> Principal.fromServiceAndUrl(service, principalUrl) }
+                                ?.let { principal -> db.principalDao().insertOrUpdate(service.id, principal) }
                         )
+                        logger.fine("Found collection: $collection")
 
-                    // in any case, check whether the response is about a usable collection
-                    var collection = Collection.fromDavResponse(response) ?: return@collect
-                    collection = collection.copy(
-                        serviceId = service.id,
-                        homeSetId = localHomeset.id,
-                        sync = shouldPreselect(collection, homesets.values),
-                        ownerId = response[Owner::class.java]?.href  // save the principal id (collection owner)
-                            ?.let { response.href.resolve(it) }
-                            ?.let { principalUrl -> Principal.fromServiceAndUrl(service, principalUrl) }
-                            ?.let { principal -> db.principalDao().insertOrUpdate(service.id, principal) }
-                    )
-                    logger.fine("Found collection: $collection")
+                        // save or update collection if usable (ignore it otherwise)
+                        if (ServiceDetectionUtils.isUsableCollection(service, collection))
+                            collectionRepository.insertOrUpdateByUrlRememberSync(collection)
 
-                    // save or update collection if usable (ignore it otherwise)
-                    if (ServiceDetectionUtils.isUsableCollection(service, collection))
-                        collectionRepository.insertOrUpdateByUrlRememberSync(collection)
-
-                    // Remove this collection from queue - because it was found in the home set
-                    localHomesetCollections.remove(collection.url)
-                }
+                        // Remove this collection from queue - because it was found in the home set
+                        localHomesetCollections.remove(collection.url)
+                    }
             } catch (e: HttpException) {
                 // delete home set locally if it was not accessible (40x)
                 if (e.statusCode in arrayOf(403, 404, 410))

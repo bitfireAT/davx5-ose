@@ -104,12 +104,12 @@ class TasksSyncManager @AssistedInject constructor(
                 davCollection.propfind(0, CalDAV.MaxResourceSize, CalDAV.GetCTag, WebDAV.SyncToken).filterSelfResponse()
 
             var syncState: SyncState? = null
-            response?.let {
-                it[MaxResourceSize::class.java]?.maxSize?.let { maxSize ->
+            if (response != null) {
+                response[MaxResourceSize::class.java]?.maxSize?.let { maxSize ->
                     logger.info("Calendar accepts tasks up to ${Formatter.formatFileSize(context, maxSize)}")
                 }
 
-                syncState = syncState(it)
+                syncState = syncState(response)
             }
 
             syncState

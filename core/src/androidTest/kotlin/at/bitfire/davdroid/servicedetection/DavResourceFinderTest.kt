@@ -5,7 +5,7 @@
 package at.bitfire.davdroid.servicedetection
 
 import at.bitfire.dav4jvm.ktor.DavResource
-import at.bitfire.dav4jvm.ktor.MultiStatusItem
+import at.bitfire.dav4jvm.ktor.filterResponses
 import at.bitfire.dav4jvm.property.carddav.CardDAV
 import at.bitfire.dav4jvm.property.webdav.WebDAV
 import at.bitfire.davdroid.log.FileLoggerFactory
@@ -146,9 +146,8 @@ class DavResourceFinderTest {
         // recognize home set
         var info = ServiceInfo()
         DavResource(client, Url("$BASE_URL$PATH_CARDDAV$SUBPATH_PRINCIPAL"))
-            .propfind(0, CardDAV.AddressbookHomeSet).collect { item ->
-                if (item is MultiStatusItem.Response)
-                    finder.scanResponse(CardDAV.Addressbook, item.response, info)
+            .propfind(0, CardDAV.AddressbookHomeSet).filterResponses().collect { response ->
+                finder.scanResponse(CardDAV.Addressbook, response, info)
             }
         assertEquals(0, info.collections.size)
         assertEquals(1, info.homeSets.size)
@@ -157,9 +156,8 @@ class DavResourceFinderTest {
         // recognize address book
         info = ServiceInfo()
         DavResource(client, Url("$BASE_URL$PATH_CARDDAV$SUBPATH_ADDRESSBOOK"))
-            .propfind(0, WebDAV.ResourceType).collect { item ->
-                if (item is MultiStatusItem.Response)
-                    finder.scanResponse(CardDAV.Addressbook, item.response, info)
+            .propfind(0, WebDAV.ResourceType).filterResponses().collect { response ->
+                finder.scanResponse(CardDAV.Addressbook, response, info)
             }
         assertEquals(1, info.collections.size)
         assertEquals(Url("$BASE_URL$PATH_CARDDAV$SUBPATH_ADDRESSBOOK/"), info.collections.keys.first())

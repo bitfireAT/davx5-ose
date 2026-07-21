@@ -55,13 +55,13 @@ class PrincipalsRefresher @AssistedInject constructor(
                 DavResource(httpClient, principalUrl).propfind(0, *principalProperties)
                     .filterResponses()
                     .collect { response ->
-                    if (!response.isSuccess())
-                        return@collect
-                    Principal.fromDavResponse(service.id, response)?.let { principal ->
-                        logger.fine("Got principal: $principal")
-                        db.principalDao().insertOrUpdate(service.id, principal)
+                        if (!response.isSuccess())
+                            return@collect
+                        Principal.fromDavResponse(service.id, response)?.let { principal ->
+                            logger.fine("Got principal: $principal")
+                            db.principalDao().insertOrUpdate(service.id, principal)
+                        }
                     }
-                }
             } catch (e: HttpException) {
                 logger.info("Principal update failed with response code ${e.statusCode}. principalUrl=$principalUrl")
             }

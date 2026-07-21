@@ -178,7 +178,8 @@ class DavResourceFinder @AssistedInject constructor(
             }
 
         // return config or null if config doesn't contain useful information
-        val serviceAvailable = config.principal != null || config.homeSets.isNotEmpty() || config.collections.isNotEmpty()
+        val serviceAvailable =
+            config.principal != null || config.homeSets.isNotEmpty() || config.collections.isNotEmpty()
         return if (serviceAvailable)
             config
         else
@@ -215,10 +216,15 @@ class DavResourceFinder @AssistedInject constructor(
                 Service.CALDAV -> {
                     davBaseURL.propfind(
                         0,
-                        WebDAV.ResourceType, WebDAV.DisplayName,
-                        WebDAV.CurrentUserPrincipal, WebDAV.CurrentUserPrivilegeSet,
+                        WebDAV.ResourceType,
+                        WebDAV.DisplayName,
+                        WebDAV.CurrentUserPrincipal,
+                        WebDAV.CurrentUserPrivilegeSet,
                         CalDAV.CalendarHomeSet,
-                        CalDAV.SupportedCalendarComponentSet, CalDAV.CalendarColor, CalDAV.CalendarDescription, CalDAV.CalendarTimezone
+                        CalDAV.SupportedCalendarComponentSet,
+                        CalDAV.CalendarColor,
+                        CalDAV.CalendarDescription,
+                        CalDAV.CalendarTimezone
                     ).filterResponses().collect { response ->
                         scanResponse(CalDAV.Calendar, response, config)
                     }
@@ -242,16 +248,16 @@ class DavResourceFinder @AssistedInject constructor(
                 .filterResponses()
                 .collect { response ->
                     response[CalendarUserAddressSet::class.java]?.let { addressSet ->
-                    for (href in addressSet.hrefs)
-                        try {
-                            val uri = URI(href)
-                            if (uri.scheme.equals("mailto", true))
-                                mailboxes.add(uri.schemeSpecificPart)
-                        } catch (e: URISyntaxException) {
-                            log.log(Level.WARNING, "Couldn't parse user address", e)
-                        }
+                        for (href in addressSet.hrefs)
+                            try {
+                                val uri = URI(href)
+                                if (uri.scheme.equals("mailto", true))
+                                    mailboxes.add(uri.schemeSpecificPart)
+                            } catch (e: URISyntaxException) {
+                                log.log(Level.WARNING, "Couldn't parse user address", e)
+                            }
+                    }
                 }
-            }
         } catch (e: Exception) {
             log.log(Level.WARNING, "Couldn't query user email address", e)
             processException(e)
@@ -425,17 +431,17 @@ class DavResourceFinder @AssistedInject constructor(
         DavResource(httpClient, url, log).propfind(0, WebDAV.CurrentUserPrincipal)
             .filterResponses()
             .collect { response ->
-            response[CurrentUserPrincipal::class.java]?.href?.let { href ->
-                val resolved = response.requestedUrl.resolve(href) ?: return@let
-                log.info("Found current-user-principal: $resolved")
+                response[CurrentUserPrincipal::class.java]?.href?.let { href ->
+                    val resolved = response.requestedUrl.resolve(href) ?: return@let
+                    log.info("Found current-user-principal: $resolved")
 
-                // service check
-                if (service != null && !providesService(resolved, service))
-                    log.warning("Principal $resolved doesn't provide $service service")
-                else
-                    principal = resolved
+                    // service check
+                    if (service != null && !providesService(resolved, service))
+                        log.warning("Principal $resolved doesn't provide $service service")
+                    else
+                        principal = resolved
+                }
             }
-        }
         return principal
     }
 
