@@ -79,7 +79,7 @@ class PushMessageHandler @Inject constructor(
 
         } else {
             // fallback when no known topic is present (shouldn't happen)
-            val service = instance.toLongOrNull()?.let { serviceRepository.getBlocking(it) }
+            val service = instance.toLongOrNull()?.let { serviceRepository.get(it) }
             if (service != null) {
                 logger.warning("Got push message without topic and service, syncing all accounts")
                 val account = accountRepository.fromName(service.accountName)
