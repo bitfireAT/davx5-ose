@@ -82,17 +82,17 @@ while true; do
   sleep 5
 done
 
-TASK_ID=$(echo "$HTTP_BODY" | jq -er '.result.url') || {
+REPORT_URL=$(echo "$HTTP_BODY" | jq -er '.result.url') || {
   echo "Error: Task completed but result URL is missing."
   echo "Response: $HTTP_BODY"
   exit 1
 }
-TASK_ID=$(echo "$TASK_ID" | cut -d '/' -f 4)
+REPORT_ID=$(echo "$REPORT_URL" | cut -d '/' -f 4)
 
 # 3. Fetch the generated report.
 # curl -H 'Accept: application/json' -H "Authorization: Token $WEBLATE_API_TOKEN" -X GET https://hosted.weblate.org/api/reports/21/json/
 # [JSON] -> data ==> weblate-translators.json
-weblate_request GET "https://hosted.weblate.org/api/reports/$TASK_ID/json/"
+weblate_request GET "https://hosted.weblate.org/api/reports/$REPORT_ID/json/"
 check_http_status "Failed to fetch report"
 
 if ! echo "$HTTP_BODY" | jq -e 'type == "array"' > /dev/null; then
