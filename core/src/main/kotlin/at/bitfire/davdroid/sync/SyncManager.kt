@@ -25,6 +25,7 @@ import at.bitfire.dav4jvm.ktor.exception.NotFoundException
 import at.bitfire.dav4jvm.ktor.exception.PreconditionFailedException
 import at.bitfire.dav4jvm.ktor.exception.ServiceUnavailableException
 import at.bitfire.dav4jvm.ktor.exception.UnauthorizedException
+import at.bitfire.dav4jvm.ktor.selfResponse
 import at.bitfire.dav4jvm.property.caldav.CalDAV
 import at.bitfire.dav4jvm.property.caldav.GetCTag
 import at.bitfire.dav4jvm.property.caldav.ScheduleTag
@@ -751,14 +752,8 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
             SyncState(SyncState.Type.CTAG, it)
         }
 
-    private suspend fun querySyncState(): SyncState? {
-        var state: SyncState? = null
-        davCollection.propfind(0, CalDAV.GetCTag, WebDAV.SyncToken).forEachResponse { response, relation ->
-            if (relation == Response.HrefRelation.SELF)
-                state = syncState(response)
-        }
-        return state
-    }
+    private suspend fun querySyncState(): SyncState? =
+        davCollection.propfind(0, CalDAV.GetCTag, WebDAV.SyncToken).selfResponse()?.let { syncState(it) }
 
     /**
      * Logs the exception, updates sync result and shows a notification to the user.
@@ -887,6 +882,10 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
     /**
      * Bridges a [Flow] of [MultiStatusItem]s back to callback style, invoking [callback]
      * for every [MultiStatusItem.Response] the flow emits.
+     *
+     * This is a temporary adapter to keep [syncRemote] and friends close to their
+     * pre-[Flow] shape. The goal is to migrate them to work with [Flow] directly and
+     * drop callback-style processing (and this helper) entirely.
      *
      * @return properties found outside `<response>` elements (for instance `sync-token`)
      */
