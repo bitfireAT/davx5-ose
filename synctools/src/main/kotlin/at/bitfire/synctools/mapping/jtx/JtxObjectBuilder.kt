@@ -114,7 +114,7 @@ class JtxObjectBuilder(
     fun build(component: AssociatedComponents<CalendarComponent>): JtxEntityAndExceptions {
         requireJtxComponents(component)
 
-        val main = component.main ?: error("Main component required")
+        val main = component.main ?: createMainFromExceptions(component.exceptions)
         return JtxEntityAndExceptions(
             main = buildComponent(from = main, main = main),
             exceptions = component.exceptions.map { exception ->
@@ -140,8 +140,19 @@ class JtxObjectBuilder(
         return JtxEntity(entity, dataSubValues)
     }
 
+    private fun createMainFromExceptions(exceptions: List<CalendarComponent>): CalendarComponent {
+        // Should in the future be replaced by a real component that has a title like "(unknown task)".
+        // This main object should also have a special extended property that indicates that the component
+        // must not actually be generated as main VToDo/VJournal when the object is locally edited and then uploaded.
+        return exceptions.firstOrNull()
+            ?: throw IllegalArgumentException("Either main component or at least one exception required")
+    }
+
     private fun requireJtxComponents(component: AssociatedComponents<CalendarComponent>) {
         when (component.main) {
+            null -> {
+                // If we're only invited to an exception, we don't have a main component.
+            }
             is VJournal -> {
                 require(component.exceptions.all { it is VJournal }) {
                     "Exceptions need to be of same type as main component"
