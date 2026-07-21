@@ -6,15 +6,8 @@ package at.bitfire.davdroid
 
 import android.app.Application
 import androidx.hilt.work.HiltWorkerFactory
-import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.log.LogManager
-import at.bitfire.davdroid.startup.StartupPlugin
-import at.bitfire.davdroid.sync.account.AccountsCleanupWorker
-import at.bitfire.davdroid.ui.UiUtils
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import at.bitfire.davdroid.startup.StartupAction
 import java.util.logging.Logger
 import javax.inject.Inject
 
@@ -34,11 +27,7 @@ abstract class CoreApp: Application() {
     lateinit var logManager: LogManager
 
     @Inject
-    @IoDispatcher
-    lateinit var ioDispatcher: CoroutineDispatcher
-
-    @Inject
-    lateinit var plugins: Set<@JvmSuppressWildcards StartupPlugin>
+    lateinit var actions: Set<@JvmSuppressWildcards StartupAction>
 
     @Inject
     lateinit var workerFactory: HiltWorkerFactory
@@ -49,30 +38,10 @@ abstract class CoreApp: Application() {
 
         logger.fine("Logging using LogManager $logManager")
 
-        // set light/dark mode
-        UiUtils.updateTheme(this)   // when this is called in the asynchronous thread below, it recreates
-                                 // some current activity and causes an IllegalStateException in rare cases
-
-        // run startup plugins (sync)
-        for (plugin in plugins.sortedBy { it.priority() }) {
-            logger.fine("Running startup plugin: $plugin (onAppCreate)")
-            plugin.onAppCreate()
-        }
-
-        // don't block UI for some background checks
-        @OptIn(DelicateCoroutinesApi::class)
-        GlobalScope.launch(ioDispatcher) {
-            // clean up orphaned accounts in DB from time to time
-            AccountsCleanupWorker.enable(this@CoreApp)
-
-            // create/update app shortcuts
-            UiUtils.updateShortcuts(this@CoreApp)
-
-            // run startup plugins (async)
-            for (plugin in plugins.sortedBy { it.priorityAsync() }) {
-                logger.fine("Running startup plugin: $plugin (onAppCreateAsync)")
-                plugin.onAppCreateAsync()
-            }
+        // run startup actions synchronously (they launch a coroutine if possible)
+        actions.sortedBy { it.priority }.forEach { action ->
+            logger.fine("Running startup action: $action")
+            action.onAppCreate()
         }
     }
 
