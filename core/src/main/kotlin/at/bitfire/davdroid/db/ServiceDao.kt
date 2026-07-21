@@ -18,6 +18,9 @@ interface ServiceDao {
     @Query("SELECT * FROM service WHERE accountName=:accountName AND type=:type")
     suspend fun getByAccountAndType(accountName: String, @ServiceType type: String): Service?
 
+    @Query("SELECT * FROM service WHERE accountName=:accountName AND type=:type")
+    fun getByAccountAndTypeBlocking(accountName: String, @ServiceType type: String): Service?
+
     suspend fun getByAccountAndType(accountId: AccountId, @ServiceType type: String): Service? {
         return when (accountId) {
             is LegacyAccount -> getByAccountAndType(accountId.androidAccount.name, type)

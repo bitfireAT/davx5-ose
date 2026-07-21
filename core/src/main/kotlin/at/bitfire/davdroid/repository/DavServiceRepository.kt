@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid.repository
 
+import androidx.annotation.WorkerThread
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.db.ServiceType
@@ -25,6 +26,10 @@ class DavServiceRepository @Inject constructor(
 
     suspend fun getByAccountAndType(name: String, @ServiceType serviceType: String): Service? =
         dao.getByAccountAndType(name, serviceType)
+
+    @WorkerThread
+    fun getByAccountAndTypeBlocking(name: String, @ServiceType serviceType: String): Service? =
+        dao.getByAccountAndTypeBlocking(name, serviceType)
 
     fun getCalDavServiceFlow(accountName: String) =
         dao.getByAccountAndTypeFlow(accountName, Service.TYPE_CALDAV)
