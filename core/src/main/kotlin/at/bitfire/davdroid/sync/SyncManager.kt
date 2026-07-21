@@ -597,31 +597,12 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
     }
 
     /**
-     * Bridges a [Flow] of [MultiStatusItem]s back to callback style, invoking [callback]
-     * for every [MultiStatusItem.Response] the flow emits.
-     *
-     * @return properties found outside `<response>` elements (for instance `sync-token`)
-     */
-    private suspend fun Flow<MultiStatusItem>.forEachResponse(
-        callback: suspend (Response, Response.HrefRelation) -> Unit
-    ): List<Property> {
-        val extraProperties = mutableListOf<Property>()
-        collect { item ->
-            when (item) {
-                is MultiStatusItem.Response -> callback(item.response, item.relation)
-                is MultiStatusItem.ExtraProperty -> extraProperties += item.property
-            }
-        }
-        return extraProperties
-    }
-
-    /**
      * Calls a function to list remote resources. All resources from the returned
      * list are downloaded and processed.
      *
      * @param listRemote function to list remote resources (for instance, all since a certain sync-token)
      */
-    protected open suspend fun syncRemote(listRemote: suspend (suspend (Response, Response.HrefRelation) -> Unit) -> Unit) =
+    protected open suspend fun syncRemote(listRemote: suspend (MultiResponseCallback) -> Unit) =
         coroutineScope {    // structured concurrency
             val batchDownloader = BatchDownloader { batch ->
                 launch {
@@ -691,7 +672,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
 
     protected open suspend fun listRemoteChanges(
         syncState: SyncState?,
-        callback: suspend (Response, Response.HrefRelation) -> Unit
+        callback: MultiResponseCallback
     ): Pair<SyncToken, Boolean> {
         var furtherResults = false
 
@@ -903,4 +884,25 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
         )
     }
 
+    /**
+     * Bridges a [Flow] of [MultiStatusItem]s back to callback style, invoking [callback]
+     * for every [MultiStatusItem.Response] the flow emits.
+     *
+     * @return properties found outside `<response>` elements (for instance `sync-token`)
+     */
+    private suspend fun Flow<MultiStatusItem>.forEachResponse(
+        callback: MultiResponseCallback
+    ): List<Property> {
+        val extraProperties = mutableListOf<Property>()
+        collect { item ->
+            when (item) {
+                is MultiStatusItem.Response -> callback(item.response, item.relation)
+                is MultiStatusItem.ExtraProperty -> extraProperties += item.property
+            }
+        }
+        return extraProperties
+    }
+
 }
+
+typealias MultiResponseCallback = suspend (Response, Response.HrefRelation) -> Unit
