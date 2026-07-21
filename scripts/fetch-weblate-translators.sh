@@ -23,8 +23,8 @@ fi
 # Timeout at 60 seconds (12 attempts with 5 seconds interval)
 COUNT=0
 while true; do
-  TASK_STATUS=$(curl -H 'Accept: application/json' -H "Authorization: Token $WEBLATE_API_TOKEN" "https://hosted.weblate.org$TASK_URL")
-  TASK_COMPLETED=$(echo "$TASK_STATUS" | jq -r '.completed')
+  TASK_STATUS=$(curl -fsS -H 'Accept: application/json' -H "Authorization: Token $WEBLATE_API_TOKEN" "https://hosted.weblate.org$TASK_URL") || { echo "Error: Failed to fetch task status."; exit 1; }
+  TASK_COMPLETED=$(echo "$TASK_STATUS" | jq -er '.completed') || { echo "Error: Failed to parse task status response."; exit 1; }
   if [[ "$TASK_COMPLETED" == "true" ]]; then
     break
   fi
