@@ -61,8 +61,8 @@ class AccountsCleanupWorker @AssistedInject constructor(
         // Later, accounts which are not in the DB should be deleted here
 
         // Delete orphaned services in DB – only necessary as long as accounts are implemented as system accounts (not in DB)
-        val accounts = accountRepository.getAll()
-        logger.info("Cleaning up accounts. Currently existing accounts: $accounts")
+        val accounts = accountRepository.getAllBlocking()
+        logger.info("Cleaning up accounts. Currently existing accounts: ${accounts.contentToString()}")
         val serviceDao = db.serviceDao()
         if (accounts.isEmpty())
             serviceDao.deleteAll()
@@ -75,7 +75,7 @@ class AccountsCleanupWorker @AssistedInject constructor(
      */
     @VisibleForTesting
     internal fun cleanUpAddressBooks() {
-        val accounts = accountRepository.getAll()
+        val accounts = accountRepository.getAllBlocking()
         for (addressBookAccount in accountManager.getAccountsByType(context.getString(R.string.account_type_address_book))) {
             val accountName = accountManager.getUserData(addressBookAccount, LocalAddressBook.USER_DATA_ACCOUNT_NAME)
             val accountType = accountManager.getUserData(addressBookAccount, LocalAddressBook.USER_DATA_ACCOUNT_TYPE)
