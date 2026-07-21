@@ -13,11 +13,33 @@ env:
   prerelease: ${{ contains(github.ref_name, '-alpha') || contains(github.ref_name, '-beta') || contains(github.ref_name, '-rc') }}
 
 jobs:
+  update-weblate-contributors:
+    name: Update Weblate Contributors
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          # Tell checkout to load 'main' instead of the tag ref
+          ref: main
+          # Fetch full history so Git knows how main and your tag relate
+          fetch-depth: 0
+      - name: Fetch Weblate Translators
+        run: ./scripts/fetch-weblate-translators.sh
+      - name: Commit weblate-translators.json
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "[skip ci] Update Weblate contributors"
+          file_pattern: "weblate-translators.json"
+          branch: main
   build:
     name: Create release
     permissions:
       contents: write
       discussions: write
+    needs: update-main
+    if: always() # Runs build after updating Weblate contributors, but if the update failed, it doesn't block the build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
