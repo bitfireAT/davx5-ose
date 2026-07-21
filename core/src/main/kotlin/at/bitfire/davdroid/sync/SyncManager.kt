@@ -56,7 +56,6 @@ import io.ktor.http.content.OutgoingContent
 import io.ktor.http.headers
 import io.ktor.util.appendAll
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
@@ -598,11 +597,10 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
      * Processes a single `<response>` element from a remote listing: downloads new or
      * changed resources, and marks unchanged ones as remotely present. Ignores collections.
      *
-     * @param scope             scope to launch per-resource processing in
      * @param response          the `<response>` element to process
      * @param batchDownloader   downloader to enqueue new/changed resources with
      */
-    private fun processMemberResponse(scope: CoroutineScope, response: Response, batchDownloader: BatchDownloader) {
+    private suspend fun processMemberResponse(response: Response, batchDownloader: BatchDownloader) {
         // ignore collections
         if (response[ResourceType::class.java]?.types?.contains(WebDAV.Collection) == true)
             return
@@ -612,37 +610,33 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
         if (response.isSuccess()) {
             logger.fine("Found remote resource: $name")
 
-            scope.launch {
-                val local = localCollection.findByName(name)
-                SyncException.wrapWithLocalResource(local) {
-                    if (local == null) {
-                        logger.info("$name has been added remotely, queueing download")
-                        batchDownloader.enqueue(response.href)
+            val local = localCollection.findByName(name)
+            SyncException.wrapWithLocalResource(local) {
+                if (local == null) {
+                    logger.info("$name has been added remotely, queueing download")
+                    batchDownloader.enqueue(response.href)
+                } else {
+                    val localETag = local.eTag
+                    val remoteETag = response[GetETag::class.java]?.eTag
+                        ?: throw DavException("Server didn't provide ETag")
+                    if (localETag == remoteETag) {
+                        logger.info("$name has not been changed on server (ETag still $remoteETag)")
                     } else {
-                        val localETag = local.eTag
-                        val remoteETag = response[GetETag::class.java]?.eTag
-                            ?: throw DavException("Server didn't provide ETag")
-                        if (localETag == remoteETag) {
-                            logger.info("$name has not been changed on server (ETag still $remoteETag)")
-                        } else {
-                            logger.info("$name has been changed on server (current ETag=$remoteETag, last known ETag=$localETag)")
-                            batchDownloader.enqueue(response.href)
-                        }
-
-                        // mark as remotely present, so that this resource won't be deleted at the end
-                        local.updateFlags(LocalResource.FLAG_REMOTELY_PRESENT)
+                        logger.info("$name has been changed on server (current ETag=$remoteETag, last known ETag=$localETag)")
+                        batchDownloader.enqueue(response.href)
                     }
+
+                    // mark as remotely present, so that this resource won't be deleted at the end
+                    local.updateFlags(LocalResource.FLAG_REMOTELY_PRESENT)
                 }
             }
 
         } else if (response.status == HttpStatusCode.NotFound) {
             // collection sync: resource has been deleted on remote server
-            scope.launch {
-                localCollection.findByName(name)?.let { local ->
-                    SyncException.wrapWithLocalResource(local) {
-                        logger.info("$name has been deleted on server, deleting locally")
-                        local.deleteLocal()
-                    }
+            localCollection.findByName(name)?.let { local ->
+                SyncException.wrapWithLocalResource(local) {
+                    logger.info("$name has been deleted on server, deleting locally")
+                    local.deleteLocal()
                 }
             }
         }
@@ -668,12 +662,11 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
 
             val extraProperties = mutableListOf<Property>()
             coroutineScope {    // structured concurrency
-                val scope = this
                 remoteList.collect { item ->
                     when (item) {
                         is MultiStatusItem.Response ->
                             if (item.relation == Response.HrefRelation.MEMBER)
-                                processMemberResponse(scope, item.response, batchDownloader)
+                                launch { processMemberResponse(item.response, batchDownloader) }
                         is MultiStatusItem.ExtraProperty ->
                             extraProperties += item.property
                     }
@@ -710,7 +703,6 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
             var furtherResults = false
             val extraProperties = mutableListOf<Property>()
             coroutineScope {    // structured concurrency
-                val scope = this
                 remoteList.collect { item ->
                     when (item) {
                         is MultiStatusItem.Response ->
@@ -719,7 +711,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
                                     furtherResults = item.response.status == HttpStatusCode.InsufficientStorage
 
                                 Response.HrefRelation.MEMBER ->
-                                    processMemberResponse(scope, item.response, batchDownloader)
+                                    launch { processMemberResponse(item.response, batchDownloader) }
 
                                 else ->
                                     logger.fine("Unexpected sync-collection response: ${item.response}")
