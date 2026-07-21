@@ -70,7 +70,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
     private val principalsRefresherFactory: PrincipalsRefresher.Factory,
     private val pushRegistrationManager: PushRegistrationManager,
     private val serviceRefresherFactory: ServiceRefresher.Factory,
-    serviceRepository: DavServiceRepository
+    private val serviceRepository: DavServiceRepository
 ) : IoCoroutineWorker(appContext, workerParams) {
 
     companion object {
@@ -133,18 +133,16 @@ class RefreshCollectionsWorker @AssistedInject constructor(
 
     }
 
-    val serviceId: Long = inputData.getLong(ARG_SERVICE_ID, -1)
-    val service = serviceRepository.getBlocking(serviceId)
-    val account = service?.let { service ->
-        Account(service.accountName, applicationContext.getString(R.string.account_type))
-    }
+    private val serviceId: Long = inputData.getLong(ARG_SERVICE_ID, -1)
 
     override suspend fun doIoWork(): Result {
-        if (service == null || account == null) {
-            logger.warning("Missing service or account with service ID: $serviceId")
+        val service = serviceRepository.get(serviceId)
+        if (service == null) {
+            logger.warning("Missing service with service ID: $serviceId")
             return Result.failure()
         }
 
+        val account = Account(service.accountName, applicationContext.getString(R.string.account_type))
         try {
             logger.log(Level.INFO, "Refreshing {0} collections of service #{1}", arrayOf(service.type, service))
 
@@ -186,8 +184,9 @@ class RefreshCollectionsWorker @AssistedInject constructor(
             // notify that we need to re-authenticate in the account settings
             val settingsIntent = AccountSettingsActivity.createIntent(applicationContext, account.toAccountId())
             notifyRefreshError(
-                applicationContext.getString(R.string.sync_error_authentication_failed),
-                settingsIntent
+                accountName = account.name,
+                contentText = applicationContext.getString(R.string.sync_error_authentication_failed),
+                contentIntent = settingsIntent
             )
             return Result.failure()
         } catch(e: Exception) {
@@ -198,8 +197,9 @@ class RefreshCollectionsWorker @AssistedInject constructor(
                 .withAccount(account)
                 .build()
             notifyRefreshError(
-                applicationContext.getString(R.string.refresh_collections_worker_refresh_couldnt_refresh),
-                debugIntent
+                accountName = account.name,
+                contentText = applicationContext.getString(R.string.refresh_collections_worker_refresh_couldnt_refresh),
+                contentIntent = debugIntent
             )
             return Result.failure()
         }
@@ -227,7 +227,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
         return ForegroundInfo(NotificationRegistry.NOTIFY_SYNC_EXPEDITED, notification)
     }
 
-    private fun notifyRefreshError(contentText: String, contentIntent: Intent) {
+    private fun notifyRefreshError(accountName: String, contentText: String, contentIntent: Intent) {
         notificationRegistry.notifyIfPossible(NotificationRegistry.NOTIFY_REFRESH_COLLECTIONS, tag = serviceId.toString()) {
             NotificationCompat.Builder(applicationContext, notificationRegistry.CHANNEL_GENERAL)
                 .setSmallIcon(R.drawable.ic_sync_problem_notify)
@@ -238,7 +238,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
                         .addNextIntentWithParentStack(contentIntent)
                         .getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
                 )
-                .setSubText(account?.name)
+                .setSubText(accountName)
                 .setCategory(NotificationCompat.CATEGORY_ERROR)
                 .build()
         }
