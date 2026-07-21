@@ -9,8 +9,8 @@ import android.text.format.Formatter
 import at.bitfire.dav4jvm.ktor.DavCalendar
 import at.bitfire.dav4jvm.ktor.MultiStatusItem
 import at.bitfire.dav4jvm.ktor.exception.DavException
-import at.bitfire.dav4jvm.ktor.filterResponses
-import at.bitfire.dav4jvm.ktor.filterSelfResponse
+import at.bitfire.dav4jvm.ktor.responses
+import at.bitfire.dav4jvm.ktor.selfResponse
 import at.bitfire.dav4jvm.property.caldav.CalDAV
 import at.bitfire.dav4jvm.property.caldav.CalendarData
 import at.bitfire.dav4jvm.property.caldav.MaxResourceSize
@@ -120,7 +120,7 @@ class CalendarSyncManager @AssistedInject constructor(
                 WebDAV.SupportedReportSet,
                 CalDAV.GetCTag,
                 WebDAV.SyncToken
-            ).filterSelfResponse()
+            ).selfResponse()
 
             var syncState: SyncState? = null
             if (response != null) {
@@ -195,7 +195,7 @@ class CalendarSyncManager @AssistedInject constructor(
     override suspend fun downloadRemote(bunch: List<Url>) {
         logger.info("Downloading ${bunch.size} iCalendars: $bunch")
         SyncException.wrapWithRemoteResource(collection.url) {
-            davCollection.multiget(bunch).filterResponses().collect { response ->
+            davCollection.multiget(bunch).responses().collect { response ->
                 /*
                  * Real-world servers may return:
                  *

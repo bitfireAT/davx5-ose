@@ -10,8 +10,8 @@ import android.text.format.Formatter
 import at.bitfire.dav4jvm.ktor.DavAddressBook
 import at.bitfire.dav4jvm.ktor.MultiStatusItem
 import at.bitfire.dav4jvm.ktor.exception.DavException
-import at.bitfire.dav4jvm.ktor.filterResponses
-import at.bitfire.dav4jvm.ktor.filterSelfResponse
+import at.bitfire.dav4jvm.ktor.responses
+import at.bitfire.dav4jvm.ktor.selfResponse
 import at.bitfire.dav4jvm.property.caldav.CalDAV
 import at.bitfire.dav4jvm.property.carddav.AddressData
 import at.bitfire.dav4jvm.property.carddav.CardDAV
@@ -176,7 +176,7 @@ class ContactsSyncManager @AssistedInject constructor(
                 WebDAV.SupportedReportSet,
                 CalDAV.GetCTag,
                 WebDAV.SyncToken
-            ).filterSelfResponse()
+            ).selfResponse()
 
             var syncState: SyncState? = null
             if (response != null) {
@@ -277,7 +277,7 @@ class ContactsSyncManager @AssistedInject constructor(
                     version = null     // 3.0 is the default version; don't request 3.0 explicitly because maybe some vCard3-only servers don't understand it
                 }
             }
-            davCollection.multiget(bunch, contentType, version).filterResponses().collect { response ->
+            davCollection.multiget(bunch, contentType, version).responses().collect { response ->
                 // See CalendarSyncManager for more information about the multi-get response
                 SyncException.wrapWithRemoteResource(response.href) wrapResource@{
                     if (!response.isSuccess()) {

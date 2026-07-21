@@ -9,8 +9,8 @@ import at.bitfire.dav4jvm.ktor.Response
 import at.bitfire.dav4jvm.ktor.exception.DavException
 import at.bitfire.dav4jvm.ktor.exception.HttpException
 import at.bitfire.dav4jvm.ktor.exception.UnauthorizedException
-import at.bitfire.dav4jvm.ktor.filterResponses
 import at.bitfire.dav4jvm.ktor.resolve
+import at.bitfire.dav4jvm.ktor.responses
 import at.bitfire.dav4jvm.ktor.withTrailingSlash
 import at.bitfire.dav4jvm.property.caldav.CalDAV
 import at.bitfire.dav4jvm.property.caldav.CalendarHomeSet
@@ -209,7 +209,7 @@ class DavResourceFinder @AssistedInject constructor(
                         WebDAV.CurrentUserPrincipal,
                         CardDAV.AddressbookHomeSet,
                         CardDAV.AddressbookDescription
-                    ).filterResponses().collect { response ->
+                    ).responses().collect { response ->
                         scanResponse(CardDAV.Addressbook, response, config)
                     }
                 }
@@ -225,7 +225,7 @@ class DavResourceFinder @AssistedInject constructor(
                         CalDAV.CalendarColor,
                         CalDAV.CalendarDescription,
                         CalDAV.CalendarTimezone
-                    ).filterResponses().collect { response ->
+                    ).responses().collect { response ->
                         scanResponse(CalDAV.Calendar, response, config)
                     }
                 }
@@ -245,7 +245,7 @@ class DavResourceFinder @AssistedInject constructor(
         val mailboxes = LinkedList<String>()
         try {
             DavResource(httpClient, principal, log).propfind(0, CalDAV.CalendarUserAddressSet)
-                .filterResponses()
+                .responses()
                 .collect { response ->
                     response[CalendarUserAddressSet::class.java]?.let { addressSet ->
                         for (href in addressSet.hrefs)
@@ -429,7 +429,7 @@ class DavResourceFinder @AssistedInject constructor(
     suspend fun getCurrentUserPrincipal(url: Url, service: Service?): Url? {
         var principal: Url? = null
         DavResource(httpClient, url, log).propfind(0, WebDAV.CurrentUserPrincipal)
-            .filterResponses()
+            .responses()
             .collect { response ->
                 response[CurrentUserPrincipal::class.java]?.href?.let { href ->
                     val resolved = response.requestedUrl.resolve(href) ?: return@let

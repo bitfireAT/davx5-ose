@@ -8,8 +8,8 @@ import android.content.Context
 import android.provider.DocumentsContract.Document
 import android.provider.DocumentsContract.buildChildDocumentsUri
 import at.bitfire.dav4jvm.ktor.DavCollection
-import at.bitfire.dav4jvm.ktor.MultiStatusItem
 import at.bitfire.dav4jvm.ktor.Response
+import at.bitfire.dav4jvm.ktor.responsesWithRelation
 import at.bitfire.dav4jvm.ktor.toContentTypeOrNull
 import at.bitfire.dav4jvm.property.webdav.CurrentUserPrivilegeSet
 import at.bitfire.dav4jvm.property.webdav.DisplayName
@@ -32,7 +32,6 @@ import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -136,7 +135,7 @@ class QueryChildDocumentsOperation @Inject constructor(
             davClientBuilder.build(parent.mountId).use { client ->
                 val folder = DavCollection(client, parentUrl)
                 folder.propfind(1, *DAV_FILE_FIELDS)
-                    .filterIsInstance<MultiStatusItem.Response>()
+                    .responsesWithRelation()
                     .collect { (response, relation) ->
                         logger.fine("$relation $response")
 

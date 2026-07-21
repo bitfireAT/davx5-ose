@@ -7,9 +7,9 @@ package at.bitfire.davdroid.servicedetection
 import at.bitfire.dav4jvm.Property
 import at.bitfire.dav4jvm.ktor.DavResource
 import at.bitfire.dav4jvm.ktor.exception.HttpException
-import at.bitfire.dav4jvm.ktor.filterResponses
 import at.bitfire.dav4jvm.ktor.parent
 import at.bitfire.dav4jvm.ktor.resolve
+import at.bitfire.dav4jvm.ktor.responses
 import at.bitfire.dav4jvm.ktor.withTrailingSlash
 import at.bitfire.dav4jvm.property.caldav.CalDAV
 import at.bitfire.dav4jvm.property.caldav.CalendarHomeSet
@@ -109,7 +109,7 @@ class ServiceRefresher @AssistedInject constructor(
         val principal = DavResource(httpClient, principalUrl)
         val personal = level == 0
         try {
-            principal.propfind(0, *homeSetProperties).filterResponses().collect { davResponse ->
+            principal.propfind(0, *homeSetProperties).responses().collect { davResponse ->
                 alreadyQueriedPrincipals += davResponse.href
 
                 // If response holds home sets, save them

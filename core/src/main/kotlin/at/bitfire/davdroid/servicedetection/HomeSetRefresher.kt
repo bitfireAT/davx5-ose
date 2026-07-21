@@ -5,10 +5,10 @@
 package at.bitfire.davdroid.servicedetection
 
 import at.bitfire.dav4jvm.ktor.DavResource
-import at.bitfire.dav4jvm.ktor.MultiStatusItem
 import at.bitfire.dav4jvm.ktor.Response
 import at.bitfire.dav4jvm.ktor.exception.HttpException
 import at.bitfire.dav4jvm.ktor.resolve
+import at.bitfire.dav4jvm.ktor.responsesWithRelation
 import at.bitfire.dav4jvm.property.webdav.CurrentUserPrivilegeSet
 import at.bitfire.dav4jvm.property.webdav.DisplayName
 import at.bitfire.dav4jvm.property.webdav.Owner
@@ -25,7 +25,6 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import io.ktor.client.HttpClient
-import kotlinx.coroutines.flow.filterIsInstance
 import java.util.logging.Logger
 import javax.annotation.WillNotClose
 
@@ -70,9 +69,8 @@ class HomeSetRefresher @AssistedInject constructor(
 
             try {
                 val collectionProperties = ServiceDetectionUtils.collectionQueryProperties(service.type)
-                // Note: this may be called multiple times (one MultiStatusItem.Response per <response> element)
                 DavResource(httpClient, homeSetUrl).propfind(1, *collectionProperties)
-                    .filterIsInstance<MultiStatusItem.Response>()
+                    .responsesWithRelation()
                     .collect { (response, relation) ->
                         if (!response.isSuccess())
                             return@collect

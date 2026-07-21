@@ -5,7 +5,7 @@
 package at.bitfire.davdroid.db
 
 import at.bitfire.dav4jvm.ktor.DavResource
-import at.bitfire.dav4jvm.ktor.filterResponses
+import at.bitfire.dav4jvm.ktor.responses
 import at.bitfire.dav4jvm.property.webdav.WebDAV
 import at.bitfire.davdroid.util.DavUtils.toUrl
 import io.ktor.client.HttpClient
@@ -48,7 +48,7 @@ class CollectionTest {
         ).use { client ->
             val davResource = DavResource(client, baseUrl)
             var collectionFromResponse: Collection? = null
-            davResource.propfind(0, WebDAV.ResourceType).filterResponses().collect { response ->
+            davResource.propfind(0, WebDAV.ResourceType).responses().collect { response ->
                 collectionFromResponse = Collection.fromDavResponse(response)
             }
             assertNotNull(collectionFromResponse)
@@ -104,7 +104,7 @@ class CollectionTest {
         ).use { client ->
             val davResource = DavResource(client, baseUrl)
             var collectionFromResponse: Collection? = null
-            davResource.propfind(0, WebDAV.ResourceType).filterResponses().collect { response ->
+            davResource.propfind(0, WebDAV.ResourceType).responses().collect { response ->
                 collectionFromResponse = Collection.fromDavResponse(response)
             }
             assertNotNull(collectionFromResponse)
@@ -140,7 +140,7 @@ class CollectionTest {
         ).use { client ->
             val davResource = DavResource(client, baseUrl)
             var collectionFromResponse: Collection? = null
-            davResource.propfind(0, WebDAV.ResourceType).filterResponses().collect { response ->
+            davResource.propfind(0, WebDAV.ResourceType).responses().collect { response ->
                 collectionFromResponse = Collection.fromDavResponse(response)
             }
             assertNotNull(collectionFromResponse)
@@ -174,7 +174,7 @@ class CollectionTest {
         ).use { client ->
             val davResource = DavResource(client, baseUrl)
             var collectionFromResponse: Collection? = null
-            davResource.propfind(0, WebDAV.ResourceType).filterResponses().collect { response ->
+            davResource.propfind(0, WebDAV.ResourceType).responses().collect { response ->
                 collectionFromResponse = Collection.fromDavResponse(response)
             }
             assertNotNull(collectionFromResponse)

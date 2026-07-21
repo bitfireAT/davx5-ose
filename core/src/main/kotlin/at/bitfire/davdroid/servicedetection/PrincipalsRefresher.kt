@@ -6,7 +6,7 @@ package at.bitfire.davdroid.servicedetection
 
 import at.bitfire.dav4jvm.ktor.DavResource
 import at.bitfire.dav4jvm.ktor.exception.HttpException
-import at.bitfire.dav4jvm.ktor.filterResponses
+import at.bitfire.dav4jvm.ktor.responses
 import at.bitfire.dav4jvm.property.webdav.WebDAV
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Principal
@@ -53,7 +53,7 @@ class PrincipalsRefresher @AssistedInject constructor(
             logger.fine("Querying principal $principalUrl")
             try {
                 DavResource(httpClient, principalUrl).propfind(0, *principalProperties)
-                    .filterResponses()
+                    .responses()
                     .collect { response ->
                         if (!response.isSuccess())
                             return@collect

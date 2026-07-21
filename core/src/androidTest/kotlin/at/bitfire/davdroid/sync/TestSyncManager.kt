@@ -8,7 +8,7 @@ import android.accounts.Account
 import at.bitfire.dav4jvm.ktor.DavCollection
 import at.bitfire.dav4jvm.ktor.MultiStatusItem
 import at.bitfire.dav4jvm.ktor.Response
-import at.bitfire.dav4jvm.ktor.filterSelfResponse
+import at.bitfire.dav4jvm.ktor.selfResponse
 import at.bitfire.dav4jvm.property.caldav.CalDAV
 import at.bitfire.dav4jvm.property.caldav.GetCTag
 import at.bitfire.davdroid.db.Collection
@@ -71,7 +71,7 @@ class TestSyncManager @AssistedInject constructor(
             throw IllegalStateException("queryCapabilities() must not be called twice")
         didQueryCapabilities = true
 
-        val response = davCollection.propfind(0, CalDAV.GetCTag).filterSelfResponse()
+        val response = davCollection.propfind(0, CalDAV.GetCTag).selfResponse()
         return response?.let { it[GetCTag::class.java]?.cTag }?.let {
             SyncState(SyncState.Type.CTAG, it)
         }
