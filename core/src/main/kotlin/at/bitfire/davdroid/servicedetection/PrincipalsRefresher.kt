@@ -5,8 +5,8 @@
 package at.bitfire.davdroid.servicedetection
 
 import at.bitfire.dav4jvm.ktor.DavResource
-import at.bitfire.dav4jvm.ktor.MultiStatusItem
 import at.bitfire.dav4jvm.ktor.exception.HttpException
+import at.bitfire.dav4jvm.ktor.filterResponses
 import at.bitfire.dav4jvm.property.webdav.WebDAV
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Principal
@@ -52,10 +52,9 @@ class PrincipalsRefresher @AssistedInject constructor(
             val principalUrl = oldPrincipal.url
             logger.fine("Querying principal $principalUrl")
             try {
-                DavResource(httpClient, principalUrl).propfind(0, *principalProperties).collect { item ->
-                    if (item !is MultiStatusItem.Response) return@collect
-                    val response = item.response
-
+                DavResource(httpClient, principalUrl).propfind(0, *principalProperties)
+                    .filterResponses()
+                    .collect { response ->
                     if (!response.isSuccess())
                         return@collect
                     Principal.fromDavResponse(service.id, response)?.let { principal ->

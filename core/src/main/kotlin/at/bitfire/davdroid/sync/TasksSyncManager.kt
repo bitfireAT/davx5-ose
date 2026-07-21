@@ -8,8 +8,9 @@ import android.accounts.Account
 import android.text.format.Formatter
 import at.bitfire.dav4jvm.ktor.DavCalendar
 import at.bitfire.dav4jvm.ktor.MultiStatusItem
-import at.bitfire.dav4jvm.ktor.Response
 import at.bitfire.dav4jvm.ktor.exception.DavException
+import at.bitfire.dav4jvm.ktor.filterResponses
+import at.bitfire.dav4jvm.ktor.filterSelfResponse
 import at.bitfire.dav4jvm.property.caldav.CalDAV
 import at.bitfire.dav4jvm.property.caldav.CalendarData
 import at.bitfire.dav4jvm.property.caldav.MaxResourceSize
@@ -99,16 +100,16 @@ class TasksSyncManager @AssistedInject constructor(
 
     override suspend fun queryCapabilities() =
         SyncException.wrapWithRemoteResource(collection.url) {
-            var syncState: SyncState? = null
-            davCollection.propfind(0, CalDAV.MaxResourceSize, CalDAV.GetCTag, WebDAV.SyncToken).collect { item ->
-                if (item is MultiStatusItem.Response && item.relation == Response.HrefRelation.SELF) {
-                    val response = item.response
-                    response[MaxResourceSize::class.java]?.maxSize?.let { maxSize ->
-                        logger.info("Calendar accepts tasks up to ${Formatter.formatFileSize(context, maxSize)}")
-                    }
+            val response =
+                davCollection.propfind(0, CalDAV.MaxResourceSize, CalDAV.GetCTag, WebDAV.SyncToken).filterSelfResponse()
 
-                    syncState = syncState(response)
+            var syncState: SyncState? = null
+            response?.let {
+                it[MaxResourceSize::class.java]?.maxSize?.let { maxSize ->
+                    logger.info("Calendar accepts tasks up to ${Formatter.formatFileSize(context, maxSize)}")
                 }
+
+                syncState = syncState(it)
             }
 
             syncState
@@ -163,10 +164,7 @@ class TasksSyncManager @AssistedInject constructor(
         logger.info("Downloading ${bunch.size} iCalendars: $bunch")
         // multiple iCalendars, use calendar-multi-get
         SyncException.wrapWithRemoteResource(collection.url) {
-            davCollection.multiget(bunch).collect { item ->
-                if (item !is MultiStatusItem.Response) return@collect
-                val response = item.response
-
+            davCollection.multiget(bunch).filterResponses().collect { response ->
                 // See CalendarSyncManager for more information about the multi-get response
                 SyncException.wrapWithRemoteResource(response.href) wrapResource@{
                     if (!response.isSuccess()) {

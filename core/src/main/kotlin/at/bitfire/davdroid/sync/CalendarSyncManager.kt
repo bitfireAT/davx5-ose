@@ -8,8 +8,9 @@ import android.accounts.Account
 import android.text.format.Formatter
 import at.bitfire.dav4jvm.ktor.DavCalendar
 import at.bitfire.dav4jvm.ktor.MultiStatusItem
-import at.bitfire.dav4jvm.ktor.Response
 import at.bitfire.dav4jvm.ktor.exception.DavException
+import at.bitfire.dav4jvm.ktor.filterResponses
+import at.bitfire.dav4jvm.ktor.filterSelfResponse
 import at.bitfire.dav4jvm.property.caldav.CalDAV
 import at.bitfire.dav4jvm.property.caldav.CalendarData
 import at.bitfire.dav4jvm.property.caldav.MaxResourceSize
@@ -113,25 +114,24 @@ class CalendarSyncManager @AssistedInject constructor(
 
     override suspend fun queryCapabilities(): SyncState? =
         SyncException.wrapWithRemoteResource(collection.url) {
-            var syncState: SyncState? = null
-            davCollection.propfind(
+            val response = davCollection.propfind(
                 0,
                 CalDAV.MaxResourceSize,
                 WebDAV.SupportedReportSet,
                 CalDAV.GetCTag,
                 WebDAV.SyncToken
-            ).collect { item ->
-                if (item is MultiStatusItem.Response && item.relation == Response.HrefRelation.SELF) {
-                    val response = item.response
-                    response[MaxResourceSize::class.java]?.maxSize?.let { maxSize ->
-                        logger.info("Calendar accepts events up to ${Formatter.formatFileSize(context, maxSize)}")
-                    }
+            ).filterSelfResponse()
 
-                    response[SupportedReportSet::class.java]?.let { supported ->
-                        hasCollectionSync = supported.reports.contains(WebDAV.SyncCollection)
-                    }
-                    syncState = syncState(response)
+            var syncState: SyncState? = null
+            response?.let {
+                it[MaxResourceSize::class.java]?.maxSize?.let { maxSize ->
+                    logger.info("Calendar accepts events up to ${Formatter.formatFileSize(context, maxSize)}")
                 }
+
+                it[SupportedReportSet::class.java]?.let { supported ->
+                    hasCollectionSync = supported.reports.contains(WebDAV.SyncCollection)
+                }
+                syncState = syncState(it)
             }
 
             logger.info("Calendar supports Collection Sync: $hasCollectionSync")
@@ -195,10 +195,7 @@ class CalendarSyncManager @AssistedInject constructor(
     override suspend fun downloadRemote(bunch: List<Url>) {
         logger.info("Downloading ${bunch.size} iCalendars: $bunch")
         SyncException.wrapWithRemoteResource(collection.url) {
-            davCollection.multiget(bunch).collect { item ->
-                if (item !is MultiStatusItem.Response) return@collect
-                val response = item.response
-
+            davCollection.multiget(bunch).filterResponses().collect { response ->
                 /*
                  * Real-world servers may return:
                  *

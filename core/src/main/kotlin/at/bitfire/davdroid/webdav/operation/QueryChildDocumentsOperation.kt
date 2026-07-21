@@ -32,6 +32,7 @@ import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -132,9 +133,9 @@ class QueryChildDocumentsOperation @Inject constructor(
         try {
             davClientBuilder.build(parent.mountId).use { client ->
                 val folder = DavCollection(client, parentUrl)
-                folder.propfind(1, *DAV_FILE_FIELDS).collect { item ->
-                    if (item !is MultiStatusItem.Response) return@collect
-                    val (response, relation) = item
+                folder.propfind(1, *DAV_FILE_FIELDS)
+                    .filterIsInstance<MultiStatusItem.Response>()
+                    .collect { (response, relation) ->
                     logger.fine("$relation $response")
 
                     val resource: WebDavDocument =

@@ -6,8 +6,8 @@ package at.bitfire.davdroid.servicedetection
 
 import at.bitfire.dav4jvm.Property
 import at.bitfire.dav4jvm.ktor.DavResource
-import at.bitfire.dav4jvm.ktor.MultiStatusItem
 import at.bitfire.dav4jvm.ktor.exception.HttpException
+import at.bitfire.dav4jvm.ktor.filterResponses
 import at.bitfire.dav4jvm.ktor.parent
 import at.bitfire.dav4jvm.ktor.resolve
 import at.bitfire.dav4jvm.ktor.withTrailingSlash
@@ -109,10 +109,7 @@ class ServiceRefresher @AssistedInject constructor(
         val principal = DavResource(httpClient, principalUrl)
         val personal = level == 0
         try {
-            principal.propfind(0, *homeSetProperties).collect { item ->
-                if (item !is MultiStatusItem.Response) return@collect
-                val davResponse = item.response
-
+            principal.propfind(0, *homeSetProperties).filterResponses().collect { davResponse ->
                 alreadyQueriedPrincipals += davResponse.href
 
                 // If response holds home sets, save them

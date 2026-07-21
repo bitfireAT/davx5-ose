@@ -9,8 +9,9 @@ import android.content.ContentProviderClient
 import android.text.format.Formatter
 import at.bitfire.dav4jvm.ktor.DavAddressBook
 import at.bitfire.dav4jvm.ktor.MultiStatusItem
-import at.bitfire.dav4jvm.ktor.Response
 import at.bitfire.dav4jvm.ktor.exception.DavException
+import at.bitfire.dav4jvm.ktor.filterResponses
+import at.bitfire.dav4jvm.ktor.filterSelfResponse
 import at.bitfire.dav4jvm.property.caldav.CalDAV
 import at.bitfire.dav4jvm.property.carddav.AddressData
 import at.bitfire.dav4jvm.property.carddav.CardDAV
@@ -168,29 +169,28 @@ class ContactsSyncManager @AssistedInject constructor(
 
     override suspend fun queryCapabilities(): SyncState? {
         return SyncException.wrapWithRemoteResource(collection.url) {
-            var syncState: SyncState? = null
-            davCollection.propfind(
+            val response = davCollection.propfind(
                 0,
                 CardDAV.MaxResourceSize,
                 CardDAV.SupportedAddressData,
                 WebDAV.SupportedReportSet,
                 CalDAV.GetCTag,
                 WebDAV.SyncToken
-            ).collect { item ->
-                if (item is MultiStatusItem.Response && item.relation == Response.HrefRelation.SELF) {
-                    val response = item.response
-                    response[MaxResourceSize::class.java]?.maxSize?.let { maxSize ->
-                        logger.info("Address book accepts vCards up to ${Formatter.formatFileSize(context, maxSize)}")
-                    }
+            ).filterSelfResponse()
 
-                    response[SupportedAddressData::class.java]?.let { supported ->
-                        hasVCard4 = supported.hasVCard4()
-                    }
-                    response[SupportedReportSet::class.java]?.let { supported ->
-                        hasCollectionSync = supported.reports.contains(WebDAV.SyncCollection)
-                    }
-                    syncState = syncState(response)
+            var syncState: SyncState? = null
+            response?.let {
+                it[MaxResourceSize::class.java]?.maxSize?.let { maxSize ->
+                    logger.info("Address book accepts vCards up to ${Formatter.formatFileSize(context, maxSize)}")
                 }
+
+                it[SupportedAddressData::class.java]?.let { supported ->
+                    hasVCard4 = supported.hasVCard4()
+                }
+                it[SupportedReportSet::class.java]?.let { supported ->
+                    hasCollectionSync = supported.reports.contains(WebDAV.SyncCollection)
+                }
+                syncState = syncState(it)
             }
 
             logger.info("Address book supports vCard4: $hasVCard4")
@@ -277,10 +277,7 @@ class ContactsSyncManager @AssistedInject constructor(
                     version = null     // 3.0 is the default version; don't request 3.0 explicitly because maybe some vCard3-only servers don't understand it
                 }
             }
-            davCollection.multiget(bunch, contentType, version).collect { item ->
-                if (item !is MultiStatusItem.Response) return@collect
-                val response = item.response
-
+            davCollection.multiget(bunch, contentType, version).filterResponses().collect { response ->
                 // See CalendarSyncManager for more information about the multi-get response
                 SyncException.wrapWithRemoteResource(response.href) wrapResource@{
                     if (!response.isSuccess()) {

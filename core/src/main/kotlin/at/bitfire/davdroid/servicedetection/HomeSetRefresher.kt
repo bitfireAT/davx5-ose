@@ -25,6 +25,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import io.ktor.client.HttpClient
+import kotlinx.coroutines.flow.filterIsInstance
 import java.util.logging.Logger
 import javax.annotation.WillNotClose
 
@@ -69,11 +70,10 @@ class HomeSetRefresher @AssistedInject constructor(
 
             try {
                 val collectionProperties = ServiceDetectionUtils.collectionQueryProperties(service.type)
-                DavResource(httpClient, homeSetUrl).propfind(1, *collectionProperties).collect { item ->
-                    // Note: this may be called multiple times (one MultiStatusItem.Response per <response> element)
-                    if (item !is MultiStatusItem.Response) return@collect
-                    val (response, relation) = item
-
+                // Note: this may be called multiple times (one MultiStatusItem.Response per <response> element)
+                DavResource(httpClient, homeSetUrl).propfind(1, *collectionProperties)
+                    .filterIsInstance<MultiStatusItem.Response>()
+                    .collect { (response, relation) ->
                     if (!response.isSuccess())
                         return@collect
 

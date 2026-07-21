@@ -15,7 +15,6 @@ import at.bitfire.dav4jvm.ktor.DavCollection
 import at.bitfire.dav4jvm.ktor.DavResource
 import at.bitfire.dav4jvm.ktor.MultiStatusItem
 import at.bitfire.dav4jvm.ktor.Response
-import at.bitfire.dav4jvm.ktor.ResponseCallback
 import at.bitfire.dav4jvm.ktor.exception.ConflictException
 import at.bitfire.dav4jvm.ktor.exception.DavException
 import at.bitfire.dav4jvm.ktor.exception.ForbiddenException
@@ -25,6 +24,7 @@ import at.bitfire.dav4jvm.ktor.exception.NotFoundException
 import at.bitfire.dav4jvm.ktor.exception.PreconditionFailedException
 import at.bitfire.dav4jvm.ktor.exception.ServiceUnavailableException
 import at.bitfire.dav4jvm.ktor.exception.UnauthorizedException
+import at.bitfire.dav4jvm.ktor.filterSelfResponse
 import at.bitfire.dav4jvm.property.caldav.CalDAV
 import at.bitfire.dav4jvm.property.caldav.GetCTag
 import at.bitfire.dav4jvm.property.caldav.ScheduleTag
@@ -45,6 +45,7 @@ import at.bitfire.davdroid.sync.account.InvalidAccountException
 import at.bitfire.synctools.storage.LocalStorageException
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.ktor.client.HttpClient
+import io.ktor.client.statement.HttpResponse
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.URLBuilder
@@ -751,14 +752,8 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
             SyncState(SyncState.Type.CTAG, it)
         }
 
-    private suspend fun querySyncState(): SyncState? {
-        var state: SyncState? = null
-        davCollection.propfind(0, CalDAV.GetCTag, WebDAV.SyncToken).collect { item ->
-            if (item is MultiStatusItem.Response && item.relation == Response.HrefRelation.SELF)
-                state = syncState(item.response)
-        }
-        return state
-    }
+    private suspend fun querySyncState(): SyncState? =
+        davCollection.propfind(0, CalDAV.GetCTag, WebDAV.SyncToken).filterSelfResponse()?.let { syncState(it) }
 
     /**
      * Logs the exception, updates sync result and shows a notification to the user.
@@ -835,7 +830,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
         ifScheduleTag: String? = null,
         ifNoneMatch: Boolean = false,
         headers: Map<String, String> = emptyMap(),
-        callback: ResponseCallback
+        callback: suspend (HttpResponse) -> Unit
     ) {
         put(
             content,
@@ -868,7 +863,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
         ifETag: String? = null,
         ifScheduleTag: String? = null,
         headers: Map<String, String> = emptyMap(),
-        callback: ResponseCallback
+        callback: suspend (HttpResponse) -> Unit
     ) {
         delete(
             additionalHeaders = headers {

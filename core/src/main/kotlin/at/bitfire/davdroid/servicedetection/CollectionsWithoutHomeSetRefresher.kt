@@ -5,8 +5,8 @@
 package at.bitfire.davdroid.servicedetection
 
 import at.bitfire.dav4jvm.ktor.DavResource
-import at.bitfire.dav4jvm.ktor.MultiStatusItem
 import at.bitfire.dav4jvm.ktor.exception.HttpException
+import at.bitfire.dav4jvm.ktor.filterResponses
 import at.bitfire.dav4jvm.ktor.resolve
 import at.bitfire.dav4jvm.property.webdav.Owner
 import at.bitfire.davdroid.db.AppDatabase
@@ -45,10 +45,7 @@ class CollectionsWithoutHomeSetRefresher @AssistedInject constructor(
         val withoutHomeSet = db.collectionDao().getByServiceAndHomeset(service.id, null).associateBy { it.url }.toMutableMap()
         for ((url, localCollection) in withoutHomeSet) try {
             val collectionProperties = ServiceDetectionUtils.collectionQueryProperties(service.type)
-            DavResource(httpClient, url).propfind(0, *collectionProperties).collect { item ->
-                if (item !is MultiStatusItem.Response) return@collect
-                val response = item.response
-
+            DavResource(httpClient, url).propfind(0, *collectionProperties).filterResponses().collect { response ->
                 if (!response.isSuccess()) {
                     collectionRepository.delete(localCollection)
                     return@collect

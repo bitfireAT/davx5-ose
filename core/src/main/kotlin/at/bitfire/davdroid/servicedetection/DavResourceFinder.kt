@@ -5,11 +5,11 @@ package at.bitfire.davdroid.servicedetection
 
 import at.bitfire.dav4jvm.Property
 import at.bitfire.dav4jvm.ktor.DavResource
-import at.bitfire.dav4jvm.ktor.MultiStatusItem
 import at.bitfire.dav4jvm.ktor.Response
 import at.bitfire.dav4jvm.ktor.exception.DavException
 import at.bitfire.dav4jvm.ktor.exception.HttpException
 import at.bitfire.dav4jvm.ktor.exception.UnauthorizedException
+import at.bitfire.dav4jvm.ktor.filterResponses
 import at.bitfire.dav4jvm.ktor.resolve
 import at.bitfire.dav4jvm.ktor.withTrailingSlash
 import at.bitfire.dav4jvm.property.caldav.CalDAV
@@ -208,9 +208,8 @@ class DavResourceFinder @AssistedInject constructor(
                         WebDAV.CurrentUserPrincipal,
                         CardDAV.AddressbookHomeSet,
                         CardDAV.AddressbookDescription
-                    ).collect { item ->
-                        if (item is MultiStatusItem.Response)
-                            scanResponse(CardDAV.Addressbook, item.response, config)
+                    ).filterResponses().collect { response ->
+                        scanResponse(CardDAV.Addressbook, response, config)
                     }
                 }
                 Service.CALDAV -> {
@@ -220,9 +219,8 @@ class DavResourceFinder @AssistedInject constructor(
                         WebDAV.CurrentUserPrincipal, WebDAV.CurrentUserPrivilegeSet,
                         CalDAV.CalendarHomeSet,
                         CalDAV.SupportedCalendarComponentSet, CalDAV.CalendarColor, CalDAV.CalendarDescription, CalDAV.CalendarTimezone
-                    ).collect { item ->
-                        if (item is MultiStatusItem.Response)
-                            scanResponse(CalDAV.Calendar, item.response, config)
+                    ).filterResponses().collect { response ->
+                        scanResponse(CalDAV.Calendar, response, config)
                     }
                 }
             }
@@ -240,9 +238,10 @@ class DavResourceFinder @AssistedInject constructor(
     suspend fun queryEmailAddress(principal: Url): List<String> {
         val mailboxes = LinkedList<String>()
         try {
-            DavResource(httpClient, principal, log).propfind(0, CalDAV.CalendarUserAddressSet).collect { item ->
-                if (item !is MultiStatusItem.Response) return@collect
-                item.response[CalendarUserAddressSet::class.java]?.let { addressSet ->
+            DavResource(httpClient, principal, log).propfind(0, CalDAV.CalendarUserAddressSet)
+                .filterResponses()
+                .collect { response ->
+                    response[CalendarUserAddressSet::class.java]?.let { addressSet ->
                     for (href in addressSet.hrefs)
                         try {
                             val uri = URI(href)
@@ -338,11 +337,10 @@ class DavResourceFinder @AssistedInject constructor(
     suspend fun providesService(url: Url, service: Service): Boolean {
         var provided = false
         try {
-            DavResource(httpClient, url, log).options { capabilities, _ ->
-                if ((service == Service.CARDDAV && capabilities.contains("addressbook")) ||
-                    (service == Service.CALDAV && capabilities.contains("calendar-access")))
-                    provided = true
-            }
+            val capabilities = DavResource(httpClient, url, log).options().davCapabilities
+            if ((service == Service.CARDDAV && capabilities.contains("addressbook")) ||
+                (service == Service.CALDAV && capabilities.contains("calendar-access")))
+                provided = true
         } catch (e: Exception) {
             log.log(Level.SEVERE, "Couldn't detect services on $url", e)
             if (e !is HttpException && e !is DavException)
@@ -424,9 +422,9 @@ class DavResourceFinder @AssistedInject constructor(
      */
     suspend fun getCurrentUserPrincipal(url: Url, service: Service?): Url? {
         var principal: Url? = null
-        DavResource(httpClient, url, log).propfind(0, WebDAV.CurrentUserPrincipal).collect { item ->
-            if (item !is MultiStatusItem.Response) return@collect
-            val response = item.response
+        DavResource(httpClient, url, log).propfind(0, WebDAV.CurrentUserPrincipal)
+            .filterResponses()
+            .collect { response ->
             response[CurrentUserPrincipal::class.java]?.href?.let { href ->
                 val resolved = response.requestedUrl.resolve(href) ?: return@let
                 log.info("Found current-user-principal: $resolved")
