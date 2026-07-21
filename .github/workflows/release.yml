@@ -38,7 +38,7 @@ jobs:
     permissions:
       contents: write
       discussions: write
-    needs: update-main
+    needs: update-weblate-contributors
     if: always() # Runs build after updating Weblate contributors, but if the update failed, it doesn't block the build
     runs-on: ubuntu-latest
     steps:
