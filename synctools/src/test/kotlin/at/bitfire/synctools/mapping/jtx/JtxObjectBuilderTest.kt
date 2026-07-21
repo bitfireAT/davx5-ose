@@ -306,7 +306,6 @@ class JtxObjectBuilderTest {
 
         assertNotNull(result.main)
         assertFalse(result.exceptions.isEmpty())
-        println(result.main)
         assertEquals("VJOURNAL", result.main.entity.entityValues.get(JtxContract.JtxICalObject.COMPONENT))
         assertEquals("VJOURNAL", result.exceptions.single().entity.entityValues.get(JtxContract.JtxICalObject.COMPONENT))
     }
