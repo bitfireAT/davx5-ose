@@ -33,7 +33,7 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "[skip ci] Update Weblate contributors"
-          file_pattern: "weblate-translators.json"
+          file_pattern: "core/src/main/assets/weblate-translators.json"
           branch: main
   build:
     name: Create release
