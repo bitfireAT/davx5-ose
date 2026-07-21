@@ -1,0 +1,33 @@
+name: Update Weblate contributors
+on:
+  pull_request_target:
+    types: [closed]
+    branches:
+      - main
+
+concurrency:
+  group: update-weblate-contributors
+  cancel-in-progress: false
+
+jobs:
+  update-weblate-contributors:
+    name: Update Weblate Contributors
+    # Only run for merged translation PRs opened by Hosted Weblate
+    if: github.event.pull_request.merged == true && github.event.pull_request.user.login == 'weblate'
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: main
+      - name: Fetch Weblate Translators
+        run: ./scripts/fetch-weblate-translators.sh
+        env:
+          WEBLATE_API_TOKEN: ${{ secrets.WEBLATE_API_TOKEN }}
+      - name: Commit weblate-translators.json
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "[skip ci] Update Weblate contributors"
+          file_pattern: "core/src/main/assets/weblate-translators.json"
+          branch: main
