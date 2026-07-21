@@ -14,6 +14,7 @@ import at.bitfire.davdroid.sync.account.TestAccount
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -58,7 +59,7 @@ class SyncWorkerManagerTest {
     // one-time sync workers
 
     @Test
-    fun testEnqueueOneTime() {
+    fun testEnqueueOneTime() = runTest {
         val workerName = OneTimeSyncWorker.workerName(account, SyncDataType.EVENTS)
         assertFalse(TestUtils.workScheduledOrRunningOrSuccessful(context, workerName))
 

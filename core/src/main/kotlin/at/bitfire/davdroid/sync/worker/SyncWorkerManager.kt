@@ -22,6 +22,7 @@ import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.WorkQuery
 import androidx.work.WorkRequest
+import androidx.work.await
 import at.bitfire.davdroid.push.PushNotificationManager
 import at.bitfire.davdroid.sync.ResyncType
 import at.bitfire.davdroid.sync.SyncDataType
@@ -39,6 +40,9 @@ import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.guava.await
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import java.util.concurrent.TimeUnit
 import java.util.logging.Logger
 import javax.inject.Inject
@@ -54,6 +58,14 @@ class SyncWorkerManager @Inject constructor(
     val pushNotificationManager: Lazy<PushNotificationManager>,
     val tasksAppManager: Lazy<TasksAppManager>
 ) {
+
+    private companion object {
+        /**
+         * Makes sure job appending works correctly, and that there are no multiple places trying to enqueue jobs at
+         * the same time.
+         */
+        val enqueueMutex = Mutex()
+    }
 
     // one-time sync workers
 
@@ -129,7 +141,7 @@ class SyncWorkerManager @Inject constructor(
      *
      * @return existing or newly created worker name
      */
-    fun enqueueOneTime(
+    suspend fun enqueueOneTime(
         account: Account,
         dataType: SyncDataType,
         manual: Boolean = false,
@@ -157,15 +169,15 @@ class SyncWorkerManager @Inject constructor(
         appended work, stop adding more work. */
 
         val workManager = WorkManager.getInstance(context)
-        synchronized(SyncWorkerManager::class.java) {
-            val currentWork = workManager.getWorkInfosForUniqueWork(name).get()
+        enqueueMutex.withLock {
+            val currentWork = workManager.getWorkInfosForUniqueWork(name).await()
             val alreadyAppended = currentWork.any {
                 it.state in setOf(WorkInfo.State.BLOCKED, WorkInfo.State.ENQUEUED)
             }
             if (!alreadyAppended) {
                 val op = workManager.enqueueUniqueWork(name, ExistingWorkPolicy.APPEND_OR_REPLACE, request)
                 // for synchronization: wait until work is actually enqueued
-                op.result
+                op.await()
             } else
                 logger.fine("Another one-time sync already waiting, not adding more of $name")
         }
@@ -179,7 +191,7 @@ class SyncWorkerManager @Inject constructor(
      *
      * Arguments: see [enqueueOneTime]
      */
-    fun enqueueOneTimeAllAuthorities(
+    suspend fun enqueueOneTimeAllAuthorities(
         account: Account,
         manual: Boolean = false,
         resync: ResyncType? = null,

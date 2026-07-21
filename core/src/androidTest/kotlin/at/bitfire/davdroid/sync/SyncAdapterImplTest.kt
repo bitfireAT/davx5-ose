@@ -95,7 +95,7 @@ class SyncAdapterImplTest {
 
         mockkObject(workManager) {
             // don't actually create a worker
-            every { syncWorkerManager.enqueueOneTime(any(), any()) } returns "TheSyncWorker"
+            coEvery { syncWorkerManager.enqueueOneTime(any(), any()) } returns "TheSyncWorker"
 
             // assume worker takes a long time
             every { workManager.getWorkInfosForUniqueWorkFlow("TheSyncWorker") } just Awaits
@@ -119,7 +119,7 @@ class SyncAdapterImplTest {
 
         mockkObject(workManager) {
             // don't actually create a worker
-            every { syncWorkerManager.enqueueOneTime(any(), any()) } returns "TheSyncWorker"
+            coEvery { syncWorkerManager.enqueueOneTime(any(), any()) } returns "TheSyncWorker"
 
             // assume worker takes a long time
             every { workManager.getWorkInfosForUniqueWorkFlow("TheSyncWorker") } just Awaits
@@ -140,7 +140,7 @@ class SyncAdapterImplTest {
 
         mockkObject(workManager) {
             // don't actually create a worker
-            every { syncWorkerManager.enqueueOneTime(any(), any()) } returns "TheSyncWorker"
+            coEvery { syncWorkerManager.enqueueOneTime(any(), any()) } returns "TheSyncWorker"
 
             // assume worker immediately returns with success
             val success = mockk<WorkInfo>()

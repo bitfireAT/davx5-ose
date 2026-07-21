@@ -19,6 +19,7 @@ import android.provider.ContactsContract
 import androidx.core.content.getSystemService
 import androidx.core.content.pm.ShortcutManagerCompat
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.WorkQuery
@@ -54,6 +55,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import java.text.Collator
 import java.util.logging.Logger
 
@@ -281,8 +283,10 @@ class AccountsViewModel @AssistedInject constructor(
         ShortcutManagerCompat.reportShortcutUsed(context, UiUtils.SHORTCUT_SYNC_ALL)
 
         // Enqueue sync worker for all accounts and authorities. Will sync once internet is available
-        for (account in accountRepository.getAll())
-            syncWorkerManager.enqueueOneTimeAllAuthorities(account, manual = true)
+        viewModelScope.launch {
+            for (account in accountRepository.getAll())
+                syncWorkerManager.enqueueOneTimeAllAuthorities(account, manual = true)
+        }
     }
 
 
