@@ -597,6 +597,9 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
      * Processes a single `<response>` element from a remote listing: downloads new or
      * changed resources, and marks unchanged ones as remotely present. Ignores collections.
      *
+     * Runs its (blocking) content provider access on [ioDispatcher], independent of the
+     * dispatcher of the calling coroutine.
+     *
      * @param response          the `<response>` element to process
      * @param batchDownloader   downloader to enqueue new/changed resources with
      */
@@ -610,33 +613,37 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
         if (response.isSuccess()) {
             logger.fine("Found remote resource: $name")
 
-            val local = localCollection.findByName(name)
-            SyncException.wrapWithLocalResource(local) {
-                if (local == null) {
-                    logger.info("$name has been added remotely, queueing download")
-                    batchDownloader.enqueue(response.href)
-                } else {
-                    val localETag = local.eTag
-                    val remoteETag = response[GetETag::class.java]?.eTag
-                        ?: throw DavException("Server didn't provide ETag")
-                    if (localETag == remoteETag) {
-                        logger.info("$name has not been changed on server (ETag still $remoteETag)")
-                    } else {
-                        logger.info("$name has been changed on server (current ETag=$remoteETag, last known ETag=$localETag)")
+            withContext(ioDispatcher) {
+                val local = localCollection.findByName(name)
+                SyncException.wrapWithLocalResource(local) {
+                    if (local == null) {
+                        logger.info("$name has been added remotely, queueing download")
                         batchDownloader.enqueue(response.href)
-                    }
+                    } else {
+                        val localETag = local.eTag
+                        val remoteETag = response[GetETag::class.java]?.eTag
+                            ?: throw DavException("Server didn't provide ETag")
+                        if (localETag == remoteETag) {
+                            logger.info("$name has not been changed on server (ETag still $remoteETag)")
+                        } else {
+                            logger.info("$name has been changed on server (current ETag=$remoteETag, last known ETag=$localETag)")
+                            batchDownloader.enqueue(response.href)
+                        }
 
-                    // mark as remotely present, so that this resource won't be deleted at the end
-                    local.updateFlags(LocalResource.FLAG_REMOTELY_PRESENT)
+                        // mark as remotely present, so that this resource won't be deleted at the end
+                        local.updateFlags(LocalResource.FLAG_REMOTELY_PRESENT)
+                    }
                 }
             }
 
         } else if (response.status == HttpStatusCode.NotFound) {
             // collection sync: resource has been deleted on remote server
-            localCollection.findByName(name)?.let { local ->
-                SyncException.wrapWithLocalResource(local) {
-                    logger.info("$name has been deleted on server, deleting locally")
-                    local.deleteLocal()
+            withContext(ioDispatcher) {
+                localCollection.findByName(name)?.let { local ->
+                    SyncException.wrapWithLocalResource(local) {
+                        logger.info("$name has been deleted on server, deleting locally")
+                        local.deleteLocal()
+                    }
                 }
             }
         }
@@ -661,15 +668,13 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
             }
 
             val extraProperties = mutableListOf<Property>()
-            coroutineScope {    // structured concurrency
-                remoteList.collect { item ->
-                    when (item) {
-                        is MultiStatusItem.Response ->
-                            if (item.relation == Response.HrefRelation.MEMBER)
-                                launch { processMemberResponse(item.response, batchDownloader) }
-                        is MultiStatusItem.ExtraProperty ->
-                            extraProperties += item.property
-                    }
+            remoteList.collect { item ->
+                when (item) {
+                    is MultiStatusItem.Response ->
+                        if (item.relation == Response.HrefRelation.MEMBER)
+                            processMemberResponse(item.response, batchDownloader)
+                    is MultiStatusItem.ExtraProperty ->
+                        extraProperties += item.property
                 }
             }
 
@@ -702,23 +707,21 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
 
             var furtherResults = false
             val extraProperties = mutableListOf<Property>()
-            coroutineScope {    // structured concurrency
-                remoteList.collect { item ->
-                    when (item) {
-                        is MultiStatusItem.Response ->
-                            when (item.relation) {
-                                Response.HrefRelation.SELF ->
-                                    furtherResults = item.response.status == HttpStatusCode.InsufficientStorage
+            remoteList.collect { item ->
+                when (item) {
+                    is MultiStatusItem.Response ->
+                        when (item.relation) {
+                            Response.HrefRelation.SELF ->
+                                furtherResults = item.response.status == HttpStatusCode.InsufficientStorage
 
-                                Response.HrefRelation.MEMBER ->
-                                    launch { processMemberResponse(item.response, batchDownloader) }
+                            Response.HrefRelation.MEMBER ->
+                                processMemberResponse(item.response, batchDownloader)
 
-                                else ->
-                                    logger.fine("Unexpected sync-collection response: ${item.response}")
-                            }
-                        is MultiStatusItem.ExtraProperty ->
-                            extraProperties += item.property
-                    }
+                            else ->
+                                logger.fine("Unexpected sync-collection response: ${item.response}")
+                        }
+                    is MultiStatusItem.ExtraProperty ->
+                        extraProperties += item.property
                 }
             }
 
