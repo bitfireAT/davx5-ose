@@ -120,22 +120,18 @@ class CalendarSyncManager @AssistedInject constructor(
                 WebDAV.SupportedReportSet,
                 CalDAV.GetCTag,
                 WebDAV.SyncToken
-            ).selfResponse()
+            ).selfResponse() ?: return@wrapWithRemoteResource null
 
-            var syncState: SyncState? = null
-            if (response != null) {
-                response[MaxResourceSize::class.java]?.maxSize?.let { maxSize ->
-                    logger.info("Calendar accepts events up to ${Formatter.formatFileSize(context, maxSize)}")
-                }
+            response[MaxResourceSize::class.java]?.maxSize?.let { maxSize ->
+                logger.info("Calendar accepts events up to ${Formatter.formatFileSize(context, maxSize)}")
+            }
 
-                response[SupportedReportSet::class.java]?.let { supported ->
-                    hasCollectionSync = supported.reports.contains(WebDAV.SyncCollection)
-                }
-                syncState = syncState(response)
+            response[SupportedReportSet::class.java]?.let { supported ->
+                hasCollectionSync = supported.reports.contains(WebDAV.SyncCollection)
             }
 
             logger.info("Calendar supports Collection Sync: $hasCollectionSync")
-            syncState
+            syncState(response)
         }
 
     override fun syncAlgorithm() =

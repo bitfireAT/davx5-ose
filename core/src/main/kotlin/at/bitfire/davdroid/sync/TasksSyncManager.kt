@@ -24,7 +24,6 @@ import at.bitfire.davdroid.di.qualifier.SyncTransferSemaphore
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.resource.LocalTask
 import at.bitfire.davdroid.resource.LocalTaskList
-import at.bitfire.davdroid.resource.SyncState
 import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.davdroid.util.DavUtils.lastSegment
 import at.bitfire.synctools.exception.InvalidResourceException
@@ -102,17 +101,13 @@ class TasksSyncManager @AssistedInject constructor(
         SyncException.wrapWithRemoteResource(collection.url) {
             val response =
                 davCollection.propfind(0, CalDAV.MaxResourceSize, CalDAV.GetCTag, WebDAV.SyncToken).selfResponse()
+                    ?: return@wrapWithRemoteResource null
 
-            var syncState: SyncState? = null
-            if (response != null) {
-                response[MaxResourceSize::class.java]?.maxSize?.let { maxSize ->
-                    logger.info("Calendar accepts tasks up to ${Formatter.formatFileSize(context, maxSize)}")
-                }
-
-                syncState = syncState(response)
+            response[MaxResourceSize::class.java]?.maxSize?.let { maxSize ->
+                logger.info("Calendar accepts tasks up to ${Formatter.formatFileSize(context, maxSize)}")
             }
 
-            syncState
+            syncState(response)
         }
 
     override fun syncAlgorithm() = SyncAlgorithm.PROPFIND_REPORT

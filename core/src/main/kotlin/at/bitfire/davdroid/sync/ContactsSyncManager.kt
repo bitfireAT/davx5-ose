@@ -176,27 +176,23 @@ class ContactsSyncManager @AssistedInject constructor(
                 WebDAV.SupportedReportSet,
                 CalDAV.GetCTag,
                 WebDAV.SyncToken
-            ).selfResponse()
+            ).selfResponse() ?: return@wrapWithRemoteResource null
 
-            var syncState: SyncState? = null
-            if (response != null) {
-                response[MaxResourceSize::class.java]?.maxSize?.let { maxSize ->
-                    logger.info("Address book accepts vCards up to ${Formatter.formatFileSize(context, maxSize)}")
-                }
+            response[MaxResourceSize::class.java]?.maxSize?.let { maxSize ->
+                logger.info("Address book accepts vCards up to ${Formatter.formatFileSize(context, maxSize)}")
+            }
 
-                response[SupportedAddressData::class.java]?.let { supported ->
-                    hasVCard4 = supported.hasVCard4()
-                }
-                response[SupportedReportSet::class.java]?.let { supported ->
-                    hasCollectionSync = supported.reports.contains(WebDAV.SyncCollection)
-                }
-                syncState = syncState(response)
+            response[SupportedAddressData::class.java]?.let { supported ->
+                hasVCard4 = supported.hasVCard4()
+            }
+            response[SupportedReportSet::class.java]?.let { supported ->
+                hasCollectionSync = supported.reports.contains(WebDAV.SyncCollection)
             }
 
             logger.info("Address book supports vCard4: $hasVCard4")
             logger.info("Address book supports Collection Sync: $hasCollectionSync")
 
-            syncState
+            syncState(response)
         }
     }
 

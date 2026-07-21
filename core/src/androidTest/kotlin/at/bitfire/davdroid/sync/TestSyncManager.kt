@@ -25,7 +25,8 @@ import io.ktor.http.Url
 import io.ktor.http.content.ByteArrayContent
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.sync.Semaphore
 import org.junit.Assert.assertEquals
 
@@ -93,12 +94,11 @@ class TestSyncManager @AssistedInject constructor(
 
     var listAllRemoteResult = emptyList<Pair<Response, Response.HrefRelation>>()
     var didListAllRemote = false
-    override fun listAllRemote(): Flow<MultiStatusItem> = flow {
+    override fun listAllRemote(): Flow<MultiStatusItem> {
         if (didListAllRemote)
             throw IllegalStateException("listAllRemote() must not be called twice")
         didListAllRemote = true
-        for (result in listAllRemoteResult)
-            emit(MultiStatusItem.Response(result.first, result.second))
+        return listAllRemoteResult.asFlow().map { MultiStatusItem.Response(it.first, it.second) }
     }
 
     var assertDownloadRemote = emptyMap<Url, String>()

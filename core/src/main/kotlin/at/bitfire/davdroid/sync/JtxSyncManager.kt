@@ -26,7 +26,6 @@ import at.bitfire.davdroid.di.qualifier.SyncTransferSemaphore
 import at.bitfire.davdroid.resource.LocalJtxCollection
 import at.bitfire.davdroid.resource.LocalJtxObject
 import at.bitfire.davdroid.resource.LocalResource
-import at.bitfire.davdroid.resource.SyncState
 import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.davdroid.util.DavUtils.lastSegment
 import at.bitfire.synctools.exception.InvalidResourceException
@@ -100,16 +99,13 @@ class JtxSyncManager @AssistedInject constructor(
         SyncException.wrapWithRemoteResource(collection.url) {
             val response =
                 davCollection.propfind(0, CalDAV.GetCTag, CalDAV.MaxResourceSize, WebDAV.SyncToken).selfResponse()
+                    ?: return@wrapWithRemoteResource null
 
-            var syncState: SyncState? = null
-            if (response != null) {
-                response[MaxResourceSize::class.java]?.maxSize?.let { maxSize ->
-                    logger.info("Collection accepts resources up to ${Formatter.formatFileSize(context, maxSize)}")
-                }
-
-                syncState = syncState(response)
+            response[MaxResourceSize::class.java]?.maxSize?.let { maxSize ->
+                logger.info("Collection accepts resources up to ${Formatter.formatFileSize(context, maxSize)}")
             }
-            syncState
+
+            syncState(response)
         }
 
     override fun generateUpload(resource: LocalJtxObject): GeneratedResource {
