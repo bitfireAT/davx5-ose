@@ -531,6 +531,15 @@
     <string name="debug_info_privacy_warning_title">Privacy notice</string>
     <string name="debug_info_privacy_warning_description">Logs and debug info may contain private information. Please be aware of this when sharing publicly.</string>
     <string name="debug_info_can_not_view_resource">Unable to view resource</string>
+    <string name="debug_info_find_help">Find help online</string>
+    <string name="debug_info_find_help_faq">Find answers to &lt;b>common questions&lt;/b>.</string>
+    <string name="debug_info_find_help_faq_action">Show FAQ on website</string>
+    <string name="debug_info_find_help_discussions">&lt;b>Ask for help&lt;/b> on GitHub</string>
+    <string name="debug_info_find_help_discussions_action">Open Discussions</string>
+    <string name="debug_info_find_help_issues">Look up &lt;b>open issues&lt;/b> on GitHub.</string>
+    <string name="debug_info_find_help_issues_action">Show current Issues</string>
+    <string name="debug_info_find_help_manual">Find &lt;b>technical information&lt;/b></string>
+    <string name="debug_info_find_help_manual_action">Open Manual</string>
 
     <!-- ExceptionInfoFragment -->
     <string name="exception">An error has occurred.</string>
