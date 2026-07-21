@@ -186,8 +186,10 @@ class AccountRepository @Inject constructor(
 
     suspend fun getAll(): Array<Account> = withContext(ioDispatcher) {
         // getAccountsByType is main-safe, but could still take some time (binder involved)
-        accountManager.getAccountsByType(accountType)
+        getAllBlocking()
     }
+
+    fun getAllBlocking() = accountManager.getAccountsByType(accountType)
 
     fun getAllFlow() = callbackFlow<Set<Account>> {
         val listener = OnAccountsUpdateListener { accounts ->
