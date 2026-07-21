@@ -24,6 +24,7 @@ import at.bitfire.dav4jvm.ktor.exception.NotFoundException
 import at.bitfire.dav4jvm.ktor.exception.PreconditionFailedException
 import at.bitfire.dav4jvm.ktor.exception.ServiceUnavailableException
 import at.bitfire.dav4jvm.ktor.exception.UnauthorizedException
+import at.bitfire.dav4jvm.ktor.responsesWithRelation
 import at.bitfire.dav4jvm.ktor.selfResponse
 import at.bitfire.dav4jvm.property.caldav.CalDAV
 import at.bitfire.dav4jvm.property.caldav.GetCTag
@@ -601,70 +602,69 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
      */
     protected open suspend fun syncRemote(listRemote: () -> Flow<MultiStatusItem>) =
         coroutineScope {    // structured concurrency
-        val batchDownloader = BatchDownloader { batch ->
-            launch {
-                syncTransferSemaphore.withPermit {
-                    downloadRemote(batch)
+            val batchDownloader = BatchDownloader { batch ->
+                launch {
+                    syncTransferSemaphore.withPermit {
+                        downloadRemote(batch)
+                    }
                 }
             }
-        }
 
-        coroutineScope {    // structured concurrency
-            listRemote().collect { item ->
-                // ignore non-members
-                if (item !is MultiStatusItem.Response || item.relation != Response.HrefRelation.MEMBER)
-                    return@collect
-                val response = item.response
+            coroutineScope {    // structured concurrency
+                listRemote().responsesWithRelation().collect { (response, relation) ->
+                    // ignore non-members
+                    if (relation != Response.HrefRelation.MEMBER)
+                        return@collect
 
-                // ignore collections
-                if (response[ResourceType::class.java]?.types?.contains(WebDAV.Collection) == true)
-                    return@collect
+                    // ignore collections
+                    if (response[ResourceType::class.java]?.types?.contains(WebDAV.Collection) == true)
+                        return@collect
 
-                val name = response.hrefName()
+                    val name = response.hrefName()
 
-                if (response.isSuccess()) {
-                    logger.fine("Found remote resource: $name")
+                    if (response.isSuccess()) {
+                        logger.fine("Found remote resource: $name")
 
-                    launch {
-                        val local = localCollection.findByName(name)
-                        SyncException.wrapWithLocalResource(local) {
-                            if (local == null) {
-                                logger.info("$name has been added remotely, queueing download")
-                                batchDownloader.enqueue(response.href)
-                            } else {
-                                val localETag = local.eTag
-                                val remoteETag = response[GetETag::class.java]?.eTag
-                                    ?: throw DavException("Server didn't provide ETag")
-                                if (localETag == remoteETag) {
-                                    logger.info("$name has not been changed on server (ETag still $remoteETag)")
-                                } else {
-                                    logger.info("$name has been changed on server (current ETag=$remoteETag, last known ETag=$localETag)")
-                                    batchDownloader.enqueue(response.href)
-                                }
-
-                                // mark as remotely present, so that this resource won't be deleted at the end
-                                local.updateFlags(LocalResource.FLAG_REMOTELY_PRESENT)
-                            }
-                        }
-                    }
-
-                } else if (response.status == HttpStatusCode.NotFound) {
-                    // collection sync: resource has been deleted on remote server
-                    launch {
-                        localCollection.findByName(name)?.let { local ->
+                        launch {
+                            val local = localCollection.findByName(name)
                             SyncException.wrapWithLocalResource(local) {
-                                logger.info("$name has been deleted on server, deleting locally")
-                                local.deleteLocal()
+                                if (local == null) {
+                                    logger.info("$name has been added remotely, queueing download")
+                                    batchDownloader.enqueue(response.href)
+                                } else {
+                                    val localETag = local.eTag
+                                    val remoteETag = response[GetETag::class.java]?.eTag
+                                        ?: throw DavException("Server didn't provide ETag")
+                                    if (localETag == remoteETag) {
+                                        logger.info("$name has not been changed on server (ETag still $remoteETag)")
+                                    } else {
+                                        logger.info("$name has been changed on server (current ETag=$remoteETag, last known ETag=$localETag)")
+                                        batchDownloader.enqueue(response.href)
+                                    }
+
+                                    // mark as remotely present, so that this resource won't be deleted at the end
+                                    local.updateFlags(LocalResource.FLAG_REMOTELY_PRESENT)
+                                }
+                            }
+                        }
+
+                    } else if (response.status == HttpStatusCode.NotFound) {
+                        // collection sync: resource has been deleted on remote server
+                        launch {
+                            localCollection.findByName(name)?.let { local ->
+                                SyncException.wrapWithLocalResource(local) {
+                                    logger.info("$name has been deleted on server, deleting locally")
+                                    local.deleteLocal()
+                                }
                             }
                         }
                     }
                 }
             }
-        }
 
-        // download remaining resources
-        batchDownloader.flush()
-    }
+            // download remaining resources
+            batchDownloader.flush()
+        }
 
     protected abstract fun listAllRemote(): Flow<MultiStatusItem>
 
@@ -829,13 +829,13 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
             content,
             additionalHeaders = headers {
                 if (ifETag != null)
-                    // only overwrite specific version
+                // only overwrite specific version
                     append(HttpHeaders.IfMatch, QuotedStringUtils.asQuotedString(ifETag))
                 if (ifScheduleTag != null)
-                    // only overwrite specific version
+                // only overwrite specific version
                     append(HttpHeaders.IfScheduleTagMatch, QuotedStringUtils.asQuotedString(ifScheduleTag))
                 if (ifNoneMatch)
-                    // don't overwrite anything existing
+                // don't overwrite anything existing
                     append(HttpHeaders.IfNoneMatch, "*")
 
                 // Append all custom headers
