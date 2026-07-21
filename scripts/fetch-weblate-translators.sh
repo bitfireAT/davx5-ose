@@ -101,4 +101,4 @@ if ! echo "$HTTP_BODY" | jq -e 'type == "array"' > /dev/null; then
   exit 1
 fi
 
-echo "$HTTP_BODY" > "$SCRIPT_DIR/../core/src/main/assets/weblate-translators.json"
+printf '%s\n' "$HTTP_BODY" > "$SCRIPT_DIR/../core/src/main/assets/weblate-translators.json"
