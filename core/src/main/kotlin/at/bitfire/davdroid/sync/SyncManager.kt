@@ -57,6 +57,7 @@ import io.ktor.util.appendAll
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
@@ -596,15 +597,10 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
      * Calls a function to list remote resources. All resources from the returned
      * flow are downloaded and processed.
      *
-     * @param onOtherItem   called for every [MultiStatusItem] that is not a [MultiStatusItem.Response]
-     *                      with relation [Response.HrefRelation.MEMBER] (for instance, `SELF` responses
-     *                      or extra properties like `sync-token`)
-     * @param listRemote    function to list remote resources (for instance, all since a certain sync-token)
+     * @param listRemote function to list remote resources (for instance, all since a certain sync-token)
      */
-    protected open suspend fun syncRemote(
-        onOtherItem: (MultiStatusItem) -> Unit = {},
-        listRemote: () -> Flow<MultiStatusItem>
-    ) = coroutineScope {    // structured concurrency
+    protected open suspend fun syncRemote(listRemote: () -> Flow<MultiStatusItem>) =
+        coroutineScope {    // structured concurrency
         val batchDownloader = BatchDownloader { batch ->
             launch {
                 syncTransferSemaphore.withPermit {
@@ -615,11 +611,9 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
 
         coroutineScope {    // structured concurrency
             listRemote().collect { item ->
-                // only interested in members; pass everything else to onOtherItem
-                if (item !is MultiStatusItem.Response || item.relation != Response.HrefRelation.MEMBER) {
-                    onOtherItem(item)
+                // ignore non-members
+                if (item !is MultiStatusItem.Response || item.relation != Response.HrefRelation.MEMBER)
                     return@collect
-                }
                 val response = item.response
 
                 // ignore collections
@@ -678,13 +672,18 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
         var furtherResults = false
         var syncToken: SyncToken? = null
 
-        syncRemote(
-            onOtherItem = { item ->
+        syncRemote {
+            davCollection.reportChanges(
+                syncState?.takeIf { syncState.type == SyncState.Type.SYNC_TOKEN }?.value,
+                false, null,
+                WebDAV.GetETag
+            ).onEach { item ->
                 when (item) {
                     is MultiStatusItem.Response ->
                         when (item.relation) {
                             Response.HrefRelation.SELF ->
                                 furtherResults = item.response.status == HttpStatusCode.InsufficientStorage
+                            Response.HrefRelation.MEMBER -> {}   // handled by syncRemote itself
                             else ->
                                 logger.fine("Unexpected sync-collection response: ${item.response}")
                         }
@@ -692,12 +691,6 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
                         (item.property as? SyncToken)?.let { syncToken = it }
                 }
             }
-        ) {
-            davCollection.reportChanges(
-                syncState?.takeIf { syncState.type == SyncState.Type.SYNC_TOKEN }?.value,
-                false, null,
-                WebDAV.GetETag
-            )
         }
 
         val token = syncToken ?: throw DavException("Received sync-collection response without sync-token")
