@@ -10,7 +10,6 @@ import android.os.DeadObjectException
 import android.os.RemoteException
 import androidx.annotation.VisibleForTesting
 import at.bitfire.dav4jvm.Error
-import at.bitfire.dav4jvm.Property
 import at.bitfire.dav4jvm.QuotedStringUtils
 import at.bitfire.dav4jvm.ktor.DavCollection
 import at.bitfire.dav4jvm.ktor.DavResource
@@ -653,10 +652,8 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
      * are downloaded and processed.
      *
      * @param remoteList remote listing to process
-     *
-     * @return properties found outside `<response>` elements (for instance `sync-token`)
      */
-    protected open suspend fun processRemoteList(remoteList: Flow<MultiStatusItem>): List<Property> =
+    protected open suspend fun processRemoteList(remoteList: Flow<MultiStatusItem>) {
         coroutineScope {    // structured concurrency
             val batchDownloader = BatchDownloader { batch ->
                 launch {
@@ -666,25 +663,18 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
                 }
             }
 
-            val extraProperties = mutableListOf<Property>()
             coroutineScope {    // structured concurrency
                 val scope = this
                 remoteList.collect { item ->
-                    when (item) {
-                        is MultiStatusItem.Response ->
-                            if (item.relation == Response.HrefRelation.MEMBER)
-                                processMemberResponse(scope, item.response, batchDownloader)
-                        is MultiStatusItem.ExtraProperty ->
-                            extraProperties += item.property
-                    }
+                    if (item is MultiStatusItem.Response && item.relation == Response.HrefRelation.MEMBER)
+                        processMemberResponse(scope, item.response, batchDownloader)
                 }
             }
 
             // download remaining resources
             batchDownloader.flush()
-
-            extraProperties
         }
+    }
 
     protected abstract fun listAllRemote(): Flow<MultiStatusItem>
 
@@ -698,7 +688,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
      * @return sync-token of the processed changes, and whether the server indicated further results
      */
     protected open suspend fun processRemoteChanges(remoteList: Flow<MultiStatusItem>): Pair<SyncToken, Boolean> =
-        coroutineScope {    // structured concurrency
+        coroutineScope {        // structured concurrency – wait for all batch downloads (including flush)
             val batchDownloader = BatchDownloader { batch ->
                 launch {
                     syncTransferSemaphore.withPermit {
@@ -707,9 +697,9 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
                 }
             }
 
+            var syncToken: SyncToken? = null
             var furtherResults = false
-            val extraProperties = mutableListOf<Property>()
-            coroutineScope {    // structured concurrency
+            coroutineScope {    // structured concurrency – wait for all per-response processing
                 val scope = this
                 remoteList.collect { item ->
                     when (item) {
@@ -725,7 +715,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
                                     logger.fine("Unexpected sync-collection response: ${item.response}")
                             }
                         is MultiStatusItem.ExtraProperty ->
-                            extraProperties += item.property
+                            (item.property as? SyncToken)?.let { syncToken = it }
                     }
                 }
             }
@@ -733,10 +723,10 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
             // download remaining resources
             batchDownloader.flush()
 
-            val syncToken = extraProperties.filterIsInstance<SyncToken>().firstOrNull()
-                ?: throw DavException("Received sync-collection response without sync-token")
-
-            Pair(syncToken, furtherResults)
+            Pair(
+                syncToken ?: throw DavException("Received sync-collection response without sync-token"),
+                furtherResults
+            )
         }
 
     protected open fun listRemoteChanges(syncState: SyncState?): Flow<MultiStatusItem> =
