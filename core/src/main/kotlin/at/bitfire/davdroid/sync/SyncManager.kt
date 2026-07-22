@@ -507,13 +507,13 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
      */
     protected fun propfindReportAlgorithm(): SyncAlgorithm = PropfindReportAlgorithm(
         PropfindReportAlgorithm.Context(
-            localCollection = localCollection,
             resetPresentRemotely = ::resetPresentRemotely,
             querySyncState = ::querySyncState,
             syncRemote = ::syncRemote,
             listAllRemote = ::listAllRemote,
             deleteNotPresentRemotely = ::deleteNotPresentRemotely,
-            postProcess = ::postProcess
+            postProcess = ::postProcess,
+            setLastSyncState = { localCollection.lastSyncState = it }
         )
     )
 
@@ -522,7 +522,8 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
      */
     protected fun collectionSyncAlgorithm(): SyncAlgorithm = CollectionSyncAlgorithm(
         CollectionSyncAlgorithm.Context(
-            localCollection = localCollection,
+            getLastSyncState = { localCollection.lastSyncState },
+            setLastSyncState = { localCollection.lastSyncState = it },
             resetPresentRemotely = ::resetPresentRemotely,
             syncRemote = ::syncRemote,
             listRemoteChanges = ::listRemoteChanges,

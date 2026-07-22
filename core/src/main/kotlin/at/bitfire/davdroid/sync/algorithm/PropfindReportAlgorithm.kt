@@ -5,7 +5,6 @@
 package at.bitfire.davdroid.sync.algorithm
 
 import at.bitfire.dav4jvm.ktor.MultiStatusItem
-import at.bitfire.davdroid.resource.LocalCollection
 import at.bitfire.davdroid.resource.SyncState
 import at.bitfire.davdroid.sync.MultiResponseCallback
 import kotlinx.coroutines.flow.Flow
@@ -21,13 +20,13 @@ class PropfindReportAlgorithm(
 
     /** Operations this algorithm needs from the owning [at.bitfire.davdroid.sync.SyncManager]. */
     class Context(
-        val localCollection: LocalCollection<*>,
         val resetPresentRemotely: () -> Unit,
         val querySyncState: suspend () -> SyncState?,
         val syncRemote: suspend (suspend (MultiResponseCallback) -> Unit) -> Unit,
         val listAllRemote: () -> Flow<MultiStatusItem>,
         val deleteNotPresentRemotely: suspend () -> Unit,
         val postProcess: suspend () -> Unit,
+        val setLastSyncState: (SyncState?) -> Unit
     )
 
     private val logger
@@ -55,7 +54,7 @@ class PropfindReportAlgorithm(
         context.postProcess()
 
         logger.info("Saving sync state: $syncState")
-        context.localCollection.lastSyncState = syncState
+        context.setLastSyncState(syncState)
     }
 
 }

@@ -8,7 +8,6 @@ import at.bitfire.dav4jvm.Error
 import at.bitfire.dav4jvm.ktor.exception.HttpException
 import at.bitfire.dav4jvm.property.webdav.SyncToken
 import at.bitfire.dav4jvm.property.webdav.WebDAV
-import at.bitfire.davdroid.resource.LocalCollection
 import at.bitfire.davdroid.resource.SyncState
 import at.bitfire.davdroid.sync.MultiResponseCallback
 import java.util.logging.Logger
@@ -23,19 +22,20 @@ class CollectionSyncAlgorithm(
 
     /** Operations this algorithm needs from the owning [at.bitfire.davdroid.sync.SyncManager]. */
     class Context(
-        val localCollection: LocalCollection<*>,
+        val getLastSyncState: () -> SyncState?,
+        val setLastSyncState: (SyncState?) -> Unit,
         val resetPresentRemotely: () -> Unit,
         val syncRemote: suspend (suspend (MultiResponseCallback) -> Unit) -> Unit,
         val listRemoteChanges: suspend (SyncState?, MultiResponseCallback) -> Pair<SyncToken, Boolean>,
         val deleteNotPresentRemotely: suspend () -> Unit,
-        val postProcess: suspend () -> Unit,
+        val postProcess: suspend () -> Unit
     )
 
     private val logger
         get() = Logger.getLogger(javaClass.name)
 
     override suspend operator fun invoke(modificationsPresent: Boolean, remoteSyncState: SyncState?) {
-        var syncState = context.localCollection.lastSyncState?.takeIf { it.type == SyncState.Type.SYNC_TOKEN }
+        var syncState = context.getLastSyncState()?.takeIf { it.type == SyncState.Type.SYNC_TOKEN }
 
         var initialSync = false
         if (syncState == null) {
@@ -70,7 +70,7 @@ class CollectionSyncAlgorithm(
             }
 
             logger.info("Saving sync state: $syncState")
-            context.localCollection.lastSyncState = syncState
+            context.setLastSyncState(syncState)
 
             logger.info("Server has further changes: $furtherChanges")
         } while (furtherChanges)
@@ -83,7 +83,7 @@ class CollectionSyncAlgorithm(
             // remove initial sync flag
             syncState!!.initialSync = false
             logger.info("Initial sync completed, saving sync state: $syncState")
-            context.localCollection.lastSyncState = syncState
+            context.setLastSyncState(syncState)
         }
 
         logger.info("Post-processing")
