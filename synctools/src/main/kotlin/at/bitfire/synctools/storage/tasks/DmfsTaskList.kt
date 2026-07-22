@@ -113,7 +113,7 @@ class DmfsTaskList(
         // insert property rows (with reference to task row ID)
         for (row in entity.subValues) {
             batch += BatchOperation.CpoBuilder
-                .newInsert(tasksPropertiesUri(asSyncAdapter = true))
+                .newInsert(tasksPropertiesUri())
                 .withValues(row.values)
                 .withValueBackReference(TaskContract.Properties.TASK_ID, taskRowIdx)
         }
@@ -219,6 +219,7 @@ class DmfsTaskList(
                         null
                     )?.use { propertiesCursor ->
                         while (propertiesCursor.moveToNext())
+                        // plain URI as sub-value key, not an actual provider operation
                             entity.addSubValue(
                                 tasksPropertiesUri(asSyncAdapter = false),
                                 propertiesCursor.toContentValues()
@@ -382,7 +383,7 @@ class DmfsTaskList(
     fun updateTask(id: Long, entity: Entity, batch: TasksBatchOperation) {
         // delete existing property rows for this task
         batch += BatchOperation.CpoBuilder
-            .newDelete(tasksPropertiesUri(asSyncAdapter = true))
+            .newDelete(tasksPropertiesUri())
             .withSelection("${TaskContract.Properties.TASK_ID}=?", arrayOf(id.toString()))
 
         // update main row
@@ -396,7 +397,7 @@ class DmfsTaskList(
         // insert new property rows (with reference to task ID)
         for (row in entity.subValues) {
             batch += BatchOperation.CpoBuilder
-                .newInsert(tasksPropertiesUri(asSyncAdapter = true))
+                .newInsert(tasksPropertiesUri())
                 .withValues(ContentValues(row.values).apply {
                     remove(TaskContract.Properties.PROPERTY_ID) // don't reuse property IDs
                     put(TaskContract.Properties.TASK_ID, id)
@@ -534,7 +535,11 @@ class DmfsTaskList(
     internal fun taskUri(id: Long, loadProperties: Boolean = false): Uri =
         ContentUris.withAppendedId(tasksUri(loadProperties), id)
 
-    internal fun tasksPropertiesUri(asSyncAdapter: Boolean = false): Uri {
+    /**
+     * Properties URI. Defaults to sync adapter so writes don't re-dirty the task (#2668);
+     * pass `false` only for the URI stored as a loaded [Entity]'s sub-value key.
+     */
+    internal fun tasksPropertiesUri(asSyncAdapter: Boolean = true): Uri {
         val uri = TaskContract.Properties.getContentUri(providerName.authority)
         return if (asSyncAdapter)
             uri.asSyncAdapter(account)

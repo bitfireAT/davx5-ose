@@ -115,6 +115,56 @@ class DmfsTaskListTest(providerName: TaskProvider.ProviderName) :
         }
     }
 
+    @Test
+    fun testTouchRelations_DoesNotReDirtyTask() {
+        // Reproduces https://github.com/bitfireAT/davx5-ose/issues/2668:
+        // touching relations must not re-dirty a task that was just synced (clean).
+        val taskList = createTaskList()
+        try {
+            // insert child before parent, so RELATED_ID gets backfilled by the provider
+            // but PARENT_ID is not yet (see touchRelations()'s doc comment)
+            val childId = taskList.addTask(
+                Entity(
+                    contentValuesOf(
+                        Tasks.LIST_ID to taskList.id,
+                        Tasks._UID to "dirty-test-child",
+                        Tasks.TITLE to "Child task",
+                        Tasks.PARENT_ID to null
+                    )
+                ).apply {
+                    addSubValue(
+                        taskList.tasksPropertiesUri(),
+                        contentValuesOf(
+                            TaskContract.Properties.MIMETYPE to Property.Relation.CONTENT_ITEM_TYPE,
+                            Property.Relation.RELATED_UID to "dirty-test-parent",
+                            Property.Relation.RELATED_TYPE to Property.Relation.RELTYPE_PARENT
+                        )
+                    )
+                }
+            )
+            taskList.addTask(
+                Entity(
+                    contentValuesOf(
+                        Tasks.LIST_ID to taskList.id,
+                        Tasks._UID to "dirty-test-parent",
+                        Tasks.TITLE to "Parent task"
+                    )
+                )
+            )
+
+            // simulate the state right after a sync applied this task: not dirty
+            taskList.updateTaskRow(childId, contentValuesOf(Tasks._DIRTY to 0))
+
+            // touching relations updates the child's relation property row to set PARENT_ID
+            taskList.touchRelations()
+
+            val dirty = taskList.getTaskRow(childId, arrayOf(Tasks._DIRTY))?.getAsInteger(Tasks._DIRTY)
+            assertEquals(0, dirty)
+        } finally {
+            taskList.delete()
+        }
+    }
+
 
     // test tasks CRUD
 
