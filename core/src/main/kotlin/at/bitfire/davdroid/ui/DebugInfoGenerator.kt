@@ -313,7 +313,7 @@ class DebugInfoGenerator @Inject constructor(
         // accounts
         writer.append("\nACCOUNTS")
         val accountManager = AccountManager.get(context)
-        val accounts = accountRepository.getAll()
+        val accounts = accountRepository.getAllBlocking()
         for (account in accounts)
             dumpAccount(account, writer)
 

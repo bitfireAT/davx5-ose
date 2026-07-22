@@ -1,0 +1,35 @@
+/*
+ * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
+ */
+
+package at.bitfire.davdroid.startup
+
+import android.content.Context
+import at.bitfire.davdroid.di.qualifier.ApplicationScope
+import at.bitfire.davdroid.di.qualifier.IoDispatcher
+import at.bitfire.davdroid.startup.StartupAction.Companion.PRIORITY_LAST
+import at.bitfire.davdroid.ui.UiUtils
+import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
+import javax.inject.Inject
+
+/**
+ * Creates/updates the app's dynamic shortcuts.
+ */
+class DynamicShortcutsAction @Inject constructor(
+    @ApplicationScope private val applicationScope: CoroutineScope,
+    @ApplicationContext private val context: Context,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher
+) : StartupAction {
+
+    override val priority = PRIORITY_LAST
+
+    override fun onAppCreate() {
+        applicationScope.launch(ioDispatcher) {
+            UiUtils.updateShortcuts(context)
+        }
+    }
+
+}

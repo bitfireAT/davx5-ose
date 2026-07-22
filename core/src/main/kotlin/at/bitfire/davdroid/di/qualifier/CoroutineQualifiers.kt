@@ -9,6 +9,9 @@ import javax.inject.Qualifier
 
 // CoroutineScope qualifiers
 
+/**
+ * A [kotlinx.coroutines.CoroutineScope] that lives for as long as the application process.
+ */
 @Retention(AnnotationRetention.RUNTIME)
 @Qualifier
 annotation class ApplicationScope

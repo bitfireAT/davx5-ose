@@ -35,7 +35,8 @@ Android library. The sync engine, database layer, and Jetpack Compose UI for DAV
 
 **ViewModel pattern** — Each Compose screen has a `@HiltViewModel` in `ui/`. Keep business logic out of Composables; Composables observe state from the ViewModel.
 
-**Startup plugins** — App-initialization hooks implement the `StartupPlugin` interface and are registered via set-based Hilt injection. Do not add init logic directly to `CoreApp`.
+**Startup actions** — App-initialization hooks implement the `StartupAction` interface and are registered via set-based
+Hilt injection. Do not add init logic directly to `CoreApp`.
 
 **Background sync** — Sync runs in WorkManager workers (`sync/worker/`). The Hilt worker factory wires DI into workers.
 
@@ -49,7 +50,7 @@ sync/         Sync managers (Calendar, Contacts, Tasks, Jtx) and workers, Androi
 network/      HTTP/WebDAV layer (Ktor + OkHttp + dav4jvm)
 webdav/       WebDAV file operations
 ui/           Compose screens, ViewModels, Activities
-startup/      StartupPlugin interface and built-in plugins
+startup/      StartupAction interface and built-in actions
 settings/     Preference management and migrations
 push/         UnifiedPush / FCM integration
 log/          Logging infrastructure
