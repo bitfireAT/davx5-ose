@@ -10,6 +10,7 @@ import at.bitfire.dav4jvm.ktor.exception.DavException
 import at.bitfire.dav4jvm.ktor.exception.HttpException
 import at.bitfire.dav4jvm.ktor.exception.UnauthorizedException
 import at.bitfire.dav4jvm.ktor.resolve
+import at.bitfire.dav4jvm.ktor.responses
 import at.bitfire.dav4jvm.ktor.withTrailingSlash
 import at.bitfire.dav4jvm.property.caldav.CalDAV
 import at.bitfire.dav4jvm.property.caldav.CalendarHomeSet
@@ -177,7 +178,8 @@ class DavResourceFinder @AssistedInject constructor(
             }
 
         // return config or null if config doesn't contain useful information
-        val serviceAvailable = config.principal != null || config.homeSets.isNotEmpty() || config.collections.isNotEmpty()
+        val serviceAvailable =
+            config.principal != null || config.homeSets.isNotEmpty() || config.collections.isNotEmpty()
         return if (serviceAvailable)
             config
         else
@@ -207,18 +209,23 @@ class DavResourceFinder @AssistedInject constructor(
                         WebDAV.CurrentUserPrincipal,
                         CardDAV.AddressbookHomeSet,
                         CardDAV.AddressbookDescription
-                    ) { response, _ ->
+                    ).responses().collect { response ->
                         scanResponse(CardDAV.Addressbook, response, config)
                     }
                 }
                 Service.CALDAV -> {
                     davBaseURL.propfind(
                         0,
-                        WebDAV.ResourceType, WebDAV.DisplayName,
-                        WebDAV.CurrentUserPrincipal, WebDAV.CurrentUserPrivilegeSet,
+                        WebDAV.ResourceType,
+                        WebDAV.DisplayName,
+                        WebDAV.CurrentUserPrincipal,
+                        WebDAV.CurrentUserPrivilegeSet,
                         CalDAV.CalendarHomeSet,
-                        CalDAV.SupportedCalendarComponentSet, CalDAV.CalendarColor, CalDAV.CalendarDescription, CalDAV.CalendarTimezone
-                    ) { response, _ ->
+                        CalDAV.SupportedCalendarComponentSet,
+                        CalDAV.CalendarColor,
+                        CalDAV.CalendarDescription,
+                        CalDAV.CalendarTimezone
+                    ).responses().collect { response ->
                         scanResponse(CalDAV.Calendar, response, config)
                     }
                 }
@@ -237,18 +244,20 @@ class DavResourceFinder @AssistedInject constructor(
     suspend fun queryEmailAddress(principal: Url): List<String> {
         val mailboxes = LinkedList<String>()
         try {
-            DavResource(httpClient, principal, log).propfind(0, CalDAV.CalendarUserAddressSet) { response, _ ->
-                response[CalendarUserAddressSet::class.java]?.let { addressSet ->
-                    for (href in addressSet.hrefs)
-                        try {
-                            val uri = URI(href)
-                            if (uri.scheme.equals("mailto", true))
-                                mailboxes.add(uri.schemeSpecificPart)
-                        } catch (e: URISyntaxException) {
-                            log.log(Level.WARNING, "Couldn't parse user address", e)
-                        }
+            DavResource(httpClient, principal, log).propfind(0, CalDAV.CalendarUserAddressSet)
+                .responses()
+                .collect { response ->
+                    response[CalendarUserAddressSet::class.java]?.let { addressSet ->
+                        for (href in addressSet.hrefs)
+                            try {
+                                val uri = URI(href)
+                                if (uri.scheme.equals("mailto", true))
+                                    mailboxes.add(uri.schemeSpecificPart)
+                            } catch (e: URISyntaxException) {
+                                log.log(Level.WARNING, "Couldn't parse user address", e)
+                            }
+                    }
                 }
-            }
         } catch (e: Exception) {
             log.log(Level.WARNING, "Couldn't query user email address", e)
             processException(e)
@@ -334,11 +343,10 @@ class DavResourceFinder @AssistedInject constructor(
     suspend fun providesService(url: Url, service: Service): Boolean {
         var provided = false
         try {
-            DavResource(httpClient, url, log).options { capabilities, _ ->
-                if ((service == Service.CARDDAV && capabilities.contains("addressbook")) ||
-                    (service == Service.CALDAV && capabilities.contains("calendar-access")))
-                    provided = true
-            }
+            val capabilities = DavResource(httpClient, url, log).options().davCapabilities
+            if ((service == Service.CARDDAV && capabilities.contains("addressbook")) ||
+                (service == Service.CALDAV && capabilities.contains("calendar-access")))
+                provided = true
         } catch (e: Exception) {
             log.log(Level.SEVERE, "Couldn't detect services on $url", e)
             if (e !is HttpException && e !is DavException)
@@ -420,18 +428,20 @@ class DavResourceFinder @AssistedInject constructor(
      */
     suspend fun getCurrentUserPrincipal(url: Url, service: Service?): Url? {
         var principal: Url? = null
-        DavResource(httpClient, url, log).propfind(0, WebDAV.CurrentUserPrincipal) { response, _ ->
-            response[CurrentUserPrincipal::class.java]?.href?.let { href ->
-                val resolved = response.requestedUrl.resolve(href) ?: return@let
-                log.info("Found current-user-principal: $resolved")
+        DavResource(httpClient, url, log).propfind(0, WebDAV.CurrentUserPrincipal)
+            .responses()
+            .collect { response ->
+                response[CurrentUserPrincipal::class.java]?.href?.let { href ->
+                    val resolved = response.requestedUrl.resolve(href) ?: return@let
+                    log.info("Found current-user-principal: $resolved")
 
-                // service check
-                if (service != null && !providesService(resolved, service))
-                    log.warning("Principal $resolved doesn't provide $service service")
-                else
-                    principal = resolved
+                    // service check
+                    if (service != null && !providesService(resolved, service))
+                        log.warning("Principal $resolved doesn't provide $service service")
+                    else
+                        principal = resolved
+                }
             }
-        }
         return principal
     }
 

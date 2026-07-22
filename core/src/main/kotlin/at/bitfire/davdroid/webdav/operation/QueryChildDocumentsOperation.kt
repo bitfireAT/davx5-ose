@@ -9,6 +9,7 @@ import android.provider.DocumentsContract.Document
 import android.provider.DocumentsContract.buildChildDocumentsUri
 import at.bitfire.dav4jvm.ktor.DavCollection
 import at.bitfire.dav4jvm.ktor.Response
+import at.bitfire.dav4jvm.ktor.responsesWithRelation
 import at.bitfire.dav4jvm.ktor.toContentTypeOrNull
 import at.bitfire.dav4jvm.property.webdav.CurrentUserPrivilegeSet
 import at.bitfire.dav4jvm.property.webdav.DisplayName
@@ -124,56 +125,64 @@ class QueryChildDocumentsOperation @Inject constructor(
      * @param parent    folder to search for children
      */
     internal suspend fun queryChildren(parent: WebDavDocument) {
-        val oldChildren = documentDao.getChildren(parent.id).associateBy { it.name }.toMutableMap() // "name" of file/folder must be unique
+        val oldChildren = documentDao.getChildren(parent.id)
+            .associateBy { it.name }
+            .toMutableMap() // "name" of file/folder must be unique
         val newChildrenList = hashMapOf<String, WebDavDocument>()
 
         val parentUrl = parent.toKtorUrl(db)
         try {
             davClientBuilder.build(parent.mountId).use { client ->
                 val folder = DavCollection(client, parentUrl)
-                folder.propfind(1, *DAV_FILE_FIELDS) { response, relation ->
-                    logger.fine("$relation $response")
+                folder.propfind(1, *DAV_FILE_FIELDS)
+                    .responsesWithRelation()
+                    .collect { (response, relation) ->
+                        logger.fine("$relation $response")
 
-                    val resource: WebDavDocument =
-                        when (relation) {
-                            Response.HrefRelation.SELF ->       // it's about the parent
-                                parent
+                        val resource: WebDavDocument =
+                            when (relation) {
+                                Response.HrefRelation.SELF ->       // it's about the parent
+                                    parent
 
-                            Response.HrefRelation.MEMBER ->     // it's about a member
-                                WebDavDocument(mountId = parent.mountId, parentId = parent.id, name = response.hrefName())
+                                Response.HrefRelation.MEMBER ->     // it's about a member
+                                    WebDavDocument(
+                                        mountId = parent.mountId,
+                                        parentId = parent.id,
+                                        name = response.hrefName()
+                                    )
 
-                            else -> {
-                                // we didn't request this; log a warning and ignore it
-                                logger.warning("Ignoring unexpected $response $relation in $parentUrl")
-                                return@propfind
+                                else -> {
+                                    // we didn't request this; log a warning and ignore it
+                                    logger.warning("Ignoring unexpected $response $relation in $parentUrl")
+                                    return@collect
+                                }
                             }
+
+                        val updatedResource = resource.copy(
+                            isDirectory = response[ResourceType::class.java]?.types?.contains(WebDAV.Collection)
+                                ?: resource.isDirectory,
+                            displayName = response[DisplayName::class.java]?.displayName,
+                            mimeType = response[GetContentType::class.java]?.type?.toContentTypeOrNull(),
+                            eTag = response[GetETag::class.java]?.takeIf { !it.weak }?.eTag,
+                            lastModified = response[GetLastModified::class.java]?.lastModified?.toEpochMilli(),
+                            size = response[GetContentLength::class.java]?.contentLength,
+                            mayBind = response[CurrentUserPrivilegeSet::class.java]?.mayBind,
+                            mayUnbind = response[CurrentUserPrivilegeSet::class.java]?.mayUnbind,
+                            mayWriteContent = response[CurrentUserPrivilegeSet::class.java]?.mayWriteContent,
+                            quotaAvailable = response[QuotaAvailableBytes::class.java]?.quotaAvailableBytes,
+                            quotaUsed = response[QuotaUsedBytes::class.java]?.quotaUsedBytes,
+                        )
+
+                        if (resource == parent)
+                            documentDao.update(updatedResource)
+                        else {
+                            documentDao.insertOrUpdate(updatedResource)
+                            newChildrenList[resource.name] = updatedResource
                         }
 
-                    val updatedResource = resource.copy(
-                        isDirectory = response[ResourceType::class.java]?.types?.contains(WebDAV.Collection)
-                            ?: resource.isDirectory,
-                        displayName = response[DisplayName::class.java]?.displayName,
-                        mimeType = response[GetContentType::class.java]?.type?.toContentTypeOrNull(),
-                        eTag = response[GetETag::class.java]?.takeIf { !it.weak }?.eTag,
-                        lastModified = response[GetLastModified::class.java]?.lastModified?.toEpochMilli(),
-                        size = response[GetContentLength::class.java]?.contentLength,
-                        mayBind = response[CurrentUserPrivilegeSet::class.java]?.mayBind,
-                        mayUnbind = response[CurrentUserPrivilegeSet::class.java]?.mayUnbind,
-                        mayWriteContent = response[CurrentUserPrivilegeSet::class.java]?.mayWriteContent,
-                        quotaAvailable = response[QuotaAvailableBytes::class.java]?.quotaAvailableBytes,
-                        quotaUsed = response[QuotaUsedBytes::class.java]?.quotaUsedBytes,
-                    )
-
-                    if (resource == parent)
-                        documentDao.update(updatedResource)
-                    else {
-                        documentDao.insertOrUpdate(updatedResource)
-                        newChildrenList[resource.name] = updatedResource
+                        // remove resource from known child nodes, because not found on server
+                        oldChildren.remove(resource.name)
                     }
-
-                    // remove resource from known child nodes, because not found on server
-                    oldChildren.remove(resource.name)
-                }
             }
 
             // Delete child nodes which were not rediscovered (deleted serverside)

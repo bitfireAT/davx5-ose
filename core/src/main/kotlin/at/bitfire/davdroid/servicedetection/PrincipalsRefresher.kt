@@ -6,6 +6,7 @@ package at.bitfire.davdroid.servicedetection
 
 import at.bitfire.dav4jvm.ktor.DavResource
 import at.bitfire.dav4jvm.ktor.exception.HttpException
+import at.bitfire.dav4jvm.ktor.responses
 import at.bitfire.dav4jvm.property.webdav.WebDAV
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Principal
@@ -14,6 +15,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import io.ktor.client.HttpClient
+import kotlinx.coroutines.flow.filter
 import java.util.logging.Logger
 import javax.annotation.WillNotClose
 
@@ -51,14 +53,15 @@ class PrincipalsRefresher @AssistedInject constructor(
             val principalUrl = oldPrincipal.url
             logger.fine("Querying principal $principalUrl")
             try {
-                DavResource(httpClient, principalUrl).propfind(0, *principalProperties) { response, _ ->
-                    if (!response.isSuccess())
-                        return@propfind
-                    Principal.fromDavResponse(service.id, response)?.let { principal ->
-                        logger.fine("Got principal: $principal")
-                        db.principalDao().insertOrUpdate(service.id, principal)
+                DavResource(httpClient, principalUrl).propfind(0, *principalProperties)
+                    .responses()
+                    .filter { it.isSuccess() }
+                    .collect { response ->
+                        Principal.fromDavResponse(service.id, response)?.let { principal ->
+                            logger.fine("Got principal: $principal")
+                            db.principalDao().insertOrUpdate(service.id, principal)
+                        }
                     }
-                }
             } catch (e: HttpException) {
                 logger.info("Principal update failed with response code ${e.statusCode}. principalUrl=$principalUrl")
             }

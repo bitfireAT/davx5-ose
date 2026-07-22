@@ -6,8 +6,9 @@ package at.bitfire.davdroid.sync
 
 import android.accounts.Account
 import at.bitfire.dav4jvm.ktor.DavCollection
-import at.bitfire.dav4jvm.ktor.MultiResponseCallback
+import at.bitfire.dav4jvm.ktor.MultiStatusItem
 import at.bitfire.dav4jvm.ktor.Response
+import at.bitfire.dav4jvm.ktor.selfResponse
 import at.bitfire.dav4jvm.property.caldav.CalDAV
 import at.bitfire.dav4jvm.property.caldav.GetCTag
 import at.bitfire.davdroid.db.Collection
@@ -23,6 +24,9 @@ import io.ktor.client.HttpClient
 import io.ktor.http.Url
 import io.ktor.http.content.ByteArrayContent
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.sync.Semaphore
 import org.junit.Assert.assertEquals
 
@@ -68,15 +72,10 @@ class TestSyncManager @AssistedInject constructor(
             throw IllegalStateException("queryCapabilities() must not be called twice")
         didQueryCapabilities = true
 
-        var cTag: SyncState? = null
-        davCollection.propfind(0, CalDAV.GetCTag) { response, rel ->
-            if (rel == Response.HrefRelation.SELF)
-                response[GetCTag::class.java]?.cTag?.let {
-                    cTag = SyncState(SyncState.Type.CTAG, it)
-                }
+        val response = davCollection.propfind(0, CalDAV.GetCTag).selfResponse()
+        return response?.let { it[GetCTag::class.java]?.cTag }?.let {
+            SyncState(SyncState.Type.CTAG, it)
         }
-
-        return cTag
     }
 
     var didGenerateUpload = false
@@ -95,12 +94,11 @@ class TestSyncManager @AssistedInject constructor(
 
     var listAllRemoteResult = emptyList<Pair<Response, Response.HrefRelation>>()
     var didListAllRemote = false
-    override suspend fun listAllRemote(callback: MultiResponseCallback) {
+    override fun listAllRemote(): Flow<MultiStatusItem> {
         if (didListAllRemote)
             throw IllegalStateException("listAllRemote() must not be called twice")
         didListAllRemote = true
-        for (result in listAllRemoteResult)
-            callback.onResponse(result.first, result.second)
+        return listAllRemoteResult.asFlow().map { MultiStatusItem.Response(it.first, it.second) }
     }
 
     var assertDownloadRemote = emptyMap<Url, String>()
