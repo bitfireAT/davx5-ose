@@ -58,6 +58,8 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
@@ -668,19 +670,22 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
 
             coroutineScope {    // structured concurrency
                 val processMultiStatusScope = this
-                remoteList.collect { item ->
-                    if (item is MultiStatusItem.Response && item.relation == Response.HrefRelation.MEMBER) {
+
+                remoteList
+                    .filterIsInstance<MultiStatusItem.Response>()
+                    .filter { it.relation == Response.HrefRelation.MEMBER }
+                    .collect {
                         // launches coroutines in scope
-                        processMemberResponse(processMultiStatusScope, item.response, batchDownloader)
+                        processMemberResponse(processMultiStatusScope, it.response, batchDownloader)
                     }
-                }
-                // wait until all coroutines in processMultiStatusScope have finished
+
+                // wait until all coroutines launched in processMultiStatusScope have finished
             }
 
             // download remaining resources
             batchDownloader.flush()
 
-            // wait until all coroutines in processRemoteListScope have finished
+            // wait until all coroutines launched in processRemoteListScope have finished
         }
     }
 
@@ -712,6 +717,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
             var furtherResults = false
             coroutineScope {    // structured concurrency
                 val processMultiStatusScope = this
+
                 remoteList.collect { item ->
                     when (item) {
                         is MultiStatusItem.Response ->
@@ -729,7 +735,8 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
                             (item.property as? SyncToken)?.let { syncToken = it }
                     }
                 }
-                // wait until all coroutines in processMultiStatusScope have finished
+
+                // wait until all coroutines launched in processMultiStatusScope have finished
             }
 
             // download remaining resources
@@ -740,7 +747,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
                 furtherResults
             )
 
-            // wait until all coroutines in processRemoteChangesScope have finished
+            // wait until all coroutines launched in processRemoteChangesScope have finished
         }
 
     protected open fun listRemoteChanges(syncState: SyncState?): Flow<MultiStatusItem> =
