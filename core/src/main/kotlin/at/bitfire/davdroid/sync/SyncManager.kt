@@ -171,8 +171,8 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
             }
 
             if (modificationsPresent || syncRequired(remoteSyncState)) {
-                val algorithm = syncAlgorithm()
-                logger.info("Sync algorithm: $algorithm")
+                val algorithm = chooseSyncAlgorithm()
+                logger.info("Running sync algorithm: $algorithm")
                 algorithm(modificationsPresent, remoteSyncState)
             } else
                 logger.info("Remote collection didn't change, no reason to sync")
@@ -493,12 +493,10 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
 
     /**
      * Determines which sync algorithm to use.
-     * @return
-     *   - [PropfindReportAlgorithm]: list all resources (with plain WebDAV
-     *   PROPFIND or specific REPORT requests), then compare and synchronize
-     *   - [CollectionSyncAlgorithm]: use incremental collection synchronization (RFC 6578)
+     *
+     * @return the [SyncAlgorithm] implementation that shall be used to synchronize this collection
      */
-    protected abstract fun syncAlgorithm(): SyncAlgorithm
+    protected abstract fun chooseSyncAlgorithm(): SyncAlgorithm
 
     /**
      * Builds a [PropfindReportAlgorithm], wired up to this manager's own operations.
@@ -511,7 +509,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
             syncRemote = ::syncRemote,
             listAllRemote = ::listAllRemote,
             deleteNotPresentRemotely = ::deleteNotPresentRemotely,
-            postProcess = ::postProcess,
+            postProcess = ::postProcess
         )
     )
 
@@ -525,7 +523,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
             syncRemote = ::syncRemote,
             listRemoteChanges = ::listRemoteChanges,
             deleteNotPresentRemotely = ::deleteNotPresentRemotely,
-            postProcess = ::postProcess,
+            postProcess = ::postProcess
         )
     )
 

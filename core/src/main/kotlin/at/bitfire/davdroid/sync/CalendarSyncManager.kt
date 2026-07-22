@@ -134,7 +134,7 @@ class CalendarSyncManager @AssistedInject constructor(
             syncState(response)
         }
 
-    override fun syncAlgorithm() =
+    override fun chooseSyncAlgorithm() =
         if (accountSettings.getTimeRangePastDays() != null || !hasCollectionSync)
             propfindReportAlgorithm()
         else

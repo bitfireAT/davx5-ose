@@ -110,7 +110,7 @@ class TasksSyncManager @AssistedInject constructor(
             syncState(response)
         }
 
-    override fun syncAlgorithm() = propfindReportAlgorithm()
+    override fun chooseSyncAlgorithm() = propfindReportAlgorithm()
 
     override fun generateUpload(resource: LocalTask): GeneratedResource {
         val localTask = resource.taskAndExceptions

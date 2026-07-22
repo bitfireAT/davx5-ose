@@ -196,7 +196,7 @@ class ContactsSyncManager @AssistedInject constructor(
         }
     }
 
-    override fun syncAlgorithm() =
+    override fun chooseSyncAlgorithm() =
         if (hasCollectionSync)
             collectionSyncAlgorithm()
         else

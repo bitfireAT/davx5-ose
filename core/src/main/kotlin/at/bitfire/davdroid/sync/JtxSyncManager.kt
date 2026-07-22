@@ -141,7 +141,7 @@ class JtxSyncManager @AssistedInject constructor(
         )
     }
 
-    override fun syncAlgorithm() = propfindReportAlgorithm()
+    override fun chooseSyncAlgorithm() = propfindReportAlgorithm()
 
     override fun listAllRemote(): Flow<MultiStatusItem> = flow {
         SyncException.wrapWithRemoteResource(collection.url) {
