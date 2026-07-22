@@ -113,7 +113,7 @@ class DmfsTaskList(
         // insert property rows (with reference to task row ID)
         for (row in entity.subValues) {
             batch += BatchOperation.CpoBuilder
-                .newInsert(tasksPropertiesUri())
+                .newInsert(tasksPropertiesUri(asSyncAdapter = true))
                 .withValues(row.values)
                 .withValueBackReference(TaskContract.Properties.TASK_ID, taskRowIdx)
         }
@@ -382,7 +382,7 @@ class DmfsTaskList(
     fun updateTask(id: Long, entity: Entity, batch: TasksBatchOperation) {
         // delete existing property rows for this task
         batch += BatchOperation.CpoBuilder
-            .newDelete(tasksPropertiesUri())
+            .newDelete(tasksPropertiesUri(asSyncAdapter = true))
             .withSelection("${TaskContract.Properties.TASK_ID}=?", arrayOf(id.toString()))
 
         // update main row
@@ -396,7 +396,7 @@ class DmfsTaskList(
         // insert new property rows (with reference to task ID)
         for (row in entity.subValues) {
             batch += BatchOperation.CpoBuilder
-                .newInsert(tasksPropertiesUri())
+                .newInsert(tasksPropertiesUri(asSyncAdapter = true))
                 .withValues(ContentValues(row.values).apply {
                     remove(TaskContract.Properties.PROPERTY_ID) // don't reuse property IDs
                     put(TaskContract.Properties.TASK_ID, id)

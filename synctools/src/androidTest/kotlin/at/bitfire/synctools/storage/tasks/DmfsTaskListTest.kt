@@ -579,6 +579,54 @@ class DmfsTaskListTest(providerName: TaskProvider.ProviderName) :
     }
 
     @Test
+    fun testUpdateTask_DoesNotReDirtyTaskWithProperties() {
+        // Reproduces https://github.com/bitfireAT/davx5-ose/issues/2668:
+        // a task with a property (e.g. a category) that is updated by the sync adapter
+        // with _DIRTY=0 must not end up dirty again because of the property rows.
+        val taskList = createTaskList()
+        try {
+            val entity = Entity(
+                contentValuesOf(
+                    Tasks.LIST_ID to taskList.id,
+                    Tasks.TITLE to "Dirty Regression Test"
+                )
+            ).apply {
+                addSubValue(
+                    taskList.tasksPropertiesUri(),
+                    contentValuesOf(
+                        TaskContract.Properties.MIMETYPE to Property.Category.CONTENT_ITEM_TYPE,
+                        Property.Category.CATEGORY_NAME to "Work"
+                    )
+                )
+            }
+            val id = taskList.addTask(entity)
+
+            // simulate what the sync adapter does when applying a downloaded task:
+            // update the main row (with _DIRTY=0) and its properties in one batch
+            val updatedEntity = Entity(
+                contentValuesOf(
+                    Tasks.TITLE to "Dirty Regression Test (updated)",
+                    Tasks._DIRTY to 0
+                )
+            ).apply {
+                addSubValue(
+                    taskList.tasksPropertiesUri(),
+                    contentValuesOf(
+                        TaskContract.Properties.MIMETYPE to Property.Category.CONTENT_ITEM_TYPE,
+                        Property.Category.CATEGORY_NAME to "Work"
+                    )
+                )
+            }
+            taskList.updateTask(id, updatedEntity)
+
+            val dirty = taskList.getTaskRow(id, arrayOf(Tasks._DIRTY))?.getAsInteger(Tasks._DIRTY)
+            assertEquals(0, dirty)
+        } finally {
+            taskList.delete()
+        }
+    }
+
+    @Test
     fun testUpdateTasks() = runTest {
         val taskList = createTaskList()
         try {
