@@ -6,9 +6,15 @@
 
 set -uo pipefail
 
+if [[ -z "${WEBLATE_API_TOKEN:-}" ]]; then
+  echo "Error: WEBLATE_API_TOKEN is not set."
+  exit 1
+fi
+
+command -v jq >/dev/null 2>&1 || { echo "Error: jq is required to parse Weblate API responses."; exit 1; }
+
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 DATE=$(date +'%Y-%m-%d')
-
 # Performs an authenticated request against the Weblate API.
 # On success, sets the HTTP_STATUS and HTTP_BODY globals to the response's status code and body.
 weblate_request() {
