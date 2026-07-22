@@ -27,51 +27,12 @@ class DmfsTaskListTest(providerName: TaskProvider.ProviderName) :
 
     private val testAccount = Account(javaClass.name, TaskContract.LOCAL_ACCOUNT_TYPE)
 
-    private fun createTaskList(): DmfsTaskList {
-        val info = ContentValues()
-        info.put(TaskLists.LIST_NAME, "Test Task List")
-        info.put(TaskLists.LIST_COLOR, 0xffff0000)
-        info.put(TaskLists.OWNER, "test@example.com")
-        info.put(TaskLists.SYNC_ENABLED, 1)
-        info.put(TaskLists.VISIBLE, 1)
-
-        val dmfsTaskListProvider = DmfsTaskListProvider(testAccount, provider, providerName)
-        return dmfsTaskListProvider.createAndGetTaskList(info)
-    }
-
     @Test
     fun testTouchRelations() {
         val taskList = createTaskList()
         try {
             // insert child before parent
-            val childId = taskList.addTask(
-                Entity(
-                    contentValuesOf(
-                        Tasks.LIST_ID to taskList.id,
-                        Tasks._UID to "child",
-                        Tasks.TITLE to "Child task",
-                        Tasks.PARENT_ID to null
-                    )
-                ).apply {
-                    addSubValue(
-                        taskList.tasksPropertiesUri(),
-                        contentValuesOf(
-                            TaskContract.Properties.MIMETYPE to Property.Relation.CONTENT_ITEM_TYPE,
-                            Property.Relation.RELATED_UID to "parent",
-                            Property.Relation.RELATED_TYPE to Property.Relation.RELTYPE_PARENT
-                        )
-                    )
-                }
-            )
-            val parentId = taskList.addTask(
-                Entity(
-                    contentValuesOf(
-                        Tasks.LIST_ID to taskList.id,
-                        Tasks._UID to "parent",
-                        Tasks.TITLE to "Parent task"
-                    )
-                )
-            )
+            val (childId, parentId) = addChildAndParentWithRelation(taskList, "child", "parent")
 
             // OpenTasks should provide the correct relation
             taskList.provider.client.query(
@@ -123,34 +84,7 @@ class DmfsTaskListTest(providerName: TaskProvider.ProviderName) :
         try {
             // insert child before parent, so RELATED_ID gets backfilled by the provider
             // but PARENT_ID is not yet (see touchRelations()'s doc comment)
-            val childId = taskList.addTask(
-                Entity(
-                    contentValuesOf(
-                        Tasks.LIST_ID to taskList.id,
-                        Tasks._UID to "dirty-test-child",
-                        Tasks.TITLE to "Child task",
-                        Tasks.PARENT_ID to null
-                    )
-                ).apply {
-                    addSubValue(
-                        taskList.tasksPropertiesUri(),
-                        contentValuesOf(
-                            TaskContract.Properties.MIMETYPE to Property.Relation.CONTENT_ITEM_TYPE,
-                            Property.Relation.RELATED_UID to "dirty-test-parent",
-                            Property.Relation.RELATED_TYPE to Property.Relation.RELTYPE_PARENT
-                        )
-                    )
-                }
-            )
-            taskList.addTask(
-                Entity(
-                    contentValuesOf(
-                        Tasks.LIST_ID to taskList.id,
-                        Tasks._UID to "dirty-test-parent",
-                        Tasks.TITLE to "Parent task"
-                    )
-                )
-            )
+            val (childId, _) = addChildAndParentWithRelation(taskList, "dirty-test-child", "dirty-test-parent")
 
             // simulate the state right after a sync applied this task: not dirty
             taskList.updateTaskRow(childId, contentValuesOf(Tasks._DIRTY to 0))
@@ -523,37 +457,26 @@ class DmfsTaskListTest(providerName: TaskProvider.ProviderName) :
     fun testUpdateTask() {
         val taskList = createTaskList()
         try {
-            val entity = Entity(
+            val entity = taskEntity(
+                taskList,
                 contentValuesOf(
                     Tasks.LIST_ID to taskList.id,
                     Tasks.TITLE to "Update Test Task"
-                )
-            ).apply {
-                addSubValue(
-                    taskList.tasksPropertiesUri(),
-                    contentValuesOf(
-                        TaskContract.Properties.MIMETYPE to Property.Category.CONTENT_ITEM_TYPE,
-                        Property.Category.CATEGORY_NAME to "Work"
-                    )
-                )
-            }
+                ),
+                TaskContract.Properties.MIMETYPE to Property.Category.CONTENT_ITEM_TYPE,
+                Property.Category.CATEGORY_NAME to "Work"
+            )
             val id = taskList.addTask(entity)
 
             // Update with new entity
-            val updatedEntity = Entity(
+            val updatedEntity = taskEntity(
+                taskList,
                 contentValuesOf(
                     Tasks.TITLE to "Updated Task Title"
-                )
-            ).apply {
-                // Use base properties URI for sub-values, MIMETYPE goes in ContentValues
-                addSubValue(
-                    taskList.tasksPropertiesUri(),
-                    contentValuesOf(
-                        TaskContract.Properties.MIMETYPE to Property.Category.CONTENT_ITEM_TYPE,
-                        Property.Category.CATEGORY_NAME to "Work"
-                    )
-                )
-            }
+                ),
+                TaskContract.Properties.MIMETYPE to Property.Category.CONTENT_ITEM_TYPE,
+                Property.Category.CATEGORY_NAME to "Work"
+            )
 
             taskList.updateTask(id, updatedEntity)
 
@@ -579,36 +502,26 @@ class DmfsTaskListTest(providerName: TaskProvider.ProviderName) :
     fun testUpdateTask_WithBatch() {
         val taskList = createTaskList()
         try {
-            val entity = Entity(
+            val entity = taskEntity(
+                taskList,
                 contentValuesOf(
                     Tasks.LIST_ID to taskList.id,
                     Tasks.TITLE to "Batch Update Test"
-                )
-            ).apply {
-                addSubValue(
-                    taskList.tasksPropertiesUri(),
-                    contentValuesOf(
-                        TaskContract.Properties.MIMETYPE to Property.Comment.CONTENT_ITEM_TYPE,
-                        Property.Comment.COMMENT to "Original Comment"
-                    )
-                )
-            }
+                ),
+                TaskContract.Properties.MIMETYPE to Property.Comment.CONTENT_ITEM_TYPE,
+                Property.Comment.COMMENT to "Original Comment"
+            )
             val id = taskList.addTask(entity)
 
             // Update via batch
-            val updatedEntity = Entity(
+            val updatedEntity = taskEntity(
+                taskList,
                 contentValuesOf(
                     Tasks.TITLE to "Updated Title"
-                )
-            ).apply {
-                addSubValue(
-                    taskList.tasksPropertiesUri(),
-                    contentValuesOf(
-                        TaskContract.Properties.MIMETYPE to Property.Comment.CONTENT_ITEM_TYPE,
-                        Property.Comment.COMMENT to "Updated Comment"
-                    )
-                )
-            }
+                ),
+                TaskContract.Properties.MIMETYPE to Property.Comment.CONTENT_ITEM_TYPE,
+                Property.Comment.COMMENT to "Updated Comment"
+            )
 
             val batch = TasksBatchOperation(taskList.client)
             taskList.updateTask(id, updatedEntity, batch)
@@ -635,38 +548,28 @@ class DmfsTaskListTest(providerName: TaskProvider.ProviderName) :
         // with _DIRTY=0 must not end up dirty again because of the property rows.
         val taskList = createTaskList()
         try {
-            val entity = Entity(
+            val entity = taskEntity(
+                taskList,
                 contentValuesOf(
                     Tasks.LIST_ID to taskList.id,
                     Tasks.TITLE to "Dirty Regression Test"
-                )
-            ).apply {
-                addSubValue(
-                    taskList.tasksPropertiesUri(),
-                    contentValuesOf(
-                        TaskContract.Properties.MIMETYPE to Property.Category.CONTENT_ITEM_TYPE,
-                        Property.Category.CATEGORY_NAME to "Work"
-                    )
-                )
-            }
+                ),
+                TaskContract.Properties.MIMETYPE to Property.Category.CONTENT_ITEM_TYPE,
+                Property.Category.CATEGORY_NAME to "Work"
+            )
             val id = taskList.addTask(entity)
 
             // simulate what the sync adapter does when applying a downloaded task:
             // update the main row (with _DIRTY=0) and its properties in one batch
-            val updatedEntity = Entity(
+            val updatedEntity = taskEntity(
+                taskList,
                 contentValuesOf(
                     Tasks.TITLE to "Dirty Regression Test (updated)",
                     Tasks._DIRTY to 0
-                )
-            ).apply {
-                addSubValue(
-                    taskList.tasksPropertiesUri(),
-                    contentValuesOf(
-                        TaskContract.Properties.MIMETYPE to Property.Category.CONTENT_ITEM_TYPE,
-                        Property.Category.CATEGORY_NAME to "Work"
-                    )
-                )
-            }
+                ),
+                TaskContract.Properties.MIMETYPE to Property.Category.CONTENT_ITEM_TYPE,
+                Property.Category.CATEGORY_NAME to "Work"
+            )
             taskList.updateTask(id, updatedEntity)
 
             val dirty = taskList.getTaskRow(id, arrayOf(Tasks._DIRTY))?.getAsInteger(Tasks._DIRTY)
@@ -814,5 +717,56 @@ class DmfsTaskListTest(providerName: TaskProvider.ProviderName) :
             taskList.delete()
         }
     }
+
+
+    // helpers
+
+    /** Inserts a child task with a Relation property pointing to [parentUid], then the parent task. */
+    private fun addChildAndParentWithRelation(
+        taskList: DmfsTaskList,
+        childUid: String,
+        parentUid: String
+    ): Pair<Long, Long> {
+        val childId = taskList.addTask(
+            taskEntity(
+                taskList,
+                contentValuesOf(
+                    Tasks.LIST_ID to taskList.id,
+                    Tasks._UID to childUid,
+                    Tasks.TITLE to "Child task",
+                    Tasks.PARENT_ID to null
+                ),
+                TaskContract.Properties.MIMETYPE to Property.Relation.CONTENT_ITEM_TYPE,
+                Property.Relation.RELATED_UID to parentUid,
+                Property.Relation.RELATED_TYPE to Property.Relation.RELTYPE_PARENT
+            )
+        )
+        val parentId = taskList.addTask(
+            Entity(contentValuesOf(Tasks.LIST_ID to taskList.id, Tasks._UID to parentUid, Tasks.TITLE to "Parent task"))
+        )
+        return childId to parentId
+    }
+
+    private fun createTaskList(): DmfsTaskList {
+        val info = ContentValues()
+        info.put(TaskLists.LIST_NAME, "Test Task List")
+        info.put(TaskLists.LIST_COLOR, 0xffff0000)
+        info.put(TaskLists.OWNER, "test@example.com")
+        info.put(TaskLists.SYNC_ENABLED, 1)
+        info.put(TaskLists.VISIBLE, 1)
+
+        val dmfsTaskListProvider = DmfsTaskListProvider(testAccount, provider, providerName)
+        return dmfsTaskListProvider.createAndGetTaskList(info)
+    }
+
+    /** Builds an [Entity] with [entityValues] as the main row and a single property sub-value. */
+    private fun taskEntity(
+        taskList: DmfsTaskList,
+        entityValues: ContentValues,
+        vararg propertyValues: Pair<String, Any?>
+    ): Entity =
+        Entity(entityValues).apply {
+            addSubValue(taskList.tasksPropertiesUri(), contentValuesOf(*propertyValues))
+        }
 
 }
