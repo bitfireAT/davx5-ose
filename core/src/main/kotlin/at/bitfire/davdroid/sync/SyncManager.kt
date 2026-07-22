@@ -42,6 +42,10 @@ import at.bitfire.davdroid.resource.LocalCollection
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.resource.SyncState
 import at.bitfire.davdroid.sync.account.InvalidAccountException
+import at.bitfire.davdroid.sync.algorithm.CollectionSyncAlgorithm
+import at.bitfire.davdroid.sync.algorithm.PropfindReportAlgorithm
+import at.bitfire.davdroid.sync.algorithm.SyncAlgorithm
+import at.bitfire.davdroid.sync.algorithm.forEachResponse
 import at.bitfire.synctools.storage.LocalStorageException
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.ktor.client.HttpClient
@@ -494,12 +498,12 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
     /**
      * Determines which sync algorithm to use.
      *
-     * @return the [SyncAlgorithm] implementation that shall be used to synchronize this collection
+     * @return the [at.bitfire.davdroid.sync.algorithm.SyncAlgorithm] implementation that shall be used to synchronize this collection
      */
     protected abstract fun chooseSyncAlgorithm(): SyncAlgorithm
 
     /**
-     * Builds a [PropfindReportAlgorithm], wired up to this manager's own operations.
+     * Builds a [at.bitfire.davdroid.sync.algorithm.PropfindReportAlgorithm], wired up to this manager's own operations.
      */
     protected fun propfindReportAlgorithm(): SyncAlgorithm = PropfindReportAlgorithm(
         PropfindReportAlgorithm.Context(
@@ -514,7 +518,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
     )
 
     /**
-     * Builds a [CollectionSyncAlgorithm], wired up to this manager's own operations.
+     * Builds a [at.bitfire.davdroid.sync.algorithm.CollectionSyncAlgorithm], wired up to this manager's own operations.
      */
     protected fun collectionSyncAlgorithm(): SyncAlgorithm = CollectionSyncAlgorithm(
         CollectionSyncAlgorithm.Context(

@@ -2,11 +2,12 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  */
 
-package at.bitfire.davdroid.sync
+package at.bitfire.davdroid.sync.algorithm
 
 import at.bitfire.dav4jvm.ktor.MultiStatusItem
 import at.bitfire.davdroid.resource.LocalCollection
 import at.bitfire.davdroid.resource.SyncState
+import at.bitfire.davdroid.sync.MultiResponseCallback
 import kotlinx.coroutines.flow.Flow
 import java.util.logging.Logger
 
@@ -18,7 +19,7 @@ class PropfindReportAlgorithm(
     private val context: Context
 ) : SyncAlgorithm {
 
-    /** Operations this algorithm needs from the owning [SyncManager]. */
+    /** Operations this algorithm needs from the owning [at.bitfire.davdroid.sync.SyncManager]. */
     class Context(
         val localCollection: LocalCollection<*>,
         val resetPresentRemotely: () -> Unit,
