@@ -90,7 +90,7 @@ class TestSyncManager @AssistedInject constructor(
         )
     }
 
-    override fun syncAlgorithm() = SyncAlgorithm.PROPFIND_REPORT
+    override fun syncAlgorithm() = propfindReportAlgorithm()
 
     var listAllRemoteResult = emptyList<Pair<Response, Response.HrefRelation>>()
     var didListAllRemote = false

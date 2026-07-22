@@ -136,9 +136,9 @@ class CalendarSyncManager @AssistedInject constructor(
 
     override fun syncAlgorithm() =
         if (accountSettings.getTimeRangePastDays() != null || !hasCollectionSync)
-            SyncAlgorithm.PROPFIND_REPORT
+            propfindReportAlgorithm()
         else
-            SyncAlgorithm.COLLECTION_SYNC
+            collectionSyncAlgorithm()
 
     override fun generateUpload(resource: LocalEvent): GeneratedResource {
         val localEvent = resource.androidEvent

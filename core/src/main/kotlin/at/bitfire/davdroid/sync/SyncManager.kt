@@ -10,7 +10,6 @@ import android.os.DeadObjectException
 import android.os.RemoteException
 import androidx.annotation.VisibleForTesting
 import at.bitfire.dav4jvm.Error
-import at.bitfire.dav4jvm.Property
 import at.bitfire.dav4jvm.QuotedStringUtils
 import at.bitfire.dav4jvm.ktor.DavCollection
 import at.bitfire.dav4jvm.ktor.DavResource
@@ -98,12 +97,6 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
     val syncTransferSemaphore: Semaphore
 ) {
 
-    enum class SyncAlgorithm {
-        PROPFIND_REPORT,
-        COLLECTION_SYNC
-    }
-
-
     @Inject
     lateinit var accountRepository: AccountRepository
 
@@ -169,7 +162,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
             if (resync == ResyncType.RESYNC_ENTRIES) {
                 logger.info("Forcing re-synchronization of all entries")
 
-                // forget sync state of collection (→ initial sync in case of SyncAlgorithm.COLLECTION_SYNC)
+                // forget sync state of collection (→ initial sync in case of CollectionSyncAlgorithm)
                 localCollection.lastSyncState = null
                 remoteSyncState = null
 
@@ -177,89 +170,11 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
                 localCollection.forgetETags()
             }
 
-            if (modificationsPresent || syncRequired(remoteSyncState))
-                when (syncAlgorithm()) {
-                    SyncAlgorithm.PROPFIND_REPORT -> {
-                        logger.info("Sync algorithm: full listing as one result (PROPFIND/REPORT)")
-                        resetPresentRemotely()
-
-                        // get current sync state
-                        if (modificationsPresent)
-                            remoteSyncState = querySyncState()
-
-                        // list and process all entries at current sync state (which may be the same as or newer than remoteSyncState)
-                        logger.info("Processing remote entries")
-                        syncRemote { callback ->
-                            listAllRemote().forEachResponse(callback)
-                        }
-
-                        logger.info("Deleting entries which are not present remotely anymore")
-                        deleteNotPresentRemotely()
-
-                        logger.info("Post-processing")
-                        postProcess()
-
-                        logger.info("Saving sync state: $remoteSyncState")
-                        localCollection.lastSyncState = remoteSyncState
-                    }
-
-                    SyncAlgorithm.COLLECTION_SYNC -> {
-                        var syncState = localCollection.lastSyncState?.takeIf { it.type == SyncState.Type.SYNC_TOKEN }
-
-                        var initialSync = false
-                        if (syncState == null) {
-                            logger.info("Starting initial sync")
-                            initialSync = true
-                            resetPresentRemotely()
-                        } else if (syncState.initialSync == true) {
-                            logger.info("Continuing initial sync")
-                            initialSync = true
-                        }
-
-                        var furtherChanges = false
-                        do {
-                            logger.info("Listing changes since $syncState")
-                            syncRemote { callback ->
-                                try {
-                                    val result = listRemoteChanges(syncState, callback)
-                                    syncState = SyncState.fromSyncToken(result.first, initialSync)
-                                    furtherChanges = result.second
-                                } catch (e: HttpException) {
-                                    if (e.errors.contains(Error(WebDAV.ValidSyncToken))) {
-                                        logger.info("Sync token invalid, performing initial sync")
-                                        initialSync = true
-                                        resetPresentRemotely()
-
-                                        val result = listRemoteChanges(null, callback)
-                                        syncState = SyncState.fromSyncToken(result.first, initialSync)
-                                        furtherChanges = result.second
-                                    } else
-                                        throw e
-                                }
-                            }
-
-                            logger.info("Saving sync state: $syncState")
-                            localCollection.lastSyncState = syncState
-
-                            logger.info("Server has further changes: $furtherChanges")
-                        } while (furtherChanges)
-
-                        if (initialSync) {
-                            // initial sync is finished, remove all local resources which have not been listed by server
-                            logger.info("Deleting local resources which are not on server (anymore)")
-                            deleteNotPresentRemotely()
-
-                            // remove initial sync flag
-                            syncState!!.initialSync = false
-                            logger.info("Initial sync completed, saving sync state: $syncState")
-                            localCollection.lastSyncState = syncState
-                        }
-
-                        logger.info("Post-processing")
-                        postProcess()
-                    }
-                }
-            else
+            if (modificationsPresent || syncRequired(remoteSyncState)) {
+                val algorithm = syncAlgorithm()
+                logger.info("Sync algorithm: $algorithm")
+                algorithm(modificationsPresent, remoteSyncState)
+            } else
                 logger.info("Remote collection didn't change, no reason to sync")
 
         } catch (potentiallyWrappedException: Throwable) {
@@ -579,11 +494,40 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
     /**
      * Determines which sync algorithm to use.
      * @return
-     *   - [SyncAlgorithm.PROPFIND_REPORT]: list all resources (with plain WebDAV
+     *   - [PropfindReportAlgorithm]: list all resources (with plain WebDAV
      *   PROPFIND or specific REPORT requests), then compare and synchronize
-     *   - [SyncAlgorithm.COLLECTION_SYNC]: use incremental collection synchronization (RFC 6578)
+     *   - [CollectionSyncAlgorithm]: use incremental collection synchronization (RFC 6578)
      */
     protected abstract fun syncAlgorithm(): SyncAlgorithm
+
+    /**
+     * Builds a [PropfindReportAlgorithm], wired up to this manager's own operations.
+     */
+    protected fun propfindReportAlgorithm(): SyncAlgorithm = PropfindReportAlgorithm(
+        PropfindReportAlgorithm.Context(
+            localCollection = localCollection,
+            resetPresentRemotely = ::resetPresentRemotely,
+            querySyncState = ::querySyncState,
+            syncRemote = ::syncRemote,
+            listAllRemote = ::listAllRemote,
+            deleteNotPresentRemotely = ::deleteNotPresentRemotely,
+            postProcess = ::postProcess,
+        )
+    )
+
+    /**
+     * Builds a [CollectionSyncAlgorithm], wired up to this manager's own operations.
+     */
+    protected fun collectionSyncAlgorithm(): SyncAlgorithm = CollectionSyncAlgorithm(
+        CollectionSyncAlgorithm.Context(
+            localCollection = localCollection,
+            resetPresentRemotely = ::resetPresentRemotely,
+            syncRemote = ::syncRemote,
+            listRemoteChanges = ::listRemoteChanges,
+            deleteNotPresentRemotely = ::deleteNotPresentRemotely,
+            postProcess = ::postProcess,
+        )
+    )
 
     /**
      * Marks all local resources which shall be taken into consideration for this
@@ -877,29 +821,6 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
             },
             callback = callback
         )
-    }
-
-    /**
-     * Bridges a [Flow] of [MultiStatusItem]s back to callback style, invoking [callback]
-     * for every [MultiStatusItem.Response] the flow emits.
-     *
-     * This is a temporary adapter to keep [syncRemote] and friends close to their
-     * pre-[Flow] shape. The goal is to migrate them to work with [Flow] directly and
-     * drop callback-style processing (and this helper) entirely.
-     *
-     * @return properties found outside `<response>` elements (for instance `sync-token`)
-     */
-    private suspend fun Flow<MultiStatusItem>.forEachResponse(
-        callback: MultiResponseCallback
-    ): List<Property> {
-        val extraProperties = mutableListOf<Property>()
-        collect { item ->
-            when (item) {
-                is MultiStatusItem.Response -> callback(item.response, item.relation)
-                is MultiStatusItem.ExtraProperty -> extraProperties += item.property
-            }
-        }
-        return extraProperties
     }
 
 }

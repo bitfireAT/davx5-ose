@@ -198,9 +198,9 @@ class ContactsSyncManager @AssistedInject constructor(
 
     override fun syncAlgorithm() =
         if (hasCollectionSync)
-            SyncAlgorithm.COLLECTION_SYNC
+            collectionSyncAlgorithm()
         else
-            SyncAlgorithm.PROPFIND_REPORT
+            propfindReportAlgorithm()
 
     override suspend fun uploadDirty(): Boolean {
         // local group housekeeping is needed regardless of whether we're actually uploading
