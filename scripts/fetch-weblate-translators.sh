@@ -63,11 +63,16 @@ while true; do
   weblate_request GET "https://hosted.weblate.org$TASK_URL"
   check_http_status "Failed to fetch task status"
 
-  TASK_COMPLETED=$(echo "$HTTP_BODY" | jq -er '.completed') || {
+  TASK_COMPLETED=$(echo "$HTTP_BODY" | jq -r '.completed') || {
     echo "Error: Failed to parse task status response."
     echo "Response: $HTTP_BODY"
     exit 1
   }
+  if [[ "$TASK_COMPLETED" != "true" && "$TASK_COMPLETED" != "false" ]]; then
+    echo "Error: Task status response is missing a boolean 'completed' field."
+    echo "Response: $HTTP_BODY"
+    exit 1
+  fi
 
   if [[ "$TASK_COMPLETED" == "true" ]]; then
     break
