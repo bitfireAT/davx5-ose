@@ -655,8 +655,11 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
      */
     protected open suspend fun processRemoteList(remoteList: Flow<MultiStatusItem>) {
         coroutineScope {    // structured concurrency
+            val processRemoteListScope = this
+
+            // launches coroutines in processRemoteListScope
             val batchDownloader = BatchDownloader { batch ->
-                launch {
+                processRemoteListScope.launch {
                     syncTransferSemaphore.withPermit {
                         downloadRemote(batch)
                     }
@@ -664,15 +667,20 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
             }
 
             coroutineScope {    // structured concurrency
-                val scope = this
+                val processMultiStatusScope = this
                 remoteList.collect { item ->
-                    if (item is MultiStatusItem.Response && item.relation == Response.HrefRelation.MEMBER)
-                        processMemberResponse(scope, item.response, batchDownloader)
+                    if (item is MultiStatusItem.Response && item.relation == Response.HrefRelation.MEMBER) {
+                        // launches coroutines in scope
+                        processMemberResponse(processMultiStatusScope, item.response, batchDownloader)
+                    }
                 }
+                // wait until all coroutines in processMultiStatusScope have finished
             }
 
             // download remaining resources
             batchDownloader.flush()
+
+            // wait until all coroutines in processRemoteListScope have finished
         }
     }
 
@@ -688,9 +696,12 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
      * @return sync-token of the processed changes, and whether the server indicated further results
      */
     protected open suspend fun processRemoteChanges(remoteList: Flow<MultiStatusItem>): Pair<SyncToken, Boolean> =
-        coroutineScope {        // structured concurrency – wait for all batch downloads (including flush)
+        coroutineScope {        // structured concurrency
+            val processRemoteChangesScope = this
+
+            // launches coroutines in processRemoteChangesScope
             val batchDownloader = BatchDownloader { batch ->
-                launch {
+                processRemoteChangesScope.launch {
                     syncTransferSemaphore.withPermit {
                         downloadRemote(batch)
                     }
@@ -699,8 +710,8 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
 
             var syncToken: SyncToken? = null
             var furtherResults = false
-            coroutineScope {    // structured concurrency – wait for all per-response processing
-                val scope = this
+            coroutineScope {    // structured concurrency
+                val processMultiStatusScope = this
                 remoteList.collect { item ->
                     when (item) {
                         is MultiStatusItem.Response ->
@@ -709,7 +720,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
                                     furtherResults = item.response.status == HttpStatusCode.InsufficientStorage
 
                                 Response.HrefRelation.MEMBER ->
-                                    processMemberResponse(scope, item.response, batchDownloader)
+                                    processMemberResponse(processMultiStatusScope, item.response, batchDownloader)
 
                                 else ->
                                     logger.fine("Unexpected sync-collection response: ${item.response}")
@@ -718,6 +729,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
                             (item.property as? SyncToken)?.let { syncToken = it }
                     }
                 }
+                // wait until all coroutines in processMultiStatusScope have finished
             }
 
             // download remaining resources
@@ -727,6 +739,8 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
                 syncToken ?: throw DavException("Received sync-collection response without sync-token"),
                 furtherResults
             )
+
+            // wait until all coroutines in processRemoteChangesScope have finished
         }
 
     protected open fun listRemoteChanges(syncState: SyncState?): Flow<MultiStatusItem> =
