@@ -201,7 +201,6 @@ class DmfsTaskList(
      * @param id    task ID
      *
      * @return task entity (or `null` if not found)
-     *
      * @throws LocalStorageException when the content provider returns an error
      */
     fun getTask(id: Long): Entity? {
@@ -218,12 +217,13 @@ class DmfsTaskList(
                         arrayOf(id.toString()),
                         null
                     )?.use { propertiesCursor ->
-                        while (propertiesCursor.moveToNext())
-                        // plain URI as sub-value key, not an actual provider operation
+                        while (propertiesCursor.moveToNext()) {
+                            // plain URI as sub-value key, not an actual provider operation
                             entity.addSubValue(
                                 tasksPropertiesUri(asSyncAdapter = false),
                                 propertiesCursor.toContentValues()
                             )
+                        }
                     }
                     return entity
                 }
@@ -536,8 +536,12 @@ class DmfsTaskList(
         ContentUris.withAppendedId(tasksUri(loadProperties), id)
 
     /**
-     * Properties URI. Defaults to sync adapter so writes don't re-dirty the task (#2668);
-     * pass `false` only for the URI stored as a loaded [Entity]'s sub-value key.
+     * URI to access the task provider's [TaskContract.Properties].
+     *
+     * **Important: Always do write operations [asSyncAdapter]**, otherwise results will be marked
+     * as "dirty". Doing everything [asSyncAdapter] is a safe default choice.
+     *
+     * @param asSyncAdapter whether [asSyncAdapter] is applied to the properties URI
      */
     internal fun tasksPropertiesUri(asSyncAdapter: Boolean = true): Uri {
         val uri = TaskContract.Properties.getContentUri(providerName.authority)
