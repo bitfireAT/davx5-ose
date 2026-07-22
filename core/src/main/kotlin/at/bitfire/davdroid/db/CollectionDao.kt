@@ -29,6 +29,9 @@ interface CollectionDao {
     @Query("SELECT * FROM collection WHERE serviceId=:serviceId")
     suspend fun getByService(serviceId: Long): List<Collection>
 
+    @Query("SELECT * FROM collection WHERE serviceId=:serviceId")
+    fun getByServiceBlocking(serviceId: Long): List<Collection>
+
     @Query("SELECT * FROM collection WHERE serviceId=:serviceId AND homeSetId IS :homeSetId")
     fun getByServiceAndHomeset(serviceId: Long, homeSetId: Long?): List<Collection>
 
