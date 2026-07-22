@@ -10,7 +10,6 @@ import android.os.DeadObjectException
 import android.os.RemoteException
 import androidx.annotation.VisibleForTesting
 import at.bitfire.dav4jvm.Error
-import at.bitfire.dav4jvm.Property
 import at.bitfire.dav4jvm.QuotedStringUtils
 import at.bitfire.dav4jvm.ktor.DavCollection
 import at.bitfire.dav4jvm.ktor.DavResource
@@ -56,8 +55,11 @@ import io.ktor.http.content.OutgoingContent
 import io.ktor.http.headers
 import io.ktor.util.appendAll
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
@@ -189,9 +191,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
 
                         // list and process all entries at current sync state (which may be the same as or newer than remoteSyncState)
                         logger.info("Processing remote entries")
-                        syncRemote { callback ->
-                            listAllRemote().forEachResponse(callback)
-                        }
+                        processRemoteList(listAllRemote())
 
                         logger.info("Deleting entries which are not present remotely anymore")
                         deleteNotPresentRemotely()
@@ -216,26 +216,24 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
                             initialSync = true
                         }
 
-                        var furtherChanges = false
+                        var furtherChanges: Boolean
                         do {
                             logger.info("Listing changes since $syncState")
-                            syncRemote { callback ->
-                                try {
-                                    val result = listRemoteChanges(syncState, callback)
-                                    syncState = SyncState.fromSyncToken(result.first, initialSync)
-                                    furtherChanges = result.second
-                                } catch (e: HttpException) {
-                                    if (e.errors.contains(Error(WebDAV.ValidSyncToken))) {
-                                        logger.info("Sync token invalid, performing initial sync")
-                                        initialSync = true
-                                        resetPresentRemotely()
+                            try {
+                                val (newToken, further) = processRemoteChanges(listRemoteChanges(syncState))
+                                syncState = SyncState.fromSyncToken(newToken, initialSync)
+                                furtherChanges = further
+                            } catch (e: HttpException) {
+                                if (e.errors.contains(Error(WebDAV.ValidSyncToken))) {
+                                    logger.info("Sync token invalid, performing initial sync")
+                                    initialSync = true
+                                    resetPresentRemotely()
 
-                                        val result = listRemoteChanges(null, callback)
-                                        syncState = SyncState.fromSyncToken(result.first, initialSync)
-                                        furtherChanges = result.second
-                                    } else
-                                        throw e
-                                }
+                                    val (newToken, further) = processRemoteChanges(listRemoteChanges(null))
+                                    syncState = SyncState.fromSyncToken(newToken, initialSync = true)
+                                    furtherChanges = further
+                                } else
+                                    throw e
                             }
 
                             logger.info("Saving sync state: $syncState")
@@ -250,7 +248,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
                             deleteNotPresentRemotely()
 
                             // remove initial sync flag
-                            syncState!!.initialSync = false
+                            syncState.initialSync = false
                             logger.info("Initial sync completed, saving sync state: $syncState")
                             localCollection.lastSyncState = syncState
                         }
@@ -598,15 +596,72 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
     }
 
     /**
-     * Calls a function to list remote resources. All resources from the returned
-     * list are downloaded and processed.
+     * Processes a single `<response>` element from a remote listing: downloads new or
+     * changed resources, and marks unchanged ones as remotely present. Ignores collections.
      *
-     * @param listRemote function to list remote resources (for instance, all since a certain sync-token)
+     * @param scope             scope to launch per-resource processing in
+     * @param response          the `<response>` element to process
+     * @param batchDownloader   downloader to enqueue new/changed resources with
      */
-    protected open suspend fun syncRemote(listRemote: suspend (MultiResponseCallback) -> Unit) =
+    private fun processMemberResponse(scope: CoroutineScope, response: Response, batchDownloader: BatchDownloader) {
+        // ignore collections
+        if (response[ResourceType::class.java]?.types?.contains(WebDAV.Collection) == true)
+            return
+
+        val name = response.hrefName()
+
+        if (response.isSuccess()) {
+            logger.fine("Found remote resource: $name")
+
+            scope.launch {
+                val local = localCollection.findByName(name)
+                SyncException.wrapWithLocalResource(local) {
+                    if (local == null) {
+                        logger.info("$name has been added remotely, queueing download")
+                        batchDownloader.enqueue(response.href)
+                    } else {
+                        val localETag = local.eTag
+                        val remoteETag = response[GetETag::class.java]?.eTag
+                            ?: throw DavException("Server didn't provide ETag")
+                        if (localETag == remoteETag) {
+                            logger.info("$name has not been changed on server (ETag still $remoteETag)")
+                        } else {
+                            logger.info("$name has been changed on server (current ETag=$remoteETag, last known ETag=$localETag)")
+                            batchDownloader.enqueue(response.href)
+                        }
+
+                        // mark as remotely present, so that this resource won't be deleted at the end
+                        local.updateFlags(LocalResource.FLAG_REMOTELY_PRESENT)
+                    }
+                }
+            }
+
+        } else if (response.status == HttpStatusCode.NotFound) {
+            // collection sync: resource has been deleted on remote server
+            scope.launch {
+                localCollection.findByName(name)?.let { local ->
+                    SyncException.wrapWithLocalResource(local) {
+                        logger.info("$name has been deleted on server, deleting locally")
+                        local.deleteLocal()
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Processes a full remote listing (PROPFIND/REPORT). All resources from [remoteList]
+     * are downloaded and processed.
+     *
+     * @param remoteList remote listing to process
+     */
+    protected open suspend fun processRemoteList(remoteList: Flow<MultiStatusItem>) {
         coroutineScope {    // structured concurrency
+            val processRemoteListScope = this
+
+            // launches coroutines in processRemoteListScope
             val batchDownloader = BatchDownloader { batch ->
-                launch {
+                processRemoteListScope.launch {
                     syncTransferSemaphore.withPermit {
                         downloadRemote(batch)
                     }
@@ -614,95 +669,93 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
             }
 
             coroutineScope {    // structured concurrency
-                listRemote { response, relation ->
-                    // ignore non-members
-                    if (relation != Response.HrefRelation.MEMBER)
-                        return@listRemote
+                val processMultiStatusScope = this
 
-                    // ignore collections
-                    if (response[ResourceType::class.java]?.types?.contains(WebDAV.Collection) == true)
-                        return@listRemote
-
-                    val name = response.hrefName()
-
-                    if (response.isSuccess()) {
-                        logger.fine("Found remote resource: $name")
-
-                        launch {
-                            val local = localCollection.findByName(name)
-                            SyncException.wrapWithLocalResource(local) {
-                                if (local == null) {
-                                    logger.info("$name has been added remotely, queueing download")
-                                    batchDownloader.enqueue(response.href)
-                                } else {
-                                    val localETag = local.eTag
-                                    val remoteETag = response[GetETag::class.java]?.eTag
-                                        ?: throw DavException("Server didn't provide ETag")
-                                    if (localETag == remoteETag) {
-                                        logger.info("$name has not been changed on server (ETag still $remoteETag)")
-                                    } else {
-                                        logger.info("$name has been changed on server (current ETag=$remoteETag, last known ETag=$localETag)")
-                                        batchDownloader.enqueue(response.href)
-                                    }
-
-                                    // mark as remotely present, so that this resource won't be deleted at the end
-                                    local.updateFlags(LocalResource.FLAG_REMOTELY_PRESENT)
-                                }
-                            }
-                        }
-
-                    } else if (response.status == HttpStatusCode.NotFound) {
-                        // collection sync: resource has been deleted on remote server
-                        launch {
-                            localCollection.findByName(name)?.let { local ->
-                                SyncException.wrapWithLocalResource(local) {
-                                    logger.info("$name has been deleted on server, deleting locally")
-                                    local.deleteLocal()
-                                }
-                            }
-                        }
+                remoteList
+                    .filterIsInstance<MultiStatusItem.Response>()
+                    .filter { it.relation == Response.HrefRelation.MEMBER }
+                    .collect {
+                        // launches coroutines in scope
+                        processMemberResponse(processMultiStatusScope, it.response, batchDownloader)
                     }
-                }
+
+                // wait until all coroutines launched in processMultiStatusScope have finished
             }
 
             // download remaining resources
             batchDownloader.flush()
+
+            // wait until all coroutines launched in processRemoteListScope have finished
         }
+    }
 
     protected abstract fun listAllRemote(): Flow<MultiStatusItem>
 
-    protected open suspend fun listRemoteChanges(
-        syncState: SyncState?,
-        callback: MultiResponseCallback
-    ): Pair<SyncToken, Boolean> {
-        var furtherResults = false
+    /**
+     * Processes remote changes as received by [listRemoteChanges] (RFC 6578 `sync-collection` REPORT).
+     * All changed/new resources from [remoteList] are downloaded, and resources deleted on the
+     * server are deleted locally.
+     *
+     * @param remoteList remote changes to process
+     *
+     * @return sync-token of the processed changes, and whether the server indicated further results
+     */
+    protected open suspend fun processRemoteChanges(remoteList: Flow<MultiStatusItem>): Pair<SyncToken, Boolean> =
+        coroutineScope {        // structured concurrency
+            val processRemoteChangesScope = this
 
-        val report = davCollection.reportChanges(
+            // launches coroutines in processRemoteChangesScope
+            val batchDownloader = BatchDownloader { batch ->
+                processRemoteChangesScope.launch {
+                    syncTransferSemaphore.withPermit {
+                        downloadRemote(batch)
+                    }
+                }
+            }
+
+            var syncToken: SyncToken? = null
+            var furtherResults = false
+            coroutineScope {    // structured concurrency
+                val processMultiStatusScope = this
+
+                remoteList.collect { item ->
+                    when (item) {
+                        is MultiStatusItem.Response ->
+                            when (item.relation) {
+                                Response.HrefRelation.SELF ->
+                                    furtherResults = item.response.status == HttpStatusCode.InsufficientStorage
+
+                                Response.HrefRelation.MEMBER ->
+                                    processMemberResponse(processMultiStatusScope, item.response, batchDownloader)
+
+                                else ->
+                                    logger.fine("Unexpected sync-collection response: ${item.response}")
+                            }
+                        is MultiStatusItem.ExtraProperty ->
+                            (item.property as? SyncToken)?.let { syncToken = it }
+                    }
+                }
+
+                // wait until all coroutines launched in processMultiStatusScope have finished
+            }
+
+            // download remaining resources
+            batchDownloader.flush()
+
+            Pair(
+                syncToken ?: throw DavException("Received sync-collection response without sync-token"),
+                furtherResults
+            )
+
+            // wait until all coroutines launched in processRemoteChangesScope have finished
+        }
+
+    protected open fun listRemoteChanges(syncState: SyncState?): Flow<MultiStatusItem> =
+        davCollection.reportChanges(
             syncState?.takeIf { syncState.type == SyncState.Type.SYNC_TOKEN }?.value,
             false, null,
             WebDAV.GetETag
-        ).forEachResponse { response, relation ->
-            when (relation) {
-                Response.HrefRelation.SELF ->
-                    furtherResults = response.status == HttpStatusCode.InsufficientStorage
-
-                Response.HrefRelation.MEMBER ->
-                    callback(response, relation)
-
-                else ->
-                    logger.fine("Unexpected sync-collection response: $response")
-            }
-        }
-
-        var syncToken: SyncToken? = null
-        report.filterIsInstance<SyncToken>().firstOrNull()?.let {
-            syncToken = it
-        }
-        if (syncToken == null)
-            throw DavException("Received sync-collection response without sync-token")
-
-        return Pair(syncToken, furtherResults)
-    }
+        )
 
     /**
      * Downloads and processes resources, given as a list of URLs. Will be called with a list
@@ -879,29 +932,4 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
         )
     }
 
-    /**
-     * Bridges a [Flow] of [MultiStatusItem]s back to callback style, invoking [callback]
-     * for every [MultiStatusItem.Response] the flow emits.
-     *
-     * This is a temporary adapter to keep [syncRemote] and friends close to their
-     * pre-[Flow] shape. The goal is to migrate them to work with [Flow] directly and
-     * drop callback-style processing (and this helper) entirely.
-     *
-     * @return properties found outside `<response>` elements (for instance `sync-token`)
-     */
-    private suspend fun Flow<MultiStatusItem>.forEachResponse(
-        callback: MultiResponseCallback
-    ): List<Property> {
-        val extraProperties = mutableListOf<Property>()
-        collect { item ->
-            when (item) {
-                is MultiStatusItem.Response -> callback(item.response, item.relation)
-                is MultiStatusItem.ExtraProperty -> extraProperties += item.property
-            }
-        }
-        return extraProperties
-    }
-
 }
-
-typealias MultiResponseCallback = suspend (Response, Response.HrefRelation) -> Unit
