@@ -25,6 +25,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import io.ktor.client.HttpClient
+import kotlinx.coroutines.flow.filter
 import java.util.logging.Logger
 import javax.annotation.WillNotClose
 
@@ -71,10 +72,8 @@ class HomeSetRefresher @AssistedInject constructor(
                 val collectionProperties = ServiceDetectionUtils.collectionQueryProperties(service.type)
                 DavResource(httpClient, homeSetUrl).propfind(1, *collectionProperties)
                     .responsesWithRelation()
+                    .filter { (response, _) -> response.isSuccess() }
                     .collect { (response, relation) ->
-                        if (!response.isSuccess())
-                            return@collect
-
                         if (relation == Response.HrefRelation.SELF) {
                             // this response is about the home set itself
                             homeSetRepository.insertOrUpdateByUrlBlocking(

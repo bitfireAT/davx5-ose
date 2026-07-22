@@ -15,6 +15,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import io.ktor.client.HttpClient
+import kotlinx.coroutines.flow.filter
 import java.util.logging.Logger
 import javax.annotation.WillNotClose
 
@@ -54,9 +55,8 @@ class PrincipalsRefresher @AssistedInject constructor(
             try {
                 DavResource(httpClient, principalUrl).propfind(0, *principalProperties)
                     .responses()
+                    .filter { it.isSuccess() }
                     .collect { response ->
-                        if (!response.isSuccess())
-                            return@collect
                         Principal.fromDavResponse(service.id, response)?.let { principal ->
                             logger.fine("Got principal: $principal")
                             db.principalDao().insertOrUpdate(service.id, principal)
