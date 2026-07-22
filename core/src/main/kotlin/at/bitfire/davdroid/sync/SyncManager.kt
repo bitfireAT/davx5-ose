@@ -214,12 +214,12 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
                             initialSync = true
                         }
 
-                        var furtherChanges = false
+                        var furtherChanges: Boolean
                         do {
                             logger.info("Listing changes since $syncState")
                             try {
-                                val (token, further) = processRemoteChanges(listRemoteChanges(syncState))
-                                syncState = SyncState.fromSyncToken(token, initialSync)
+                                val (newToken, further) = processRemoteChanges(listRemoteChanges(syncState))
+                                syncState = SyncState.fromSyncToken(newToken, initialSync)
                                 furtherChanges = further
                             } catch (e: HttpException) {
                                 if (e.errors.contains(Error(WebDAV.ValidSyncToken))) {
@@ -227,8 +227,8 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
                                     initialSync = true
                                     resetPresentRemotely()
 
-                                    val (token, further) = processRemoteChanges(listRemoteChanges(null))
-                                    syncState = SyncState.fromSyncToken(token, initialSync)
+                                    val (newToken, further) = processRemoteChanges(listRemoteChanges(null))
+                                    syncState = SyncState.fromSyncToken(newToken, initialSync = true)
                                     furtherChanges = further
                                 } else
                                     throw e
@@ -246,7 +246,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
                             deleteNotPresentRemotely()
 
                             // remove initial sync flag
-                            syncState!!.initialSync = false
+                            syncState.initialSync = false
                             logger.info("Initial sync completed, saving sync state: $syncState")
                             localCollection.lastSyncState = syncState
                         }
