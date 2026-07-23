@@ -48,6 +48,10 @@ class PagingReader(
     /** currently loaded page */
     private var currentPage: CachedPage? = null
 
+    /** Instance field (not in companion): [currentPage] and [pageCache] are per-instance, so a shared mutex would
+     *  needlessly serialize reads across unrelated, concurrently open WebDAV files. */
+    private val readPageMutex = Mutex()
+
     /**
      * Reads a given number of bytes from a given position.
      *
@@ -128,10 +132,6 @@ class PagingReader(
         System.arraycopy(page.data, inPageStart, dst, dstOffset, len)
 
         return len
-    }
-
-    companion object {
-        private val readPageMutex = Mutex()
     }
 
 }
