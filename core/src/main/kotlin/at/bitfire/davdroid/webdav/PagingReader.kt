@@ -92,8 +92,7 @@ class PagingReader(
      * @return number of bytes read (may be less than [size] when the page ends before);
      * 0 guarantees that there are no more bytes (EOF)
     */
-    @Synchronized
-    fun readPage(position: Long, size: Int, dst: ByteArray, dstOffset: Int): Int {
+    suspend fun readPage(position: Long, size: Int, dst: ByteArray, dstOffset: Int): Int = readPageMutex.withLock {
         logger.fine("read(position=$position, size=$size, dstOffset=$dstOffset)")
 
         // read max. 1 page
@@ -126,6 +125,10 @@ class PagingReader(
         System.arraycopy(page.data, inPageStart, dst, dstOffset, len)
 
         return len
+    }
+
+    companion object {
+        private val readPageMutex = Mutex()
     }
 
 }
