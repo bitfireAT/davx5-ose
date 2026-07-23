@@ -35,6 +35,7 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.http.Url
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 import java.io.InterruptedIOException
@@ -77,7 +78,7 @@ class RandomAccessCallback @AssistedInject constructor(
     private val documentState = headResponse.toDocumentState() ?: throw IllegalArgumentException("Can only be used with ETag/Last-Modified")
 
     private val pageLoader = PageLoader(externalScope)
-    private val pageCache: LoadingCache<PageIdentifier, ByteArray> = CacheBuilder.newBuilder()
+    private val pageCache: LoadingCache<PageIdentifier, Deferred<ByteArray>> = CacheBuilder.newBuilder()
         .maximumSize(10)    // don't cache more than 10 entries (MAX_PAGE_SIZE each)
         .softValues()       // use SoftReference for the page contents so they will be garbage-collected if memory is needed
         .build(pageLoader)  // fetch actual content using pageLoader
@@ -141,7 +142,7 @@ class RandomAccessCallback @AssistedInject constructor(
      *
      * @param functionName  name of the operation, passed to [ErrnoException] in case of cancellation
      */
-    private fun<T> runBlockingFd(functionName: String, block: () -> T): T =
+    private fun<T> runBlockingFd(functionName: String, block: suspend () -> T): T =
         runBlocking {
             try {
                 externalScope.async {
@@ -151,7 +152,7 @@ class RandomAccessCallback @AssistedInject constructor(
                 logger.warning("Random file access cancelled in $functionName, throwing ErrnoException(EINTR)")
                 throw ErrnoException(functionName, OsConstants.EINTR, e)
             } catch (e: Throwable) {
-                throw e.toErrNoException("onRead")
+                throw e.toErrNoException(functionName)
             }
         }
 
@@ -181,15 +182,9 @@ class RandomAccessCallback @AssistedInject constructor(
      */
     inner class PageLoader(
         private val scope: CoroutineScope
-    ): CacheLoader<PageIdentifier, ByteArray>() {
+    ): CacheLoader<PageIdentifier, Deferred<ByteArray>>() {
 
-        override fun load(key: PageIdentifier) = runBlocking {
-            scope.async {
-                loadAsync(key)
-            }.await()
-        }
-
-        private suspend fun loadAsync(key: PageIdentifier): ByteArray {
+        override fun load(key: PageIdentifier): Deferred<ByteArray> = scope.async {
             val offset = key.offset
             val size = key.size
             logger.fine("Loading page $url $offset/$size")
@@ -212,7 +207,7 @@ class RandomAccessCallback @AssistedInject constructor(
 
                 result = response.bodyAsBytes()
             }
-            return result ?: throw DavException("No response body")
+            result ?: throw DavException("No response body")
         }
 
     }
