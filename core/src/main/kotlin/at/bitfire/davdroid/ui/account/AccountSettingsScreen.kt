@@ -57,7 +57,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
-import at.bitfire.davdroid.settings.AccountSettings.Companion.SYNC_INTERVAL_MANUALLY
+import at.bitfire.davdroid.settings.AccountSettingsStore.Companion.SYNC_INTERVAL_MANUALLY
 import at.bitfire.davdroid.settings.Credentials
 import at.bitfire.davdroid.ui.ExternalUris
 import at.bitfire.davdroid.ui.composable.ActionCard

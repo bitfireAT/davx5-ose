@@ -8,8 +8,8 @@ import android.accounts.Account
 import android.accounts.AccountManager
 import android.content.ContentResolver
 import android.content.Context
-import at.bitfire.davdroid.settings.AccountSettings
-import at.bitfire.davdroid.settings.AccountSettings.Companion.SYNC_INTERVAL_MANUALLY
+import at.bitfire.davdroid.settings.AccountSettingsStore.Companion.KEY_SYNC_INTERVAL_TASKS
+import at.bitfire.davdroid.settings.AccountSettingsStore.Companion.SYNC_INTERVAL_MANUALLY
 import at.bitfire.davdroid.sync.TasksAppManager
 import at.bitfire.synctools.util.setAndVerifyUserData
 import dagger.Binds
@@ -35,7 +35,7 @@ class AccountSettingsMigration11 @Inject constructor(
         tasksAppManager.currentProvider()?.let { provider ->
             val interval = getSyncFrameworkInterval(account, provider.authority)
             if (interval != null)
-                accountManager.setAndVerifyUserData(account, AccountSettings.KEY_SYNC_INTERVAL_TASKS, interval.toString())
+                accountManager.setAndVerifyUserData(account, KEY_SYNC_INTERVAL_TASKS, interval.toString())
         }
     }
 

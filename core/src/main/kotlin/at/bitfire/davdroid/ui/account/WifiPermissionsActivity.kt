@@ -25,7 +25,7 @@ class WifiPermissionsActivity: AppCompatActivity() {
 
     companion object {
         private const val EXTRA_ACCOUNT = "account"
-        
+
         fun createIntent(context: Context, account: Account): Intent {
             return Intent(context, WifiPermissionsActivity::class.java).apply { 
                 putExtra(EXTRA_ACCOUNT, account)

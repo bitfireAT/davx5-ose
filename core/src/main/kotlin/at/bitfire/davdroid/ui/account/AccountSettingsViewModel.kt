@@ -107,9 +107,9 @@ class AccountSettingsViewModel @AssistedInject constructor(
         settings.addOnChangeListener(this)
         viewModelScope.launch {
             reload()
-            
+
             accountRepository.getAccountNameFlow(accountId).collect { accountName ->
-                _uiState.update { 
+                _uiState.update {
                     it.copy(accountName = accountName)
                 }
             }
@@ -132,7 +132,7 @@ class AccountSettingsViewModel @AssistedInject constructor(
         val hasCalendarSync = serviceDao.getByAccountAndType(accountId, Service.TYPE_CALDAV) != null
         val hasTasksSync = hasCalendarSync && tasksProvider != null
 
-        _uiState.update { 
+        _uiState.update {
             it.copy(
                 status = null,
 
