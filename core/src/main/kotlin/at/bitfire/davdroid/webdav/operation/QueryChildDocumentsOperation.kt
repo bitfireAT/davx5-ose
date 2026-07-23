@@ -40,7 +40,13 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
+import javax.inject.Singleton
 
+/**
+ * Singleton so that [backgroundScope] (and the running-query bookkeeping it launches into) has a
+ * single, well-defined lifetime instead of a new, uncancellable scope per Hilt injection.
+ */
+@Singleton
 class QueryChildDocumentsOperation @Inject constructor(
     @ApplicationContext private val context: Context,
     private val db: AppDatabase,
