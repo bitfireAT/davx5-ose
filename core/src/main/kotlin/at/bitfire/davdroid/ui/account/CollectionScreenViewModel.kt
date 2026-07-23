@@ -147,12 +147,18 @@ class CollectionScreenViewModel @AssistedInject constructor(
     /** The account's "past event time limit", or null if not set or not relevant for the collection. */
     val pastEventTimeLimit = combine(collection.filterNotNull(), account.filterNotNull()) { collection, account ->
         if (collection.type == Collection.TYPE_CALENDAR) {
-            val accountSettings = withContext(ioDispatcher) {
-                accountSettingsFactory.create(account)
-            }
-            accountSettings.getTimeRangePastDays()
-        } else  // doesn't apply to address books
+            getTimeRangePastDays(account)
+        } else  {
+            // doesn't apply to address books
             null
+        }
+    }
+
+    private suspend fun getTimeRangePastDays(account: Account): Int? {
+        return withContext(ioDispatcher) {
+            val accountSettings = accountSettingsFactory.create(account)
+            accountSettings.getTimeRangePastDays()
+        }
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
