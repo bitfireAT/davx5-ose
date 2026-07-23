@@ -4,6 +4,8 @@
 
 package at.bitfire.davdroid.webdav.cache
 
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import java.io.File
 import java.util.logging.Logger
 
@@ -23,6 +25,8 @@ class DiskCache(
          * after how many cache writes [trim] is called
          */
         const val CLEANUP_RATE = 15
+
+        private val fileMutex = Mutex()
     }
 
     private val logger = Logger.getGlobal()
@@ -46,8 +50,8 @@ class DiskCache(
      *
      * @return the file that contains the value
      */
-    fun getFileOrPut(key: String, generate: () -> ByteArray?): File? {
-        synchronized(this) {
+    suspend fun getFileOrPut(key: String, generate: () -> ByteArray?): File? {
+        fileMutex.withLock {
             val file = File(cacheDir, key)
             if (file.exists()) {
                 logger.fine("Cache hit: $key")
@@ -69,29 +73,34 @@ class DiskCache(
     }
 
 
-    @Synchronized
-    fun clear() {
-        cacheDir.listFiles()?.forEach { entry ->
-            entry.delete()
+    suspend fun clear() {
+        fileMutex.withLock {
+            cacheDir.listFiles()?.forEach { entry ->
+                entry.delete()
+            }
         }
     }
 
-    @Synchronized
-    fun entries(): Int {
-        return cacheDir.listFiles()!!.size
+    suspend fun entries(): Int {
+        return fileMutex.withLock {
+            cacheDir.listFiles()!!.size
+        }
     }
 
-    fun keys(): Array<String> = cacheDir.list()!!
+    suspend fun keys(): Array<String> {
+        return fileMutex.withLock {
+            cacheDir.list()!!
+        }
+    }
 
     /**
      * Trims the cache to keep it smaller than [maxSize].
      */
-    @Synchronized
-    fun trim(): Int {
+    suspend fun trim(): Int {
         var removed = 0
         logger.fine("Trimming disk cache to $maxSize bytes")
 
-        val files = cacheDir.listFiles()!!.toMutableList()
+        val files = fileMutex.withLock { cacheDir.listFiles() }!!.toMutableList()
         files.sortBy { file -> file.lastModified() }    // sort by modification time (ascending)
 
         while (files.sumOf { file -> file.length() } > maxSize) {
