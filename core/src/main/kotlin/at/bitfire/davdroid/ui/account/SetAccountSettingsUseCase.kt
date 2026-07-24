@@ -25,9 +25,9 @@ import net.openid.appauth.AuthState
 class SetAccountSettingsUseCase @AssistedInject constructor(
     @Assisted private val accountId: AccountId,
     private val accountSettingsFactory: AccountSettings.Factory,
-    private val syncWorkerManager: SyncWorkerManager,
+    @ApplicationScope private val appScope: CoroutineScope,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
-    @ApplicationScope private val appScope: CoroutineScope
+    private val syncWorkerManager: SyncWorkerManager
 ) {
     @AssistedFactory
     interface Factory {
@@ -109,6 +109,8 @@ class SetAccountSettingsUseCase @AssistedInject constructor(
      * If the calling coroutine is canceled, the operation in `appScope` will remain unaffected, i.e. run to completion.
      */
     private suspend fun runInAppScope(block: suspend CoroutineScope.() -> Unit) {
+        // Note: We're currently using `ioDispatcher` because `AccountSettings` is blocking. Once there's a suspending
+        // API to write account settings, we can drop the `context` parameter here.
         appScope.launch(context = ioDispatcher, block = block)
             .join()
     }

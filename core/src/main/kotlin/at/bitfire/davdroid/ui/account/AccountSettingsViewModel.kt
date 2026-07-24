@@ -12,6 +12,7 @@ import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.accounts.toAndroidAccount
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Service
+import at.bitfire.davdroid.di.qualifier.ApplicationScope
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.network.OAuthIntegration
 import at.bitfire.davdroid.repository.AccountRepository
@@ -26,7 +27,10 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -44,13 +48,14 @@ class AccountSettingsViewModel @AssistedInject constructor(
     @Assisted val accountId: AccountId,
     private val accountRepository: AccountRepository,
     private val accountSettingsFactory: AccountSettings.Factory,
-    setAccountSettingsUseCaseFactory: SetAccountSettingsUseCase.Factory,
+    @ApplicationScope private val applicationScope: CoroutineScope,
     private val authService: AuthorizationService,
     @ApplicationContext val context: Context,
     db: AppDatabase,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val logger: Logger,
     private val oAuthIntegration: OAuthIntegration,
+    setAccountSettingsUseCaseFactory: SetAccountSettingsUseCase.Factory,
     private val settings: SettingsManager,
     private val tasksAppManager: TasksAppManager
 ): ViewModel(), SettingsManager.OnChangeListener {
@@ -203,20 +208,32 @@ class AccountSettingsViewModel @AssistedInject constructor(
 
     fun authenticate(authResponse: AuthorizationResponse) {
         viewModelScope.launch {
-            try {
-                // save new credentials
+            val status = finishOAuthLogin(authResponse).fold(
+                onSuccess = { context.getString(R.string.settings_reauthorize_oauth_success) },
+                onFailure = { exception -> exception.localizedMessage }
+            )
+
+            _uiState.update {
+                it.copy(status = status)
+            }
+        }
+    }
+
+    private suspend fun finishOAuthLogin(authResponse: AuthorizationResponse): Result<Unit> {
+        try {
+            // Use applicationScope to make sure OAuth login completes even if the user navigates away from the screen,
+            // i.e. viewModelScope is canceled.
+            applicationScope.async {
                 val authState = oAuthIntegration.authenticate(authService, authResponse)
                 setAccountSettingsUseCase.setAuthState(authState)
+            }.await()
 
-                _uiState.update {
-                    it.copy(status = context.getString(R.string.settings_reauthorize_oauth_success))
-                }
-            } catch (e: Exception) {
-                logger.log(Level.WARNING, "Authentication failed", e)
-                _uiState.update {
-                    it.copy(status = e.localizedMessage)
-                }
-            }
+            return Result.success(Unit)
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            logger.log(Level.WARNING, "Authentication failed", e)
+            return Result.failure(e)
         }
     }
 
