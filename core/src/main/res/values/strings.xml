@@ -341,6 +341,9 @@
     <string name="login_nextcloud_login_flow_sign_in">Sign in</string>
     <string name="login_nextcloud_login_flow_no_login_url">Couldn\'t obtain login URL</string>
     <string name="login_nextcloud_login_flow_no_login_data">Couldn\'t obtain login data</string>
+    <string name="login_type_oidc">Login with OpenID Connect</string>
+    <string name="login_oidc_client_id">Client ID</string>
+    <string name="login_oidc_scope">Scope</string>
 
     <string name="login_configuration_detection">Configuration detection</string>
     <string name="login_querying_server">Please wait, querying server…</string>
