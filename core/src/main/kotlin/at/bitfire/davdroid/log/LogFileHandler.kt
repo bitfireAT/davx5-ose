@@ -138,6 +138,9 @@ class LogFileHandler @Inject constructor(
                 ).build()
             )
 
+            // also view/share the logs when tapping the notification
+            builder.setContentIntent(pendingShare)
+
             builder.build()
         }
    }
