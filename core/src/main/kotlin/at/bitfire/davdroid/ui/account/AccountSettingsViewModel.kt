@@ -12,24 +12,25 @@ import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.accounts.toAndroidAccount
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Service
+import at.bitfire.davdroid.di.qualifier.ApplicationScope
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.network.OAuthIntegration
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Credentials
 import at.bitfire.davdroid.settings.SettingsManager
-import at.bitfire.davdroid.sync.ResyncType
 import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.TasksAppManager
-import at.bitfire.davdroid.sync.worker.SyncWorkerManager
 import at.bitfire.synctools.vcard.GroupMethod
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -47,14 +48,15 @@ class AccountSettingsViewModel @AssistedInject constructor(
     @Assisted val accountId: AccountId,
     private val accountRepository: AccountRepository,
     private val accountSettingsFactory: AccountSettings.Factory,
+    @ApplicationScope private val applicationScope: CoroutineScope,
     private val authService: AuthorizationService,
     @ApplicationContext val context: Context,
     db: AppDatabase,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val logger: Logger,
     private val oAuthIntegration: OAuthIntegration,
+    setAccountSettingsUseCaseFactory: SetAccountSettingsUseCase.Factory,
     private val settings: SettingsManager,
-    private val syncWorkerManager: SyncWorkerManager,
     private val tasksAppManager: TasksAppManager
 ): ViewModel(), SettingsManager.OnChangeListener {
 
@@ -102,6 +104,7 @@ class AccountSettingsViewModel @AssistedInject constructor(
      */
     private val accountSettings by lazy { accountSettingsFactory.create(accountId.toAndroidAccount()) }
 
+    private val setAccountSettingsUseCase = setAccountSettingsUseCaseFactory.create(accountId)
 
     init {
         settings.addOnChangeListener(this)
@@ -162,39 +165,39 @@ class AccountSettingsViewModel @AssistedInject constructor(
 
 
     fun updateContactsSyncInterval(syncInterval: Long) {
-        CoroutineScope(ioDispatcher).launch {
-            accountSettings.setSyncInterval(SyncDataType.CONTACTS, syncInterval.takeUnless { it == -1L })
-            reload()
+        updateSettingsAndReload {
+            setAccountSettingsUseCase.setContactsSyncInterval(syncInterval)
         }
     }
 
     fun updateCalendarSyncInterval(syncInterval: Long) {
-        CoroutineScope(ioDispatcher).launch {
-            accountSettings.setSyncInterval(SyncDataType.EVENTS, syncInterval.takeUnless { it == -1L })
-            reload()
+        updateSettingsAndReload {
+            setAccountSettingsUseCase.setCalendarSyncInterval(syncInterval)
         }
     }
 
     fun updateTasksSyncInterval(syncInterval: Long) {
-        CoroutineScope(ioDispatcher).launch {
-            accountSettings.setSyncInterval(SyncDataType.TASKS, syncInterval.takeUnless { it == -1L })
-            reload()
+        updateSettingsAndReload {
+            setAccountSettingsUseCase.setTasksSyncInterval(syncInterval)
         }
     }
 
-    fun updateSyncWifiOnly(wifiOnly: Boolean) = CoroutineScope(ioDispatcher).launch {
-        accountSettings.setSyncWiFiOnly(wifiOnly)
-        reload()
+    fun updateSyncWifiOnly(wifiOnly: Boolean) {
+        updateSettingsAndReload {
+            setAccountSettingsUseCase.setSyncWiFiOnly(wifiOnly)
+        }
     }
 
-    fun updateSyncWifiOnlySSIDs(ssids: List<String>?) = CoroutineScope(ioDispatcher).launch {
-        accountSettings.setSyncWifiOnlySSIDs(ssids)
-        reload()
+    fun updateSyncWifiOnlySSIDs(ssids: List<String>?) {
+        updateSettingsAndReload {
+            setAccountSettingsUseCase.setSyncWifiOnlySSIDs(ssids)
+        }
     }
 
-    fun updateIgnoreVpns(ignoreVpns: Boolean) = CoroutineScope(ioDispatcher).launch {
-        accountSettings.setIgnoreVpns(ignoreVpns)
-        reload()
+    fun updateIgnoreVpns(ignoreVpns: Boolean) {
+        updateSettingsAndReload {
+            setAccountSettingsUseCase.setIgnoreVpns(ignoreVpns)
+        }
     }
 
 
@@ -204,21 +207,33 @@ class AccountSettingsViewModel @AssistedInject constructor(
         accountSettings.credentials().authState?.lastAuthorizationResponse?.request
 
     fun authenticate(authResponse: AuthorizationResponse) {
-        CoroutineScope(ioDispatcher).launch {
-            try {
-                // save new credentials
-                val authState = oAuthIntegration.authenticate(authService, authResponse)
-                accountSettings.updateAuthState(authState)
+        viewModelScope.launch {
+            val status = finishOAuthLogin(authResponse).fold(
+                onSuccess = { context.getString(R.string.settings_reauthorize_oauth_success) },
+                onFailure = { exception -> exception.localizedMessage }
+            )
 
-                _uiState.update {
-                    it.copy(status = context.getString(R.string.settings_reauthorize_oauth_success))
-                }
-            } catch (e: Exception) {
-                logger.log(Level.WARNING, "Authentication failed", e)
-                _uiState.update {
-                    it.copy(status = e.localizedMessage)
-                }
+            _uiState.update {
+                it.copy(status = status)
             }
+        }
+    }
+
+    private suspend fun finishOAuthLogin(authResponse: AuthorizationResponse): Result<Unit> {
+        try {
+            // Use applicationScope to make sure OAuth login completes even if the user navigates away from the screen,
+            // i.e. viewModelScope is canceled.
+            applicationScope.async {
+                val authState = oAuthIntegration.authenticate(authService, authResponse)
+                setAccountSettingsUseCase.setAuthState(authState)
+            }.await()
+
+            return Result.success(Unit)
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            logger.log(Level.WARNING, "Authentication failed", e)
+            return Result.failure(e)
         }
     }
 
@@ -228,78 +243,49 @@ class AccountSettingsViewModel @AssistedInject constructor(
         }
     }
 
-    fun updateCredentials(credentials: Credentials) = CoroutineScope(ioDispatcher).launch {
-        accountSettings.credentials(credentials)
-        reload()
+    fun updateCredentials(credentials: Credentials) {
+        updateSettingsAndReload {
+            setAccountSettingsUseCase.setCredentials(credentials)
+        }
     }
 
 
-    fun updateTimeRangePastDays(days: Int?) = CoroutineScope(ioDispatcher).launch {
-        accountSettings.setTimeRangePastDays(days)
-        reload()
-
-        /* If the new setting is a certain number of days, no full resync is required,
-        because every sync will cause a REPORT calendar-query with the given number of days.
-        However, if the new setting is "all events", collection sync may/should be used, so
-        the last sync-token has to be reset, which is done by setting fullResync=true.
-         */
-        resyncCalendars(
-            resync = if (days == null) ResyncType.RESYNC_ENTRIES else ResyncType.RESYNC_LIST,
-            tasks = false
-        )
+    fun updateTimeRangePastDays(days: Int?) {
+        updateSettingsAndReload {
+            setAccountSettingsUseCase.setTimeRangePastDays(days)
+        }
     }
 
-    fun updateDefaultAlarm(minBefore: Int?) = CoroutineScope(ioDispatcher).launch {
-        accountSettings.setDefaultAlarm(minBefore)
-        reload()
-
-        resyncCalendars(resync = ResyncType.RESYNC_ENTRIES, tasks = false)
+    fun updateDefaultAlarm(minBefore: Int?) {
+        updateSettingsAndReload {
+            setAccountSettingsUseCase.setDefaultAlarm(minBefore)
+        }
     }
 
-    fun updateManageCalendarColors(manage: Boolean) = CoroutineScope(ioDispatcher).launch {
-        accountSettings.setManageCalendarColors(manage)
-        reload()
-
-        resyncCalendars(resync = ResyncType.RESYNC_LIST, tasks = true)
+    fun updateManageCalendarColors(manage: Boolean) {
+        updateSettingsAndReload {
+            setAccountSettingsUseCase.setManageCalendarColors(manage)
+        }
     }
 
-    fun updateEventColors(manageColors: Boolean) = CoroutineScope(ioDispatcher).launch {
-        accountSettings.setEventColors(manageColors)
-        reload()
-
-        resyncCalendars(resync = ResyncType.RESYNC_ENTRIES, tasks = false)
+    fun updateEventColors(manageColors: Boolean) {
+        updateSettingsAndReload {
+            setAccountSettingsUseCase.setEventColors(manageColors)
+        }
     }
 
-
-    fun updateContactGroupMethod(groupMethod: GroupMethod) = CoroutineScope(ioDispatcher).launch {
-        accountSettings.setGroupMethod(groupMethod)
-        reload()
-
-        resync(SyncDataType.CONTACTS, ResyncType.RESYNC_ENTRIES)
+    fun updateContactGroupMethod(groupMethod: GroupMethod) {
+        updateSettingsAndReload {
+            setAccountSettingsUseCase.setContactGroupMethod(groupMethod)
+        }
     }
 
-    /**
-     * Initiates calendar re-synchronization.
-     *
-     * @param resync    whether only the list of entries (resync) or also all entries
-     *                  themselves (full resync) shall be downloaded again
-     * @param tasks     whether tasks shall be synchronized, too (false: only events, true: events and tasks)
-     */
-    private suspend fun resyncCalendars(resync: ResyncType, tasks: Boolean) {
-        resync(SyncDataType.EVENTS, resync)
-        if (tasks)
-            resync(SyncDataType.TASKS, resync)
+    // Note: Until there's a mechanism for listening to account settings changes, we need to manually reload settings
+    // after updating a setting.
+    private fun updateSettingsAndReload(block: suspend () -> Unit) {
+        viewModelScope.launch {
+            block()
+            reload()
+        }
     }
-
-    /**
-     * Initiates re-synchronization for given authority.
-     *
-     * @param dataType  type of data to synchronize
-     * @param resync    whether only the list of entries (resync) or also all entries
-     *                  themselves (full resync) shall be downloaded again
-     */
-    private suspend fun resync(dataType: SyncDataType, resync: ResyncType) {
-        syncWorkerManager.enqueueOneTime(accountId.toAndroidAccount(), dataType = dataType, resync = resync)
-    }
-
 }
