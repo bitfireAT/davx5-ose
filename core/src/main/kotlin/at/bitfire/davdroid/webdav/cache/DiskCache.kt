@@ -4,6 +4,12 @@
 
 package at.bitfire.davdroid.webdav.cache
 
+import androidx.annotation.VisibleForTesting
+import at.bitfire.davdroid.webdav.cache.DiskCache.Companion.fileMutex
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.util.logging.Logger
 
@@ -23,6 +29,8 @@ class DiskCache(
          * after how many cache writes [trim] is called
          */
         const val CLEANUP_RATE = 15
+
+        private val fileMutex = Mutex()
     }
 
     private val logger = Logger.getGlobal()
@@ -46,48 +54,49 @@ class DiskCache(
      *
      * @return the file that contains the value
      */
-    fun getFileOrPut(key: String, generate: () -> ByteArray?): File? {
-        synchronized(this) {
-            val file = File(cacheDir, key)
-            if (file.exists()) {
-                logger.fine("Cache hit: $key")
-                return file
-            } else {
-                logger.fine("Cache miss: $key → generating")
-                val result = generate() ?: return null
+    suspend fun getFileOrPut(key: String, generate: () -> ByteArray?): File? = fileMutex.withLock {
+        val file = File(cacheDir, key)
+        if (file.exists()) {
+            logger.fine("Cache hit: $key")
+            return file
+        } else {
+            logger.fine("Cache miss: $key → generating")
+            val result = generate() ?: return null
 
-                file.outputStream().use { output ->
-                    output.write(result)
-                }
-
-                if (writeCounter++.mod(CLEANUP_RATE) == 0)
-                    trim()
-
-                return file
+            file.outputStream().use { output ->
+                output.write(result)
             }
+
+            if (writeCounter++.mod(CLEANUP_RATE) == 0) withContext(Dispatchers.IO) {
+                trim()
+            }
+
+            return file
         }
     }
 
 
-    @Synchronized
-    fun clear() {
+    suspend fun clear() = fileMutex.withLock {
         cacheDir.listFiles()?.forEach { entry ->
             entry.delete()
         }
     }
 
-    @Synchronized
-    fun entries(): Int {
-        return cacheDir.listFiles()!!.size
+    suspend fun entries(): Int = fileMutex.withLock {
+        cacheDir.listFiles()!!.size
     }
 
-    fun keys(): Array<String> = cacheDir.list()!!
+    suspend fun keys(): Array<String> = fileMutex.withLock {
+        cacheDir.list()!!
+    }
 
     /**
      * Trims the cache to keep it smaller than [maxSize].
+     *
+     * Doesn't hold [fileMutex], it should be held by the calling function.
      */
-    @Synchronized
-    fun trim(): Int {
+    @VisibleForTesting
+    internal fun trim(): Int {
         var removed = 0
         logger.fine("Trimming disk cache to $maxSize bytes")
 

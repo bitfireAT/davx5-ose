@@ -4,11 +4,9 @@
 
 package at.bitfire.davdroid.webdav
 
-import android.os.FileUtils
 import at.bitfire.davdroid.webdav.cache.DiskCache
-import com.google.common.io.ByteStreams
 import com.google.common.io.Files
-import ezvcard.util.IOUtils
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
@@ -50,7 +48,7 @@ class DiskCacheTest {
 
 
     @Test
-    fun testGetFile_Null() {
+    fun testGetFile_Null() = runTest {
         assertNull(cache.getFileOrPut(SOME_KEY) { null })
 
         // null value shouldn't have been written to cache
@@ -61,7 +59,7 @@ class DiskCacheTest {
     }
 
     @Test
-    fun testGetFile_NotNull() {
+    fun testGetFile_NotNull() = runTest {
         cache.getFileOrPut(SOME_KEY) { SOME_VALUE }!!.let {
             assertArrayEquals(SOME_VALUE, Files.asByteSource(it).read())
         }
@@ -75,7 +73,7 @@ class DiskCacheTest {
 
 
     @Test
-    fun testClear() {
+    fun testClear() = runTest {
         for (i in 1..50) {
             cache.getFileOrPut(i.toString()) { i.toString().toByteArray() }
         }
@@ -87,7 +85,7 @@ class DiskCacheTest {
 
 
     @Test
-    fun testTrim() {
+    fun testTrim() = runTest {
         assertEquals(0, cache.entries())
 
         cache.getFileOrPut(SOME_KEY) { SOME_VALUE }
