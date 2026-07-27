@@ -8,6 +8,7 @@ import android.content.ContentValues
 import android.content.Entity
 import at.bitfire.synctools.icalendar.plusAssign
 import at.bitfire.synctools.mapping.jtx.KNOWN_ALARM_PROPERTIES
+import at.bitfire.synctools.util.Utils.containsIgnoreCase
 import at.techbee.jtx.JtxContract
 import net.fortuna.ical4j.model.Component
 import net.fortuna.ical4j.model.ComponentContainer
@@ -79,7 +80,7 @@ class RemindersHandler : JtxObjectEntityHandler {
                 }
             }?.all ?: emptyList()
         otherProperties
-            .filterNot { it.name.uppercase() in KNOWN_ALARM_PROPERTIES }
+            .filterNot { KNOWN_ALARM_PROPERTIES.containsIgnoreCase(it.name) }
             .let { alarmProps += it }
 
         handleTrigger(values)?.let { trigger ->
