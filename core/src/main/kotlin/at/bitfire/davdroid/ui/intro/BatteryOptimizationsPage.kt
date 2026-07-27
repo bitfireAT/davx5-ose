@@ -21,10 +21,7 @@ class BatteryOptimizationsPage @Inject constructor(
 ) : IntroPage() {
 
     override fun getShowPolicy(): ShowPolicy {
-        // show fragment when:
-        // 1. DAVx5 is not whitelisted yet and "don't show anymore" has not been clicked, and/or
-        // 2a. evil manufacturer AND
-        // 2b. "don't show anymore" has not been clicked
+        // show fragment when DAVx5 is not whitelisted yet and "don't show anymore" has not been clicked
         return if (
             !BatteryOptimizationsPageViewModel.isExempted(context) &&
             settingsManager.getBooleanOrNull(HINT_BATTERY_OPTIMIZATIONS) != false
