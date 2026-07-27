@@ -17,7 +17,14 @@ import javax.inject.Inject
  * [CoroutineWorker]'s default (CPU-core-sized [kotlinx.coroutines.Dispatchers.Default]),
  * which can be exhausted by concurrent background work easily and cause deadlocks.
  *
- * Use as base class for workers that primarily do I/O work.
+ * This class mainly exists because using [kotlinx.coroutines.Dispatchers.Default] for multiple
+ * concurrent syncs causes a deadlock:
+ * https://github.com/bitfireAT/davx5/issues/937 – caused by
+ * https://youtrack.jetbrains.com/issue/KTOR-9722/DigestAuthProvider-cannot-be-initialized-with-a-congested-Dispatchers.Default-pool
+ *
+ * As soon as the Ktor upstream bug is fixed, we can switch back to the default dispatcher again.
+ * We can also at any time switch to another dispatcher – the only important thing is that there's a free
+ * default dispatcher thread when the Ktor DigestAuthenticator is initalized.
  *
  * **Requires Hilt member injection**, so subclasses must be constructed as ([androidx.hilt.work.HiltWorker]).
  */
