@@ -111,7 +111,6 @@ class AppSettingsViewModel @Inject constructor(
     fun resetHints() = viewModelScope.launch(ioDispatcher) {
         settings.remove(BackupsPage.Model.SETTING_BACKUPS_ACCEPTED)
         settings.remove(BatteryOptimizationsPageViewModel.HINT_BATTERY_OPTIMIZATIONS)
-        settings.remove(BatteryOptimizationsPageViewModel.HINT_AUTOSTART_PERMISSION)
         settings.remove(OpenSourcePage.Model.SETTING_NEXT_DONATION_POPUP)
         settings.remove(TasksViewModel.HINT_OPENTASKS_NOT_INSTALLED)
     }

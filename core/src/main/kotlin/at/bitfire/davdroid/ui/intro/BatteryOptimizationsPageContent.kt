@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.ui.intro
 
-import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
@@ -18,7 +17,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -34,10 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.ui.ExternalUris
-import at.bitfire.davdroid.ui.ExternalUris.withStatParams
 import at.bitfire.davdroid.ui.composable.AppTheme
-import java.util.Locale
 
 @Composable
 fun BatteryOptimizationsPageContent(
@@ -57,16 +52,12 @@ fun BatteryOptimizationsPageContent(
             ignoreBatteryOptimizationsResultLauncher.launch(context.packageName)
     }
 
-    val hintAutostartPermission by model.hintAutostartPermission.collectAsStateWithLifecycle(false)
     BatteryOptimizationsPageContent(
         dontShowBattery = hintBatteryOptimizations == false,
         onChangeDontShowBattery = model::updateHintBatteryOptimizations,
         isExempted = uiState.isExempted,
         shouldBeExempted = uiState.shouldBeExempted,
-        onChangeShouldBeExempted = model::updateShouldBeExempted,
-        dontShowAutostart = hintAutostartPermission == false,
-        onChangeDontShowAutostart = model::updateHintAutostartPermission,
-        manufacturerWarning = BatteryOptimizationsPageViewModel.manufacturerWarning
+        onChangeShouldBeExempted = model::updateShouldBeExempted
     )
 }
 
@@ -76,10 +67,7 @@ fun BatteryOptimizationsPageContent(
     onChangeDontShowBattery: (Boolean) -> Unit = {},
     isExempted: Boolean,
     shouldBeExempted: Boolean,
-    onChangeShouldBeExempted: (Boolean) -> Unit = {},
-    dontShowAutostart: Boolean,
-    onChangeDontShowAutostart: (Boolean) -> Unit = {},
-    manufacturerWarning: Boolean
+    onChangeShouldBeExempted: (Boolean) -> Unit = {}
 ) {
     val uriHandler = LocalUriHandler.current
 
@@ -143,65 +131,6 @@ fun BatteryOptimizationsPageContent(
                 }
             }
         }
-        if (manufacturerWarning) {
-            Card(
-                modifier = Modifier
-                    .padding(8.dp)
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                ) {
-                    Text(
-                        text = stringResource(
-                            R.string.intro_autostart_title,
-                            Build.MANUFACTURER.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
-                        ),
-                        style = MaterialTheme.typography.labelLarge,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    Text(
-                        text = stringResource(R.string.intro_autostart_text),
-                        style = MaterialTheme.typography.bodyLarge,
-                        modifier = Modifier.padding(top = 12.dp)
-                    )
-
-                    val context = LocalContext.current
-                    OutlinedButton(
-                        onClick = {
-                            uriHandler.openUri(
-                                ExternalUris.Homepage.baseUrl.buildUpon()
-                                    .appendPath(ExternalUris.Homepage.PATH_FAQ)
-                                    .appendPath(ExternalUris.Homepage.PATH_FAQ_SYNC_NOT_RUN)
-                                    .appendQueryParameter(
-                                        "manufacturer",
-                                        Build.MANUFACTURER.lowercase(Locale.ROOT)
-                                    )
-                                    .withStatParams(context, "BatteryOptimizationsPage")
-                                    .build().toString()
-                            )
-                        }
-                    ) {
-                        Text(stringResource(R.string.intro_more_info))
-                    }
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Checkbox(
-                            checked = dontShowAutostart,
-                            onCheckedChange = { onChangeDontShowAutostart(dontShowAutostart) }
-                        )
-                        Text(
-                            text = stringResource(R.string.intro_autostart_dont_show),
-                            style = MaterialTheme.typography.bodyMedium,
-                            modifier = Modifier
-                                .clickable { onChangeDontShowAutostart(dontShowAutostart) }
-                        )
-                    }
-                }
-            }
-        }
         Text(
             text = stringResource(
                 R.string.intro_leave_unchecked,
@@ -220,9 +149,7 @@ private fun BatteryOptimizationsContent_Preview() {
         BatteryOptimizationsPageContent(
             dontShowBattery = true,
             isExempted = false,
-            shouldBeExempted = true,
-            dontShowAutostart = false,
-            manufacturerWarning = true
+            shouldBeExempted = true
         )
     }
 }
