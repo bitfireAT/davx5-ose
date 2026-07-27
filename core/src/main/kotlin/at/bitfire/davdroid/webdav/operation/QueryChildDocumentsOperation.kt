@@ -25,13 +25,13 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.WebDavDocument
 import at.bitfire.davdroid.db.WebDavDocumentDao
+import at.bitfire.davdroid.di.qualifier.ApplicationScope
 import at.bitfire.davdroid.webdav.DavHttpClientBuilder
 import at.bitfire.davdroid.webdav.DocumentSortByMapper
 import at.bitfire.davdroid.webdav.DocumentsCursor
 import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -43,7 +43,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * Singleton so that [backgroundScope] (and the running-query bookkeeping it launches into) has a
+ * Singleton so that [applicationScope] (and the running-query bookkeeping it launches into) has a
  * single, well-defined lifetime instead of a new, uncancellable scope per Hilt injection.
  */
 @Singleton
@@ -52,13 +52,12 @@ class QueryChildDocumentsOperation @Inject constructor(
     private val db: AppDatabase,
     private val documentSortByMapper: Lazy<DocumentSortByMapper>,
     private val davClientBuilder: DavHttpClientBuilder,
-    private val logger: Logger
+    private val logger: Logger,
+    @ApplicationScope private val applicationScope: CoroutineScope
 ) {
 
     private val authority = context.getString(R.string.webdav_authority)
     private val documentDao = db.webDavDocumentDao()
-
-    private val backgroundScope = CoroutineScope(SupervisorJob())
 
     suspend operator fun invoke(parentDocumentId: String, projection: Array<out String>?, sortOrder: String?) =
         mutex.withLock {
@@ -90,7 +89,7 @@ class QueryChildDocumentsOperation @Inject constructor(
 
         // Dispatch worker querying for the children and keep track of it
         val running = runningQueryChildren.getOrPut(parentId) {
-            backgroundScope.launch {
+            applicationScope.launch {
                 queryChildren(parent)
                 // Once the query is done, set query as finished (not running)
                 runningQueryChildren[parentId] = false
