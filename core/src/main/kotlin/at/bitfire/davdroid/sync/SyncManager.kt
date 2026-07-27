@@ -58,8 +58,6 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
@@ -191,7 +189,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
 
                         // list and process all entries at current sync state (which may be the same as or newer than remoteSyncState)
                         logger.info("Processing remote entries")
-                        processRemoteList(listAllRemote())
+                        processRemoteMembers(listAllRemote())
 
                         logger.info("Deleting entries which are not present remotely anymore")
                         deleteNotPresentRemotely()
@@ -220,7 +218,9 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
                         do {
                             logger.info("Listing changes since $syncState")
                             try {
-                                val (newToken, further) = processRemoteChanges(listRemoteChanges(syncState))
+                                val (syncToken, further) = processRemoteMembers(listRemoteChanges(syncState))
+                                val newToken = syncToken
+                                    ?: throw DavException("Received sync-collection response without sync-token")
                                 syncState = SyncState.fromSyncToken(newToken, initialSync)
                                 furtherChanges = further
                             } catch (e: HttpException) {
@@ -229,7 +229,9 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
                                     initialSync = true
                                     resetPresentRemotely()
 
-                                    val (newToken, further) = processRemoteChanges(listRemoteChanges(null))
+                                    val (syncToken, further) = processRemoteMembers(listRemoteChanges(null))
+                                    val newToken = syncToken
+                                        ?: throw DavException("Received sync-collection response without sync-token")
                                     syncState = SyncState.fromSyncToken(newToken, initialSync = true)
                                     furtherChanges = further
                                 } else
@@ -650,63 +652,22 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
     }
 
     /**
-     * Processes a full remote listing (PROPFIND/REPORT). All resources from [remoteList]
-     * are downloaded and processed.
+     * Processes a remote listing: all resources from [remoteList] are downloaded and processed.
+     * Handles both full listings (PROPFIND/REPORT) and sync-collection changes (RFC 6578); for the
+     * latter, extracts the sync-token and whether the server indicated further results.
      *
-     * @param remoteList remote listing to process
+     * @param remoteList remote listing (or changes) to process
+     *
+     * @return sync-token, if any was found in [remoteList] (only present for sync-collection changes),
+     *         and whether the server indicated further results
      */
-    protected open suspend fun processRemoteList(remoteList: Flow<MultiStatusItem>) {
-        coroutineScope {    // structured concurrency
-            val processRemoteListScope = this
-
-            // launches coroutines in processRemoteListScope
-            val batchDownloader = BatchDownloader { batch ->
-                processRemoteListScope.launch {
-                    syncTransferSemaphore.withPermit {
-                        downloadRemote(batch)
-                    }
-                }
-            }
-
-            coroutineScope {    // structured concurrency
-                val processMultiStatusScope = this
-
-                remoteList
-                    .filterIsInstance<MultiStatusItem.Response>()
-                    .filter { it.relation == Response.HrefRelation.MEMBER }
-                    .collect {
-                        // launches coroutines in scope
-                        processMemberResponse(processMultiStatusScope, it.response, batchDownloader)
-                    }
-
-                // wait until all coroutines launched in processMultiStatusScope have finished
-            }
-
-            // download remaining resources
-            batchDownloader.flush()
-
-            // wait until all coroutines launched in processRemoteListScope have finished
-        }
-    }
-
-    protected abstract fun listAllRemote(): Flow<MultiStatusItem>
-
-    /**
-     * Processes remote changes as received by [listRemoteChanges] (RFC 6578 `sync-collection` REPORT).
-     * All changed/new resources from [remoteList] are downloaded, and resources deleted on the
-     * server are deleted locally.
-     *
-     * @param remoteList remote changes to process
-     *
-     * @return sync-token of the processed changes, and whether the server indicated further results
-     */
-    protected open suspend fun processRemoteChanges(remoteList: Flow<MultiStatusItem>): Pair<SyncToken, Boolean> =
+    protected suspend fun processRemoteMembers(remoteList: Flow<MultiStatusItem>): Pair<SyncToken?, Boolean> =
         coroutineScope {        // structured concurrency
-            val processRemoteChangesScope = this
+            val processRemoteScope = this
 
-            // launches coroutines in processRemoteChangesScope
+            // launches coroutines in processRemoteScope
             val batchDownloader = BatchDownloader { batch ->
-                processRemoteChangesScope.launch {
+                processRemoteScope.launch {
                     syncTransferSemaphore.withPermit {
                         downloadRemote(batch)
                     }
@@ -742,13 +703,12 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
             // download remaining resources
             batchDownloader.flush()
 
-            Pair(
-                syncToken ?: throw DavException("Received sync-collection response without sync-token"),
-                furtherResults
-            )
+            Pair(syncToken, furtherResults)
 
-            // wait until all coroutines launched in processRemoteChangesScope have finished
+            // wait until all coroutines launched in processRemoteScope have finished
         }
+
+    protected abstract fun listAllRemote(): Flow<MultiStatusItem>
 
     protected open fun listRemoteChanges(syncState: SyncState?): Flow<MultiStatusItem> =
         davCollection.reportChanges(
