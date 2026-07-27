@@ -23,7 +23,7 @@ import javax.inject.Inject
  *
  * As soon as the Ktor upstream bug is fixed, we can switch back to the default dispatcher again.
  * We can also at any time switch to another dispatcher – the only important thing is that there's a free
- * default dispatcher thread when the Ktor DigestAuthenticator is initalized, until KTOR-9722 is fixed.
+ * default dispatcher thread when the Ktor DigestAuthenticator is initialized, until KTOR-9722 is fixed.
  *
  * **Requires Hilt member injection**, so subclasses must be constructed as ([androidx.hilt.work.HiltWorker]).
  */

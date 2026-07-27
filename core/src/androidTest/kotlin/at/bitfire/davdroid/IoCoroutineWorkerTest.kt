@@ -92,7 +92,7 @@ class IoCoroutineWorkerTest {
             scope.launch {
                 allCongested.countDown()
                 runInterruptible {
-                    Thread.sleep(10_000)
+                    Thread.sleep(3_000)
                 }
             }
         }
