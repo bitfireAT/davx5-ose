@@ -5,12 +5,14 @@
 package at.bitfire.davdroid.webdav.cache
 
 import androidx.annotation.VisibleForTesting
-import at.bitfire.davdroid.webdav.cache.DiskCache.Companion.fileMutex
+import at.bitfire.davdroid.util.KeyedMutex
+import at.bitfire.davdroid.webdav.cache.DiskCache.Companion.structureMutex
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.util.concurrent.atomic.AtomicInteger
 import java.util.logging.Logger
 
 /**
@@ -30,11 +32,26 @@ class DiskCache(
          */
         const val CLEANUP_RATE = 15
 
-        private val fileMutex = Mutex()
+        /**
+         * Serializes cache-wide structural operations ([clear], [entries], [keys], [trim]) across all
+         * [DiskCache] instances (they all share the same lock, regardless of [cacheDir]). These are all
+         * fast, blocking-but-brief file system calls – this lock is never held while running a
+         * [getFileOrPut] `generate` callback, so a single slow (e.g. network-bound) fetch can't stall
+         * unrelated cache reads/writes.
+         */
+        private val structureMutex = Mutex()
+
+        /**
+         * One [Mutex] per cache key, so that concurrent [getFileOrPut] calls for the *same* key are
+         * serialized (preventing torn writes to the same file), while calls for different keys – even
+         * while one of them is stuck in a slow `generate` callback – proceed independently instead of
+         * stalling behind a single global lock.
+         */
+        private val keyMutex = KeyedMutex()
     }
 
     private val logger = Logger.getGlobal()
-    private var writeCounter: Int = 0
+    private val writeCounter = AtomicInteger()
 
     init {
         if (!cacheDir.isDirectory)
@@ -54,7 +71,7 @@ class DiskCache(
      *
      * @return the file that contains the value
      */
-    suspend fun getFileOrPut(key: String, generate: () -> ByteArray?): File? = fileMutex.withLock {
+    suspend fun getFileOrPut(key: String, generate: () -> ByteArray?): File? = keyMutex.withLock(key) {
         val file = File(cacheDir, key)
         if (file.exists()) {
             logger.fine("Cache hit: $key")
@@ -67,8 +84,10 @@ class DiskCache(
                 output.write(result)
             }
 
-            if (writeCounter++.mod(CLEANUP_RATE) == 0) withContext(Dispatchers.IO) {
-                trim()
+            if (writeCounter.getAndIncrement().mod(CLEANUP_RATE) == 0) structureMutex.withLock {
+                withContext(Dispatchers.IO) {
+                    trim()
+                }
             }
 
             return file
@@ -76,24 +95,24 @@ class DiskCache(
     }
 
 
-    suspend fun clear() = fileMutex.withLock {
+    suspend fun clear() = structureMutex.withLock {
         cacheDir.listFiles()?.forEach { entry ->
             entry.delete()
         }
     }
 
-    suspend fun entries(): Int = fileMutex.withLock {
+    suspend fun entries(): Int = structureMutex.withLock {
         cacheDir.listFiles()!!.size
     }
 
-    suspend fun keys(): Array<String> = fileMutex.withLock {
+    suspend fun keys(): Array<String> = structureMutex.withLock {
         cacheDir.list()!!
     }
 
     /**
      * Trims the cache to keep it smaller than [maxSize].
      *
-     * Doesn't hold [fileMutex], it should be held by the calling function.
+     * Doesn't hold [structureMutex] itself, it must be held by the calling function.
      */
     @VisibleForTesting
     internal fun trim(): Int {
