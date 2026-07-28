@@ -6,6 +6,9 @@ package at.bitfire.davdroid.webdav
 
 import androidx.annotation.RequiresApi
 import com.google.common.cache.LoadingCache
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import java.io.IOException
 import java.util.logging.Logger
 import kotlin.math.min
@@ -26,7 +29,7 @@ import kotlin.math.min
 class PagingReader(
     private val fileSize: Long,
     private val pageSize: Int,
-    private val pageCache: LoadingCache<RandomAccessCallback.PageIdentifier, ByteArray>
+    private val pageCache: LoadingCache<RandomAccessCallback.PageIdentifier, Deferred<ByteArray>>
 ) {
 
     val logger: Logger = Logger.getLogger(javaClass.name)
@@ -45,6 +48,10 @@ class PagingReader(
     /** currently loaded page */
     private var currentPage: CachedPage? = null
 
+    /** Instance field (not in companion): [currentPage] and [pageCache] are per-instance, so a shared mutex would
+     *  needlessly serialize reads across unrelated, concurrently open WebDAV files. */
+    private val readPageMutex = Mutex()
+
     /**
      * Reads a given number of bytes from a given position.
      *
@@ -56,7 +63,7 @@ class PagingReader(
      *
      * @return number of bytes read (may be smaller than [size] if the file is not that big)
      */
-    fun read(offset: Long, size: Int, dst: ByteArray): Int {
+    suspend fun read(offset: Long, size: Int, dst: ByteArray): Int {
         // input validation
         if (offset > fileSize)
             throw IndexOutOfBoundsException()
@@ -92,8 +99,7 @@ class PagingReader(
      * @return number of bytes read (may be less than [size] when the page ends before);
      * 0 guarantees that there are no more bytes (EOF)
     */
-    @Synchronized
-    fun readPage(position: Long, size: Int, dst: ByteArray, dstOffset: Int): Int {
+    suspend fun readPage(position: Long, size: Int, dst: ByteArray, dstOffset: Int): Int = readPageMutex.withLock {
         logger.fine("read(position=$position, size=$size, dstOffset=$dstOffset)")
 
         // read max. 1 page
@@ -107,7 +113,7 @@ class PagingReader(
                 if (pgSize == 0)
                     ByteArray(0)        // don't load 0-byte pages
                 else
-                    pageCache.get(RandomAccessCallback.PageIdentifier(offset = pgStart, size = pgSize))
+                    pageCache.get(RandomAccessCallback.PageIdentifier(offset = pgStart, size = pgSize)).await()
             if (pageData.size != pgSize)
                 throw IOException("Couldn't fetch whole file segment (expected $pgSize bytes, got ${pageData.size} bytes)")
 
