@@ -9,6 +9,9 @@ import java.util.Locale
 
 object Utils {
 
+    fun Set<String>.containsIgnoreCase(value: String): Boolean =
+        any { it.equals(value, ignoreCase = true) }
+
     fun String.capitalize(): String = split(' ').joinToString(" ") { word ->
         word.replaceFirstChar {
             if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString()
