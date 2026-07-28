@@ -12,6 +12,7 @@ import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.resource.LocalTaskList
 import at.bitfire.davdroid.resource.LocalTaskListStore
+import at.bitfire.davdroid.settings.SyncSettingsSnapshot
 import at.bitfire.synctools.storage.TaskProvider
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -26,14 +27,21 @@ class TaskSyncer @AssistedInject constructor(
     @Assisted val providerName: TaskProvider.ProviderName,
     @Assisted resync: ResyncType?,
     @Assisted syncResult: SyncResult,
+    @Assisted settings: SyncSettingsSnapshot,
     localTaskListStoreFactory: LocalTaskListStore.Factory,
     private val tasksAppManager: dagger.Lazy<TasksAppManager>,
     private val tasksSyncManagerFactory: TasksSyncManager.Factory,
-): Syncer<LocalTaskListStore, LocalTaskList>(account, resync, syncResult) {
+) : Syncer<LocalTaskListStore, LocalTaskList>(account, resync, syncResult, settings) {
 
     @AssistedFactory
     interface Factory {
-        fun create(account: Account, providerName: TaskProvider.ProviderName, resyncType: ResyncType?, syncResult: SyncResult): TaskSyncer
+        fun create(
+            account: Account,
+            providerName: TaskProvider.ProviderName,
+            resyncType: ResyncType?,
+            syncResult: SyncResult,
+            settings: SyncSettingsSnapshot
+        ): TaskSyncer
     }
 
     override val dataStore = localTaskListStoreFactory.create(providerName)
@@ -84,7 +92,8 @@ class TaskSyncer @AssistedInject constructor(
             syncResult,
             localCollection,
             remoteCollection,
-            resync
+            resync,
+            settings
         )
         syncManager.performSync()
     }

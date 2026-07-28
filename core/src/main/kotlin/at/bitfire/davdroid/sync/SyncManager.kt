@@ -42,6 +42,7 @@ import at.bitfire.davdroid.repository.DavSyncStatsRepository
 import at.bitfire.davdroid.resource.LocalCollection
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.resource.SyncState
+import at.bitfire.davdroid.settings.SyncSettingsSnapshot
 import at.bitfire.davdroid.sync.account.InvalidAccountException
 import at.bitfire.synctools.storage.LocalStorageException
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -85,6 +86,7 @@ import javax.net.ssl.SSLHandshakeException
  * @param localCollection   local collection to synchronize (interface to content provider)
  * @param collection        collection info in the database
  * @param resync            whether re-synchronization is requested
+ * @param settings          snapshot of the account settings relevant for this sync run
  */
 abstract class SyncManager<LocalType : LocalResource, out CollectionType : LocalCollection<LocalType>, RemoteType : DavCollection>(
     val account: Account,
@@ -95,7 +97,8 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
     val collection: Collection,
     val resync: ResyncType?,
     val ioDispatcher: CoroutineDispatcher,
-    val syncTransferSemaphore: Semaphore
+    val syncTransferSemaphore: Semaphore,
+    val settings: SyncSettingsSnapshot
 ) {
 
     enum class SyncAlgorithm {

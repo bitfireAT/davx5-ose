@@ -13,7 +13,7 @@ import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalAddressBookStore
-import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.settings.SyncSettingsSnapshot
 import at.bitfire.synctools.storage.contacts.AddressContract.asSyncAdapter
 import at.bitfire.synctools.util.setAndVerifyUserData
 import dagger.assisted.Assisted
@@ -32,11 +32,11 @@ class AddressBookSyncer @AssistedInject constructor(
     @Assisted resync: ResyncType?,
     @Assisted val syncFrameworkUpload: Boolean,
     @Assisted syncResult: SyncResult,
+    @Assisted settings: SyncSettingsSnapshot,
     addressBookStore: LocalAddressBookStore,
-    private val accountSettingsFactory: AccountSettings.Factory,
     private val contactsSyncManagerFactory: ContactsSyncManager.Factory,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher
-): Syncer<LocalAddressBookStore, LocalAddressBook>(account, resync, syncResult) {
+) : Syncer<LocalAddressBookStore, LocalAddressBook>(account, resync, syncResult, settings) {
 
     @AssistedFactory
     interface Factory {
@@ -44,7 +44,8 @@ class AddressBookSyncer @AssistedInject constructor(
             account: Account,
             resyncType: ResyncType?,
             syncFrameworkUpload: Boolean,
-            syncResult: SyncResult
+            syncResult: SyncResult,
+            settings: SyncSettingsSnapshot
         ): AddressBookSyncer
     }
 
@@ -101,7 +102,8 @@ class AddressBookSyncer @AssistedInject constructor(
                 addressBook,
                 collection,
                 resync,
-                syncFrameworkUpload
+                syncFrameworkUpload,
+                settings
             )
             syncManager.performSync()
 
@@ -127,8 +129,7 @@ class AddressBookSyncer @AssistedInject constructor(
         addressBook: LocalAddressBook,
         provider: ContentProviderClient
     ) {
-        val accountSettings = accountSettingsFactory.create(account)
-        val groupMethod = accountSettings.getGroupMethod().name
+        val groupMethod = settings.groupMethod.name
 
         val accountManager = AccountManager.get(context)
         accountManager.getUserData(addressBook.addressBookAccount, PREVIOUS_GROUP_METHOD)?.let { previousGroupMethod ->

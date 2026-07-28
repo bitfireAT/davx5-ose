@@ -139,7 +139,8 @@ class CalendarSyncManagerTest {
         syncResult = mockk(),
         localCalendar = mockk(),
         collection = mockk(),
-        resync = mockk()
+        resync = mockk(),
+        settings = mockk()
     )
 
 

@@ -26,6 +26,7 @@ import at.bitfire.davdroid.di.qualifier.SyncTransferSemaphore
 import at.bitfire.davdroid.resource.LocalJtxCollection
 import at.bitfire.davdroid.resource.LocalJtxObject
 import at.bitfire.davdroid.resource.LocalResource
+import at.bitfire.davdroid.settings.SyncSettingsSnapshot
 import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.davdroid.util.DavUtils.lastSegment
 import at.bitfire.synctools.exception.InvalidResourceException
@@ -61,6 +62,7 @@ class JtxSyncManager @AssistedInject constructor(
     @Assisted localCollection: LocalJtxCollection,
     @Assisted collection: Collection,
     @Assisted resync: ResyncType?,
+    @Assisted settings: SyncSettingsSnapshot,
     @IoDispatcher ioDispatcher: CoroutineDispatcher,
     private val productIds: ProductIds,
     @SyncTransferSemaphore syncTransferSemaphore: Semaphore
@@ -73,7 +75,8 @@ class JtxSyncManager @AssistedInject constructor(
     collection,
     resync,
     ioDispatcher,
-    syncTransferSemaphore
+    syncTransferSemaphore,
+    settings
 ) {
 
     @AssistedFactory
@@ -84,7 +87,8 @@ class JtxSyncManager @AssistedInject constructor(
             syncResult: SyncResult,
             localCollection: LocalJtxCollection,
             collection: Collection,
-            resync: ResyncType?
+            resync: ResyncType?,
+            settings: SyncSettingsSnapshot
         ): JtxSyncManager
     }
 

@@ -537,7 +537,8 @@ class SyncManagerTest {
         client,
         syncResult,
         localCollection,
-        collection
+        collection,
+        mockk()
     )
 
 }

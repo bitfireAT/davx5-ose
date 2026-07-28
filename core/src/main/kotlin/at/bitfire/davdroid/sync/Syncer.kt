@@ -16,6 +16,7 @@ import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.resource.LocalCollection
 import at.bitfire.davdroid.resource.LocalDataStore
+import at.bitfire.davdroid.settings.SyncSettingsSnapshot
 import at.bitfire.davdroid.sync.account.InvalidAccountException
 import at.bitfire.synctools.storage.LocalStorageException
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -35,11 +36,13 @@ import kotlin.jvm.optionals.getOrNull
  * @param account       account to synchronize
  * @param resync        whether re-synchronization is requested (`null` for normal sync)
  * @param syncResult    synchronization result, to be modified during sync
+ * @param settings      snapshot of the account settings relevant for this sync run
  */
 abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType: LocalCollection<*>>(
     protected val account: Account,
     protected val resync: ResyncType?,
-    protected val syncResult: SyncResult
+    protected val syncResult: SyncResult,
+    protected val settings: SyncSettingsSnapshot
 ): Closeable {
 
     abstract val dataStore: StoreType

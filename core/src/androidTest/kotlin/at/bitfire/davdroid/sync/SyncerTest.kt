@@ -40,7 +40,7 @@ class SyncerTest {
 
     @SpyK
     @InjectMockKs
-    var syncer = TestSyncer(mockk(relaxed = true), null, SyncResult(), dataStore)
+    var syncer = TestSyncer(mockk(relaxed = true), null, SyncResult(), mockk(relaxed = true), dataStore)
 
 
     @Test
@@ -162,8 +162,9 @@ class SyncerTest {
         account: Account,
         resyncType: ResyncType?,
         syncResult: SyncResult,
+        settings: at.bitfire.davdroid.settings.SyncSettingsSnapshot,
         theDataStore: LocalTestStore
-    ) : Syncer<LocalTestStore, LocalTestCollection>(account, resyncType, syncResult) {
+    ) : Syncer<LocalTestStore, LocalTestCollection>(account, resyncType, syncResult, settings) {
 
         override val dataStore: LocalTestStore =
             theDataStore

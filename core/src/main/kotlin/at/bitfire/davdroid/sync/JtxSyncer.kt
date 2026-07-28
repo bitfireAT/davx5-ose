@@ -12,6 +12,7 @@ import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.resource.LocalJtxCollection
 import at.bitfire.davdroid.resource.LocalJtxCollectionStore
+import at.bitfire.davdroid.settings.SyncSettingsSnapshot
 import at.bitfire.synctools.storage.TaskProvider
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -24,14 +25,20 @@ class JtxSyncer @AssistedInject constructor(
     @Assisted account: Account,
     @Assisted resync: ResyncType?,
     @Assisted syncResult: SyncResult,
+    @Assisted settings: SyncSettingsSnapshot,
     localJtxCollectionStore: LocalJtxCollectionStore,
     private val jtxSyncManagerFactory: JtxSyncManager.Factory,
     private val tasksAppManager: dagger.Lazy<TasksAppManager>
-): Syncer<LocalJtxCollectionStore, LocalJtxCollection>(account, resync, syncResult) {
+) : Syncer<LocalJtxCollectionStore, LocalJtxCollection>(account, resync, syncResult, settings) {
 
     @AssistedFactory
     interface Factory {
-        fun create(account: Account, resyncType: ResyncType?, syncResult: SyncResult): JtxSyncer
+        fun create(
+            account: Account,
+            resyncType: ResyncType?,
+            syncResult: SyncResult,
+            settings: SyncSettingsSnapshot
+        ): JtxSyncer
     }
 
     override val dataStore = localJtxCollectionStore
@@ -78,7 +85,8 @@ class JtxSyncer @AssistedInject constructor(
             syncResult,
             localCollection,
             remoteCollection,
-            resync
+            resync,
+            settings
         )
         syncManager.performSync()
     }

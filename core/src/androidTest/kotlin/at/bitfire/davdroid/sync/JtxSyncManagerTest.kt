@@ -22,6 +22,7 @@ import at.techbee.jtx.JtxContract
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -99,7 +100,8 @@ class JtxSyncManagerTest {
             syncResult = SyncResult(),
             localCollection = localJtxCollection,
             collection = dbCollection,
-            resync = null
+            resync = null,
+            settings = mockk()
         )
     }
 
