@@ -5,7 +5,10 @@
 package at.bitfire.davdroid.util
 
 import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withContext
 import java.util.concurrent.ConcurrentHashMap
+import kotlin.coroutines.CoroutineContext
 
 /**
  * A [Mutex] per key: concurrent operations for different keys don't block each other, while
@@ -23,16 +26,13 @@ class KeyedMutex {
     // ConcurrentHashMap's atomic compute/computeIfPresent, so no additional locking is needed here
     val locks = ConcurrentHashMap<String, Entry>()
 
-    suspend inline fun <T> withLock(key: String, action: () -> T): T {
+    suspend inline fun <T> withLock(key: String, coroutineContext: CoroutineContext? = null, crossinline action: () -> T): T {
         val entry = locks.compute(key) { _, existing ->
             (existing ?: Entry()).apply { refCount++ }
         }!!
         try {
-            entry.mutex.lock()
-            try {
-                return action()
-            } finally {
-                entry.mutex.unlock()
+            return entry.mutex.withLock {
+                if (coroutineContext != null) withContext(coroutineContext) { action() } else action()
             }
         } finally {
             locks.computeIfPresent(key) { _, e ->
