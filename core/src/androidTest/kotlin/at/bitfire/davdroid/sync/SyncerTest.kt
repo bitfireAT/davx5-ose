@@ -162,7 +162,7 @@ class SyncerTest {
         account: Account,
         resyncType: ResyncType?,
         syncResult: SyncResult,
-        settings: at.bitfire.davdroid.settings.SyncSettingsSnapshot,
+        settings: SyncSettingsSnapshot,
         theDataStore: LocalTestStore
     ) : Syncer<LocalTestStore, LocalTestCollection>(account, resyncType, syncResult, settings) {
 

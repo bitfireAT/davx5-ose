@@ -26,7 +26,6 @@ import at.bitfire.davdroid.di.qualifier.SyncTransferSemaphore
 import at.bitfire.davdroid.resource.LocalJtxCollection
 import at.bitfire.davdroid.resource.LocalJtxObject
 import at.bitfire.davdroid.resource.LocalResource
-import at.bitfire.davdroid.settings.SyncSettingsSnapshot
 import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.davdroid.util.DavUtils.lastSegment
 import at.bitfire.synctools.exception.InvalidResourceException
