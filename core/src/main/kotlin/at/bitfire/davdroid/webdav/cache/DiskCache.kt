@@ -6,7 +6,6 @@ package at.bitfire.davdroid.webdav.cache
 
 import androidx.annotation.VisibleForTesting
 import at.bitfire.davdroid.util.KeyedMutex
-import at.bitfire.davdroid.webdav.cache.DiskCache.Companion.structureMutex
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -72,63 +71,67 @@ class DiskCache(
      * @return the file that contains the value
      */
     suspend fun getFileOrPut(key: String, generate: () -> ByteArray?): File? = keyMutex.withLock(key) {
-        val file = File(cacheDir, key)
-        if (file.exists()) {
-            logger.fine("Cache hit: $key")
-            return file
-        } else {
-            logger.fine("Cache miss: $key → generating")
-            val result = generate() ?: return null
+        withContext(Dispatchers.IO) {
+            val file = File(cacheDir, key)
+            if (file.exists()) {
+                logger.fine("Cache hit: $key")
+                return@withContext file
+            } else {
+                logger.fine("Cache miss: $key → generating")
+                val result = generate() ?: return@withContext null
 
-            file.outputStream().use { output ->
-                output.write(result)
-            }
-
-            if (writeCounter.getAndIncrement().mod(CLEANUP_RATE) == 0) structureMutex.withLock {
-                withContext(Dispatchers.IO) {
-                    trim()
+                file.outputStream().use { output ->
+                    output.write(result)
                 }
-            }
 
-            return file
+                if (writeCounter.getAndIncrement().mod(CLEANUP_RATE) == 0) trim()
+
+                return@withContext file
+            }
         }
     }
 
 
     suspend fun clear() = structureMutex.withLock {
-        cacheDir.listFiles()?.forEach { entry ->
-            entry.delete()
+        withContext(Dispatchers.IO) {
+            cacheDir.listFiles()?.forEach { entry ->
+                entry.delete()
+            }
         }
     }
 
     suspend fun entries(): Int = structureMutex.withLock {
-        cacheDir.listFiles()!!.size
+        withContext(Dispatchers.IO) {
+            cacheDir.listFiles()!!.size
+        }
     }
 
     suspend fun keys(): Array<String> = structureMutex.withLock {
-        cacheDir.list()!!
+        withContext(Dispatchers.IO) {
+            cacheDir.list()!!
+        }
     }
 
     /**
      * Trims the cache to keep it smaller than [maxSize].
-     *
-     * Doesn't hold [structureMutex] itself, it must be held by the calling function.
      */
     @VisibleForTesting
-    internal fun trim(): Int {
-        var removed = 0
-        logger.fine("Trimming disk cache to $maxSize bytes")
+    internal suspend fun trim(): Int = structureMutex.withLock {
+        withContext(Dispatchers.IO) {
+            var removed = 0
+            logger.fine("Trimming disk cache to $maxSize bytes")
 
-        val files = cacheDir.listFiles()!!.toMutableList()
-        files.sortBy { file -> file.lastModified() }    // sort by modification time (ascending)
+            val files = cacheDir.listFiles()!!.toMutableList()
+            files.sortBy { file -> file.lastModified() }    // sort by modification time (ascending)
 
-        while (files.sumOf { file -> file.length() } > maxSize) {
-            val file = files.removeAt(0)      // take first (= oldest) file
-            logger.finer("Removing $file")
-            file.delete()
-            removed++
+            while (files.sumOf { file -> file.length() } > maxSize) {
+                val file = files.removeAt(0)      // take first (= oldest) file
+                logger.finer("Removing $file")
+                file.delete()
+                removed++
+            }
+            removed
         }
-        return removed
     }
 
 }
