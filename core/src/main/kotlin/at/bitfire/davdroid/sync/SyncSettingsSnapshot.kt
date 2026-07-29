@@ -3,7 +3,6 @@
  */
 package at.bitfire.davdroid.sync
 
-import android.accounts.Account
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.synctools.vcard.GroupMethod
@@ -30,21 +29,19 @@ data class SyncSettingsSnapshot(
 ) {
 
     class Factory @Inject constructor(
-        private val accountSettingsFactory: AccountSettings.Factory,
         @IoDispatcher private val ioDispatcher: CoroutineDispatcher
     ) {
 
-        suspend fun create(account: Account): SyncSettingsSnapshot =
+        suspend fun create(accountSettings: AccountSettings): SyncSettingsSnapshot =
             withContext(ioDispatcher) {
-                val settings = accountSettingsFactory.create(account)
                 SyncSettingsSnapshot(
-                    syncWifiOnly = settings.getSyncWifiOnly(),
-                    syncWifiOnlySSIDs = settings.getSyncWifiOnlySSIDs(),
-                    ignoreVpns = settings.getIgnoreVpns(),
-                    timeRangePastDays = settings.getTimeRangePastDays(),
-                    defaultAlarm = settings.getDefaultAlarm(),
-                    eventColors = settings.getEventColors(),
-                    groupMethod = settings.getGroupMethod()
+                    syncWifiOnly = accountSettings.getSyncWifiOnly(),
+                    syncWifiOnlySSIDs = accountSettings.getSyncWifiOnlySSIDs(),
+                    ignoreVpns = accountSettings.getIgnoreVpns(),
+                    timeRangePastDays = accountSettings.getTimeRangePastDays(),
+                    defaultAlarm = accountSettings.getDefaultAlarm(),
+                    eventColors = accountSettings.getEventColors(),
+                    groupMethod = accountSettings.getGroupMethod()
                 )
             }
 

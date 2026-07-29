@@ -106,6 +106,7 @@ abstract class BaseSyncWorker(
                 val workId = workerParams.id
                 logger.warning("No valid account settings for account $account, cancelling worker $workId")
 
+                // make sure no more workers are run for the invalid account
                 val workManager = WorkManager.getInstance(applicationContext)
                 workManager.cancelWorkById(workId)
 
@@ -130,7 +131,7 @@ abstract class BaseSyncWorker(
                 }
             }
 
-            val settings = syncSettingsSnapshotFactory.create(account)
+            val settings = syncSettingsSnapshotFactory.create(accountSettings)
             return doSyncWork(account, dataType, settings)
         } finally {
             logger.info("${javaClass.simpleName} finished for $syncTag")
