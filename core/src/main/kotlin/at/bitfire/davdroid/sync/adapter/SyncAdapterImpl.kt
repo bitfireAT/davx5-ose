@@ -140,14 +140,14 @@ class SyncAdapterImpl @Inject constructor(
      *
      * @return the resolved account, or `null` if an address book account doesn't have an associated collection
      */
-    private fun getAccount(accountOrAddressBookAccount: Account): Account? =
+    private suspend fun getAccount(accountOrAddressBookAccount: Account): Account? =
         if (accountOrAddressBookAccount.type == context.getString(R.string.account_type_address_book))
             AccountManager.get(context)
                 .getUserData(accountOrAddressBookAccount, LocalAddressBook.USER_DATA_COLLECTION_ID)
                 ?.toLongOrNull()
                 ?.let { collectionId ->
-                    collectionRepository.get(collectionId)?.let { collection ->
-                        serviceRepository.getBlocking(collection.serviceId)?.let { service ->
+                    collectionRepository.getAsync(collectionId)?.let { collection ->
+                        serviceRepository.get(collection.serviceId)?.let { service ->
                             Account(service.accountName, context.getString(R.string.account_type))
                         }
                     }
