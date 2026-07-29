@@ -157,9 +157,7 @@ class SyncFrameworkIntegration @Inject constructor(
      * Cancels the sync request for this account/authority.
      *
      * _Note:_ The sync framework doesn't reliably clear its internal "pending" flag when a one-time
-     * sync finishes normally. [SyncAdapterImpl] calls this explicitly to work around that, but only
-     * on Android versions affected by the bug (see `AndroidSyncFrameworkTest
-     * .testSyncStaysPendingAfterFinish_rawFrameworkBug` for details).
+     * sync finishes normally. [SyncAdapterImpl] calls this explicitly to work around that.
      *
      * *Only the two-argument [ContentResolver.cancelSync] actually resets the "pending" flag.**
      *

@@ -80,8 +80,9 @@ class SyncAdapterImpl @Inject constructor(
      */
     private val waitScope = CoroutineScope(EmptyCoroutineContext)
 
-    // Sync framework "always pending" bug on Android 14+ - see AndroidSyncFrameworkTest
-    // .testSyncStaysPendingAfterFinish_rawFrameworkBug for details.
+    // Sync framework bug: ContentResolver.isSyncPending() can get stuck returning true forever
+    // after a sync, starting with Android 14. Confirmed still present on Android 15/16 as of
+    // 2025-06. See https://issuetracker.google.com/issues/320542002.
     private val isAffectedByAlwaysPendingBug = Build.VERSION.SDK_INT >= 34
 
     override fun onPerformSync(
