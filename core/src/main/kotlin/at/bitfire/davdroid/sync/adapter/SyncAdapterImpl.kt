@@ -165,27 +165,27 @@ class SyncAdapterImpl @Inject constructor(
     }
 
     /**
-     * Waits until the worker with the given [workerName] has finished, or until the max wait
-     * timeout is reached. Sets [syncResult] fields when the worker failed.
+     * Suspends until the worker with the given [workerName] finishes or times out.
+     * Updates [syncResult] with error information if the worker failed.
      *
-     * Because we are not allowed to observe worker state on a background thread, we can not use it
-     * to block the sync adapter. Instead, we use a Flow to get notified when the sync has finished.
+     * @param workerName The unique name of the worker to wait for.
+     * @param syncResult The SyncResult to update with error information if the worker failed.
      */
     private suspend fun waitForWorker(workerName: String, syncResult: SyncResult) {
         val workManager = WorkManager.getInstance(context)
 
         try {
-            val finishedWorkerInfo = withTimeout(10.minutes) {   // max wait timeout
-                // we don't need a separate thread to wait
-                waitScope.async(Dispatchers.Unconfined) {
+            // we don't need a separate thread to wait
+            val finishedWorkerInfo = waitScope.async(Dispatchers.Unconfined) {
+                withTimeout(10.minutes) {   // max wait timeout
                     workManager.getWorkInfosForUniqueWorkFlow(workerName)
                         .mapNotNull { infos ->
                             // from list of WorkerInfos, take the first that is finished (if available)
                             infos.firstOrNull { it.state.isFinished }
                         }
                         .first()    // first non-null, i.e. finished WorkerInfo
-                }.await()
-            }
+                }
+            }.await()
 
             if (finishedWorkerInfo.state == WorkInfo.State.FAILED) {
                 if (finishedWorkerInfo.outputData.getBoolean(BaseSyncWorker.OUTPUT_TOO_MANY_RETRIES, false))

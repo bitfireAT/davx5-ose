@@ -126,7 +126,12 @@ class SyncAdapterImplTest {
 
             mockkStatic("kotlinx.coroutines.TimeoutKt") {   // mock global extension function
                 // immediate timeout (instead of really waiting)
-                coEvery { withTimeout(any<Long>(), any<suspend CoroutineScope.() -> Unit>()) } throws CancellationException("Simulated timeout")
+                coEvery {
+                    withTimeout(
+                        any<Long>(),
+                        any<suspend CoroutineScope.() -> Unit>()
+                    )
+                } throws CancellationException("Simulated timeout")
 
                 syncAdapter.onPerformSync(account, Bundle(), CalendarContract.AUTHORITY, mockk(), SyncResult())
             }
