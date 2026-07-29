@@ -7,7 +7,6 @@ package at.bitfire.davdroid.sync
 import android.accounts.Account
 import android.content.ContentResolver
 import android.content.SyncRequest
-import android.content.SyncStatusObserver
 import android.os.Bundle
 import android.provider.CalendarContract
 import androidx.test.filters.SdkSuppress
@@ -24,193 +23,99 @@ import org.junit.Before
 import org.junit.BeforeClass
 import org.junit.Rule
 import org.junit.Test
-import java.util.Collections
-import java.util.LinkedList
-import java.util.logging.Logger
-import javax.inject.Inject
 import kotlin.time.Duration.Companion.seconds
 
+/**
+ * Reproduces the raw Android sync framework bug where a one-time sync's "pending" flag stays
+ * `true` forever once it has been set, even after the sync has finished (on Android 14+).
+ *
+ * Uses [FakeSyncAdapter] - the default [at.bitfire.davdroid.sync.adapter.SyncAdapter] test binding
+ * (see [at.bitfire.davdroid.di.FakeSyncAdapterModule]), a bare sync adapter that finishes normally
+ * without applying any of DAVx5's workarounds - so this demonstrates the bug exists independently
+ * of DAVx5's own code.
+ *
+ * DAVx5 works around this in [at.bitfire.davdroid.sync.adapter.SyncAdapterImpl] by explicitly
+ * calling `ContentResolver.cancelSync(account, authority)` after every sync - see
+ * `SyncAdapterImplTest.testOnPerformSync_clearsPendingFlag` for a test verifying that fix. It
+ * can't be verified here: the [at.bitfire.davdroid.sync.adapter.SyncAdapter] implementation used
+ * by the real sync framework dispatch is swapped for the whole test binary via `@TestInstallIn`,
+ * which - unlike `@InstallIn` modules - Hilt does not allow undoing for just one test class.
+ */
 @HiltAndroidTest
-class AndroidSyncFrameworkTest: SyncStatusObserver {
+class AndroidSyncFrameworkTest {
 
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
 
-    @Inject
-    lateinit var logger: Logger
-
     lateinit var account: Account
     val authority = CalendarContract.AUTHORITY
-
-    private lateinit var stateChangeListener: Any
-    private val recordedStates = Collections.synchronizedList(LinkedList<State>())
 
     @Before
     fun setUp() {
         hiltRule.inject()
-
         account = TestAccount.create()
 
         // Enable sync globally and for the test account
         ContentResolver.setIsSyncable(account, authority, 1)
-
-        // Remember states the sync framework reports as pairs of (sync pending, sync active).
-        recordedStates.clear()
-        onStatusChanged(0)      // record first entry (pending = false, active = false)
-        stateChangeListener = ContentResolver.addStatusChangeListener(
-            ContentResolver.SYNC_OBSERVER_TYPE_PENDING or ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE,
-            this
-        )
     }
 
     @After
     fun tearDown() {
-        ContentResolver.removeStatusChangeListener(stateChangeListener)
         TestAccount.remove(account)
     }
 
 
     /**
-     * Correct behaviour of the sync framework on Android 13 and below.
-     * Pending state is correctly reflected
+     * Reproduces the raw Android sync framework bug on Android 14+: once a one-time sync's
+     * "pending" flag has been set (when the job was scheduled), nothing on the normal-completion
+     * path ever clears it back to `false` again - see `SyncManager.cancelJob()` in AOSP, which
+     * only cancels the JobScheduler job and never calls `SyncStorageEngine.markPending(false)` /
+     * `setAuthorityPendingState()`.
+     *
+     * Introduced by AOSP commit `5ebdf21a7d3b` ("Put syncs in a dedicated job namespace",
+     * Kweku Adams, 2022-12-22, landed for Android 14/API 34). It replaced the internal
+     * `JobSchedulerInternal.getSystemScheduledPendingJobs()` (whose javadoc said "a running job
+     * is not considered pending") with the public `JobScheduler.getAllPendingJobs()` (whose
+     * javadoc says the opposite: "includes jobs that are currently started") inside
+     * `SyncManager.getAllPendingSyncs()`/`setAuthorityPendingState()`. So the one-time "is this
+     * still pending" recompute done right after dispatch now always sees the just-started job as
+     * still pending, and nothing ever corrects it afterwards. Confirmed absent on Android 13 and
+     * earlier (diffed `android-13.0.0_r62` vs. `android-14.0.0_r1` in AOSP).
+     *
+     * No upper SDK bound on purpose: if this ever starts failing on some future Android version,
+     * that's the platform bug having been fixed there, not a broken test - see the assertion
+     * message.
      */
-    @SdkSuppress(maxSdkVersion = 33)
+    @SdkSuppress(minSdkVersion = 34)
     @Test
-    fun testVerifySyncAlwaysPending_correctBehaviour_android13() {
-        verifySyncStates(
-            listOf(
-                State(pending = false, active = false),                 // no sync pending or active
-                State(pending = true, active = false, optional = true), // sync becomes pending
-                State(pending = true, active = true),                   // ... and pending and active at the same time
-                State(pending = false, active = true),                  // ... and then only active
-                State(pending = false, active = false)                  // sync finished
-            )
-        )
-    }
+    fun testSyncStaysPendingAfterFinish_rawFrameworkBug() = runBlocking {
+        val syncRequest = SyncRequest.Builder()
+            .setSyncAdapter(account, authority)
+            .syncOnce()
+            .setExtras(Bundle())    // needed for Android 9
+            .setManual(true)        // equivalent of setting both SYNC_EXTRAS_IGNORE_SETTINGS and SYNC_EXTRAS_IGNORE_BACKOFF
+            .build()
+        ContentResolver.requestSync(syncRequest)
 
-    /* SHOULD BE FIXED WITH https://github.com/bitfireAT/davx5-ose/issues/1748
-     * Wrong behaviour of the sync framework on Android 14+.
-     * Pending state stays true forever (after initial run), active state behaves correctly
-     */
-    /*@SdkSuppress(minSdkVersion = 34 /*, maxSdkVersion = 36 */)
-    @Test
-    fun testVerifySyncAlwaysPending_wrongBehaviour_android14() {
-        verifySyncStates(
-            listOf(
-                State(pending = false, active = false),                 // no sync pending or active
-                State(pending = true, active = false, optional = true), // sync becomes pending
-                State(pending = true, active = true),                   // ... and pending and active at the same time
-                State(pending = true, active = false)                   // ... and finishes, but stays pending
-            )
-        )
-    }*/
-
-
-    // helpers
-
-    private fun syncRequest() = SyncRequest.Builder()
-        .setSyncAdapter(account, authority)
-        .syncOnce()
-        .setExtras(Bundle())    // needed for Android 9
-        .setExpedited(true)     // sync request will be scheduled at the front of the sync request queue
-        .setManual(true)        // equivalent of setting both SYNC_EXTRAS_IGNORE_SETTINGS and SYNC_EXTRAS_IGNORE_BACKOFF
-        .build()
-
-    /**
-     * Verifies that the given expected states match the recorded states.
-     */
-    private fun verifySyncStates(expectedStates: List<State>) = runBlocking {
-        // Verify that last state is non-optional.
-        if (expectedStates.last().optional)
-            throw IllegalArgumentException("Last expected state must not be optional")
-
-        // We use runBlocking for these tests because it uses the default dispatcher
-        // which does not auto-advance virtual time and we need real system time to
-        // test the sync framework behavior.
-
-        ContentResolver.requestSync(syncRequest())
-
-        // Even though the always-pending-bug is present on Android 14+, the sync active
-        // state behaves correctly, so we can record the state changes as pairs (pending,
-        // active) and expect a certain sequence of state pairs to verify the presence or
-        // absence of the bug on different Android versions.
+        // Rather than asserting on the exact sequence of intermediate state changes (which is
+        // prone to flakiness - callbacks can be coalesced or arrive with unpredictable timing),
+        // we only wait for two clear-cut, unambiguous points in time: the sync starting (using
+        // isSyncActive, which - unlike isSyncPending - is reliably set/cleared by the framework),
+        // and the sync ending. What we actually want to test is the state *after* that point.
         withTimeout(60.seconds) { // Usually takes less than 30 seconds
-            while (recordedStates.size < expectedStates.size) {
-                // verify already known states
-                if (recordedStates.isNotEmpty())
-                    assertStatesEqual(expectedStates, recordedStates, fullMatch = false)
-
-                delay(500) // avoid busy-waiting
-            }
-
-            assertStatesEqual(expectedStates, recordedStates, fullMatch = true)
-        }
-    }
-
-    private fun assertStatesEqual(expectedStates: List<State>, actualStates: List<State>, fullMatch: Boolean) {
-        assertTrue("Expected states=$expectedStates, actual=$actualStates", statesMatch(expectedStates, actualStates, fullMatch))
-    }
-
-    /**
-     * Checks whether [actualStates] have matching [expectedStates], under the condition
-     * that expected states with the [State.optional] flag can be skipped.
-     *
-     * Note: When [fullMatch] is not set, this method can return _true_ even if not all expected states are used.
-     *
-     * @param expectedStates    expected states (can include optional states which don't have to be present in actual states)
-     * @param actualStates      actual states
-     * @param fullMatch         whether all non-optional expected states must be present in actual states
-     */
-    private fun statesMatch(expectedStates: List<State>, actualStates: List<State>, fullMatch: Boolean): Boolean {
-        // iterate through entries
-        val expectedIterator = expectedStates.iterator()
-        for (actual in actualStates) {
-            if (!expectedIterator.hasNext())
-                return false
-            var expected = expectedIterator.next()
-
-            // skip optional expected entries if they don't match the actual entry
-            while (!actual.stateEquals(expected) && expected.optional) {
-                if (!expectedIterator.hasNext())
-                    return false
-                expected = expectedIterator.next()
-            }
-
-            // we now have a non-optional expected state and it must match
-            if (!actual.stateEquals(expected))
-                return false
+            while (!ContentResolver.isSyncActive(account, authority))
+                delay(200)
+            while (ContentResolver.isSyncActive(account, authority))
+                delay(200)
         }
 
-        // full match: all expected states must have been used
-        if (fullMatch && expectedIterator.hasNext())
-            return false
-
-        return true
-    }
-
-
-    // SyncStatusObserver implementation and data class
-
-    override fun onStatusChanged(which: Int) {
-        val state = State(
-            pending = ContentResolver.isSyncPending(account, authority),
-            active = ContentResolver.isSyncActive(account, authority)
+        assertTrue(
+            "Sync framework bug now fixed? Expected the sync to still be pending after finishing " +
+                    "(this is the known AOSP \"always pending\" bug DAVx5 works around in SyncAdapterImpl) " +
+                    "- if this fails, the platform bug may have been fixed on this Android version; " +
+                    "investigate before removing the workaround.",
+            ContentResolver.isSyncPending(account, authority)
         )
-        synchronized(recordedStates) {
-            if (recordedStates.lastOrNull() != state) {
-                logger.info("$account syncState = $state")
-                recordedStates += state
-            }
-        }
-    }
-
-    data class State(
-        val pending: Boolean,
-        val active: Boolean,
-        val optional: Boolean = false
-    ) {
-        fun stateEquals(other: State) =
-            pending == other.pending && active == other.active
     }
 
 

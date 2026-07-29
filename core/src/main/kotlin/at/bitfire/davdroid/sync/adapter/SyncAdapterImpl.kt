@@ -11,6 +11,7 @@ import android.content.ContentProviderClient
 import android.content.ContentResolver
 import android.content.Context
 import android.content.SyncResult
+import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
 import androidx.work.WorkInfo
@@ -79,6 +80,10 @@ class SyncAdapterImpl @Inject constructor(
      */
     private val waitScope = CoroutineScope(EmptyCoroutineContext)
 
+    // Sync framework "always pending" bug on Android 14+ - see AndroidSyncFrameworkTest
+    // .testSyncStaysPendingAfterFinish_rawFrameworkBug for details.
+    private val isAffectedByAlwaysPendingBug = Build.VERSION.SDK_INT >= 34
+
     override fun onPerformSync(
         accountOrAddressBookAccount: Account,
         extras: Bundle,
@@ -94,7 +99,8 @@ class SyncAdapterImpl @Inject constructor(
             logger.log(Level.WARNING, "Sync adapter entry point failed", e)
             syncResult.databaseError = true
         } finally {
-            clearPendingFlag(accountOrAddressBookAccount, authority)
+            if (isAffectedByAlwaysPendingBug)
+                clearPendingFlag(accountOrAddressBookAccount, authority)
         }
     }
 

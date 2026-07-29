@@ -34,6 +34,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withTimeout
 import org.junit.After
@@ -43,6 +44,8 @@ import org.junit.Test
 import javax.inject.Inject
 import javax.inject.Provider
 import kotlin.coroutines.cancellation.CancellationException
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 
 @HiltAndroidTest
 class SyncAdapterImplTest {
@@ -109,6 +112,32 @@ class SyncAdapterImplTest {
 
             // wait for sync to finish (should happen immediately)
             sync.join()
+        }
+    }
+
+    @Test
+    fun testSyncAdapter_onPerformSync_clearsPendingFlag() = runBlocking {
+        val syncAdapter = syncAdapterImplProvider.get()
+
+        // Don't actually create a worker
+        coEvery { syncWorkerManager.enqueueOneTime(any(), any()) } returns "TheSyncWorker"
+
+        // Make the real sync framework genuinely mark this account/authority as pending.
+        val extras = Bundle()
+        ContentResolver.requestSync(account, CalendarContract.AUTHORITY, extras)
+        withTimeout(10.seconds) {
+            while (!ContentResolver.isSyncPending(account, CalendarContract.AUTHORITY))
+                delay(100.milliseconds)
+        }
+
+        // Call SyncAdapterImpl directly, just like the sync framework would -
+        // this must clear the pending flag again.
+        syncAdapter.onPerformSync(account, extras, CalendarContract.AUTHORITY, mockk(), SyncResult())
+
+        // Verify that pending flag is cleared
+        withTimeout(10.seconds) {
+            while (ContentResolver.isSyncPending(account, CalendarContract.AUTHORITY))
+                delay(100.milliseconds)
         }
     }
 
