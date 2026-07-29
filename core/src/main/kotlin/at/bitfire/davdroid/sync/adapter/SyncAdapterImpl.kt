@@ -37,8 +37,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.guava.await
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import java.util.logging.Level
@@ -172,18 +173,22 @@ class SyncAdapterImpl @Inject constructor(
      * @param syncResult The SyncResult to update with error information if the worker failed.
      */
     private suspend fun waitForWorker(workerName: String, syncResult: SyncResult) {
+        logger.fine("Waiting for worker: $workerName to finish")
         val workManager = WorkManager.getInstance(context)
 
+        // look up whether there's an unfinished worker with the given name
+        val worker = workManager.getWorkInfosForUniqueWork(workerName).await().firstOrNull {
+            !it.state.isFinished
+        } ?: return
+
+        // wait for worker to finish
         try {
             // we don't need a separate thread to wait
             val finishedWorkerInfo = waitScope.async(Dispatchers.Unconfined) {
                 withTimeout(10.minutes) {   // max wait timeout
-                    workManager.getWorkInfosForUniqueWorkFlow(workerName)
-                        .mapNotNull { infos ->
-                            // from list of WorkerInfos, take the first that is finished (if available)
-                            infos.firstOrNull { it.state.isFinished }
-                        }
-                        .first()    // first non-null, i.e. finished WorkerInfo
+                    workManager.getWorkInfoByIdFlow(worker.id)
+                        .filterNotNull()
+                        .first { it.state.isFinished }
                 }
             }.await()
 
@@ -195,7 +200,7 @@ class SyncAdapterImpl @Inject constructor(
             }
         } catch (_: CancellationException) {
             // waiting for work was cancelled, either by timeout or because the worker has finished
-            logger.fine("Not waiting for OneTimeSyncWorker anymore.")
+            logger.fine("Not waiting for $workerName anymore.")
         }
     }
 
