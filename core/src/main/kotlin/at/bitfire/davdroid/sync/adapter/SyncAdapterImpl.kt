@@ -34,7 +34,6 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -42,6 +41,8 @@ import kotlinx.coroutines.withTimeout
 import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
+import kotlin.coroutines.EmptyCoroutineContext
+import kotlin.time.Duration.Companion.minutes
 
 /**
  * Entry point for the Sync Adapter Framework.
@@ -73,9 +74,15 @@ class SyncAdapterImpl @Inject constructor(
      * Scope used to wait until the synchronization is finished. Will be cancelled when the sync framework
      * requests cancellation.
      */
-    private val waitScope = CoroutineScope(Dispatchers.IO)
+    private val waitScope = CoroutineScope(EmptyCoroutineContext)
 
-    override fun onPerformSync(accountOrAddressBookAccount: Account, extras: Bundle, authority: String, provider: ContentProviderClient, syncResult: SyncResult) {
+    override fun onPerformSync(
+        accountOrAddressBookAccount: Account,
+        extras: Bundle,
+        authority: String,
+        provider: ContentProviderClient,
+        syncResult: SyncResult
+    ) = runBlocking {   // blocking entry point
         // We have to pass this old SyncFramework extra for an Android 7 workaround
         val upload = extras.containsKey(ContentResolver.SYNC_EXTRAS_UPLOAD)
         logger.info("Sync request via sync framework for $accountOrAddressBookAccount $authority (upload=$upload)")
@@ -97,7 +104,7 @@ class SyncAdapterImpl @Inject constructor(
 
         if (account == null) {
             logger.warning("Address book account $accountOrAddressBookAccount doesn't have an associated collection")
-            return
+            return@runBlocking
         }
 
         // Check sync conditions
@@ -105,19 +112,21 @@ class SyncAdapterImpl @Inject constructor(
             accountSettingsFactory.create(account)
         } catch (e: InvalidAccountException) {
             logger.log(Level.WARNING, "Account doesn't exist anymore", e)
-            return
+            return@runBlocking
         }
         val syncConditions = syncConditionsFactory.create(accountSettings)
         // Should we run the sync at all?
         if (!syncConditions.wifiConditionsMet()) {
             logger.info("Sync conditions not met. Aborting sync framework initiated sync")
-            return
+            return@runBlocking
         }
 
         logger.fine("Starting OneTimeSyncWorker for $account $authority and waiting for it")
-        val workerName = runBlocking(waitScope.coroutineContext) {
-            syncWorkerManager.enqueueOneTime(account, dataType = SyncDataType.fromAuthority(authority), fromUpload = upload)
-        }
+        val workerName = syncWorkerManager.enqueueOneTime(
+            account,
+            dataType = SyncDataType.fromAuthority(authority),
+            fromUpload = upload
+        )
 
         // Android 14+ does not handle pending sync state correctly.
         // As a defensive workaround, we can cancel specifically this still pending sync only
@@ -129,7 +138,7 @@ class SyncAdapterImpl @Inject constructor(
         }
 
         /* Because we are not allowed to observe worker state on a background thread, we can not
-        use it to block the sync adapter. Instead we use a Flow to get notified when the sync
+        use it to block the sync adapter. Instead, we use a Flow to get notified when the sync
         has finished. */
         val workManager = WorkManager.getInstance(context)
 
@@ -150,10 +159,8 @@ class SyncAdapterImpl @Inject constructor(
                 }
             }
 
-            runBlocking {
-                withTimeout(10 * 60 * 1000) {   // block max. 10 minutes
-                    waitJob.join()              // wait until worker has finished
-                }
+            withTimeout(10.minutes) {   // max wait timeout
+                waitJob.join()          // wait until worker has finished
             }
         } catch (_: CancellationException) {
             // waiting for work was cancelled, either by timeout or because the worker has finished
