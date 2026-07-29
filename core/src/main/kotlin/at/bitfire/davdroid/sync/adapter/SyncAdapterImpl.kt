@@ -68,10 +68,13 @@ class SyncAdapterImpl @Inject constructor(
 ), SyncAdapter {
 
     /**
-     * Scope used to wait until the synchronization is finished. Will be cancelled when the sync framework
-     * requests cancellation.
+     * Scope used to wait for the currently running sync (if any) to finish.
+     * A fresh scope is created for every [onPerformSync].
+     *
+     * [onSyncCanceled] is called from a different thread then [onPerformSync].
      */
-    private val waitScope = CoroutineScope(EmptyCoroutineContext)
+    @Volatile
+    private var waitScope: CoroutineScope? = null
 
     override fun onPerformSync(
         accountOrAddressBookAccount: Account,
@@ -80,13 +83,19 @@ class SyncAdapterImpl @Inject constructor(
         provider: ContentProviderClient,
         syncResult: SyncResult
     ) = runBlocking {   // blocking entry point
+        val scope = CoroutineScope(EmptyCoroutineContext)
+        waitScope = scope
+
         // Make sure we always return normally (never throw) so that AbstractThreadedSyncAdapter's
         // SyncThread reaches its finally block and calls SyncContext.onFinished().
         try {
-            performSync(accountOrAddressBookAccount, extras, authority)
+            performSync(accountOrAddressBookAccount, extras, authority, scope)
         } catch (e: Throwable) {
-            logger.log(Level.WARNING, "Sync adapter entry point failed", e)
+            logger.log(Level.WARNING, "onPerformSync error", e)
         } finally {
+            // this waitScope is only relevant for the performSync call, reset
+            waitScope = null
+
             if (isAffectedByAlwaysPendingBug)
                 clearPendingFlag(accountOrAddressBookAccount, authority)
         }
@@ -99,11 +108,13 @@ class SyncAdapterImpl @Inject constructor(
      * @param accountOrAddressBookAccount the account (or address book account) to sync
      * @param extras SyncAdapter-specific parameters as passed to [onPerformSync]
      * @param authority the authority of this sync request
+     * @param waitScope scope to wait for the worker in; see [SyncAdapterImpl.waitScope]
      */
     private suspend fun performSync(
         accountOrAddressBookAccount: Account,
         extras: Bundle,
-        authority: String
+        authority: String,
+        waitScope: CoroutineScope
     ) {
         // We have to pass this old SyncFramework extra for an Android 7 workaround
         val upload = extras.containsKey(ContentResolver.SYNC_EXTRAS_UPLOAD)
@@ -128,7 +139,7 @@ class SyncAdapterImpl @Inject constructor(
         )
 
         // Wait until worker has finished
-        waitForWorker(workerName)
+        waitForWorker(workerName, waitScope)
 
         logger.info("Worker $workerName has finished, returning to sync framework")
     }
@@ -182,8 +193,9 @@ class SyncAdapterImpl @Inject constructor(
      * workers themselves, so this method only cares that the worker has finished, not how.
      *
      * @param workerName The unique name of the worker to wait for.
+     * @param waitScope scope to wait in; see [SyncAdapterImpl.waitScope]
      */
-    private suspend fun waitForWorker(workerName: String) {
+    private suspend fun waitForWorker(workerName: String, waitScope: CoroutineScope) {
         logger.fine("Waiting for worker: $workerName to finish")
         val workManager = WorkManager.getInstance(context)
 
@@ -221,12 +233,14 @@ class SyncAdapterImpl @Inject constructor(
     }
 
     override fun onSyncCanceled() {
-        // Note: this is also called in response to our own cancellation at the end of every sync.
+        // Note: this is also called in response to our own cancellation at the end of every sync
+        // (see clearPendingFlag/cancelSync), in which case waitScope is already null and there's
+        // nothing to cancel.
 
         // We don't call super.onSyncCanceled() / interrupt the sync thread here: AbstractThreadedSyncAdapter
         // only calls SyncContext.onFinished() if the thread is not interrupted.
 
-        waitScope.cancel()
+        waitScope?.cancel()
     }
 
     override fun onSyncCanceled(thread: Thread) = onSyncCanceled()
