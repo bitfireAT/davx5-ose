@@ -14,7 +14,6 @@ import android.content.SyncResult
 import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
-import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.repository.DavCollectionRepository
@@ -24,7 +23,6 @@ import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.SyncConditions
 import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.account.InvalidAccountException
-import at.bitfire.davdroid.sync.worker.BaseSyncWorker
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
 import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -45,15 +43,14 @@ import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.time.Duration.Companion.minutes
 
 /**
- * Entry point for the Sync Adapter Framework.
+ * Entry point for the Sync Adapter Framework. Handles incoming sync requests from the Sync Adapter Framework when
  *
- * Handles incoming sync requests from the Sync Adapter Framework.
+ * - contacts/events/tasks have changed in the content provider (for instance because of an edit
+ * in the calendar app),
+ * - a sync has explicitly been requested by a third-party app (for instance the calendar app).
  *
- * Although we do not use the sync adapter for syncing anymore, we keep this sole
- * adapter to provide exported services, which allow android system components and calendar,
- * contacts or task apps to sync via DAVx5.
- *
- * All Sync Adapter Framework related interaction should happen inside [SyncFrameworkIntegration].
+ * This class only forwards such requests to a [at.bitfire.davdroid.sync.worker.OneTimeSyncWorker]
+ * and does not run the sync itself.
  */
 class SyncAdapterImpl @Inject constructor(
     private val accountSettingsFactory: AccountSettings.Factory,
@@ -86,10 +83,9 @@ class SyncAdapterImpl @Inject constructor(
         // Make sure we always return normally (never throw) so that AbstractThreadedSyncAdapter's
         // SyncThread reaches its finally block and calls SyncContext.onFinished().
         try {
-            performSync(accountOrAddressBookAccount, extras, authority, syncResult)
+            performSync(accountOrAddressBookAccount, extras, authority)
         } catch (e: Throwable) {
             logger.log(Level.WARNING, "Sync adapter entry point failed", e)
-            syncResult.databaseError = true
         } finally {
             if (isAffectedByAlwaysPendingBug)
                 clearPendingFlag(accountOrAddressBookAccount, authority)
@@ -103,13 +99,11 @@ class SyncAdapterImpl @Inject constructor(
      * @param accountOrAddressBookAccount the account (or address book account) to sync
      * @param extras SyncAdapter-specific parameters as passed to [onPerformSync]
      * @param authority the authority of this sync request
-     * @param syncResult will be updated with error information if the worker failed
      */
     private suspend fun performSync(
         accountOrAddressBookAccount: Account,
         extras: Bundle,
-        authority: String,
-        syncResult: SyncResult
+        authority: String
     ) {
         // We have to pass this old SyncFramework extra for an Android 7 workaround
         val upload = extras.containsKey(ContentResolver.SYNC_EXTRAS_UPLOAD)
@@ -134,9 +128,9 @@ class SyncAdapterImpl @Inject constructor(
         )
 
         // Wait until worker has finished
-        waitForWorker(workerName, syncResult)
+        waitForWorker(workerName)
 
-        logger.info("Returning to sync framework: $syncResult")
+        logger.info("Worker $workerName has finished, returning to sync framework")
     }
 
     /**
@@ -183,12 +177,13 @@ class SyncAdapterImpl @Inject constructor(
 
     /**
      * Suspends until the worker with the given [workerName] finishes or times out.
-     * Updates [syncResult] with error information if the worker failed.
+     *
+     * Doesn't report the outcome anywhere: all error handling and retry logic is done by the
+     * workers themselves, so this method only cares that the worker has finished, not how.
      *
      * @param workerName The unique name of the worker to wait for.
-     * @param syncResult The SyncResult to update with error information if the worker failed.
      */
-    private suspend fun waitForWorker(workerName: String, syncResult: SyncResult) {
+    private suspend fun waitForWorker(workerName: String) {
         logger.fine("Waiting for worker: $workerName to finish")
         val workManager = WorkManager.getInstance(context)
 
@@ -200,20 +195,13 @@ class SyncAdapterImpl @Inject constructor(
         // wait for worker to finish
         try {
             // we don't need a separate thread to wait
-            val finishedWorkerInfo = waitScope.async(Dispatchers.Unconfined) {
+            waitScope.async(Dispatchers.Unconfined) {
                 withTimeout(10.minutes) {   // max wait timeout
                     workManager.getWorkInfoByIdFlow(worker.id)
                         .filterNotNull()
                         .first { it.state.isFinished }
                 }
             }.await()
-
-            if (finishedWorkerInfo.state == WorkInfo.State.FAILED) {
-                if (finishedWorkerInfo.outputData.getBoolean(BaseSyncWorker.OUTPUT_TOO_MANY_RETRIES, false))
-                    syncResult.tooManyRetries = true
-                else
-                    syncResult.databaseError = true
-            }
         } catch (_: CancellationException) {
             // waiting for work was cancelled, either by timeout or because the worker has finished
             logger.fine("Not waiting for $workerName anymore.")
