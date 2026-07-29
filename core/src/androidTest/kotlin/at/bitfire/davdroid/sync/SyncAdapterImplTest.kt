@@ -72,6 +72,8 @@ class SyncAdapterImplTest {
     private lateinit var syncAdapter: SyncAdapterImpl
     private lateinit var workManager: WorkManager
 
+    private val mockSyncWorkerName = "TheSyncWorker"
+
     @Before
     fun setUp() {
         hiltRule.inject()
@@ -86,7 +88,9 @@ class SyncAdapterImplTest {
         ContentResolver.setIsSyncable(account, CalendarContract.AUTHORITY, 1)
 
         // don't actually create a worker
-        coEvery { syncWorkerManager.enqueueOneTime(any(), any()) } returns "TheSyncWorker"
+        coEvery {
+            syncWorkerManager.enqueueOneTime(account = any(), dataType = any(), fromUpload = any())
+        } returns mockSyncWorkerName
     }
 
     @After
@@ -107,7 +111,7 @@ class SyncAdapterImplTest {
             every { id } returns workId
             every { state } returns WorkInfo.State.RUNNING
         }
-        every { workManager.getWorkInfosForUniqueWork("TheSyncWorker") } returns
+        every { workManager.getWorkInfosForUniqueWork(mockSyncWorkerName) } returns
                 Futures.immediateFuture(listOf(runningWorkInfo))
         every { workManager.getWorkInfoByIdFlow(workId) } returns finishesWith
         return workId
@@ -125,7 +129,7 @@ class SyncAdapterImplTest {
             }
 
             // wait until performSync has started (so that waitScope is guaranteed to be set before we cancel it below)
-            coVerify(timeout = 5000) { syncAdapter.performSync(any(), any(), any(), any()) }
+            coVerify(timeout = 5000) { syncAdapter.performSync(any(), any(), any()) }
 
             // simulate incoming cancellation from sync framework
             syncAdapter.onSyncCanceled()

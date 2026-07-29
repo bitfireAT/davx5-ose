@@ -28,19 +28,16 @@ import at.bitfire.davdroid.sync.worker.SyncWorkerManager
 import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.cancel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.guava.await
+import kotlinx.coroutines.job
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
-import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
 
@@ -70,13 +67,13 @@ class SyncAdapterImpl @Inject constructor(
 ), SyncAdapter {
 
     /**
-     * Scope used to wait for the currently running sync (if any) to finish.
-     * A fresh scope is created for every [onPerformSync].
+     * The [Job] of the currently running sync (that waits for the worker to be finished).
+     * Used to cancel the job when [onSyncCanceled] is called.
      *
-     * [onSyncCanceled] is called from a different thread than [onPerformSync].
+     * Volatile because [onSyncCanceled] is called from a different thread than [onPerformSync].
      */
     @Volatile
-    private var waitScope: CoroutineScope? = null
+    private var syncJob: Job? = null
 
     /**
      * Max time to wait for the worker in [waitForWorker]. Overridable for tests.
@@ -90,19 +87,18 @@ class SyncAdapterImpl @Inject constructor(
         authority: String,
         provider: ContentProviderClient,
         syncResult: SyncResult
-    ) = runBlocking {   // blocking entry point
-        val scope = CoroutineScope(EmptyCoroutineContext).also {
-            waitScope = it
-        }
+    ) = runBlocking {
+        // remember Job of runBlocking's root coroutine to allow cancellation
+        syncJob = coroutineContext.job
 
         try {
-            performSync(accountOrAddressBookAccount, extras, authority, scope)
+            performSync(accountOrAddressBookAccount, extras, authority)
         } catch (e: Throwable) {
             // catch and ignore any error so that the sync always finishes "successfully"
             logger.log(Level.WARNING, "onPerformSync error", e)
         } finally {
-            // this waitScope is only relevant for the performSync call, reset
-            waitScope = null
+            // no need for cancellation anymore, clear job variable
+            syncJob = null
 
             if (hasAlwaysPendingIssue)
                 clearPendingFlag(accountOrAddressBookAccount, authority)
@@ -116,14 +112,12 @@ class SyncAdapterImpl @Inject constructor(
      * @param accountOrAddressBookAccount the account (or address book account) to sync
      * @param extras SyncAdapter-specific parameters as passed to [onPerformSync]
      * @param authority the authority of this sync request
-     * @param waitScope scope to wait for the worker in; see [SyncAdapterImpl.waitScope]
      */
     @VisibleForTesting
     internal suspend fun performSync(
         accountOrAddressBookAccount: Account,
         extras: Bundle,
-        authority: String,
-        waitScope: CoroutineScope
+        authority: String
     ) {
         // We have to pass this old SyncFramework extra for an Android 7 workaround
         val upload = extras.containsKey(ContentResolver.SYNC_EXTRAS_UPLOAD)
@@ -143,8 +137,8 @@ class SyncAdapterImpl @Inject constructor(
             fromUpload = upload
         )
 
-        // Scoped wait until worker has finished
-        waitForWorker(workerName, waitScope)
+        // Wait until worker has finished
+        waitForWorker(workerName)
 
         logger.info("Worker $workerName has finished, returning to sync framework")
     }
@@ -198,9 +192,8 @@ class SyncAdapterImpl @Inject constructor(
      * workers themselves, so this method only cares that the worker has finished, not how.
      *
      * @param workerName The unique name of the worker to wait for.
-     * @param waitScope scope to wait in; see [SyncAdapterImpl.waitScope]
      */
-    private suspend fun waitForWorker(workerName: String, waitScope: CoroutineScope) {
+    private suspend fun waitForWorker(workerName: String) {
         logger.fine("Waiting for worker: $workerName to finish")
         val workManager = WorkManager.getInstance(context)
 
@@ -212,13 +205,11 @@ class SyncAdapterImpl @Inject constructor(
         // wait for worker to finish
         try {
             // we don't need a separate thread to wait
-            waitScope.async(Dispatchers.Unconfined) {
-                withTimeout(workerWaitTimeout) {
-                    workManager.getWorkInfoByIdFlow(unfinishedWorker.id)
-                        .filterNotNull()
-                        .first { it.state.isFinished }  // collect flow until worker is finished
-                }
-            }.await()
+            withTimeout(workerWaitTimeout) {
+                workManager.getWorkInfoByIdFlow(unfinishedWorker.id)
+                    .filterNotNull()
+                    .first { it.state.isFinished }  // collect flow until worker is finished
+            }
         } catch (_: CancellationException) {
             // waiting for work was cancelled, either by timeout or because the worker has finished
             logger.fine("Not waiting for $workerName anymore.")
@@ -238,14 +229,14 @@ class SyncAdapterImpl @Inject constructor(
     }
 
     override fun onSyncCanceled() {
-        // Note: this is also called in response to our own cancellation at the end of every sync
-        // (see clearPendingFlag/cancelSync), in which case waitScope is already null and there's
-        // nothing to cancel.
+        /* Note: this is also called in response to our own cancellation at the end of every sync
+        (see clearPendingFlag/cancelSync), in which case syncJob is already null and there's
+        nothing to cancel.
 
-        // We don't call super.onSyncCanceled() / interrupt the sync thread here: AbstractThreadedSyncAdapter
-        // only calls SyncContext.onFinished() if the thread is not interrupted.
+        We don't call super.onSyncCanceled() / interrupt the sync thread here: AbstractThreadedSyncAdapter
+        only calls SyncContext.onFinished() if the thread is not interrupted. */
 
-        waitScope?.cancel()
+        syncJob?.cancel()
     }
 
     override fun onSyncCanceled(thread: Thread) = onSyncCanceled()
