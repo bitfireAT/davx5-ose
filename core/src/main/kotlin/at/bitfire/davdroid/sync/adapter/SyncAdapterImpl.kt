@@ -26,12 +26,8 @@ import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.account.InvalidAccountException
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
-import dagger.Binds
 import dagger.Lazy
-import dagger.Module
-import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
-import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -68,10 +64,10 @@ class SyncAdapterImpl @Inject constructor(
     private val syncConditionsFactory: SyncConditions.Factory,
     private val syncFrameworkIntegration: Lazy<SyncFrameworkIntegration>,
     private val syncWorkerManager: SyncWorkerManager
-): AbstractThreadedSyncAdapter(
+) : AbstractThreadedSyncAdapter(
     /* context = */ context,
     /* autoInitialize = */ true     // Sets isSyncable=1 when isSyncable=-1 and SYNC_EXTRAS_INITIALIZE is set.
-                                    // Doesn't matter for us because we have android:isAlwaysSyncable="true" for all sync adapters.
+    // Doesn't matter for us because we have android:isAlwaysSyncable="true" for all sync adapters.
 ), SyncAdapter {
 
     /**
@@ -79,11 +75,6 @@ class SyncAdapterImpl @Inject constructor(
      * requests cancellation.
      */
     private val waitScope = CoroutineScope(EmptyCoroutineContext)
-
-    // Sync framework bug: ContentResolver.isSyncPending() can get stuck returning true forever
-    // after a sync, starting with Android 14. Confirmed still present on Android 15/16 as of
-    // 2025-06. See https://issuetracker.google.com/issues/320542002.
-    private val isAffectedByAlwaysPendingBug = Build.VERSION.SDK_INT >= 34
 
     override fun onPerformSync(
         accountOrAddressBookAccount: Account,
@@ -252,16 +243,16 @@ class SyncAdapterImpl @Inject constructor(
 
     override fun onSyncCanceled(thread: Thread) = onSyncCanceled()
 
-
-    // SyncAdapter implementation and Hilt module
-
     override fun getBinder(): IBinder = syncAdapterBinder
 
-    @Module
-    @InstallIn(SingletonComponent::class)
-    abstract class RealSyncAdapterModule {
-        @Binds
-        abstract fun provide(impl: SyncAdapterImpl): SyncAdapter
+    companion object {
+
+        /* Sync framework bug: ContentResolver.isSyncPending() can get stuck returning true forever
+        after a sync, starting with Android 14: https://issuetracker.google.com/issues/320542002.
+        Confirmed still present on Android 15/16. The issue doesn't seem to be deterministic, so it
+        can't be reproduced with a behavior test easily. */
+        private val isAffectedByAlwaysPendingBug = Build.VERSION.SDK_INT >= 34
+
     }
 
 }
