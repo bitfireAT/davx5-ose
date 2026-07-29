@@ -11,7 +11,6 @@ import at.bitfire.davdroid.repository.PreferenceRepository
 import at.bitfire.synctools.log.LogcatHandler
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import java.util.logging.Level
@@ -19,6 +18,7 @@ import java.util.logging.Logger
 import javax.inject.Inject
 import javax.inject.Provider
 import javax.inject.Singleton
+import kotlin.coroutines.EmptyCoroutineContext
 
 /**
  * Handles logging configuration and which loggers are active at a moment.
@@ -52,7 +52,7 @@ class LogManager @Inject constructor(
     private val prefs: PreferenceRepository
 ) : AutoCloseable {
 
-    private val scope = CoroutineScope(Dispatchers.IO)
+    private val scope = CoroutineScope(EmptyCoroutineContext)
 
     init {
         // observe preference changes

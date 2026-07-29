@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.ui.account
 
 import android.accounts.Account
+import at.bitfire.davdroid.di.qualifier.ApplicationScope
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.push.PushRegistrationManager
 import at.bitfire.davdroid.repository.AccountRepository
@@ -15,7 +16,6 @@ import at.bitfire.davdroid.ui.account.CollectionSelectedUseCase.Companion.DELAY_
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.concurrent.ConcurrentHashMap
@@ -30,6 +30,7 @@ import javax.inject.Singleton
 @Singleton
 class CollectionSelectedUseCase @Inject constructor(
     private val accountRepository: AccountRepository,
+    @ApplicationScope private val applicationScope: CoroutineScope,
     private val collectionRepository: DavCollectionRepository,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val pushRegistrationManager: PushRegistrationManager,
@@ -38,7 +39,6 @@ class CollectionSelectedUseCase @Inject constructor(
 ) {
 
     private val delayJobs: ConcurrentHashMap<Account, Job> = ConcurrentHashMap()
-    private val scope = CoroutineScope(SupervisorJob())
 
     /**
      * After a delay of [DELAY_MS] ms:
@@ -60,7 +60,7 @@ class CollectionSelectedUseCase @Inject constructor(
             // Stop previous delay, if exists
             previousJob?.cancel()
 
-            scope.launch(ioDispatcher) {
+            applicationScope.launch(ioDispatcher) {
                 // wait
                 delay(DELAY_MS)
 
