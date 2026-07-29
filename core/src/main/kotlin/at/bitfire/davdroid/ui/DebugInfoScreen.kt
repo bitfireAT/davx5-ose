@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.ui
 
-import android.accounts.Account
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -46,6 +45,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import at.bitfire.dav4jvm.ktor.exception.DavException
 import at.bitfire.dav4jvm.ktor.exception.HttpException
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.log.DebugDirectory
 import at.bitfire.davdroid.ui.composable.AppTheme
 import at.bitfire.davdroid.ui.composable.CardWithImage
@@ -56,7 +56,7 @@ import java.io.IOException
 
 @Composable
 fun DebugInfoScreen(
-    account: Account?,
+    accountId: AccountId?,
     syncDataType: String?,
     cause: Throwable?,
     localResource: String?,
@@ -73,7 +73,7 @@ fun DebugInfoScreen(
     val model: DebugInfoViewModel = hiltViewModel(
         creationCallback = { factory: DebugInfoViewModel.Factory ->
             factory.createWithDetails(DebugInfoViewModel.DebugInfoDetails(
-                account = account,
+                accountId = accountId,
                 syncDataType = syncDataType,
                 cause = cause,
                 localResource = localResource,
