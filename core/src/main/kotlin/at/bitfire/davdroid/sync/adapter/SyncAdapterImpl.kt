@@ -28,11 +28,9 @@ import at.bitfire.davdroid.sync.worker.SyncWorkerManager
 import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.guava.await
-import kotlinx.coroutines.job
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import java.util.logging.Level
@@ -67,15 +65,6 @@ class SyncAdapterImpl @Inject constructor(
 ), SyncAdapter {
 
     /**
-     * The [Job] of the currently running sync (that waits for the worker to be finished).
-     * Used to cancel the job when [onSyncCanceled] is called.
-     *
-     * Volatile because [onSyncCanceled] is called from a different thread than [onPerformSync].
-     */
-    @Volatile
-    private var syncJob: Job? = null
-
-    /**
      * Max time to wait for the worker in [waitForWorker]. Overridable for tests.
      */
     @VisibleForTesting
@@ -87,19 +76,18 @@ class SyncAdapterImpl @Inject constructor(
         authority: String,
         provider: ContentProviderClient,
         syncResult: SyncResult
-    ) = runBlocking {
-        // remember Job of runBlocking's root coroutine to allow cancellation
-        syncJob = coroutineContext.job
-
+    ) {
         try {
-            performSync(accountOrAddressBookAccount, extras, authority)
-        } catch (e: Throwable) {
-            // catch and ignore any error so that the sync always finishes "successfully"
-            logger.log(Level.WARNING, "onPerformSync error", e)
-        } finally {
-            // no need for cancellation anymore, clear job variable
-            syncJob = null
+            runBlocking {
+                /* When the sync framework wants to interrupt the sync, it calls onSyncCanceled, which
+                interrupts the thread in the default implementation. runBlocking cancels its
+                CoroutineScope when the thread is interrupted. So we can just rely on that. */
 
+                performSync(accountOrAddressBookAccount, extras, authority)
+            }
+        } catch (_: Throwable) {
+            // catch and ignore any error so that the sync always finishes "successfully"
+        } finally {
             if (hasAlwaysPendingIssue)
                 clearPendingFlag(accountOrAddressBookAccount, authority)
         }
@@ -227,19 +215,6 @@ class SyncAdapterImpl @Inject constructor(
     override fun onSecurityException(account: Account, extras: Bundle, authority: String, syncResult: SyncResult) {
         logger.warning("Security exception for $account/$authority")
     }
-
-    override fun onSyncCanceled() {
-        /* Note: this is also called in response to our own cancellation at the end of every sync
-        (see clearPendingFlag/cancelSync), in which case syncJob is already null and there's
-        nothing to cancel.
-
-        We don't call super.onSyncCanceled() / interrupt the sync thread here: AbstractThreadedSyncAdapter
-        only calls SyncContext.onFinished() if the thread is not interrupted. */
-
-        syncJob?.cancel()
-    }
-
-    override fun onSyncCanceled(thread: Thread) = onSyncCanceled()
 
     override fun getBinder(): IBinder = syncAdapterBinder
 

@@ -128,11 +128,14 @@ class SyncAdapterImplTest {
                 syncAdapter.onPerformSync(account, Bundle(), CalendarContract.AUTHORITY, mockk(), SyncResult())
             }
 
-            // wait until performSync has started (so that waitScope is guaranteed to be set before we cancel it below)
-            coVerify(timeout = 5000) { syncAdapter.performSync(any(), any(), any()) }
+            // wait until performSync is started
+            coVerify {
+                syncAdapter.performSync(any(), any(), any())
+            }
 
-            // simulate incoming cancellation from sync framework
-            syncAdapter.onSyncCanceled()
+            // wait a bit and simulate incoming cancellation from sync framework
+            Thread.sleep(100)
+            sync.interrupt()
 
             // wait for sync to finish (should happen immediately)
             sync.join(5000)
