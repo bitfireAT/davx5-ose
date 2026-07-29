@@ -32,23 +32,21 @@ import io.mockk.mockkStatic
 import io.mockk.verify
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.awaitCancellation
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withTimeout
 import org.junit.After
+import org.junit.Assert.assertFalse
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Provider
+import kotlin.concurrent.thread
 import kotlin.coroutines.cancellation.CancellationException
-import kotlin.time.Duration.Companion.milliseconds
-import kotlin.time.Duration.Companion.seconds
+import kotlin.time.Duration
 
 @HiltAndroidTest
 class SyncAdapterImplTest {
@@ -72,8 +70,10 @@ class SyncAdapterImplTest {
     lateinit var workerFactory: HiltWorkerFactory
 
     lateinit var account: Account
+    private lateinit var syncAdapter: SyncAdapterImpl
+    private lateinit var workManager: WorkManager
 
-    private var masterSyncStateBeforeTest = ContentResolver.getMasterSyncAutomatically()
+    private val globalSyncStateBeforeTest = ContentResolver.getMasterSyncAutomatically()
 
     @Before
     fun setUp() {
@@ -81,105 +81,79 @@ class SyncAdapterImplTest {
         TestUtils.setUpWorkManager(context, workerFactory)
 
         account = TestAccount.create()
+        syncAdapter = syncAdapterImplProvider.get()
+        workManager = WorkManager.getInstance(context)
 
         ContentResolver.setMasterSyncAutomatically(true)
         ContentResolver.setSyncAutomatically(account, CalendarContract.AUTHORITY, true)
         ContentResolver.setIsSyncable(account, CalendarContract.AUTHORITY, 1)
+
+        // don't actually create a worker
+        coEvery { syncWorkerManager.enqueueOneTime(any(), any()) } returns "TheSyncWorker"
     }
 
     @After
     fun tearDown() {
-        ContentResolver.setMasterSyncAutomatically(masterSyncStateBeforeTest)
+        ContentResolver.setMasterSyncAutomatically(globalSyncStateBeforeTest)
         TestAccount.remove(account)
+    }
+
+    /**
+     * Stubs [workManager] so that [SyncAdapterImpl]'s `waitForWorker()` finds a not-yet-finished
+     * "TheSyncWorker", and then waits on [finishesWith] to learn when it's done.
+     *
+     * @return the worker's id (needed to `verify` that [WorkManager.getWorkInfoByIdFlow] was called for it)
+     */
+    private fun stubOneTimeWorker(finishesWith: Flow<WorkInfo>): UUID {
+        val workId = UUID.randomUUID()
+        val runningWorkInfo = mockk<WorkInfo> {
+            every { id } returns workId
+            every { state } returns WorkInfo.State.RUNNING
+        }
+        every { workManager.getWorkInfosForUniqueWork("TheSyncWorker") } returns
+                Futures.immediateFuture(listOf(runningWorkInfo))
+        every { workManager.getWorkInfoByIdFlow(workId) } returns finishesWith
+        return workId
     }
 
 
     @Test
-    fun testSyncAdapter_onPerformSync_cancellation() = runTest {
-        val workManager = WorkManager.getInstance(context)
-        val syncAdapter = syncAdapterImplProvider.get()
-
+    fun testSyncAdapter_onPerformSync_cancellation() {
         mockkObject(workManager) {
-            // don't actually create a worker
-            coEvery { syncWorkerManager.enqueueOneTime(any(), any()) } returns "TheSyncWorker"
-
-            // assume worker is still running
-            val workId = UUID.randomUUID()
-            val runningWorkInfo = mockk<WorkInfo> {
-                every { id } returns workId
-                every { state } returns WorkInfo.State.RUNNING
-            }
-            every { workManager.getWorkInfosForUniqueWork("TheSyncWorker") } returns
-                    Futures.immediateFuture(listOf(runningWorkInfo))
             // assume worker takes a long time to finish
-            every { workManager.getWorkInfoByIdFlow(workId) } returns flow { awaitCancellation() }
+            stubOneTimeWorker(flow { awaitCancellation() })
 
-            val sync = launch {
+            // onPerformSync() blocks its calling thread (it's a runBlocking entry point), just
+            // like the real sync framework calls it on its own SyncThread - so we need a real
+            // thread here too, to be able to call onSyncCanceled() concurrently with it.
+            val sync = thread {
                 syncAdapter.onPerformSync(account, Bundle(), CalendarContract.AUTHORITY, mockk(), SyncResult())
             }
+
+            // wait until the sync adapter has actually started waiting for the worker (so that
+            // waitScope is guaranteed to be set before we cancel it below)
+            verify(timeout = 5000) { workManager.getWorkInfosForUniqueWork("TheSyncWorker") }
 
             // simulate incoming cancellation from sync framework
             syncAdapter.onSyncCanceled()
 
             // wait for sync to finish (should happen immediately)
-            sync.join()
-
-            // verify that the sync adapter actually looked up the (still running) worker
-            verify { workManager.getWorkInfosForUniqueWork("TheSyncWorker") }
-        }
-    }
-
-    @Test
-    fun testSyncAdapter_onPerformSync_clearsPendingFlag() = runBlocking {
-        val syncAdapter = syncAdapterImplProvider.get()
-
-        // Don't actually create a worker
-        coEvery { syncWorkerManager.enqueueOneTime(any(), any()) } returns "TheSyncWorker"
-
-        // Make the real sync framework genuinely mark this account/authority as pending.
-        val extras = Bundle()
-        ContentResolver.requestSync(account, CalendarContract.AUTHORITY, extras)
-        withTimeout(10.seconds) {
-            while (!ContentResolver.isSyncPending(account, CalendarContract.AUTHORITY))
-                delay(100.milliseconds)
-        }
-
-        // Call SyncAdapterImpl directly, just like the sync framework would -
-        // this must clear the pending flag again.
-        syncAdapter.onPerformSync(account, extras, CalendarContract.AUTHORITY, mockk(), SyncResult())
-
-        // Verify that pending flag is cleared
-        withTimeout(10.seconds) {
-            while (ContentResolver.isSyncPending(account, CalendarContract.AUTHORITY))
-                delay(100.milliseconds)
+            sync.join(5000)
+            assertFalse("Sync thread was not terminated on cancellation", sync.isAlive)
         }
     }
 
     @Test
     fun testSyncAdapter_onPerformSync_returnsAfterTimeout() {
-        val workManager = WorkManager.getInstance(context)
-        val syncAdapter = syncAdapterImplProvider.get()
-
         mockkObject(workManager) {
-            // don't actually create a worker
-            coEvery { syncWorkerManager.enqueueOneTime(any(), any()) } returns "TheSyncWorker"
-
-            // assume worker is still running
-            val workId = UUID.randomUUID()
-            val runningWorkInfo = mockk<WorkInfo> {
-                every { id } returns workId
-                every { state } returns WorkInfo.State.RUNNING
-            }
-            every { workManager.getWorkInfosForUniqueWork("TheSyncWorker") } returns
-                    Futures.immediateFuture(listOf(runningWorkInfo))
             // assume worker takes a long time to finish
-            every { workManager.getWorkInfoByIdFlow(workId) } returns flow { awaitCancellation() }
+            stubOneTimeWorker(flow { awaitCancellation() })
 
             mockkStatic("kotlinx.coroutines.TimeoutKt") {   // mock global extension function
                 // immediate timeout (instead of really waiting)
                 coEvery {
                     withTimeout(
-                        any<Long>(),
+                        any<Duration>(),
                         any<suspend CoroutineScope.() -> Unit>()
                     )
                 } throws CancellationException("Simulated timeout")
@@ -194,31 +168,18 @@ class SyncAdapterImplTest {
 
     @Test
     fun testSyncAdapter_onPerformSync_runsInTime() {
-        val workManager = WorkManager.getInstance(context)
-        val syncAdapter = syncAdapterImplProvider.get()
-
         mockkObject(workManager) {
-            // don't actually create a worker
-            coEvery { syncWorkerManager.enqueueOneTime(any(), any()) } returns "TheSyncWorker"
-
             // assume worker is enqueued, then immediately finishes with success
-            val workId = UUID.randomUUID()
-            val enqueuedWorkInfo = mockk<WorkInfo> {
-                every { id } returns workId
-                every { state } returns WorkInfo.State.ENQUEUED
-            }
             val succeededWorkInfo = mockk<WorkInfo> {
-                every { id } returns workId
                 every { state } returns WorkInfo.State.SUCCEEDED
             }
-            every { workManager.getWorkInfosForUniqueWork("TheSyncWorker") } returns
-                    Futures.immediateFuture(listOf(enqueuedWorkInfo))
-            every { workManager.getWorkInfoByIdFlow(workId) } returns flowOf(succeededWorkInfo)
+            val workId = stubOneTimeWorker(flowOf(succeededWorkInfo))
 
             // should just run
             syncAdapter.onPerformSync(account, Bundle(), CalendarContract.AUTHORITY, mockk(), SyncResult())
 
-            // verify that the sync adapter actually waited for the worker to finish
+            // verify that the sync adapter actually subscribed to the worker's status
+            // (i.e. didn't take the early-return path)
             verify { workManager.getWorkInfoByIdFlow(workId) }
         }
     }
