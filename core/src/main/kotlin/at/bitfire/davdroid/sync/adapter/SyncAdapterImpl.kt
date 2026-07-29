@@ -73,7 +73,7 @@ class SyncAdapterImpl @Inject constructor(
      * Scope used to wait for the currently running sync (if any) to finish.
      * A fresh scope is created for every [onPerformSync].
      *
-     * [onSyncCanceled] is called from a different thread then [onPerformSync].
+     * [onSyncCanceled] is called from a different thread than [onPerformSync].
      */
     @Volatile
     private var waitScope: CoroutineScope? = null
@@ -91,20 +91,20 @@ class SyncAdapterImpl @Inject constructor(
         provider: ContentProviderClient,
         syncResult: SyncResult
     ) = runBlocking {   // blocking entry point
-        val scope = CoroutineScope(EmptyCoroutineContext)
-        waitScope = scope
+        val scope = CoroutineScope(EmptyCoroutineContext).also {
+            waitScope = it
+        }
 
-        // Make sure we always return normally (never throw) so that AbstractThreadedSyncAdapter's
-        // SyncThread reaches its finally block and calls SyncContext.onFinished().
         try {
             performSync(accountOrAddressBookAccount, extras, authority, scope)
         } catch (e: Throwable) {
+            // catch and ignore any error so that the sync always finishes "successfully"
             logger.log(Level.WARNING, "onPerformSync error", e)
         } finally {
             // this waitScope is only relevant for the performSync call, reset
             waitScope = null
 
-            if (isAffectedByAlwaysPendingBug)
+            if (hasAlwaysPendingIssue)
                 clearPendingFlag(accountOrAddressBookAccount, authority)
         }
     }
@@ -129,25 +129,21 @@ class SyncAdapterImpl @Inject constructor(
         val upload = extras.containsKey(ContentResolver.SYNC_EXTRAS_UPLOAD)
         logger.info("Sync request via sync framework for $accountOrAddressBookAccount $authority (upload=$upload)")
 
-        // If we should sync an address book account - find the account storing the settings
-        val account = getAccount(accountOrAddressBookAccount)
-        if (account == null) {
-            logger.warning("Address book account $accountOrAddressBookAccount doesn't have an associated collection")
-            return
-        }
+        // If we should sync an address book account: find the main account
+        val account = getAccount(accountOrAddressBookAccount) ?: return
 
-        // Check sync conditions
+        // Check sync conditions (don't enqueue worker if sync conditions are not met)
         if (!checkSyncConditions(account))
             return
 
-        logger.fine("Starting OneTimeSyncWorker for $account $authority and waiting for it")
+        logger.info("Starting OneTimeSyncWorker for $account $authority and waiting for it")
         val workerName = syncWorkerManager.enqueueOneTime(
             account,
             dataType = SyncDataType.fromAuthority(authority),
             fromUpload = upload
         )
 
-        // Wait until worker has finished
+        // Scoped wait until worker has finished
         waitForWorker(workerName, waitScope)
 
         logger.info("Worker $workerName has finished, returning to sync framework")
@@ -156,7 +152,7 @@ class SyncAdapterImpl @Inject constructor(
     /**
      * Resolves the account that should actually be used for syncing. If [accountOrAddressBookAccount]
      * is an address book account, looks up the collection and service it belongs to and returns the
-     * account storing the settings for that service. Otherwise returns [accountOrAddressBookAccount] as-is.
+     * account storing the settings for that service. Otherwise, [accountOrAddressBookAccount] is directly returned.
      *
      * @return the resolved account, or `null` if an address book account doesn't have an associated collection
      */
@@ -189,7 +185,7 @@ class SyncAdapterImpl @Inject constructor(
         }
         val syncConditions = syncConditionsFactory.create(accountSettings)
         if (!syncConditions.wifiConditionsMet()) {
-            logger.info("Sync conditions not met. Aborting sync framework initiated sync")
+            logger.info("Sync conditions not met. Ignoring sync framework-initiated sync")
             return false
         }
         return true
@@ -209,7 +205,7 @@ class SyncAdapterImpl @Inject constructor(
         val workManager = WorkManager.getInstance(context)
 
         // look up whether there's an unfinished worker with the given name
-        val worker = workManager.getWorkInfosForUniqueWork(workerName).await().firstOrNull {
+        val unfinishedWorker = workManager.getWorkInfosForUniqueWork(workerName).await().firstOrNull {
             !it.state.isFinished
         } ?: return
 
@@ -217,10 +213,10 @@ class SyncAdapterImpl @Inject constructor(
         try {
             // we don't need a separate thread to wait
             waitScope.async(Dispatchers.Unconfined) {
-                withTimeout(workerWaitTimeout) {   // max wait timeout
-                    workManager.getWorkInfoByIdFlow(worker.id)
+                withTimeout(workerWaitTimeout) {
+                    workManager.getWorkInfoByIdFlow(unfinishedWorker.id)
                         .filterNotNull()
-                        .first { it.state.isFinished }
+                        .first { it.state.isFinished }  // collect flow until worker is finished
                 }
             }.await()
         } catch (_: CancellationException) {
@@ -259,10 +255,9 @@ class SyncAdapterImpl @Inject constructor(
     companion object {
 
         /* Sync framework bug: ContentResolver.isSyncPending() can get stuck returning true forever
-        after a sync, starting with Android 14: https://issuetracker.google.com/issues/320542002.
-        Confirmed still present on Android 15/16. The issue doesn't seem to be deterministic, so it
-        can't be reproduced with a behavior test easily. */
-        private val isAffectedByAlwaysPendingBug = Build.VERSION.SDK_INT >= 34
+        after a sync, starting with Android 14: https://issuetracker.google.com/issues/320542002. The
+        issue doesn't seem to be deterministic, so it can't be reproduced with a behavior test easily. */
+        private val hasAlwaysPendingIssue = Build.VERSION.SDK_INT >= 34
 
     }
 
