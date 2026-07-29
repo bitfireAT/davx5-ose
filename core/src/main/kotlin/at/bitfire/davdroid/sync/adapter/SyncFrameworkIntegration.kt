@@ -171,10 +171,8 @@ class SyncFrameworkIntegration @Inject constructor(
     /**
      * Observe whether any of the given data types is currently pending for sync.
      *
-     * Note: the sync framework doesn't reliably mark a finished one-time sync as "not pending"
-     * anymore. This is why [SyncAdapterImpl] explicitly calls [cancelSync] after every sync
-     * framework initiated sync. Doing so allows us to have a reliable "pending" flag again,
-     * which is used in this method.
+     * _Note:_ the sync framework doesn't reliably mark a finished one-time sync as "not pending"
+     * anymore, see [SyncAdapterImpl.isAffectedByAlwaysPendingBug].
      *
      * @param account   account to observe sync status for
      * @param dataTypes data types to observe sync status for
