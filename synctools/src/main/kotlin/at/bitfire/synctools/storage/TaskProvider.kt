@@ -29,8 +29,8 @@ object TaskProvider {
         JtxBoard(
             authority = "at.techbee.jtx.provider",
             packageName = "at.techbee.jtx",
-            minVersionCode = 210000000,
-            minVersionName = "2.10.00",
+            minVersionCode = 217020009,
+            minVersionName = "2.17.00",
             permissions = arrayOf("at.techbee.jtx.permission.READ", "at.techbee.jtx.permission.WRITE")
         ),
         TasksOrg(
