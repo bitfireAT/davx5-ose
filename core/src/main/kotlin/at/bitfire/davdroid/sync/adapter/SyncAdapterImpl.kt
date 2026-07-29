@@ -34,8 +34,11 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import java.util.logging.Level
@@ -88,38 +91,15 @@ class SyncAdapterImpl @Inject constructor(
         logger.info("Sync request via sync framework for $accountOrAddressBookAccount $authority (upload=$upload)")
 
         // If we should sync an address book account - find the account storing the settings
-        val account = if (accountOrAddressBookAccount.type == context.getString(R.string.account_type_address_book))
-            AccountManager.get(context)
-                .getUserData(accountOrAddressBookAccount, LocalAddressBook.USER_DATA_COLLECTION_ID)
-                ?.toLongOrNull()
-                ?.let { collectionId ->
-                collectionRepository.get(collectionId)?.let { collection ->
-                    serviceRepository.getBlocking(collection.serviceId)?.let { service ->
-                        Account(service.accountName, context.getString(R.string.account_type))
-                    }
-                }
-            }
-        else
-            accountOrAddressBookAccount
-
+        val account = getAccount(accountOrAddressBookAccount)
         if (account == null) {
             logger.warning("Address book account $accountOrAddressBookAccount doesn't have an associated collection")
             return@runBlocking
         }
 
         // Check sync conditions
-        val accountSettings = try {
-            accountSettingsFactory.create(account)
-        } catch (e: InvalidAccountException) {
-            logger.log(Level.WARNING, "Account doesn't exist anymore", e)
+        if (!checkSyncConditions(account))
             return@runBlocking
-        }
-        val syncConditions = syncConditionsFactory.create(accountSettings)
-        // Should we run the sync at all?
-        if (!syncConditions.wifiConditionsMet()) {
-            logger.info("Sync conditions not met. Aborting sync framework initiated sync")
-            return@runBlocking
-        }
 
         logger.fine("Starting OneTimeSyncWorker for $account $authority and waiting for it")
         val workerName = syncWorkerManager.enqueueOneTime(
@@ -137,37 +117,86 @@ class SyncAdapterImpl @Inject constructor(
             syncFrameworkIntegration.get().cancelSync(accountOrAddressBookAccount, authority, extras)
         }
 
-        /* Because we are not allowed to observe worker state on a background thread, we can not
-        use it to block the sync adapter. Instead, we use a Flow to get notified when the sync
-        has finished. */
+        waitForWorker(workerName, syncResult)
+
+        logger.info("Returning to sync framework: $syncResult")
+    }
+
+    /**
+     * Resolves the account that should actually be used for syncing. If [accountOrAddressBookAccount]
+     * is an address book account, looks up the collection and service it belongs to and returns the
+     * account storing the settings for that service. Otherwise returns [accountOrAddressBookAccount] as-is.
+     *
+     * @return the resolved account, or `null` if an address book account doesn't have an associated collection
+     */
+    private fun getAccount(accountOrAddressBookAccount: Account): Account? =
+        if (accountOrAddressBookAccount.type == context.getString(R.string.account_type_address_book))
+            AccountManager.get(context)
+                .getUserData(accountOrAddressBookAccount, LocalAddressBook.USER_DATA_COLLECTION_ID)
+                ?.toLongOrNull()
+                ?.let { collectionId ->
+                    collectionRepository.get(collectionId)?.let { collection ->
+                        serviceRepository.getBlocking(collection.serviceId)?.let { service ->
+                            Account(service.accountName, context.getString(R.string.account_type))
+                        }
+                    }
+                }
+        else
+            accountOrAddressBookAccount
+
+    /**
+     * Checks whether a sync framework initiated sync should actually run for [account].
+     *
+     * @return whether the sync conditions are met (`false` also when the account doesn't exist anymore)
+     */
+    private fun checkSyncConditions(account: Account): Boolean {
+        val accountSettings = try {
+            accountSettingsFactory.create(account)
+        } catch (e: InvalidAccountException) {
+            logger.log(Level.WARNING, "Account doesn't exist anymore", e)
+            return false
+        }
+        val syncConditions = syncConditionsFactory.create(accountSettings)
+        if (!syncConditions.wifiConditionsMet()) {
+            logger.info("Sync conditions not met. Aborting sync framework initiated sync")
+            return false
+        }
+        return true
+    }
+
+    /**
+     * Waits until the worker with the given [workerName] has finished, or until the max wait
+     * timeout is reached. Sets [syncResult] fields when the worker failed.
+     *
+     * Because we are not allowed to observe worker state on a background thread, we can not use it
+     * to block the sync adapter. Instead, we use a Flow to get notified when the sync has finished.
+     */
+    private suspend fun waitForWorker(workerName: String, syncResult: SyncResult) {
         val workManager = WorkManager.getInstance(context)
 
         try {
-            val waitJob = waitScope.launch {
-                // wait for finished worker state
-                workManager.getWorkInfosForUniqueWorkFlow(workerName).collect { infoList ->
-                    for (info in infoList)
-                        if (info.state.isFinished) {
-                            if (info.state == WorkInfo.State.FAILED) {
-                                if (info.outputData.getBoolean(BaseSyncWorker.OUTPUT_TOO_MANY_RETRIES, false))
-                                    syncResult.tooManyRetries = true
-                                else
-                                    syncResult.databaseError = true
-                            }
-                            cancel("$workerName has finished")
+            val finishedWorkerInfo = withTimeout(10.minutes) {   // max wait timeout
+                // we don't need a separate thread to wait
+                waitScope.async(Dispatchers.Unconfined) {
+                    workManager.getWorkInfosForUniqueWorkFlow(workerName)
+                        .mapNotNull { infos ->
+                            // from list of WorkerInfos, take the first that is finished (if available)
+                            infos.firstOrNull { it.state.isFinished }
                         }
-                }
+                        .first()    // first non-null, i.e. finished WorkerInfo
+                }.await()
             }
 
-            withTimeout(10.minutes) {   // max wait timeout
-                waitJob.join()          // wait until worker has finished
+            if (finishedWorkerInfo.state == WorkInfo.State.FAILED) {
+                if (finishedWorkerInfo.outputData.getBoolean(BaseSyncWorker.OUTPUT_TOO_MANY_RETRIES, false))
+                    syncResult.tooManyRetries = true
+                else
+                    syncResult.databaseError = true
             }
         } catch (_: CancellationException) {
             // waiting for work was cancelled, either by timeout or because the worker has finished
             logger.fine("Not waiting for OneTimeSyncWorker anymore.")
         }
-
-        logger.info("Returning to sync framework: $syncResult")
     }
 
     override fun onSecurityException(account: Account, extras: Bundle, authority: String, syncResult: SyncResult) {
