@@ -154,11 +154,27 @@ class SyncFrameworkIntegration @Inject constructor(
         }
 
     /**
+     * Cancels the sync request for this account/authority.
+     *
+     * _Note:_ The sync framework doesn't reliably clear its internal "pending" flag when a one-time
+     * sync finishes normally. So we have to cancel the sync explicitly after every sync.
+     *
+     * *Only the two-argument [ContentResolver.cancelSync] actually resets the "pending" flag.**
+     *
+     * @param account   account to cancel the sync request for
+     * @param authority sync authority (like [android.provider.CalendarContract.AUTHORITY])
+     */
+    fun cancelSync(account: Account, authority: String) {
+        ContentResolver.cancelSync(account, authority)
+    }
+
+    /**
      * Observe whether any of the given data types is currently pending for sync.
      *
-     * Note: On Android 14+ finished syncs stay by default pending. This is why we
-     * explicitly cancel the active sync in [SyncAdapterImpl] for Android 14+. Doing
-     * so allows us to have a reliable "pending" flag again, which is used in this method.
+     * Note: the sync framework doesn't reliably mark a finished one-time sync as "not pending"
+     * anymore. This is why [SyncAdapterImpl] explicitly calls [cancelSync] after every sync
+     * framework initiated sync. Doing so allows us to have a reliable "pending" flag again,
+     * which is used in this method.
      *
      * @param account   account to observe sync status for
      * @param dataTypes data types to observe sync status for

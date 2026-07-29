@@ -86,6 +86,33 @@ class SyncAdapterImpl @Inject constructor(
         provider: ContentProviderClient,
         syncResult: SyncResult
     ) = runBlocking {   // blocking entry point
+        // Make sure we always return normally (never throw) so that AbstractThreadedSyncAdapter's
+        // SyncThread reaches its finally block and calls SyncContext.onFinished().
+        try {
+            performSync(accountOrAddressBookAccount, extras, authority, syncResult)
+        } catch (e: Throwable) {
+            logger.log(Level.WARNING, "Sync adapter entry point failed", e)
+            syncResult.databaseError = true
+        } finally {
+            clearPendingFlag(accountOrAddressBookAccount, authority)
+        }
+    }
+
+    /**
+     * Does the actual work of [onPerformSync]: resolves the account, checks sync conditions,
+     * enqueues a [at.bitfire.davdroid.sync.worker.OneTimeSyncWorker] and waits for it to finish.
+     *
+     * @param accountOrAddressBookAccount the account (or address book account) to sync
+     * @param extras SyncAdapter-specific parameters as passed to [onPerformSync]
+     * @param authority the authority of this sync request
+     * @param syncResult will be updated with error information if the worker failed
+     */
+    private suspend fun performSync(
+        accountOrAddressBookAccount: Account,
+        extras: Bundle,
+        authority: String,
+        syncResult: SyncResult
+    ) {
         // We have to pass this old SyncFramework extra for an Android 7 workaround
         val upload = extras.containsKey(ContentResolver.SYNC_EXTRAS_UPLOAD)
         logger.info("Sync request via sync framework for $accountOrAddressBookAccount $authority (upload=$upload)")
@@ -94,12 +121,12 @@ class SyncAdapterImpl @Inject constructor(
         val account = getAccount(accountOrAddressBookAccount)
         if (account == null) {
             logger.warning("Address book account $accountOrAddressBookAccount doesn't have an associated collection")
-            return@runBlocking
+            return
         }
 
         // Check sync conditions
         if (!checkSyncConditions(account))
-            return@runBlocking
+            return
 
         logger.fine("Starting OneTimeSyncWorker for $account $authority and waiting for it")
         val workerName = syncWorkerManager.enqueueOneTime(
@@ -108,6 +135,7 @@ class SyncAdapterImpl @Inject constructor(
             fromUpload = upload
         )
 
+        // Wait until worker has finished
         waitForWorker(workerName, syncResult)
 
         logger.info("Returning to sync framework: $syncResult")
@@ -194,14 +222,24 @@ class SyncAdapterImpl @Inject constructor(
         }
     }
 
+    /** Addresses an Android issue: the sync framework doesn't reliably clear its "pending" flag
+     * for this sync request on its own.
+     *
+     * This method explicitly clears the "pending flag" by cancelling the sync. */
+    private fun clearPendingFlag(account: Account, authority: String) {
+        syncFrameworkIntegration.get().cancelSync(account, authority)
+    }
+
     override fun onSecurityException(account: Account, extras: Bundle, authority: String, syncResult: SyncResult) {
         logger.warning("Security exception for $account/$authority")
     }
 
     override fun onSyncCanceled() {
-        logger.info("Sync adapter requested cancellation – won't cancel sync, but also won't block sync framework anymore")
+        // Note: this is also called in response to our own cancellation at the end of every sync.
 
-        // unblock sync framework
+        // We don't call super.onSyncCanceled() / interrupt the sync thread here: AbstractThreadedSyncAdapter
+        // only calls SyncContext.onFinished() if the thread is not interrupted.
+
         waitScope.cancel()
     }
 
