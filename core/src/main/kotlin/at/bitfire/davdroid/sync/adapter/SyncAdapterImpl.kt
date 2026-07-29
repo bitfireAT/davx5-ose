@@ -11,7 +11,6 @@ import android.content.ContentProviderClient
 import android.content.ContentResolver
 import android.content.Context
 import android.content.SyncResult
-import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
 import androidx.work.WorkInfo
@@ -108,15 +107,6 @@ class SyncAdapterImpl @Inject constructor(
             dataType = SyncDataType.fromAuthority(authority),
             fromUpload = upload
         )
-
-        // Android 14+ does not handle pending sync state correctly.
-        // As a defensive workaround, we can cancel specifically this still pending sync only
-        // See: https://github.com/bitfireAT/davx5-ose/issues/1458
-        if (Build.VERSION.SDK_INT >= 34) {
-            logger.fine("Android 14+ bug: Canceling forever pending sync adapter framework sync request for " +
-                    "account=$accountOrAddressBookAccount authority=$authority extras=$extras")
-            syncFrameworkIntegration.get().cancelSync(accountOrAddressBookAccount, authority, extras)
-        }
 
         waitForWorker(workerName, syncResult)
 

@@ -7,8 +7,6 @@ package at.bitfire.davdroid.sync.adapter
 import android.accounts.Account
 import android.content.ContentResolver
 import android.content.Context
-import android.content.SyncRequest
-import android.os.Bundle
 import androidx.annotation.WorkerThread
 import at.bitfire.davdroid.resource.LocalAddressBookStore
 import at.bitfire.davdroid.sync.SyncDataType
@@ -97,27 +95,6 @@ class SyncFrameworkIntegration @Inject constructor(
     fun disableSyncOnContentChange(account: Account, authority: String) {
         if (ContentResolver.getSyncAutomatically(account, authority))
             setSyncOnContentChange(account, authority, false)
-    }
-
-    /**
-     * Cancels the sync request in the Sync Adapter Framework by sync request. This
-     * is the defensive approach canceling only one specific sync request with matching
-     * sync extras.
-     *
-     * @param account The account for which the sync request should be canceled.
-     * @param authority The authority for which the sync request should be canceled.
-     * @param extras The original extras Bundle used to start the sync.
-     */
-    fun cancelSync(account: Account, authority: String, extras: Bundle) {
-        // Recreate the sync request which was used to start this sync
-        val syncRequest = SyncRequest.Builder()
-            .setSyncAdapter(account, authority)
-            .setExtras(extras)
-            .syncOnce()
-            .build()
-
-        // Cancel it
-        ContentResolver.cancelSync(syncRequest)
     }
 
     /**
