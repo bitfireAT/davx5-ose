@@ -14,6 +14,7 @@ import android.content.SyncResult
 import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
+import androidx.annotation.VisibleForTesting
 import androidx.work.WorkManager
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.repository.DavCollectionRepository
@@ -40,6 +41,7 @@ import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
 import kotlin.coroutines.EmptyCoroutineContext
+import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
 
 /**
@@ -76,6 +78,12 @@ class SyncAdapterImpl @Inject constructor(
     @Volatile
     private var waitScope: CoroutineScope? = null
 
+    /**
+     * Max time to wait for the worker in [waitForWorker]. Overridable for tests.
+     */
+    @VisibleForTesting
+    internal var workerWaitTimeout: Duration = 10.minutes
+
     override fun onPerformSync(
         accountOrAddressBookAccount: Account,
         extras: Bundle,
@@ -110,7 +118,8 @@ class SyncAdapterImpl @Inject constructor(
      * @param authority the authority of this sync request
      * @param waitScope scope to wait for the worker in; see [SyncAdapterImpl.waitScope]
      */
-    private suspend fun performSync(
+    @VisibleForTesting
+    internal suspend fun performSync(
         accountOrAddressBookAccount: Account,
         extras: Bundle,
         authority: String,
@@ -208,7 +217,7 @@ class SyncAdapterImpl @Inject constructor(
         try {
             // we don't need a separate thread to wait
             waitScope.async(Dispatchers.Unconfined) {
-                withTimeout(10.minutes) {   // max wait timeout
+                withTimeout(workerWaitTimeout) {   // max wait timeout
                     workManager.getWorkInfoByIdFlow(worker.id)
                         .filterNotNull()
                         .first { it.state.isFinished }
