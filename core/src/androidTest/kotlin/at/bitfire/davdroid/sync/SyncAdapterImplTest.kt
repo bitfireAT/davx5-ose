@@ -129,7 +129,7 @@ class SyncAdapterImplTest {
             }
 
             // wait until performSync is started
-            coVerify {
+            coVerify(timeout = 1000) {
                 syncAdapter.performSync(any(), any(), any())
             }
 

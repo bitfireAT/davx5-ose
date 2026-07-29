@@ -223,7 +223,7 @@ class SyncAdapterImpl @Inject constructor(
         /* Sync framework bug: ContentResolver.isSyncPending() can get stuck returning true forever
         after a sync, starting with Android 14: https://issuetracker.google.com/issues/320542002. The
         issue doesn't seem to be deterministic, so it can't be reproduced with a behavior test easily. */
-        private val hasAlwaysPendingIssue = Build.VERSION.SDK_INT >= 34
+        val hasAlwaysPendingIssue = Build.VERSION.SDK_INT >= 34
 
     }
 
