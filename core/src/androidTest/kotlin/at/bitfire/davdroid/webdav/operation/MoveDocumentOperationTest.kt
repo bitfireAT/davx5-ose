@@ -17,7 +17,7 @@ import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.Url
-import io.mockk.every
+import io.mockk.coEvery
 import io.mockk.junit4.MockKRule
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
@@ -61,7 +61,7 @@ class MoveDocumentOperationTest {
     @Before
     fun setUp() {
         hiltRule.inject()
-        every { httpClientBuilder.build(any(), any()) } answers { HttpClient(mockEngine) }
+        coEvery { httpClientBuilder.build(any(), any()) } answers { HttpClient(mockEngine) }
 
         mountDao = db.webDavMountDao()
         runBlocking {
