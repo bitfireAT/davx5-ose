@@ -4,13 +4,13 @@
 
 package at.bitfire.davdroid.ui
 
-import android.accounts.Account
 import android.content.Context
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.log.DebugDirectory
 import at.bitfire.davdroid.log.LogFileHandler
@@ -41,7 +41,7 @@ class DebugInfoViewModel @AssistedInject constructor(
 ) : ViewModel() {
 
     data class DebugInfoDetails(
-        val account: Account?,
+        val accountId: AccountId?,
         val syncDataType: String?,
         val cause: Throwable?,
         val localResource: String?,
@@ -82,7 +82,7 @@ class DebugInfoViewModel @AssistedInject constructor(
     init {
         viewModelScope.launch(ioDispatcher) {
             generateDebugInfo(
-                syncAccount = details.account,
+                syncAccountId = details.accountId,
                 syncDataType = details.syncDataType,
                 cause = details.cause,
                 localResource = details.localResource,
@@ -98,7 +98,7 @@ class DebugInfoViewModel @AssistedInject constructor(
      * Note: Part of this method and all of its helpers (listed below) should probably be extracted in the future
      */
     private fun generateDebugInfo(
-        syncAccount: Account?,
+        syncAccountId: AccountId?,
         syncDataType: String?,
         cause: Throwable?,
         localResource: String?,
@@ -108,7 +108,7 @@ class DebugInfoViewModel @AssistedInject constructor(
         val debugInfoFile = File(debugDirectory.getOrCreate(), FILE_DEBUG_INFO)
         debugInfoFile.printWriter().use { writer ->
             debugInfoGenerator(
-                syncAccount = syncAccount,
+                syncAccountId = syncAccountId,
                 syncDataType = syncDataType,
                 cause = cause,
                 localResource = localResource,

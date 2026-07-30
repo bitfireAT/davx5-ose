@@ -19,6 +19,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import at.bitfire.dav4jvm.ktor.exception.HttpException
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.accounts.toAccountId
 import at.bitfire.davdroid.ui.DebugInfoActivity
 import io.ktor.http.Url
 import java.io.IOException
@@ -68,7 +69,7 @@ fun ExceptionInfoDialog(
                 onClick = {
                     val intent = DebugInfoActivity.IntentBuilder(context).withCause(exception)
                     if (account != null)
-                        intent.withAccount(account)
+                        intent.withAccount(account.toAccountId())
                     if (remoteResource != null)
                         intent.withRemoteResource(remoteResource)
                     context.startActivity(intent.build())
