@@ -63,6 +63,7 @@ class TasksSyncManager @AssistedInject constructor(
     @Assisted localCollection: LocalTaskList,
     @Assisted collection: Collection,
     @Assisted resync: ResyncType?,
+    @Assisted settings: SyncSettings,
     @IoDispatcher ioDispatcher: CoroutineDispatcher,
     private val productIds: ProductIds,
     @SyncTransferSemaphore syncTransferSemaphore: Semaphore
@@ -75,7 +76,8 @@ class TasksSyncManager @AssistedInject constructor(
     collection,
     resync,
     ioDispatcher,
-    syncTransferSemaphore
+    syncTransferSemaphore,
+    settings
 ) {
 
     @AssistedFactory
@@ -86,7 +88,8 @@ class TasksSyncManager @AssistedInject constructor(
             syncResult: SyncResult,
             localCollection: LocalTaskList,
             collection: Collection,
-            resync: ResyncType?
+            resync: ResyncType?,
+            settings: SyncSettings
         ): TasksSyncManager
     }
 

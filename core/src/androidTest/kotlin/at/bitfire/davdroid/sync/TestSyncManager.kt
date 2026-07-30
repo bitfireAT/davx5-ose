@@ -36,6 +36,7 @@ class TestSyncManager @AssistedInject constructor(
     @Assisted syncResult: SyncResult,
     @Assisted localCollection: LocalTestCollection,
     @Assisted collection: Collection,
+    @Assisted settings: SyncSettings,
     @IoDispatcher ioDispatcher: CoroutineDispatcher,
     @SyncTransferSemaphore syncTransferSemaphore: Semaphore
 ): SyncManager<LocalTestResource, LocalTestCollection, DavCollection>(
@@ -47,7 +48,8 @@ class TestSyncManager @AssistedInject constructor(
     collection,
     resync = null,
     ioDispatcher,
-    syncTransferSemaphore
+    syncTransferSemaphore,
+    settings
 ) {
 
     @AssistedFactory
@@ -57,7 +59,8 @@ class TestSyncManager @AssistedInject constructor(
             httpClient: HttpClient,
             syncResult: SyncResult,
             localCollection: LocalTestCollection,
-            collection: Collection
+            collection: Collection,
+            settings: SyncSettings
         ): TestSyncManager
     }
 

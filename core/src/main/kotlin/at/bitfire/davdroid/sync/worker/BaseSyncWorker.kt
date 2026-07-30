@@ -27,6 +27,8 @@ import at.bitfire.davdroid.sync.ResyncType
 import at.bitfire.davdroid.sync.SyncConditions
 import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.SyncResult
+import at.bitfire.davdroid.sync.SyncSettings
+import at.bitfire.davdroid.sync.SyncSettingsProvider
 import at.bitfire.davdroid.sync.TaskSyncer
 import at.bitfire.davdroid.sync.TasksAppManager
 import at.bitfire.davdroid.sync.account.InvalidAccountException
@@ -73,6 +75,9 @@ abstract class BaseSyncWorker(
     lateinit var syncConditionsFactory: SyncConditions.Factory
 
     @Inject
+    lateinit var syncSettingsProvider: SyncSettingsProvider
+
+    @Inject
     lateinit var tasksAppManager: Lazy<TasksAppManager>
 
     @Inject
@@ -101,6 +106,7 @@ abstract class BaseSyncWorker(
                 val workId = workerParams.id
                 logger.warning("No valid account settings for account $accountId, cancelling worker $workId")
 
+                // make sure no more workers are run for the invalid account
                 val workManager = WorkManager.getInstance(applicationContext)
                 workManager.cancelWorkById(workId)
 
@@ -125,7 +131,8 @@ abstract class BaseSyncWorker(
                 }
             }
 
-            return doSyncWork(accountId, dataType)
+            val settings = syncSettingsProvider.create(accountSettings)
+            return doSyncWork(accountId, dataType, settings)
         } finally {
             logger.info("${javaClass.simpleName} finished for $syncTag")
             runningSyncs -= syncTag
@@ -135,7 +142,7 @@ abstract class BaseSyncWorker(
         }
     }
 
-    suspend fun doSyncWork(accountId: AccountId, dataType: SyncDataType): Result {
+    suspend fun doSyncWork(accountId: AccountId, dataType: SyncDataType, settings: SyncSettings): Result {
         logger.info("Running ${javaClass.name}: account=$accountId, dataType=$dataType")
 
         // pass supplied parameters to the selected syncer
@@ -154,16 +161,16 @@ abstract class BaseSyncWorker(
         val account = accountId.toAndroidAccount()
         when (dataType) {
             SyncDataType.CONTACTS ->
-                addressBookSyncer.create(account, resyncType, syncFrameworkUpload, syncResult)
+                addressBookSyncer.create(account, resyncType, syncFrameworkUpload, syncResult, settings)
             SyncDataType.EVENTS ->
-                calendarSyncer.create(account, resyncType, syncResult)
+                calendarSyncer.create(account, resyncType, syncResult, settings)
             SyncDataType.TASKS -> {
                 when (val currentProvider = tasksAppManager.get().currentProvider()) {
                     TaskProvider.ProviderName.JtxBoard ->
-                        jtxSyncer.create(account, resyncType, syncResult)
+                        jtxSyncer.create(account, resyncType, syncResult, settings)
                     TaskProvider.ProviderName.OpenTasks,
                     TaskProvider.ProviderName.TasksOrg ->
-                        taskSyncer.create(account, currentProvider, resyncType, syncResult)
+                        taskSyncer.create(account, currentProvider, resyncType, syncResult, settings)
                     else -> {
                         logger.warning("No valid tasks provider found, aborting sync")
                         return Result.failure()

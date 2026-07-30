@@ -85,6 +85,7 @@ import javax.net.ssl.SSLHandshakeException
  * @param localCollection   local collection to synchronize (interface to content provider)
  * @param collection        collection info in the database
  * @param resync            whether re-synchronization is requested
+ * @param settings          snapshot of the account settings relevant for this sync run
  */
 abstract class SyncManager<LocalType : LocalResource, out CollectionType : LocalCollection<LocalType>, RemoteType : DavCollection>(
     val account: Account,
@@ -95,7 +96,8 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
     val collection: Collection,
     val resync: ResyncType?,
     val ioDispatcher: CoroutineDispatcher,
-    val syncTransferSemaphore: Semaphore
+    val syncTransferSemaphore: Semaphore,
+    val settings: SyncSettings
 ) {
 
     enum class SyncAlgorithm {

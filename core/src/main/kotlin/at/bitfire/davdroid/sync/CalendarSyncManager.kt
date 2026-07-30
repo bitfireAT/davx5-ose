@@ -27,7 +27,6 @@ import at.bitfire.davdroid.resource.LocalCalendar
 import at.bitfire.davdroid.resource.LocalEvent
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.resource.SyncState
-import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.davdroid.util.DavUtils.lastSegment
 import at.bitfire.synctools.exception.InvalidResourceException
@@ -67,7 +66,7 @@ class CalendarSyncManager @AssistedInject constructor(
     @Assisted localCalendar: LocalCalendar,
     @Assisted collection: Collection,
     @Assisted resync: ResyncType?,
-    accountSettingsFactory: AccountSettings.Factory,
+    @Assisted settings: SyncSettings,
     @IoDispatcher ioDispatcher: CoroutineDispatcher,
     private val productIds: ProductIds,
     @SyncTransferSemaphore syncTransferSemaphore: Semaphore
@@ -80,7 +79,8 @@ class CalendarSyncManager @AssistedInject constructor(
     collection,
     resync,
     ioDispatcher,
-    syncTransferSemaphore
+    syncTransferSemaphore,
+    settings
 ) {
 
     @AssistedFactory
@@ -91,11 +91,10 @@ class CalendarSyncManager @AssistedInject constructor(
             syncResult: SyncResult,
             localCalendar: LocalCalendar,
             collection: Collection,
-            resync: ResyncType?
+            resync: ResyncType?,
+            settings: SyncSettings
         ): CalendarSyncManager
     }
-
-    private val accountSettings = accountSettingsFactory.create(account)
 
 
     override suspend fun prepare(): Boolean {
@@ -135,7 +134,7 @@ class CalendarSyncManager @AssistedInject constructor(
         }
 
     override fun syncAlgorithm() =
-        if (accountSettings.getTimeRangePastDays() != null || !hasCollectionSync)
+        if (settings.timeRangePastDays != null || !hasCollectionSync)
             SyncAlgorithm.PROPFIND_REPORT
         else
             SyncAlgorithm.COLLECTION_SYNC
@@ -178,7 +177,7 @@ class CalendarSyncManager @AssistedInject constructor(
 
     override fun listAllRemote(): Flow<MultiStatusItem> = flow {
         // calculate time range limits
-        val limitStart = accountSettings.getTimeRangePastDays()?.let { pastDays ->
+        val limitStart = settings.timeRangePastDays?.let { pastDays ->
             ZonedDateTime.now().minusDays(pastDays.toLong()).toInstant()
         }
 
@@ -264,7 +263,7 @@ class CalendarSyncManager @AssistedInject constructor(
         ).build(event)
 
         // add default reminder (if desired)
-        accountSettings.getDefaultAlarm()?.let { minBefore ->
+        settings.defaultAlarm?.let { minBefore ->
             logger.info("Adding default alarm ($minBefore min before) to $event")
             DefaultReminderBuilder(minBefore = minBefore).add(to = androidEvent)
         }

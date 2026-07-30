@@ -32,7 +32,6 @@ import at.bitfire.davdroid.resource.LocalGroup
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.resource.SyncState
 import at.bitfire.davdroid.resource.workaround.ContactDirtyVerifier
-import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.groups.CategoriesStrategy
 import at.bitfire.davdroid.sync.groups.VCard4Strategy
 import at.bitfire.davdroid.util.DavUtils
@@ -109,7 +108,7 @@ class ContactsSyncManager @AssistedInject constructor(
     @Assisted collection: Collection,
     @Assisted resync: ResyncType?,
     @Assisted val syncFrameworkUpload: Boolean,
-    accountSettingsFactory: AccountSettings.Factory,
+    @Assisted settings: SyncSettings,
     val dirtyVerifier: Optional<ContactDirtyVerifier>,
     @IoDispatcher ioDispatcher: CoroutineDispatcher,
     private val productIds: ProductIds,
@@ -124,7 +123,8 @@ class ContactsSyncManager @AssistedInject constructor(
     collection,
     resync,
     ioDispatcher,
-    syncTransferSemaphore
+    syncTransferSemaphore,
+    settings
 ) {
 
     @AssistedFactory
@@ -137,7 +137,8 @@ class ContactsSyncManager @AssistedInject constructor(
             localAddressBook: LocalAddressBook,
             collection: Collection,
             resync: ResyncType?,
-            syncFrameworkUpload: Boolean
+            syncFrameworkUpload: Boolean,
+            settings: SyncSettings
         ): ContactsSyncManager
     }
 
@@ -145,10 +146,8 @@ class ContactsSyncManager @AssistedInject constructor(
         infix fun <T> Set<T>.disjunct(other: Set<T>) = (this - other) union (other - this)
     }
 
-    private val accountSettings = accountSettingsFactory.create(account)
-
     private var hasVCard4 = false
-    private val groupStrategy = when (accountSettings.getGroupMethod()) {
+    private val groupStrategy = when (settings.groupMethod) {
         GroupMethod.GROUP_VCARDS -> VCard4Strategy(localAddressBook)
         GroupMethod.CATEGORIES -> CategoriesStrategy(localAddressBook)
     }

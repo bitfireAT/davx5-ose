@@ -24,14 +24,20 @@ class JtxSyncer @AssistedInject constructor(
     @Assisted account: Account,
     @Assisted resync: ResyncType?,
     @Assisted syncResult: SyncResult,
+    @Assisted settings: SyncSettings,
     localJtxCollectionStore: LocalJtxCollectionStore,
     private val jtxSyncManagerFactory: JtxSyncManager.Factory,
     private val tasksAppManager: dagger.Lazy<TasksAppManager>
-): Syncer<LocalJtxCollectionStore, LocalJtxCollection>(account, resync, syncResult) {
+) : Syncer<LocalJtxCollectionStore, LocalJtxCollection>(account, resync, syncResult, settings) {
 
     @AssistedFactory
     interface Factory {
-        fun create(account: Account, resyncType: ResyncType?, syncResult: SyncResult): JtxSyncer
+        fun create(
+            account: Account,
+            resyncType: ResyncType?,
+            syncResult: SyncResult,
+            settings: SyncSettings
+        ): JtxSyncer
     }
 
     override val dataStore = localJtxCollectionStore
@@ -78,7 +84,8 @@ class JtxSyncer @AssistedInject constructor(
             syncResult,
             localCollection,
             remoteCollection,
-            resync
+            resync,
+            settings
         )
         syncManager.performSync()
     }
