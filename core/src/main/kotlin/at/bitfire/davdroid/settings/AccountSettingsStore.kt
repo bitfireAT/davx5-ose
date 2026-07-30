@@ -12,7 +12,7 @@ import at.bitfire.synctools.util.trimToNull
 import at.bitfire.synctools.vcard.GroupMethod
 import net.openid.appauth.AuthState
 
-interface AccountSettingsStore<IdType: AccountId> {
+sealed interface AccountSettingsStore<IdType: AccountId> {
 
     val accountId: IdType
 
