@@ -51,6 +51,6 @@ include(":synctools")
 }*/
 /*includeBuild("../dav4jvm") {
     dependencySubstitution {
-        substitute(module("com.github.bitfireat:dav4jvm")).using(project(":"))
+        substitute(module("com.github.bitfireAT:dav4jvm")).using(project(":"))
     }
 }*/

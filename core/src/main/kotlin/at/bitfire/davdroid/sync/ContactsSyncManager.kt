@@ -8,9 +8,10 @@ import android.accounts.Account
 import android.content.ContentProviderClient
 import android.text.format.Formatter
 import at.bitfire.dav4jvm.ktor.DavAddressBook
-import at.bitfire.dav4jvm.ktor.MultiResponseCallback
-import at.bitfire.dav4jvm.ktor.Response
+import at.bitfire.dav4jvm.ktor.MultiStatusItem
 import at.bitfire.dav4jvm.ktor.exception.DavException
+import at.bitfire.dav4jvm.ktor.responses
+import at.bitfire.dav4jvm.ktor.selfResponse
 import at.bitfire.dav4jvm.property.caldav.CalDAV
 import at.bitfire.dav4jvm.property.carddav.AddressData
 import at.bitfire.dav4jvm.property.carddav.CardDAV
@@ -31,7 +32,6 @@ import at.bitfire.davdroid.resource.LocalGroup
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.resource.SyncState
 import at.bitfire.davdroid.resource.workaround.ContactDirtyVerifier
-import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.groups.CategoriesStrategy
 import at.bitfire.davdroid.sync.groups.VCard4Strategy
 import at.bitfire.davdroid.util.DavUtils
@@ -51,6 +51,9 @@ import io.ktor.http.ContentType
 import io.ktor.http.Url
 import io.ktor.http.content.TextContent
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.sync.Semaphore
 import java.io.Reader
 import java.io.StringReader
@@ -105,7 +108,7 @@ class ContactsSyncManager @AssistedInject constructor(
     @Assisted collection: Collection,
     @Assisted resync: ResyncType?,
     @Assisted val syncFrameworkUpload: Boolean,
-    accountSettingsFactory: AccountSettings.Factory,
+    @Assisted settings: SyncSettings,
     val dirtyVerifier: Optional<ContactDirtyVerifier>,
     @IoDispatcher ioDispatcher: CoroutineDispatcher,
     private val productIds: ProductIds,
@@ -120,7 +123,8 @@ class ContactsSyncManager @AssistedInject constructor(
     collection,
     resync,
     ioDispatcher,
-    syncTransferSemaphore
+    syncTransferSemaphore,
+    settings
 ) {
 
     @AssistedFactory
@@ -133,7 +137,8 @@ class ContactsSyncManager @AssistedInject constructor(
             localAddressBook: LocalAddressBook,
             collection: Collection,
             resync: ResyncType?,
-            syncFrameworkUpload: Boolean
+            syncFrameworkUpload: Boolean,
+            settings: SyncSettings
         ): ContactsSyncManager
     }
 
@@ -141,10 +146,8 @@ class ContactsSyncManager @AssistedInject constructor(
         infix fun <T> Set<T>.disjunct(other: Set<T>) = (this - other) union (other - this)
     }
 
-    private val accountSettings = accountSettingsFactory.create(account)
-
     private var hasVCard4 = false
-    private val groupStrategy = when (accountSettings.getGroupMethod()) {
+    private val groupStrategy = when (settings.groupMethod) {
         GroupMethod.GROUP_VCARDS -> VCard4Strategy(localAddressBook)
         GroupMethod.CATEGORIES -> CategoriesStrategy(localAddressBook)
     }
@@ -165,34 +168,30 @@ class ContactsSyncManager @AssistedInject constructor(
 
     override suspend fun queryCapabilities(): SyncState? {
         return SyncException.wrapWithRemoteResource(collection.url) {
-            var syncState: SyncState? = null
-            davCollection.propfind(
+            val response = davCollection.propfind(
                 0,
                 CardDAV.MaxResourceSize,
                 CardDAV.SupportedAddressData,
                 WebDAV.SupportedReportSet,
                 CalDAV.GetCTag,
                 WebDAV.SyncToken
-            ) { response, relation ->
-                if (relation == Response.HrefRelation.SELF) {
-                    response[MaxResourceSize::class.java]?.maxSize?.let { maxSize ->
-                        logger.info("Address book accepts vCards up to ${Formatter.formatFileSize(context, maxSize)}")
-                    }
+            ).selfResponse() ?: return@wrapWithRemoteResource null
 
-                    response[SupportedAddressData::class.java]?.let { supported ->
-                        hasVCard4 = supported.hasVCard4()
-                    }
-                    response[SupportedReportSet::class.java]?.let { supported ->
-                        hasCollectionSync = supported.reports.contains(WebDAV.SyncCollection)
-                    }
-                    syncState = syncState(response)
-                }
+            response[MaxResourceSize::class.java]?.maxSize?.let { maxSize ->
+                logger.info("Address book accepts vCards up to ${Formatter.formatFileSize(context, maxSize)}")
+            }
+
+            response[SupportedAddressData::class.java]?.let { supported ->
+                hasVCard4 = supported.hasVCard4()
+            }
+            response[SupportedReportSet::class.java]?.let { supported ->
+                hasCollectionSync = supported.reports.contains(WebDAV.SyncCollection)
             }
 
             logger.info("Address book supports vCard4: $hasVCard4")
             logger.info("Address book supports Collection Sync: $hasCollectionSync")
 
-            syncState
+            syncState(response)
         }
     }
 
@@ -252,10 +251,11 @@ class ContactsSyncManager @AssistedInject constructor(
         )
     }
 
-    override suspend fun listAllRemote(callback: MultiResponseCallback) =
+    override fun listAllRemote(): Flow<MultiStatusItem> = flow {
         SyncException.wrapWithRemoteResource(collection.url) {
-            davCollection.propfind(1, WebDAV.ResourceType, WebDAV.GetETag, callback = callback)
+            emitAll(davCollection.propfind(1, WebDAV.ResourceType, WebDAV.GetETag))
         }
+    }
 
     override suspend fun downloadRemote(bunch: List<Url>) {
         logger.info("Downloading ${bunch.size} vCard(s): $bunch")
@@ -272,7 +272,7 @@ class ContactsSyncManager @AssistedInject constructor(
                     version = null     // 3.0 is the default version; don't request 3.0 explicitly because maybe some vCard3-only servers don't understand it
                 }
             }
-            davCollection.multiget(bunch, contentType, version) { response, _ ->
+            davCollection.multiget(bunch, contentType, version).responses().collect { response ->
                 // See CalendarSyncManager for more information about the multi-get response
                 SyncException.wrapWithRemoteResource(response.href) wrapResource@{
                     if (!response.isSuccess()) {

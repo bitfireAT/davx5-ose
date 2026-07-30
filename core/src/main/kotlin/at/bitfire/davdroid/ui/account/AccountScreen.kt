@@ -3,7 +3,6 @@
  */
 
 import android.Manifest
-import android.accounts.Account
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.widget.Toast
@@ -58,6 +57,7 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
@@ -81,6 +81,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.ui.PermissionsActivity
 import at.bitfire.davdroid.ui.account.AccountProgress
@@ -98,7 +99,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun AccountScreen(
-    account: Account,
+    accountId: AccountId,
     onAccountSettings: () -> Unit,
     onCreateAddressBook: () -> Unit,
     onCreateCalendar: () -> Unit,
@@ -108,10 +109,11 @@ fun AccountScreen(
 ) {
     val model: AccountScreenViewModel = hiltViewModel(
         creationCallback = { factory: AccountScreenViewModel.Factory ->
-            factory.create(account)
+            factory.create(accountId)
         }
     )
 
+    val accountName by model.accountName.collectAsState("")
     val cardDavService by model.cardDavSvc.collectAsStateWithLifecycle()
     val addressBooks = model.addressBooks.collectAsLazyPagingItems()
 
@@ -122,7 +124,7 @@ fun AccountScreen(
 
     val context = LocalContext.current
     AccountScreen(
-        accountName = account.name,
+        accountName = accountName,
         error = model.error,
         onResetError = model::resetError,
         invalidAccount = model.invalidAccount.collectAsStateWithLifecycle(false).value,

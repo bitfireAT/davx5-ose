@@ -12,6 +12,8 @@ import androidx.annotation.WorkerThread
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.accounts.LegacyAccount
+import at.bitfire.davdroid.accounts.toAccountId
+import at.bitfire.davdroid.accounts.toAndroidAccount
 import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.db.ServiceType
@@ -82,8 +84,14 @@ class AccountRepository @Inject constructor(
             }
         }
     }
-    
+
     private fun getAccountName(accountId: AccountId): String {
+        // For now getAccountNameBlocking() isn't really blocking, so simply call through to it.
+        return getAccountNameBlocking(accountId)
+    }
+
+    @WorkerThread
+    fun getAccountNameBlocking(accountId: AccountId): String {
         return when (accountId) {
             is LegacyAccount -> accountId.androidAccount.name
         }
@@ -107,7 +115,7 @@ class AccountRepository @Inject constructor(
         config: DavResourceFinder.Configuration,
         groupMethod: GroupMethod,
         preconfigurationUrl: String?,
-    ): Account? {
+    ): AccountId? {
         val account = fromName(accountName)
 
         // create Android account
@@ -147,28 +155,28 @@ class AccountRepository @Inject constructor(
             logger.log(Level.SEVERE, "Couldn't access account settings", e)
             return null
         }
-        return account
+        return LegacyAccount(account)
     }
 
-    suspend fun delete(accountName: String): Boolean {
-        val account = fromName(accountName)
+    suspend fun delete(accountId: AccountId): Boolean {
+        val account = accountId.toAndroidAccount()
         // remove account directly (bypassing the authenticator, which is our own)
         return try {
             accountManager.removeAccountExplicitly(account)
 
             // delete address books (= address book accounts)
-            serviceRepository.getByAccountAndType(accountName, Service.TYPE_CARDDAV)?.let { service ->
+            serviceRepository.getByAccountAndType(accountId, Service.TYPE_CARDDAV)?.let { service ->
                 collectionRepository.getByService(service.id).forEach { collection ->
                     localAddressBookStore.get().deleteByCollectionId(collection.id)
                 }
             }
 
             // delete from database
-            serviceRepository.deleteByAccount(accountName)
+            serviceRepository.deleteByAccount(accountId)
 
             true
         } catch (e: Exception) {
-            logger.log(Level.WARNING, "Couldn't remove account $accountName", e)
+            logger.log(Level.WARNING, "Couldn't remove account $accountId", e)
             false
         }
     }
@@ -184,9 +192,15 @@ class AccountRepository @Inject constructor(
     fun fromName(accountName: String) =
         Account(accountName, accountType)
 
-    suspend fun getAll(): Array<Account> = withContext(ioDispatcher) {
-        // getAccountsByType is main-safe, but could still take some time (binder involved)
-        getAllBlocking()
+    suspend fun getAccountIdFromName(accountName: String): AccountId {
+        // Note: In the future this will have to perform a database lookup
+        return LegacyAccount(fromName(accountName))
+    }
+
+    suspend fun getAll(): List<AccountId> {
+        return withContext(ioDispatcher) {
+            getAllBlocking().map { account -> account.toAccountId() }
+        }
     }
 
     fun getAllBlocking() = accountManager.getAccountsByType(accountType)
@@ -247,11 +261,11 @@ class AccountRepository @Inject constructor(
             accountRenameFlow.emit(AccountRename(oldAccount.name, newName))
             
             // account renamed, cancel maybe running synchronization of old account
-            syncWorkerManager.get().cancelAllWork(oldAccount)
+            syncWorkerManager.get().cancelAllWork(oldAccount.toAccountId())
 
             // disable periodic syncs for old account
             for (dataType in SyncDataType.entries)
-                syncWorkerManager.get().disablePeriodic(oldAccount, dataType)
+                syncWorkerManager.get().disablePeriodic(oldAccount.toAccountId(), dataType)
 
             // update account name references in database
             serviceRepository.renameAccount(oldName, newName)
@@ -288,6 +302,12 @@ class AccountRepository @Inject constructor(
         } finally {
             // release AccountsCleanupWorker mutex at the end of this async coroutine
             AccountsCleanupWorker.unlockAccountsCleanup()
+        }
+    }
+
+    suspend fun rename(accountId: AccountId, newName: String) {
+        when (accountId) {
+            is LegacyAccount -> rename(accountId.androidAccount.name, newName)
         }
     }
 

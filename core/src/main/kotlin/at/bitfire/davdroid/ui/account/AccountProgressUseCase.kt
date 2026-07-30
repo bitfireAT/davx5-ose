@@ -4,9 +4,10 @@
 
 package at.bitfire.davdroid.ui.account
 
-import android.accounts.Account
 import android.content.Context
 import androidx.work.WorkInfo
+import at.bitfire.davdroid.accounts.AccountId
+import at.bitfire.davdroid.accounts.toAndroidAccount
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.sync.SyncDataType
@@ -31,14 +32,14 @@ class AccountProgressUseCase @Inject constructor(
      * Returns the current sync state of the account.
      */
     operator fun invoke(
-        account: Account,
+        accountId: AccountId,
         serviceFlow: Flow<Service?>,
         dataTypes: Iterable<SyncDataType>
     ): Flow<AccountProgress> {
         val serviceRefreshing = isServiceRefreshing(serviceFlow)
-        val syncEnqueued = isSyncEnqueued(account, dataTypes)
-        val syncPending = syncFramework.isSyncPending(account, dataTypes)
-        val syncRunning = isSyncRunning(account, dataTypes)
+        val syncEnqueued = isSyncEnqueued(accountId, dataTypes)
+        val syncPending = syncFramework.isSyncPending(accountId.toAndroidAccount(), dataTypes)
+        val syncRunning = isSyncRunning(accountId, dataTypes)
 
         return combine(
             serviceRefreshing,
@@ -64,22 +65,23 @@ class AccountProgressUseCase @Inject constructor(
         }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    fun isSyncEnqueued(account: Account, dataTypes: Iterable<SyncDataType>): Flow<Boolean> =
-        syncWorkerManager.hasAnyFlow(
+    fun isSyncEnqueued(accountId: AccountId, dataTypes: Iterable<SyncDataType>): Flow<Boolean> {
+        return syncWorkerManager.hasAnyFlow(
             workStates = listOf(WorkInfo.State.ENQUEUED),
-            account = account,
+            accountId = accountId,
             dataTypes = dataTypes,
             whichTag = { _, authority ->
                 // we are only interested in enqueued OneTimeSyncWorkers because there's always an enqueued PeriodicSyncWorker
-                OneTimeSyncWorker.workerName(account, authority)
+                OneTimeSyncWorker.workerName(accountId, authority)
             }
         )
+    }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    fun isSyncRunning(account: Account, dataTypes: Iterable<SyncDataType>): Flow<Boolean> =
+    fun isSyncRunning(accountId: AccountId, dataTypes: Iterable<SyncDataType>): Flow<Boolean> =
         syncWorkerManager.hasAnyFlow(
             workStates = listOf(WorkInfo.State.RUNNING),
-            account = account,
+            accountId = accountId,
             dataTypes = dataTypes
         )
 

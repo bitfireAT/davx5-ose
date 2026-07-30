@@ -46,12 +46,11 @@ class WebDavUrlChecker @Inject constructor(
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     internal suspend fun checkWebDavUrl(httpClient: HttpClient, url: Url): Url? {
         val validVersions = arrayOf("1", "2", "3")
-        var webdavUrl: Url? = null
         val dav = DavResource(httpClient, url)
-        dav.options(followRedirects = true) { davCapabilities, _ ->
-            if (davCapabilities.any { it in validVersions })
-                webdavUrl = dav.location
-        }
-        return webdavUrl
+        val davCapabilities = dav.options(followRedirects = true).davCapabilities
+        return if (davCapabilities.any { it in validVersions })
+            dav.location
+        else
+            null
     }
 }

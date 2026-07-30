@@ -4,13 +4,13 @@
 
 package at.bitfire.davdroid.ui.setup
 
-import android.accounts.Account
 import android.content.Context
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.log.DebugDirectory
 import at.bitfire.davdroid.log.FileLoggerFactory
@@ -295,7 +295,7 @@ class LoginScreenViewModel @AssistedInject constructor(
         val groupMethod: GroupMethod = GroupMethod.GROUP_VCARDS,
         val groupMethodReadOnly: Boolean = false,
         val creatingAccount: Boolean = false,
-        val createdAccount: Account? = null,
+        val createdAccountId: AccountId? = null,
         val couldNotCreateAccount: Boolean = false
     ) {
         val showApostropheWarning = accountName.contains('\'') || accountName.contains('"')
@@ -366,7 +366,7 @@ class LoginScreenViewModel @AssistedInject constructor(
         }
 
         viewModelScope.launch {
-            val account = withContext(ioDispatcher) {
+            val accountId = withContext(ioDispatcher) {
                 accountRepository.createBlocking(
                     accountDetailsUiState.value.accountName,
                     loginInfo.credentials,
@@ -377,8 +377,8 @@ class LoginScreenViewModel @AssistedInject constructor(
             }
 
             _accountDetailsUiState.update { currentState ->
-                if (account != null)
-                    currentState.copy(createdAccount = account)
+                if (accountId != null)
+                    currentState.copy(createdAccountId = accountId)
                 else
                     currentState.copy(
                         creatingAccount = false,

@@ -194,7 +194,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
 
             val debugIntent = DebugInfoActivity.IntentBuilder(applicationContext)
                 .withCause(e)
-                .withAccount(account)
+                .withAccount(account.toAccountId())
                 .build()
             notifyRefreshError(
                 accountName = account.name,

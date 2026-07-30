@@ -40,7 +40,7 @@ class ThumbnailCache @Inject constructor(
     }
 
 
-    fun get(docKey: WebDavDocument.CacheKey, sizeHint: Point, generate: () -> ByteArray?): File? {
+    suspend fun get(docKey: WebDavDocument.CacheKey, sizeHint: Point, generate: () -> ByteArray?): File? {
         val key = Key(docKey, sizeHint)
         return storage.getFileOrPut(key.asString(), generate)
     }

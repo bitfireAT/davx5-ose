@@ -7,9 +7,10 @@ package at.bitfire.davdroid.sync
 import android.accounts.Account
 import android.text.format.Formatter
 import at.bitfire.dav4jvm.ktor.DavCalendar
-import at.bitfire.dav4jvm.ktor.MultiResponseCallback
-import at.bitfire.dav4jvm.ktor.Response
+import at.bitfire.dav4jvm.ktor.MultiStatusItem
 import at.bitfire.dav4jvm.ktor.exception.DavException
+import at.bitfire.dav4jvm.ktor.responses
+import at.bitfire.dav4jvm.ktor.selfResponse
 import at.bitfire.dav4jvm.property.caldav.CalDAV
 import at.bitfire.dav4jvm.property.caldav.CalendarData
 import at.bitfire.dav4jvm.property.caldav.MaxResourceSize
@@ -26,7 +27,6 @@ import at.bitfire.davdroid.resource.LocalCalendar
 import at.bitfire.davdroid.resource.LocalEvent
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.resource.SyncState
-import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.davdroid.util.DavUtils.lastSegment
 import at.bitfire.synctools.exception.InvalidResourceException
@@ -44,6 +44,9 @@ import io.ktor.client.HttpClient
 import io.ktor.http.Url
 import io.ktor.http.content.TextContent
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.sync.Semaphore
 import net.fortuna.ical4j.model.Component
 import net.fortuna.ical4j.model.component.VEvent
@@ -63,7 +66,7 @@ class CalendarSyncManager @AssistedInject constructor(
     @Assisted localCalendar: LocalCalendar,
     @Assisted collection: Collection,
     @Assisted resync: ResyncType?,
-    accountSettingsFactory: AccountSettings.Factory,
+    @Assisted settings: SyncSettings,
     @IoDispatcher ioDispatcher: CoroutineDispatcher,
     private val productIds: ProductIds,
     @SyncTransferSemaphore syncTransferSemaphore: Semaphore
@@ -76,7 +79,8 @@ class CalendarSyncManager @AssistedInject constructor(
     collection,
     resync,
     ioDispatcher,
-    syncTransferSemaphore
+    syncTransferSemaphore,
+    settings
 ) {
 
     @AssistedFactory
@@ -87,11 +91,10 @@ class CalendarSyncManager @AssistedInject constructor(
             syncResult: SyncResult,
             localCalendar: LocalCalendar,
             collection: Collection,
-            resync: ResyncType?
+            resync: ResyncType?,
+            settings: SyncSettings
         ): CalendarSyncManager
     }
-
-    private val accountSettings = accountSettingsFactory.create(account)
 
 
     override suspend fun prepare(): Boolean {
@@ -110,32 +113,28 @@ class CalendarSyncManager @AssistedInject constructor(
 
     override suspend fun queryCapabilities(): SyncState? =
         SyncException.wrapWithRemoteResource(collection.url) {
-            var syncState: SyncState? = null
-            davCollection.propfind(
+            val response = davCollection.propfind(
                 0,
                 CalDAV.MaxResourceSize,
                 WebDAV.SupportedReportSet,
                 CalDAV.GetCTag,
                 WebDAV.SyncToken
-            ) { response, relation ->
-                if (relation == Response.HrefRelation.SELF) {
-                    response[MaxResourceSize::class.java]?.maxSize?.let { maxSize ->
-                        logger.info("Calendar accepts events up to ${Formatter.formatFileSize(context, maxSize)}")
-                    }
+            ).selfResponse() ?: return@wrapWithRemoteResource null
 
-                    response[SupportedReportSet::class.java]?.let { supported ->
-                        hasCollectionSync = supported.reports.contains(WebDAV.SyncCollection)
-                    }
-                    syncState = syncState(response)
-                }
+            response[MaxResourceSize::class.java]?.maxSize?.let { maxSize ->
+                logger.info("Calendar accepts events up to ${Formatter.formatFileSize(context, maxSize)}")
+            }
+
+            response[SupportedReportSet::class.java]?.let { supported ->
+                hasCollectionSync = supported.reports.contains(WebDAV.SyncCollection)
             }
 
             logger.info("Calendar supports Collection Sync: $hasCollectionSync")
-            syncState
+            syncState(response)
         }
 
     override fun syncAlgorithm() =
-        if (accountSettings.getTimeRangePastDays() != null || !hasCollectionSync)
+        if (settings.timeRangePastDays != null || !hasCollectionSync)
             SyncAlgorithm.PROPFIND_REPORT
         else
             SyncAlgorithm.COLLECTION_SYNC
@@ -176,22 +175,22 @@ class CalendarSyncManager @AssistedInject constructor(
         )
     }
 
-    override suspend fun listAllRemote(callback: MultiResponseCallback) {
+    override fun listAllRemote(): Flow<MultiStatusItem> = flow {
         // calculate time range limits
-        val limitStart = accountSettings.getTimeRangePastDays()?.let { pastDays ->
+        val limitStart = settings.timeRangePastDays?.let { pastDays ->
             ZonedDateTime.now().minusDays(pastDays.toLong()).toInstant()
         }
 
-        return SyncException.wrapWithRemoteResource(collection.url) {
+        SyncException.wrapWithRemoteResource(collection.url) {
             logger.info("Querying events since $limitStart")
-            davCollection.calendarQuery(Component.VEVENT, limitStart, null, callback = callback)
+            emitAll(davCollection.calendarQuery(Component.VEVENT, limitStart, null))
         }
     }
 
     override suspend fun downloadRemote(bunch: List<Url>) {
         logger.info("Downloading ${bunch.size} iCalendars: $bunch")
         SyncException.wrapWithRemoteResource(collection.url) {
-            davCollection.multiget(bunch) { response, _ ->
+            davCollection.multiget(bunch).responses().collect { response ->
                 /*
                  * Real-world servers may return:
                  *
@@ -264,7 +263,7 @@ class CalendarSyncManager @AssistedInject constructor(
         ).build(event)
 
         // add default reminder (if desired)
-        accountSettings.getDefaultAlarm()?.let { minBefore ->
+        settings.defaultAlarm?.let { minBefore ->
             logger.info("Adding default alarm ($minBefore min before) to $event")
             DefaultReminderBuilder(minBefore = minBefore).add(to = androidEvent)
         }

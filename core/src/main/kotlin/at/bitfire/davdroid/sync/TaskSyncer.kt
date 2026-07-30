@@ -26,14 +26,21 @@ class TaskSyncer @AssistedInject constructor(
     @Assisted val providerName: TaskProvider.ProviderName,
     @Assisted resync: ResyncType?,
     @Assisted syncResult: SyncResult,
+    @Assisted settings: SyncSettings,
     localTaskListStoreFactory: LocalTaskListStore.Factory,
     private val tasksAppManager: dagger.Lazy<TasksAppManager>,
     private val tasksSyncManagerFactory: TasksSyncManager.Factory,
-): Syncer<LocalTaskListStore, LocalTaskList>(account, resync, syncResult) {
+) : Syncer<LocalTaskListStore, LocalTaskList>(account, resync, syncResult, settings) {
 
     @AssistedFactory
     interface Factory {
-        fun create(account: Account, providerName: TaskProvider.ProviderName, resyncType: ResyncType?, syncResult: SyncResult): TaskSyncer
+        fun create(
+            account: Account,
+            providerName: TaskProvider.ProviderName,
+            resyncType: ResyncType?,
+            syncResult: SyncResult,
+            settings: SyncSettings
+        ): TaskSyncer
     }
 
     override val dataStore = localTaskListStoreFactory.create(providerName)
@@ -84,7 +91,8 @@ class TaskSyncer @AssistedInject constructor(
             syncResult,
             localCollection,
             remoteCollection,
-            resync
+            resync,
+            settings
         )
         syncManager.performSync()
     }

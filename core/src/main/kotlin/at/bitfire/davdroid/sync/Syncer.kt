@@ -35,11 +35,13 @@ import kotlin.jvm.optionals.getOrNull
  * @param account       account to synchronize
  * @param resync        whether re-synchronization is requested (`null` for normal sync)
  * @param syncResult    synchronization result, to be modified during sync
+ * @param settings      snapshot of the account settings relevant for this sync run
  */
 abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType: LocalCollection<*>>(
     protected val account: Account,
     protected val resync: ResyncType?,
-    protected val syncResult: SyncResult
+    protected val syncResult: SyncResult,
+    protected val settings: SyncSettings
 ): Closeable {
 
     abstract val dataStore: StoreType

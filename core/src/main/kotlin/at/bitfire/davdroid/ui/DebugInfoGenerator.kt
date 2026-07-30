@@ -35,6 +35,8 @@ import androidx.work.WorkManager
 import androidx.work.WorkQuery
 import at.bitfire.dav4jvm.ktor.exception.DavException
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.accounts.AccountId
+import at.bitfire.davdroid.accounts.toAccountId
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.resource.LocalAddressBook
@@ -78,7 +80,7 @@ class DebugInfoGenerator @Inject constructor(
 ) {
 
     operator fun invoke(
-        syncAccount: Account?,
+        syncAccountId: AccountId?,
         syncDataType: String?,
         cause: Throwable?,
         localResource: String?,
@@ -100,10 +102,12 @@ class DebugInfoGenerator @Inject constructor(
         }
 
         // continue with most specific information
-        if (syncAccount != null || syncDataType != null) {
+        if (syncAccountId != null || syncDataType != null) {
             writer.append("SYNCHRONIZATION INFO\n")
-            if (syncAccount != null)
-                writer.append("Account: $syncAccount\n")
+            if (syncAccountId != null) {
+                val accountName = accountRepository.getAccountNameBlocking(syncAccountId)
+                writer.append("Account: $accountName (ID: $syncAccountId)\n")
+            }
             if (syncDataType != null)
                 writer.append("SyncDataType: $syncDataType\n")
             writer.append("\n")
@@ -575,7 +579,7 @@ class DebugInfoGenerator @Inject constructor(
     private fun dumpSyncWorkers(account: Account, writer: Writer) {
         writer.append(workersInfoTable(
             WorkQuery.Builder.fromTags(
-                SyncDataType.entries.map { BaseSyncWorker.commonTag(account, it) }
+                SyncDataType.entries.map { BaseSyncWorker.commonTag(account.toAccountId(), it) }
             ).build(),
             mapOf(
                 1 to ("Data Type" to { workInfo: WorkInfo ->
@@ -605,7 +609,7 @@ class DebugInfoGenerator @Inject constructor(
      */
     private fun dumpOtherWorkers(accounts: Array<Account>, writer: Writer) {
         val syncWorkersTags = accounts.flatMap { account ->
-            SyncDataType.entries.map { BaseSyncWorker.commonTag(account, it) }
+            SyncDataType.entries.map { BaseSyncWorker.commonTag(account.toAccountId(), it) }
         }
 
         writer.append(workersInfoTable(

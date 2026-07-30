@@ -45,7 +45,7 @@ class AccountSettingsActivity: AppCompatActivity() {
             AccountSettingsScreen(
                 accountId = accountId,
                 onNavWifiPermissionsScreen = {
-                    val intent = WifiPermissionsActivity.createIntent(this, accountId.toAndroidAccount())
+                    val intent = WifiPermissionsActivity.createIntent(this, accountId)
                     startActivity(intent)
                 },
                 onNavUp = ::onSupportNavigateUp,
@@ -56,7 +56,7 @@ class AccountSettingsActivity: AppCompatActivity() {
     override fun supportShouldUpRecreateTask(targetIntent: Intent) = true
 
     override fun onPrepareSupportNavigateUpTaskStack(builder: TaskStackBuilder) {
-        builder.editIntentAt(builder.intentCount - 1)?.editAccountActivityIntent(accountId.toAndroidAccount())
+        builder.editIntentAt(builder.intentCount - 1)?.editAccountActivityIntent(accountId)
     }
 
 }
