@@ -27,6 +27,12 @@ interface ServiceDao {
         }
     }
 
+    fun getByAccountAndTypeBlocking(accountId: AccountId, @ServiceType type: String): Service? {
+        return when (accountId) {
+            is LegacyAccount -> getByAccountAndTypeBlocking(accountId.androidAccount.name, type)
+        }
+    }
+
     @Query("SELECT * FROM service WHERE accountName=:accountName AND type=:type")
     fun getByAccountAndTypeFlow(accountName: String, @ServiceType type: String): Flow<Service?>
 

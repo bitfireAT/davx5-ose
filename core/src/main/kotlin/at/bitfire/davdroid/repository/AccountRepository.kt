@@ -149,7 +149,7 @@ class AccountRepository @Inject constructor(
             }
 
             // set up automatic sync (processes inserted services)
-            automaticSyncManager.get().updateAutomaticSync(account)
+            automaticSyncManager.get().updateAutomaticSync(account.toAccountId())
 
         } catch (e: InvalidAccountException) {
             logger.log(Level.SEVERE, "Couldn't access account settings", e)
@@ -298,7 +298,7 @@ class AccountRepository @Inject constructor(
             }
 
             // update automatic sync
-            automaticSyncManager.get().updateAutomaticSync(newAccount)
+            automaticSyncManager.get().updateAutomaticSync(newAccount.toAccountId())
         } finally {
             // release AccountsCleanupWorker mutex at the end of this async coroutine
             AccountsCleanupWorker.unlockAccountsCleanup()

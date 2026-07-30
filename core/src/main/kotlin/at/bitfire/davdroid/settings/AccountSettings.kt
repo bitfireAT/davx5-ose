@@ -9,6 +9,7 @@ import android.content.Context
 import android.os.Looper
 import androidx.annotation.WorkerThread
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.accounts.toAccountId
 import at.bitfire.davdroid.settings.AccountSettings.Companion.CREDENTIALS_LOCK
 import at.bitfire.davdroid.settings.AccountSettings.Companion.CREDENTIALS_LOCK_AT_LOGIN_AND_SETTINGS
 import at.bitfire.davdroid.settings.migration.AccountSettingsMigration
@@ -175,7 +176,7 @@ class AccountSettings @AssistedInject constructor(
         val newValue = seconds ?: SYNC_INTERVAL_MANUALLY
         accountManager.setAndVerifyUserData(account, key, newValue.toString())
 
-        automaticSyncManager.updateAutomaticSync(account, dataType)
+        automaticSyncManager.updateAutomaticSync(account.toAccountId(), dataType)
     }
 
     fun getSyncWifiOnly() =
@@ -186,7 +187,7 @@ class AccountSettings @AssistedInject constructor(
 
     fun setSyncWiFiOnly(wiFiOnly: Boolean) {
         accountManager.setAndVerifyUserData(account, KEY_WIFI_ONLY, if (wiFiOnly) "1" else null)
-        automaticSyncManager.updateAutomaticSync(account)
+        automaticSyncManager.updateAutomaticSync(account.toAccountId())
     }
 
     fun getSyncWifiOnlySSIDs(): List<String>? =

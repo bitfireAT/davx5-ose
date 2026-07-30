@@ -37,6 +37,10 @@ class DavServiceRepository @Inject constructor(
     fun getByAccountAndTypeBlocking(name: String, @ServiceType serviceType: String): Service? =
         dao.getByAccountAndTypeBlocking(name, serviceType)
 
+    @WorkerThread
+    fun getByAccountAndTypeBlocking(accountId: AccountId, @ServiceType serviceType: String): Service? =
+        dao.getByAccountAndTypeBlocking(accountId, serviceType)
+
     fun getCalDavServiceFlow(accountName: String) =
         dao.getByAccountAndTypeFlow(accountName, Service.TYPE_CALDAV)
 
