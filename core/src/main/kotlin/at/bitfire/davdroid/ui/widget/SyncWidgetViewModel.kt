@@ -21,8 +21,8 @@ class SyncWidgetViewModel @Inject constructor(
 ): ViewModel() {
 
     fun requestSync() = viewModelScope.launch(Dispatchers.IO) {
-        for (account in accountRepository.getAll())
-            syncWorkerManager.enqueueOneTimeAllAuthorities(account, manual = true)
+        for (accountId in accountRepository.getAll())
+            syncWorkerManager.enqueueOneTimeAllAuthorities(accountId, manual = true)
     }
 
 }

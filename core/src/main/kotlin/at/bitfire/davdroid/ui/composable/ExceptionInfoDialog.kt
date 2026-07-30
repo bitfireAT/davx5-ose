@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.ui.composable
 
-import android.accounts.Account
 import android.annotation.SuppressLint
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Error
@@ -19,6 +18,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import at.bitfire.dav4jvm.ktor.exception.HttpException
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.ui.DebugInfoActivity
 import io.ktor.http.Url
 import java.io.IOException
@@ -26,7 +26,7 @@ import java.io.IOException
 @Composable
 fun ExceptionInfoDialog(
     exception: Throwable,
-    account: Account? = null,
+    accountId: AccountId? = null,
     remoteResource: Url? = null,
     onDismiss: () -> Unit
 ) {
@@ -67,8 +67,8 @@ fun ExceptionInfoDialog(
             OutlinedButton(
                 onClick = {
                     val intent = DebugInfoActivity.IntentBuilder(context).withCause(exception)
-                    if (account != null)
-                        intent.withAccount(account)
+                    if (accountId != null)
+                        intent.withAccount(accountId)
                     if (remoteResource != null)
                         intent.withRemoteResource(remoteResource)
                     context.startActivity(intent.build())

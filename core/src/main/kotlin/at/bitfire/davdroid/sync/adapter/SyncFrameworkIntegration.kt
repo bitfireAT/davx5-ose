@@ -7,8 +7,6 @@ package at.bitfire.davdroid.sync.adapter
 import android.accounts.Account
 import android.content.ContentResolver
 import android.content.Context
-import android.content.SyncRequest
-import android.os.Bundle
 import androidx.annotation.WorkerThread
 import at.bitfire.davdroid.resource.LocalAddressBookStore
 import at.bitfire.davdroid.sync.SyncDataType
@@ -100,27 +98,6 @@ class SyncFrameworkIntegration @Inject constructor(
     }
 
     /**
-     * Cancels the sync request in the Sync Adapter Framework by sync request. This
-     * is the defensive approach canceling only one specific sync request with matching
-     * sync extras.
-     *
-     * @param account The account for which the sync request should be canceled.
-     * @param authority The authority for which the sync request should be canceled.
-     * @param extras The original extras Bundle used to start the sync.
-     */
-    fun cancelSync(account: Account, authority: String, extras: Bundle) {
-        // Recreate the sync request which was used to start this sync
-        val syncRequest = SyncRequest.Builder()
-            .setSyncAdapter(account, authority)
-            .setExtras(extras)
-            .syncOnce()
-            .build()
-
-        // Cancel it
-        ContentResolver.cancelSync(syncRequest)
-    }
-
-    /**
      * Enables/disables sync adapter automatic sync (content triggered sync) for the given
      * account and authority. Does *not* call [ContentResolver.setIsSyncable].
      *
@@ -177,11 +154,25 @@ class SyncFrameworkIntegration @Inject constructor(
         }
 
     /**
+     * Cancels the sync request for this account/authority.
+     *
+     * _Note:_ The sync framework doesn't reliably clear its internal "pending" flag when a one-time
+     * sync finishes normally. [SyncAdapterImpl] calls this explicitly to work around that.
+     *
+     * _Only the two-argument [ContentResolver.cancelSync] seems to reset the "pending" flag reliably._
+     *
+     * @param account   account to cancel the sync request for
+     * @param authority sync authority (like [android.provider.CalendarContract.AUTHORITY])
+     */
+    fun cancelSync(account: Account, authority: String) {
+        ContentResolver.cancelSync(account, authority)
+    }
+
+    /**
      * Observe whether any of the given data types is currently pending for sync.
      *
-     * Note: On Android 14+ finished syncs stay by default pending. This is why we
-     * explicitly cancel the active sync in [SyncAdapterImpl] for Android 14+. Doing
-     * so allows us to have a reliable "pending" flag again, which is used in this method.
+     * _Note:_ the sync framework doesn't reliably mark a finished one-time sync as "not pending"
+     * anymore, see [SyncAdapterImpl.hasAlwaysPendingIssue].
      *
      * @param account   account to observe sync status for
      * @param dataTypes data types to observe sync status for

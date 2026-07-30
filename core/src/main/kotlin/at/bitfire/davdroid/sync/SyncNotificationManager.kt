@@ -219,7 +219,7 @@ class SyncNotificationManager @AssistedInject constructor(
         remote: Url?
     ): Intent {
         val builder = DebugInfoActivity.IntentBuilder(context)
-            .withAccount(account)
+            .withAccount(account.toAccountId())
             .withSyncDataType(dataType)
             .withCause(e)
 
