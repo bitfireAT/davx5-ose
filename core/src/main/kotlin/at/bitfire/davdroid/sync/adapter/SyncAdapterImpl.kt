@@ -17,6 +17,7 @@ import android.os.IBinder
 import androidx.annotation.VisibleForTesting
 import androidx.work.WorkManager
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.accounts.toAccountId
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.resource.LocalAddressBook
@@ -120,7 +121,7 @@ class SyncAdapterImpl @Inject constructor(
 
         logger.info("Starting OneTimeSyncWorker for $account $authority and waiting for it")
         val workerName = syncWorkerManager.enqueueOneTime(
-            account,
+            account.toAccountId(),
             dataType = SyncDataType.fromAuthority(authority),
             fromUpload = upload
         )

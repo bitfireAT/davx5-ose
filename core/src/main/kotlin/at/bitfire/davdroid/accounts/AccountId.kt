@@ -14,7 +14,7 @@ sealed interface AccountId
 /**
  * A legacy account that is backed by Android's AccountManager.
  */
-class LegacyAccount(val androidAccount: AndroidAccount) : AccountId {
+data class LegacyAccount(val androidAccount: AndroidAccount) : AccountId {
     override fun toString(): String {
         return "${androidAccount.type}/${androidAccount.name}"
     }
