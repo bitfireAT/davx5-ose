@@ -85,7 +85,7 @@ class AccountRepository @Inject constructor(
         }
     }
 
-    private fun getAccountName(accountId: AccountId): String {
+    suspend fun getAccountName(accountId: AccountId): String {
         // For now getAccountNameBlocking() isn't really blocking, so simply call through to it.
         return getAccountNameBlocking(accountId)
     }

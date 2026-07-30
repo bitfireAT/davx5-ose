@@ -97,7 +97,7 @@ abstract class BaseSyncWorker(
         }
 
         // Dismiss any pending push notification
-        pushNotificationManager.dismiss(accountId.toAndroidAccount(), dataType)
+        pushNotificationManager.dismiss(accountId, dataType)
 
         try {
             val accountSettings = try {
