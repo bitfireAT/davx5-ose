@@ -123,6 +123,6 @@ class SetAccountSettingsUseCase @AssistedInject constructor(
      *   downloaded again
      */
     private suspend fun resync(dataType: SyncDataType, resync: ResyncType) {
-        syncWorkerManager.enqueueOneTime(accountId.toAndroidAccount(), dataType = dataType, resync = resync)
+        syncWorkerManager.enqueueOneTime(accountId, dataType = dataType, resync = resync)
     }
 }

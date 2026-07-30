@@ -7,6 +7,7 @@ package at.bitfire.davdroid.settings.migration
 import android.accounts.Account
 import android.content.Context
 import androidx.work.WorkManager
+import at.bitfire.davdroid.accounts.toAccountId
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
@@ -39,7 +40,7 @@ class AccountSettingsMigration16 @Inject constructor(
             /* A maybe existing periodic worker references the old class name (even if it failed and/or is not active). So
             we need to explicitly disable and prune all workers. Just updating the worker is not enough – WorkManager will update
             the work details, but not the class name. */
-            val disableOp = syncWorkerManager.disablePeriodic(account, dataType)
+            val disableOp = syncWorkerManager.disablePeriodic(account.toAccountId(), dataType)
             disableOp.result.get()  // block until worker with old name is disabled
 
             val pruneOp = WorkManager.getInstance(context).pruneWork()
@@ -50,7 +51,7 @@ class AccountSettingsMigration16 @Inject constructor(
             if (interval != null) {
                 // There's a sync interval for this account/authority; a periodic sync worker should be there, too.
                 val onlyWifi = accountSettings.getSyncWifiOnly()
-                syncWorkerManager.enablePeriodic(account, dataType, interval, onlyWifi)
+                syncWorkerManager.enablePeriodic(account.toAccountId(), dataType, interval, onlyWifi)
             }
         }
     }

@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.sync.worker
 
-import android.accounts.Account
 import android.content.Context
 import android.os.Build
 import androidx.annotation.IntDef
@@ -16,6 +15,9 @@ import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import at.bitfire.davdroid.IoCoroutineWorker
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.accounts.AccountId
+import at.bitfire.davdroid.accounts.LegacyAccount
+import at.bitfire.davdroid.accounts.toAndroidAccount
 import at.bitfire.davdroid.push.PushNotificationManager
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.AddressBookSyncer
@@ -77,14 +79,11 @@ abstract class BaseSyncWorker(
     lateinit var taskSyncer: TaskSyncer.Factory
 
     override suspend fun doIoWork(): Result {
-        // ensure we got the required arguments
-        val account = Account(
-            inputData.getString(INPUT_ACCOUNT_NAME) ?: throw IllegalArgumentException("INPUT_ACCOUNT_NAME required"),
-            inputData.getString(INPUT_ACCOUNT_TYPE) ?: throw IllegalArgumentException("INPUT_ACCOUNT_TYPE required")
-        )
+        val accountId = requireNotNull(inputData.getAccountId()) { "AccountId required" }
+
         val dataType = SyncDataType.valueOf(inputData.getString(INPUT_DATA_TYPE) ?: throw IllegalArgumentException("INPUT_SYNC_DATA_TYPE required"))
 
-        val syncTag = commonTag(account, dataType)
+        val syncTag = commonTag(accountId, dataType)
         logger.info("${javaClass.simpleName} called for $syncTag")
 
         if (!runningSyncs.add(syncTag)) {
@@ -93,14 +92,14 @@ abstract class BaseSyncWorker(
         }
 
         // Dismiss any pending push notification
-        pushNotificationManager.dismiss(account, dataType)
+        pushNotificationManager.dismiss(accountId.toAndroidAccount(), dataType)
 
         try {
             val accountSettings = try {
-                accountSettingsFactory.create(account)
+                accountSettingsFactory.create(accountId.toAndroidAccount())
             } catch (_: InvalidAccountException) {
                 val workId = workerParams.id
-                logger.warning("No valid account settings for account $account, cancelling worker $workId")
+                logger.warning("No valid account settings for account $accountId, cancelling worker $workId")
 
                 val workManager = WorkManager.getInstance(applicationContext)
                 workManager.cancelWorkById(workId)
@@ -126,7 +125,7 @@ abstract class BaseSyncWorker(
                 }
             }
 
-            return doSyncWork(account, dataType)
+            return doSyncWork(accountId, dataType)
         } finally {
             logger.info("${javaClass.simpleName} finished for $syncTag")
             runningSyncs -= syncTag
@@ -136,8 +135,8 @@ abstract class BaseSyncWorker(
         }
     }
 
-    suspend fun doSyncWork(account: Account, dataType: SyncDataType): Result {
-        logger.info("Running ${javaClass.name}: account=$account, dataType=$dataType")
+    suspend fun doSyncWork(accountId: AccountId, dataType: SyncDataType): Result {
+        logger.info("Running ${javaClass.name}: account=$accountId, dataType=$dataType")
 
         // pass supplied parameters to the selected syncer
         val resyncType: ResyncType? = when (inputData.getInt(INPUT_RESYNC, NO_RESYNC)) {
@@ -152,6 +151,7 @@ abstract class BaseSyncWorker(
         val syncResult = SyncResult()
 
         // What are we going to sync? Select syncer based on authority
+        val account = accountId.toAndroidAccount()
         when (dataType) {
             SyncDataType.CONTACTS ->
                 addressBookSyncer.create(account, resyncType, syncFrameworkUpload, syncResult)
@@ -239,8 +239,6 @@ abstract class BaseSyncWorker(
     companion object {
 
         // common worker input parameters
-        internal const val INPUT_ACCOUNT_NAME = "accountName"
-        internal const val INPUT_ACCOUNT_TYPE = "accountType"
         internal const val INPUT_DATA_TYPE = "dataType"
 
         /** set to `true` for user-initiated sync that skips network checks */
@@ -274,8 +272,14 @@ abstract class BaseSyncWorker(
         /**
          * This tag shall be added to every worker that is enqueued by a subclass.
          */
-        fun commonTag(account: Account, dataType: SyncDataType): String =
-            "sync-$dataType ${account.type}/${account.name}"
+        fun commonTag(accountId: AccountId, dataType: SyncDataType): String {
+            return when (accountId) {
+                is LegacyAccount -> {
+                    val account = accountId.androidAccount
+                    "sync-$dataType ${account.type}/${account.name}"
+                }
+            }
+        }
 
     }
 

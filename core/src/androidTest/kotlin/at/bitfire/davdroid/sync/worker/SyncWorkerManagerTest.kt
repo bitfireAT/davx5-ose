@@ -4,11 +4,12 @@
 
 package at.bitfire.davdroid.sync.worker
 
-import android.accounts.Account
 import android.content.Context
 import androidx.hilt.work.HiltWorkerFactory
 import at.bitfire.davdroid.TestUtils
 import at.bitfire.davdroid.TestUtils.workScheduledOrRunning
+import at.bitfire.davdroid.accounts.AccountId
+import at.bitfire.davdroid.accounts.LegacyAccount
 import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.account.TestAccount
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -40,19 +41,19 @@ class SyncWorkerManagerTest {
     @Inject
     lateinit var workerFactory: HiltWorkerFactory
 
-    lateinit var account: Account
+    lateinit var accountId: LegacyAccount
 
     @Before
     fun setUp() {
         hiltRule.inject()
         TestUtils.setUpWorkManager(context, workerFactory)
 
-        account = TestAccount.create()
+        accountId = LegacyAccount(TestAccount.create())
     }
 
     @After
     fun tearDown() {
-        TestAccount.remove(account)
+        TestAccount.remove(accountId.androidAccount)
     }
 
 
@@ -60,10 +61,10 @@ class SyncWorkerManagerTest {
 
     @Test
     fun testEnqueueOneTime() = runTest {
-        val workerName = OneTimeSyncWorker.workerName(account, SyncDataType.EVENTS)
+        val workerName = OneTimeSyncWorker.workerName(accountId, SyncDataType.EVENTS)
         assertFalse(TestUtils.workScheduledOrRunningOrSuccessful(context, workerName))
 
-        val returnedName = syncWorkerManager.enqueueOneTime(account, SyncDataType.EVENTS)
+        val returnedName = syncWorkerManager.enqueueOneTime(accountId, SyncDataType.EVENTS)
         assertEquals(workerName, returnedName)
         assertTrue(TestUtils.workScheduledOrRunningOrSuccessful(context, workerName))
     }
@@ -73,18 +74,18 @@ class SyncWorkerManagerTest {
 
     @Test
     fun enablePeriodic() {
-        syncWorkerManager.enablePeriodic(account, SyncDataType.EVENTS, 60, false).result.get()
+        syncWorkerManager.enablePeriodic(accountId, SyncDataType.EVENTS, 60, false).result.get()
 
-        val workerName = PeriodicSyncWorker.workerName(account, SyncDataType.EVENTS)
+        val workerName = PeriodicSyncWorker.workerName(accountId, SyncDataType.EVENTS)
         assertTrue(workScheduledOrRunning(context, workerName))
     }
 
     @Test
     fun disablePeriodic() {
-        syncWorkerManager.enablePeriodic(account, SyncDataType.EVENTS, 60, false).result.get()
-        syncWorkerManager.disablePeriodic(account, SyncDataType.EVENTS).result.get()
+        syncWorkerManager.enablePeriodic(accountId, SyncDataType.EVENTS, 60, false).result.get()
+        syncWorkerManager.disablePeriodic(accountId, SyncDataType.EVENTS).result.get()
 
-        val workerName = PeriodicSyncWorker.workerName(account, SyncDataType.EVENTS)
+        val workerName = PeriodicSyncWorker.workerName(accountId, SyncDataType.EVENTS)
         assertFalse(workScheduledOrRunning(context, workerName))
     }
 

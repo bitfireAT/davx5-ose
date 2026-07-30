@@ -6,6 +6,7 @@ package at.bitfire.davdroid.sync.worker
 
 import android.accounts.Account
 import android.content.Context
+import androidx.work.Data
 import androidx.work.ListenableWorker
 import androidx.work.WorkManager
 import androidx.work.WorkerFactory
@@ -14,6 +15,8 @@ import androidx.work.testing.TestListenableWorkerBuilder
 import androidx.work.workDataOf
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.TestUtils
+import at.bitfire.davdroid.accounts.LegacyAccount
+import at.bitfire.davdroid.accounts.toAccountId
 import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.account.TestAccount
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -66,11 +69,10 @@ class PeriodicSyncWorkerTest {
         val invalidAccount = Account("invalid", context.getString(R.string.account_type))
 
         // Run PeriodicSyncWorker as TestWorker
-        val inputData = workDataOf(
-            BaseSyncWorker.INPUT_DATA_TYPE to SyncDataType.EVENTS.toString(),
-            BaseSyncWorker.INPUT_ACCOUNT_NAME to invalidAccount.name,
-            BaseSyncWorker.INPUT_ACCOUNT_TYPE to invalidAccount.type
-        )
+        val inputData = Data.Builder()
+            .putString(BaseSyncWorker.INPUT_DATA_TYPE, SyncDataType.EVENTS.toString())
+            .putAccountId(LegacyAccount(invalidAccount))
+            .build()
 
         // observe WorkManager cancellation call
         val workManager = WorkManager.getInstance(context)
