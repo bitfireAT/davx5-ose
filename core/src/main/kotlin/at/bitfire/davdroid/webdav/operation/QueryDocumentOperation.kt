@@ -8,7 +8,6 @@ import android.database.Cursor
 import android.provider.DocumentsContract.Document
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.webdav.DocumentsCursor
-import kotlinx.coroutines.runBlocking
 import java.io.FileNotFoundException
 import java.util.logging.Level
 import java.util.logging.Logger
@@ -22,7 +21,7 @@ class QueryDocumentOperation @Inject constructor(
     private val documentDao = db.webDavDocumentDao()
     private val mountDao = db.webDavMountDao()
 
-    operator fun invoke(documentId: String, projection: Array<out String>?): Cursor {
+    suspend operator fun invoke(documentId: String, projection: Array<out String>?): Cursor {
         logger.log(Level.FINE, "WebDAV queryDocument {0} {1}", arrayOf(documentId, projection?.joinToString("+")))
 
         val doc = documentDao.get(documentId.toLong()) ?: throw FileNotFoundException()
@@ -45,7 +44,7 @@ class QueryDocumentOperation @Inject constructor(
 
             // override display names of root documents
             if (parent == null) {
-                val mount = runBlocking { mountDao.getById(doc.mountId) }
+                val mount = mountDao.getById(doc.mountId)
                 bundle.putString(Document.COLUMN_DISPLAY_NAME, mount.name)
             }
 

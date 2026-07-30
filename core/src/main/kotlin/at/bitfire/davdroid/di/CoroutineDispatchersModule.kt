@@ -4,9 +4,7 @@
 
 package at.bitfire.davdroid.di
 
-import at.bitfire.davdroid.di.qualifier.DefaultDispatcher
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
-import at.bitfire.davdroid.di.qualifier.MainDispatcher
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -19,15 +17,7 @@ import kotlinx.coroutines.Dispatchers
 class CoroutineDispatchersModule {
 
     @Provides
-    @DefaultDispatcher
-    fun defaultDispatcher(): CoroutineDispatcher = Dispatchers.Default
-
-    @Provides
     @IoDispatcher
     fun ioDispatcher(): CoroutineDispatcher = Dispatchers.IO
-
-    @Provides
-    @MainDispatcher
-    fun mainDispatcher(): CoroutineDispatcher = Dispatchers.Main
 
 }

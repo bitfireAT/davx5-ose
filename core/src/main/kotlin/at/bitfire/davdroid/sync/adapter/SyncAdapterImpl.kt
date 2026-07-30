@@ -14,9 +14,10 @@ import android.content.SyncResult
 import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
-import androidx.work.WorkInfo
+import androidx.annotation.VisibleForTesting
 import androidx.work.WorkManager
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.accounts.toAccountId
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.resource.LocalAddressBook
@@ -24,35 +25,30 @@ import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.SyncConditions
 import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.account.InvalidAccountException
-import at.bitfire.davdroid.sync.worker.BaseSyncWorker
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
-import dagger.Binds
 import dagger.Lazy
-import dagger.Module
-import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
-import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.guava.await
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.minutes
 
 /**
- * Entry point for the Sync Adapter Framework.
+ * Entry point for the Sync Adapter Framework. Handles incoming sync requests from the Sync Adapter Framework when
  *
- * Handles incoming sync requests from the Sync Adapter Framework.
+ * - contacts/events/tasks have changed in the content provider (for instance because of an edit
+ * in the calendar app),
+ * - a sync has explicitly been requested by a third-party app (for instance the calendar app).
  *
- * Although we do not use the sync adapter for syncing anymore, we keep this sole
- * adapter to provide exported services, which allow android system components and calendar,
- * contacts or task apps to sync via DAVx5.
- *
- * All Sync Adapter Framework related interaction should happen inside [SyncFrameworkIntegration].
+ * This class only forwards such requests to a [at.bitfire.davdroid.sync.worker.OneTimeSyncWorker]
+ * and does not run the sync itself.
  */
 class SyncAdapterImpl @Inject constructor(
     private val accountSettingsFactory: AccountSettings.Factory,
@@ -63,127 +59,173 @@ class SyncAdapterImpl @Inject constructor(
     private val syncConditionsFactory: SyncConditions.Factory,
     private val syncFrameworkIntegration: Lazy<SyncFrameworkIntegration>,
     private val syncWorkerManager: SyncWorkerManager
-): AbstractThreadedSyncAdapter(
+) : AbstractThreadedSyncAdapter(
     /* context = */ context,
     /* autoInitialize = */ true     // Sets isSyncable=1 when isSyncable=-1 and SYNC_EXTRAS_INITIALIZE is set.
-                                    // Doesn't matter for us because we have android:isAlwaysSyncable="true" for all sync adapters.
+    // Doesn't matter for us because we have android:isAlwaysSyncable="true" for all sync adapters.
 ), SyncAdapter {
 
     /**
-     * Scope used to wait until the synchronization is finished. Will be cancelled when the sync framework
-     * requests cancellation.
+     * Max time to wait for the worker in [waitForWorker]. Overridable for tests.
      */
-    private val waitScope = CoroutineScope(Dispatchers.Default)
+    @VisibleForTesting
+    internal var workerWaitTimeout: Duration = 10.minutes
 
-    override fun onPerformSync(accountOrAddressBookAccount: Account, extras: Bundle, authority: String, provider: ContentProviderClient, syncResult: SyncResult) {
+    override fun onPerformSync(
+        accountOrAddressBookAccount: Account,
+        extras: Bundle,
+        authority: String,
+        provider: ContentProviderClient,
+        syncResult: SyncResult
+    ) {
+        try {
+            runBlocking {
+                /* When the sync framework wants to interrupt the sync, it calls onSyncCanceled, which
+                interrupts the thread in the default implementation. runBlocking cancels its
+                CoroutineScope when the thread is interrupted. So we can just rely on that. */
+
+                performSync(accountOrAddressBookAccount, extras, authority)
+            }
+        } catch (_: Throwable) {
+            // catch and ignore any error so that the sync always finishes "successfully"
+        } finally {
+            if (hasAlwaysPendingIssue)
+                clearPendingFlag(accountOrAddressBookAccount, authority)
+        }
+    }
+
+    /**
+     * Does the actual work of [onPerformSync]: resolves the account, checks sync conditions,
+     * enqueues a [at.bitfire.davdroid.sync.worker.OneTimeSyncWorker] and waits for it to finish.
+     *
+     * @param accountOrAddressBookAccount the account (or address book account) to sync
+     * @param extras SyncAdapter-specific parameters as passed to [onPerformSync]
+     * @param authority the authority of this sync request
+     */
+    @VisibleForTesting
+    internal suspend fun performSync(
+        accountOrAddressBookAccount: Account,
+        extras: Bundle,
+        authority: String
+    ) {
         // We have to pass this old SyncFramework extra for an Android 7 workaround
         val upload = extras.containsKey(ContentResolver.SYNC_EXTRAS_UPLOAD)
         logger.info("Sync request via sync framework for $accountOrAddressBookAccount $authority (upload=$upload)")
 
-        // If we should sync an address book account - find the account storing the settings
-        val account = if (accountOrAddressBookAccount.type == context.getString(R.string.account_type_address_book))
+        // If we should sync an address book account: find the main account
+        val account = getAccount(accountOrAddressBookAccount) ?: return
+
+        // Check sync conditions (don't enqueue worker if sync conditions are not met)
+        if (!checkSyncConditions(account))
+            return
+
+        logger.info("Starting OneTimeSyncWorker for $account $authority and waiting for it")
+        val workerName = syncWorkerManager.enqueueOneTime(
+            account.toAccountId(),
+            dataType = SyncDataType.fromAuthority(authority),
+            fromUpload = upload
+        )
+
+        // Wait until worker has finished
+        waitForWorker(workerName)
+
+        logger.info("Worker $workerName has finished, returning to sync framework")
+    }
+
+    /**
+     * Resolves the account that should actually be used for syncing. If [accountOrAddressBookAccount]
+     * is an address book account, looks up the collection and service it belongs to and returns the
+     * account storing the settings for that service. Otherwise, [accountOrAddressBookAccount] is directly returned.
+     *
+     * @return the resolved account, or `null` if an address book account doesn't have an associated collection
+     */
+    private suspend fun getAccount(accountOrAddressBookAccount: Account): Account? =
+        if (accountOrAddressBookAccount.type == context.getString(R.string.account_type_address_book))
             AccountManager.get(context)
                 .getUserData(accountOrAddressBookAccount, LocalAddressBook.USER_DATA_COLLECTION_ID)
                 ?.toLongOrNull()
                 ?.let { collectionId ->
-                collectionRepository.get(collectionId)?.let { collection ->
-                    serviceRepository.getBlocking(collection.serviceId)?.let { service ->
-                        Account(service.accountName, context.getString(R.string.account_type))
+                    collectionRepository.getAsync(collectionId)?.let { collection ->
+                        serviceRepository.get(collection.serviceId)?.let { service ->
+                            Account(service.accountName, context.getString(R.string.account_type))
+                        }
                     }
                 }
-            }
         else
             accountOrAddressBookAccount
 
-        if (account == null) {
-            logger.warning("Address book account $accountOrAddressBookAccount doesn't have an associated collection")
-            return
-        }
-
-        // Check sync conditions
+    /**
+     * Checks whether a sync framework initiated sync should actually run for [account].
+     *
+     * @return whether the sync conditions are met (`false` also when the account doesn't exist anymore)
+     */
+    private fun checkSyncConditions(account: Account): Boolean {
         val accountSettings = try {
             accountSettingsFactory.create(account)
         } catch (e: InvalidAccountException) {
             logger.log(Level.WARNING, "Account doesn't exist anymore", e)
-            return
+            return false
         }
         val syncConditions = syncConditionsFactory.create(accountSettings)
-        // Should we run the sync at all?
         if (!syncConditions.wifiConditionsMet()) {
-            logger.info("Sync conditions not met. Aborting sync framework initiated sync")
-            return
+            logger.info("Sync conditions not met. Ignoring sync framework-initiated sync")
+            return false
         }
+        return true
+    }
 
-        logger.fine("Starting OneTimeSyncWorker for $account $authority and waiting for it")
-        val workerName = syncWorkerManager.enqueueOneTime(account, dataType = SyncDataType.fromAuthority(authority), fromUpload = upload)
-
-        // Android 14+ does not handle pending sync state correctly.
-        // As a defensive workaround, we can cancel specifically this still pending sync only
-        // See: https://github.com/bitfireAT/davx5-ose/issues/1458
-        if (Build.VERSION.SDK_INT >= 34) {
-            logger.fine("Android 14+ bug: Canceling forever pending sync adapter framework sync request for " +
-                    "account=$accountOrAddressBookAccount authority=$authority extras=$extras")
-            syncFrameworkIntegration.get().cancelSync(accountOrAddressBookAccount, authority, extras)
-        }
-
-        /* Because we are not allowed to observe worker state on a background thread, we can not
-        use it to block the sync adapter. Instead we use a Flow to get notified when the sync
-        has finished. */
+    /**
+     * Suspends until the worker with the given [workerName] finishes or times out.
+     *
+     * Doesn't report the outcome anywhere: all error handling and retry logic is done by the
+     * workers themselves, so this method only cares that the worker has finished, not how.
+     *
+     * @param workerName The unique name of the worker to wait for.
+     */
+    private suspend fun waitForWorker(workerName: String) {
+        logger.fine("Waiting for worker: $workerName to finish")
         val workManager = WorkManager.getInstance(context)
 
-        try {
-            val waitJob = waitScope.launch {
-                // wait for finished worker state
-                workManager.getWorkInfosForUniqueWorkFlow(workerName).collect { infoList ->
-                    for (info in infoList)
-                        if (info.state.isFinished) {
-                            if (info.state == WorkInfo.State.FAILED) {
-                                if (info.outputData.getBoolean(BaseSyncWorker.OUTPUT_TOO_MANY_RETRIES, false))
-                                    syncResult.tooManyRetries = true
-                                else
-                                    syncResult.databaseError = true
-                            }
-                            cancel("$workerName has finished")
-                        }
-                }
-            }
+        // look up whether there's an unfinished worker with the given name
+        val unfinishedWorker = workManager.getWorkInfosForUniqueWork(workerName).await().firstOrNull {
+            !it.state.isFinished
+        } ?: return
 
-            runBlocking {
-                withTimeout(10 * 60 * 1000) {   // block max. 10 minutes
-                    waitJob.join()              // wait until worker has finished
-                }
+        // wait for worker to finish
+        try {
+            // we don't need a separate thread to wait
+            withTimeout(workerWaitTimeout) {
+                workManager.getWorkInfoByIdFlow(unfinishedWorker.id)
+                    .filterNotNull()
+                    .first { it.state.isFinished }  // collect flow until worker is finished
             }
         } catch (_: CancellationException) {
             // waiting for work was cancelled, either by timeout or because the worker has finished
-            logger.fine("Not waiting for OneTimeSyncWorker anymore.")
+            logger.fine("Not waiting for $workerName anymore.")
         }
+    }
 
-        logger.info("Returning to sync framework: $syncResult")
+    /** Addresses an Android issue: the sync framework doesn't reliably clear its "pending" flag
+     * for this sync request on its own.
+     *
+     * This method explicitly clears the "pending flag" by cancelling the sync. */
+    private fun clearPendingFlag(account: Account, authority: String) {
+        syncFrameworkIntegration.get().cancelSync(account, authority)
     }
 
     override fun onSecurityException(account: Account, extras: Bundle, authority: String, syncResult: SyncResult) {
         logger.warning("Security exception for $account/$authority")
     }
 
-    override fun onSyncCanceled() {
-        logger.info("Sync adapter requested cancellation – won't cancel sync, but also won't block sync framework anymore")
-
-        // unblock sync framework
-        waitScope.cancel()
-    }
-
-    override fun onSyncCanceled(thread: Thread) = onSyncCanceled()
-
-
-    // SyncAdapter implementation and Hilt module
-
     override fun getBinder(): IBinder = syncAdapterBinder
 
-    @Module
-    @InstallIn(SingletonComponent::class)
-    abstract class RealSyncAdapterModule {
-        @Binds
-        abstract fun provide(impl: SyncAdapterImpl): SyncAdapter
+    companion object {
+
+        /* Sync framework bug: ContentResolver.isSyncPending() can get stuck returning true forever
+        after a sync, starting with Android 14: https://issuetracker.google.com/issues/320542002. The
+        issue doesn't seem to be deterministic, so it can't be reproduced with a behavior test easily. */
+        val hasAlwaysPendingIssue = Build.VERSION.SDK_INT >= 34
+
     }
 
 }

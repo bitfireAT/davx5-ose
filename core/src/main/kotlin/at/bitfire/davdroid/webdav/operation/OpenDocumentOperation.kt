@@ -22,7 +22,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.runBlocking
 import java.io.FileNotFoundException
 import java.util.logging.Logger
 import javax.annotation.WillNotClose
@@ -39,7 +38,7 @@ class OpenDocumentOperation @Inject constructor(
 
     private val documentDao = db.webDavDocumentDao()
 
-    operator fun invoke(documentId: String, mode: String, signal: CancellationSignal?): ParcelFileDescriptor = runBlocking {
+    suspend operator fun invoke(documentId: String, mode: String, signal: CancellationSignal?): ParcelFileDescriptor {
         logger.fine("WebDAV openDocument $documentId $mode $signal")
 
         val doc = documentDao.get(documentId.toLong()) ?: throw FileNotFoundException()
@@ -66,7 +65,7 @@ class OpenDocumentOperation @Inject constructor(
         val contentType = doc.mimeType?.toString().toContentTypeOrNull()
 
         // RandomAccessCallback.Wrapper / StreamingFileDescriptor are responsible for closing httpClient
-        return@runBlocking if (
+        return if (
             androidSupportsRandomAccess &&
             readOnlyMode &&                     // WebDAV doesn't support random write access (natively)
             fileInfo.size != null &&            // file descriptor must return a useful value on getFileSize()

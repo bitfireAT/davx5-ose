@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.sync.worker
 
-import android.accounts.Account
 import android.content.Context
 import androidx.work.BackoffPolicy
 import androidx.work.Constraints
@@ -22,12 +21,13 @@ import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.WorkQuery
 import androidx.work.WorkRequest
+import androidx.work.await
+import at.bitfire.davdroid.accounts.AccountId
+import at.bitfire.davdroid.accounts.toAndroidAccount
 import at.bitfire.davdroid.push.PushNotificationManager
 import at.bitfire.davdroid.sync.ResyncType
 import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.TasksAppManager
-import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.INPUT_ACCOUNT_NAME
-import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.INPUT_ACCOUNT_TYPE
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.INPUT_DATA_TYPE
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.INPUT_MANUAL
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.INPUT_RESYNC
@@ -39,6 +39,9 @@ import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.guava.await
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import java.util.concurrent.TimeUnit
 import java.util.logging.Logger
 import javax.inject.Inject
@@ -55,6 +58,14 @@ class SyncWorkerManager @Inject constructor(
     val tasksAppManager: Lazy<TasksAppManager>
 ) {
 
+    private companion object {
+        /**
+         * Makes sure job appending works correctly, and that there are no multiple places trying to enqueue jobs at
+         * the same time.
+         */
+        val enqueueMutex = Mutex()
+    }
+
     // one-time sync workers
 
     /**
@@ -65,7 +76,7 @@ class SyncWorkerManager @Inject constructor(
      * @return one-time sync work request for the given arguments
      */
     fun buildOneTime(
-        account: Account,
+        accountId: AccountId,
         dataType: SyncDataType,
         manual: Boolean = false,
         resync: ResyncType? = null,
@@ -74,8 +85,7 @@ class SyncWorkerManager @Inject constructor(
         // worker arguments
         val argumentsBuilder = Data.Builder()
             .putString(INPUT_DATA_TYPE, dataType.toString())
-            .putString(INPUT_ACCOUNT_NAME, account.name)
-            .putString(INPUT_ACCOUNT_TYPE, account.type)
+            .putAccountId(accountId)
 
         if (manual)
             argumentsBuilder.putBoolean(INPUT_MANUAL, true)
@@ -93,8 +103,8 @@ class SyncWorkerManager @Inject constructor(
             .setRequiredNetworkType(NetworkType.CONNECTED)   // require a network connection
             .build()
         return OneTimeWorkRequestBuilder<OneTimeSyncWorker>()
-            .addTag(OneTimeSyncWorker.workerName(account, dataType))
-            .addTag(commonTag(account, dataType))
+            .addTag(OneTimeSyncWorker.workerName(accountId, dataType))
+            .addTag(commonTag(accountId, dataType))
             .setInputData(argumentsBuilder.build())
             .setBackoffCriteria(
                 BackoffPolicy.EXPONENTIAL,
@@ -120,7 +130,7 @@ class SyncWorkerManager @Inject constructor(
      * a complete sync is run. This method makes however sure that there's only _one_
      * further sync in the queue.
      *
-     * @param account       account to sync
+     * @param accountId     [AccountId] of the account to sync
      * @param dataType      type of data to synchronize
      * @param manual        user-initiated sync (ignores network checks)
      * @param resync        whether to request (full) re-synchronization (`null` for normal sync)
@@ -129,20 +139,20 @@ class SyncWorkerManager @Inject constructor(
      *
      * @return existing or newly created worker name
      */
-    fun enqueueOneTime(
-        account: Account,
+    suspend fun enqueueOneTime(
+        accountId: AccountId,
         dataType: SyncDataType,
         manual: Boolean = false,
         resync: ResyncType? = null,
         fromUpload: Boolean = false,
         fromPush: Boolean = false
     ): String {
-        logger.info("Enqueueing unique worker for account=$account, dataType=$dataType, manual=$manual, resync=$resync, fromUpload=$fromUpload, fromPush=$fromPush")
+        logger.info("Enqueueing unique worker for account=$accountId, dataType=$dataType, manual=$manual, resync=$resync, fromUpload=$fromUpload, fromPush=$fromPush")
 
         // enqueue and start syncing
-        val name = OneTimeSyncWorker.workerName(account, dataType)
+        val name = OneTimeSyncWorker.workerName(accountId, dataType)
         val request = buildOneTime(
-            account = account,
+            accountId = accountId,
             dataType = dataType,
             manual = manual,
             resync = resync,
@@ -150,22 +160,22 @@ class SyncWorkerManager @Inject constructor(
         )
 
         if (fromPush)
-            pushNotificationManager.get().notify(account, dataType)
+            pushNotificationManager.get().notify(accountId.toAndroidAccount(), dataType)
 
         /* We want to append only one work request, regardless of how many sync requests came in.
         So we have to append the work one time, and as soon as there is already a pending
         appended work, stop adding more work. */
 
         val workManager = WorkManager.getInstance(context)
-        synchronized(SyncWorkerManager::class.java) {
-            val currentWork = workManager.getWorkInfosForUniqueWork(name).get()
+        enqueueMutex.withLock {
+            val currentWork = workManager.getWorkInfosForUniqueWork(name).await()
             val alreadyAppended = currentWork.any {
                 it.state in setOf(WorkInfo.State.BLOCKED, WorkInfo.State.ENQUEUED)
             }
             if (!alreadyAppended) {
                 val op = workManager.enqueueUniqueWork(name, ExistingWorkPolicy.APPEND_OR_REPLACE, request)
                 // for synchronization: wait until work is actually enqueued
-                op.result
+                op.await()
             } else
                 logger.fine("Another one-time sync already waiting, not adding more of $name")
         }
@@ -179,8 +189,8 @@ class SyncWorkerManager @Inject constructor(
      *
      * Arguments: see [enqueueOneTime]
      */
-    fun enqueueOneTimeAllAuthorities(
-        account: Account,
+    suspend fun enqueueOneTimeAllAuthorities(
+        accountId: AccountId,
         manual: Boolean = false,
         resync: ResyncType? = null,
         fromUpload: Boolean = false,
@@ -188,7 +198,7 @@ class SyncWorkerManager @Inject constructor(
     ) {
         for (dataType in SyncDataType.entries)
             enqueueOneTime(
-                account = account,
+                accountId = accountId,
                 dataType = dataType,
                 manual = manual,
                 resync = resync,
@@ -207,11 +217,15 @@ class SyncWorkerManager @Inject constructor(
      *
      * @return periodic sync work request for the given arguments
      */
-    fun buildPeriodic(account: Account, dataType: SyncDataType, interval: Long, syncWifiOnly: Boolean): PeriodicWorkRequest {
+    fun buildPeriodic(
+        accountId: AccountId,
+        dataType: SyncDataType,
+        interval: Long,
+        syncWifiOnly: Boolean
+    ): PeriodicWorkRequest {
         val arguments = Data.Builder()
             .putString(INPUT_DATA_TYPE, dataType.toString())
-            .putString(INPUT_ACCOUNT_NAME, account.name)
-            .putString(INPUT_ACCOUNT_TYPE, account.type)
+            .putAccountId(accountId)
             .build()
         val constraints = Constraints.Builder()
             .setRequiredNetworkType(
@@ -221,8 +235,8 @@ class SyncWorkerManager @Inject constructor(
                     NetworkType.CONNECTED
             ).build()
         return PeriodicWorkRequestBuilder<PeriodicSyncWorker>(interval, TimeUnit.SECONDS)
-            .addTag(PeriodicSyncWorker.workerName(account, dataType))
-            .addTag(commonTag(account, dataType))
+            .addTag(PeriodicSyncWorker.workerName(accountId, dataType))
+            .addTag(commonTag(accountId, dataType))
             .setInputData(arguments)
             .setConstraints(constraints)
             .build()
@@ -231,16 +245,16 @@ class SyncWorkerManager @Inject constructor(
     /**
      * Activate periodic synchronization of an account with a specific authority.
      *
-     * @param account    account to sync
+     * @param accountId  [AccountId] of the account to sync
      * @param dataType   type of data to synchronize
      * @param interval   interval between recurring syncs in seconds
      * @return operation object to check when and whether activation was successful
      */
-    fun enablePeriodic(account: Account, dataType: SyncDataType, interval: Long, syncWifiOnly: Boolean): Operation {
-        logger.fine("Updating periodic worker for account=$account, dataType=$dataType, interval=$interval, syncWifiOnly=$syncWifiOnly")
-        val workRequest = buildPeriodic(account, dataType, interval, syncWifiOnly)
+    fun enablePeriodic(accountId: AccountId, dataType: SyncDataType, interval: Long, syncWifiOnly: Boolean): Operation {
+        logger.fine("Updating periodic worker for account=$accountId, dataType=$dataType, interval=$interval, syncWifiOnly=$syncWifiOnly")
+        val workRequest = buildPeriodic(accountId, dataType, interval, syncWifiOnly)
         return WorkManager.getInstance(context).enqueueUniquePeriodicWork(
-            PeriodicSyncWorker.workerName(account, dataType),
+            PeriodicSyncWorker.workerName(accountId, dataType),
             // if a periodic sync exists already, we want to update it with the new interval
             // and/or new required network type (applies on next iteration of periodic worker)
             ExistingPeriodicWorkPolicy.UPDATE,
@@ -251,14 +265,14 @@ class SyncWorkerManager @Inject constructor(
     /**
      * Disables periodic synchronization of an account for a specific authority.
      *
-     * @param account     account to sync
+     * @param accountId   [AccountId] of the account to sync
      * @param dataType    type of data to synchronize
      * @return operation object to check process state of work cancellation
      */
-    fun disablePeriodic(account: Account, dataType: SyncDataType): Operation {
-        logger.fine("Disabling periodic worker for account=$account, dataType=$dataType")
+    fun disablePeriodic(accountId: AccountId, dataType: SyncDataType): Operation {
+        logger.fine("Disabling periodic worker for account=$accountId, dataType=$dataType")
         return WorkManager.getInstance(context)
-            .cancelUniqueWork(PeriodicSyncWorker.workerName(account, dataType))
+            .cancelUniqueWork(PeriodicSyncWorker.workerName(accountId, dataType))
     }
 
 
@@ -267,11 +281,11 @@ class SyncWorkerManager @Inject constructor(
     /**
      * Stops running sync workers and removes pending sync workers from queue, for all authorities.
      */
-    fun cancelAllWork(account: Account) {
+    fun cancelAllWork(accountId: AccountId) {
         val workManager = WorkManager.getInstance(context)
         for (dataType in SyncDataType.entries) {
-            workManager.cancelUniqueWork(OneTimeSyncWorker.workerName(account, dataType))
-            workManager.cancelUniqueWork(PeriodicSyncWorker.workerName(account, dataType))
+            workManager.cancelUniqueWork(OneTimeSyncWorker.workerName(accountId, dataType))
+            workManager.cancelUniqueWork(PeriodicSyncWorker.workerName(accountId, dataType))
         }
     }
 
@@ -280,7 +294,7 @@ class SyncWorkerManager @Inject constructor(
      * exist, belonging to given account and authorities, and which are/is in the given worker state.
      *
      * @param workStates   list of states of workers to match
-     * @param account      the account which the workers belong to
+     * @param accountId    [AccountId] of the account which the workers belong to
      * @param dataTypes    data types of sync work
      * @param whichTag     function to generate tag that should be observed for given account and authority
      *
@@ -288,16 +302,16 @@ class SyncWorkerManager @Inject constructor(
      */
     fun hasAnyFlow(
         workStates: List<WorkInfo.State>,
-        account: Account? = null,
+        accountId: AccountId? = null,
         dataTypes: Iterable<SyncDataType>? = null,
-        whichTag: (account: Account, dataType: SyncDataType) -> String = { account, dataType ->
-            commonTag(account, dataType)
+        whichTag: (accountId: AccountId, dataType: SyncDataType) -> String = { accountId, dataType ->
+            commonTag(accountId, dataType)
         }
     ): Flow<Boolean> {
         val workQuery = WorkQuery.Builder.fromStates(workStates)
-        if (account != null && dataTypes != null)
+        if (accountId != null && dataTypes != null)
             workQuery.addTags(
-                dataTypes.map { dataType -> whichTag(account, dataType) }
+                dataTypes.map { dataType -> whichTag(accountId, dataType) }
             )
         return WorkManager.getInstance(context)
             .getWorkInfosFlow(workQuery.build())

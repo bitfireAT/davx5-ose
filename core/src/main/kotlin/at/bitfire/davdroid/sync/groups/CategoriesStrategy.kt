@@ -14,7 +14,7 @@ class CategoriesStrategy(val addressBook: LocalAddressBook): ContactGroupStrateg
     private val logger: Logger
         get() = Logger.getGlobal()
 
-    override suspend fun beforeUploadDirty() {
+    override suspend fun resolveLocalGroupChanges() {
         // groups with DELETED=1: set all members to dirty, then remove group
         addressBook.findDeletedGroups().collect { group ->
             logger.fine("Finally removing group $group")

@@ -133,7 +133,7 @@ class StreamingFileDescriptor @AssistedInject constructor(
 
 
     fun interface OnSuccessCallback {
-        fun onFinished(transferred: Long, success: Boolean)
+        suspend fun onFinished(transferred: Long, success: Boolean)
     }
 
 }

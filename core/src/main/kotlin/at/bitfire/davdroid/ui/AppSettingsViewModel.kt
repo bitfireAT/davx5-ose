@@ -39,7 +39,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import java.util.Optional
 import javax.inject.Inject
 import kotlin.jvm.optionals.getOrNull
@@ -109,10 +108,9 @@ class AppSettingsViewModel @Inject constructor(
         UiUtils.updateTheme(context)
     }
 
-    fun resetHints() = runBlocking(ioDispatcher) {
+    fun resetHints() = viewModelScope.launch(ioDispatcher) {
         settings.remove(BackupsPage.Model.SETTING_BACKUPS_ACCEPTED)
         settings.remove(BatteryOptimizationsPageViewModel.HINT_BATTERY_OPTIMIZATIONS)
-        settings.remove(BatteryOptimizationsPageViewModel.HINT_AUTOSTART_PERMISSION)
         settings.remove(OpenSourcePage.Model.SETTING_NEXT_DONATION_POPUP)
         settings.remove(TasksViewModel.HINT_OPENTASKS_NOT_INSTALLED)
     }

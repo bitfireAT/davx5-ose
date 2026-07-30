@@ -4,9 +4,9 @@
 
 package at.bitfire.davdroid.ui
 
-import android.accounts.Account
+import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.di.qualifier.ApplicationScope
-import at.bitfire.davdroid.di.qualifier.DefaultDispatcher
+import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.push.PushRegistrationManager
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavCollectionRepository
@@ -30,7 +30,7 @@ class CollectionSelectedUseCase @Inject constructor(
     private val accountRepository: AccountRepository,
     @ApplicationScope private val applicationScope: CoroutineScope,
     private val collectionRepository: DavCollectionRepository,
-    @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val pushRegistrationManager: PushRegistrationManager,
     private val serviceRepository: DavServiceRepository,
     private val syncWorkerManager: SyncWorkerManager
@@ -49,25 +49,25 @@ class CollectionSelectedUseCase @Inject constructor(
     suspend fun handleWithDelay(collectionId: Long) {
         val collection = collectionRepository.getAsync(collectionId) ?: return
         val service = serviceRepository.get(collection.serviceId) ?: return
-        val account = accountRepository.fromName(service.accountName)
+        val accountId = accountRepository.getAccountIdFromName(service.accountName)
 
         // Atomically cancel, launch and remember delay coroutine of given account
-        delayJobs.compute(account) { _, previousJob ->
+        delayJobs.compute(accountId) { _, previousJob ->
             // Stop previous delay, if exists
             previousJob?.cancel()
 
-            applicationScope.launch(defaultDispatcher) {
+            applicationScope.launch(ioDispatcher) {
                 // wait
                 delay(DELAY_MS)
 
                 // enqueue sync
-                syncWorkerManager.enqueueOneTimeAllAuthorities(account)
+                syncWorkerManager.enqueueOneTimeAllAuthorities(accountId)
 
                 // update push subscriptions
                 pushRegistrationManager.update(service.id)
 
                 // remove complete job
-                delayJobs -= account
+                delayJobs -= accountId
             }
         }
     }
@@ -80,7 +80,7 @@ class CollectionSelectedUseCase @Inject constructor(
          */
         const val DELAY_MS = 5000L     // 5 seconds
 
-        private val delayJobs: ConcurrentHashMap<Account, Job> = ConcurrentHashMap()
+        private val delayJobs: ConcurrentHashMap<AccountId, Job> = ConcurrentHashMap()
 
     }
 

@@ -10,7 +10,6 @@ import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.resource.LocalCalendar
 import at.bitfire.davdroid.resource.LocalCalendarStore
-import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.synctools.storage.calendar.AndroidCalendarProvider
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -24,14 +23,19 @@ class CalendarSyncer @AssistedInject constructor(
     @Assisted account: Account,
     @Assisted resync: ResyncType?,
     @Assisted syncResult: SyncResult,
+    @Assisted settings: SyncSettings,
     calendarStore: LocalCalendarStore,
-    private val accountSettingsFactory: AccountSettings.Factory,
     private val calendarSyncManagerFactory: CalendarSyncManager.Factory
-): Syncer<LocalCalendarStore, LocalCalendar>(account, resync, syncResult) {
+) : Syncer<LocalCalendarStore, LocalCalendar>(account, resync, syncResult, settings) {
 
     @AssistedFactory
     interface Factory {
-        fun create(account: Account, resyncType: ResyncType?, syncResult: SyncResult): CalendarSyncer
+        fun create(
+            account: Account,
+            resyncType: ResyncType?,
+            syncResult: SyncResult,
+            settings: SyncSettings
+        ): CalendarSyncer
     }
 
     override val dataStore = calendarStore
@@ -42,10 +46,8 @@ class CalendarSyncer @AssistedInject constructor(
 
     override fun prepare(provider: ContentProviderClient): Boolean {
         // Update colors
-        val accountSettings = accountSettingsFactory.create(account)
-
         val calendarProvider = AndroidCalendarProvider(account, provider)
-        if (accountSettings.getEventColors())
+        if (settings.eventColors)
             calendarProvider.provideCss3ColorIndices()
         else
             calendarProvider.removeColorIndices()
@@ -76,7 +78,8 @@ class CalendarSyncer @AssistedInject constructor(
             syncResult,
             localCollection,
             remoteCollection,
-            resync
+            resync,
+            settings
         )
         syncManager.performSync()
     }

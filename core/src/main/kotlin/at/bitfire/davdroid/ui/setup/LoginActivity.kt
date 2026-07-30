@@ -8,6 +8,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
+import at.bitfire.davdroid.accounts.toAccountId
 import at.bitfire.davdroid.settings.Credentials
 import at.bitfire.davdroid.ui.account.AccountActivity
 import at.bitfire.synctools.util.SensitiveString.Companion.toSensitiveString
@@ -37,11 +38,11 @@ class LoginActivity @Inject constructor(): AppCompatActivity() {
                 skipLoginTypePage = skipLoginTypePage,
                 initialLoginInfo = loginInfoFromIntent(intent),
                 onNavUp = { onSupportNavigateUp() },
-                onFinish = { newAccount ->
+                onFinish = { newAccountId ->
                     finish()
 
-                    newAccount?.let { newAccount ->
-                        val intent = AccountActivity.createIntent(this, newAccount)
+                    if (newAccountId != null) {
+                        val intent = AccountActivity.createIntent(this, newAccountId)
                         startActivity(intent)
                     }
                 }

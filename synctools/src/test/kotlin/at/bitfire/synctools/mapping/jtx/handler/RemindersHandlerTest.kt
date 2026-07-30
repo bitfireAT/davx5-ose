@@ -205,6 +205,35 @@ class RemindersHandlerTest {
     }
 
     @Test
+    fun `Alarm with reserved property names in OTHER`() {
+        val input = Entity(ContentValues())
+        input.addSubValue(
+            JtxContract.JtxAlarm.CONTENT_URI,
+            contentValuesOf(
+                JtxContract.JtxAlarm.ACTION to "DISPLAY",
+                JtxContract.JtxAlarm.DESCRIPTION to "Default Tasks.org description",
+                JtxContract.JtxAlarm.TRIGGER_RELATIVE_DURATION to "PT0S",
+                // stale/corrupted OTHER blob with different values than the dedicated columns above - must be ignored entirely
+                JtxContract.JtxAlarm.OTHER to """{"ACTION":"AUDIO","DESCRIPTION":"stale description","TRIGGER":"PT99H","X-CUSTOM-PROP":"custom-value"}"""
+            )
+        )
+        val output = VToDo()
+
+        handler.process(from = input, main = input, to = output)
+
+        val alarm = output.alarms.first()
+        assertEquals(listOf("DISPLAY"), alarm.getProperties<Action>(Property.ACTION).map { it.value })
+        assertEquals(
+            listOf("Default Tasks.org description"),
+            alarm.getProperties<Description>(Property.DESCRIPTION).map { it.value }
+        )
+        val triggers = alarm.getProperties<Trigger>(Property.TRIGGER)
+        assertEquals(1, triggers.size)
+        assertEquals(java.time.Duration.ofSeconds(0), triggers.first().duration)
+        assertNotNull(alarm.getProperty<net.fortuna.ical4j.model.property.XProperty>("X-CUSTOM-PROP").getOrNull())
+    }
+
+    @Test
     fun `Trigger with relative duration`() {
         val input = Entity(ContentValues())
         input.addSubValue(

@@ -4,7 +4,7 @@
 
 package at.bitfire.davdroid.di
 
-import at.bitfire.davdroid.startup.StartupPlugin
+import at.bitfire.davdroid.startup.StartupAction
 import dagger.Module
 import dagger.hilt.components.SingletonComponent
 import dagger.hilt.testing.TestInstallIn
@@ -13,12 +13,12 @@ import dagger.multibindings.Multibinds
 @Module
 @TestInstallIn(
     components = [SingletonComponent::class],
-    replaces = [StartupPluginsModule::class]
+    replaces = [StartupActionsModule::class]
 )
-abstract class TestStartupPluginsModule {
+abstract class TestStartupActionsModule {
 
-    // provides empty set of startup plugins so that nothing interferes with tests
+    // provides empty set of startup actions so that nothing interferes with tests
     @Multibinds
-    abstract fun empty(): Set<StartupPlugin>
+    abstract fun empty(): Set<StartupAction>
 
 }

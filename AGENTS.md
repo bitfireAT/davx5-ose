@@ -35,7 +35,8 @@ Android library. The sync engine, database layer, and Jetpack Compose UI for DAV
 
 **ViewModel pattern** — Each Compose screen has a `@HiltViewModel` in `ui/`. Keep business logic out of Composables; Composables observe state from the ViewModel.
 
-**Startup plugins** — App-initialization hooks implement the `StartupPlugin` interface and are registered via set-based Hilt injection. Do not add init logic directly to `CoreApp`.
+**Startup actions** — App-initialization hooks implement the `StartupAction` interface and are registered via set-based
+Hilt injection. Do not add init logic directly to `CoreApp`.
 
 **Background sync** — Sync runs in WorkManager workers (`sync/worker/`). The Hilt worker factory wires DI into workers.
 
@@ -49,7 +50,7 @@ sync/         Sync managers (Calendar, Contacts, Tasks, Jtx) and workers, Androi
 network/      HTTP/WebDAV layer (Ktor + OkHttp + dav4jvm)
 webdav/       WebDAV file operations
 ui/           Compose screens, ViewModels, Activities
-startup/      StartupPlugin interface and built-in plugins
+startup/      StartupAction interface and built-in actions
 settings/     Preference management and migrations
 push/         UnifiedPush / FCM integration
 log/          Logging infrastructure
@@ -63,7 +64,8 @@ log/          Logging infrastructure
 
 ### `:synctools` (`synctools/`)
 
-A standalone Android library for bidirectional conversion between iCalendar/vCard data and Android content providers (Calendar, Contacts, Tasks, Jtx). It is consumed by `:core` and can be published independently.
+Technically a standalone Android library for bidirectional conversion between iCalendar/vCard data and Android content
+providers (Calendar, Contacts, Tasks, Jtx). It is only consumed by `:core`.
 
 **No Hilt or Dagger.** This is a pure library — no DI framework, no Android application components. Dependencies are passed via constructors or obtained directly (e.g. `ContentResolver`). Keep it that way. For logging, use `val logger\nget() = java.util.Logger.getLogger(javaClass.name)`.
 

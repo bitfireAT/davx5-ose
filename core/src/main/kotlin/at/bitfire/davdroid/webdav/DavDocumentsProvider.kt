@@ -22,6 +22,7 @@ import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.runBlocking
 
 /**
  * Provides functionality on WebDav documents.
@@ -32,8 +33,10 @@ import dagger.hilt.components.SingletonComponent
  * Note: A DocumentsProvider is a ContentProvider and thus has no well-defined lifecycle. It
  * is created by Android when it's first accessed and then stays in memory until the process
  * is killed.
+ *
+ * As a ContentProvider, this class is responsible for bridging its blocking API to the suspending operations.
  */
-class DavDocumentsProvider: DocumentsProvider() {
+class DavDocumentsProvider : DocumentsProvider() {
 
     @EntryPoint
     @InstallIn(SingletonComponent::class)
@@ -64,43 +67,63 @@ class DavDocumentsProvider: DocumentsProvider() {
 
     /*** query ***/
 
-    override fun queryRoots(projection: Array<out String>?) =
+    override fun queryRoots(projection: Array<out String>?) = runBlocking {
         entryPoint.queryRootsOperation().invoke(projection)
+    }
 
-    override fun queryDocument(documentId: String, projection: Array<out String>?) =
+    override fun queryDocument(documentId: String, projection: Array<out String>?) = runBlocking {
         entryPoint.queryDocumentOperation().invoke(documentId, projection)
+    }
 
     override fun queryChildDocuments(parentDocumentId: String, projection: Array<out String>?, sortOrder: String?) =
+        runBlocking {
         entryPoint.queryChildDocumentsOperation().invoke(parentDocumentId, projection, sortOrder)
+        }
 
-    override fun isChildDocument(parentDocumentId: String, documentId: String) =
+    override fun isChildDocument(parentDocumentId: String, documentId: String) = runBlocking {
         entryPoint.isChildDocumentOperation().invoke(parentDocumentId, documentId)
+    }
 
 
     /*** copy/create/delete/move/rename ***/
 
-    override fun copyDocument(sourceDocumentId: String, targetParentDocumentId: String) =
+    override fun copyDocument(sourceDocumentId: String, targetParentDocumentId: String) = runBlocking {
         entryPoint.copyDocumentOperation().invoke(sourceDocumentId, targetParentDocumentId)
+    }
 
-    override fun createDocument(parentDocumentId: String, mimeType: String, displayName: String): String? =
+    override fun createDocument(
+        parentDocumentId: String,
+        mimeType: String,
+        displayName: String
+    ): String? = runBlocking {
         entryPoint.createDocumentOperation().invoke(parentDocumentId, mimeType, displayName)
+    }
 
-    override fun deleteDocument(documentId: String) =
+    override fun deleteDocument(documentId: String) = runBlocking {
         entryPoint.deleteDocumentOperation().invoke(documentId)
+    }
 
-    override fun moveDocument(sourceDocumentId: String, sourceParentDocumentId: String, targetParentDocumentId: String) =
+    override fun moveDocument(
+        sourceDocumentId: String,
+        sourceParentDocumentId: String,
+        targetParentDocumentId: String
+    ) = runBlocking {
         entryPoint.moveDocumentOperation().invoke(sourceDocumentId, sourceParentDocumentId, targetParentDocumentId)
+    }
 
-    override fun renameDocument(documentId: String, displayName: String): String? =
+    override fun renameDocument(documentId: String, displayName: String): String? = runBlocking {
         entryPoint.renameDocumentOperation().invoke(documentId, displayName)
+    }
 
 
     /*** read/write ***/
 
-    override fun openDocument(documentId: String, mode: String, signal: CancellationSignal?) =
+    override fun openDocument(documentId: String, mode: String, signal: CancellationSignal?) = runBlocking {
         entryPoint.openDocumentOperation().invoke(documentId, mode, signal)
+    }
 
-    override fun openDocumentThumbnail(documentId: String, sizeHint: Point, signal: CancellationSignal?) =
+    override fun openDocumentThumbnail(documentId: String, sizeHint: Point, signal: CancellationSignal?) = runBlocking {
         entryPoint.openDocumentThumbnailOperation().invoke(documentId, sizeHint, signal)
+    }
 
 }

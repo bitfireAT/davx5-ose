@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.ui.setup
 
-import android.accounts.Account
 import android.annotation.SuppressLint
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -45,17 +44,18 @@ import androidx.compose.ui.window.PopupProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.ui.composable.Assistant
 import at.bitfire.synctools.vcard.GroupMethod
 
 @Composable
 fun AccountDetailsPage(
     snackbarHostState: SnackbarHostState,
-    onAccountCreated: (Account) -> Unit,
+    onAccountCreated: (AccountId) -> Unit,
     model: LoginScreenViewModel = viewModel()
 ) {
     val uiState by model.accountDetailsUiState.collectAsStateWithLifecycle()
-    uiState.createdAccount?.let(onAccountCreated)
+    uiState.createdAccountId?.let(onAccountCreated)
 
     val context = LocalContext.current
     @SuppressLint("LocalContextGetResourceValueCall")

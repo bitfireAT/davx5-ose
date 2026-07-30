@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.ui
 
-import android.accounts.Account
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
@@ -20,6 +19,8 @@ import androidx.core.app.ShareCompat
 import androidx.core.content.FileProvider
 import androidx.core.content.IntentCompat
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.accounts.AccountId
+import at.bitfire.davdroid.accounts.AccountIdIntentSerializer
 import at.bitfire.davdroid.log.DebugDirectory
 import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.TasksAppManager
@@ -64,7 +65,7 @@ class DebugInfoActivity: AppCompatActivity() {
         val remoteResource = extras?.getString(EXTRA_REMOTE_RESOURCE)
         setContent {
             DebugInfoScreen(
-                account = IntentCompat.getParcelableExtra(intent, EXTRA_ACCOUNT, Account::class.java),
+                accountId = AccountIdIntentSerializer.fromIntent(intent, EXTRA_ACCOUNT),
                 syncDataType = extras?.getString(EXTRA_SYNC_DATA_TYPE),
                 cause = IntentCompat.getSerializableExtra(intent, EXTRA_CAUSE, Throwable::class.java),
                 canViewResource = viewResourceIntent != null,
@@ -193,9 +194,10 @@ class DebugInfoActivity: AppCompatActivity() {
             return this
         }
 
-        fun withAccount(account: Account?): IntentBuilder {
-            if (account != null)
-                intent.putExtra(EXTRA_ACCOUNT, account)
+        fun withAccount(accountId: AccountId?): IntentBuilder {
+            if (accountId != null) {
+                AccountIdIntentSerializer.addExtra(intent, EXTRA_ACCOUNT, accountId)
+            }
             return this
         }
 

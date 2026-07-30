@@ -63,7 +63,7 @@ class CreateCalendarViewModel @AssistedInject constructor(
         val result = timeZones.sortedBy { collator.getCollationKey(it.displayName) }
 
         emit(result)
-    }.flowOn(Dispatchers.Default)
+    }.flowOn(Dispatchers.IO)
 
 
     // UI state

@@ -99,7 +99,8 @@ class JtxSyncManagerTest {
             syncResult = SyncResult(),
             localCollection = localJtxCollection,
             collection = dbCollection,
-            resync = null
+            resync = null,
+            settings = SyncSettingsFixtures.default()
         )
     }
 

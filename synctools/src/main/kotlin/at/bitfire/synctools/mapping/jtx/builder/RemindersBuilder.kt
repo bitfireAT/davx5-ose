@@ -8,6 +8,7 @@ import android.content.ContentValues
 import android.content.Entity
 import androidx.core.content.contentValuesOf
 import at.bitfire.synctools.icalendar.DatePropertyTzMapper.normalizedDate
+import at.bitfire.synctools.mapping.jtx.KNOWN_ALARM_PROPERTIES
 import at.bitfire.synctools.mapping.jtx.builder.TimeZoneIdMapper.toTimeZoneId
 import at.bitfire.synctools.util.AndroidTimeUtils.toTimestamp
 import at.techbee.jtx.JtxContract
@@ -56,15 +57,7 @@ class RemindersBuilder : JtxObjectEntityBuilder {
             triggerTimezone = normalizedTriggerDate.toTimeZoneId()
         }
 
-        val otherProperties = alarm.propertyList.removeAll(
-            Property.ACTION,
-            Property.SUMMARY,
-            Property.DESCRIPTION,
-            Property.DURATION,
-            Property.ATTACH,
-            Property.REPEAT,
-            Property.TRIGGER
-        )
+        val otherProperties = alarm.propertyList.removeAll(*KNOWN_ALARM_PROPERTIES.toTypedArray())
         val other = JtxContract.getJsonStringFromXProperties(otherProperties)
 
         return contentValuesOf(

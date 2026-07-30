@@ -9,6 +9,7 @@ import at.bitfire.dav4jvm.ktor.DavResource
 import at.bitfire.dav4jvm.ktor.exception.HttpException
 import at.bitfire.dav4jvm.ktor.parent
 import at.bitfire.dav4jvm.ktor.resolve
+import at.bitfire.dav4jvm.ktor.responses
 import at.bitfire.dav4jvm.ktor.withTrailingSlash
 import at.bitfire.dav4jvm.property.caldav.CalDAV
 import at.bitfire.dav4jvm.property.caldav.CalendarHomeSet
@@ -108,7 +109,7 @@ class ServiceRefresher @AssistedInject constructor(
         val principal = DavResource(httpClient, principalUrl)
         val personal = level == 0
         try {
-            principal.propfind(0, *homeSetProperties) { davResponse, _ ->
+            principal.propfind(0, *homeSetProperties).responses().collect { davResponse ->
                 alreadyQueriedPrincipals += davResponse.href
 
                 // If response holds home sets, save them
@@ -158,6 +159,7 @@ class ServiceRefresher @AssistedInject constructor(
                         relatedResources += davResponse.href.parent()
                 }
             }
+
         } catch (e: HttpException) {
             if (e.isClientError)
                 logger.log(Level.INFO, "Ignoring Client Error 4xx while looking for ${service.type} home sets", e)

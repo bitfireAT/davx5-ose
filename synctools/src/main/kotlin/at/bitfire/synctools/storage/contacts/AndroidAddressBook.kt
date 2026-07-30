@@ -48,11 +48,13 @@ import java.util.logging.Logger
  * @param context            application context (used to obtain the [AccountManager])
  * @param addressBookAccount account whose contacts and groups are managed
  * @param provider           content provider client for [ContactsContract]
+ * @param groupMethod        method used to represent group memberships (as vCard groups or as CATEGORIES)
  */
 class AndroidAddressBook(
     private val context: Context,
     var addressBookAccount: Account,
-    val provider: ContentProviderClient
+    val provider: ContentProviderClient,
+    val groupMethod: GroupMethod
 ) {
 
     private val logger
@@ -60,8 +62,6 @@ class AndroidAddressBook(
 
     private val accountManager: AccountManager
         get() = AccountManager.get(context)
-
-    val groupMethod: GroupMethod = GroupMethod.GROUP_VCARDS
 
     /**
      * Read-only flag for the address book itself.

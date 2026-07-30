@@ -18,6 +18,9 @@ interface ServiceDao {
     @Query("SELECT * FROM service WHERE accountName=:accountName AND type=:type")
     suspend fun getByAccountAndType(accountName: String, @ServiceType type: String): Service?
 
+    @Query("SELECT * FROM service WHERE accountName=:accountName AND type=:type")
+    fun getByAccountAndTypeBlocking(accountName: String, @ServiceType type: String): Service?
+
     suspend fun getByAccountAndType(accountId: AccountId, @ServiceType type: String): Service? {
         return when (accountId) {
             is LegacyAccount -> getByAccountAndType(accountId.androidAccount.name, type)
@@ -26,6 +29,12 @@ interface ServiceDao {
 
     @Query("SELECT * FROM service WHERE accountName=:accountName AND type=:type")
     fun getByAccountAndTypeFlow(accountName: String, @ServiceType type: String): Flow<Service?>
+
+    fun getByAccountAndTypeFlow(accountId: AccountId, @ServiceType type: String): Flow<Service?> {
+        return when (accountId) {
+            is LegacyAccount -> getByAccountAndTypeFlow(accountId.androidAccount.name, type)
+        }
+    }
 
     @Query("SELECT id FROM service WHERE accountName=:accountName")
     suspend fun getIdsByAccountAsync(accountName: String): List<Long>
@@ -47,6 +56,12 @@ interface ServiceDao {
 
     @Query("DELETE FROM service WHERE accountName=:accountName")
     suspend fun deleteByAccount(accountName: String)
+
+    suspend fun deleteByAccount(accountId: AccountId) {
+        when (accountId) {
+            is LegacyAccount -> deleteByAccount(accountId.androidAccount.name)
+        }
+    }
 
     @Query("DELETE FROM service WHERE accountName NOT IN (:accountNames)")
     fun deleteExceptAccounts(accountNames: Array<String>)

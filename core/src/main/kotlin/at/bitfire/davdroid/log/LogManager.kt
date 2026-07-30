@@ -52,7 +52,7 @@ class LogManager @Inject constructor(
     private val prefs: PreferenceRepository
 ) : AutoCloseable {
 
-    private val scope = CoroutineScope(Dispatchers.Default)
+    private val scope = CoroutineScope(Dispatchers.IO)
 
     init {
         // observe preference changes
