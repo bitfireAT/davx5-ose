@@ -114,7 +114,7 @@ class AccountRepository @Inject constructor(
         config: DavResourceFinder.Configuration,
         groupMethod: GroupMethod,
         preconfigurationUrl: String?,
-    ): Account? {
+    ): AccountId? {
         val account = fromName(accountName)
 
         // create Android account
@@ -154,7 +154,7 @@ class AccountRepository @Inject constructor(
             logger.log(Level.SEVERE, "Couldn't access account settings", e)
             return null
         }
-        return account
+        return LegacyAccount(account)
     }
 
     suspend fun delete(accountId: AccountId): Boolean {

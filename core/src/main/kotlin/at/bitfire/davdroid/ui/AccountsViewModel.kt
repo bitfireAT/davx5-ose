@@ -23,6 +23,8 @@ import androidx.lifecycle.viewModelScope
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.WorkQuery
+import at.bitfire.davdroid.accounts.AccountId
+import at.bitfire.davdroid.accounts.toAccountId
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
@@ -87,7 +89,8 @@ class AccountsViewModel @AssistedInject constructor(
     }
 
     data class AccountInfo(
-        val name: Account,
+        val id: AccountId,
+        val name: String,
         val progress: AccountProgress
     )
 
@@ -171,7 +174,11 @@ class AccountsViewModel @AssistedInject constructor(
                     else -> AccountProgress.Idle
                 }
 
-                AccountInfo(account, progress)
+                AccountInfo(
+                    id = account.toAccountId(),
+                    name = account.name,
+                    progress = progress
+                )
             }
     }
 

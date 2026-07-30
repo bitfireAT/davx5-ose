@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.ui.setup
 
-import android.accounts.Account
 import android.net.Uri
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
@@ -28,6 +27,7 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.ui.composable.AppTheme
 
 @Composable
@@ -36,7 +36,7 @@ fun LoginScreen(
     skipLoginTypePage: Boolean = false,
     initialLoginType: LoginType = UrlLogin,
     onNavUp: () -> Unit,
-    onFinish: (Account?) -> Unit
+    onFinish: (AccountId?) -> Unit
 ) {
     val model: LoginScreenViewModel = hiltViewModel { factory: LoginScreenViewModel.Factory ->
         factory.create(initialLoginType, skipLoginTypePage, initialLoginInfo)
@@ -68,7 +68,7 @@ fun LoginScreenContent(
     page: LoginScreenViewModel.Page,
     helpUri: Uri?,
     onNavUp: () -> Unit = {},
-    onFinish: (newAccount: Account?) -> Unit = {}
+    onFinish: (newAccountId: AccountId?) -> Unit = {}
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     AppTheme {
@@ -117,8 +117,8 @@ fun LoginScreenContent(
                     LoginScreenViewModel.Page.AccountDetails ->
                         AccountDetailsPage(
                             snackbarHostState = snackbarHostState,
-                            onAccountCreated = { account ->
-                                onFinish(account)
+                            onAccountCreated = { accountId ->
+                                onFinish(accountId)
                             }
                         )
                 }

@@ -38,11 +38,11 @@ class LoginActivity @Inject constructor(): AppCompatActivity() {
                 skipLoginTypePage = skipLoginTypePage,
                 initialLoginInfo = loginInfoFromIntent(intent),
                 onNavUp = { onSupportNavigateUp() },
-                onFinish = { newAccount ->
+                onFinish = { newAccountId ->
                     finish()
 
-                    newAccount?.let { newAccount ->
-                        val intent = AccountActivity.createIntent(this, newAccount.toAccountId())
+                    if (newAccountId != null) {
+                        val intent = AccountActivity.createIntent(this, newAccountId)
                         startActivity(intent)
                     }
                 }
