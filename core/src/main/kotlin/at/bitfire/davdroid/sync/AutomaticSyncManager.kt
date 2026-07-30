@@ -8,6 +8,7 @@ import android.accounts.Account
 import android.provider.CalendarContract
 import android.provider.ContactsContract
 import androidx.annotation.WorkerThread
+import at.bitfire.davdroid.accounts.toAccountId
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.resource.LocalAddressBookStore
@@ -41,7 +42,7 @@ class AutomaticSyncManager @Inject constructor(
      * Disable automatic synchronization for the given account and data type.
      */
     private fun disableAutomaticSync(account: Account, dataType: SyncDataType) {
-        workerManager.disablePeriodic(account, dataType)
+        workerManager.disablePeriodic(account.toAccountId(), dataType)
 
         for (authority in dataType.possibleAuthorities()) {
             syncFramework.disableSyncAbility(account, authority)
@@ -70,9 +71,9 @@ class AutomaticSyncManager @Inject constructor(
         // 1. Update sync workers (needs already updated sync interval in AccountSettings).
         if (syncInterval != null) {
             val wifiOnly = accountSettings.getSyncWifiOnly()
-            workerManager.enablePeriodic(account, dataType, syncInterval, wifiOnly)
+            workerManager.enablePeriodic(account.toAccountId(), dataType, syncInterval, wifiOnly)
         } else
-            workerManager.disablePeriodic(account, dataType)
+            workerManager.disablePeriodic(account.toAccountId(), dataType)
 
         // 2. Enable/disable content-triggered syncs.
         if (dataType == SyncDataType.CONTACTS) {

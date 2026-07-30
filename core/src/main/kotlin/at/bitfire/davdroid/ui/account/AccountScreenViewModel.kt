@@ -13,6 +13,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
+import at.bitfire.davdroid.accounts.toAccountId
 import at.bitfire.davdroid.accounts.toAndroidAccount
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
@@ -208,7 +209,7 @@ class AccountScreenViewModel @AssistedInject constructor(
 
                 // synchronize again
                 val newAccount = Account(newName, context.getString(R.string.account_type))
-                syncWorkerManager.enqueueOneTimeAllAuthorities(newAccount, manual = true)
+                syncWorkerManager.enqueueOneTimeAllAuthorities(newAccount.toAccountId(), manual = true)
             } catch (e: Exception) {
                 logger.log(Level.SEVERE, "Couldn't rename account", e)
                 error = e.localizedMessage
@@ -225,7 +226,7 @@ class AccountScreenViewModel @AssistedInject constructor(
 
     fun sync() {
         viewModelScope.launch {
-            syncWorkerManager.enqueueOneTimeAllAuthorities(accountId.toAndroidAccount(), manual = true)
+            syncWorkerManager.enqueueOneTimeAllAuthorities(accountId, manual = true)
         }
     }
 

@@ -157,14 +157,14 @@ class AccountsViewModel @AssistedInject constructor(
                                 services.any { serviceId ->
                                     info.tags.contains(RefreshCollectionsWorker.workerName(serviceId))
                                 } || SyncDataType.entries.any { dataType ->
-                                    info.tags.contains(BaseSyncWorker.commonTag(account, dataType))
+                                    info.tags.contains(BaseSyncWorker.commonTag(account.toAccountId(), dataType))
                                 }
                             )
                     } -> AccountProgress.Active
 
                     workInfos.any { info ->
                         info.state == WorkInfo.State.ENQUEUED && SyncDataType.entries.any { dataType ->
-                            info.tags.contains(OneTimeSyncWorker.workerName(account, dataType))
+                            info.tags.contains(OneTimeSyncWorker.workerName(account.toAccountId(), dataType))
                         }
                     } -> AccountProgress.Pending
 
@@ -291,8 +291,8 @@ class AccountsViewModel @AssistedInject constructor(
 
         // Enqueue sync worker for all accounts and authorities. Will sync once internet is available
         viewModelScope.launch {
-            for (account in accountRepository.getAll())
-                syncWorkerManager.enqueueOneTimeAllAuthorities(account, manual = true)
+            for (accountId in accountRepository.getAll())
+                syncWorkerManager.enqueueOneTimeAllAuthorities(accountId, manual = true)
         }
     }
 

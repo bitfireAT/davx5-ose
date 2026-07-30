@@ -36,6 +36,7 @@ import androidx.work.WorkQuery
 import at.bitfire.dav4jvm.ktor.exception.DavException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
+import at.bitfire.davdroid.accounts.toAccountId
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.resource.LocalAddressBook
@@ -578,7 +579,7 @@ class DebugInfoGenerator @Inject constructor(
     private fun dumpSyncWorkers(account: Account, writer: Writer) {
         writer.append(workersInfoTable(
             WorkQuery.Builder.fromTags(
-                SyncDataType.entries.map { BaseSyncWorker.commonTag(account, it) }
+                SyncDataType.entries.map { BaseSyncWorker.commonTag(account.toAccountId(), it) }
             ).build(),
             mapOf(
                 1 to ("Data Type" to { workInfo: WorkInfo ->
@@ -608,7 +609,7 @@ class DebugInfoGenerator @Inject constructor(
      */
     private fun dumpOtherWorkers(accounts: Array<Account>, writer: Writer) {
         val syncWorkersTags = accounts.flatMap { account ->
-            SyncDataType.entries.map { BaseSyncWorker.commonTag(account, it) }
+            SyncDataType.entries.map { BaseSyncWorker.commonTag(account.toAccountId(), it) }
         }
 
         writer.append(workersInfoTable(

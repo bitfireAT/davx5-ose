@@ -10,6 +10,7 @@ import android.content.Context
 import androidx.hilt.work.HiltWorkerFactory
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.TestUtils
+import at.bitfire.davdroid.accounts.toAccountId
 import at.bitfire.davdroid.resource.LocalAddressBookStore
 import at.bitfire.davdroid.resource.LocalCalendarStore
 import at.bitfire.davdroid.resource.LocalDataStore
@@ -149,7 +150,7 @@ class AccountRepositoryTest {
     fun testRename_cancelsRunningSynchronizationOfOldAccount() = runTest {
         accountRepository.rename(account.name, newName)
 
-        coVerify { syncWorkerManager.cancelAllWork(account) }
+        coVerify { syncWorkerManager.cancelAllWork(account.toAccountId()) }
     }
 
     @Test
@@ -158,7 +159,7 @@ class AccountRepositoryTest {
 
         for (dataType in SyncDataType.entries)
             coVerify(exactly = 1) {
-                syncWorkerManager.disablePeriodic(account, dataType)
+                syncWorkerManager.disablePeriodic(account.toAccountId(), dataType)
             }
     }
 

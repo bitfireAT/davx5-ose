@@ -66,14 +66,13 @@ class AccountProgressUseCase @Inject constructor(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     fun isSyncEnqueued(accountId: AccountId, dataTypes: Iterable<SyncDataType>): Flow<Boolean> {
-        val account = accountId.toAndroidAccount()
         return syncWorkerManager.hasAnyFlow(
             workStates = listOf(WorkInfo.State.ENQUEUED),
-            account = account,
+            accountId = accountId,
             dataTypes = dataTypes,
             whichTag = { _, authority ->
                 // we are only interested in enqueued OneTimeSyncWorkers because there's always an enqueued PeriodicSyncWorker
-                OneTimeSyncWorker.workerName(account, authority)
+                OneTimeSyncWorker.workerName(accountId, authority)
             }
         )
     }
@@ -82,7 +81,7 @@ class AccountProgressUseCase @Inject constructor(
     fun isSyncRunning(accountId: AccountId, dataTypes: Iterable<SyncDataType>): Flow<Boolean> =
         syncWorkerManager.hasAnyFlow(
             workStates = listOf(WorkInfo.State.RUNNING),
-            account = accountId.toAndroidAccount(),
+            accountId = accountId,
             dataTypes = dataTypes
         )
 

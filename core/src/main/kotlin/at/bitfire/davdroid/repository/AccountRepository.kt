@@ -12,6 +12,7 @@ import androidx.annotation.WorkerThread
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.accounts.LegacyAccount
+import at.bitfire.davdroid.accounts.toAccountId
 import at.bitfire.davdroid.accounts.toAndroidAccount
 import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.db.Service
@@ -191,9 +192,15 @@ class AccountRepository @Inject constructor(
     fun fromName(accountName: String) =
         Account(accountName, accountType)
 
-    suspend fun getAll(): Array<Account> = withContext(ioDispatcher) {
-        // getAccountsByType is main-safe, but could still take some time (binder involved)
-        getAllBlocking()
+    suspend fun getAccountIdFromName(accountName: String): AccountId {
+        // Note: In the future this will have to perform a database lookup
+        return LegacyAccount(fromName(accountName))
+    }
+
+    suspend fun getAll(): List<AccountId> {
+        return withContext(ioDispatcher) {
+            getAllBlocking().map { account -> account.toAccountId() }
+        }
     }
 
     fun getAllBlocking() = accountManager.getAccountsByType(accountType)
@@ -254,11 +261,11 @@ class AccountRepository @Inject constructor(
             accountRenameFlow.emit(AccountRename(oldAccount.name, newName))
             
             // account renamed, cancel maybe running synchronization of old account
-            syncWorkerManager.get().cancelAllWork(oldAccount)
+            syncWorkerManager.get().cancelAllWork(oldAccount.toAccountId())
 
             // disable periodic syncs for old account
             for (dataType in SyncDataType.entries)
-                syncWorkerManager.get().disablePeriodic(oldAccount, dataType)
+                syncWorkerManager.get().disablePeriodic(oldAccount.toAccountId(), dataType)
 
             // update account name references in database
             serviceRepository.renameAccount(oldName, newName)

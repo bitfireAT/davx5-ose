@@ -89,7 +89,7 @@ class SyncAdapterImplTest {
 
         // don't actually create a worker
         coEvery {
-            syncWorkerManager.enqueueOneTime(account = any(), dataType = any(), fromUpload = any())
+            syncWorkerManager.enqueueOneTime(accountId = any(), dataType = any(), fromUpload = any())
         } returns mockSyncWorkerName
     }
 
