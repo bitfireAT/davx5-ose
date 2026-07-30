@@ -23,7 +23,7 @@ class CalendarSyncer @AssistedInject constructor(
     @Assisted account: Account,
     @Assisted resync: ResyncType?,
     @Assisted syncResult: SyncResult,
-    @Assisted settings: SyncSettingsSnapshot,
+    @Assisted settings: SyncSettings,
     calendarStore: LocalCalendarStore,
     private val calendarSyncManagerFactory: CalendarSyncManager.Factory
 ) : Syncer<LocalCalendarStore, LocalCalendar>(account, resync, syncResult, settings) {
@@ -34,7 +34,7 @@ class CalendarSyncer @AssistedInject constructor(
             account: Account,
             resyncType: ResyncType?,
             syncResult: SyncResult,
-            settings: SyncSettingsSnapshot
+            settings: SyncSettings
         ): CalendarSyncer
     }
 

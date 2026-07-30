@@ -26,7 +26,7 @@ class TaskSyncer @AssistedInject constructor(
     @Assisted val providerName: TaskProvider.ProviderName,
     @Assisted resync: ResyncType?,
     @Assisted syncResult: SyncResult,
-    @Assisted settings: SyncSettingsSnapshot,
+    @Assisted settings: SyncSettings,
     localTaskListStoreFactory: LocalTaskListStore.Factory,
     private val tasksAppManager: dagger.Lazy<TasksAppManager>,
     private val tasksSyncManagerFactory: TasksSyncManager.Factory,
@@ -39,7 +39,7 @@ class TaskSyncer @AssistedInject constructor(
             providerName: TaskProvider.ProviderName,
             resyncType: ResyncType?,
             syncResult: SyncResult,
-            settings: SyncSettingsSnapshot
+            settings: SyncSettings
         ): TaskSyncer
     }
 

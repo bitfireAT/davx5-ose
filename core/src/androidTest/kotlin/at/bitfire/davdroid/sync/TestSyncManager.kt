@@ -36,7 +36,7 @@ class TestSyncManager @AssistedInject constructor(
     @Assisted syncResult: SyncResult,
     @Assisted localCollection: LocalTestCollection,
     @Assisted collection: Collection,
-    @Assisted settings: SyncSettingsSnapshot,
+    @Assisted settings: SyncSettings,
     @IoDispatcher ioDispatcher: CoroutineDispatcher,
     @SyncTransferSemaphore syncTransferSemaphore: Semaphore
 ): SyncManager<LocalTestResource, LocalTestCollection, DavCollection>(
@@ -60,7 +60,7 @@ class TestSyncManager @AssistedInject constructor(
             syncResult: SyncResult,
             localCollection: LocalTestCollection,
             collection: Collection,
-            settings: SyncSettingsSnapshot
+            settings: SyncSettings
         ): TestSyncManager
     }
 

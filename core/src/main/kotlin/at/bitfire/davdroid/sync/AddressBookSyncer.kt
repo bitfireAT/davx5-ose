@@ -31,7 +31,7 @@ class AddressBookSyncer @AssistedInject constructor(
     @Assisted resync: ResyncType?,
     @Assisted val syncFrameworkUpload: Boolean,
     @Assisted syncResult: SyncResult,
-    @Assisted settings: SyncSettingsSnapshot,
+    @Assisted settings: SyncSettings,
     addressBookStore: LocalAddressBookStore,
     private val contactsSyncManagerFactory: ContactsSyncManager.Factory,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher
@@ -44,7 +44,7 @@ class AddressBookSyncer @AssistedInject constructor(
             resyncType: ResyncType?,
             syncFrameworkUpload: Boolean,
             syncResult: SyncResult,
-            settings: SyncSettingsSnapshot
+            settings: SyncSettings
         ): AddressBookSyncer
     }
 

@@ -61,7 +61,7 @@ class JtxSyncManager @AssistedInject constructor(
     @Assisted localCollection: LocalJtxCollection,
     @Assisted collection: Collection,
     @Assisted resync: ResyncType?,
-    @Assisted settings: SyncSettingsSnapshot,
+    @Assisted settings: SyncSettings,
     @IoDispatcher ioDispatcher: CoroutineDispatcher,
     private val productIds: ProductIds,
     @SyncTransferSemaphore syncTransferSemaphore: Semaphore
@@ -87,7 +87,7 @@ class JtxSyncManager @AssistedInject constructor(
             localCollection: LocalJtxCollection,
             collection: Collection,
             resync: ResyncType?,
-            settings: SyncSettingsSnapshot
+            settings: SyncSettings
         ): JtxSyncManager
     }
 

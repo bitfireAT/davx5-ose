@@ -27,7 +27,8 @@ import at.bitfire.davdroid.sync.ResyncType
 import at.bitfire.davdroid.sync.SyncConditions
 import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.SyncResult
-import at.bitfire.davdroid.sync.SyncSettingsSnapshot
+import at.bitfire.davdroid.sync.SyncSettings
+import at.bitfire.davdroid.sync.SyncSettingsProvider
 import at.bitfire.davdroid.sync.TaskSyncer
 import at.bitfire.davdroid.sync.TasksAppManager
 import at.bitfire.davdroid.sync.account.InvalidAccountException
@@ -74,7 +75,7 @@ abstract class BaseSyncWorker(
     lateinit var syncConditionsFactory: SyncConditions.Factory
 
     @Inject
-    lateinit var syncSettingsSnapshotFactory: SyncSettingsSnapshot.Factory
+    lateinit var syncSettingsProvider: SyncSettingsProvider
 
     @Inject
     lateinit var tasksAppManager: Lazy<TasksAppManager>
@@ -130,7 +131,7 @@ abstract class BaseSyncWorker(
                 }
             }
 
-            val settings = syncSettingsSnapshotFactory.create(accountSettings)
+            val settings = syncSettingsProvider.create(accountSettings)
             return doSyncWork(accountId, dataType, settings)
         } finally {
             logger.info("${javaClass.simpleName} finished for $syncTag")
@@ -141,7 +142,7 @@ abstract class BaseSyncWorker(
         }
     }
 
-    suspend fun doSyncWork(accountId: AccountId, dataType: SyncDataType, settings: SyncSettingsSnapshot): Result {
+    suspend fun doSyncWork(accountId: AccountId, dataType: SyncDataType, settings: SyncSettings): Result {
         logger.info("Running ${javaClass.name}: account=$accountId, dataType=$dataType")
 
         // pass supplied parameters to the selected syncer

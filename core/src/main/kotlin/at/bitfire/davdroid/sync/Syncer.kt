@@ -41,7 +41,7 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
     protected val account: Account,
     protected val resync: ResyncType?,
     protected val syncResult: SyncResult,
-    protected val settings: SyncSettingsSnapshot
+    protected val settings: SyncSettings
 ): Closeable {
 
     abstract val dataStore: StoreType

@@ -40,7 +40,7 @@ class SyncerTest {
 
     @SpyK
     @InjectMockKs
-    var syncer = TestSyncer(mockk(relaxed = true), null, SyncResult(), mockk(relaxed = true), dataStore)
+    var syncer = TestSyncer(mockk(relaxed = true), null, SyncResult(), SyncSettingsFixtures.default(), dataStore)
 
 
     @Test
@@ -162,7 +162,7 @@ class SyncerTest {
         account: Account,
         resyncType: ResyncType?,
         syncResult: SyncResult,
-        settings: SyncSettingsSnapshot,
+        settings: SyncSettings,
         theDataStore: LocalTestStore
     ) : Syncer<LocalTestStore, LocalTestCollection>(account, resyncType, syncResult, settings) {
 

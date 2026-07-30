@@ -140,7 +140,7 @@ class CalendarSyncManagerTest {
         localCalendar = mockk(),
         collection = mockk(),
         resync = mockk(),
-        settings = mockk()
+        settings = SyncSettingsFixtures.default()
     )
 
 

@@ -538,7 +538,7 @@ class SyncManagerTest {
         syncResult,
         localCollection,
         collection,
-        mockk()
+        SyncSettingsFixtures.default()
     )
 
 }

@@ -24,7 +24,7 @@ class JtxSyncer @AssistedInject constructor(
     @Assisted account: Account,
     @Assisted resync: ResyncType?,
     @Assisted syncResult: SyncResult,
-    @Assisted settings: SyncSettingsSnapshot,
+    @Assisted settings: SyncSettings,
     localJtxCollectionStore: LocalJtxCollectionStore,
     private val jtxSyncManagerFactory: JtxSyncManager.Factory,
     private val tasksAppManager: dagger.Lazy<TasksAppManager>
@@ -36,7 +36,7 @@ class JtxSyncer @AssistedInject constructor(
             account: Account,
             resyncType: ResyncType?,
             syncResult: SyncResult,
-            settings: SyncSettingsSnapshot
+            settings: SyncSettings
         ): JtxSyncer
     }
 

@@ -66,7 +66,7 @@ class CalendarSyncManager @AssistedInject constructor(
     @Assisted localCalendar: LocalCalendar,
     @Assisted collection: Collection,
     @Assisted resync: ResyncType?,
-    @Assisted settings: SyncSettingsSnapshot,
+    @Assisted settings: SyncSettings,
     @IoDispatcher ioDispatcher: CoroutineDispatcher,
     private val productIds: ProductIds,
     @SyncTransferSemaphore syncTransferSemaphore: Semaphore
@@ -92,7 +92,7 @@ class CalendarSyncManager @AssistedInject constructor(
             localCalendar: LocalCalendar,
             collection: Collection,
             resync: ResyncType?,
-            settings: SyncSettingsSnapshot
+            settings: SyncSettings
         ): CalendarSyncManager
     }
 

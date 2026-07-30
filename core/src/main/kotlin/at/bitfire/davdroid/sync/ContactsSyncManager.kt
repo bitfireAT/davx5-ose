@@ -108,7 +108,7 @@ class ContactsSyncManager @AssistedInject constructor(
     @Assisted collection: Collection,
     @Assisted resync: ResyncType?,
     @Assisted val syncFrameworkUpload: Boolean,
-    @Assisted settings: SyncSettingsSnapshot,
+    @Assisted settings: SyncSettings,
     val dirtyVerifier: Optional<ContactDirtyVerifier>,
     @IoDispatcher ioDispatcher: CoroutineDispatcher,
     private val productIds: ProductIds,
@@ -138,7 +138,7 @@ class ContactsSyncManager @AssistedInject constructor(
             collection: Collection,
             resync: ResyncType?,
             syncFrameworkUpload: Boolean,
-            settings: SyncSettingsSnapshot
+            settings: SyncSettings
         ): ContactsSyncManager
     }
 

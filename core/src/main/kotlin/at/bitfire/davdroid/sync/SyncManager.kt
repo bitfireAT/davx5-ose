@@ -97,7 +97,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
     val resync: ResyncType?,
     val ioDispatcher: CoroutineDispatcher,
     val syncTransferSemaphore: Semaphore,
-    val settings: SyncSettingsSnapshot
+    val settings: SyncSettings
 ) {
 
     enum class SyncAlgorithm {
