@@ -20,6 +20,7 @@ import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.di.qualifier.ApplicationScope
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
+import at.bitfire.davdroid.di.qualifier.UiDispatcher
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
@@ -74,9 +75,10 @@ class CollectionScreenViewModel @AssistedInject constructor(
     private val localCalendarStore: Lazy<LocalCalendarStore>,
     private val logger: Logger,
     private val serviceRepository: DavServiceRepository,
-    private val tasksAppManager: Lazy<TasksAppManager>,
     settings: SettingsManager,
-    syncStatsRepository: DavSyncStatsRepository
+    syncStatsRepository: DavSyncStatsRepository,
+    private val tasksAppManager: Lazy<TasksAppManager>,
+    @UiDispatcher private val uiDispatcher: CoroutineDispatcher
 ): ViewModel() {
 
     @AssistedFactory
@@ -178,7 +180,7 @@ class CollectionScreenViewModel @AssistedInject constructor(
         val collection = collection.value ?: return
 
         inProgress = true
-        applicationScope.launch {
+        applicationScope.launch(uiDispatcher) {
             try {
                 collectionRepository.deleteRemote(collection)
             } catch (e: Exception) {

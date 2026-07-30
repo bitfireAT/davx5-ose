@@ -26,10 +26,9 @@ class CoroutineScopesModule {
         @DefaultDispatcher defaultDispatcher: CoroutineDispatcher
     ): CoroutineScope = CoroutineScope(
         /* 1) If one child fails, don't cancel all other ones → SupervisorJob.
-         * 2) We explicitly specify a dispatcher here because the scope can be created by Hilt whenever
-         * it's first injected, with any dispatcher in the parent coroutine. To provide a deterministic
-         * default, we set the default dispatcher that is used by standard builders if no dispatcher
-         * is specified. */
+         * 2) We explicitly specify a dispatcher here to have a deterministic default because the
+         * scope can be created by Hilt whenever it's first injected, with any dispatcher in the parent
+         * coroutine. See `@ApplicationScope` KDoc. */
         SupervisorJob() + defaultDispatcher
     )
 
