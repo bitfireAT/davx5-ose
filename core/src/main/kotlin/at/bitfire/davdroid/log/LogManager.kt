@@ -7,18 +7,20 @@ package at.bitfire.davdroid.log
 import android.content.Context
 import android.util.Log
 import at.bitfire.davdroid.BuildConfig
+import at.bitfire.davdroid.di.qualifier.ApplicationScope
+import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.repository.PreferenceRepository
 import at.bitfire.synctools.log.LogcatHandler
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
 import javax.inject.Provider
 import javax.inject.Singleton
-import kotlin.coroutines.EmptyCoroutineContext
 
 /**
  * Handles logging configuration and which loggers are active at a moment.
@@ -46,29 +48,34 @@ import kotlin.coroutines.EmptyCoroutineContext
  */
 @Singleton
 class LogManager @Inject constructor(
+    @ApplicationScope applicationScope: CoroutineScope,
     @ApplicationContext private val context: Context,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val logFileHandler: Provider<LogFileHandler>,
     private val logger: Logger,
     private val prefs: PreferenceRepository
-) : AutoCloseable {
-
-    private val scope = CoroutineScope(EmptyCoroutineContext)
+) {
 
     init {
         // observe preference changes
-        scope.launch {
+        applicationScope.launch {
             prefs.logToFileFlow().collect {
-                reloadConfig()
+                withContext(ioDispatcher) {
+                    reloadConfig()
+                }
             }
         }
 
+        // initial configuration
         reloadConfig()
     }
 
-    override fun close() {
-        scope.cancel()
-    }
-
+    /**
+     * Reloads the logging configuration from assets/logging.properties and configures the JUL
+     * (`java.util.logging`) framework.
+     *
+     * Blocking method with short run-time so that it can be run on app start-up.
+     */
     @Synchronized
     fun reloadConfig() {
         val logToFile = prefs.logToFile()
