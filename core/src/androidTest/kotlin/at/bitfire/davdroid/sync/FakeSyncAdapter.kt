@@ -17,16 +17,26 @@ import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
 
+/**
+ * Test-only [SyncAdapter] that replaces the real one during instrumented tests, so that accounts
+ * created by tests can't trigger an actual sync via the Android Sync Framework.
+ */
 class FakeSyncAdapter @Inject constructor(
     @ApplicationContext context: Context,
     private val logger: Logger
-): AbstractThreadedSyncAdapter(context, true), SyncAdapter {
+) : AbstractThreadedSyncAdapter(context, true), SyncAdapter {
 
     init {
         logger.info("FakeSyncAdapter created")
     }
 
-    override fun onPerformSync(account: Account, extras: Bundle, authority: String, provider: ContentProviderClient, syncResult: SyncResult) {
+    override fun onPerformSync(
+        account: Account,
+        extras: Bundle,
+        authority: String,
+        provider: ContentProviderClient,
+        syncResult: SyncResult
+    ) {
         logger.log(
             Level.INFO,
             "onPerformSync(account=$account, extras=$extras, authority=$authority, syncResult=$syncResult)",
@@ -42,9 +52,6 @@ class FakeSyncAdapter @Inject constructor(
 
         logger.info("onPerformSync($account) finished")
     }
-
-
-    // SyncAdapter implementation and Hilt module
 
     override fun getBinder(): IBinder = syncAdapterBinder
 
