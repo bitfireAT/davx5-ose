@@ -4,7 +4,8 @@
 
 package at.bitfire.davdroid.sync
 
-import android.accounts.Account
+import at.bitfire.davdroid.accounts.AccountId
+import at.bitfire.davdroid.accounts.toAndroidAccount
 import at.bitfire.davdroid.network.HttpClientBuilder
 import at.bitfire.davdroid.util.DavUtils.toURIorNull
 import dagger.assisted.Assisted
@@ -28,11 +29,11 @@ import javax.annotation.WillNotClose
  * `example.com` ([originalHost]), then [retrieve] will send authentication
  * when downloading `https://example.com/photo.jpg`, but not for `https://external-hoster.com/photo.jpg`.
  *
- * @param account       account to build authentication from
+ * @param accountId     [AccountId] of the account to build authentication from
  * @param originalHost  client only authenticates for the domain of this host
  */
 class ResourceRetriever @AssistedInject constructor(
-    @Assisted private val account: Account,
+    @Assisted private val accountId: AccountId,
     @Assisted private val originalHost: String,
     @Assisted private val httpClient: HttpClient?,
     private val httpClientBuilder: HttpClientBuilder,
@@ -41,7 +42,11 @@ class ResourceRetriever @AssistedInject constructor(
 
     @AssistedFactory
     interface Factory {
-        fun create(account: Account, originalHost: String, @WillNotClose httpClient: HttpClient? = null): ResourceRetriever
+        fun create(
+            accountId: AccountId,
+            originalHost: String,
+            @WillNotClose httpClient: HttpClient? = null
+        ): ResourceRetriever
     }
 
     /**
@@ -62,7 +67,7 @@ class ResourceRetriever @AssistedInject constructor(
 
                 "http", "https" -> {
                     val httpClient = httpClient ?: httpClientBuilder
-                        .fromAccount(account, authDomain = originalHost)
+                        .fromAccount(accountId.toAndroidAccount(), authDomain = originalHost)
                         .followRedirects(true)
                         .build()
                     val response = httpClient.get(url)

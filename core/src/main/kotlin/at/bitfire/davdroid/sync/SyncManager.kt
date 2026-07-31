@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.sync
 
-import android.accounts.Account
 import android.content.Context
 import android.os.DeadObjectException
 import android.os.RemoteException
@@ -34,6 +33,7 @@ import at.bitfire.dav4jvm.property.webdav.ResourceType
 import at.bitfire.dav4jvm.property.webdav.SyncToken
 import at.bitfire.dav4jvm.property.webdav.WebDAV
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavCollectionRepository
@@ -78,8 +78,8 @@ import javax.net.ssl.SSLHandshakeException
  * @param CollectionType    type of local collection
  * @param RemoteType        type of remote collection
  *
- * @param account           account to synchronize
- * @param httpClient        HTTP client to use for network requests, already authenticated with credentials from [account]
+ * @param accountId         [AccountId] of the account to synchronize
+ * @param httpClient        HTTP client to use for network requests, already authenticated with credentials from the account
  * @param dataType          data type to synchronize
  * @param syncResult        receiver for result of the synchronization (will be updated by [performSync])
  * @param localCollection   local collection to synchronize (interface to content provider)
@@ -88,7 +88,7 @@ import javax.net.ssl.SSLHandshakeException
  * @param settings          snapshot of the account settings relevant for this sync run
  */
 abstract class SyncManager<LocalType : LocalResource, out CollectionType : LocalCollection<LocalType>, RemoteType : DavCollection>(
-    val account: Account,
+    val accountId: AccountId,
     val httpClient: HttpClient,
     val dataType: SyncDataType,
     val syncResult: SyncResult,
@@ -137,7 +137,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
     protected var hasCollectionSync = false
 
     private val syncNotificationManager by lazy {
-        syncNotificationManagerFactory.create(account)
+        syncNotificationManagerFactory.create(accountId)
     }
 
     /**
@@ -760,7 +760,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
     /**
      * Logs the exception, updates sync result and shows a notification to the user.
      */
-    private fun handleException(e: Throwable, local: LocalResource?, remote: Url?) {
+    private suspend fun handleException(e: Throwable, local: LocalResource?, remote: Url?) {
         var message: String
         when (e) {
             is IOException -> {
@@ -805,7 +805,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
         )
     }
 
-    protected fun notifyInvalidResource(e: Throwable, fileName: String) =
+    protected suspend fun notifyInvalidResource(e: Throwable, fileName: String) =
         syncNotificationManager.notifyInvalidResource(
             dataType,
             localCollection.tag,

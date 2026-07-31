@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.sync
 
-import android.accounts.Account
 import android.text.format.Formatter
 import at.bitfire.dav4jvm.ktor.DavCalendar
 import at.bitfire.dav4jvm.ktor.MultiStatusItem
@@ -20,6 +19,7 @@ import at.bitfire.dav4jvm.property.webdav.SupportedReportSet
 import at.bitfire.dav4jvm.property.webdav.WebDAV
 import at.bitfire.davdroid.ProductIds
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.di.qualifier.SyncTransferSemaphore
@@ -60,7 +60,7 @@ import java.util.logging.Level
  * Synchronization manager for CalDAV collections; handles events (VEVENT).
  */
 class CalendarSyncManager @AssistedInject constructor(
-    @Assisted account: Account,
+    @Assisted accountId: AccountId,
     @Assisted httpClient: HttpClient,
     @Assisted syncResult: SyncResult,
     @Assisted localCalendar: LocalCalendar,
@@ -71,7 +71,7 @@ class CalendarSyncManager @AssistedInject constructor(
     private val productIds: ProductIds,
     @SyncTransferSemaphore syncTransferSemaphore: Semaphore
 ) : SyncManager<LocalEvent, LocalCalendar, DavCalendar>(
-    account,
+    accountId,
     httpClient,
     SyncDataType.EVENTS,
     syncResult,
@@ -86,7 +86,7 @@ class CalendarSyncManager @AssistedInject constructor(
     @AssistedFactory
     interface Factory {
         fun calendarSyncManager(
-            account: Account,
+            accountId: AccountId,
             httpClient: HttpClient,
             syncResult: SyncResult,
             localCalendar: LocalCalendar,
