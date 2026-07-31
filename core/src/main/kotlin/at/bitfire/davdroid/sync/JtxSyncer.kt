@@ -4,11 +4,9 @@
 
 package at.bitfire.davdroid.sync
 
-import android.accounts.Account
-import android.accounts.AccountManager
 import android.content.ContentProviderClient
-import android.os.Build
-import at.bitfire.davdroid.accounts.toAccountId
+import at.bitfire.davdroid.accounts.AccountId
+import at.bitfire.davdroid.accounts.AndroidAccountManager
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.resource.LocalJtxCollection
@@ -22,19 +20,19 @@ import dagger.assisted.AssistedInject
  * Sync logic for jtx board
  */
 class JtxSyncer @AssistedInject constructor(
-    @Assisted account: Account,
+    @Assisted accountId: AccountId,
     @Assisted resync: ResyncType?,
     @Assisted syncResult: SyncResult,
     @Assisted settings: SyncSettings,
     localJtxCollectionStore: LocalJtxCollectionStore,
     private val jtxSyncManagerFactory: JtxSyncManager.Factory,
     private val tasksAppManager: dagger.Lazy<TasksAppManager>
-) : Syncer<LocalJtxCollectionStore, LocalJtxCollection>(account, resync, syncResult, settings) {
+) : Syncer<LocalJtxCollectionStore, LocalJtxCollection>(accountId, resync, syncResult, settings) {
 
     @AssistedFactory
     interface Factory {
         fun create(
-            account: Account,
+            accountId: AccountId,
             resyncType: ResyncType?,
             syncResult: SyncResult,
             settings: SyncSettings
@@ -57,15 +55,9 @@ class JtxSyncer @AssistedInject constructor(
             return false // Don't sync
         }
 
-        // make sure account can be seen by task provider
-        if (Build.VERSION.SDK_INT >= 26) {
-            /* Warning: If setAccountVisibility is called, Android 12 broadcasts the
-               AccountManager.LOGIN_ACCOUNTS_CHANGED_ACTION Intent. This cancels running syncs
-               and starts them again! So make sure setAccountVisibility is only called when necessary. */
-            val am = AccountManager.get(context)
-            if (am.getAccountVisibility(account, TaskProvider.ProviderName.JtxBoard.packageName) != AccountManager.VISIBILITY_VISIBLE)
-                am.setAccountVisibility(account, TaskProvider.ProviderName.JtxBoard.packageName, AccountManager.VISIBILITY_VISIBLE)
-        }
+        // make sure account can be seen by jtx board
+        androidAccountManager.ensureAccountVisibility(accountId, TaskProvider.ProviderName.JtxBoard.packageName)
+
         return true
     }
 
@@ -80,7 +72,7 @@ class JtxSyncer @AssistedInject constructor(
         logger.info("Synchronizing jtx collection $localCollection")
 
         val syncManager = jtxSyncManagerFactory.jtxSyncManager(
-            account.toAccountId(),
+            accountId,
             httpClient,
             syncResult,
             localCollection,

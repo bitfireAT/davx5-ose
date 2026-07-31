@@ -158,19 +158,18 @@ abstract class BaseSyncWorker(
         val syncResult = SyncResult()
 
         // What are we going to sync? Select syncer based on authority
-        val account = accountId.toAndroidAccount()
         when (dataType) {
             SyncDataType.CONTACTS ->
-                addressBookSyncer.create(account, resyncType, syncFrameworkUpload, syncResult, settings)
+                addressBookSyncer.create(accountId, resyncType, syncFrameworkUpload, syncResult, settings)
             SyncDataType.EVENTS ->
-                calendarSyncer.create(account, resyncType, syncResult, settings)
+                calendarSyncer.create(accountId, resyncType, syncResult, settings)
             SyncDataType.TASKS -> {
                 when (val currentProvider = tasksAppManager.get().currentProvider()) {
                     TaskProvider.ProviderName.JtxBoard ->
-                        jtxSyncer.create(account, resyncType, syncResult, settings)
+                        jtxSyncer.create(accountId, resyncType, syncResult, settings)
                     TaskProvider.ProviderName.OpenTasks,
                     TaskProvider.ProviderName.TasksOrg ->
-                        taskSyncer.create(account, currentProvider, resyncType, syncResult, settings)
+                        taskSyncer.create(accountId, currentProvider, resyncType, syncResult, settings)
                     else -> {
                         logger.warning("No valid tasks provider found, aborting sync")
                         return Result.failure()
@@ -188,6 +187,7 @@ abstract class BaseSyncWorker(
 
         // Check for errors
         if (syncResult.hasError()) {
+            val account = accountId.toAndroidAccount()
             val softErrorNotificationTag = "${account.type}-${account.name}-$dataType"
 
             // On soft errors the sync is retried a few times before considered failed

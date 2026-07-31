@@ -4,12 +4,13 @@
 
 package at.bitfire.davdroid.sync
 
-import android.accounts.Account
 import android.content.ContentProviderClient
 import android.content.Context
 import android.os.DeadObjectException
 import androidx.annotation.VisibleForTesting
-import at.bitfire.davdroid.accounts.toAccountId
+import at.bitfire.davdroid.accounts.AccountId
+import at.bitfire.davdroid.accounts.AndroidAccountManager
+import at.bitfire.davdroid.accounts.toAndroidAccount
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.ServiceType
 import at.bitfire.davdroid.network.HttpClientBuilder
@@ -33,19 +34,22 @@ import kotlin.jvm.optionals.getOrNull
  *
  * Contains generic sync code, equal for all sync authorities.
  *
- * @param account       account to synchronize
+ * @param accountId     [AccountId] of the account to synchronize
  * @param resync        whether re-synchronization is requested (`null` for normal sync)
  * @param syncResult    synchronization result, to be modified during sync
  * @param settings      snapshot of the account settings relevant for this sync run
  */
 abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType: LocalCollection<*>>(
-    protected val account: Account,
+    protected val accountId: AccountId,
     protected val resync: ResyncType?,
     protected val syncResult: SyncResult,
     protected val settings: SyncSettings
 ): Closeable {
 
     abstract val dataStore: StoreType
+
+    @Inject
+    lateinit var androidAccountManager: AndroidAccountManager
 
     @Inject @ApplicationContext
     lateinit var context: Context
@@ -72,12 +76,12 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
     abstract val serviceType: String
 
     val syncNotificationManager by lazy {
-        syncNotificationManagerFactory.create(account.toAccountId())
+        syncNotificationManagerFactory.create(accountId)
     }
 
     @WillCloseWhenClosed
     val httpClient by lazy {
-        httpClientBuilder.fromAccount(account).build()
+        httpClientBuilder.fromAccount(accountId.toAndroidAccount()).build()
     }
 
     /**
@@ -95,6 +99,7 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
 
         // Find collections in database and provider which should be synced (are sync-enabled)
         val dbCollections = getSyncEnabledCollections()
+        val account = androidAccountManager.getAndroidAccount(accountId)
         val localCollections = dataStore.getAll(account, provider)
 
         // Create/update/delete local collections according to DB
@@ -113,7 +118,7 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
     @VisibleForTesting
     internal suspend fun getSyncEnabledCollections(): Map<Long, Collection> {
         val dbCollections = mutableMapOf<Long, Collection>()
-        serviceRepository.getByAccountAndType(account.name, serviceType)?.let { service ->
+        serviceRepository.getByAccountIdAndType(accountId, serviceType)?.let { service ->
             for (dbCollection in getDbSyncCollections(service.id))
                 dbCollections[dbCollection.id] = dbCollection
         }
@@ -259,7 +264,7 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
      * - handle occurring sync errors
      */
     suspend operator fun invoke() {
-        logger.info("${dataStore.authority} sync of $account initiated (resync=$resync)")
+        logger.info("${dataStore.authority} sync of $accountId initiated (resync=$resync)")
 
         try {
             dataStore.acquireContentProvider(throwOnMissingPermissions = true)
@@ -285,7 +290,7 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
             try {
                 val runSync = syncValidator.getOrNull()?.let { instance ->
                     logger.info("Registered sync validator: ${instance::class.java.name}")
-                    instance.beforeSync(account)
+                    instance.beforeSync(accountId.toAndroidAccount())
                 } ?: /* no sync validator, in OSE for example */ true
 
                 if (runSync)
@@ -314,7 +319,7 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
                 }
 
             } finally {
-                logger.info("${dataStore.authority} sync of $account finished")
+                logger.info("${dataStore.authority} sync of $accountId finished")
             }
         }
     }
