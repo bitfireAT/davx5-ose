@@ -34,6 +34,7 @@ import at.bitfire.dav4jvm.property.webdav.ResourceType
 import at.bitfire.dav4jvm.property.webdav.SyncToken
 import at.bitfire.dav4jvm.property.webdav.WebDAV
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.accounts.toAccountId
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavCollectionRepository
@@ -137,7 +138,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
     protected var hasCollectionSync = false
 
     private val syncNotificationManager by lazy {
-        syncNotificationManagerFactory.create(account)
+        syncNotificationManagerFactory.create(account.toAccountId())
     }
 
     /**
@@ -760,7 +761,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
     /**
      * Logs the exception, updates sync result and shows a notification to the user.
      */
-    private fun handleException(e: Throwable, local: LocalResource?, remote: Url?) {
+    private suspend fun handleException(e: Throwable, local: LocalResource?, remote: Url?) {
         var message: String
         when (e) {
             is IOException -> {
@@ -805,7 +806,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
         )
     }
 
-    protected fun notifyInvalidResource(e: Throwable, fileName: String) =
+    protected suspend fun notifyInvalidResource(e: Throwable, fileName: String) =
         syncNotificationManager.notifyInvalidResource(
             dataType,
             localCollection.tag,

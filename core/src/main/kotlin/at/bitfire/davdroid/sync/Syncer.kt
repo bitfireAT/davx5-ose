@@ -9,6 +9,7 @@ import android.content.ContentProviderClient
 import android.content.Context
 import android.os.DeadObjectException
 import androidx.annotation.VisibleForTesting
+import at.bitfire.davdroid.accounts.toAccountId
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.ServiceType
 import at.bitfire.davdroid.network.HttpClientBuilder
@@ -71,7 +72,7 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
     abstract val serviceType: String
 
     val syncNotificationManager by lazy {
-        syncNotificationManagerFactory.create(account)
+        syncNotificationManagerFactory.create(account.toAccountId())
     }
 
     @WillCloseWhenClosed
