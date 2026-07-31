@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid.di
 
+import at.bitfire.davdroid.di.qualifier.DefaultDispatcher
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import dagger.Module
 import dagger.Provides
@@ -15,6 +16,10 @@ import kotlinx.coroutines.Dispatchers
 @Module
 @InstallIn(SingletonComponent::class)
 class CoroutineDispatchersModule {
+
+    @Provides
+    @DefaultDispatcher
+    fun defaultDispatcher(): CoroutineDispatcher = Dispatchers.Default
 
     @Provides
     @IoDispatcher

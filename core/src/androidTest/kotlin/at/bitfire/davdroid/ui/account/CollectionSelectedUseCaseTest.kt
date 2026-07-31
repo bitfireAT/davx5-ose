@@ -2,7 +2,7 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  */
 
-package at.bitfire.davdroid.ui
+package at.bitfire.davdroid.ui.account
 
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
@@ -48,7 +48,7 @@ class CollectionSelectedUseCaseTest {
 
     val service = Service(
         id = 1,
-        type = Service.Companion.TYPE_CALDAV,
+        type = Service.TYPE_CALDAV,
         accountName = "test@example.com"
     )
 
