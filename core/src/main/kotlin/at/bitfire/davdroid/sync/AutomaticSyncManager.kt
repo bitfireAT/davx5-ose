@@ -138,7 +138,7 @@ class AutomaticSyncManager @Inject constructor(
             SyncDataType.EVENTS,
             SyncDataType.TASKS -> Service.TYPE_CALDAV
         }
-        val hasService = serviceRepository.getByAccountAndTypeBlocking(accountId, serviceType) != null
+        val hasService = serviceRepository.getByAccountIdAndTypeBlocking(accountId, serviceType) != null
 
         val hasProvider = if (dataType == SyncDataType.TASKS)
             tasksAppManager.get().currentProvider() != null

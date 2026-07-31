@@ -21,13 +21,13 @@ interface ServiceDao {
     @Query("SELECT * FROM service WHERE accountName=:accountName AND type=:type")
     fun getByAccountAndTypeBlocking(accountName: String, @ServiceType type: String): Service?
 
-    suspend fun getByAccountAndType(accountId: AccountId, @ServiceType type: String): Service? {
+    suspend fun getByAccountIdAndType(accountId: AccountId, @ServiceType type: String): Service? {
         return when (accountId) {
             is LegacyAccount -> getByAccountAndType(accountId.androidAccount.name, type)
         }
     }
 
-    fun getByAccountAndTypeBlocking(accountId: AccountId, @ServiceType type: String): Service? {
+    fun getByAccountIdAndTypeBlocking(accountId: AccountId, @ServiceType type: String): Service? {
         return when (accountId) {
             is LegacyAccount -> getByAccountAndTypeBlocking(accountId.androidAccount.name, type)
         }
