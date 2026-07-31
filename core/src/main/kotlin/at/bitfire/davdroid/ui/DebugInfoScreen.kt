@@ -16,7 +16,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.LiveHelp
 import androidx.compose.material.icons.rounded.Adb
 import androidx.compose.material.icons.rounded.BugReport
-import androidx.compose.material.icons.rounded.Info
+import androidx.compose.material.icons.rounded.CloudOff
 import androidx.compose.material.icons.rounded.PrivacyTip
 import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -44,9 +44,12 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.fromHtml
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.text.htmlEncode
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import at.bitfire.dav4jvm.ktor.UrlUtils
 import at.bitfire.dav4jvm.ktor.exception.DavException
 import at.bitfire.dav4jvm.ktor.exception.HttpException
+import at.bitfire.dav4jvm.ktor.toUrlOrNull
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.log.DebugDirectory
@@ -76,15 +79,17 @@ fun DebugInfoScreen(
 ) {
     val model: DebugInfoViewModel = hiltViewModel(
         creationCallback = { factory: DebugInfoViewModel.Factory ->
-            factory.createWithDetails(DebugInfoViewModel.DebugInfoDetails(
-                accountId = accountId,
-                syncDataType = syncDataType,
-                cause = cause,
-                localResource = localResource,
-                remoteResource = remoteResource,
-                debugLogFileName = debugLogFileName,
-                timestamp = timestamp
-            ))
+            factory.createWithDetails(
+                DebugInfoViewModel.DebugInfoDetails(
+                    accountId = accountId,
+                    syncDataType = syncDataType,
+                    cause = cause,
+                    localResource = localResource,
+                    remoteResource = remoteResource,
+                    debugLogFileName = debugLogFileName,
+                    timestamp = timestamp
+                )
+            )
         }
     )
 
@@ -116,18 +121,26 @@ fun DebugInfoScreen(
             else -> cause?.let { it::class.java.simpleName }
         } ?: "",
         modelCauseSubtitle = cause?.localizedMessage,
-        modelCauseMessage = stringResource(
+        modelCauseMessage =
             if (cause is HttpException)
                 when {
-                    cause.statusCode == 403 -> R.string.debug_info_http_403_description
-                    cause.statusCode == 404 -> R.string.debug_info_http_404_description
-                    cause.statusCode == 405 -> R.string.debug_info_http_405_description
-                    cause.isServerError -> R.string.debug_info_http_5xx_description
-                    else -> R.string.debug_info_unexpected_error
+                    cause.statusCode == 403 -> AnnotatedString(stringResource(R.string.debug_info_http_403_description))
+                    cause.statusCode == 404 -> AnnotatedString(stringResource(R.string.debug_info_http_404_description))
+                    cause.statusCode == 405 -> AnnotatedString(stringResource(R.string.debug_info_http_405_description))
+                    cause.isServerError -> {
+                        val domain = UrlUtils.hostToDomain(remoteResource?.toUrlOrNull()?.host)
+                        val appName = stringResource(R.string.app_name).htmlEncode()
+                        AnnotatedString.fromHtml(
+                            if (domain != null)
+                                stringResource(R.string.debug_info_http_5xx_description, domain.htmlEncode(), appName)
+                            else
+                                stringResource(R.string.debug_info_http_5xx_description_no_domain, appName)
+                        )
+                    }
+                    else -> AnnotatedString(stringResource(R.string.debug_info_unexpected_error))
                 }
             else
-                R.string.debug_info_unexpected_error
-        ),
+                AnnotatedString(stringResource(R.string.debug_info_unexpected_error)),
         localResource = localResource,
         canViewResource = canViewResource,
         remoteResource = remoteResource,
@@ -151,7 +164,7 @@ fun DebugInfoScreen(
     showModelCause: Boolean,
     modelCauseTitle: String,
     modelCauseSubtitle: String?,
-    modelCauseMessage: String?,
+    modelCauseMessage: AnnotatedString?,
     localResource: String?,
     canViewResource: Boolean,
     remoteResource: String?,
@@ -213,22 +226,22 @@ fun DebugInfoScreen(
                 if (!showDebugInfo || zipProgress)
                     ProgressBar()
 
+                if (showModelCause) {
+                    CardWithImage(
+                        title = modelCauseTitle,
+                        subtitle = modelCauseSubtitle,
+                        annotatedMessage = modelCauseMessage,
+                        icon = Icons.Rounded.CloudOff,
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
+                    )
+                }
+
                 CardWithImage(
                     title = stringResource(R.string.debug_info_privacy_warning_title),
                     message = stringResource(R.string.debug_info_privacy_warning_description),
                     icon = Icons.Rounded.PrivacyTip,
                     modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
                 )
-
-                if (showModelCause) {
-                    CardWithImage(
-                        title = modelCauseTitle,
-                        subtitle = modelCauseSubtitle,
-                        message = modelCauseMessage,
-                        icon = Icons.Rounded.Info,
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
-                    )
-                }
 
                 if (showDebugInfo)
                     CardWithImage(
@@ -412,10 +425,34 @@ fun DebugInfoScreen_Preview() {
         showModelCause = true,
         modelCauseTitle = "ModelCauseTitle",
         modelCauseSubtitle = "ModelCauseSubtitle",
-        modelCauseMessage = "ModelCauseMessage",
+        modelCauseMessage = AnnotatedString("ModelCauseMessage"),
         localResource = "local-resource-string",
         canViewResource = true,
         remoteResource = "remote-resource-string",
+        hasLogFile = true
+    )
+}
+
+@Composable
+@Preview
+fun DebugInfoScreen_5xxError_Preview() {
+    DebugInfoScreen(
+        error = null,
+        showDebugInfo = true,
+        zipProgress = false,
+        showModelCause = true,
+        modelCauseTitle = "Server Error",
+        modelCauseSubtitle = "503 Service Unavailable",
+        modelCauseMessage = AnnotatedString.fromHtml(
+            stringResource(
+                R.string.debug_info_http_5xx_description,
+                "example.com",
+                stringResource(R.string.app_name)
+            )
+        ),
+        localResource = "local-resource-string",
+        canViewResource = true,
+        remoteResource = "https://example.com/dav/",
         hasLogFile = true
     )
 }

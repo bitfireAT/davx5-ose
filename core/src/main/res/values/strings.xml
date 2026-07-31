@@ -512,7 +512,8 @@
     <string name="debug_info_http_403_description">The request has been denied by the server.</string>
     <string name="debug_info_http_404_description">The requested resource doesn\'t exist (anymore).</string>
     <string name="debug_info_http_405_description">The server doesn\'t allow the requested type of operation.</string>
-    <string name="debug_info_http_5xx_description">A server-side problem occurred. Please contact your server support.</string>
+    <string name="debug_info_http_5xx_description"><![CDATA[A problem occurred on your server. <b>Please contact the support team of <tt>%1$s</tt></b> (not %2$s).]]></string>
+    <string name="debug_info_http_5xx_description_no_domain"><![CDATA[A problem occurred on your server. <b>Please contact the support team of your provider</b> (not %1$s).]]></string>
     <string name="debug_info_unexpected_error">An unexpected error has occurred. View debug info for details.</string>
     <string name="debug_info_view_details">View details</string>
     <string name="debug_info_subtitle">Debug info have been collected</string>
