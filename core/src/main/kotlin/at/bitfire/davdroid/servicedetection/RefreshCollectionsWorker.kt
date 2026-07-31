@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.servicedetection
 
-import android.accounts.Account
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
@@ -25,8 +24,10 @@ import at.bitfire.dav4jvm.ktor.exception.UnauthorizedException
 import at.bitfire.davdroid.IoCoroutineWorker
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.toAccountId
+import at.bitfire.davdroid.accounts.toAndroidAccount
 import at.bitfire.davdroid.network.HttpClientBuilder
 import at.bitfire.davdroid.push.PushRegistrationManager
+import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker.Companion.ARG_SERVICE_ID
 import at.bitfire.davdroid.sync.account.InvalidAccountException
@@ -62,6 +63,7 @@ import java.util.logging.Logger
 class RefreshCollectionsWorker @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted workerParams: WorkerParameters,
+    private val accountRepository: AccountRepository,
     private val collectionsWithoutHomeSetRefresherFactory: CollectionsWithoutHomeSetRefresher.Factory,
     private val homeSetRefresherFactory: HomeSetRefresher.Factory,
     private val httpClientBuilder: HttpClientBuilder,
@@ -142,7 +144,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
             return Result.failure()
         }
 
-        val account = Account(service.accountName, applicationContext.getString(R.string.account_type))
+        val accountId = accountRepository.getAccountIdFromName(service.accountName)
         try {
             logger.log(Level.INFO, "Refreshing {0} collections of service #{1}", arrayOf(service.type, service))
 
@@ -152,7 +154,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
 
             // create authenticating HttpClient (credentials taken from account settings)
             httpClientBuilder
-                .fromAccount(account)
+                .fromAccount(accountId.toAndroidAccount())
                 .build()
                 .use { httpClient ->
                     val refresher = collectionsWithoutHomeSetRefresherFactory.create(service, httpClient)
@@ -182,9 +184,10 @@ class RefreshCollectionsWorker @AssistedInject constructor(
         } catch (e: UnauthorizedException) {
             logger.log(Level.SEVERE, "Not authorized (anymore)", e)
             // notify that we need to re-authenticate in the account settings
-            val settingsIntent = AccountSettingsActivity.createIntent(applicationContext, account.toAccountId())
+            val settingsIntent = AccountSettingsActivity.createIntent(applicationContext, accountId)
+            val accountName = accountRepository.getAccountName(accountId)
             notifyRefreshError(
-                accountName = account.name,
+                accountName = accountName,
                 contentText = applicationContext.getString(R.string.sync_error_authentication_failed),
                 contentIntent = settingsIntent
             )
@@ -192,12 +195,14 @@ class RefreshCollectionsWorker @AssistedInject constructor(
         } catch(e: Exception) {
             logger.log(Level.SEVERE, "Couldn't refresh collection list", e)
 
+            val accountName = accountRepository.getAccountName(accountId)
             val debugIntent = DebugInfoActivity.IntentBuilder(applicationContext)
                 .withCause(e)
-                .withAccount(account.toAccountId())
+                .withAccount(accountId)
                 .build()
+
             notifyRefreshError(
-                accountName = account.name,
+                accountName = accountName,
                 contentText = applicationContext.getString(R.string.refresh_collections_worker_refresh_couldnt_refresh),
                 contentIntent = debugIntent
             )

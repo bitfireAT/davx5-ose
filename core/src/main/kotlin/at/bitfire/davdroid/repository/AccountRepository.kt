@@ -85,7 +85,7 @@ class AccountRepository @Inject constructor(
         }
     }
 
-    private fun getAccountName(accountId: AccountId): String {
+    suspend fun getAccountName(accountId: AccountId): String {
         // For now getAccountNameBlocking() isn't really blocking, so simply call through to it.
         return getAccountNameBlocking(accountId)
     }
@@ -149,7 +149,7 @@ class AccountRepository @Inject constructor(
             }
 
             // set up automatic sync (processes inserted services)
-            automaticSyncManager.get().updateAutomaticSync(account)
+            automaticSyncManager.get().updateAutomaticSync(account.toAccountId())
 
         } catch (e: InvalidAccountException) {
             logger.log(Level.SEVERE, "Couldn't access account settings", e)
@@ -165,7 +165,7 @@ class AccountRepository @Inject constructor(
             accountManager.removeAccountExplicitly(account)
 
             // delete address books (= address book accounts)
-            serviceRepository.getByAccountAndType(accountId, Service.TYPE_CARDDAV)?.let { service ->
+            serviceRepository.getByAccountIdAndType(accountId, Service.TYPE_CARDDAV)?.let { service ->
                 collectionRepository.getByService(service.id).forEach { collection ->
                     localAddressBookStore.get().deleteByCollectionId(collection.id)
                 }
@@ -298,7 +298,7 @@ class AccountRepository @Inject constructor(
             }
 
             // update automatic sync
-            automaticSyncManager.get().updateAutomaticSync(newAccount)
+            automaticSyncManager.get().updateAutomaticSync(newAccount.toAccountId())
         } finally {
             // release AccountsCleanupWorker mutex at the end of this async coroutine
             AccountsCleanupWorker.unlockAccountsCleanup()

@@ -11,6 +11,7 @@ import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
 import androidx.work.WorkManager
 import androidx.work.testing.WorkManagerTestInitHelper
+import at.bitfire.davdroid.accounts.toAccountId
 import at.bitfire.davdroid.sync.AutomaticSyncManager
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.BindValue
@@ -76,7 +77,7 @@ class AccountSettingsMigration19Test {
             workManager.cancelUniqueWork("periodic-sync org.dmfs.tasks Test/Some")
             workManager.cancelUniqueWork("periodic-sync org.tasks.opentasks Test/Some")
 
-            automaticSyncManager.updateAutomaticSync(account)
+            automaticSyncManager.updateAutomaticSync(account.toAccountId())
         }
     }
 

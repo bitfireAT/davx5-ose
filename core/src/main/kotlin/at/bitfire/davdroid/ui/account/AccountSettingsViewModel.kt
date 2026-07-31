@@ -131,8 +131,8 @@ class AccountSettingsViewModel @AssistedInject constructor(
     }
 
     private suspend fun reload() = withContext(ioDispatcher) {
-        val hasContactsSync = serviceDao.getByAccountAndType(accountId, Service.TYPE_CARDDAV) != null
-        val hasCalendarSync = serviceDao.getByAccountAndType(accountId, Service.TYPE_CALDAV) != null
+        val hasContactsSync = serviceDao.getByAccountIdAndType(accountId, Service.TYPE_CARDDAV) != null
+        val hasCalendarSync = serviceDao.getByAccountIdAndType(accountId, Service.TYPE_CALDAV) != null
         val hasTasksSync = hasCalendarSync && tasksProvider != null
 
         _uiState.update { 
