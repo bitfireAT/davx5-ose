@@ -8,6 +8,7 @@ import android.accounts.Account
 import android.accounts.AccountManager
 import android.content.ContentProviderClient
 import android.provider.ContactsContract
+import at.bitfire.davdroid.accounts.toAccountId
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
@@ -94,7 +95,7 @@ class AddressBookSyncer @AssistedInject constructor(
             handleGroupMethodChange(account, addressBook, provider)
 
             val syncManager = contactsSyncManagerFactory.contactsSyncManager(
-                account,
+                account.toAccountId(),
                 provideHttpClient(),
                 syncResult,
                 provider,

@@ -14,6 +14,9 @@ import android.provider.CalendarContract.Calendars
 import android.provider.CalendarContract.Events
 import androidx.core.content.contentValuesOf
 import androidx.test.rule.GrantPermissionRule
+import at.bitfire.davdroid.accounts.AccountId
+import at.bitfire.davdroid.accounts.LegacyAccount
+import at.bitfire.davdroid.accounts.toAndroidAccount
 import at.bitfire.davdroid.resource.LocalCalendar
 import at.bitfire.davdroid.resource.LocalEvent
 import at.bitfire.davdroid.sync.account.TestAccount
@@ -55,7 +58,7 @@ class CalendarSyncManagerTest {
     @Inject
     lateinit var syncManagerFactory: CalendarSyncManager.Factory
 
-    lateinit var account: Account
+    lateinit var accountId: LegacyAccount
     lateinit var providerClient: ContentProviderClient
     lateinit var androidCalendar: AndroidCalendar
     lateinit var localCalendar: LocalCalendar
@@ -64,11 +67,11 @@ class CalendarSyncManagerTest {
     fun setUp() {
         hiltRule.inject()
 
-        account = TestAccount.create()
+        accountId = LegacyAccount(TestAccount.create())
         providerClient = context.contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)!!
 
         // create LocalCalendar
-        val androidCalendarProvider = AndroidCalendarProvider(account, providerClient)
+        val androidCalendarProvider = AndroidCalendarProvider(accountId.toAndroidAccount(), providerClient)
         androidCalendar = androidCalendarProvider.createAndGetCalendar(contentValuesOf(
             Calendars.NAME to "Sample Calendar"
         ))
@@ -79,7 +82,7 @@ class CalendarSyncManagerTest {
     fun tearDown() {
         localCalendar.androidCalendar.delete()
         providerClient.close()
-        TestAccount.remove(account)
+        TestAccount.remove(accountId.androidAccount)
     }
 
 
@@ -134,7 +137,7 @@ class CalendarSyncManagerTest {
     // helpers
 
     private fun syncManager() = syncManagerFactory.calendarSyncManager(
-        account = account,
+        accountId = accountId,
         httpClient = mockk(),
         syncResult = mockk(),
         localCalendar = mockk(),

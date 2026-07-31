@@ -6,6 +6,7 @@ package at.bitfire.davdroid.sync
 
 import android.accounts.Account
 import android.content.ContentProviderClient
+import at.bitfire.davdroid.accounts.toAccountId
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.resource.LocalCalendar
@@ -73,7 +74,7 @@ class CalendarSyncer @AssistedInject constructor(
         )
 
         val syncManager = calendarSyncManagerFactory.calendarSyncManager(
-            account,
+            account.toAccountId(),
             httpClient,
             syncResult,
             localCollection,

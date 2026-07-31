@@ -6,6 +6,8 @@ package at.bitfire.davdroid.sync
 
 import android.accounts.Account
 import at.bitfire.davdroid.MockEngineUtils.basic
+import at.bitfire.davdroid.accounts.LegacyAccount
+import at.bitfire.davdroid.accounts.toAndroidAccount
 import at.bitfire.davdroid.network.HttpClientBuilder
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Credentials
@@ -40,34 +42,34 @@ class ResourceRetrieverTest {
     @Inject
     lateinit var httpClientBuilder: HttpClientBuilder
 
-    lateinit var account: Account
+    lateinit var accountId: LegacyAccount
 
     @Before
     fun setUp() {
         hiltRule.inject()
-        account = TestAccount.create()
+        accountId = LegacyAccount(TestAccount.create())
 
         // add credentials to test account so that we can check whether they have been sent
-        val settings = accountSettingsFactory.create(account)
+        val settings = accountSettingsFactory.create(accountId.toAndroidAccount())
         settings.credentials(Credentials("test", "test".toSensitiveString()))
     }
 
     @After
     fun tearDown() {
-        TestAccount.remove(account)
+        TestAccount.remove(accountId.androidAccount)
     }
 
 
     @Test
     fun testRetrieve_DataUri() = runTest {
-        val retriever = resourceRetrieverFactory.create(account, "example.com")
+        val retriever = resourceRetrieverFactory.create(accountId, "example.com")
         val result = retriever.retrieve("data:image/png;base64,dGVzdA==")
         assertArrayEquals("test".toByteArray(), result)
     }
 
     @Test
     fun testRetrieve_DataUri_Invalid() = runTest {
-        val retriever = resourceRetrieverFactory.create(account, "example.com")
+        val retriever = resourceRetrieverFactory.create(accountId, "example.com")
         val result = retriever.retrieve("data:;INVALID,INVALID")
         assertNull(result)
     }
@@ -78,10 +80,10 @@ class ResourceRetrieverTest {
             httpClientBuilder
                 // fromAccount() restricts authentication to the given domain; build the test client the
                 // same way production code does so that restriction is actually exercised.
-                .fromAccount(account, authDomain = "example.com")
+                .fromAccount(accountId.toAndroidAccount(), authDomain = "example.com")
                 .build(engine)
                 .use { httpClient ->
-                    val retriever = resourceRetrieverFactory.create(account, "example.com", httpClient)
+                    val retriever = resourceRetrieverFactory.create(accountId, "example.com", httpClient)
                     // Request to a different domain than the account's — auth must not be sent
                     val result = retriever.retrieve("https://other-domain.example.net/photo.jpg")
 
@@ -97,10 +99,10 @@ class ResourceRetrieverTest {
     fun testRetrieve_SameDomain() = runTest {
         MockEngine.basic("TEST").use { engine ->
             httpClientBuilder
-                .fromAccount(account, authDomain = "example.com")
+                .fromAccount(accountId.toAndroidAccount(), authDomain = "example.com")
                 .build(engine)
                 .use { httpClient ->
-                    val retriever = resourceRetrieverFactory.create(account, "example.com", httpClient)
+                    val retriever = resourceRetrieverFactory.create(accountId, "example.com", httpClient)
                     val result = retriever.retrieve("https://example.com/photo.jpg")
 
                     val sentAuth = engine.requestHistory.first().headers[HttpHeaders.Authorization]
@@ -113,14 +115,14 @@ class ResourceRetrieverTest {
 
     @Test
     fun testRetrieve_FtpUrl() = runTest {
-        val retriever = resourceRetrieverFactory.create(account, "example.com")
+        val retriever = resourceRetrieverFactory.create(accountId, "example.com")
         val result = retriever.retrieve("ftp://example.com/photo.jpg")
         assertNull(result)
     }
 
     @Test
     fun testRetrieve_RelativeHttpsUrl() = runTest {
-        val retriever = resourceRetrieverFactory.create(account, "example.com")
+        val retriever = resourceRetrieverFactory.create(accountId, "example.com")
         val result = retriever.retrieve("https:photo.jpg")
         assertNull(result)
     }

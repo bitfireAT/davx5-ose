@@ -4,13 +4,13 @@
 
 package at.bitfire.davdroid.sync
 
-import android.accounts.Account
 import at.bitfire.dav4jvm.ktor.DavCollection
 import at.bitfire.dav4jvm.ktor.MultiStatusItem
 import at.bitfire.dav4jvm.ktor.Response
 import at.bitfire.dav4jvm.ktor.selfResponse
 import at.bitfire.dav4jvm.property.caldav.CalDAV
 import at.bitfire.dav4jvm.property.caldav.GetCTag
+import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.di.qualifier.SyncTransferSemaphore
@@ -31,7 +31,7 @@ import kotlinx.coroutines.sync.Semaphore
 import org.junit.Assert.assertEquals
 
 class TestSyncManager @AssistedInject constructor(
-    @Assisted account: Account,
+    @Assisted accountId: AccountId,
     @Assisted httpClient: HttpClient,
     @Assisted syncResult: SyncResult,
     @Assisted localCollection: LocalTestCollection,
@@ -40,7 +40,7 @@ class TestSyncManager @AssistedInject constructor(
     @IoDispatcher ioDispatcher: CoroutineDispatcher,
     @SyncTransferSemaphore syncTransferSemaphore: Semaphore
 ): SyncManager<LocalTestResource, LocalTestCollection, DavCollection>(
-    account,
+    accountId,
     httpClient,
     SyncDataType.EVENTS,
     syncResult,
@@ -55,7 +55,7 @@ class TestSyncManager @AssistedInject constructor(
     @AssistedFactory
     interface Factory {
         fun create(
-            account: Account,
+            accountId: AccountId,
             httpClient: HttpClient,
             syncResult: SyncResult,
             localCollection: LocalTestCollection,

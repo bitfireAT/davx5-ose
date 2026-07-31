@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.sync
 
-import android.accounts.Account
 import android.text.format.Formatter
 import androidx.annotation.OpenForTesting
 import at.bitfire.dav4jvm.ktor.DavCalendar
@@ -20,6 +19,7 @@ import at.bitfire.dav4jvm.property.webdav.GetETag
 import at.bitfire.dav4jvm.property.webdav.WebDAV
 import at.bitfire.davdroid.ProductIds
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.di.qualifier.SyncTransferSemaphore
@@ -55,7 +55,7 @@ import java.io.StringWriter
 import java.util.logging.Level
 
 class JtxSyncManager @AssistedInject constructor(
-    @Assisted account: Account,
+    @Assisted accountId: AccountId,
     @Assisted httpClient: HttpClient,
     @Assisted syncResult: SyncResult,
     @Assisted localCollection: LocalJtxCollection,
@@ -66,7 +66,7 @@ class JtxSyncManager @AssistedInject constructor(
     private val productIds: ProductIds,
     @SyncTransferSemaphore syncTransferSemaphore: Semaphore
 ): SyncManager<LocalJtxObject, LocalJtxCollection, DavCalendar>(
-    account,
+    accountId,
     httpClient,
     SyncDataType.TASKS,
     syncResult,
@@ -81,7 +81,7 @@ class JtxSyncManager @AssistedInject constructor(
     @AssistedFactory
     interface Factory {
         fun jtxSyncManager(
-            account: Account,
+            accountId: AccountId,
             httpClient: HttpClient,
             syncResult: SyncResult,
             localCollection: LocalJtxCollection,

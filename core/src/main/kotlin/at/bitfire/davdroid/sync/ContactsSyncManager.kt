@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.sync
 
-import android.accounts.Account
 import android.content.ContentProviderClient
 import android.text.format.Formatter
 import at.bitfire.dav4jvm.ktor.DavAddressBook
@@ -22,6 +21,7 @@ import at.bitfire.dav4jvm.property.webdav.SupportedReportSet
 import at.bitfire.dav4jvm.property.webdav.WebDAV
 import at.bitfire.davdroid.ProductIds
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.di.qualifier.SyncTransferSemaphore
@@ -100,7 +100,7 @@ import kotlin.jvm.optionals.getOrNull
  * @param syncFrameworkUpload   set when this sync is caused by the sync framework and [android.content.ContentResolver.SYNC_EXTRAS_UPLOAD] was set
  */
 class ContactsSyncManager @AssistedInject constructor(
-    @Assisted account: Account,
+    @Assisted accountId: AccountId,
     @Assisted httpClient: HttpClient,
     @Assisted syncResult: SyncResult,
     @Assisted val provider: ContentProviderClient,
@@ -115,7 +115,7 @@ class ContactsSyncManager @AssistedInject constructor(
     private val resourceRetrieverFactory: ResourceRetriever.Factory,
     @SyncTransferSemaphore syncTransferSemaphore: Semaphore
 ): SyncManager<LocalAddress, LocalAddressBook, DavAddressBook>(
-    account,
+    accountId,
     httpClient,
     SyncDataType.CONTACTS,
     syncResult,
@@ -130,7 +130,7 @@ class ContactsSyncManager @AssistedInject constructor(
     @AssistedFactory
     interface Factory {
         fun contactsSyncManager(
-            account: Account,
+            accountId: AccountId,
             httpClient: HttpClient,
             syncResult: SyncResult,
             provider: ContentProviderClient,
@@ -296,7 +296,7 @@ class ContactsSyncManager @AssistedInject constructor(
                         downloader = object : Contact.Downloader {
                             override suspend fun download(url: String, accepts: String): ByteArray? {
                                 // retrieve external resource (like a photo) from a URL (not necessarily HTTP[S])
-                                val retriever = resourceRetrieverFactory.create(account, davCollection.location.host)
+                                val retriever = resourceRetrieverFactory.create(accountId, davCollection.location.host)
                                 return retriever.retrieve(url)
                             }
                         }

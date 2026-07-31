@@ -7,6 +7,7 @@ package at.bitfire.davdroid.sync
 import android.accounts.Account
 import android.content.ContentProviderClient
 import android.content.Context
+import at.bitfire.davdroid.accounts.LegacyAccount
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.network.HttpClientBuilder
@@ -63,7 +64,7 @@ class JtxSyncManagerTest {
     @get:Rule
     val permissionRule = GrantPermissionOrSkipRule(TaskProvider.ProviderName.JtxBoard.permissions.toSet())
 
-    lateinit var account: Account
+    lateinit var accountId: LegacyAccount
 
     private lateinit var provider: ContentProviderClient
     private lateinit var syncManager: JtxSyncManager
@@ -81,10 +82,10 @@ class JtxSyncManagerTest {
         assumeNotNull(providerOrNull)
         provider = providerOrNull!!
 
-        account = TestAccount.create()
+        accountId = LegacyAccount(TestAccount.create())
 
         // Create dummy dependencies
-        val service = Service(0, account.name, Service.TYPE_CALDAV, null)
+        val service = Service(0, accountId.androidAccount.name, Service.TYPE_CALDAV, null)
         val serviceId = serviceRepository.insertOrReplaceBlocking(service)
         val dbCollection = Collection(
             0,
@@ -94,7 +95,7 @@ class JtxSyncManagerTest {
         )
         localJtxCollection = localJtxCollectionStore.create(provider, dbCollection)
         syncManager = jtxSyncManagerFactory.jtxSyncManager(
-            account = account,
+            accountId = accountId,
             httpClient = httpClientBuilder.build(),
             syncResult = SyncResult(),
             localCollection = localJtxCollection,
@@ -113,8 +114,8 @@ class JtxSyncManagerTest {
         if (this::provider.isInitialized)
             provider.close()
 
-        if (this::account.isInitialized)
-            TestAccount.remove(account)
+        if (this::accountId.isInitialized)
+            TestAccount.remove(accountId.androidAccount)
     }
 
 
