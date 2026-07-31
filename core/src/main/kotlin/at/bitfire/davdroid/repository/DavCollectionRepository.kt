@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.repository
 
-import android.accounts.Account
 import android.content.Context
 import at.bitfire.dav4jvm.XmlUtils
 import at.bitfire.dav4jvm.XmlUtils.insertTag
@@ -17,7 +16,7 @@ import at.bitfire.dav4jvm.property.caldav.CalDAV
 import at.bitfire.dav4jvm.property.carddav.CardDAV
 import at.bitfire.dav4jvm.property.webdav.WebDAV
 import at.bitfire.davdroid.ProductIds
-import at.bitfire.davdroid.R
+import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.CollectionType
@@ -48,6 +47,7 @@ import javax.inject.Inject
  * Repository for managing collections.
  */
 class DavCollectionRepository @Inject constructor(
+    private val accountRepository: AccountRepository,
     @ApplicationContext private val context: Context,
     private val db: AppDatabase,
     private val logger: Logger,
@@ -95,7 +95,7 @@ class DavCollectionRepository @Inject constructor(
      * Creates address book collection on server and locally
      */
     suspend fun createAddressBook(
-        account: Account,
+        accountId: AccountId,
         homeSet: HomeSet,
         displayName: String,
         description: String?
@@ -108,7 +108,7 @@ class DavCollectionRepository @Inject constructor(
 
         // create collection on server
         createOnServer(
-            account = account,
+            accountId = accountId,
             url = url,
             method = "MKCOL",
             xmlBody = generateMkColXml(
@@ -134,7 +134,7 @@ class DavCollectionRepository @Inject constructor(
      * Create calendar collection on server and locally
      */
     suspend fun createCalendar(
-        account: Account,
+        accountId: AccountId,
         homeSet: HomeSet,
         color: Int?,
         displayName: String,
@@ -152,7 +152,7 @@ class DavCollectionRepository @Inject constructor(
 
         // create collection on server
         createOnServer(
-            account = account,
+            accountId = accountId,
             url = url,
             method = "MKCALENDAR",
             xmlBody = generateMkColXml(
@@ -191,10 +191,10 @@ class DavCollectionRepository @Inject constructor(
     /** Deletes the given collection from the server and the database. */
     suspend fun deleteRemote(collection: Collection) {
         val service = serviceRepository.get(collection.serviceId) ?: throw IllegalArgumentException("Service not found")
-        val account = Account(service.accountName, context.getString(R.string.account_type))
+        val accountId = accountRepository.getAccountIdFromName(service.accountName)
 
         httpClientBuilder
-            .fromAccountAsync(account)
+            .fromAccountAsync(accountId)
             .build()
             .use { httpClient ->
                 try {
@@ -332,14 +332,14 @@ class DavCollectionRepository @Inject constructor(
      *
      * Uses the provided HTTP method and XML body to perform a MKCOL request (collection creation).
      *
-     * @param account Account to use for authentication and server connection.
+     * @param accountId [AccountId] of the account to use for authentication and server connection.
      * @param url Target URL where the collection should be created.
      * @param method HTTP method to use for the MKCOL request (should be `MKCALENDAR` or `MKCOL`).
      * @param xmlBody XML body containing collection metadata (e.g., display name, properties).
      */
-    private suspend fun createOnServer(account: Account, url: Url, method: String, xmlBody: String) {
+    private suspend fun createOnServer(accountId: AccountId, url: Url, method: String, xmlBody: String) {
         httpClientBuilder
-            .fromAccountAsync(account)
+            .fromAccountAsync(accountId)
             .build()
             .use { httpClient ->
                 DavResource(httpClient, url).mkCol(

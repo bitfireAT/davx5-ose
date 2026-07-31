@@ -81,7 +81,7 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
 
     @WillCloseWhenClosed
     val httpClient by lazy {
-        httpClientBuilder.fromAccount(accountId.toAndroidAccount()).build()
+        httpClientBuilder.fromAccount(accountId).build()
     }
 
     /**

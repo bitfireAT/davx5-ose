@@ -5,7 +5,6 @@
 package at.bitfire.davdroid.sync
 
 import at.bitfire.davdroid.accounts.AccountId
-import at.bitfire.davdroid.accounts.toAndroidAccount
 import at.bitfire.davdroid.network.HttpClientBuilder
 import at.bitfire.davdroid.util.DavUtils.toURIorNull
 import dagger.assisted.Assisted
@@ -67,7 +66,7 @@ class ResourceRetriever @AssistedInject constructor(
 
                 "http", "https" -> {
                     val httpClient = httpClient ?: httpClientBuilder
-                        .fromAccount(accountId.toAndroidAccount(), authDomain = originalHost)
+                        .fromAccount(accountId, authDomain = originalHost)
                         .followRedirects(true)
                         .build()
                     val response = httpClient.get(url)

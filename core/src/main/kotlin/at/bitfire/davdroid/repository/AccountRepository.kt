@@ -55,7 +55,7 @@ class AccountRepository @Inject constructor(
     private val accountSettingsFactory: AccountSettings.Factory,
     private val automaticSyncManager: Lazy<AutomaticSyncManager>,
     @ApplicationContext private val context: Context,
-    private val collectionRepository: DavCollectionRepository,
+    private val collectionRepository: Lazy<DavCollectionRepository>,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val homeSetRepository: DavHomeSetRepository,
     private val localCalendarStore: Lazy<LocalCalendarStore>,
@@ -166,7 +166,7 @@ class AccountRepository @Inject constructor(
 
             // delete address books (= address book accounts)
             serviceRepository.getByAccountIdAndType(accountId, Service.TYPE_CARDDAV)?.let { service ->
-                collectionRepository.getByService(service.id).forEach { collection ->
+                collectionRepository.get().getByService(service.id).forEach { collection ->
                     localAddressBookStore.get().deleteByCollectionId(collection.id)
                 }
             }
@@ -329,7 +329,7 @@ class AccountRepository @Inject constructor(
 
         // insert collections
         for (collection in info.collections.values) {
-            collectionRepository.insertOrUpdateByUrl(collection.copy(serviceId = serviceId))
+            collectionRepository.get().insertOrUpdateByUrl(collection.copy(serviceId = serviceId))
         }
 
         return serviceId
