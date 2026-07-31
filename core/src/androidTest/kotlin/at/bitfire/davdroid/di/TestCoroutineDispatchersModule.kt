@@ -8,7 +8,6 @@ import android.os.Looper
 import at.bitfire.davdroid.di.TestCoroutineDispatchersModule.testScheduler
 import at.bitfire.davdroid.di.qualifier.DefaultDispatcher
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
-import at.bitfire.davdroid.di.qualifier.UiDispatcher
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.components.SingletonComponent
@@ -54,10 +53,6 @@ object TestCoroutineDispatchersModule {
     @Provides
     @IoDispatcher
     fun ioDispatcher(): CoroutineDispatcher = ioDispatcher
-
-    @Provides
-    @UiDispatcher
-    fun uiDispatcher(): CoroutineDispatcher = mainDispatcher
 
     /** Syncs [Dispatchers.Main] to [testScheduler] so e.g. `viewModelScope` is deterministic under `runTest`. */
     fun initMainDispatcher() {

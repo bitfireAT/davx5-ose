@@ -8,11 +8,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.accounts.toAndroidAccount
 import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.di.qualifier.ApplicationScope
-import at.bitfire.davdroid.di.qualifier.UiDispatcher
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavHomeSetRepository
 import at.bitfire.synctools.icalendar.Css3Color
@@ -20,9 +20,9 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
@@ -37,8 +37,7 @@ class CreateCalendarViewModel @AssistedInject constructor(
     @Assisted val accountId: AccountId,
     @ApplicationScope private val applicationScope: CoroutineScope,
     private val collectionRepository: DavCollectionRepository,
-    homeSetRepository: DavHomeSetRepository,
-    @UiDispatcher private val uiDispatcher: CoroutineDispatcher
+    homeSetRepository: DavHomeSetRepository
 ): ViewModel() {
 
     @AssistedFactory
@@ -135,19 +134,21 @@ class CreateCalendarViewModel @AssistedInject constructor(
         val homeSet = uiState.homeSet ?: return
         uiState = uiState.copy(isCreating = true)
 
-        applicationScope.launch(uiDispatcher) {
+        viewModelScope.launch {
             uiState = try {
-                collectionRepository.createCalendar(
-                    account = accountId.toAndroidAccount(),
-                    homeSet = homeSet,
-                    color = uiState.color,
-                    displayName = uiState.displayName,
-                    description = uiState.description,
-                    timeZoneId = uiState.timeZoneId,
-                    supportVEVENT = uiState.supportVEVENT,
-                    supportVTODO = uiState.supportVTODO,
-                    supportVJOURNAL = uiState.supportVJOURNAL
-                )
+                applicationScope.async {
+                    collectionRepository.createCalendar(
+                        account = accountId.toAndroidAccount(),
+                        homeSet = homeSet,
+                        color = uiState.color,
+                        displayName = uiState.displayName,
+                        description = uiState.description,
+                        timeZoneId = uiState.timeZoneId,
+                        supportVEVENT = uiState.supportVEVENT,
+                        supportVTODO = uiState.supportVTODO,
+                        supportVJOURNAL = uiState.supportVJOURNAL
+                    )
+                }.await()
 
                 uiState.copy(isCreating = false, success = true)
             } catch (e: Exception) {

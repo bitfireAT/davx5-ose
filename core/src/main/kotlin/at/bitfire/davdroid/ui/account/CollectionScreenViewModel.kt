@@ -20,7 +20,6 @@ import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.di.qualifier.ApplicationScope
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
-import at.bitfire.davdroid.di.qualifier.UiDispatcher
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
@@ -42,6 +41,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
@@ -77,8 +77,7 @@ class CollectionScreenViewModel @AssistedInject constructor(
     private val serviceRepository: DavServiceRepository,
     settings: SettingsManager,
     syncStatsRepository: DavSyncStatsRepository,
-    private val tasksAppManager: Lazy<TasksAppManager>,
-    @UiDispatcher private val uiDispatcher: CoroutineDispatcher
+    private val tasksAppManager: Lazy<TasksAppManager>
 ): ViewModel() {
 
     @AssistedFactory
@@ -180,9 +179,11 @@ class CollectionScreenViewModel @AssistedInject constructor(
         val collection = collection.value ?: return
 
         inProgress = true
-        applicationScope.launch(uiDispatcher) {
+        viewModelScope.launch {
             try {
-                collectionRepository.deleteRemote(collection)
+                applicationScope.async {
+                    collectionRepository.deleteRemote(collection)
+                }.await()
             } catch (e: Exception) {
                 error = e
             } finally {
