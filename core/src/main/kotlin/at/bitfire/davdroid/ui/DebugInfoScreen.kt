@@ -127,16 +127,7 @@ fun DebugInfoScreen(
                     cause.statusCode == 403 -> AnnotatedString(stringResource(R.string.debug_info_http_403_description))
                     cause.statusCode == 404 -> AnnotatedString(stringResource(R.string.debug_info_http_404_description))
                     cause.statusCode == 405 -> AnnotatedString(stringResource(R.string.debug_info_http_405_description))
-                    cause.isServerError -> {
-                        val domain = UrlUtils.hostToDomain(remoteResource?.toUrlOrNull()?.host)
-                        val appName = stringResource(R.string.app_name).htmlEncode()
-                        AnnotatedString.fromHtml(
-                            if (domain != null)
-                                stringResource(R.string.debug_info_http_5xx_description, domain.htmlEncode(), appName)
-                            else
-                                stringResource(R.string.debug_info_http_5xx_description_no_domain, appName)
-                        )
-                    }
+                    cause.isServerError -> serverErrorMessage(UrlUtils.hostToDomain(remoteResource?.toUrlOrNull()?.host))
                     else -> AnnotatedString(stringResource(R.string.debug_info_unexpected_error))
                 }
             else
@@ -416,6 +407,18 @@ private fun FindHelpCard(modifier: Modifier = Modifier) {
 }
 
 @Composable
+private fun serverErrorMessage(domain: String?): AnnotatedString {
+    val appName = stringResource(R.string.app_name).htmlEncode()
+    val description = stringResource(R.string.debug_info_http_5xx_description).htmlEncode()
+    val contactSupport =
+        if (domain != null)
+            stringResource(R.string.debug_info_http_5xx_contact_support, domain.htmlEncode(), appName)
+        else
+            stringResource(R.string.debug_info_http_5xx_contact_support_no_domain, appName)
+    return AnnotatedString.fromHtml("$description\n\n$contactSupport")
+}
+
+@Composable
 @Preview
 fun DebugInfoScreen_Preview() {
     DebugInfoScreen(
@@ -443,13 +446,7 @@ fun DebugInfoScreen_5xxError_Preview() {
         showModelCause = true,
         modelCauseTitle = "Server Error",
         modelCauseSubtitle = "503 Service Unavailable",
-        modelCauseMessage = AnnotatedString.fromHtml(
-            stringResource(
-                R.string.debug_info_http_5xx_description,
-                "example.com",
-                stringResource(R.string.app_name)
-            )
-        ),
+        modelCauseMessage = serverErrorMessage(domain = "example.com"),
         localResource = "local-resource-string",
         canViewResource = true,
         remoteResource = "https://example.com/dav/",
