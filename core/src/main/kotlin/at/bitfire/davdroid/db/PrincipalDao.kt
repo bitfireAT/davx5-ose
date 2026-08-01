@@ -8,6 +8,7 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Update
 import io.ktor.http.Url
 
@@ -48,6 +49,7 @@ interface PrincipalDao {
      * @param principal Principal to be inserted or updated
      * @return ID of the newly inserted or already existing principal
      */
+    @Transaction
     suspend fun insertOrUpdate(serviceId: Long, principal: Principal): Long {
         // Try to get existing principal by URL
         val oldPrincipal = getByUrl(serviceId, principal.url)
