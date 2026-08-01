@@ -5,6 +5,9 @@
 package at.bitfire.davdroid.sync
 
 import at.bitfire.davdroid.resource.LocalResource
+import at.bitfire.davdroid.sync.SyncException.Companion.unwrap
+import at.bitfire.davdroid.sync.SyncException.Companion.wrapWithLocalResource
+import at.bitfire.davdroid.sync.SyncException.Companion.wrapWithRemoteResource
 import io.ktor.http.Url
 
 /**
@@ -13,46 +16,44 @@ import io.ktor.http.Url
  */
 class SyncException(cause: Throwable) : Exception(cause) {
 
+    /**
+     * Context information extracted from a [SyncException] with [unwrap].
+     */
+    data class Unwrapped(
+        val cause: Throwable,
+        val localResource: LocalResource? = null,
+        val remoteResource: Url? = null
+    )
+
     companion object {
 
-        // provide lambda wrappers for setting the local/remote resource
-
-        suspend fun <T> wrapWithLocalResource(localResource: LocalResource?, body: suspend () -> T): T {
+        private suspend fun <T> wrapContext(with: (SyncException) -> Unit, body: suspend () -> T): T =
             try {
-                return body()
+                body()
             } catch (e: SyncException) {
-                if (localResource != null)
-                    e.setLocalResourceIfNull(localResource)
+                with(e)
                 throw e
             } catch (e: Throwable) {
-                throw if (localResource != null)
-                    SyncException(e).setLocalResourceIfNull(localResource)
-                else
-                    e
+                throw SyncException(e).also(with)
             }
-        }
 
-        suspend fun <T> wrapWithRemoteResource(remoteResource: Url?, body: suspend () -> T): T {
-            try {
-                return body()
-            } catch (e: SyncException) {
-                if (remoteResource != null)
-                    e.setRemoteResourceIfNull(remoteResource)
-                throw e
-            } catch (e: Throwable) {
-                throw if (remoteResource != null)
-                    SyncException(e).setRemoteResourceIfNull(remoteResource)
-                else
-                    e
-            }
-        }
+        suspend fun <T> wrapWithLocalResource(localResource: LocalResource?, body: suspend () -> T): T =
+            if (localResource == null)
+                body()
+            else
+                wrapContext({ it.setLocalResourceIfNull(localResource) }, body)
 
-        fun unwrap(e: Throwable, contextReceiver: (SyncException) -> Unit) =
-            if (e is SyncException) {
-                contextReceiver(e)
-                e.cause!!
-            } else
-                e
+        suspend fun <T> wrapWithRemoteResource(remoteResource: Url?, body: suspend () -> T): T =
+            if (remoteResource == null)
+                body()
+            else
+                wrapContext({ it.setRemoteResourceIfNull(remoteResource) }, body)
+
+        fun unwrap(e: Throwable): Unwrapped =
+            if (e is SyncException)
+                Unwrapped(e.cause ?: e, e.localResource, e.remoteResource)
+            else
+                Unwrapped(e)
 
     }
 
@@ -62,6 +63,8 @@ class SyncException(cause: Throwable) : Exception(cause) {
     var remoteResource: Url? = null
         private set
 
+    /** Sets [localResource] unless already set, so the innermost (closest to the actual
+     *  failure) [wrapWithLocalResource] call wins when wraps are nested. */
     fun setLocalResourceIfNull(local: LocalResource): SyncException {
         if (localResource == null)
             localResource = local
@@ -69,6 +72,8 @@ class SyncException(cause: Throwable) : Exception(cause) {
         return this
     }
 
+    /** Sets [remoteResource] unless already set, so the innermost (closest to the actual
+     *  failure) [wrapWithRemoteResource] call wins when wraps are nested. */
     fun setRemoteResourceIfNull(remote: Url): SyncException {
         if (remoteResource == null)
             remoteResource = remote

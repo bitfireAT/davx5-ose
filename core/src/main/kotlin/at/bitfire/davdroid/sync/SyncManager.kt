@@ -265,15 +265,9 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
                 logger.info("Remote collection didn't change, no reason to sync")
 
         } catch (potentiallyWrappedException: Throwable) {
-            var local: LocalResource? = null
-            var remote: Url? = null
+            val ctx = SyncException.unwrap(potentiallyWrappedException)
 
-            val e = SyncException.unwrap(potentiallyWrappedException) {
-                local = it.localResource
-                remote = it.remoteResource
-            }
-
-            when (e) {
+            when (val e = ctx.cause) {
                 /* LocalStorageException with cause DeadObjectException may occur when syncing takes too long
                 and process is demoted to cached. In this case, we re-throw to the base Syncer which will
                 treat it as a soft error and re-schedule the sync process. */
@@ -291,7 +285,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
 
                     // when a certificate is rejected by cert4android, the cause will be a CertificateException
                     if (e.cause !is CertificateException)
-                        handleException(e, local, remote)
+                        handleException(e, ctx.localResource, ctx.remoteResource)
                 }
 
                 // specific HTTP errors
@@ -304,7 +298,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
 
                 // all others
                 else ->
-                    handleException(e, local, remote)
+                    handleException(e, ctx.localResource, ctx.remoteResource)
             }
         }
     }

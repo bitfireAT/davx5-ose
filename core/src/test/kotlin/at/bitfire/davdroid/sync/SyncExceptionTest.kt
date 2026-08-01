@@ -9,8 +9,6 @@ import io.ktor.http.Url
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class SyncExceptionTest {
@@ -169,26 +167,23 @@ class SyncExceptionTest {
     fun testUnwrap_Exception() {
         val e = Exception()
 
-        var contextProvided = false
-        val unwrapped = SyncException.unwrap(e) {
-            contextProvided = true
-        }
-        assertEquals(e, unwrapped)
-        assertFalse(contextProvided)
+        val ctx = SyncException.unwrap(e)
+        assertEquals(e, ctx.cause)
+        assertEquals(null, ctx.localResource)
+        assertEquals(null, ctx.remoteResource)
     }
 
     @Test
     fun testUnwrap_SyncException() {
         val e = Exception()
-        val wrapped = SyncException(e)
+        val local = mockk<LocalResource>()
+        val remote = Url("https://example.com")
+        val wrapped = SyncException(e).setLocalResourceIfNull(local).setRemoteResourceIfNull(remote)
 
-        var contextProvided = false
-        val unwrapped = SyncException.unwrap(wrapped) {
-            assertEquals(wrapped, it)
-            contextProvided = true
-        }
-        assertEquals(e, unwrapped)
-        assertTrue(contextProvided)
+        val ctx = SyncException.unwrap(wrapped)
+        assertEquals(e, ctx.cause)
+        assertEquals(local, ctx.localResource)
+        assertEquals(remote, ctx.remoteResource)
     }
 
 
