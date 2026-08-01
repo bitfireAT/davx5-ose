@@ -127,7 +127,10 @@ fun DebugInfoScreen(
                     cause.statusCode == 403 -> AnnotatedString(stringResource(R.string.debug_info_http_403_description))
                     cause.statusCode == 404 -> AnnotatedString(stringResource(R.string.debug_info_http_404_description))
                     cause.statusCode == 405 -> AnnotatedString(stringResource(R.string.debug_info_http_405_description))
-                    cause.isServerError -> serverErrorMessage(UrlUtils.hostToDomain(remoteResource?.toUrlOrNull()?.host))
+                    cause.isServerError -> {
+                        val domain = UrlUtils.hostToDomain(remoteResource?.toUrlOrNull()?.host)
+                        serverErrorMessage(domain)
+                    }
                     else -> AnnotatedString(stringResource(R.string.debug_info_unexpected_error))
                 }
             else
