@@ -18,10 +18,10 @@ import kotlinx.coroutines.flow.Flow
 interface CollectionDao {
 
     @Query("SELECT * FROM collection WHERE id=:id")
-    fun getBlocking(id: Long): Collection?
+    suspend fun get(id: Long): Collection?
 
     @Query("SELECT * FROM collection WHERE id=:id")
-    suspend fun get(id: Long): Collection?
+    fun getBlocking(id: Long): Collection?
 
     @Query("SELECT * FROM collection WHERE id=:id")
     fun getFlow(id: Long): Flow<Collection?>
@@ -33,7 +33,7 @@ interface CollectionDao {
     fun getByServiceBlocking(serviceId: Long): List<Collection>
 
     @Query("SELECT * FROM collection WHERE serviceId=:serviceId AND homeSetId IS :homeSetId")
-    fun getByServiceAndHomesetBlocking(serviceId: Long, homeSetId: Long?): List<Collection>
+    suspend fun getByServiceAndHomeset(serviceId: Long, homeSetId: Long?): List<Collection>
 
     @Query("SELECT * FROM collection WHERE serviceId=:serviceId AND type=:type ORDER BY displayName COLLATE NOCASE, url COLLATE NOCASE")
     fun getByServiceAndTypeBlocking(serviceId: Long, @CollectionType type: String): List<Collection>
@@ -101,10 +101,10 @@ interface CollectionDao {
     suspend fun getPushRegisteredAndNotSyncable(serviceId: Long): List<Collection>
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    fun insertBlocking(collection: Collection): Long
+    suspend fun insert(collection: Collection): Long
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insert(collection: Collection): Long
+    fun insertBlocking(collection: Collection): Long
 
     @Update
     fun updateBlocking(collection: Collection)

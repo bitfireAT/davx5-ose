@@ -21,8 +21,8 @@ class DavServiceRepository @Inject constructor(
 
     // Read
 
-    fun getBlocking(id: Long): Service? = dao.getBlocking(id)
     suspend fun get(id: Long): Service? = dao.get(id)
+    fun getBlocking(id: Long): Service? = dao.getBlocking(id)
 
     suspend fun getAll(): List<Service> = dao.getAll()
 

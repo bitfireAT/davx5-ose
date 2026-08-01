@@ -21,7 +21,13 @@ interface HomeSetDao {
     fun getByIdBlocking(homesetId: Long): HomeSet?
 
     @Query("SELECT * FROM homeset WHERE serviceId=:serviceId AND url=:url")
+    suspend fun getByUrl(serviceId: Long, url: String): HomeSet?
+
+    @Query("SELECT * FROM homeset WHERE serviceId=:serviceId AND url=:url")
     fun getByUrlBlocking(serviceId: Long, url: String): HomeSet?
+
+    @Query("SELECT * FROM homeset WHERE serviceId=:serviceId")
+    suspend fun getByService(serviceId: Long): List<HomeSet>
 
     @Query("SELECT * FROM homeset WHERE serviceId=:serviceId")
     fun getByServiceBlocking(serviceId: Long): List<HomeSet>
@@ -44,7 +50,13 @@ interface HomeSetDao {
     fun getBindableByServiceFlow(serviceId: Long): Flow<List<HomeSet>>
 
     @Insert
+    suspend fun insert(homeSet: HomeSet): Long
+
+    @Insert
     fun insertBlocking(homeSet: HomeSet): Long
+
+    @Update
+    suspend fun update(homeset: HomeSet)
 
     @Update
     fun updateBlocking(homeset: HomeSet)
@@ -61,11 +73,21 @@ interface HomeSetDao {
      * @return ID of the row that has been inserted or updated. -1 If the insert fails due to other reasons.
      */
     @Transaction
+    suspend fun insertOrUpdateByUrl(homeSet: HomeSet): Long =
+        getByUrl(homeSet.serviceId, homeSet.url.toString())?.let { existingHomeset ->
+            update(homeSet.copy(id = existingHomeset.id))
+            existingHomeset.id
+        } ?: insert(homeSet)
+
+    @Transaction
     fun insertOrUpdateByUrlBlocking(homeSet: HomeSet): Long =
         getByUrlBlocking(homeSet.serviceId, homeSet.url.toString())?.let { existingHomeset ->
             updateBlocking(homeSet.copy(id = existingHomeset.id))
             existingHomeset.id
         } ?: insertBlocking(homeSet)
+
+    @Delete
+    suspend fun delete(homeset: HomeSet)
 
     @Delete
     fun deleteBlocking(homeset: HomeSet)

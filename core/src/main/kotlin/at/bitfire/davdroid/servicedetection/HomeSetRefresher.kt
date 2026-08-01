@@ -57,14 +57,14 @@ class HomeSetRefresher @AssistedInject constructor(
      * and a null value for it's home-set. Refreshing of collections without home-sets is then handled by [CollectionsWithoutHomeSetRefresher.refreshCollectionsWithoutHomeSet].
      */
     internal suspend fun refreshHomesetsAndTheirCollections() {
-        val homesets = homeSetRepository.getByServiceBlocking(service.id).associateBy { it.url }.toMutableMap()
+        val homesets = homeSetRepository.getByService(service.id).associateBy { it.url }.toMutableMap()
         for ((homeSetUrl, localHomeset) in homesets) {
             logger.fine("Listing home set $homeSetUrl")
 
             // To find removed collections in this homeset: create a queue from existing collections and remove every collection that
             // is successfully rediscovered. If there are collections left, after processing is done, these are marked as "without home-set".
             val localHomesetCollections = db.collectionDao()
-                .getByServiceAndHomesetBlocking(service.id, localHomeset.id)
+                .getByServiceAndHomeset(service.id, localHomeset.id)
                 .associateBy { it.url }
                 .toMutableMap()
 
@@ -76,7 +76,7 @@ class HomeSetRefresher @AssistedInject constructor(
                     .collect { (response, relation) ->
                         if (relation == Response.HrefRelation.SELF) {
                             // this response is about the home set itself
-                            homeSetRepository.insertOrUpdateByUrlBlocking(
+                            homeSetRepository.insertOrUpdateByUrl(
                                 localHomeset.copy(
                                     displayName = response[DisplayName::class.java]?.displayName,
                                     privBind = response[CurrentUserPrivilegeSet::class.java]?.mayBind != false
@@ -93,7 +93,7 @@ class HomeSetRefresher @AssistedInject constructor(
                             ownerId = response[Owner::class.java]?.href  // save the principal id (collection owner)
                                 ?.let { response.href.resolve(it) }
                                 ?.let { principalUrl -> Principal.fromServiceAndUrl(service, principalUrl) }
-                                ?.let { principal -> db.principalDao().insertOrUpdateBlocking(service.id, principal) }
+                                ?.let { principal -> db.principalDao().insertOrUpdate(service.id, principal) }
                         )
                         logger.fine("Found collection: $collection")
 
@@ -107,7 +107,7 @@ class HomeSetRefresher @AssistedInject constructor(
             } catch (e: HttpException) {
                 // delete home set locally if it was not accessible (40x)
                 if (e.statusCode in arrayOf(403, 404, 410))
-                    homeSetRepository.deleteBlocking(localHomeset)
+                    homeSetRepository.delete(localHomeset)
             }
 
             // Mark leftover (not rediscovered) collections from queue as "without home-set" (remove association)

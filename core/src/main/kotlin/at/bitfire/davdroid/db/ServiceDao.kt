@@ -46,10 +46,10 @@ interface ServiceDao {
     suspend fun getIdsByAccount(accountName: String): List<Long>
 
     @Query("SELECT * FROM service WHERE id=:id")
-    fun getBlocking(id: Long): Service?
+    suspend fun get(id: Long): Service?
 
     @Query("SELECT * FROM service WHERE id=:id")
-    suspend fun get(id: Long): Service?
+    fun getBlocking(id: Long): Service?
 
     @Query("SELECT * FROM service")
     suspend fun getAll(): List<Service>

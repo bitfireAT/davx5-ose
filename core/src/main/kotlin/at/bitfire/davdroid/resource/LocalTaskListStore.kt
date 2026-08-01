@@ -56,8 +56,8 @@ class LocalTaskListStore @AssistedInject constructor(
             /* return */ null
     }
 
-    override fun create(client: ContentProviderClient, fromCollection: Collection): LocalTaskList {
-        val service = serviceDao.getBlocking(fromCollection.serviceId)
+    override suspend fun create(client: ContentProviderClient, fromCollection: Collection): LocalTaskList {
+        val service = serviceDao.get(fromCollection.serviceId)
             ?: throw IllegalArgumentException("Couldn't fetch DB service from collection")
         val account = Account(service.accountName, context.getString(R.string.account_type))
 

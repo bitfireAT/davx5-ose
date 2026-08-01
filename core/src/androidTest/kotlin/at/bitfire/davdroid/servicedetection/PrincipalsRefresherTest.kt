@@ -106,7 +106,7 @@ class PrincipalsRefresherTest {
 
     @Test
     fun refreshPrincipals_inaccessiblePrincipal() = runTest {
-        val principalId = db.principalDao().insertBlocking(
+        val principalId = db.principalDao().insert(
             Principal(
                 0, service.id,
                 "$BASE_URL$PATH_CARDDAV$SUBPATH_PRINCIPAL_INACCESSIBLE".toUrl(),
@@ -123,7 +123,7 @@ class PrincipalsRefresherTest {
 
         principalsRefresher.create(service, client).refreshPrincipals()
 
-        val principals = db.principalDao().getByServiceBlocking(service.id)
+        val principals = db.principalDao().getByService(service.id)
         assertEquals(1, principals.size)
         assertEquals("$BASE_URL$PATH_CARDDAV$SUBPATH_PRINCIPAL_INACCESSIBLE".toUrl(), principals[0].url)
         assertEquals(null, principals[0].displayName)
@@ -131,7 +131,7 @@ class PrincipalsRefresherTest {
 
     @Test
     fun refreshPrincipals_updatesPrincipal() = runTest {
-        val principalId = db.principalDao().insertBlocking(
+        val principalId = db.principalDao().insert(
             Principal(
                 0, service.id,
                 "$BASE_URL$PATH_CARDDAV$SUBPATH_PRINCIPAL".toUrl(),
@@ -148,7 +148,7 @@ class PrincipalsRefresherTest {
 
         principalsRefresher.create(service, client).refreshPrincipals()
 
-        val principals = db.principalDao().getByServiceBlocking(service.id)
+        val principals = db.principalDao().getByService(service.id)
         assertEquals(1, principals.size)
         assertEquals("$BASE_URL$PATH_CARDDAV$SUBPATH_PRINCIPAL".toUrl(), principals[0].url)
         assertEquals("Mr. Wobbles", principals[0].displayName)
@@ -156,7 +156,7 @@ class PrincipalsRefresherTest {
 
     @Test
     fun refreshPrincipals_deletesPrincipalsWithoutCollections() = runTest {
-        db.principalDao().insertBlocking(
+        db.principalDao().insert(
             Principal(
                 0, service.id,
                 "$BASE_URL$PATH_CARDDAV$SUBPATH_PRINCIPAL_WITHOUT_COLLECTIONS/".toUrl()
@@ -165,7 +165,7 @@ class PrincipalsRefresherTest {
 
         principalsRefresher.create(service, client).refreshPrincipals()
 
-        assertEquals(0, db.principalDao().getByServiceBlocking(service.id).size)
+        assertEquals(0, db.principalDao().getByService(service.id).size)
     }
 
 }

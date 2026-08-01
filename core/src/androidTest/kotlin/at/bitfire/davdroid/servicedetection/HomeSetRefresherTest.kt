@@ -243,10 +243,10 @@ class HomeSetRefresherTest {
             )
         )
 
-        assertEquals(0, db.principalDao().getByServiceBlocking(service.id).size)
+        assertEquals(0, db.principalDao().getByService(service.id).size)
         homeSetRefresherFactory.create(service, client).refreshHomesetsAndTheirCollections()
 
-        val principals = db.principalDao().getByServiceBlocking(service.id)
+        val principals = db.principalDao().getByService(service.id)
         assertEquals(1, principals.size)
         assertEquals("$BASE_URL$PATH_CARDDAV$SUBPATH_PRINCIPAL".toUrl(), principals[0].url)
         assertEquals(null, principals[0].displayName)
