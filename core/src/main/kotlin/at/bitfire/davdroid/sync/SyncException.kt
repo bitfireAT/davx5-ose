@@ -11,23 +11,21 @@ import io.ktor.http.Url
  * A throwable together with the local/remote resource that was being processed
  * when it occurred, if any. Use
  *
- * - [LocalResource.withExceptionContext]/ [Url.withExceptionContext] to attach this
- * context while a resource is being processed, and
+ * - `withExceptionContext` to attach context when a resource is being processed, and
  * - [Throwable.unwrapContext] to retrieve it after catching an exception.
+ *
+ * If multiple `withExceptionContext` calls are nested, the innermost ones are unwrapped.
  */
 data class SyncExceptionContext(
     val cause: Throwable,
     val localResource: LocalResource? = null,
     val remoteResource: Url? = null
-) {
+)
 
-    /**
-     * Internal vehicle for propagating a [SyncExceptionContext] value up the call stack via
-     * normal exception handling. Not part of the public API.
-     */
-    internal class SyncException(val context: SyncExceptionContext) : Exception(context.cause)
-
-}
+/**
+ * The exception that actually carries the context. Only used internally.
+ */
+private class SyncException(val context: SyncExceptionContext) : Exception(context.cause)
 
 private suspend fun <T> wrapContext(
     buildContext: (SyncExceptionContext) -> SyncExceptionContext,
@@ -35,10 +33,10 @@ private suspend fun <T> wrapContext(
 ): T =
     try {
         body()
-    } catch (e: SyncExceptionContext.SyncException) {
-        throw SyncExceptionContext.SyncException(buildContext(e.context))
+    } catch (e: SyncException) {
+        throw SyncException(buildContext(e.context))
     } catch (e: Throwable) {
-        throw SyncExceptionContext.SyncException(buildContext(SyncExceptionContext(e)))
+        throw SyncException(buildContext(SyncExceptionContext(e)))
     }
 
 /**
@@ -90,7 +88,7 @@ suspend fun <T> Url?.withExceptionContext(body: suspend () -> T): T {
  * `withExceptionContext`, if available.
  */
 fun Throwable.unwrapContext(): SyncExceptionContext =
-    if (this is SyncExceptionContext.SyncException)
+    if (this is SyncException)
         context
     else
         SyncExceptionContext(this)
