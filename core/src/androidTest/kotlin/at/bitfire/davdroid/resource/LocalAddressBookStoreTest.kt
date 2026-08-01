@@ -68,10 +68,10 @@ class LocalAddressBookStoreTest {
         service = Service(
             id = 200,
             accountName = account.name,
-            type = Service.Companion.TYPE_CARDDAV,
+            type = Service.TYPE_CARDDAV,
             principal = null
         )
-        db.serviceDao().insertOrReplace(service)
+        db.serviceDao().insertOrReplaceBlocking(service)
         addressBookAccount = Account(
             "MrRobert@example.com",
             addressBookAccountType

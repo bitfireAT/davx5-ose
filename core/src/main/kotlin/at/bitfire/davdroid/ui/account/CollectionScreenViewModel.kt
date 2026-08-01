@@ -138,7 +138,7 @@ class CollectionScreenViewModel @AssistedInject constructor(
     private val principalDao = db.principalDao()
     val owner: Flow<String?> = collection.map { collection ->
         collection?.ownerId?.let { ownerId ->
-            val principal = principalDao.getAsync(ownerId)
+            val principal = principalDao.get(ownerId)
             principal.displayName ?: principal.url.lastSegment
         }
     }

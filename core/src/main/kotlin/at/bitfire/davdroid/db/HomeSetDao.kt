@@ -18,13 +18,13 @@ import kotlinx.coroutines.flow.Flow
 interface HomeSetDao {
 
     @Query("SELECT * FROM homeset WHERE id=:homesetId")
-    fun getById(homesetId: Long): HomeSet?
+    fun getByIdBlocking(homesetId: Long): HomeSet?
 
     @Query("SELECT * FROM homeset WHERE serviceId=:serviceId AND url=:url")
-    fun getByUrl(serviceId: Long, url: String): HomeSet?
+    fun getByUrlBlocking(serviceId: Long, url: String): HomeSet?
 
     @Query("SELECT * FROM homeset WHERE serviceId=:serviceId")
-    fun getByService(serviceId: Long): List<HomeSet>
+    fun getByServiceBlocking(serviceId: Long): List<HomeSet>
 
     @Query("SELECT * FROM homeset WHERE serviceId=(SELECT id FROM service WHERE accountName=:accountName AND type=:serviceType) AND privBind ORDER BY displayName, url COLLATE NOCASE")
     fun getBindableByAccountAndServiceTypeFlow(accountName: String, @ServiceType serviceType: String): Flow<List<HomeSet>>
@@ -44,10 +44,10 @@ interface HomeSetDao {
     fun getBindableByServiceFlow(serviceId: Long): Flow<List<HomeSet>>
 
     @Insert
-    fun insert(homeSet: HomeSet): Long
+    fun insertBlocking(homeSet: HomeSet): Long
 
     @Update
-    fun update(homeset: HomeSet)
+    fun updateBlocking(homeset: HomeSet)
 
     /**
      * If a homeset with the given service ID and URL already exists, it is updated with the other fields.
@@ -62,12 +62,12 @@ interface HomeSetDao {
      */
     @Transaction
     fun insertOrUpdateByUrlBlocking(homeSet: HomeSet): Long =
-        getByUrl(homeSet.serviceId, homeSet.url.toString())?.let { existingHomeset ->
-            update(homeSet.copy(id = existingHomeset.id))
+        getByUrlBlocking(homeSet.serviceId, homeSet.url.toString())?.let { existingHomeset ->
+            updateBlocking(homeSet.copy(id = existingHomeset.id))
             existingHomeset.id
-        } ?: insert(homeSet)
+        } ?: insertBlocking(homeSet)
 
     @Delete
-    fun delete(homeset: HomeSet)
+    fun deleteBlocking(homeset: HomeSet)
 
 }

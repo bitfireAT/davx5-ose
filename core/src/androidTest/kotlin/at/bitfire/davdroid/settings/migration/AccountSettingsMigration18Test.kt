@@ -90,13 +90,15 @@ class AccountSettingsMigration18Test {
     fun testMigrate_AddressBook_ValidCollection() {
         val account = Account("test", "test")
 
-        db.serviceDao().insertOrReplace(Service(
+        db.serviceDao().insertOrReplaceBlocking(
+            Service(
             id = 10,
             accountName = account.name,
             type = Service.TYPE_CARDDAV,
             principal = null
         ))
-        db.collectionDao().insertOrUpdateByUrl(Collection(
+        db.collectionDao().insertOrUpdateByUrlBlocking(
+            Collection(
             id = 100,
             serviceId = 10,
             url = "http://example.com".toUrl(),

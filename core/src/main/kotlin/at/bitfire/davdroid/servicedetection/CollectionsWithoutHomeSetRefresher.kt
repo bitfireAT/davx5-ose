@@ -42,7 +42,8 @@ class CollectionsWithoutHomeSetRefresher @AssistedInject constructor(
      * It queries each stored collection with a homeSetId of "null" and either updates or deletes (if inaccessible or unusable) them.
      */
     internal suspend fun refreshCollectionsWithoutHomeSet() {
-        val withoutHomeSet = db.collectionDao().getByServiceAndHomeset(service.id, null).associateBy { it.url }.toMutableMap()
+        val withoutHomeSet =
+            db.collectionDao().getByServiceAndHomesetBlocking(service.id, null).associateBy { it.url }.toMutableMap()
         for ((url, localCollection) in withoutHomeSet) try {
             val collectionProperties = ServiceDetectionUtils.collectionQueryProperties(service.type)
             DavResource(httpClient, url).propfind(0, *collectionProperties).responses().collect { response ->
@@ -60,7 +61,7 @@ class CollectionsWithoutHomeSetRefresher @AssistedInject constructor(
                         ownerId = response[Owner::class.java]?.href     // save the principal id (collection owner)
                             ?.let { response.href.resolve(it) }
                             ?.let { principalUrl -> Principal.fromServiceAndUrl(service, principalUrl) }
-                            ?.let { principal -> db.principalDao().insertOrUpdate(service.id, principal) }
+                            ?.let { principal -> db.principalDao().insertOrUpdateBlocking(service.id, principal) }
                     ))
                 } ?: collectionRepository.delete(localCollection)
             }

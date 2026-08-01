@@ -33,14 +33,14 @@ class HomeSetDaoTest {
         hiltRule.inject()
         dao = db.homeSetDao()
 
-        serviceId = db.serviceDao().insertOrReplace(
+        serviceId = db.serviceDao().insertOrReplaceBlocking(
             Service(id=0, accountName="test", type= Service.TYPE_CALDAV, principal = null)
         )
     }
 
     @After
     fun tearDown() {
-        db.serviceDao().deleteAll()
+        db.serviceDao().deleteAllBlocking()
     }
 
 
@@ -50,17 +50,17 @@ class HomeSetDaoTest {
         val entry1 = HomeSet(id=0, serviceId=serviceId, personal=true, url="https://example.com/1".toUrl())
         val insertId1 = dao.insertOrUpdateByUrlBlocking(entry1)
         assertEquals(1L, insertId1)
-        assertEquals(entry1.copy(id = 1L), dao.getById(1))
+        assertEquals(entry1.copy(id = 1L), dao.getByIdBlocking(1))
 
         val updatedEntry1 = HomeSet(id=0, serviceId=serviceId, personal=true, url="https://example.com/1".toUrl(), displayName="Updated Entry")
         val updateId1 = dao.insertOrUpdateByUrlBlocking(updatedEntry1)
         assertEquals(1L, updateId1)
-        assertEquals(updatedEntry1.copy(id = 1L), dao.getById(1))
+        assertEquals(updatedEntry1.copy(id = 1L), dao.getByIdBlocking(1))
 
         val entry2 = HomeSet(id=0, serviceId=serviceId, personal=true, url= "https://example.com/2".toUrl())
         val insertId2 = dao.insertOrUpdateByUrlBlocking(entry2)
         assertEquals(2L, insertId2)
-        assertEquals(entry2.copy(id = 2L), dao.getById(2))
+        assertEquals(entry2.copy(id = 2L), dao.getByIdBlocking(2))
     }
 
     @Test
@@ -78,7 +78,7 @@ class HomeSetDaoTest {
                     )
                 }
         }
-        assertEquals(1, dao.getByService(serviceId).size)
+        assertEquals(1, dao.getByServiceBlocking(serviceId).size)
     }
 
     @Test
@@ -88,10 +88,10 @@ class HomeSetDaoTest {
 
         val insertId1 = dao.insertOrUpdateByUrlBlocking(entry1)
         assertEquals(1L, insertId1)
-        assertEquals(entry1, dao.getById(1L))
+        assertEquals(entry1, dao.getByIdBlocking(1L))
 
-        dao.delete(entry1)
-        assertEquals(null, dao.getById(1L))
+        dao.deleteBlocking(entry1)
+        assertEquals(null, dao.getByIdBlocking(1L))
     }
 
 }

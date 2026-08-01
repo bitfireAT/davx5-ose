@@ -46,7 +46,8 @@ class LocalJtxCollectionStore @Inject constructor(
     }
 
     override fun create(client: ContentProviderClient, fromCollection: Collection): LocalJtxCollection {
-        val service = serviceDao.get(fromCollection.serviceId) ?: throw IllegalArgumentException("Couldn't fetch DB service from collection")
+        val service = serviceDao.getBlocking(fromCollection.serviceId)
+            ?: throw IllegalArgumentException("Couldn't fetch DB service from collection")
         val account = Account(service.accountName, context.getString(R.string.account_type))
 
         // If the collection doesn't have a color, use a default color.

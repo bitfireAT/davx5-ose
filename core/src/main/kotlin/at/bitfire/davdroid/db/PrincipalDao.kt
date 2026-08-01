@@ -15,31 +15,31 @@ import io.ktor.http.Url
 interface PrincipalDao {
 
     @Query("SELECT * FROM principal WHERE id=:id")
-    fun get(id: Long): Principal
+    fun getBlocking(id: Long): Principal
 
     @Query("SELECT * FROM principal WHERE id=:id")
-    suspend fun getAsync(id: Long): Principal
+    suspend fun get(id: Long): Principal
 
     @Query("SELECT * FROM principal WHERE serviceId=:serviceId")
-    fun getByService(serviceId: Long): List<Principal>
+    fun getByServiceBlocking(serviceId: Long): List<Principal>
 
     @Query("SELECT * FROM principal WHERE serviceId=:serviceId AND url=:url")
-    fun getByUrl(serviceId: Long, url: Url): Principal?
+    fun getByUrlBlocking(serviceId: Long, url: Url): Principal?
 
     /**
      * Gets all principals who do not own any collections
      */
     @Query("SELECT * FROM principal WHERE principal.id NOT IN (SELECT ownerId FROM collection WHERE ownerId IS NOT NULL)")
-    fun getAllWithoutCollections(): List<Principal>
+    fun getAllWithoutCollectionsBlocking(): List<Principal>
 
     @Insert
-    fun insert(principal: Principal): Long
+    fun insertBlocking(principal: Principal): Long
 
     @Update
-    fun update(principal: Principal)
+    fun updateBlocking(principal: Principal)
 
     @Delete
-    fun delete(principal: Principal)
+    fun deleteBlocking(principal: Principal)
 
     /**
      * Inserts, updates or just gets existing principal if its display name has not
@@ -48,17 +48,17 @@ interface PrincipalDao {
      * @param principal Principal to be inserted or updated
      * @return ID of the newly inserted or already existing principal
      */
-    fun insertOrUpdate(serviceId: Long, principal: Principal): Long {
+    fun insertOrUpdateBlocking(serviceId: Long, principal: Principal): Long {
         // Try to get existing principal by URL
-        val oldPrincipal = getByUrl(serviceId, principal.url)
+        val oldPrincipal = getByUrlBlocking(serviceId, principal.url)
 
         // Insert new principal if not existing
         if (oldPrincipal == null)
-            return insert(principal)
+            return insertBlocking(principal)
 
         // Otherwise update the existing principal
         if (principal.displayName != oldPrincipal.displayName)
-            update(principal.copy(id = oldPrincipal.id))
+            updateBlocking(principal.copy(id = oldPrincipal.id))
 
         // In any case return the id of the principal
         return oldPrincipal.id

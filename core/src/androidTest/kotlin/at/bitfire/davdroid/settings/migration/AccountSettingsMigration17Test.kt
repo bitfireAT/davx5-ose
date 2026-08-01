@@ -67,12 +67,12 @@ class AccountSettingsMigration17Test {
                 accountManager.setAndVerifyUserData(addressBookAccount, localAddressBookUserDataUrl, url)
 
                 // and is known in database
-                db.serviceDao().insertOrReplace(
+                db.serviceDao().insertOrReplaceBlocking(
                     Service(
                         id = 1, accountName = account.name, type = Service.TYPE_CARDDAV, principal = null
                     )
                 )
-                db.collectionDao().insert(
+                db.collectionDao().insertBlocking(
                     Collection(
                         id = 100,
                         serviceId = 1,

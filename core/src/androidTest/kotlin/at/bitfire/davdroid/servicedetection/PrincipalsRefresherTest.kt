@@ -92,10 +92,10 @@ class PrincipalsRefresherTest {
         hiltRule.inject()
         client = HttpClient(buildMockEngine())
 
-        val serviceId = db.serviceDao().insertOrReplace(
+        val serviceId = db.serviceDao().insertOrReplaceBlocking(
             Service(id = 0, accountName = "test", type = Service.TYPE_CARDDAV, principal = null)
         )
-        service = db.serviceDao().get(serviceId)!!
+        service = db.serviceDao().getBlocking(serviceId)!!
     }
 
     @After
@@ -106,14 +106,14 @@ class PrincipalsRefresherTest {
 
     @Test
     fun refreshPrincipals_inaccessiblePrincipal() = runTest {
-        val principalId = db.principalDao().insert(
+        val principalId = db.principalDao().insertBlocking(
             Principal(
                 0, service.id,
                 "$BASE_URL$PATH_CARDDAV$SUBPATH_PRINCIPAL_INACCESSIBLE".toUrl(),
                 null
             )
         )
-        db.collectionDao().insertOrUpdateByUrl(
+        db.collectionDao().insertOrUpdateByUrlBlocking(
             Collection(
                 0, service.id, null, principalId,
                 Collection.TYPE_ADDRESSBOOK,
@@ -123,7 +123,7 @@ class PrincipalsRefresherTest {
 
         principalsRefresher.create(service, client).refreshPrincipals()
 
-        val principals = db.principalDao().getByService(service.id)
+        val principals = db.principalDao().getByServiceBlocking(service.id)
         assertEquals(1, principals.size)
         assertEquals("$BASE_URL$PATH_CARDDAV$SUBPATH_PRINCIPAL_INACCESSIBLE".toUrl(), principals[0].url)
         assertEquals(null, principals[0].displayName)
@@ -131,14 +131,14 @@ class PrincipalsRefresherTest {
 
     @Test
     fun refreshPrincipals_updatesPrincipal() = runTest {
-        val principalId = db.principalDao().insert(
+        val principalId = db.principalDao().insertBlocking(
             Principal(
                 0, service.id,
                 "$BASE_URL$PATH_CARDDAV$SUBPATH_PRINCIPAL".toUrl(),
                 null
             )
         )
-        db.collectionDao().insertOrUpdateByUrl(
+        db.collectionDao().insertOrUpdateByUrlBlocking(
             Collection(
                 0, service.id, null, principalId,
                 Collection.TYPE_ADDRESSBOOK,
@@ -148,7 +148,7 @@ class PrincipalsRefresherTest {
 
         principalsRefresher.create(service, client).refreshPrincipals()
 
-        val principals = db.principalDao().getByService(service.id)
+        val principals = db.principalDao().getByServiceBlocking(service.id)
         assertEquals(1, principals.size)
         assertEquals("$BASE_URL$PATH_CARDDAV$SUBPATH_PRINCIPAL".toUrl(), principals[0].url)
         assertEquals("Mr. Wobbles", principals[0].displayName)
@@ -156,7 +156,7 @@ class PrincipalsRefresherTest {
 
     @Test
     fun refreshPrincipals_deletesPrincipalsWithoutCollections() = runTest {
-        db.principalDao().insert(
+        db.principalDao().insertBlocking(
             Principal(
                 0, service.id,
                 "$BASE_URL$PATH_CARDDAV$SUBPATH_PRINCIPAL_WITHOUT_COLLECTIONS/".toUrl()
@@ -165,7 +165,7 @@ class PrincipalsRefresherTest {
 
         principalsRefresher.create(service, client).refreshPrincipals()
 
-        assertEquals(0, db.principalDao().getByService(service.id).size)
+        assertEquals(0, db.principalDao().getByServiceBlocking(service.id).size)
     }
 
 }

@@ -64,7 +64,7 @@ class HomeSetRefresher @AssistedInject constructor(
             // To find removed collections in this homeset: create a queue from existing collections and remove every collection that
             // is successfully rediscovered. If there are collections left, after processing is done, these are marked as "without home-set".
             val localHomesetCollections = db.collectionDao()
-                .getByServiceAndHomeset(service.id, localHomeset.id)
+                .getByServiceAndHomesetBlocking(service.id, localHomeset.id)
                 .associateBy { it.url }
                 .toMutableMap()
 
@@ -93,7 +93,7 @@ class HomeSetRefresher @AssistedInject constructor(
                             ownerId = response[Owner::class.java]?.href  // save the principal id (collection owner)
                                 ?.let { response.href.resolve(it) }
                                 ?.let { principalUrl -> Principal.fromServiceAndUrl(service, principalUrl) }
-                                ?.let { principal -> db.principalDao().insertOrUpdate(service.id, principal) }
+                                ?.let { principal -> db.principalDao().insertOrUpdateBlocking(service.id, principal) }
                         )
                         logger.fine("Found collection: $collection")
 

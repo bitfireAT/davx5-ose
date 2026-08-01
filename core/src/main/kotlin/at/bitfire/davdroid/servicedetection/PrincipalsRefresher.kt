@@ -48,7 +48,7 @@ class PrincipalsRefresher @AssistedInject constructor(
      */
     suspend fun refreshPrincipals() {
         // Refresh principals (collection owner urls)
-        val principals = db.principalDao().getByService(service.id)
+        val principals = db.principalDao().getByServiceBlocking(service.id)
         for (oldPrincipal in principals) {
             val principalUrl = oldPrincipal.url
             logger.fine("Querying principal $principalUrl")
@@ -59,7 +59,7 @@ class PrincipalsRefresher @AssistedInject constructor(
                     .collect { response ->
                         Principal.fromDavResponse(service.id, response)?.let { principal ->
                             logger.fine("Got principal: $principal")
-                            db.principalDao().insertOrUpdate(service.id, principal)
+                            db.principalDao().insertOrUpdateBlocking(service.id, principal)
                         }
                     }
             } catch (e: HttpException) {
@@ -68,8 +68,8 @@ class PrincipalsRefresher @AssistedInject constructor(
         }
 
         // Delete principals which don't own any collections
-        db.principalDao().getAllWithoutCollections().forEach { principal ->
-            db.principalDao().delete(principal)
+        db.principalDao().getAllWithoutCollectionsBlocking().forEach { principal ->
+            db.principalDao().deleteBlocking(principal)
         }
     }
 

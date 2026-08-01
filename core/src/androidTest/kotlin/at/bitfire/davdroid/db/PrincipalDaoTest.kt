@@ -42,47 +42,47 @@ class PrincipalDaoTest {
         principalDao = spyk(db.principalDao())
 
         service = Service(id = 1, accountName = "account", type = "webdav")
-        db.serviceDao().insertOrReplace(service)
+        db.serviceDao().insertOrReplaceBlocking(service)
     }
 
     @Test
     fun insertOrUpdate_insertsIfNotExisting() = runTest {
         val principal = Principal(serviceId = service.id, url = url, displayName = "principal")
-        val id = principalDao.insertOrUpdate(service.id, principal)
+        val id = principalDao.insertOrUpdateBlocking(service.id, principal)
         assertTrue(id > 0)
 
-        val stored = principalDao.get(id)
+        val stored = principalDao.getBlocking(id)
         assertEquals("principal", stored.displayName)
-        verify(exactly = 0) { principalDao.update(any()) }
+        verify(exactly = 0) { principalDao.updateBlocking(any()) }
     }
 
     @Test
     fun insertOrUpdate_doesNotUpdateIfDisplayNameIsEqual() = runTest {
         val principalOld = Principal(serviceId = service.id, url = url, displayName = "principalOld")
-        val idOld = principalDao.insertOrUpdate(service.id, principalOld)
+        val idOld = principalDao.insertOrUpdateBlocking(service.id, principalOld)
 
         val principalNew = Principal(serviceId = service.id, url = url, displayName = "principalOld")
-        val idNew = principalDao.insertOrUpdate(service.id, principalNew)
+        val idNew = principalDao.insertOrUpdateBlocking(service.id, principalNew)
 
         assertEquals(idOld, idNew)
-        val stored = principalDao.get(idOld)
+        val stored = principalDao.getBlocking(idOld)
         assertEquals("principalOld", stored.displayName)
-        verify(exactly = 0) { principalDao.update(any()) }
+        verify(exactly = 0) { principalDao.updateBlocking(any()) }
     }
 
     @Test
     fun insertOrUpdate_updatesIfDisplayNameIsDifferent() = runTest {
         val principalOld = Principal(serviceId = service.id, url = url, displayName = "principalOld")
-        val idOld = principalDao.insertOrUpdate(service.id, principalOld)
+        val idOld = principalDao.insertOrUpdateBlocking(service.id, principalOld)
 
         val principalNew = Principal(serviceId = service.id, url = url, displayName = "principalNew")
-        val idNew = principalDao.insertOrUpdate(service.id, principalNew)
+        val idNew = principalDao.insertOrUpdateBlocking(service.id, principalNew)
 
         assertEquals(idOld, idNew)
 
-        val updated = principalDao.get(idOld)
+        val updated = principalDao.getBlocking(idOld)
         assertEquals("principalNew", updated.displayName)
-        verify(exactly = 1) { principalDao.update(any()) }
+        verify(exactly = 1) { principalDao.updateBlocking(any()) }
     }
 
     @Test(expected = SQLiteConstraintException::class)
@@ -90,7 +90,7 @@ class PrincipalDaoTest {
         // throws on non-existing service
         val url = "https://example.com/dav/principal".toUrl()
         val principal1 = Principal(serviceId = 999, url = url, displayName = "p1")
-        principalDao.insertOrUpdate(999, principal1)
+        principalDao.insertOrUpdateBlocking(999, principal1)
     }
 
 }
