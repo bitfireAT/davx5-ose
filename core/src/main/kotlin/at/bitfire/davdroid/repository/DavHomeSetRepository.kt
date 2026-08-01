@@ -21,8 +21,6 @@ class DavHomeSetRepository @Inject constructor(
 
     fun getBindableByServiceFlow(serviceId: Long) = dao.getBindableByServiceFlow(serviceId)
 
-    fun getByIdBlocking(id: Long) = dao.getByIdBlocking(id)
-
     suspend fun getByService(serviceId: Long) = dao.getByService(serviceId)
 
     fun getCalendarHomeSetsFlow(accountId: AccountId) =

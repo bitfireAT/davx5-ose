@@ -35,9 +35,6 @@ interface CollectionDao {
     @Query("SELECT * FROM collection WHERE serviceId=:serviceId AND homeSetId IS :homeSetId")
     suspend fun getByServiceAndHomeset(serviceId: Long, homeSetId: Long?): List<Collection>
 
-    @Query("SELECT * FROM collection WHERE serviceId=:serviceId AND type=:type ORDER BY displayName COLLATE NOCASE, url COLLATE NOCASE")
-    fun getByServiceAndTypeBlocking(serviceId: Long, @CollectionType type: String): List<Collection>
-
     @Query("SELECT * FROM collection WHERE pushTopic=:topic AND sync")
     suspend fun getSyncableByPushTopic(topic: String): Collection?
 
