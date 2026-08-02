@@ -20,6 +20,7 @@ import at.bitfire.synctools.storage.calendar.AndroidCalendarProvider
 import at.bitfire.synctools.storage.calendar.EventsContract
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
@@ -70,7 +71,7 @@ class LocalCalendarTest {
      * - [Events._ID]
      * - [Events.DIRTY]
      */
-    private fun testRemoveNotDirtyMarked(contentValues: ContentValues) {
+    private fun testRemoveNotDirtyMarked(contentValues: ContentValues) = runTest {
         val entity = Entity(
             contentValuesOf(
                 Events.CALENDAR_ID to androidCalendar.id,

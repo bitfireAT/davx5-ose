@@ -72,6 +72,8 @@ import androidx.core.net.toUri
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.accounts.AccountId
+import at.bitfire.davdroid.accounts.LegacyAccount
 import at.bitfire.davdroid.ui.account.AccountProgress
 import at.bitfire.davdroid.ui.composable.ActionCard
 import at.bitfire.davdroid.ui.composable.AppTheme
@@ -89,7 +91,7 @@ fun AccountsScreen(
     onShowAppIntro: () -> Unit,
     accountsDrawerHandler: AccountsDrawerHandler,
     onAddAccount: () -> Unit,
-    onShowAccount: (Account) -> Unit,
+    onShowAccount: (AccountId) -> Unit,
     onManagePermissions: () -> Unit,
     model: AccountsViewModel = hiltViewModel(
         creationCallback = { factory: AccountsViewModel.Factory ->
@@ -140,7 +142,7 @@ fun AccountsScreen(
     onSyncAll: () -> Unit = {},
     showAddAccount: AccountsViewModel.FABStyle = AccountsViewModel.FABStyle.Standard,
     onAddAccount: () -> Unit = {},
-    onShowAccount: (Account) -> Unit = {},
+    onShowAccount: (AccountId) -> Unit = {},
     onManagePermissions: () -> Unit = {},
     internetUnavailable: Boolean = false,
     batterySaverActive: Boolean = false,
@@ -310,8 +312,8 @@ fun AccountsScreen(
                             // account list
                             AccountList(
                                 accounts = accounts,
-                                onClickAccount = { account ->
-                                    onShowAccount(account)
+                                onClickAccount = { accountId ->
+                                    onShowAccount(accountId)
                                 },
                                 modifier = Modifier
                                     .fillMaxSize()
@@ -353,8 +355,9 @@ fun AccountsScreen_Preview_OneAccount() {
         },
         accounts = listOf(
             AccountsViewModel.AccountInfo(
-                Account("Account Name", "test"),
-                AccountProgress.Idle
+                id = LegacyAccount(Account("Account Name", "test")),
+                name = "Account Name",
+                progress = AccountProgress.Idle
             )
         )
     )
@@ -364,7 +367,7 @@ fun AccountsScreen_Preview_OneAccount() {
 fun AccountList(
     accounts: List<AccountsViewModel.AccountInfo>,
     modifier: Modifier = Modifier,
-    onClickAccount: (Account) -> Unit = {}
+    onClickAccount: (AccountId) -> Unit = {}
 ) {
     Column(modifier) {
         if (accounts.isEmpty())
@@ -389,7 +392,7 @@ fun AccountList(
                 )
             }
         else
-            for ((account, progress) in accounts)
+            for (accountInfo in accounts) {
                 Card(
                     colors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.primary,
@@ -397,11 +400,12 @@ fun AccountList(
                     ),
                     elevation = CardDefaults.cardElevation(1.dp),
                     modifier = Modifier
-                        .clickable { onClickAccount(account) }
+                        .clickable { onClickAccount(accountInfo.id) }
                         .fillMaxWidth()
                         .padding(bottom = 8.dp)
                 ) {
                     Column {
+                        val progress = accountInfo.progress
                         val progressAlpha = progress.rememberAlpha()
                         when (progress) {
                             AccountProgress.Active ->
@@ -430,7 +434,7 @@ fun AccountList(
                             )
 
                             Text(
-                                text = account.name,
+                                text = accountInfo.name,
                                 style = MaterialTheme.typography.titleLarge,
                                 textAlign = TextAlign.Center,
                                 modifier = Modifier
@@ -440,6 +444,7 @@ fun AccountList(
                         }
                     }
                 }
+            }
     }
 }
 
@@ -450,8 +455,9 @@ fun AccountList_Preview_Idle() {
         AccountList(
             listOf(
                 AccountsViewModel.AccountInfo(
-                    Account("Account Name", "test"),
-                    AccountProgress.Idle
+                    id = LegacyAccount(Account("Account Name", "test")),
+                    name = "Account Name",
+                    progress = AccountProgress.Idle
                 )
             )
         )
@@ -465,8 +471,9 @@ fun AccountList_Preview_SyncPending() {
         AccountList(
             listOf(
                 AccountsViewModel.AccountInfo(
-                    Account("Account Name", "test"),
-                    AccountProgress.Pending
+                    id = LegacyAccount(Account("Account Name", "test")),
+                    name = "Account Name",
+                    progress = AccountProgress.Pending
                 )
             )
         )
@@ -480,8 +487,9 @@ fun AccountList_Preview_Syncing() {
         AccountList(
             listOf(
                 AccountsViewModel.AccountInfo(
-                    Account("Account Name", "test"),
-                    AccountProgress.Active
+                    id = LegacyAccount(Account("Account Name", "test")),
+                    name = "Account Name",
+                    progress = AccountProgress.Active
                 )
             )
         )

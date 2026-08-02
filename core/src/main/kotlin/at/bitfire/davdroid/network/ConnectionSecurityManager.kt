@@ -20,6 +20,8 @@ import kotlin.jvm.optionals.getOrNull
 
 /**
  * Caching provider for [ConnectionSecurityContext].
+ *
+ * When this class is loaded, it makes sure that [ConscryptIntegration] is initialized.
  */
 @Singleton
 class ConnectionSecurityManager @Inject constructor(
@@ -103,6 +105,16 @@ class ConnectionSecurityManager @Inject constructor(
         val factory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm())
         factory.init(null as KeyStore?)
         return factory.trustManagers.filterIsInstance<X509TrustManager>().first()
+    }
+
+
+    companion object {
+
+        init {
+            // make sure Conscrypt is available
+            ConscryptIntegration().initialize()
+        }
+
     }
 
 }

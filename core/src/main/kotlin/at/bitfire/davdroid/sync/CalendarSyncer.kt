@@ -6,16 +6,16 @@ package at.bitfire.davdroid.sync
 
 import android.accounts.Account
 import android.content.ContentProviderClient
+import at.bitfire.davdroid.accounts.toAccountId
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.resource.LocalCalendar
 import at.bitfire.davdroid.resource.LocalCalendarStore
-import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.synctools.storage.calendar.AndroidCalendarProvider
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import kotlinx.coroutines.runBlocking
+import java.util.logging.Level
 
 /**
  * Sync logic for calendars
@@ -24,14 +24,19 @@ class CalendarSyncer @AssistedInject constructor(
     @Assisted account: Account,
     @Assisted resync: ResyncType?,
     @Assisted syncResult: SyncResult,
+    @Assisted settings: SyncSettings,
     calendarStore: LocalCalendarStore,
-    private val accountSettingsFactory: AccountSettings.Factory,
     private val calendarSyncManagerFactory: CalendarSyncManager.Factory
-): Syncer<LocalCalendarStore, LocalCalendar>(account, resync, syncResult) {
+) : Syncer<LocalCalendarStore, LocalCalendar>(account, resync, syncResult, settings) {
 
     @AssistedFactory
     interface Factory {
-        fun create(account: Account, resyncType: ResyncType?, syncResult: SyncResult): CalendarSyncer
+        fun create(
+            account: Account,
+            resyncType: ResyncType?,
+            syncResult: SyncResult,
+            settings: SyncSettings
+        ): CalendarSyncer
     }
 
     override val dataStore = calendarStore
@@ -42,10 +47,8 @@ class CalendarSyncer @AssistedInject constructor(
 
     override fun prepare(provider: ContentProviderClient): Boolean {
         // Update colors
-        val accountSettings = accountSettingsFactory.create(account)
-
         val calendarProvider = AndroidCalendarProvider(account, provider)
-        if (accountSettings.getEventColors())
+        if (settings.eventColors)
             calendarProvider.provideCss3ColorIndices()
         else
             calendarProvider.removeColorIndices()
@@ -55,20 +58,31 @@ class CalendarSyncer @AssistedInject constructor(
     override fun getDbSyncCollections(serviceId: Long): List<Collection> =
         collectionRepository.getSyncCalendars(serviceId)
 
-    override fun syncCollection(provider: ContentProviderClient, localCollection: LocalCalendar, remoteCollection: Collection) {
-        logger.info("Synchronizing calendar #${localCollection.androidCalendar.id}, DB Collection ID: ${localCollection.dbCollectionId}, URL: ${localCollection.androidCalendar.name}")
+    override suspend fun syncCollection(
+        provider: ContentProviderClient,
+        localCollection: LocalCalendar,
+        remoteCollection: Collection
+    ) {
+        logger.log(
+            Level.INFO,
+            "Synchronizing calendar #{0}, DB Collection ID: {1}, URL: {2}",
+            arrayOf<Any?>(
+                localCollection.androidCalendar.id,
+                localCollection.dbCollectionId,
+                localCollection.androidCalendar.name
+            )
+        )
 
         val syncManager = calendarSyncManagerFactory.calendarSyncManager(
-            account,
+            account.toAccountId(),
             httpClient,
             syncResult,
             localCollection,
             remoteCollection,
-            resync
+            resync,
+            settings
         )
-        runBlocking {
-            syncManager.performSync()
-        }
+        syncManager.performSync()
     }
 
 }

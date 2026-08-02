@@ -9,6 +9,7 @@ import android.content.ContentProviderClient
 import android.content.Context
 import android.os.DeadObjectException
 import androidx.annotation.VisibleForTesting
+import at.bitfire.davdroid.accounts.toAccountId
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.ServiceType
 import at.bitfire.davdroid.network.HttpClientBuilder
@@ -19,10 +20,11 @@ import at.bitfire.davdroid.resource.LocalDataStore
 import at.bitfire.davdroid.sync.account.InvalidAccountException
 import at.bitfire.synctools.storage.LocalStorageException
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.runBlocking
+import java.io.Closeable
 import java.util.Optional
 import java.util.logging.Level
 import java.util.logging.Logger
+import javax.annotation.WillCloseWhenClosed
 import javax.inject.Inject
 import kotlin.jvm.optionals.getOrNull
 
@@ -34,12 +36,14 @@ import kotlin.jvm.optionals.getOrNull
  * @param account       account to synchronize
  * @param resync        whether re-synchronization is requested (`null` for normal sync)
  * @param syncResult    synchronization result, to be modified during sync
+ * @param settings      snapshot of the account settings relevant for this sync run
  */
 abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType: LocalCollection<*>>(
     protected val account: Account,
     protected val resync: ResyncType?,
-    protected val syncResult: SyncResult
-) {
+    protected val syncResult: SyncResult,
+    protected val settings: SyncSettings
+): Closeable {
 
     abstract val dataStore: StoreType
 
@@ -68,9 +72,10 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
     abstract val serviceType: String
 
     val syncNotificationManager by lazy {
-        syncNotificationManagerFactory.create(account)
+        syncNotificationManagerFactory.create(account.toAccountId())
     }
 
+    @WillCloseWhenClosed
     val httpClient by lazy {
         httpClientBuilder.fromAccount(account).build()
     }
@@ -81,10 +86,10 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
      * of the remaining, now up-to-date, collections.
      */
     @VisibleForTesting
-    internal fun sync(provider: ContentProviderClient) {
+    internal suspend fun sync(provider: ContentProviderClient) {
         // Collection type specific preparations
         if (!prepare(provider)) {
-            logger.log(Level.WARNING, "Failed to prepare sync. Won't run sync.")
+            logger.warning("Failed to prepare sync. Won't run sync.")
             return
         }
 
@@ -106,14 +111,14 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
      * @return The sync enabled database collections as hash map identified by their ID
      */
     @VisibleForTesting
-    internal fun getSyncEnabledCollections(): Map<Long, Collection> = runBlocking {
+    internal suspend fun getSyncEnabledCollections(): Map<Long, Collection> {
         val dbCollections = mutableMapOf<Long, Collection>()
         serviceRepository.getByAccountAndType(account.name, serviceType)?.let { service ->
             for (dbCollection in getDbSyncCollections(service.id))
                 dbCollections[dbCollection.id] = dbCollection
         }
 
-        dbCollections
+        return dbCollections
     }
 
     /**
@@ -130,7 +135,7 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
      * @return Updated list of local collections (obsolete collections removed, new collections added)
      */
     @VisibleForTesting
-    internal fun updateCollections(
+    internal suspend fun updateCollections(
         provider: ContentProviderClient,
         localCollections: List<CollectionType>,
         dbCollections: Map<Long, Collection>
@@ -143,12 +148,20 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
             val dbCollection = dbCollections.getOrDefault(localCollection.dbCollectionId, null)
             if (dbCollection == null) {
                 // Collection not available in db = on server (anymore), delete and remove from the updated list
-                logger.info("Deleting local collection ${localCollection.title} without matching remote collection")
+                logger.log(
+                    Level.INFO,
+                    "Deleting local collection {0} without matching remote collection",
+                    arrayOf(localCollection.title)
+                )
                 dataStore.delete(localCollection)
                 updatedLocalCollections -= localCollection
             } else {
                 // Collection exists locally, update local collection and remove it from "to be created" map
-                logger.fine("Updating local collection ${localCollection.title} with $dbCollection")
+                logger.log(
+                    Level.FINE,
+                    "Updating local collection {0} with {1}",
+                    arrayOf(localCollection.title, dbCollection)
+                )
                 dataStore.update(provider, localCollection, dbCollection)
                 newDbCollections -= dbCollection.id
             }
@@ -157,7 +170,7 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
         // Create local collections which are in DB, but don't exist locally yet
         if (newDbCollections.isNotEmpty()) {
             val toBeCreated = newDbCollections.values.toList()
-            logger.log(Level.INFO, "Creating new local collections", toBeCreated.toTypedArray())
+            logger.log(Level.INFO, "Creating new local collections: {0}", arrayOf(toBeCreated.joinToString()))
             val newLocalCollections = createLocalCollections(provider, toBeCreated)
             // Add the newly created collections to the updated list
             updatedLocalCollections.addAll(newLocalCollections)
@@ -175,7 +188,7 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
      * @return Newly created local collections
      */
     @VisibleForTesting
-    internal fun createLocalCollections(
+    internal suspend fun createLocalCollections(
         provider: ContentProviderClient,
         dbCollections: List<Collection>
     ): List<CollectionType> =
@@ -192,14 +205,19 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
      * @param dbCollections Remote collection information
      */
     @VisibleForTesting
-    internal fun syncCollectionContents(
+    internal suspend fun syncCollectionContents(
         provider: ContentProviderClient,
         localCollections: List<CollectionType>,
         dbCollections: Map<Long, Collection>
-    ) = localCollections.forEach { localCollection ->
-        dbCollections[localCollection.dbCollectionId]?.let { dbCollection ->
+    ) {
+        for (localCollection in localCollections) {
+            val dbCollection = dbCollections[localCollection.dbCollectionId] ?: continue
             syncCollection(provider, localCollection, dbCollection)
         }
+    }
+
+    override fun close() {
+        httpClient.close()
     }
 
     /**
@@ -228,7 +246,11 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
      * @param remoteCollection The database collection representing the remote collection. Contains
      * remote address of the collection to be synchronized.
      */
-    abstract fun syncCollection(provider: ContentProviderClient, localCollection: CollectionType, remoteCollection: Collection)
+    abstract suspend fun syncCollection(
+        provider: ContentProviderClient,
+        localCollection: CollectionType,
+        remoteCollection: Collection
+    )
 
     /**
      * Prepares the sync:
@@ -236,7 +258,7 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
      * - acquire content provider
      * - handle occurring sync errors
      */
-    operator fun invoke() {
+    suspend operator fun invoke() {
         logger.info("${dataStore.authority} sync of $account initiated (resync=$resync)")
 
         try {

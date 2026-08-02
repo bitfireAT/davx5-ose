@@ -13,44 +13,41 @@ import android.provider.ContactsContract.RawContacts
 import android.provider.ContactsContract.RawContacts.getContactLookupUri
 import androidx.core.content.contentValuesOf
 import at.bitfire.synctools.mapping.contacts.Contact
-import at.bitfire.synctools.storage.BatchOperation
-import at.bitfire.synctools.storage.contacts.AndroidAddressBook
+import at.bitfire.synctools.storage.contacts.AddressContract.RawContactColumns
 import at.bitfire.synctools.storage.contacts.AndroidContact
-import at.bitfire.synctools.storage.contacts.AndroidContactFactory
 import com.google.common.base.MoreObjects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-class LocalContact: AndroidContact, LocalAddress {
+class LocalContact(
+    val localAddressBook: LocalAddressBook,
+    val androidContact: AndroidContact
+) : LocalAddress {
 
-    companion object {
-        const val COLUMN_FLAGS = RawContacts.SYNC4
-        const val COLUMN_HASHCODE = RawContacts.SYNC3
-    }
+    private val provider get() = androidContact.addressBook.provider
 
-    override val addressBook: LocalAddressBook
-        get() = super.addressBook as LocalAddressBook
+    override val id: Long?
+        get() = androidContact.id
+
+    override val fileName: String?
+        get() = androidContact.fileName
+
+    override val eTag: String?
+        get() = androidContact.eTag
+
+    override val flags: Int
+        get() = androidContact.flags
 
     override val scheduleTag: String?
         get() = null
 
-    override var flags: Int = 0
-
-
-    constructor(addressBook: LocalAddressBook, values: ContentValues): super(addressBook, values) {
-        flags = values.getAsInteger(COLUMN_FLAGS) ?: 0
-    }
-
-    constructor(addressBook: LocalAddressBook, contact: Contact, fileName: String?, eTag: String?, _flags: Int): super(addressBook, contact, fileName, eTag) {
-        flags = _flags
-    }
 
     /**
-     * Clears cached contact (that is used by [getContact]) so that the next call of [getContact]
+     * Clears cached contact (that is used by [AndroidContact.getContact]) so that the next call of [AndroidContact.getContact]
      * will query the content provider again.
      */
     fun clearCachedContact() {
-        setContact(null)
+        androidContact.setContact(null)
     }
 
     override fun clearDirty(fileName: Optional<String>, eTag: String?, scheduleTag: String?) {
@@ -59,55 +56,54 @@ class LocalContact: AndroidContact, LocalAddress {
 
         val values = ContentValues(4)
         if (fileName.isPresent)
-            values.put(COLUMN_FILENAME, fileName.get())
-        values.put(COLUMN_ETAG, eTag)
+            values.put(RawContactColumns.FILENAME, fileName.get())
+        values.put(RawContactColumns.ETAG, eTag)
         values.put(RawContacts.DIRTY, 0)
 
         // Android 7 workaround
-        addressBook.dirtyVerifier.getOrNull()?.setHashCodeColumn(this, values)
+        localAddressBook.dirtyVerifier.getOrNull()?.setHashCodeColumn(this, values)
 
-        addressBook.provider!!.update(rawContactSyncURI(), values, null, null)
+        provider.update(androidContact.rawContactSyncURI(), values, null, null)
 
         if (fileName.isPresent)
-            this.fileName = fileName.get()
-        this.eTag = eTag
+            androidContact.fileName = fileName.get()
+        androidContact.eTag = eTag
     }
 
     fun resetDirty() {
         val values = contentValuesOf(RawContacts.DIRTY to 0)
-        addressBook.provider!!.update(rawContactSyncURI(), values, null, null)
+        provider.update(androidContact.rawContactSyncURI(), values, null, null)
     }
 
     override fun update(data: Contact, fileName: String?, eTag: String?, scheduleTag: String?, flags: Int) {
-        this.fileName = fileName
-        this.eTag = eTag
-        this.flags = flags
+        androidContact.fileName = fileName
+        androidContact.eTag = eTag
+        androidContact.flags = flags
 
-        // processes this.{fileName, eTag, flags} and resets DIRTY flag
-        update(data)
+        // processes androidContact.{fileName, eTag, flags} and resets DIRTY flag
+        androidContact.update(data)
     }
 
     override fun updateFlags(flags: Int) {
-        val values = contentValuesOf(COLUMN_FLAGS to flags)
-        addressBook.provider!!.update(rawContactSyncURI(), values, null, null)
-
-        this.flags = flags
+        val values = contentValuesOf(RawContactColumns.FLAGS to flags)
+        provider.update(androidContact.rawContactSyncURI(), values, null, null)
+        androidContact.flags = flags
     }
 
     override fun updateSequence(sequence: Int) = throw NotImplementedError()
 
     override fun updateUid(uid: String) {
-        val values = contentValuesOf(COLUMN_UID to uid)
-        addressBook.provider!!.update(rawContactSyncURI(), values, null, null)
+        val values = contentValuesOf(RawContactColumns.UID to uid)
+        provider.update(androidContact.rawContactSyncURI(), values, null, null)
     }
 
     override fun deleteLocal() {
-        delete()
+        androidContact.delete()
     }
 
     override fun resetDeleted() {
         val values = contentValuesOf(ContactsContract.Groups.DELETED to 0)
-        addressBook.provider!!.update(rawContactSyncURI(), values, null, null)
+        provider.update(androidContact.rawContactSyncURI(), values, null, null)
     }
 
     override fun getDebugSummary() =
@@ -133,21 +129,5 @@ class LocalContact: AndroidContact, LocalAddress {
                 ContentUris.withAppendedId(RawContacts.CONTENT_URI, idNotNull)
             )
         }
-
-
-    // data rows
-
-    override fun buildContact(builder: BatchOperation.CpoBuilder, update: Boolean) {
-        builder.withValue(COLUMN_FLAGS, flags)
-        super.buildContact(builder, update)
-    }
-
-
-    // factory
-
-    object Factory: AndroidContactFactory<LocalContact> {
-        override fun fromProvider(addressBook: AndroidAddressBook<LocalContact, *>, values: ContentValues) =
-                LocalContact(addressBook as LocalAddressBook, values)
-    }
 
 }

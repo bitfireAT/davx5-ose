@@ -4,7 +4,7 @@
 
 package at.bitfire.davdroid.ui.account
 
-import android.accounts.Account
+import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -13,18 +13,29 @@ import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.ui.res.stringResource
 import androidx.core.app.TaskStackBuilder
-import androidx.core.content.IntentCompat
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.accounts.AccountId
+import at.bitfire.davdroid.accounts.AccountIdIntentSerializer
+import at.bitfire.davdroid.ui.account.AccountSettingsActivity.Companion.editAccountSettingsActivityIntent
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class WifiPermissionsActivity: AppCompatActivity() {
 
     companion object {
-        const val EXTRA_ACCOUNT = "account"
+        private const val EXTRA_ACCOUNT = "account"
+        
+        fun createIntent(context: Context, accountId: AccountId): Intent {
+            return Intent(context, WifiPermissionsActivity::class.java).apply {
+                AccountIdIntentSerializer.addExtra(this, EXTRA_ACCOUNT, accountId)
+            }
+        }
     }
 
-    private val account by lazy { IntentCompat.getParcelableExtra(intent, EXTRA_ACCOUNT, Account::class.java) ?: throw IllegalArgumentException("EXTRA_ACCOUNT must be set") }
+    private val accountId by lazy {
+        AccountIdIntentSerializer.fromIntent(intent, EXTRA_ACCOUNT)
+            ?: throw IllegalArgumentException("EXTRA_ACCOUNT must be set")
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,7 +60,7 @@ class WifiPermissionsActivity: AppCompatActivity() {
     override fun supportShouldUpRecreateTask(targetIntent: Intent) = true
 
     override fun onPrepareSupportNavigateUpTaskStack(builder: TaskStackBuilder) {
-        builder.editIntentAt(builder.intentCount - 1)?.putExtra(AccountSettingsActivity.EXTRA_ACCOUNT, account)
+        builder.editIntentAt(builder.intentCount - 1)?.editAccountSettingsActivityIntent(accountId)
     }
 
 }

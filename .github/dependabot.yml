@@ -28,5 +28,3 @@ updates:
     ignore:
       # dependencies without semantic versioning
       - dependency-name: "com.github.bitfireat:cert4android"
-      - dependency-name: "com.github.bitfireat:dav4jvm"
-      - dependency-name: "com.github.bitfireat:synctools"

@@ -6,15 +6,17 @@ package at.bitfire.davdroid.resource.workaround
 
 import android.content.ContentValues
 import android.os.Build
+import android.provider.ContactsContract.Groups
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalContact
-import at.bitfire.davdroid.resource.LocalContact.Companion.COLUMN_HASHCODE
 import at.bitfire.synctools.storage.BatchOperation
+import at.bitfire.synctools.storage.contacts.AddressContract.RawContactColumns
 import at.bitfire.synctools.storage.contacts.ContactsBatchOperation
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.flow.firstOrNull
 import java.util.Optional
 import java.util.logging.Level
 import java.util.logging.Logger
@@ -48,11 +50,11 @@ class Android7DirtyVerifier @Inject constructor(
 
     // address-book level functions
 
-    override fun prepareAddressBook(addressBook: LocalAddressBook, isUpload: Boolean): Boolean {
+    override suspend fun prepareAddressBook(addressBook: LocalAddressBook, isUpload: Boolean): Boolean {
         val reallyDirty = verifyDirtyContacts(addressBook)
 
-        val deleted = addressBook.findDeleted().size
-        if (isUpload && reallyDirty == 0 && deleted == 0) {
+        val anyDeleted = addressBook.findDeleted().firstOrNull() != null
+        if (isUpload && reallyDirty == 0 && !anyDeleted) {
             logger.info("This sync was called to up-sync dirty/deleted contacts, but no contacts have been changed")
             return false
         }
@@ -69,29 +71,34 @@ class Android7DirtyVerifier @Inject constructor(
      *
      * @return number of "really dirty" contacts
      */
-    private fun verifyDirtyContacts(addressBook: LocalAddressBook): Int {
+    private suspend fun verifyDirtyContacts(addressBook: LocalAddressBook): Int {
         var reallyDirty = 0
-        for (contact in addressBook.findDirtyContacts()) {
+        addressBook.findDirtyContacts().collect { contact ->
             val lastHash = getLastHashCode(addressBook, contact)
             val currentHash = contactDataHashCode(contact)
             if (lastHash == currentHash) {
                 // hash is code still the same, contact is not "really dirty" (only metadata been have changed)
-                logger.log(Level.FINE, "Contact data hash has not changed, resetting dirty flag", contact)
+                logger.log(Level.FINE, "Contact data hash has not changed, resetting dirty flag: {0}", arrayOf(contact))
                 contact.resetDirty()
             } else {
-                logger.log(Level.FINE, "Contact data has changed from hash $lastHash to $currentHash", contact)
+                logger.log(
+                    Level.FINE,
+                    "Contact data has changed from hash {0} to {1}: {2}",
+                    arrayOf(lastHash, currentHash, contact)
+                )
                 reallyDirty++
             }
         }
 
         if (addressBook.includeGroups)
-            reallyDirty += addressBook.findDirtyGroups().size
+            reallyDirty += addressBook.ab.countGroups(Groups.DIRTY, null)
 
         return reallyDirty
     }
 
     private fun getLastHashCode(addressBook: LocalAddressBook, contact: LocalContact): Int {
-        addressBook.provider!!.query(contact.rawContactSyncURI(), arrayOf(COLUMN_HASHCODE), null, null, null)?.use { c ->
+        val provider = addressBook.ab.provider
+        provider.query(contact.androidContact.rawContactSyncURI(), arrayOf(RawContactColumns.HASHCODE), null, null, null)?.use { c ->
             if (c.moveToNext() && !c.isNull(0))
                 return c.getInt(0)
         }
@@ -111,31 +118,37 @@ class Android7DirtyVerifier @Inject constructor(
         contact.clearCachedContact()
 
         // groupMemberships is filled by getContact()
-        val dataHash = contact.getContact().hashCode()
-        val groupHash = contact.groupMemberships.hashCode()
+        val ac = contact.androidContact
+        val dataHash = ac.getContact().hashCode()
+        val groupHash = ac.groupMemberships.hashCode()
         val combinedHash = dataHash xor groupHash
-        logger.log(Level.FINE, "Calculated data hash = $dataHash, group memberships hash = $groupHash → combined hash = $combinedHash", contact)
+        logger.log(
+            Level.FINE,
+            "Calculated hash code for {0}: data={1}, groups={2}, combined={3}",
+            arrayOf(contact, dataHash, groupHash, combinedHash)
+        )
         return combinedHash
     }
 
     override fun setHashCodeColumn(contact: LocalContact, toValues: ContentValues) {
         val hashCode = contactDataHashCode(contact)
-        toValues.put(COLUMN_HASHCODE, hashCode)
+        toValues.put(RawContactColumns.HASHCODE, hashCode)
     }
 
     override fun updateHashCode(addressBook: LocalAddressBook, contact: LocalContact) {
+        val provider = addressBook.ab.provider
         val values = ContentValues(1)
         setHashCodeColumn(contact, values)
 
-        addressBook.provider!!.update(contact.rawContactSyncURI(), values, null, null)
+        provider.update(contact.androidContact.rawContactSyncURI(), values, null, null)
     }
 
     override fun updateHashCode(contact: LocalContact, batch: ContactsBatchOperation) {
         val hashCode = contactDataHashCode(contact)
 
         batch += BatchOperation.CpoBuilder
-            .newUpdate(contact.rawContactSyncURI())
-            .withValue(COLUMN_HASHCODE, hashCode)
+            .newUpdate(contact.androidContact.rawContactSyncURI())
+            .withValue(RawContactColumns.HASHCODE, hashCode)
     }
 
 

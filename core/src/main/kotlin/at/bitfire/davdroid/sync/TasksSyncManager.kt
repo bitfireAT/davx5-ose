@@ -4,12 +4,12 @@
 
 package at.bitfire.davdroid.sync
 
-import android.accounts.Account
 import android.text.format.Formatter
-import at.bitfire.dav4jvm.okhttp.DavCalendar
-import at.bitfire.dav4jvm.okhttp.MultiResponseCallback
-import at.bitfire.dav4jvm.okhttp.Response
-import at.bitfire.dav4jvm.okhttp.exception.DavException
+import at.bitfire.dav4jvm.ktor.DavCalendar
+import at.bitfire.dav4jvm.ktor.MultiStatusItem
+import at.bitfire.dav4jvm.ktor.exception.DavException
+import at.bitfire.dav4jvm.ktor.responses
+import at.bitfire.dav4jvm.ktor.selfResponse
 import at.bitfire.dav4jvm.property.caldav.CalDAV
 import at.bitfire.dav4jvm.property.caldav.CalendarData
 import at.bitfire.dav4jvm.property.caldav.MaxResourceSize
@@ -17,12 +17,13 @@ import at.bitfire.dav4jvm.property.webdav.GetETag
 import at.bitfire.dav4jvm.property.webdav.WebDAV
 import at.bitfire.davdroid.ProductIds
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.db.Collection
-import at.bitfire.davdroid.di.qualifier.SyncDispatcher
+import at.bitfire.davdroid.di.qualifier.IoDispatcher
+import at.bitfire.davdroid.di.qualifier.SyncTransferSemaphore
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.resource.LocalTask
 import at.bitfire.davdroid.resource.LocalTaskList
-import at.bitfire.davdroid.resource.SyncState
 import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.davdroid.util.DavUtils.lastSegment
 import at.bitfire.synctools.exception.InvalidResourceException
@@ -36,14 +37,17 @@ import at.bitfire.synctools.mapping.tasks.SequenceUpdater
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import io.ktor.client.HttpClient
+import io.ktor.http.Url
+import io.ktor.http.content.TextContent
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.runInterruptible
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.sync.Semaphore
 import net.fortuna.ical4j.model.Component
 import net.fortuna.ical4j.model.component.VToDo
 import net.fortuna.ical4j.model.property.ProdId
-import okhttp3.HttpUrl
-import okhttp3.OkHttpClient
-import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.Reader
 import java.io.StringReader
 import java.io.StringWriter
@@ -53,74 +57,77 @@ import java.util.logging.Level
  * Synchronization manager for CalDAV collections; handles tasks (VTODO)
  */
 class TasksSyncManager @AssistedInject constructor(
-    @Assisted account: Account,
-    @Assisted httpClient: OkHttpClient,
+    @Assisted accountId: AccountId,
+    @Assisted httpClient: HttpClient,
     @Assisted syncResult: SyncResult,
     @Assisted localCollection: LocalTaskList,
     @Assisted collection: Collection,
     @Assisted resync: ResyncType?,
+    @Assisted settings: SyncSettings,
+    @IoDispatcher ioDispatcher: CoroutineDispatcher,
     private val productIds: ProductIds,
-    @SyncDispatcher syncDispatcher: CoroutineDispatcher
+    @SyncTransferSemaphore syncTransferSemaphore: Semaphore
 ): SyncManager<LocalTask, LocalTaskList, DavCalendar>(
-    account,
+    accountId,
     httpClient,
     SyncDataType.TASKS,
     syncResult,
     localCollection,
     collection,
     resync,
-    syncDispatcher
+    ioDispatcher,
+    syncTransferSemaphore,
+    settings
 ) {
 
     @AssistedFactory
     interface Factory {
         fun tasksSyncManager(
-            account: Account,
-            httpClient: OkHttpClient,
+            accountId: AccountId,
+            httpClient: HttpClient,
             syncResult: SyncResult,
             localCollection: LocalTaskList,
             collection: Collection,
-            resync: ResyncType?
+            resync: ResyncType?,
+            settings: SyncSettings
         ): TasksSyncManager
     }
 
 
-    override fun prepare(): Boolean {
+    override suspend fun prepare(): Boolean {
         davCollection = DavCalendar(httpClient, collection.url)
 
         return true
     }
 
     override suspend fun queryCapabilities() =
-        SyncException.wrapWithRemoteResourceSuspending(collection.url) {
-            var syncState: SyncState? = null
-            runInterruptible {
-                davCollection.propfind(0, CalDAV.MaxResourceSize, CalDAV.GetCTag, WebDAV.SyncToken) { response, relation ->
-                    if (relation == Response.HrefRelation.SELF) {
-                        response[MaxResourceSize::class.java]?.maxSize?.let { maxSize ->
-                            logger.info("Calendar accepts tasks up to ${Formatter.formatFileSize(context, maxSize)}")
-                        }
+        SyncException.wrapWithRemoteResource(collection.url) {
+            val response =
+                davCollection.propfind(0, CalDAV.MaxResourceSize, CalDAV.GetCTag, WebDAV.SyncToken).selfResponse()
+                    ?: return@wrapWithRemoteResource null
 
-                        syncState = syncState(response)
-                    }
-                }
+            response[MaxResourceSize::class.java]?.maxSize?.let { maxSize ->
+                logger.info("Calendar accepts tasks up to ${Formatter.formatFileSize(context, maxSize)}")
             }
 
-            syncState
+            syncState(response)
         }
 
     override fun syncAlgorithm() = SyncAlgorithm.PROPFIND_REPORT
 
     override fun generateUpload(resource: LocalTask): GeneratedResource {
         val localTask = resource.taskAndExceptions
-        logger.log(Level.FINE, "Preparing upload of task #${resource.id}", localTask)
+        logger.log(Level.FINE, "Preparing upload of task #{0}: {1}", arrayOf(resource.id, localTask))
 
         /* Increase SEQUENCE of main task in memory and remember new value.
         Will be written to provider later over onSuccessContext. */
         val updatedSequence = SequenceUpdater().increaseSequence(localTask.main)
 
         // map Android event to iCalendar (also generates UID, if necessary)
-        val handler = DmfsTaskHandler(ProdId(productIds.iCalProdId))
+        val handler = DmfsTaskHandler(
+            prodId = ProdId(productIds.iCalProdId),
+            providerName = localCollection.dmfsTaskList.providerName
+        )
         val mappedVToDos = handler.mapToVToDos(localTask)
 
         // persist UID if it was generated
@@ -130,63 +137,62 @@ class TasksSyncManager @AssistedInject constructor(
         // generate iCalendar and convert to request body
         val iCalWriter = StringWriter()
         ICalendarGenerator().write(mappedVToDos.associatedTasks, iCalWriter)
-        val requestBody = iCalWriter.toString().toRequestBody(DavCalendar.MIME_ICALENDAR_UTF8)
+        val outgoingContent = TextContent(
+            text = iCalWriter.toString(),
+            contentType = DavCalendar.MIME_ICALENDAR_UTF8
+        )
 
         return GeneratedResource(
             suggestedFileName = DavUtils.fileNameFromUid(mappedVToDos.uid, "ics"),
-            requestBody = requestBody,
+            content = outgoingContent,
             onSuccessContext = GeneratedResource.OnSuccessContext(
                 sequence = updatedSequence
             )
         )
     }
 
-    override suspend fun listAllRemote(callback: MultiResponseCallback) {
-        SyncException.wrapWithRemoteResourceSuspending(collection.url) {
+    override fun listAllRemote(): Flow<MultiStatusItem> = flow {
+        SyncException.wrapWithRemoteResource(collection.url) {
             logger.info("Querying tasks")
-            runInterruptible {
-                davCollection.calendarQuery("VTODO", null, null, callback)
-            }
+            emitAll(davCollection.calendarQuery("VTODO", null, null))
         }
     }
 
-    override suspend fun downloadRemote(bunch: List<HttpUrl>) {
+    override suspend fun downloadRemote(bunch: List<Url>) {
         logger.info("Downloading ${bunch.size} iCalendars: $bunch")
         // multiple iCalendars, use calendar-multi-get
-        SyncException.wrapWithRemoteResourceSuspending(collection.url) {
-            runInterruptible {
-                davCollection.multiget(bunch) { response, _ ->
-                    // See CalendarSyncManager for more information about the multi-get response
-                    SyncException.wrapWithRemoteResource(response.href) wrapResource@{
-                        if (!response.isSuccess()) {
-                            logger.warning("Ignoring non-successful multi-get response for ${response.href}")
-                            return@wrapResource
-                        }
+        SyncException.wrapWithRemoteResource(collection.url) {
+            davCollection.multiget(bunch).responses().collect { response ->
+                // See CalendarSyncManager for more information about the multi-get response
+                SyncException.wrapWithRemoteResource(response.href) wrapResource@{
+                    if (!response.isSuccess()) {
+                        logger.warning("Ignoring non-successful multi-get response for ${response.href}")
+                        return@wrapResource
+                    }
 
-                        val iCal = response[CalendarData::class.java]?.iCalendar
-                        if (iCal == null) {
-                            logger.warning("Ignoring multi-get response without calendar-data")
-                            return@wrapResource
-                        }
+                    val iCal = response[CalendarData::class.java]?.iCalendar
+                    if (iCal == null) {
+                        logger.warning("Ignoring multi-get response without calendar-data")
+                        return@wrapResource
+                    }
 
-                        val eTag = response[GetETag::class.java]?.eTag
-                            ?: throw DavException("Received multi-get response without ETag")
+                    val eTag = response[GetETag::class.java]?.eTag
+                        ?: throw DavException("Received multi-get response without ETag")
 
-                        val fileName = response.href.lastSegment
+                    val fileName = response.href.lastSegment
 
-                        try {
-                            processVTodo(fileName, eTag, StringReader(iCal))
-                        } catch (e: InvalidResourceException) {
-                            logger.log(Level.WARNING, "Error while processing VTODO", e)
-                            notifyInvalidResource(e, fileName)
-                        }
+                    try {
+                        processVTodo(fileName, eTag, StringReader(iCal))
+                    } catch (e: InvalidResourceException) {
+                        logger.log(Level.WARNING, "Error while processing VTODO", e)
+                        notifyInvalidResource(e, fileName)
                     }
                 }
             }
         }
     }
 
-    override fun postProcess() {
+    override suspend fun postProcess() {
         val touched = localCollection.dmfsTaskList.touchRelations()
         logger.info("Touched $touched relations")
     }
@@ -194,7 +200,7 @@ class TasksSyncManager @AssistedInject constructor(
 
     // helpers
 
-    private fun processVTodo(fileName: String, eTag: String, reader: Reader) {
+    private suspend fun processVTodo(fileName: String, eTag: String, reader: Reader) {
         val calendar = ICalendarParser().parse(reader)
 
         val uidsAndTasks = CalendarUidSplitter<VToDo>().associateByUid(calendar, Component.VTODO)
@@ -217,11 +223,11 @@ class TasksSyncManager @AssistedInject constructor(
         val local = localCollection.findByName(fileName)
         if (local != null) {
             SyncException.wrapWithLocalResource(local) {
-                logger.log(Level.INFO, "Updating $fileName in local task list", task)
+                logger.info("Updating $fileName in local task list: $task")
                 local.update(dmfsTask)
             }
         } else {
-            logger.log(Level.INFO, "Adding $fileName to local task list", task)
+            logger.info("Adding $fileName to local task list: $task")
             localCollection.add(dmfsTask)
         }
     }

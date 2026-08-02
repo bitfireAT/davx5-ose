@@ -18,7 +18,6 @@ import net.fortuna.ical4j.model.property.Summary
 import net.fortuna.ical4j.model.property.immutable.ImmutableAction
 import java.net.URI
 import java.time.Duration
-import java.util.logging.Level
 import java.util.logging.Logger
 
 class RemindersHandler(
@@ -34,7 +33,7 @@ class RemindersHandler(
     }
 
     private fun populateReminder(row: ContentValues, event: Entity, to: VEvent) {
-        logger.log(Level.FINE, "Read event reminder from calendar provider", row)
+        logger.fine("Read event reminder from calendar provider: $row")
 
         val eventTitle = event.entityValues.getAsString(Events.TITLE) ?: "Calendar Event Reminder"
 

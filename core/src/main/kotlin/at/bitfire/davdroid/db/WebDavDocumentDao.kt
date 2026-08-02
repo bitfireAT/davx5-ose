@@ -18,13 +18,13 @@ import androidx.room.Update
 interface WebDavDocumentDao {
 
     @Query("SELECT * FROM webdav_document WHERE id=:id")
-    fun get(id: Long): WebDavDocument?
+    suspend fun get(id: Long): WebDavDocument?
 
     @Query("SELECT * FROM webdav_document WHERE mountId=:mountId AND (parentId=:parentId OR (parentId IS NULL AND :parentId IS NULL)) AND name=:name")
-    fun getByParentAndName(mountId: Long, parentId: Long?, name: String): WebDavDocument?
+    suspend fun getByParentAndName(mountId: Long, parentId: Long?, name: String): WebDavDocument?
 
     @RawQuery
-    fun query(query: RoomRawQuery): List<WebDavDocument>
+    suspend fun query(query: RoomRawQuery): List<WebDavDocument>
 
     /**
      * Gets all the child documents from a given parent id.
@@ -33,7 +33,7 @@ interface WebDavDocumentDao {
      * @param orderBy If desired, a SQL clause to specify how to order the results.
      *                **The caller is responsible for the correct formatting of this argument. Syntax won't be validated!**
      */
-    fun getChildren(parentId: Long, orderBy: String = DEFAULT_ORDER): List<WebDavDocument> {
+    suspend fun getChildren(parentId: Long, orderBy: String = DEFAULT_ORDER): List<WebDavDocument> {
         return query(
             RoomRawQuery("SELECT * FROM webdav_document WHERE parentId = ? ORDER BY $orderBy") {
                 it.bindLong(1, parentId)
@@ -42,19 +42,19 @@ interface WebDavDocumentDao {
     }
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertOrReplace(document: WebDavDocument): Long
+    suspend fun insertOrReplace(document: WebDavDocument): Long
 
     @Query("DELETE FROM webdav_document WHERE parentId=:parentId")
-    fun removeChildren(parentId: Long)
+    suspend fun removeChildren(parentId: Long)
 
     @Insert
-    fun insert(document: WebDavDocument): Long
+    suspend fun insert(document: WebDavDocument): Long
 
     @Update
-    fun update(document: WebDavDocument)
+    suspend fun update(document: WebDavDocument)
 
     @Delete
-    fun delete(document: WebDavDocument)
+    suspend fun delete(document: WebDavDocument)
 
 
     // complex operations
@@ -67,7 +67,7 @@ interface WebDavDocumentDao {
      * @return ID of the row, that has been inserted or updated. -1 If the insert fails due to other reasons.
      */
     @Transaction
-    fun insertOrUpdate(document: WebDavDocument): Long {
+    suspend fun insertOrUpdate(document: WebDavDocument): Long {
         val parentId = document.parentId
             ?: return insert(document)
         val existingDocument = getByParentAndName(document.mountId, parentId, document.name)
@@ -77,7 +77,7 @@ interface WebDavDocumentDao {
     }
 
     @Transaction
-    fun getOrCreateRoot(mount: WebDavMount): WebDavDocument {
+    suspend fun getOrCreateRoot(mount: WebDavMount): WebDavDocument {
         getByParentAndName(mount.id, null, "")?.let { existing ->
             return existing
         }

@@ -8,6 +8,7 @@ import android.accounts.Account
 import android.accounts.AccountManager
 import android.content.ContentProviderClient
 import android.os.Build
+import at.bitfire.davdroid.accounts.toAccountId
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.resource.LocalTaskList
@@ -16,7 +17,7 @@ import at.bitfire.synctools.storage.TaskProvider
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import kotlinx.coroutines.runBlocking
+import java.util.logging.Level
 
 /**
  * Sync logic for tasks in CalDAV collections ({@code VTODO}).
@@ -26,14 +27,21 @@ class TaskSyncer @AssistedInject constructor(
     @Assisted val providerName: TaskProvider.ProviderName,
     @Assisted resync: ResyncType?,
     @Assisted syncResult: SyncResult,
+    @Assisted settings: SyncSettings,
     localTaskListStoreFactory: LocalTaskListStore.Factory,
     private val tasksAppManager: dagger.Lazy<TasksAppManager>,
     private val tasksSyncManagerFactory: TasksSyncManager.Factory,
-): Syncer<LocalTaskListStore, LocalTaskList>(account, resync, syncResult) {
+) : Syncer<LocalTaskListStore, LocalTaskList>(account, resync, syncResult, settings) {
 
     @AssistedFactory
     interface Factory {
-        fun create(account: Account, providerName: TaskProvider.ProviderName, resyncType: ResyncType?, syncResult: SyncResult): TaskSyncer
+        fun create(
+            account: Account,
+            providerName: TaskProvider.ProviderName,
+            resyncType: ResyncType?,
+            syncResult: SyncResult,
+            settings: SyncSettings
+        ): TaskSyncer
     }
 
     override val dataStore = localTaskListStoreFactory.create(providerName)
@@ -67,20 +75,27 @@ class TaskSyncer @AssistedInject constructor(
     override fun getDbSyncCollections(serviceId: Long): List<Collection> =
         collectionRepository.getSyncTaskLists(serviceId)
 
-    override fun syncCollection(provider: ContentProviderClient, localCollection: LocalTaskList, remoteCollection: Collection) {
-        logger.info("Synchronizing task list ${localCollection.dmfsTaskList.id} with database collection ID: ${localCollection.dbCollectionId}")
+    override suspend fun syncCollection(
+        provider: ContentProviderClient,
+        localCollection: LocalTaskList,
+        remoteCollection: Collection
+    ) {
+        logger.log(
+            Level.INFO,
+            "Synchronizing task list {0} with database collection ID: {1}",
+            arrayOf(localCollection.dmfsTaskList.id, localCollection.dbCollectionId)
+        )
 
         val syncManager = tasksSyncManagerFactory.tasksSyncManager(
-            account,
+            account.toAccountId(),
             httpClient,
             syncResult,
             localCollection,
             remoteCollection,
-            resync
+            resync,
+            settings
         )
-        runBlocking {
-            syncManager.performSync()
-        }
+        syncManager.performSync()
     }
 
 }

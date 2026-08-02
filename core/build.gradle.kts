@@ -85,6 +85,7 @@ dependencies {
     // Kotlin / Android
     implementation(libs.kotlin.stdlib)
     implementation(libs.kotlinx.coroutines)
+    implementation(libs.kotlinx.coroutines.guava)
     coreLibraryDesugaring(libs.android.desugaring)
 
     // Hilt
@@ -138,14 +139,15 @@ dependencies {
     implementation(libs.conscrypt)
     implementation(libs.dnsjava)
     implementation(libs.guava)
+    implementation(libs.ktor.client.auth)
     implementation(libs.ktor.client.content.negotiation)
     implementation(libs.ktor.client.core)
+    implementation(libs.ktor.client.encoding)
+    implementation(libs.ktor.client.logging)
     implementation(libs.ktor.client.okhttp)
     implementation(libs.ktor.serialization.kotlinx.json)
     implementation(libs.mikepenz.aboutLibraries.m3)
     implementation(libs.okhttp.base)
-    implementation(libs.okhttp.brotli)
-    implementation(libs.okhttp.logging)
     implementation(libs.openid.appauth)
     implementation(libs.unifiedpush) {
         // UnifiedPush connector seems to be using a workaround by importing this library.
@@ -170,12 +172,19 @@ dependencies {
     androidTestImplementation(libs.hilt.android.testing)
     androidTestImplementation(libs.junit)
     androidTestImplementation(libs.kotlinx.coroutines.test)
+    androidTestImplementation(libs.ktor.client.mock)
     androidTestImplementation(libs.mockk.android)
-    androidTestImplementation(libs.okhttp.mockwebserver)
+    androidTestImplementation(testFixtures(project(":synctools")))
 
     testImplementation(libs.bitfire.dav4jvm)
     testImplementation(libs.junit)
+    testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.mockk)
-    testImplementation(libs.okhttp.mockwebserver)
     testImplementation(libs.robolectric)
+    testImplementation(testFixtures(project(":synctools")))
+}
+
+tasks.withType<Test>().configureEach {
+    // activate verbose logging for tests
+    systemProperty("java.util.logging.config.file", "$projectDir/src/test/resources/logging.properties")
 }

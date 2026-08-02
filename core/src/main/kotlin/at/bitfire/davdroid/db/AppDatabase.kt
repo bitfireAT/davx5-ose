@@ -43,14 +43,17 @@ import javax.inject.Singleton
  * production (non-test) databases.
  */
 @Database(entities = [
-    Service::class,
-    HomeSet::class,
+    AccountSetting::class,
     Collection::class,
+    DbAccount::class,
+    HomeSet::class,
     Principal::class,
+    Service::class,
     SyncStats::class,
     WebDavDocument::class,
     WebDavMount::class
-], exportSchema = true, version = 19, autoMigrations = [
+], exportSchema = true, version = 20, autoMigrations = [
+    AutoMigration(from = 19, to = 20),      // add account, account_setting
     AutoMigration(from = 18, to = 19),      // collection: add pushRegisteredEndpoint
     AutoMigration(from = 17, to = 18, spec = AutoMigration18::class),
     AutoMigration(from = 16, to = 17),      // collection: add VAPID key
@@ -115,10 +118,12 @@ abstract class AppDatabase: RoomDatabase() {
 
     // DAOs
 
-    abstract fun serviceDao(): ServiceDao
-    abstract fun homeSetDao(): HomeSetDao
+    abstract fun accountSettingDao(): AccountSettingDao
     abstract fun collectionDao(): CollectionDao
+    abstract fun dbAccountDao(): DbAccountDao
+    abstract fun homeSetDao(): HomeSetDao
     abstract fun principalDao(): PrincipalDao
+    abstract fun serviceDao(): ServiceDao
     abstract fun syncStatsDao(): SyncStatsDao
     abstract fun webDavDocumentDao(): WebDavDocumentDao
     abstract fun webDavMountDao(): WebDavMountDao

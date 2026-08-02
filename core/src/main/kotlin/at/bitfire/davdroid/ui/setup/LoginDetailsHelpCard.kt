@@ -1,0 +1,78 @@
+/*
+ * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
+ */
+
+package at.bitfire.davdroid.ui.setup
+
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.fromHtml
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import at.bitfire.davdroid.R
+import at.bitfire.davdroid.ui.ExternalUris
+import at.bitfire.davdroid.ui.ExternalUris.withStatParams
+import at.bitfire.davdroid.ui.composable.IconCard
+
+@Composable
+@Preview
+fun LoginDetailsHelpCard(
+    includeEmailBaseUrl: Boolean = false,
+    includeServiceDiscovery: Boolean = false,
+    screenName: String? = null
+) {
+    IconCard(
+        icon = Icons.Default.Info,
+        modifier = Modifier.padding(bottom = 8.dp)
+    ) {
+        val context = LocalContext.current
+        Column {
+            if (includeEmailBaseUrl)
+                Text(
+                    stringResource(R.string.login_email_address_info),
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+
+            if (includeServiceDiscovery) {
+                val manualUrl = ExternalUris.Manual.baseUrl.buildUpon()
+                    .appendPath(ExternalUris.Manual.PATH_ACCOUNTS_COLLECTIONS)
+                    .fragment(ExternalUris.Manual.FRAGMENT_SERVICE_DISCOVERY)
+                    .withStatParams(context, screen = screenName)
+                    .build()
+                Text(
+                    text = AnnotatedString.fromHtml(stringResource(R.string.login_base_url_info, manualUrl)),
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+            }
+
+            val testedWithUrl = ExternalUris.Homepage.baseUrl.buildUpon()
+                .appendPath(ExternalUris.Homepage.PATH_TESTED_SERVICES)
+                .withStatParams(context, screen = screenName)
+                .build().toString()
+            Text(
+                AnnotatedString.fromHtml(stringResource(R.string.login_see_tested_with, testedWithUrl)),
+                style = MaterialTheme.typography.bodyMedium
+            )
+        }
+    }
+}
+
+@Composable
+@Preview
+fun LoginDetailsHelpCard_Preview_IncludingEverything() {
+    LoginDetailsHelpCard(
+        includeEmailBaseUrl = true,
+        includeServiceDiscovery = true
+    )
+}

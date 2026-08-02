@@ -4,31 +4,19 @@
 
 package at.bitfire.davdroid.webdav
 
+import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.network.HttpClientBuilder
-import at.bitfire.davdroid.network.MemoryCookieStore
 import com.google.errorprone.annotations.MustBeClosed
-import io.ktor.client.HttpClient
-import okhttp3.CookieJar
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
+import io.ktor.client.plugins.logging.LogLevel
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
-import javax.inject.Provider
 
 class DavHttpClientBuilder @Inject constructor(
     private val credentialsStore: CredentialsStore,
-    private val httpClientBuilder: Provider<HttpClientBuilder>,
+    private val httpClientBuilder: HttpClientBuilder,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) {
-
-    /**
-     * Creates an HTTP client that can be used to access resources in the given mount.
-     *
-     * @param mountId    ID of the mount to access
-     * @param logBody    whether to log the body of HTTP requests (disable for potentially large files)
-     */
-    fun build(mountId: Long, logBody: Boolean = true): OkHttpClient {
-        val builder = createBuilder(mountId, logBody)
-        return builder.build()
-    }
 
     /**
      * Creates a Ktor HTTP client that can be used to access resources in the given mount.
@@ -38,10 +26,8 @@ class DavHttpClientBuilder @Inject constructor(
      * @return the new HttpClient which **must be closed by the caller**
      */
     @MustBeClosed
-    fun buildKtor(mountId: Long, logBody: Boolean = true): HttpClient {
-        val builder = createBuilder(mountId, logBody)
-        return builder.buildKtor()
-    }
+    suspend fun build(mountId: Long, logBody: Boolean = true) =
+        createBuilder(mountId, logBody).build()
 
     /**
      * Creates and configures an HttpClientBuilder with authentication and cookie store.
@@ -50,31 +36,20 @@ class DavHttpClientBuilder @Inject constructor(
      * @param logBody    whether to log the body of HTTP requests (disable for potentially large files)
      * @return configured HttpClientBuilder ready for building
      */
-    private fun createBuilder(mountId: Long, logBody: Boolean = true): HttpClientBuilder {
-        val cookieStore = cookieStores.getOrPut(mountId) {
-            MemoryCookieStore()
-        }
-        val builder = httpClientBuilder.get()
-            .loggerInterceptorLevel(if (logBody) HttpLoggingInterceptor.Level.BODY else HttpLoggingInterceptor.Level.HEADERS)
-            .setCookieStore(cookieStore)
+    private suspend fun createBuilder(mountId: Long, logBody: Boolean = true): HttpClientBuilder {
+        var builder = httpClientBuilder
+            .trafficLogLevel(if (logBody) LogLevel.ALL else LogLevel.HEADERS)
 
-        credentialsStore.getCredentials(mountId)?.let { credentials ->
-            builder.authenticate(
-                domain = null,
-                getCredentials = { credentials }
-            )
+        withContext(ioDispatcher) {
+            credentialsStore.getCredentials(mountId)?.let { credentials ->
+                builder = builder.authenticate(
+                    domain = null,
+                    getCredentials = { credentials }
+                )
+            }
         }
 
         return builder
-    }
-
-
-    companion object {
-
-        /** in-memory cookie stores (one per mount ID) that are available until the content
-         * provider (= process) is terminated */
-        private val cookieStores = mutableMapOf<Long, CookieJar>()
-
     }
 
 }

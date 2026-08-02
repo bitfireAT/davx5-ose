@@ -22,16 +22,4 @@ class DebugInfoActivityTest {
         assertEquals(expected.toString(), intent.getStringExtra(DebugInfoActivity.EXTRA_LOCAL_RESOURCE_SUMMARY))
     }
 
-    @Test
-    fun testIntentBuilder_LargeLogs() {
-        val a = 'A'.code.toByte()
-        val intent = DebugInfoActivity.IntentBuilder(InstrumentationRegistry.getInstrumentation().context)
-            .withLogs(String(ByteArray(1024*1024) { a }))
-            .build()
-        val expected = StringBuilder(DebugInfoActivity.IntentBuilder.MAX_ELEMENT_SIZE)
-        expected.append(String(ByteArray(DebugInfoActivity.IntentBuilder.MAX_ELEMENT_SIZE - 3) { a }))
-        expected.append("...")
-        assertEquals(expected.toString(), intent.getStringExtra("logs"))
-    }
-
 }

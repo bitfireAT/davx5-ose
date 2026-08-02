@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.ui.account
 
-import android.accounts.Account
 import android.annotation.SuppressLint
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -57,24 +56,25 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import at.bitfire.dav4jvm.ktor.toUrlOrNull
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.ui.composable.AppTheme
 import at.bitfire.davdroid.ui.composable.ExceptionInfoDialog
 import at.bitfire.davdroid.ui.composable.ProgressBar
 import at.bitfire.davdroid.ui.widget.CalendarColorPickerDialog
 import at.bitfire.synctools.icalendar.Css3Color
-import okhttp3.HttpUrl.Companion.toHttpUrl
 
 @Composable
 fun CreateCalendarScreen(
-    account: Account,
+    accountId: AccountId,
     onFinish: () -> Unit,
     onNavUp: () -> Unit
 ) {
     val model: CreateCalendarViewModel = hiltViewModel(
         creationCallback = { factory: CreateCalendarViewModel.Factory ->
-            factory.create(account)
+            factory.create(accountId)
         }
     )
     val uiState = model.uiState
@@ -376,7 +376,7 @@ fun CreateCalendarScreenPreview() {
                 id = 0,
                 serviceId = 0,
                 personal = true,
-                url = "https://example.com/some/homeset".toHttpUrl()
+                url = "https://example.com/some/homeset".toUrlOrNull()!!
             )
         )
     )

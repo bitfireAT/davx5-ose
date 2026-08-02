@@ -4,7 +4,9 @@
 
 package at.bitfire.synctools.storage.calendar
 
+import android.accounts.Account
 import android.content.ContentResolver
+import android.net.Uri
 import android.provider.CalendarContract
 import at.bitfire.synctools.storage.calendar.EventsContract.CATEGORIES_SEPARATOR
 
@@ -12,6 +14,13 @@ import at.bitfire.synctools.storage.calendar.EventsContract.CATEGORIES_SEPARATOR
  * How synctools uses some Android event sync columns and data rows.
  */
 object EventsContract {
+
+    fun Uri.asSyncAdapter(account: Account): Uri = buildUpon()
+        .appendQueryParameter(CalendarContract.Calendars.ACCOUNT_NAME, account.name)
+        .appendQueryParameter(CalendarContract.Calendars.ACCOUNT_TYPE, account.type)
+        .appendQueryParameter(CalendarContract.CALLER_IS_SYNCADAPTER, "true")
+        .build()
+
 
     // event rows
 

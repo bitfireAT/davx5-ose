@@ -9,7 +9,7 @@ import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import at.bitfire.davdroid.util.DavUtils.lastSegment
-import okhttp3.HttpUrl
+import io.ktor.http.Url
 
 @Entity(tableName = "homeset",
         foreignKeys = [
@@ -31,7 +31,7 @@ data class HomeSet(
      */
     val personal: Boolean,
 
-    val url: HttpUrl,
+    val url: Url,
 
     val privBind: Boolean = true,
 

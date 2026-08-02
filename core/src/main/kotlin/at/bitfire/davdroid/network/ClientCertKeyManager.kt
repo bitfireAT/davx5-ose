@@ -67,7 +67,7 @@ class ClientCertKeyManager @AssistedInject constructor(
         return try {
             KeyChain.getPrivateKey(context, alias).also { result ->
                 if (result == null)
-                    logger.log(Level.WARNING, "Couldn't obtain private key for alias $alias")
+                    logger.warning("Couldn't obtain private key for alias $alias")
             }
         } catch (e: KeyChainException) {
             // Android <Q throws an exception instead of returning null

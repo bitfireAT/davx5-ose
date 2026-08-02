@@ -4,9 +4,12 @@
 
 package at.bitfire.davdroid.repository
 
+import androidx.annotation.WorkerThread
+import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.db.ServiceType
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class DavServiceRepository @Inject constructor(
@@ -26,11 +29,27 @@ class DavServiceRepository @Inject constructor(
     suspend fun getByAccountAndType(name: String, @ServiceType serviceType: String): Service? =
         dao.getByAccountAndType(name, serviceType)
 
+    suspend fun getByAccountIdAndType(accountId: AccountId, @ServiceType serviceType: String): Service? {
+        return dao.getByAccountIdAndType(accountId, serviceType)
+    }
+
+    @WorkerThread
+    fun getByAccountAndTypeBlocking(name: String, @ServiceType serviceType: String): Service? =
+        dao.getByAccountAndTypeBlocking(name, serviceType)
+
+    @WorkerThread
+    fun getByAccountIdAndTypeBlocking(accountId: AccountId, @ServiceType serviceType: String): Service? =
+        dao.getByAccountIdAndTypeBlocking(accountId, serviceType)
+
     fun getCalDavServiceFlow(accountName: String) =
         dao.getByAccountAndTypeFlow(accountName, Service.TYPE_CALDAV)
 
-    fun getCardDavServiceFlow(accountName: String) =
-        dao.getByAccountAndTypeFlow(accountName, Service.TYPE_CARDDAV)
+    fun getCalDavServiceFlow(accountId: AccountId) =
+        dao.getByAccountAndTypeFlow(accountId, Service.TYPE_CALDAV)
+
+    fun getCardDavServiceFlow(accountId: AccountId): Flow<Service?> {
+        return dao.getByAccountAndTypeFlow(accountId, Service.TYPE_CARDDAV)
+    }
 
 
     // Create & update
@@ -46,7 +65,7 @@ class DavServiceRepository @Inject constructor(
 
     fun deleteAllBlocking() = dao.deleteAll()
 
-    suspend fun deleteByAccount(accountName: String) =
-        dao.deleteByAccount(accountName)
+    suspend fun deleteByAccount(accountId: AccountId) =
+        dao.deleteByAccount(accountId)
 
 }

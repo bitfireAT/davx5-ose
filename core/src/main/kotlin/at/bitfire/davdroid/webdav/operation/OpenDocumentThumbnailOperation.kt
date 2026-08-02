@@ -41,7 +41,7 @@ import kotlin.use
 class OpenDocumentThumbnailOperation @Inject constructor(
     @ApplicationContext private val context: Context,
     private val db: AppDatabase,
-    private val httpClientBuilder: DavHttpClientBuilder,
+    private val davClientBuilder: DavHttpClientBuilder,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val logger: Logger,
     private val thumbnailCache: ThumbnailCache
@@ -49,7 +49,11 @@ class OpenDocumentThumbnailOperation @Inject constructor(
 
     private val documentDao = db.webDavDocumentDao()
 
-    operator fun invoke(documentId: String, sizeHint: Point, signal: CancellationSignal?): AssetFileDescriptor? {
+    suspend operator fun invoke(
+        documentId: String,
+        sizeHint: Point,
+        signal: CancellationSignal?
+    ): AssetFileDescriptor? {
         logger.info("openDocumentThumbnail documentId=$documentId sizeHint=$sizeHint signal=$signal")
 
         // don't download the large images just to create a thumbnail on metered networks
@@ -101,8 +105,8 @@ class OpenDocumentThumbnailOperation @Inject constructor(
         }
 
     private suspend fun downloadAndCreateThumbnail(doc: WebDavDocument, db: AppDatabase, sizeHint: Point): ByteArray? =
-        httpClientBuilder
-            .buildKtor(doc.mountId, logBody = false)
+        davClientBuilder
+            .build(doc.mountId, logBody = false)
             .use { httpClient ->
             val url = doc.toKtorUrl(db)
             try {

@@ -6,10 +6,10 @@ package at.bitfire.davdroid.db
 
 import androidx.sqlite.SQLiteException
 import at.bitfire.davdroid.sync.SyncDataType
+import at.bitfire.davdroid.util.DavUtils.toUrl
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.test.runTest
-import okhttp3.HttpUrl.Companion.toHttpUrl
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -39,7 +39,7 @@ class SyncStatsDaoTest {
             id = 0,
             serviceId = serviceId,
             type = Collection.TYPE_CALENDAR,
-            url = "https://example.com".toHttpUrl()
+            url = "https://example.com".toUrl()
         ))
     }
 

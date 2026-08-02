@@ -53,10 +53,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.itemKey
+import at.bitfire.dav4jvm.ktor.toUrlOrNull
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.ui.composable.AppTheme
-import okhttp3.HttpUrl.Companion.toHttpUrl
 
 @Composable
 fun CollectionsList(
@@ -204,7 +204,7 @@ fun CollectionsList_Item_Standard_Preview() {
         CollectionsList_Item_Standard(
             Collection(
                 type = Collection.TYPE_CALENDAR,
-                url = "https://example.com/caldav/sample".toHttpUrl(),
+                url = "https://example.com/caldav/sample".toUrlOrNull()!!,
                 displayName = "Sample Calendar",
                 description = "This Sample Calendar even has some lengthy description.",
                 color = 0xffff0000.toInt(),
@@ -246,7 +246,7 @@ fun CollectionList_Item_Webcal_Preview() {
         CollectionsList_Item_Webcal(
             Collection(
                 type = Collection.TYPE_WEBCAL,
-                url = "https://example.com/caldav/sample".toHttpUrl(),
+                url = "https://example.com/caldav/sample".toUrlOrNull()!!,
                 displayName = "Sample Subscription",
                 description = "This Sample Subscription even has some lengthy description.",
                 color = 0xffff0000.toInt()

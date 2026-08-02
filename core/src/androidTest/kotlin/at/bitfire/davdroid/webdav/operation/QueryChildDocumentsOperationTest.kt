@@ -4,30 +4,35 @@
 
 package at.bitfire.davdroid.webdav.operation
 
-import android.content.Context
-import android.security.NetworkSecurityPolicy
+import at.bitfire.davdroid.MockEngineUtils.basic
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.WebDavDocument
 import at.bitfire.davdroid.db.WebDavMount
-import at.bitfire.davdroid.network.HttpClientBuilder
-import dagger.hilt.android.qualifiers.ApplicationContext
+import at.bitfire.davdroid.webdav.DavHttpClientBuilder
+import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.mock.MockEngine
+import io.ktor.client.engine.mock.respond
+import io.ktor.http.ContentType
+import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpStatusCode
+import io.ktor.http.Url
+import io.ktor.http.headersOf
+import io.ktor.http.withCharset
+import io.ktor.utils.io.charsets.Charsets
+import io.mockk.coEvery
 import io.mockk.junit4.MockKRule
+import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
-import okhttp3.OkHttpClient
-import okhttp3.mockwebserver.Dispatcher
-import okhttp3.mockwebserver.MockResponse
-import okhttp3.mockwebserver.MockWebServer
-import okhttp3.mockwebserver.RecordedRequest
 import org.junit.After
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
+import org.junit.Assert.assertNotNull
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import java.util.logging.Logger
 import javax.inject.Inject
 
 @HiltAndroidTest
@@ -39,23 +44,15 @@ class QueryChildDocumentsOperationTest {
     @get:Rule
     val mockkRule = MockKRule(this)
 
-    @Inject @ApplicationContext
-    lateinit var context: Context
-
     @Inject
     lateinit var db: AppDatabase
 
     @Inject
     lateinit var operation: QueryChildDocumentsOperation
 
-    @Inject
-    lateinit var httpClientBuilder: HttpClientBuilder
-
-    @Inject
-    lateinit var testDispatcher: TestDispatcher
-
-    private lateinit var server: MockWebServer
-    private lateinit var client: OkHttpClient
+    @BindValue
+    @JvmField
+    val httpClientBuilder: DavHttpClientBuilder = mockk()
 
     private lateinit var mount: WebDavMount
     private lateinit var rootDocument: WebDavDocument
@@ -63,21 +60,13 @@ class QueryChildDocumentsOperationTest {
     @Before
     fun setUp() {
         hiltRule.inject()
-
-        // create server and client
-        server = MockWebServer().apply {
-            dispatcher = testDispatcher
-            start()
-        }
-
-        client = httpClientBuilder.build()
-
-        // mock server delivers HTTP without encryption
-        assertTrue(NetworkSecurityPolicy.getInstance().isCleartextTrafficPermitted)
+        coEvery { httpClientBuilder.build(any(), any()) } answers { HttpClient(buildDefaultEngine()) }
 
         // create WebDAV mount and root document in DB
         runBlocking {
-            val mountId = db.webDavMountDao().insert(WebDavMount(0, "Cat food storage", server.url(PATH_WEBDAV_ROOT)))
+            val mountId = db.webDavMountDao().insert(
+                WebDavMount(0, "Cat food storage", Url("https://dav.example.com$PATH_WEBDAV_ROOT"))
+            )
             mount = db.webDavMountDao().getById(mountId)
             rootDocument = db.webDavDocumentDao().getOrCreateRoot(mount)
         }
@@ -85,8 +74,6 @@ class QueryChildDocumentsOperationTest {
 
     @After
     fun tearDown() {
-        server.shutdown()
-
         runBlocking {
             db.webDavMountDao().deleteAsync(mount)
         }
@@ -112,14 +99,7 @@ class QueryChildDocumentsOperationTest {
 
         // Create a folder
         val folderId = db.webDavDocumentDao().insert(
-            WebDavDocument(
-                0,
-                mount.id,
-                rootDocument.id,
-                "My_Books",
-                true,
-                "My Books",
-            )
+            WebDavDocument(0, mount.id, rootDocument.id, "My_Books", true, "My Books")
         )
         assertEquals("My_Books", db.webDavDocumentDao().get(folderId)!!.name)
         assertEquals("My Books", db.webDavDocumentDao().get(folderId)!!.displayName)
@@ -131,7 +111,6 @@ class QueryChildDocumentsOperationTest {
         assertEquals("Cats WebDAV", db.webDavDocumentDao().get(rootDocument.id)!!.displayName)
         assertEquals("Library", db.webDavDocumentDao().getChildren(rootDocument.id)[0].name)
         assertEquals("Library", db.webDavDocumentDao().getChildren(rootDocument.id)[0].displayName)
-
     }
 
     @Test
@@ -147,6 +126,26 @@ class QueryChildDocumentsOperationTest {
 
         // Assert folder got deleted
         assertEquals(null, db.webDavDocumentDao().get(folderId))
+    }
+
+    @Test
+    fun testDoQueryChildren_propfindFails_doesNotDeleteChildren() = runTest {
+        // Create a child document in DB
+        val childId = db.webDavDocumentDao().insert(
+            WebDavDocument(0, mount.id, rootDocument.id, "some_file.txt", false, "Some File")
+        )
+        assertNotNull(db.webDavDocumentDao().get(childId))
+
+        coEvery { httpClientBuilder.build(any(), any()) } answers {
+            HttpClient(MockEngine.basic(statusCode = HttpStatusCode.InternalServerError))
+        }
+
+        // Query - PROPFIND fails
+        operation.queryChildren(rootDocument)
+
+        // Child must NOT have been deleted despite the PROPFIND failure
+        assertNotNull(db.webDavDocumentDao().get(childId))
+        assertEquals("some_file.txt", db.webDavDocumentDao().get(childId)!!.name)
     }
 
     @Test
@@ -169,75 +168,59 @@ class QueryChildDocumentsOperationTest {
     }
 
 
-    // mock server
+    // mock engine
 
-    class TestDispatcher @Inject constructor(
-        private val logger: Logger
-    ): Dispatcher() {
+    private val xmlHeaders = headersOf(HttpHeaders.ContentType, ContentType.Application.Xml.withCharset(Charsets.UTF_8).toString())
 
-        data class Resource(
-            val name: String,
-            val props: String
+    private fun buildDefaultEngine() = MockEngine { request ->
+        val requestPath = request.url.encodedPath.trimEnd('/')
+
+        if (!request.method.value.equals("PROPFIND", ignoreCase = true))
+            return@MockEngine respond("", HttpStatusCode.NotFound)
+
+        val propsMap = mapOf(
+            PATH_WEBDAV_ROOT to listOf(
+                Resource("",
+                    "<resourcetype><collection/></resourcetype>" +
+                            "<displayname>Cats WebDAV</displayname>"
+                ),
+                Resource("Secret_Document.pages",
+                    "<displayname>Secret_Document.pages</displayname>"
+                ),
+                Resource("MeowMeow_Cats.docx",
+                    "<displayname>MeowMeow_Cats.docx</displayname>"
+                ),
+                Resource("Library",
+                    "<resourcetype><collection/></resourcetype>" +
+                            "<displayname>Library</displayname>"
+                )
+            ),
+            "$PATH_WEBDAV_ROOT/parent1" to listOf(
+                Resource("childOne.txt", "<displayname>childOne.txt</displayname>")
+            ),
+            "$PATH_WEBDAV_ROOT/parent2" to listOf(
+                Resource("childTwo.txt", "<displayname>childTwo.txt</displayname>")
+            )
         )
 
-        override fun dispatch(request: RecordedRequest): MockResponse {
-            logger.info("Request: $request")
-            val requestPath = request.path!!.trimEnd('/')
+        val resources = propsMap[requestPath]
+            ?: return@MockEngine respond("", HttpStatusCode.NotFound)
 
-            if (request.method.equals("PROPFIND", true)) {
-                val propsMap = mutableMapOf(
-                    PATH_WEBDAV_ROOT to arrayOf(
-                        Resource("",
-                            "<resourcetype><collection/></resourcetype>" +
-                                    "<displayname>Cats WebDAV</displayname>"
-                        ),
-                        Resource("Secret_Document.pages",
-                            "<displayname>Secret_Document.pages</displayname>",
-                        ),
-                        Resource("MeowMeow_Cats.docx",
-                            "<displayname>MeowMeow_Cats.docx</displayname>"
-                        ),
-                        Resource("Library",
-                            "<resourcetype><collection/></resourcetype>" +
-                                    "<displayname>Library</displayname>"
-                        )
-                    ),
-
-                    "$PATH_WEBDAV_ROOT/parent1" to arrayOf(
-                        Resource("childOne.txt",
-                            "<displayname>childOne.txt</displayname>"
-                        ),
-                    ),
-                    "$PATH_WEBDAV_ROOT/parent2" to arrayOf(
-                        Resource("childTwo.txt",
-                            "<displayname>childTwo.txt</displayname>"
-                        )
-                    )
-                )
-
-                val responses = propsMap[requestPath]?.joinToString { resource ->
-                    "<response><href>$requestPath/${resource.name}</href><propstat><prop>" +
-                            resource.props +
-                            "</prop></propstat></response>"
-                }
-
-                val multistatus =
-                    "<multistatus xmlns='DAV:' " +
-                            "xmlns:CARD='urn:ietf:params:xml:ns:carddav' " +
-                            "xmlns:CAL='urn:ietf:params:xml:ns:caldav'>" +
-                            responses +
-                            "</multistatus>"
-
-                logger.info("Response: $multistatus")
-                return MockResponse()
-                    .setResponseCode(207)
-                    .setBody(multistatus)
-            }
-
-            return MockResponse().setResponseCode(404)
+        val responses = resources.joinToString("") { resource ->
+            "<response><href>$requestPath/${resource.name}</href>" +
+                    "<propstat><prop>${resource.props}</prop></propstat></response>"
         }
+        val multistatus =
+            "<multistatus xmlns='DAV:' " +
+                    "xmlns:CARD='urn:ietf:params:xml:ns:carddav' " +
+                    "xmlns:CAL='urn:ietf:params:xml:ns:caldav'>" +
+                    responses +
+                    "</multistatus>"
 
+        respond(multistatus, HttpStatusCode.MultiStatus, xmlHeaders)
     }
+
+    private data class Resource(val name: String, val props: String)
 
 
     companion object {

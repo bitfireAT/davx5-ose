@@ -7,13 +7,13 @@ package at.bitfire.synctools.mapping.calendar.builder
 import android.content.Entity
 import android.provider.CalendarContract.Events
 import androidx.annotation.VisibleForTesting
-import at.bitfire.ical4android.util.DateUtils
-import at.bitfire.ical4android.util.TimeApiExtensions.abs
 import at.bitfire.synctools.icalendar.DatePropertyTzMapper.normalizedDate
 import at.bitfire.synctools.icalendar.requireDtStart
 import at.bitfire.synctools.util.AndroidTimeUtils.androidTimezoneId
 import at.bitfire.synctools.util.AndroidTimeUtils.toTimestamp
 import at.bitfire.synctools.util.AndroidTimeUtils.toZonedDateTime
+import at.bitfire.synctools.util.TimeApiExtensions.abs
+import at.bitfire.synctools.util.TimeApiExtensions.isDate
 import net.fortuna.ical4j.model.Property
 import net.fortuna.ical4j.model.component.VEvent
 import net.fortuna.ical4j.model.property.RDate
@@ -80,13 +80,13 @@ class EndTimeBuilder : AndroidEventEntityBuilder {
      * - DTEND is DATE, DTSTART is DATE-TIME → DTEND is amended to DATE-TIME with time and timezone from DTSTART
      * - DTEND is DATE-TIME, DTSTART is DATE → DTEND is reduced to its date component
      *
-     * @see at.bitfire.synctools.mapping.calendar.handler.RecurrenceFieldsHandler.alignUntil
+     * @see at.bitfire.synctools.util.RecurrenceUtils.alignUntil
      */
     @VisibleForTesting
     internal fun alignWithDtStart(endDate: Temporal, startDate: Temporal): Temporal {
         return if (endDate is LocalDate) {
             // DTEND is DATE
-            if (DateUtils.isDate(startDate)) {
+            if (startDate.isDate()) {
                 // DTEND is DATE, DTSTART is DATE
                 endDate
             } else {
@@ -101,7 +101,7 @@ class EndTimeBuilder : AndroidEventEntityBuilder {
             }
         } else {
             // DTEND is DATE-TIME
-            if (DateUtils.isDate(startDate)) {
+            if (startDate.isDate()) {
                 // DTEND is DATE-TIME, DTSTART is DATE → only take date part
                 endDate.toZonedDateTime().toLocalDate()
             } else {
@@ -126,7 +126,7 @@ class EndTimeBuilder : AndroidEventEntityBuilder {
 
         val dur = duration.abs()   // always take positive temporal amount
 
-        return if (DateUtils.isDate(startDate)) {
+        return if (startDate.isDate()) {
             // DTSTART is DATE
             when (dur) {
                 is Period -> {

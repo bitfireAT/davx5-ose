@@ -5,11 +5,18 @@
 package at.bitfire.davdroid.startup
 
 import android.content.Context
-import at.bitfire.davdroid.startup.StartupPlugin.Companion.PRIORITY_DEFAULT
+import androidx.annotation.WorkerThread
+import at.bitfire.davdroid.di.qualifier.ApplicationScope
+import at.bitfire.davdroid.di.qualifier.IoDispatcher
+import at.bitfire.davdroid.startup.StartupAction.Companion.PRIORITY_DEFAULT
 import at.bitfire.davdroid.sync.TasksAppManager
 import at.bitfire.davdroid.util.packageChangedFlow
 import at.bitfire.synctools.storage.TaskProvider
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.logging.Logger
 import javax.inject.Inject
 import javax.inject.Provider
@@ -19,26 +26,27 @@ import javax.inject.Provider
  * the selected tasks app and task sync settings accordingly.
  */
 class TasksAppWatcher @Inject constructor(
+    @ApplicationScope private val applicationScope: CoroutineScope,
     @ApplicationContext private val context: Context,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val logger: Logger,
     private val tasksAppManager: Provider<TasksAppManager>
-): StartupPlugin {
+) : StartupAction {
+
+    override val priority = PRIORITY_DEFAULT
 
     override fun onAppCreate() {
-    }
-
-    override fun priority() = PRIORITY_DEFAULT
-
-    override suspend fun onAppCreateAsync() {
         logger.info("Watching for package changes in order to detect tasks app changes")
-        packageChangedFlow(context).collect {
-            onPackageChanged()
+        applicationScope.launch {
+            packageChangedFlow(context).collect {
+                withContext(ioDispatcher) {
+                    onPackageChanged()
+                }
+            }
         }
     }
 
-    override fun priorityAsync() = PRIORITY_DEFAULT
-
-
+    @WorkerThread
     private fun onPackageChanged() {
         val manager = tasksAppManager.get()
         val currentProvider = manager.currentProvider()
@@ -46,7 +54,7 @@ class TasksAppWatcher @Inject constructor(
 
         if (currentProvider == null) {
             // Iterate through all supported providers and select one, if available.
-            var newProvider = TaskProvider.ProviderName.entries
+            val newProvider = TaskProvider.ProviderName.entries
                 .firstOrNull { provider ->
                     context.packageManager.resolveContentProvider(provider.authority, 0) != null
                 }

@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.servicedetection
 
-import android.accounts.Account
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
@@ -12,7 +11,6 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.TaskStackBuilder
 import androidx.hilt.work.HiltWorker
-import androidx.work.CoroutineWorker
 import androidx.work.Data
 import androidx.work.ExistingWorkPolicy
 import androidx.work.ForegroundInfo
@@ -22,10 +20,14 @@ import androidx.work.OutOfQuotaPolicy
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
-import at.bitfire.dav4jvm.okhttp.exception.UnauthorizedException
+import at.bitfire.dav4jvm.ktor.exception.UnauthorizedException
+import at.bitfire.davdroid.IoCoroutineWorker
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.accounts.toAccountId
+import at.bitfire.davdroid.accounts.toAndroidAccount
 import at.bitfire.davdroid.network.HttpClientBuilder
 import at.bitfire.davdroid.push.PushRegistrationManager
+import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker.Companion.ARG_SERVICE_ID
 import at.bitfire.davdroid.sync.account.InvalidAccountException
@@ -35,7 +37,6 @@ import at.bitfire.davdroid.ui.account.AccountSettingsActivity
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.runInterruptible
 import java.util.logging.Level
 import java.util.logging.Logger
 
@@ -62,6 +63,7 @@ import java.util.logging.Logger
 class RefreshCollectionsWorker @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted workerParams: WorkerParameters,
+    private val accountRepository: AccountRepository,
     private val collectionsWithoutHomeSetRefresherFactory: CollectionsWithoutHomeSetRefresher.Factory,
     private val homeSetRefresherFactory: HomeSetRefresher.Factory,
     private val httpClientBuilder: HttpClientBuilder,
@@ -70,8 +72,8 @@ class RefreshCollectionsWorker @AssistedInject constructor(
     private val principalsRefresherFactory: PrincipalsRefresher.Factory,
     private val pushRegistrationManager: PushRegistrationManager,
     private val serviceRefresherFactory: ServiceRefresher.Factory,
-    serviceRepository: DavServiceRepository
-): CoroutineWorker(appContext, workerParams) {
+    private val serviceRepository: DavServiceRepository
+) : IoCoroutineWorker(appContext, workerParams) {
 
     companion object {
 
@@ -133,50 +135,48 @@ class RefreshCollectionsWorker @AssistedInject constructor(
 
     }
 
-    val serviceId: Long = inputData.getLong(ARG_SERVICE_ID, -1)
-    val service = serviceRepository.getBlocking(serviceId)
-    val account = service?.let { service ->
-        Account(service.accountName, applicationContext.getString(R.string.account_type))
-    }
+    private val serviceId: Long = inputData.getLong(ARG_SERVICE_ID, -1)
 
-    override suspend fun doWork(): Result {
-        if (service == null || account == null) {
-            logger.warning("Missing service or account with service ID: $serviceId")
+    override suspend fun doIoWork(): Result {
+        val service = serviceRepository.get(serviceId)
+        if (service == null) {
+            logger.warning("Missing service with service ID: $serviceId")
             return Result.failure()
         }
 
+        val accountId = accountRepository.getAccountIdFromName(service.accountName)
         try {
-            logger.info("Refreshing ${service.type} collections of service #$service")
+            logger.log(Level.INFO, "Refreshing {0} collections of service #{1}", arrayOf(service.type, service))
 
             // cancel previous notification
             NotificationManagerCompat.from(applicationContext)
                 .cancel(serviceId.toString(), NotificationRegistry.NOTIFY_REFRESH_COLLECTIONS)
 
-            // create authenticating OkHttpClient (credentials taken from account settings)
-            val httpClient = httpClientBuilder
-                .fromAccount(account)
+            // create authenticating HttpClient (credentials taken from account settings)
+            httpClientBuilder
+                .fromAccount(accountId.toAndroidAccount())
                 .build()
-            runInterruptible {
-                val refresher = collectionsWithoutHomeSetRefresherFactory.create(service, httpClient)
+                .use { httpClient ->
+                    val refresher = collectionsWithoutHomeSetRefresherFactory.create(service, httpClient)
 
-                // refresh home set list (from principal url)
-                service.principal?.let { principalUrl ->
-                    logger.fine("Querying principal $principalUrl for home sets")
-                    val serviceRefresher = serviceRefresherFactory.create(service, httpClient)
-                    serviceRefresher.discoverHomesets(principalUrl)
+                    // refresh home set list (from principal url)
+                    service.principal?.let { principalUrl ->
+                        logger.fine("Querying principal $principalUrl for home sets")
+                        val serviceRefresher = serviceRefresherFactory.create(service, httpClient)
+                        serviceRefresher.discoverHomesets(principalUrl)
+                    }
+
+                    // refresh home sets and their member collections
+                    homeSetRefresherFactory.create(service, httpClient)
+                        .refreshHomesetsAndTheirCollections()
+
+                    // also refresh collections without a home set
+                    refresher.refreshCollectionsWithoutHomeSet()
+
+                    // Lastly, refresh the principals (collection owners)
+                    val principalsRefresher = principalsRefresherFactory.create(service, httpClient)
+                    principalsRefresher.refreshPrincipals()
                 }
-
-                // refresh home sets and their member collections
-                homeSetRefresherFactory.create(service, httpClient)
-                    .refreshHomesetsAndTheirCollections()
-
-                // also refresh collections without a home set
-                refresher.refreshCollectionsWithoutHomeSet()
-
-                // Lastly, refresh the principals (collection owners)
-                val principalsRefresher = principalsRefresherFactory.create(service, httpClient)
-                principalsRefresher.refreshPrincipals()
-            }
 
         } catch(e: InvalidAccountException) {
             logger.log(Level.SEVERE, "Invalid account", e)
@@ -184,23 +184,27 @@ class RefreshCollectionsWorker @AssistedInject constructor(
         } catch (e: UnauthorizedException) {
             logger.log(Level.SEVERE, "Not authorized (anymore)", e)
             // notify that we need to re-authenticate in the account settings
-            val settingsIntent = Intent(applicationContext, AccountSettingsActivity::class.java)
-                .putExtra(AccountSettingsActivity.EXTRA_ACCOUNT, account)
+            val settingsIntent = AccountSettingsActivity.createIntent(applicationContext, accountId)
+            val accountName = accountRepository.getAccountName(accountId)
             notifyRefreshError(
-                applicationContext.getString(R.string.sync_error_authentication_failed),
-                settingsIntent
+                accountName = accountName,
+                contentText = applicationContext.getString(R.string.sync_error_authentication_failed),
+                contentIntent = settingsIntent
             )
             return Result.failure()
         } catch(e: Exception) {
             logger.log(Level.SEVERE, "Couldn't refresh collection list", e)
 
+            val accountName = accountRepository.getAccountName(accountId)
             val debugIntent = DebugInfoActivity.IntentBuilder(applicationContext)
                 .withCause(e)
-                .withAccount(account)
+                .withAccount(accountId)
                 .build()
+
             notifyRefreshError(
-                applicationContext.getString(R.string.refresh_collections_worker_refresh_couldnt_refresh),
-                debugIntent
+                accountName = accountName,
+                contentText = applicationContext.getString(R.string.refresh_collections_worker_refresh_couldnt_refresh),
+                contentIntent = debugIntent
             )
             return Result.failure()
         }
@@ -228,7 +232,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
         return ForegroundInfo(NotificationRegistry.NOTIFY_SYNC_EXPEDITED, notification)
     }
 
-    private fun notifyRefreshError(contentText: String, contentIntent: Intent) {
+    private fun notifyRefreshError(accountName: String, contentText: String, contentIntent: Intent) {
         notificationRegistry.notifyIfPossible(NotificationRegistry.NOTIFY_REFRESH_COLLECTIONS, tag = serviceId.toString()) {
             NotificationCompat.Builder(applicationContext, notificationRegistry.CHANNEL_GENERAL)
                 .setSmallIcon(R.drawable.ic_sync_problem_notify)
@@ -239,7 +243,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
                         .addNextIntentWithParentStack(contentIntent)
                         .getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
                 )
-                .setSubText(account?.name)
+                .setSubText(accountName)
                 .setCategory(NotificationCompat.CATEGORY_ERROR)
                 .build()
         }

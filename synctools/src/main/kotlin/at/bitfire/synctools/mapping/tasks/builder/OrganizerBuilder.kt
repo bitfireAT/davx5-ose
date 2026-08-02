@@ -10,7 +10,6 @@ import net.fortuna.ical4j.model.component.VToDo
 import net.fortuna.ical4j.model.parameter.Email
 import net.fortuna.ical4j.model.property.Organizer
 import org.dmfs.tasks.contract.TaskContract.Tasks
-import java.util.logging.Level
 import java.util.logging.Logger
 import kotlin.jvm.optionals.getOrNull
 
@@ -35,7 +34,7 @@ class OrganizerBuilder : DmfsTaskEntityBuilder {
         if (email != null)
             to.entityValues.put(Tasks.ORGANIZER, email)
         else {
-            logger.log(Level.WARNING, "Ignoring ORGANIZER without email address (not supported by Android)", organizer)
+            logger.warning("Ignoring ORGANIZER without email address (not supported by Android): $organizer")
             to.entityValues.putNull(Tasks.ORGANIZER)
         }
     }

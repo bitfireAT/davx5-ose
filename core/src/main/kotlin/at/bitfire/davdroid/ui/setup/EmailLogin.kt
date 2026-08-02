@@ -30,11 +30,8 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.text.HtmlCompat
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.ui.ExternalUris
-import at.bitfire.davdroid.ui.UiUtils.toAnnotatedString
 import at.bitfire.davdroid.ui.composable.Assistant
 import at.bitfire.davdroid.ui.composable.PasswordTextField
 
@@ -96,17 +93,10 @@ fun EmailLoginScreen(
                     .padding(vertical = 8.dp)
             )
 
-            val manualUrl = ExternalUris.Manual.baseUrl.buildUpon()
-                .appendPath(ExternalUris.Manual.PATH_ACCOUNTS_COLLECTIONS)
-                .fragment(ExternalUris.Manual.FRAGMENT_SERVICE_DISCOVERY)
-                .build()
-            val emailInfo = HtmlCompat.fromHtml(stringResource(R.string.login_email_address_info, manualUrl), HtmlCompat.FROM_HTML_MODE_COMPACT)
-            Text(
-                text = emailInfo.toAnnotatedString(),
-                style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp, bottom = 16.dp)
+            LoginDetailsHelpCard(
+                includeEmailBaseUrl = true,
+                includeServiceDiscovery = true,
+                screenName = "EmailLogin"
             )
 
             OutlinedTextField(

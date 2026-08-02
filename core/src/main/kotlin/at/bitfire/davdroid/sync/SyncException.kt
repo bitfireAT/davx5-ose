@@ -5,8 +5,7 @@
 package at.bitfire.davdroid.sync
 
 import at.bitfire.davdroid.resource.LocalResource
-import kotlinx.coroutines.runBlocking
-import okhttp3.HttpUrl
+import io.ktor.http.Url
 
 /**
  * Exception that wraps another notification together with potential information about
@@ -18,12 +17,7 @@ class SyncException(cause: Throwable) : Exception(cause) {
 
         // provide lambda wrappers for setting the local/remote resource
 
-        fun <T> wrapWithLocalResource(localResource: LocalResource?, body: () -> T): T =
-            runBlocking {
-                wrapWithLocalResourceSuspending(localResource, body)
-            }
-
-        suspend fun <T> wrapWithLocalResourceSuspending(localResource: LocalResource?, body: suspend () -> T): T {
+        suspend fun <T> wrapWithLocalResource(localResource: LocalResource?, body: suspend () -> T): T {
             try {
                 return body()
             } catch (e: SyncException) {
@@ -38,12 +32,7 @@ class SyncException(cause: Throwable) : Exception(cause) {
             }
         }
 
-        fun <T> wrapWithRemoteResource(remoteResource: HttpUrl?, body: () -> T): T =
-            runBlocking {
-                wrapWithRemoteResourceSuspending(remoteResource, body)
-            }
-
-        suspend fun <T> wrapWithRemoteResourceSuspending(remoteResource: HttpUrl?, body: suspend () -> T): T {
+        suspend fun <T> wrapWithRemoteResource(remoteResource: Url?, body: suspend () -> T): T {
             try {
                 return body()
             } catch (e: SyncException) {
@@ -70,7 +59,7 @@ class SyncException(cause: Throwable) : Exception(cause) {
 
     var localResource: LocalResource? = null
         private set
-    var remoteResource: HttpUrl? = null
+    var remoteResource: Url? = null
         private set
 
     fun setLocalResourceIfNull(local: LocalResource): SyncException {
@@ -80,7 +69,7 @@ class SyncException(cause: Throwable) : Exception(cause) {
         return this
     }
 
-    fun setRemoteResourceIfNull(remote: HttpUrl): SyncException {
+    fun setRemoteResourceIfNull(remote: Url): SyncException {
         if (remoteResource == null)
             remoteResource = remote
 

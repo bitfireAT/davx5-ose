@@ -7,13 +7,15 @@ package at.bitfire.davdroid.log
 import android.content.Context
 import android.util.Log
 import at.bitfire.davdroid.BuildConfig
+import at.bitfire.davdroid.di.qualifier.ApplicationScope
+import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.repository.PreferenceRepository
 import at.bitfire.synctools.log.LogcatHandler
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
@@ -46,29 +48,34 @@ import javax.inject.Singleton
  */
 @Singleton
 class LogManager @Inject constructor(
+    @ApplicationScope applicationScope: CoroutineScope,
     @ApplicationContext private val context: Context,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val logFileHandler: Provider<LogFileHandler>,
     private val logger: Logger,
     private val prefs: PreferenceRepository
-) : AutoCloseable {
-
-    private val scope = CoroutineScope(Dispatchers.Default)
+) {
 
     init {
         // observe preference changes
-        scope.launch {
+        applicationScope.launch {
             prefs.logToFileFlow().collect {
-                reloadConfig()
+                withContext(ioDispatcher) {
+                    reloadConfig()
+                }
             }
         }
 
+        // initial configuration
         reloadConfig()
     }
 
-    override fun close() {
-        scope.cancel()
-    }
-
+    /**
+     * Reloads the logging configuration from assets/logging.properties and configures the JUL
+     * (`java.util.logging`) framework.
+     *
+     * Blocking method with short run-time so that it can be run on app start-up.
+     */
     @Synchronized
     fun reloadConfig() {
         val logToFile = prefs.logToFile()
@@ -87,7 +94,7 @@ class LogManager @Inject constructor(
             Level.ALL       // include everything (including HTTP interceptor logs) in verbose logs
         else
             Level.FINE      // include detailed information like content provider operations in non-verbose logs
-        rootLogger.addHandler(LogcatHandler(context.packageName))
+        rootLogger.addHandler(LogcatHandler())
 
         // log to file, if requested
         if (logToFile)

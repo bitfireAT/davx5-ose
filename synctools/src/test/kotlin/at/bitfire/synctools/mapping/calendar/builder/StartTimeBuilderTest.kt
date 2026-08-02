@@ -11,7 +11,6 @@ import at.bitfire.DefaultTimezoneRule
 import at.bitfire.dateTimeValue
 import at.bitfire.dateValue
 import at.bitfire.synctools.exception.InvalidICalendarException
-import at.bitfire.synctools.exception.ResourceMappingException
 import at.bitfire.synctools.icalendar.propertyListOf
 import net.fortuna.ical4j.model.ParameterList
 import net.fortuna.ical4j.model.TimeZoneRegistryFactory
@@ -24,7 +23,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import java.time.temporal.Temporal
-import kotlin.test.assertFailsWith
 
 @RunWith(RobolectricTestRunner::class)
 class StartTimeBuilderTest {
@@ -89,14 +87,16 @@ class StartTimeBuilderTest {
     }
 
     @Test
-    fun `Unknown timezone should fail`() {
+    fun `Unknown timezone uses default timezone`() {
+        // ical4j 4.3.0: unknown TZID is treated as floating under relaxed validation, so the
+        // default timezone is used — same result as a floating DTSTART.
         val result = Entity(ContentValues())
         val event = VEvent(propertyListOf(
             DtStart<Temporal>(ParameterList(listOf(TzId("Etc/ABC"))), "20251010T010203")
         ))
-        assertFailsWith<ResourceMappingException>("Expected build call to fail with unknown timezone") {
-            builder.build(event, event, result)
-        }
+        builder.build(event, event, result)
+        assertEquals(1760050923000L, result.entityValues.get(Events.DTSTART))
+        assertEquals(tzRule.defaultZoneId.id, result.entityValues.get(Events.EVENT_TIMEZONE))
     }
 
 }

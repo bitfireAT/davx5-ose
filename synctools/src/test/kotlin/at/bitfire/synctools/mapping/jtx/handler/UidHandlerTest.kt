@@ -41,4 +41,15 @@ class UidHandlerTest {
 
         assertEquals(Uid("test-uid-123"), output.uid.getOrNull())
     }
+
+    @Test
+    fun `exception should use UID from main jtx object`() {
+        val from = Entity(ContentValues())
+        val main = Entity(contentValuesOf(JtxContract.JtxICalObject.UID to "test-uid-123"))
+        val output = VToDo()
+
+        handler.process(from = from, main = main, to = output)
+
+        assertEquals(Uid("test-uid-123"), output.uid.getOrNull())
+    }
 }

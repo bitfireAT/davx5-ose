@@ -11,10 +11,10 @@ import androidx.annotation.RequiresApi
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import io.ktor.client.HttpClient
+import io.ktor.http.ContentType
+import io.ktor.http.Url
 import kotlinx.coroutines.CoroutineScope
-import okhttp3.HttpUrl
-import okhttp3.MediaType
-import okhttp3.OkHttpClient
 
 /**
  * Use this wrapper to ensure that all memory is released as soon as [onRelease] is called.
@@ -28,13 +28,13 @@ import okhttp3.OkHttpClient
  * **All fields of objects of this class must be set to `null` when [onRelease] is called!**
  * Otherwise they will leak memory.
  *
- * @param httpClient    HTTP client ([RandomAccessCallbackWrapper] is responsible to close it)
+ * @param httpClient    HTTP client (closed by [RandomAccessCallback] in its [RandomAccessCallback.onRelease])
  */
 @RequiresApi(26)
 class RandomAccessCallbackWrapper @AssistedInject constructor(
-    @Assisted httpClient: OkHttpClient,
-    @Assisted url: HttpUrl,
-    @Assisted mimeType: MediaType?,
+    @Assisted httpClient: HttpClient,
+    @Assisted url: Url,
+    @Assisted mimeType: ContentType?,
     @Assisted headResponse: HeadResponse,
     @Assisted externalScope: CoroutineScope,
     callbackFactory: RandomAccessCallback.Factory
@@ -42,7 +42,13 @@ class RandomAccessCallbackWrapper @AssistedInject constructor(
 
     @AssistedFactory
     interface Factory {
-        fun create(httpClient: OkHttpClient, url: HttpUrl, mimeType: MediaType?, headResponse: HeadResponse, externalScope: CoroutineScope): RandomAccessCallbackWrapper
+        fun create(
+            httpClient: HttpClient,
+            url: Url,
+            mimeType: ContentType?,
+            headResponse: HeadResponse,
+            externalScope: CoroutineScope
+        ): RandomAccessCallbackWrapper
     }
 
 

@@ -72,10 +72,6 @@ internal fun HttpException.throwForDocumentProvider(context: Context, ignorePrec
     throwForDocumentProvider(context, statusCode, this, ignorePreconditionFailed)
 }
 
-internal fun at.bitfire.dav4jvm.okhttp.exception.HttpException.throwForDocumentProvider(context: Context, ignorePreconditionFailed: Boolean = false) {
-    throwForDocumentProvider(context, statusCode, this, ignorePreconditionFailed)
-}
-
 private fun throwForDocumentProvider(context: Context, statusCode: Int, ex: Exception, ignorePreconditionFailed: Boolean) {
     when (statusCode) {
         401 -> {

@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.sync
 
-import android.accounts.Account
 import android.app.PendingIntent
 import android.app.TaskStackBuilder
 import android.content.Context
@@ -15,9 +14,12 @@ import android.provider.Settings
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.net.toUri
-import at.bitfire.dav4jvm.okhttp.exception.UnauthorizedException
+import at.bitfire.dav4jvm.ktor.exception.UnauthorizedException
+import at.bitfire.dav4jvm.ktor.resolve
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.db.Collection
+import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.resource.LocalCollection
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.ui.DebugInfoActivity
@@ -27,13 +29,13 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.qualifiers.ApplicationContext
-import okhttp3.HttpUrl
+import io.ktor.http.Url
 import java.io.IOException
-import java.util.logging.Level
 import java.util.logging.Logger
 
 class SyncNotificationManager @AssistedInject constructor(
-    @Assisted val account: Account,
+    @Assisted val accountId: AccountId,
+    private val accountRepository: AccountRepository,
     @ApplicationContext private val context: Context,
     private val logger: Logger,
     private val notificationRegistry: NotificationRegistry
@@ -41,7 +43,7 @@ class SyncNotificationManager @AssistedInject constructor(
 
     @AssistedFactory
     interface Factory {
-        fun create(account: Account): SyncNotificationManager
+        fun create(accountId: AccountId): SyncNotificationManager
     }
 
     /**
@@ -50,7 +52,7 @@ class SyncNotificationManager @AssistedInject constructor(
      *
      * @param authority The authority of the content provider.
      */
-    fun notifyProviderError(authority: String) {
+    suspend fun notifyProviderError(authority: String) {
         val (titleResource, textResource) = when (authority) {
             ContactsContract.AUTHORITY ->
                 R.string.sync_warning_contacts_storage_disabled_title to
@@ -59,17 +61,18 @@ class SyncNotificationManager @AssistedInject constructor(
                 R.string.sync_warning_calendar_storage_disabled_title to
                 R.string.sync_warning_calendar_storage_disabled_description
             else -> {
-                logger.log(Level.WARNING, "Content provider error for unknown authority: $authority")
+                logger.warning("Content provider error for unknown authority: $authority")
                 return
             }
         }
 
+        val accountName = accountRepository.getAccountName(accountId)
         notificationRegistry.notifyIfPossible(NotificationRegistry.NOTIFY_SYNC_ERROR, tag = authority) {
             NotificationCompat.Builder(context, notificationRegistry.CHANNEL_SYNC_ERRORS)
                 .setSmallIcon(R.drawable.ic_sync_problem_notify)
                 .setContentTitle(context.getString(titleResource))
                 .setContentText(context.getString(textResource))
-                .setSubText(account.name)
+                .setSubText(accountName)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .setCategory(NotificationCompat.CATEGORY_ERROR)
                 .setAutoCancel(true)
@@ -105,55 +108,54 @@ class SyncNotificationManager @AssistedInject constructor(
      * @param local             The affected local resource.
      * @param remote            The remote URL that caused the exception.
      */
-    fun notifyException(
+    suspend fun notifyException(
         syncDataType: SyncDataType,
         notificationTag: String,
         message: String,
         localCollection: LocalCollection<*>,
         e: Throwable,
         local: LocalResource?,
-        remote: HttpUrl?
-    ) = notificationRegistry.notifyIfPossible(NotificationRegistry.NOTIFY_SYNC_ERROR, tag = notificationTag) {
-        val contentIntent: Intent
-        if (e is UnauthorizedException) {
-            contentIntent = Intent(context, AccountSettingsActivity::class.java)
-            contentIntent.putExtra(
-                AccountSettingsActivity.EXTRA_ACCOUNT,
-                account
-            )
-        } else {
-            contentIntent = buildDebugInfoIntent(syncDataType, e, local, remote)
+        remote: Url?
+    ) {
+        val accountName = accountRepository.getAccountName(accountId)
+        notificationRegistry.notifyIfPossible(NotificationRegistry.NOTIFY_SYNC_ERROR, tag = notificationTag) {
+            val contentIntent: Intent
+            if (e is UnauthorizedException) {
+                contentIntent = AccountSettingsActivity.createIntent(context, accountId)
+            } else {
+                contentIntent = buildDebugInfoIntent(syncDataType, e, local, remote)
+            }
+
+            // to make the PendingIntent unique
+            contentIntent.data = "davdroid:exception/${e.hashCode()}".toUri()
+
+            val channel: String
+            val priority: Int
+            if (e is IOException) {
+                channel = notificationRegistry.CHANNEL_SYNC_IO_ERRORS
+                priority = NotificationCompat.PRIORITY_MIN
+            } else {
+                channel = notificationRegistry.CHANNEL_SYNC_ERRORS
+                priority = NotificationCompat.PRIORITY_DEFAULT
+            }
+
+            val builder = NotificationCompat.Builder(context, channel)
+            builder.setSmallIcon(R.drawable.ic_sync_problem_notify)
+                .setContentTitle(localCollection.title)
+                .setContentText(message)
+                .setStyle(NotificationCompat.BigTextStyle(builder).bigText(message))
+                .setSubText(accountName)
+                .setOnlyAlertOnce(true)
+                .setContentIntent(
+                    TaskStackBuilder.create(context)
+                        .addNextIntentWithParentStack(contentIntent)
+                        .getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+                )
+                .setPriority(priority)
+                .setCategory(NotificationCompat.CATEGORY_ERROR)
+
+            builder.build()
         }
-
-        // to make the PendingIntent unique
-        contentIntent.data = "davdroid:exception/${e.hashCode()}".toUri()
-
-        val channel: String
-        val priority: Int
-        if (e is IOException) {
-            channel = notificationRegistry.CHANNEL_SYNC_IO_ERRORS
-            priority = NotificationCompat.PRIORITY_MIN
-        } else {
-            channel = notificationRegistry.CHANNEL_SYNC_ERRORS
-            priority = NotificationCompat.PRIORITY_DEFAULT
-        }
-
-        val builder = NotificationCompat.Builder(context, channel)
-        builder.setSmallIcon(R.drawable.ic_sync_problem_notify)
-            .setContentTitle(localCollection.title)
-            .setContentText(message)
-            .setStyle(NotificationCompat.BigTextStyle(builder).bigText(message))
-            .setSubText(account.name)
-            .setOnlyAlertOnce(true)
-            .setContentIntent(
-                TaskStackBuilder.create(context)
-                    .addNextIntentWithParentStack(contentIntent)
-                    .getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
-            )
-            .setPriority(priority)
-            .setCategory(NotificationCompat.CATEGORY_ERROR)
-
-        builder.build()
     }
 
     /**
@@ -167,7 +169,7 @@ class SyncNotificationManager @AssistedInject constructor(
      * @param fileName          The name of the file containing the invalid resource.
      * @param title             The title of the notification.
      */
-    fun notifyInvalidResource(
+    suspend fun notifyInvalidResource(
         dataType: SyncDataType,
         notificationTag: String,
         collection: Collection,
@@ -175,6 +177,7 @@ class SyncNotificationManager @AssistedInject constructor(
         fileName: String,
         title: String
     ) {
+        val accountName = accountRepository.getAccountName(accountId)
         notificationRegistry.notifyIfPossible(NotificationRegistry.NOTIFY_INVALID_RESOURCE, tag = notificationTag) {
             val intent = buildDebugInfoIntent(dataType, e, null, collection.url.resolve(fileName))
 
@@ -182,7 +185,7 @@ class SyncNotificationManager @AssistedInject constructor(
             builder.setSmallIcon(R.drawable.ic_warning_notify)
                 .setContentTitle(title)
                 .setContentText(context.getString(R.string.sync_invalid_resources_ignoring))
-                .setSubText(account.name)
+                .setSubText(accountName)
                 .setContentIntent(
                     TaskStackBuilder.create(context)
                         .addNextIntent(intent)
@@ -219,10 +222,10 @@ class SyncNotificationManager @AssistedInject constructor(
         dataType: SyncDataType,
         e: Throwable,
         local: LocalResource?,
-        remote: HttpUrl?
+        remote: Url?
     ): Intent {
         val builder = DebugInfoActivity.IntentBuilder(context)
-            .withAccount(account)
+            .withAccount(accountId)
             .withSyncDataType(dataType)
             .withCause(e)
 

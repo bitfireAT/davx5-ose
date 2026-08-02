@@ -16,7 +16,7 @@ class GroupMembershipBuilder(
     dataRowUri: Uri,
     rawContactId: Long?,
     contact: Contact,
-    val addressBook: AndroidAddressBook<*, *>,
+    val addressBook: AndroidAddressBook,
     val groupMethod: GroupMethod,
     readOnly: Boolean
 ) : DataRowBuilder(Factory.MIME_TYPE, dataRowUri, rawContactId, contact, readOnly) {
@@ -36,7 +36,7 @@ class GroupMembershipBuilder(
     }
 
 
-    class Factory(val addressBook: AndroidAddressBook<*, *>, val groupMethod: GroupMethod) : DataRowBuilder.Factory<GroupMembershipBuilder> {
+    class Factory(val addressBook: AndroidAddressBook, val groupMethod: GroupMethod) : DataRowBuilder.Factory<GroupMembershipBuilder> {
         companion object {
             const val MIME_TYPE = GroupMembership.CONTENT_ITEM_TYPE
         }

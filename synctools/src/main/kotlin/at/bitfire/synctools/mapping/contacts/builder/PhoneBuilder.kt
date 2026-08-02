@@ -6,6 +6,7 @@ package at.bitfire.synctools.mapping.contacts.builder
 
 import android.net.Uri
 import android.provider.ContactsContract.CommonDataKinds.Phone
+import android.telephony.PhoneNumberUtils
 import at.bitfire.synctools.mapping.contacts.Contact
 import at.bitfire.synctools.storage.BatchOperation
 import at.bitfire.synctools.vcard.property.CustomType
@@ -22,7 +23,20 @@ class PhoneBuilder(dataRowUri: Uri, rawContactId: Long?, contact: Contact, readO
             val tel = phoneNumber.property
 
             // TEL can have either a TEXT (default for vCard 3 compatibility) or an URI value.
-            val number = tel.uri?.number ?: tel.text
+            val uri = tel.uri
+            val number: String?
+            if (uri != null) {
+                val baseNumber = uri.number
+                val ext = uri.extension
+                number =
+                    if (!baseNumber.isNullOrBlank() && !ext.isNullOrBlank() &&
+                            !baseNumber.contains(PhoneNumberUtils.WAIT) && !baseNumber.contains(PhoneNumberUtils.PAUSE))
+                        "$baseNumber${PhoneNumberUtils.WAIT}$ext"
+                    else
+                        baseNumber
+            } else {
+                number = tel.text
+            }
 
             // Skip empty numbers
             if (number.isNullOrBlank())

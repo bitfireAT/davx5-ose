@@ -10,6 +10,8 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
+import at.bitfire.davdroid.accounts.AccountId
+import at.bitfire.davdroid.accounts.LegacyAccount
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -26,6 +28,17 @@ interface HomeSetDao {
 
     @Query("SELECT * FROM homeset WHERE serviceId=(SELECT id FROM service WHERE accountName=:accountName AND type=:serviceType) AND privBind ORDER BY displayName, url COLLATE NOCASE")
     fun getBindableByAccountAndServiceTypeFlow(accountName: String, @ServiceType serviceType: String): Flow<List<HomeSet>>
+
+    fun getBindableByAccountAndServiceTypeFlow(
+        accountId: AccountId,
+        @ServiceType serviceType: String
+    ): Flow<List<HomeSet>> {
+        return when (accountId) {
+            is LegacyAccount -> {
+                getBindableByAccountAndServiceTypeFlow(accountId.androidAccount.name, serviceType)
+            }
+        }
+    }
 
     @Query("SELECT * FROM homeset WHERE serviceId=:serviceId AND privBind")
     fun getBindableByServiceFlow(serviceId: Long): Flow<List<HomeSet>>

@@ -57,6 +57,36 @@ class PhoneBuilderTest {
         }
     }
 
+    @Test
+    fun testNumber_Value_Uri_WithExtension() {
+        PhoneBuilder(Uri.EMPTY, null, Contact().apply {
+            phoneNumbers += LabeledProperty(Telephone(TelUri.Builder("+15551234567").extension("5555").build()))
+        }, false).build().also { result ->
+            assertEquals(1, result.size)
+            assertEquals("+15551234567;5555", result[0].values[CommonDataKinds.Phone.NUMBER])
+        }
+    }
+
+    @Test
+    fun testNumber_Value_Uri_BlankExtension() {
+        PhoneBuilder(Uri.EMPTY, null, Contact().apply {
+            phoneNumbers += LabeledProperty(Telephone(TelUri.Builder("+15551234567").build()))
+        }, false).build().also { result ->
+            assertEquals(1, result.size)
+            assertEquals("+15551234567", result[0].values[CommonDataKinds.Phone.NUMBER])
+        }
+    }
+
+    @Test
+    fun testNumber_Value_Uri_AlreadyHasSeparator() {
+        PhoneBuilder(Uri.EMPTY, null, Contact().apply {
+            phoneNumbers += LabeledProperty(Telephone(TelUri.parse("tel:+15551234567,5555;ext=5555")))
+        }, false).build().also { result ->
+            assertEquals(1, result.size)
+            assertEquals("+15551234567,5555", result[0].values[CommonDataKinds.Phone.NUMBER])
+        }
+    }
+
 
     @Test
     fun testLabel() {

@@ -13,7 +13,6 @@ import net.fortuna.ical4j.model.parameter.Email
 import net.fortuna.ical4j.model.property.Attendee
 import net.fortuna.ical4j.model.property.Organizer
 import java.net.URI
-import java.util.logging.Level
 import java.util.logging.Logger
 import kotlin.jvm.optionals.getOrNull
 
@@ -54,7 +53,7 @@ class OrganizerBuilder(
         if (email != null)
             return email
 
-        logger.log(Level.WARNING, "Ignoring ORGANIZER without email address (not supported by Android)", organizer)
+        logger.warning("Ignoring ORGANIZER without email address (not supported by Android): $organizer")
         return null
     }
 

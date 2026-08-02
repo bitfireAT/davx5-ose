@@ -7,6 +7,7 @@ package at.bitfire.synctools.mapping.tasks
 import android.content.ContentValues
 import android.content.Entity
 import androidx.core.content.contentValuesOf
+import at.bitfire.synctools.storage.TaskProvider
 import at.bitfire.synctools.storage.tasks.TaskAndExceptions
 import net.fortuna.ical4j.model.Parameter
 import net.fortuna.ical4j.model.Property
@@ -19,15 +20,20 @@ import org.dmfs.tasks.contract.TaskContract.Properties
 import org.dmfs.tasks.contract.TaskContract.Property.Relation
 import org.dmfs.tasks.contract.TaskContract.Tasks
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import kotlin.jvm.optionals.getOrNull
 
 @RunWith(RobolectricTestRunner::class)
 class DmfsTaskHandlerTest {
 
-    private val handler = DmfsTaskHandler(prodId = ProdId(javaClass.simpleName))
+    private val handler = DmfsTaskHandler(
+        prodId = ProdId(javaClass.simpleName),
+        providerName = TaskProvider.ProviderName.OpenTasks
+    )
 
     @Test
     fun `mapToVToDos adds UID if necessary`() {
@@ -43,6 +49,8 @@ class DmfsTaskHandlerTest {
         val result = handler.mapToVToDos(taskAndExceptions)
 
         assertTrue(result.generatedUid)
+        assertNotNull(result.uid)
+        assertEquals(result.uid, result.associatedTasks.main?.uid?.getOrNull()?.value)
     }
 
     @Test
@@ -71,6 +79,21 @@ class DmfsTaskHandlerTest {
         val result = handler.mapToVToDos(taskAndExceptions)
 
         assertTrue(result.associatedTasks.main!!.getProperty<DtStamp>(Property.DTSTAMP).isPresent)
+    }
+
+    @Test
+    fun `mapToVToDos sets PRODID with provider package name`() {
+        val taskAndExceptions = TaskAndExceptions(
+            main = Entity(ContentValues()),
+            exceptions = emptyList()
+        )
+
+        val result = handler.mapToVToDos(taskAndExceptions)
+
+        assertEquals(
+            ProdId("${javaClass.simpleName} (${TaskProvider.ProviderName.OpenTasks.packageName})"),
+            result.associatedTasks.prodId
+        )
     }
 
     @Test

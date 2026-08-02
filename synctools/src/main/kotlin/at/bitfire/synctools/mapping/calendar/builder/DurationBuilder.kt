@@ -7,15 +7,16 @@ package at.bitfire.synctools.mapping.calendar.builder
 import android.content.Entity
 import android.provider.CalendarContract.Events
 import androidx.annotation.VisibleForTesting
-import at.bitfire.ical4android.util.DateUtils
-import at.bitfire.ical4android.util.TimeApiExtensions.abs
-import at.bitfire.ical4android.util.TimeApiExtensions.toDuration
-import at.bitfire.ical4android.util.TimeApiExtensions.toLocalDate
-import at.bitfire.ical4android.util.TimeApiExtensions.toRfc5545Duration
 import at.bitfire.synctools.icalendar.DatePropertyTzMapper.normalizedDate
 import at.bitfire.synctools.icalendar.requireDtStart
 import at.bitfire.synctools.util.AndroidTimeUtils.toInstant
 import at.bitfire.synctools.util.AndroidTimeUtils.toTimestamp
+import at.bitfire.synctools.util.TimeApiExtensions.abs
+import at.bitfire.synctools.util.TimeApiExtensions.isDate
+import at.bitfire.synctools.util.TimeApiExtensions.isDateTime
+import at.bitfire.synctools.util.TimeApiExtensions.toDuration
+import at.bitfire.synctools.util.TimeApiExtensions.toLocalDate
+import at.bitfire.synctools.util.TimeApiExtensions.toRfc5545Duration
 import net.fortuna.ical4j.model.Property
 import net.fortuna.ical4j.model.component.VEvent
 import net.fortuna.ical4j.model.property.RDate
@@ -51,7 +52,7 @@ class DurationBuilder : AndroidEventEntityBuilder {
 
         // use default duration, if necessary
         val duration = calculatedDuration?.abs()    // always use positive duration
-            ?: defaultDuration(DateUtils.isDate(startDate))
+            ?: defaultDuration(startDate.isDate())
 
         /* [RFC 5545 3.8.2.5]
         > When the "DURATION" property relates to a "DTSTART" property that is specified as a DATE value, then the
@@ -85,7 +86,7 @@ class DurationBuilder : AndroidEventEntityBuilder {
      */
     @VisibleForTesting
     internal fun alignWithDtStart(amount: TemporalAmount, startDate: Temporal): TemporalAmount {
-        if (DateUtils.isDate(startDate)) {
+        if (startDate.isDate()) {
             // DTSTART is DATE
             return if (amount is Duration) {
                 // amount is Duration, change to Period of days instead
@@ -120,7 +121,7 @@ class DurationBuilder : AndroidEventEntityBuilder {
         if (endDate == null || endDate.toTimestamp() <= startDate.toTimestamp())
             return null
 
-        return if (DateUtils.isDateTime(startDate) && DateUtils.isDateTime(endDate)) {
+        return if (startDate.isDateTime() && endDate.isDateTime()) {
             // DTSTART and DTEND are DATE-TIME → calculate difference between timestamps
             val seconds = (endDate.toTimestamp() - startDate.toTimestamp()) / 1000L
             Duration.ofSeconds(seconds)

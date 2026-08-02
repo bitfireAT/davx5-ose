@@ -447,4 +447,11 @@
     <string name="about_translations_thanks">❤️ Merci à tous ceux qui ont contribué aux traductions !</string>
     <string name="navigation_drawer_managed">Pour les organisations</string>
     <string name="sync_warning_contacts_storage_disabled_title">Fournisseur de contacts manquant</string>
+    <string name="dismiss_forever">Ne plus afficher</string>
+    <string name="intro_backups_something_wrong">Les choses peuvent toujours mal tourner, que ce soit sur le serveur, dans %s, ou dans d\'autres applications, ce qui pourrait par exemple supprimer accidentellement tous les évènements d\'un calendrier. (Ces suppressions seraient alors synchronisées avec le serveur.)</string>
+    <string name="intro_backups_accept">Je dispose déjà d\'une stratégie de sauvegarde ou je n\'en ai pas besoin.</string>
+    <string name="about_translations_over_transifex">Avec Transifex</string>
+    <string name="about_translations_over_weblate">Avec Weblate</string>
+    <string name="about_translations_contribute">Aider à traduire</string>
+    <string name="keep_android_open"><![CDATA[La liberté d\'Android est menacée. Découvrez comment la préserver sur <a href="%s">keepandroidopen.org</a>.]]></string>
 </resources>

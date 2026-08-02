@@ -19,9 +19,12 @@ import android.provider.ContactsContract
 import androidx.core.content.getSystemService
 import androidx.core.content.pm.ShortcutManagerCompat
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.WorkQuery
+import at.bitfire.davdroid.accounts.AccountId
+import at.bitfire.davdroid.accounts.toAccountId
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
@@ -54,6 +57,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import java.text.Collator
 import java.util.logging.Logger
 
@@ -85,7 +89,8 @@ class AccountsViewModel @AssistedInject constructor(
     }
 
     data class AccountInfo(
-        val name: Account,
+        val id: AccountId,
+        val name: String,
         val progress: AccountProgress
     )
 
@@ -152,14 +157,14 @@ class AccountsViewModel @AssistedInject constructor(
                                 services.any { serviceId ->
                                     info.tags.contains(RefreshCollectionsWorker.workerName(serviceId))
                                 } || SyncDataType.entries.any { dataType ->
-                                    info.tags.contains(BaseSyncWorker.commonTag(account, dataType))
+                                    info.tags.contains(BaseSyncWorker.commonTag(account.toAccountId(), dataType))
                                 }
                             )
                     } -> AccountProgress.Active
 
                     workInfos.any { info ->
                         info.state == WorkInfo.State.ENQUEUED && SyncDataType.entries.any { dataType ->
-                            info.tags.contains(OneTimeSyncWorker.workerName(account, dataType))
+                            info.tags.contains(OneTimeSyncWorker.workerName(account.toAccountId(), dataType))
                         }
                     } -> AccountProgress.Pending
 
@@ -169,7 +174,11 @@ class AccountsViewModel @AssistedInject constructor(
                     else -> AccountProgress.Idle
                 }
 
-                AccountInfo(account, progress)
+                AccountInfo(
+                    id = account.toAccountId(),
+                    name = account.name,
+                    progress = progress
+                )
             }
     }
 
@@ -185,7 +194,7 @@ class AccountsViewModel @AssistedInject constructor(
         }
 
         emit(anyShowAlwaysPage)
-    }.flowOn(Dispatchers.Default)
+    }.flowOn(Dispatchers.IO)
 
 
     // warnings
@@ -281,8 +290,10 @@ class AccountsViewModel @AssistedInject constructor(
         ShortcutManagerCompat.reportShortcutUsed(context, UiUtils.SHORTCUT_SYNC_ALL)
 
         // Enqueue sync worker for all accounts and authorities. Will sync once internet is available
-        for (account in accountRepository.getAll())
-            syncWorkerManager.enqueueOneTimeAllAuthorities(account, manual = true)
+        viewModelScope.launch {
+            for (accountId in accountRepository.getAll())
+                syncWorkerManager.enqueueOneTimeAllAuthorities(accountId, manual = true)
+        }
     }
 
 

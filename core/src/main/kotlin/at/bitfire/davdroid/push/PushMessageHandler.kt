@@ -42,7 +42,7 @@ class PushMessageHandler @Inject constructor(
             return
         }
         val messageXml = message.content.toString(Charsets.UTF_8)
-        logger.log(Level.INFO, "Received push message", messageXml)
+        logger.log(Level.FINE, "Received push message: {0}", arrayOf(messageXml))
 
         // parse push notification
         val topic = parse(messageXml)
@@ -71,24 +71,24 @@ class PushMessageHandler @Inject constructor(
                             syncDataTypes += SyncDataType.TASKS
 
                     // Schedule sync for all the types identified
-                    val account = accountRepository.fromName(service.accountName)
+                    val accountId = accountRepository.getAccountIdFromName(service.accountName)
                     for (syncDataType in syncDataTypes)
-                        syncWorkerManager.enqueueOneTime(account, syncDataType, fromPush = true)
+                        syncWorkerManager.enqueueOneTime(accountId, syncDataType, fromPush = true)
                 }
             }
 
         } else {
             // fallback when no known topic is present (shouldn't happen)
-            val service = instance.toLongOrNull()?.let { serviceRepository.getBlocking(it) }
+            val service = instance.toLongOrNull()?.let { serviceRepository.get(it) }
             if (service != null) {
                 logger.warning("Got push message without topic and service, syncing all accounts")
-                val account = accountRepository.fromName(service.accountName)
-                syncWorkerManager.enqueueOneTimeAllAuthorities(account, fromPush = true)
+                val accountId = accountRepository.getAccountIdFromName(service.accountName)
+                syncWorkerManager.enqueueOneTimeAllAuthorities(accountId, fromPush = true)
 
             } else {
                 logger.warning("Got push message without topic, syncing all accounts")
-                for (account in accountRepository.getAll())
-                    syncWorkerManager.enqueueOneTimeAllAuthorities(account, fromPush = true)
+                for (accountId in accountRepository.getAll())
+                    syncWorkerManager.enqueueOneTimeAllAuthorities(accountId, fromPush = true)
             }
         }
     }

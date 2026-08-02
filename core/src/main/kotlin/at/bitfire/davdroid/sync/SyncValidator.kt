@@ -22,7 +22,7 @@ interface SyncValidator {
      * @param account The account about to be synchronized
      * @return whether synchronization shall take place (false to abort)
      */
-    fun beforeSync(account: Account): Boolean
+    suspend fun beforeSync(account: Account): Boolean
 
 }
 

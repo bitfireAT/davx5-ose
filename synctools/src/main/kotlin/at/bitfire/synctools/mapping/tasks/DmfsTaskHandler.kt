@@ -5,9 +5,8 @@
 package at.bitfire.synctools.mapping.tasks
 
 import android.content.Entity
-import at.bitfire.ical4android.ICalendar.Companion.withUserAgents
 import at.bitfire.synctools.icalendar.AssociatedTasks
-import at.bitfire.synctools.icalendar.plusAssign
+import at.bitfire.synctools.icalendar.withUserAgents
 import at.bitfire.synctools.mapping.tasks.handler.AlarmsHandler
 import at.bitfire.synctools.mapping.tasks.handler.CategoriesHandler
 import at.bitfire.synctools.mapping.tasks.handler.ClassificationHandler
@@ -36,12 +35,12 @@ import at.bitfire.synctools.storage.TaskProvider
 import at.bitfire.synctools.storage.tasks.TaskAndExceptions
 import net.fortuna.ical4j.model.component.VToDo
 import net.fortuna.ical4j.model.property.ProdId
-import net.fortuna.ical4j.model.property.Uid
 import org.dmfs.tasks.contract.TaskContract
 import java.util.UUID
 
 class DmfsTaskHandler(
     private val prodId: ProdId,
+    private val providerName: TaskProvider.ProviderName
 ) {
     private val entityHandlers = arrayOf<DmfsTaskEntityHandler>(
         UidHandler(),
@@ -83,7 +82,15 @@ class DmfsTaskHandler(
     )
 
     fun mapToVToDos(taskAndExceptions: TaskAndExceptions): MappingResult {
+        // make sure that main task has a UID
         var generatedUid = false
+        val mainValues = taskAndExceptions.main.entityValues
+        val uid = mainValues.getAsString(TaskContract.Tasks._UID) ?: run {
+            val newUid = UUID.randomUUID().toString()
+            mainValues.put(TaskContract.Tasks._UID, newUid)
+            generatedUid = true
+            newUid
+        }
 
          // map main task
         val main = mapTask(
@@ -91,24 +98,18 @@ class DmfsTaskHandler(
             main = taskAndExceptions.main
         )
 
-        // make sure that main task has a UID
-        if (main.uid.isEmpty) {
-            generatedUid = true
-            main += Uid(UUID.randomUUID().toString())
-        }
-
         // Exceptions are currently not supported by the mapping code
         val exceptions = listOf<VToDo>()
 
         val mappedTasks = AssociatedTasks(
             main = main,
             exceptions = exceptions,
-            prodId = prodId.withUserAgents(listOf(TaskProvider.ProviderName.JtxBoard.packageName))
+            prodId = prodId.withUserAgents(listOf(providerName.packageName))
         )
 
         return MappingResult(
             associatedTasks = mappedTasks,
-            uid = main.uid.get().value,
+            uid = uid,
             generatedUid = generatedUid
         )
     }

@@ -8,6 +8,7 @@ import android.accounts.Account
 import android.accounts.AccountManager
 import android.content.ContentProviderClient
 import android.os.Build
+import at.bitfire.davdroid.accounts.toAccountId
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.resource.LocalJtxCollection
@@ -16,7 +17,6 @@ import at.bitfire.synctools.storage.TaskProvider
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import kotlinx.coroutines.runBlocking
 
 /**
  * Sync logic for jtx board
@@ -25,14 +25,20 @@ class JtxSyncer @AssistedInject constructor(
     @Assisted account: Account,
     @Assisted resync: ResyncType?,
     @Assisted syncResult: SyncResult,
+    @Assisted settings: SyncSettings,
     localJtxCollectionStore: LocalJtxCollectionStore,
     private val jtxSyncManagerFactory: JtxSyncManager.Factory,
     private val tasksAppManager: dagger.Lazy<TasksAppManager>
-): Syncer<LocalJtxCollectionStore, LocalJtxCollection>(account, resync, syncResult) {
+) : Syncer<LocalJtxCollectionStore, LocalJtxCollection>(account, resync, syncResult, settings) {
 
     @AssistedFactory
     interface Factory {
-        fun create(account: Account, resyncType: ResyncType?, syncResult: SyncResult): JtxSyncer
+        fun create(
+            account: Account,
+            resyncType: ResyncType?,
+            syncResult: SyncResult,
+            settings: SyncSettings
+        ): JtxSyncer
     }
 
     override val dataStore = localJtxCollectionStore
@@ -66,20 +72,23 @@ class JtxSyncer @AssistedInject constructor(
     override fun getDbSyncCollections(serviceId: Long): List<Collection> =
         collectionRepository.getSyncJtxCollections(serviceId)
 
-    override fun syncCollection(provider: ContentProviderClient, localCollection: LocalJtxCollection, remoteCollection: Collection) {
+    override suspend fun syncCollection(
+        provider: ContentProviderClient,
+        localCollection: LocalJtxCollection,
+        remoteCollection: Collection
+    ) {
         logger.info("Synchronizing jtx collection $localCollection")
 
         val syncManager = jtxSyncManagerFactory.jtxSyncManager(
-            account,
+            account.toAccountId(),
             httpClient,
             syncResult,
             localCollection,
             remoteCollection,
-            resync
+            resync,
+            settings
         )
-        runBlocking {
-            syncManager.performSync()
-        }
+        syncManager.performSync()
     }
 
 }

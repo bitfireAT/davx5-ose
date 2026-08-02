@@ -7,8 +7,10 @@ package at.bitfire.davdroid.webdav.operation
 import android.content.Context
 import android.provider.DocumentsContract.Document
 import android.provider.DocumentsContract.buildChildDocumentsUri
-import at.bitfire.dav4jvm.okhttp.DavCollection
-import at.bitfire.dav4jvm.okhttp.Response
+import at.bitfire.dav4jvm.ktor.DavCollection
+import at.bitfire.dav4jvm.ktor.Response
+import at.bitfire.dav4jvm.ktor.responsesWithRelation
+import at.bitfire.dav4jvm.ktor.toContentTypeOrNull
 import at.bitfire.dav4jvm.property.webdav.CurrentUserPrivilegeSet
 import at.bitfire.dav4jvm.property.webdav.DisplayName
 import at.bitfire.dav4jvm.property.webdav.GetContentLength
@@ -23,44 +25,44 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.WebDavDocument
 import at.bitfire.davdroid.db.WebDavDocumentDao
-import at.bitfire.davdroid.di.qualifier.IoDispatcher
+import at.bitfire.davdroid.di.qualifier.ApplicationScope
 import at.bitfire.davdroid.webdav.DavHttpClientBuilder
 import at.bitfire.davdroid.webdav.DocumentSortByMapper
 import at.bitfire.davdroid.webdav.DocumentsCursor
 import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runInterruptible
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import java.io.FileNotFoundException
 import java.util.concurrent.ConcurrentHashMap
 import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
 
+/**
+ * Singleton so that [applicationScope] (and the running-query bookkeeping it launches into) has a
+ * single, well-defined lifetime instead of a new, uncancellable scope per Hilt injection.
+ */
 class QueryChildDocumentsOperation @Inject constructor(
     @ApplicationContext private val context: Context,
     private val db: AppDatabase,
     private val documentSortByMapper: Lazy<DocumentSortByMapper>,
-    private val httpClientBuilder: DavHttpClientBuilder,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
-    private val logger: Logger
+    private val davClientBuilder: DavHttpClientBuilder,
+    private val logger: Logger,
+    @ApplicationScope private val applicationScope: CoroutineScope
 ) {
 
     private val authority = context.getString(R.string.webdav_authority)
     private val documentDao = db.webDavDocumentDao()
 
-    private val backgroundScope = CoroutineScope(SupervisorJob())
-
-    operator fun invoke(parentDocumentId: String, projection: Array<out String>?, sortOrder: String?) =
-        synchronized(QueryChildDocumentsOperation::class.java) {
+    suspend operator fun invoke(parentDocumentId: String, projection: Array<out String>?, sortOrder: String?) =
+        mutex.withLock {
             queryChildDocuments(parentDocumentId, projection, sortOrder)
         }
 
-    private fun queryChildDocuments(
+    private suspend fun queryChildDocuments(
         parentDocumentId: String,
         projection: Array<out String>?,
         sortOrder: String?
@@ -85,7 +87,7 @@ class QueryChildDocumentsOperation @Inject constructor(
 
         // Dispatch worker querying for the children and keep track of it
         val running = runningQueryChildren.getOrPut(parentId) {
-            backgroundScope.launch {
+            applicationScope.launch {
                 queryChildren(parent)
                 // Once the query is done, set query as finished (not running)
                 runningQueryChildren[parentId] = false
@@ -126,66 +128,72 @@ class QueryChildDocumentsOperation @Inject constructor(
      * @param parent    folder to search for children
      */
     internal suspend fun queryChildren(parent: WebDavDocument) {
-        val oldChildren = documentDao.getChildren(parent.id).associateBy { it.name }.toMutableMap() // "name" of file/folder must be unique
+        val oldChildren = documentDao.getChildren(parent.id)
+            .associateBy { it.name }
+            .toMutableMap() // "name" of file/folder must be unique
         val newChildrenList = hashMapOf<String, WebDavDocument>()
 
-        val parentUrl = parent.toHttpUrl(db)
-        val client = httpClientBuilder.build(parent.mountId)
-        val folder = DavCollection(client, parentUrl)
-
+        val parentUrl = parent.toKtorUrl(db)
         try {
-            runInterruptible(ioDispatcher) {
-                folder.propfind(1, *DAV_FILE_FIELDS) { response, relation ->
-                    logger.fine("$relation $response")
+            davClientBuilder.build(parent.mountId).use { client ->
+                val folder = DavCollection(client, parentUrl)
+                folder.propfind(1, *DAV_FILE_FIELDS)
+                    .responsesWithRelation()
+                    .collect { (response, relation) ->
+                        logger.fine("$relation $response")
 
-                    val resource: WebDavDocument =
-                        when (relation) {
-                            Response.HrefRelation.SELF ->       // it's about the parent
-                                parent
+                        val resource: WebDavDocument =
+                            when (relation) {
+                                Response.HrefRelation.SELF ->       // it's about the parent
+                                    parent
 
-                            Response.HrefRelation.MEMBER ->     // it's about a member
-                                WebDavDocument(mountId = parent.mountId, parentId = parent.id, name = response.hrefName())
+                                Response.HrefRelation.MEMBER ->     // it's about a member
+                                    WebDavDocument(
+                                        mountId = parent.mountId,
+                                        parentId = parent.id,
+                                        name = response.hrefName()
+                                    )
 
-                            else -> {
-                                // we didn't request this; log a warning and ignore it
-                                logger.warning("Ignoring unexpected $response $relation in $parentUrl")
-                                return@propfind
+                                else -> {
+                                    // we didn't request this; log a warning and ignore it
+                                    logger.warning("Ignoring unexpected $response $relation in $parentUrl")
+                                    return@collect
+                                }
                             }
+
+                        val updatedResource = resource.copy(
+                            isDirectory = response[ResourceType::class.java]?.types?.contains(WebDAV.Collection)
+                                ?: resource.isDirectory,
+                            displayName = response[DisplayName::class.java]?.displayName,
+                            mimeType = response[GetContentType::class.java]?.type?.toContentTypeOrNull(),
+                            eTag = response[GetETag::class.java]?.takeIf { !it.weak }?.eTag,
+                            lastModified = response[GetLastModified::class.java]?.lastModified?.toEpochMilli(),
+                            size = response[GetContentLength::class.java]?.contentLength,
+                            mayBind = response[CurrentUserPrivilegeSet::class.java]?.mayBind,
+                            mayUnbind = response[CurrentUserPrivilegeSet::class.java]?.mayUnbind,
+                            mayWriteContent = response[CurrentUserPrivilegeSet::class.java]?.mayWriteContent,
+                            quotaAvailable = response[QuotaAvailableBytes::class.java]?.quotaAvailableBytes,
+                            quotaUsed = response[QuotaUsedBytes::class.java]?.quotaUsedBytes,
+                        )
+
+                        if (resource == parent)
+                            documentDao.update(updatedResource)
+                        else {
+                            documentDao.insertOrUpdate(updatedResource)
+                            newChildrenList[resource.name] = updatedResource
                         }
 
-                    val updatedResource = resource.copy(
-                        isDirectory = response[ResourceType::class.java]?.types?.contains(WebDAV.Collection)
-                            ?: resource.isDirectory,
-                        displayName = response[DisplayName::class.java]?.displayName,
-                        mimeType = response[GetContentType::class.java]?.type?.toMediaTypeOrNull(),
-                        eTag = response[GetETag::class.java]?.takeIf { !it.weak }?.eTag,
-                        lastModified = response[GetLastModified::class.java]?.lastModified?.toEpochMilli(),
-                        size = response[GetContentLength::class.java]?.contentLength,
-                        mayBind = response[CurrentUserPrivilegeSet::class.java]?.mayBind,
-                        mayUnbind = response[CurrentUserPrivilegeSet::class.java]?.mayUnbind,
-                        mayWriteContent = response[CurrentUserPrivilegeSet::class.java]?.mayWriteContent,
-                        quotaAvailable = response[QuotaAvailableBytes::class.java]?.quotaAvailableBytes,
-                        quotaUsed = response[QuotaUsedBytes::class.java]?.quotaUsedBytes,
-                    )
-
-                    if (resource == parent)
-                        documentDao.update(updatedResource)
-                    else {
-                        documentDao.insertOrUpdate(updatedResource)
-                        newChildrenList[resource.name] = updatedResource
+                        // remove resource from known child nodes, because not found on server
+                        oldChildren.remove(resource.name)
                     }
-
-                    // remove resource from known child nodes, because not found on server
-                    oldChildren.remove(resource.name)
-                }
             }
+
+            // Delete child nodes which were not rediscovered (deleted serverside)
+            for ((_, oldChild) in oldChildren)
+                documentDao.delete(oldChild)
         } catch (e: Exception) {
             logger.log(Level.WARNING, "Couldn't query children", e)
         }
-
-        // Delete child nodes which were not rediscovered (deleted serverside)
-        for ((_, oldChild) in oldChildren)
-            documentDao.delete(oldChild)
     }
 
 
@@ -209,6 +217,9 @@ class QueryChildDocumentsOperation @Inject constructor(
          *  Value: whether the runner is still running (*true*) or has already finished (*false*).
          */
         private val runningQueryChildren = ConcurrentHashMap<Long, Boolean>()
+
+        /** Serializes [queryChildDocuments] across all instances. */
+        private val mutex = Mutex()
 
     }
 

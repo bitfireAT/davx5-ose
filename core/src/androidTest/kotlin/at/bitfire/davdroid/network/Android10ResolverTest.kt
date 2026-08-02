@@ -14,18 +14,18 @@ import org.xbill.DNS.Type
 import java.net.Inet4Address
 import java.net.InetAddress
 
+@SdkSuppress(minSdkVersion = Build.VERSION_CODES.Q)
 class Android10ResolverTest {
 
     val FQDN_DAVX5 = "www.davx5.com"
 
     @Test
-    @SdkSuppress(minSdkVersion = Build.VERSION_CODES.Q, maxSdkVersion = 34)
     fun testResolveA() {
         val www = InetAddress.getAllByName(FQDN_DAVX5).filterIsInstance<Inet4Address>().first()
 
-        val srvLookup = Lookup(FQDN_DAVX5, Type.A)
-        srvLookup.setResolver(Android10Resolver())
-        val resultGeneric = srvLookup.run()
+        val lookup = Lookup(FQDN_DAVX5, Type.A)
+        lookup.setResolver(Android10Resolver())
+        val resultGeneric = lookup.run()
         assertEquals(1, resultGeneric.size)
 
         val result = resultGeneric.first() as ARecord

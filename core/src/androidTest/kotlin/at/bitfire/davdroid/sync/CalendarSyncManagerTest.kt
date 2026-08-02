@@ -14,6 +14,9 @@ import android.provider.CalendarContract.Calendars
 import android.provider.CalendarContract.Events
 import androidx.core.content.contentValuesOf
 import androidx.test.rule.GrantPermissionRule
+import at.bitfire.davdroid.accounts.AccountId
+import at.bitfire.davdroid.accounts.LegacyAccount
+import at.bitfire.davdroid.accounts.toAndroidAccount
 import at.bitfire.davdroid.resource.LocalCalendar
 import at.bitfire.davdroid.resource.LocalEvent
 import at.bitfire.davdroid.sync.account.TestAccount
@@ -23,7 +26,9 @@ import at.bitfire.synctools.storage.calendar.EventAndExceptions
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import io.ktor.client.engine.mock.toByteArray
 import io.mockk.mockk
+import kotlinx.coroutines.test.runTest
 import okio.Buffer
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -53,7 +58,7 @@ class CalendarSyncManagerTest {
     @Inject
     lateinit var syncManagerFactory: CalendarSyncManager.Factory
 
-    lateinit var account: Account
+    lateinit var accountId: LegacyAccount
     lateinit var providerClient: ContentProviderClient
     lateinit var androidCalendar: AndroidCalendar
     lateinit var localCalendar: LocalCalendar
@@ -62,11 +67,11 @@ class CalendarSyncManagerTest {
     fun setUp() {
         hiltRule.inject()
 
-        account = TestAccount.create()
+        accountId = LegacyAccount(TestAccount.create())
         providerClient = context.contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)!!
 
         // create LocalCalendar
-        val androidCalendarProvider = AndroidCalendarProvider(account, providerClient)
+        val androidCalendarProvider = AndroidCalendarProvider(accountId.toAndroidAccount(), providerClient)
         androidCalendar = androidCalendarProvider.createAndGetCalendar(contentValuesOf(
             Calendars.NAME to "Sample Calendar"
         ))
@@ -77,12 +82,12 @@ class CalendarSyncManagerTest {
     fun tearDown() {
         localCalendar.androidCalendar.delete()
         providerClient.close()
-        TestAccount.remove(account)
+        TestAccount.remove(accountId.androidAccount)
     }
 
 
     @Test
-    fun test_generateUpload_existingUid() {
+    fun test_generateUpload_existingUid() = runTest {
         val result = syncManager().generateUpload(LocalEvent(
             localCalendar.recurringCalendar,
             EventAndExceptions(
@@ -99,13 +104,13 @@ class CalendarSyncManagerTest {
         assertEquals("existing-uid.ics", result.suggestedFileName)
 
         val iCal = Buffer().also {
-            result.requestBody.writeTo(it)
+            it.write(result.content.toByteArray())
         }.readString(Charsets.UTF_8)
         assertTrue(iCal.contains("UID:existing-uid\r\n"))
     }
 
     @Test
-    fun generateUpload_noUid() {
+    fun generateUpload_noUid() = runTest {
         val result = syncManager().generateUpload(LocalEvent(
             localCalendar.recurringCalendar,
             EventAndExceptions(
@@ -122,7 +127,7 @@ class CalendarSyncManagerTest {
         val uuid = result.suggestedFileName.removeSuffix(".ics")
 
         val iCal = Buffer().also {
-            result.requestBody.writeTo(it)
+            it.write(result.content.toByteArray())
         }.readString(Charsets.UTF_8)
         assertTrue(iCal.contains("UID:$uuid\r\n"))
 
@@ -132,12 +137,13 @@ class CalendarSyncManagerTest {
     // helpers
 
     private fun syncManager() = syncManagerFactory.calendarSyncManager(
-        account = account,
+        accountId = accountId,
         httpClient = mockk(),
         syncResult = mockk(),
         localCalendar = mockk(),
         collection = mockk(),
-        resync = mockk()
+        resync = mockk(),
+        settings = SyncSettingsFixtures.default()
     )
 
 

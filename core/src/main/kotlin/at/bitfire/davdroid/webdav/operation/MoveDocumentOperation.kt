@@ -8,15 +8,12 @@ import android.content.Context
 import at.bitfire.dav4jvm.ktor.DavResource
 import at.bitfire.dav4jvm.ktor.exception.HttpException
 import at.bitfire.davdroid.db.AppDatabase
-import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.webdav.DavHttpClientBuilder
 import at.bitfire.davdroid.webdav.DocumentProviderUtils
 import at.bitfire.davdroid.webdav.throwForDocumentProvider
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.ktor.http.URLBuilder
 import io.ktor.http.appendPathSegments
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.runBlocking
 import java.io.FileNotFoundException
 import java.util.logging.Logger
 import javax.inject.Inject
@@ -24,14 +21,17 @@ import javax.inject.Inject
 class MoveDocumentOperation @Inject constructor(
     @ApplicationContext private val context: Context,
     private val db: AppDatabase,
-    private val httpClientBuilder: DavHttpClientBuilder,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
+    private val davClientBuilder: DavHttpClientBuilder,
     private val logger: Logger
 ) {
 
     private val documentDao = db.webDavDocumentDao()
 
-    operator fun invoke(sourceDocumentId: String, sourceParentDocumentId: String, targetParentDocumentId: String): String = runBlocking(ioDispatcher) {
+    suspend operator fun invoke(
+        sourceDocumentId: String,
+        sourceParentDocumentId: String,
+        targetParentDocumentId: String
+    ): String {
         logger.fine("WebDAV moveDocument $sourceDocumentId $sourceParentDocumentId $targetParentDocumentId")
         val doc = documentDao.get(sourceDocumentId.toLong()) ?: throw FileNotFoundException()
         val dstParent = documentDao.get(targetParentDocumentId.toLong()) ?: throw FileNotFoundException()
@@ -39,8 +39,8 @@ class MoveDocumentOperation @Inject constructor(
         if (doc.mountId != dstParent.mountId)
             throw UnsupportedOperationException("Can't MOVE between WebDAV servers")
 
-        httpClientBuilder
-            .buildKtor(doc.mountId)
+        davClientBuilder
+            .build(doc.mountId)
             .use { httpClient ->
                 val newLocation = URLBuilder(dstParent.toKtorUrl(db))
                     .appendPathSegments(doc.name)
@@ -61,7 +61,7 @@ class MoveDocumentOperation @Inject constructor(
                 }
             }
 
-        doc.id.toString()
+        return doc.id.toString()
     }
 
 }

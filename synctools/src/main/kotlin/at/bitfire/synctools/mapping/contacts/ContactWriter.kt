@@ -71,7 +71,7 @@ class ContactWriter(
     }
 
     private fun addProperties() {
-        vCard.productId = ProductId("$productId (ez-vcard/${Ezvcard.VERSION})")
+        vCard.productId = ProductId(productId)
         contact.uid?.let { vCard.uid = Uid(it) }
 
         addKindAndMembers()
@@ -365,7 +365,7 @@ class ContactWriter(
             val msgs = LinkedList<String>()
             for ((key, warnings) in validation)
                 msgs += "  * " + key?.javaClass?.simpleName + " - " + warnings?.joinToString(" | ")
-            logger.log(Level.WARNING, "vCard validation warnings", msgs.joinToString(","))
+            logger.log(Level.WARNING, "vCard validation warnings: {0}", arrayOf(msgs.joinToString(",")))
         }
     }
 

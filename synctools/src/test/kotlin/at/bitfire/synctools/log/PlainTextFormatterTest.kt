@@ -12,7 +12,7 @@ import java.util.logging.LogRecord
 class PlainTextFormatterTest {
 
     private val minimum = PlainTextFormatter(
-        withTime = false,
+        withTimeAndThreadId = false,
         withSource = false,
         padSource = 0,
         withException = false,
@@ -20,44 +20,36 @@ class PlainTextFormatterTest {
     )
 
     @Test
-    fun test_format_param_null() {
-        val result = minimum.format(LogRecord(Level.INFO, "Message").apply {
+    fun `format with invalid message formatting`() {
+        val result = minimum.format(LogRecord(Level.INFO, "Message {!}").apply {
             parameters = arrayOf(null)
         })
-        assertEquals("Message\n\tPARAMETER #1 = (null)", result)
+        assertEquals("Message {!}", result)
     }
 
     @Test
-    fun test_format_param_object() {
-        val result = minimum.format(LogRecord(Level.INFO, "Message").apply {
+    fun `format with null parameter`() {
+        val result = minimum.format(LogRecord(Level.INFO, "Message {0}").apply {
+            parameters = arrayOf(null)
+        })
+        assertEquals("Message null", result)
+    }
+
+    @Test
+    fun `format with Object parameter`() {
+        val result = minimum.format(LogRecord(Level.INFO, "Message {0}").apply {
             parameters = arrayOf(object {
                 override fun toString() = "SomeObject[]"
             })
         })
-        assertEquals("Message\n\tPARAMETER #1 = SomeObject[]", result)
+        assertEquals("Message SomeObject[]", result)
     }
 
     @Test
-    fun test_format_truncatesMessage() {
+    fun `format truncates long line`() {
         val result = minimum.format(LogRecord(Level.INFO, "a".repeat(50000)))
         // PlainTextFormatter.MAX_LENGTH is 10,000
         assertEquals(10000, result.length)
-    }
-
-
-    @Test
-    fun test_shortClassName_Empty() {
-        assertEquals("", PlainTextFormatter.DEFAULT.shortClassName(""))
-    }
-
-    @Test
-    fun test_shortClassName_NoDot_Anonymous() {
-        assertEquals("NoDot", PlainTextFormatter.DEFAULT.shortClassName("NoDot\$Anonymous"))
-    }
-
-    @Test
-    fun test_shortClassName_MultipleParts() {
-        assertEquals("a.b.s.l.PlainTextFormatterTest", PlainTextFormatter.DEFAULT.shortClassName(javaClass.name))
     }
 
 }

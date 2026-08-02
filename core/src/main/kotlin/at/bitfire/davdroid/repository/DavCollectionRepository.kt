@@ -6,13 +6,13 @@ package at.bitfire.davdroid.repository
 
 import android.accounts.Account
 import android.content.Context
-import at.bitfire.dav4jvm.HttpUtils.toKtorUrl
 import at.bitfire.dav4jvm.XmlUtils
 import at.bitfire.dav4jvm.XmlUtils.insertTag
 import at.bitfire.dav4jvm.ktor.DavResource
 import at.bitfire.dav4jvm.ktor.exception.GoneException
 import at.bitfire.dav4jvm.ktor.exception.HttpException
 import at.bitfire.dav4jvm.ktor.exception.NotFoundException
+import at.bitfire.dav4jvm.ktor.withTrailingSlash
 import at.bitfire.dav4jvm.property.caldav.CalDAV
 import at.bitfire.dav4jvm.property.carddav.CardDAV
 import at.bitfire.dav4jvm.property.webdav.WebDAV
@@ -29,7 +29,9 @@ import at.bitfire.synctools.icalendar.componentListOf
 import at.bitfire.synctools.icalendar.propertyListOf
 import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
+import io.ktor.http.URLBuilder
 import io.ktor.http.Url
+import io.ktor.http.appendPathSegments
 import net.fortuna.ical4j.model.Calendar
 import net.fortuna.ical4j.model.Component
 import net.fortuna.ical4j.model.TimeZoneRegistryFactory
@@ -38,9 +40,9 @@ import net.fortuna.ical4j.model.property.ProdId
 import net.fortuna.ical4j.model.property.immutable.ImmutableVersion
 import java.io.StringWriter
 import java.util.UUID
+import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
-import javax.inject.Provider
 
 /**
  * Repository for managing collections.
@@ -49,7 +51,7 @@ class DavCollectionRepository @Inject constructor(
     @ApplicationContext private val context: Context,
     private val db: AppDatabase,
     private val logger: Logger,
-    private val httpClientBuilder: Provider<HttpClientBuilder>,
+    private val httpClientBuilder: HttpClientBuilder,
     private val productIds: Lazy<ProductIds>,
     private val serviceRepository: DavServiceRepository
 ) {
@@ -99,15 +101,15 @@ class DavCollectionRepository @Inject constructor(
         description: String?
     ) {
         val folderName = UUID.randomUUID().toString()
-        val url = homeSet.url.newBuilder()
-            .addPathSegment(folderName)
-            .addPathSegment("")     // trailing slash
+        val url = URLBuilder(homeSet.url)
+            .appendPathSegments(folderName, encodeSlash = true)
             .build()
+            .withTrailingSlash()
 
         // create collection on server
         createOnServer(
             account = account,
-            url = url.toKtorUrl(),
+            url = url,
             method = "MKCOL",
             xmlBody = generateMkColXml(
                 addressBook = true,
@@ -143,15 +145,15 @@ class DavCollectionRepository @Inject constructor(
         supportVJOURNAL: Boolean
     ) {
         val folderName = UUID.randomUUID().toString()
-        val url = homeSet.url.newBuilder()
-            .addPathSegment(folderName)
-            .addPathSegment("")     // trailing slash
+        val url = URLBuilder(homeSet.url)
+            .appendPathSegments(folderName, encodeSlash = true)
             .build()
+            .withTrailingSlash()
 
         // create collection on server
         createOnServer(
             account = account,
-            url = url.toKtorUrl(),
+            url = url,
             method = "MKCALENDAR",
             xmlBody = generateMkColXml(
                 addressBook = false,
@@ -188,22 +190,26 @@ class DavCollectionRepository @Inject constructor(
 
     /** Deletes the given collection from the server and the database. */
     suspend fun deleteRemote(collection: Collection) {
-        val service = serviceRepository.getBlocking(collection.serviceId) ?: throw IllegalArgumentException("Service not found")
+        val service = serviceRepository.get(collection.serviceId) ?: throw IllegalArgumentException("Service not found")
         val account = Account(service.accountName, context.getString(R.string.account_type))
 
-        httpClientBuilder.get()
+        httpClientBuilder
             .fromAccountAsync(account)
-            .buildKtor()
+            .build()
             .use { httpClient ->
                 try {
-                    DavResource(httpClient, collection.url.toKtorUrl()).delete {
+                    DavResource(httpClient, collection.url).delete {
                         // success, otherwise an exception would have been thrown → delete locally, too
                         delete(collection)
                     }
                 } catch (e: HttpException) {
                     if (e is NotFoundException || e is GoneException) {
                         // HTTP 404 Not Found or 410 Gone (collection is not there anymore) -> delete locally, too
-                        logger.info("Collection ${collection.url} not found on server, deleting locally")
+                        logger.log(
+                            Level.INFO,
+                            "Collection {0} not found on server, deleting locally",
+                            arrayOf(collection.url)
+                        )
                         delete(collection)
                     } else
                         throw e
@@ -332,9 +338,9 @@ class DavCollectionRepository @Inject constructor(
      * @param xmlBody XML body containing collection metadata (e.g., display name, properties).
      */
     private suspend fun createOnServer(account: Account, url: Url, method: String, xmlBody: String) {
-        httpClientBuilder.get()
+        httpClientBuilder
             .fromAccountAsync(account)
-            .buildKtor()
+            .build()
             .use { httpClient ->
                 DavResource(httpClient, url).mkCol(
                     xmlBody = xmlBody,

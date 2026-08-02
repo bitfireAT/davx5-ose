@@ -4,12 +4,15 @@
 
 package at.bitfire.davdroid.ui.account
 
-import android.accounts.Account
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import at.bitfire.davdroid.accounts.AccountId
+import at.bitfire.davdroid.accounts.toAndroidAccount
 import at.bitfire.davdroid.db.HomeSet
+import at.bitfire.davdroid.di.qualifier.ApplicationScope
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavHomeSetRepository
 import at.bitfire.synctools.icalendar.Css3Color
@@ -19,7 +22,7 @@ import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
@@ -31,17 +34,18 @@ import java.util.Locale
 
 @HiltViewModel(assistedFactory = CreateCalendarViewModel.Factory::class)
 class CreateCalendarViewModel @AssistedInject constructor(
-    @Assisted val account: Account,
+    @Assisted val accountId: AccountId,
+    @ApplicationScope private val applicationScope: CoroutineScope,
     private val collectionRepository: DavCollectionRepository,
     homeSetRepository: DavHomeSetRepository
 ): ViewModel() {
 
     @AssistedFactory
     interface Factory {
-        fun create(account: Account): CreateCalendarViewModel
+        fun create(accountId: AccountId): CreateCalendarViewModel
     }
 
-    val calendarHomeSets = homeSetRepository.getCalendarHomeSetsFlow(account)
+    val calendarHomeSets = homeSetRepository.getCalendarHomeSetsFlow(accountId)
 
     data class TimeZoneInfo(
         val id: String,
@@ -62,7 +66,7 @@ class CreateCalendarViewModel @AssistedInject constructor(
         val result = timeZones.sortedBy { collator.getCollationKey(it.displayName) }
 
         emit(result)
-    }.flowOn(Dispatchers.Default)
+    }.flowOn(Dispatchers.IO)
 
 
     // UI state
@@ -126,27 +130,25 @@ class CreateCalendarViewModel @AssistedInject constructor(
 
     // actions
 
-    /* Creating collections shouldn't be cancelled when the view is destroyed, otherwise we might
-    end up with collections on the server that are not represented in the database/UI. */
-    private val createCollectionScope = CoroutineScope(SupervisorJob())
-
     fun createCalendar() {
         val homeSet = uiState.homeSet ?: return
         uiState = uiState.copy(isCreating = true)
 
-        createCollectionScope.launch {
+        viewModelScope.launch {
             uiState = try {
-                collectionRepository.createCalendar(
-                    account = account,
-                    homeSet = homeSet,
-                    color = uiState.color,
-                    displayName = uiState.displayName,
-                    description = uiState.description,
-                    timeZoneId = uiState.timeZoneId,
-                    supportVEVENT = uiState.supportVEVENT,
-                    supportVTODO = uiState.supportVTODO,
-                    supportVJOURNAL = uiState.supportVJOURNAL
-                )
+                applicationScope.async {
+                    collectionRepository.createCalendar(
+                        account = accountId.toAndroidAccount(),
+                        homeSet = homeSet,
+                        color = uiState.color,
+                        displayName = uiState.displayName,
+                        description = uiState.description,
+                        timeZoneId = uiState.timeZoneId,
+                        supportVEVENT = uiState.supportVEVENT,
+                        supportVTODO = uiState.supportVTODO,
+                        supportVJOURNAL = uiState.supportVJOURNAL
+                    )
+                }.await()
 
                 uiState.copy(isCreating = false, success = true)
             } catch (e: Exception) {

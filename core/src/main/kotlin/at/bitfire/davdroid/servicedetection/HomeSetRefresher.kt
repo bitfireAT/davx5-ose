@@ -4,9 +4,11 @@
 
 package at.bitfire.davdroid.servicedetection
 
-import at.bitfire.dav4jvm.okhttp.DavResource
-import at.bitfire.dav4jvm.okhttp.Response
-import at.bitfire.dav4jvm.okhttp.exception.HttpException
+import at.bitfire.dav4jvm.ktor.DavResource
+import at.bitfire.dav4jvm.ktor.Response
+import at.bitfire.dav4jvm.ktor.exception.HttpException
+import at.bitfire.dav4jvm.ktor.resolve
+import at.bitfire.dav4jvm.ktor.responsesWithRelation
 import at.bitfire.dav4jvm.property.webdav.CurrentUserPrivilegeSet
 import at.bitfire.dav4jvm.property.webdav.DisplayName
 import at.bitfire.dav4jvm.property.webdav.Owner
@@ -22,16 +24,17 @@ import at.bitfire.davdroid.settings.SettingsManager
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import okhttp3.OkHttpClient
-import java.util.logging.Level
+import io.ktor.client.HttpClient
+import kotlinx.coroutines.flow.filter
 import java.util.logging.Logger
+import javax.annotation.WillNotClose
 
 /**
  * Used to update the list of synchronizable collections
  */
 class HomeSetRefresher @AssistedInject constructor(
     @Assisted private val service: Service,
-    @Assisted private val httpClient: OkHttpClient,
+    @Assisted @WillNotClose private val httpClient: HttpClient,
     private val db: AppDatabase,
     private val logger: Logger,
     private val collectionRepository: DavCollectionRepository,
@@ -41,7 +44,7 @@ class HomeSetRefresher @AssistedInject constructor(
 
     @AssistedFactory
     interface Factory {
-        fun create(service: Service, httpClient: OkHttpClient): HomeSetRefresher
+        fun create(service: Service, httpClient: HttpClient): HomeSetRefresher
     }
 
     /**
@@ -53,7 +56,7 @@ class HomeSetRefresher @AssistedInject constructor(
      * If a home-set URL in fact points to a collection directly, the collection will be saved with this URL,
      * and a null value for it's home-set. Refreshing of collections without home-sets is then handled by [CollectionsWithoutHomeSetRefresher.refreshCollectionsWithoutHomeSet].
      */
-    internal fun refreshHomesetsAndTheirCollections() {
+    internal suspend fun refreshHomesetsAndTheirCollections() {
         val homesets = homeSetRepository.getByServiceBlocking(service.id).associateBy { it.url }.toMutableMap()
         for ((homeSetUrl, localHomeset) in homesets) {
             logger.fine("Listing home set $homeSetUrl")
@@ -67,40 +70,40 @@ class HomeSetRefresher @AssistedInject constructor(
 
             try {
                 val collectionProperties = ServiceDetectionUtils.collectionQueryProperties(service.type)
-                DavResource(httpClient, homeSetUrl).propfind(1, *collectionProperties) { response, relation ->
-                    // Note: This callback may be called multiple times ([MultiResponseCallback])
-                    if (!response.isSuccess())
-                        return@propfind
-
-                    if (relation == Response.HrefRelation.SELF)
-                    // this response is about the home set itself
-                        homeSetRepository.insertOrUpdateByUrlBlocking(
-                            localHomeset.copy(
-                                displayName = response[DisplayName::class.java]?.displayName,
-                                privBind = response[CurrentUserPrivilegeSet::class.java]?.mayBind != false
+                DavResource(httpClient, homeSetUrl).propfind(1, *collectionProperties)
+                    .responsesWithRelation()
+                    .filter { (response, _) -> response.isSuccess() }
+                    .collect { (response, relation) ->
+                        if (relation == Response.HrefRelation.SELF) {
+                            // this response is about the home set itself
+                            homeSetRepository.insertOrUpdateByUrlBlocking(
+                                localHomeset.copy(
+                                    displayName = response[DisplayName::class.java]?.displayName,
+                                    privBind = response[CurrentUserPrivilegeSet::class.java]?.mayBind != false
+                                )
                             )
+                        }
+
+                        // in any case, check whether the response is about a usable collection
+                        var collection = Collection.fromDavResponse(response) ?: return@collect
+                        collection = collection.copy(
+                            serviceId = service.id,
+                            homeSetId = localHomeset.id,
+                            sync = shouldPreselect(collection, homesets.values),
+                            ownerId = response[Owner::class.java]?.href  // save the principal id (collection owner)
+                                ?.let { response.href.resolve(it) }
+                                ?.let { principalUrl -> Principal.fromServiceAndUrl(service, principalUrl) }
+                                ?.let { principal -> db.principalDao().insertOrUpdate(service.id, principal) }
                         )
+                        logger.fine("Found collection: $collection")
 
-                    // in any case, check whether the response is about a usable collection
-                    var collection = Collection.fromDavResponse(response) ?: return@propfind
-                    collection = collection.copy(
-                        serviceId = service.id,
-                        homeSetId = localHomeset.id,
-                        sync = shouldPreselect(collection, homesets.values),
-                        ownerId = response[Owner::class.java]?.href  // save the principal id (collection owner)
-                            ?.let { response.href.resolve(it) }
-                            ?.let { principalUrl -> Principal.fromServiceAndUrl(service, principalUrl) }
-                            ?.let { principal -> db.principalDao().insertOrUpdate(service.id, principal) }
-                    )
-                    logger.log(Level.FINE, "Found collection", collection)
+                        // save or update collection if usable (ignore it otherwise)
+                        if (ServiceDetectionUtils.isUsableCollection(service, collection))
+                            collectionRepository.insertOrUpdateByUrlRememberSync(collection)
 
-                    // save or update collection if usable (ignore it otherwise)
-                    if (ServiceDetectionUtils.isUsableCollection(service, collection))
-                        collectionRepository.insertOrUpdateByUrlRememberSync(collection)
-
-                    // Remove this collection from queue - because it was found in the home set
-                    localHomesetCollections.remove(collection.url)
-                }
+                        // Remove this collection from queue - because it was found in the home set
+                        localHomesetCollections.remove(collection.url)
+                    }
             } catch (e: HttpException) {
                 // delete home set locally if it was not accessible (40x)
                 if (e.statusCode in arrayOf(403, 404, 410))

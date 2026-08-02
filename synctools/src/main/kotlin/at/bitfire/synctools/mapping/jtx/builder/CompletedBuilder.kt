@@ -5,8 +5,8 @@
 package at.bitfire.synctools.mapping.jtx.builder
 
 import android.content.Entity
-import at.bitfire.ical4android.JtxICalObject
 import at.bitfire.synctools.icalendar.DatePropertyTzMapper.normalizedDate
+import at.bitfire.synctools.mapping.jtx.JtxProperty
 import at.bitfire.synctools.util.AndroidTimeUtils.toTimestamp
 import at.techbee.jtx.JtxContract
 import net.fortuna.ical4j.model.component.CalendarComponent
@@ -28,7 +28,7 @@ class CompletedBuilder : JtxObjectEntityBuilder {
         }
 
         val completed = from.getProperty<Completed>(Completed.COMPLETED).getOrNull()?.normalizedDate()?.toTimestamp()
-        val completedTimezone = from.getProperty<XProperty>(JtxICalObject.X_PROP_COMPLETEDTIMEZONE).getOrNull()?.value
+        val completedTimezone = from.getProperty<XProperty>(JtxProperty.X_COMPLETEDTIMEZONE).getOrNull()?.value
 
         to.entityValues.put(JtxContract.JtxICalObject.COMPLETED, completed)
         to.entityValues.put(JtxContract.JtxICalObject.COMPLETED_TIMEZONE, completedTimezone)

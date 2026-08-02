@@ -104,7 +104,7 @@ class ContactReader internal constructor(val vCard: VCard, val downloader: Conta
             val date: Temporal? = prop.date
 
             if (arrayOf(ChronoField.YEAR, ChronoField.MONTH_OF_YEAR, ChronoField.DAY_OF_MONTH).any { date?.isSupported(it) == false }) {
-                logger.log(Level.WARNING, "checkPartialDate: unsupported DateOrTimeProperty", prop)
+                logger.warning("checkPartialDate: unsupported DateOrTimeProperty $prop")
                 return
             }
 
@@ -242,8 +242,7 @@ class ContactReader internal constructor(val vCard: VCard, val downloader: Conta
                     val relation = Related()
                     relation.text = prop.value
 
-                    val labelStr = findAndRemoveLabel(prop.group)
-                    when (labelStr) {
+                    when (val labelStr = findAndRemoveLabel(prop.group)) {
                         XAbRelatedNames.APPLE_ASSISTANT -> {
                             relation.types.add(CustomType.Related.ASSISTANT)
                             relation.types.add(RelatedType.CO_WORKER)

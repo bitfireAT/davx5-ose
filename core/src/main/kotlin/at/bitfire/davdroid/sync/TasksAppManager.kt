@@ -14,6 +14,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.TaskStackBuilder
 import androidx.core.net.toUri
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.accounts.toAccountId
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.resource.LocalDataStore
 import at.bitfire.davdroid.resource.LocalJtxCollectionStore
@@ -90,8 +91,8 @@ class TasksAppManager @Inject constructor(
             notificationRegistry.get().notifyPermissions()
 
         // check all accounts and update task sync
-        for (account in accountRepository.get().getAll())
-            automaticSyncManager.updateAutomaticSync(account, SyncDataType.TASKS)
+        for (account in accountRepository.get().getAllBlocking())
+            automaticSyncManager.updateAutomaticSync(account.toAccountId(), SyncDataType.TASKS)
     }
 
 

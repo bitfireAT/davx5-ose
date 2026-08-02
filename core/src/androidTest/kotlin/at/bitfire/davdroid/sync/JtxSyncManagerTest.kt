@@ -7,6 +7,7 @@ package at.bitfire.davdroid.sync
 import android.accounts.Account
 import android.content.ContentProviderClient
 import android.content.Context
+import at.bitfire.davdroid.accounts.LegacyAccount
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.network.HttpClientBuilder
@@ -14,6 +15,7 @@ import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.resource.LocalJtxCollection
 import at.bitfire.davdroid.resource.LocalJtxCollectionStore
 import at.bitfire.davdroid.sync.account.TestAccount
+import at.bitfire.davdroid.util.DavUtils.toUrl
 import at.bitfire.davdroid.util.PermissionUtils
 import at.bitfire.synctools.storage.TaskProvider
 import at.bitfire.synctools.test.GrantPermissionOrSkipRule
@@ -21,7 +23,7 @@ import at.techbee.jtx.JtxContract
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import okhttp3.HttpUrl.Companion.toHttpUrl
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assume.assumeNotNull
@@ -62,7 +64,7 @@ class JtxSyncManagerTest {
     @get:Rule
     val permissionRule = GrantPermissionOrSkipRule(TaskProvider.ProviderName.JtxBoard.permissions.toSet())
 
-    lateinit var account: Account
+    lateinit var accountId: LegacyAccount
 
     private lateinit var provider: ContentProviderClient
     private lateinit var syncManager: JtxSyncManager
@@ -80,25 +82,26 @@ class JtxSyncManagerTest {
         assumeNotNull(providerOrNull)
         provider = providerOrNull!!
 
-        account = TestAccount.create()
+        accountId = LegacyAccount(TestAccount.create())
 
         // Create dummy dependencies
-        val service = Service(0, account.name, Service.TYPE_CALDAV, null)
+        val service = Service(0, accountId.androidAccount.name, Service.TYPE_CALDAV, null)
         val serviceId = serviceRepository.insertOrReplaceBlocking(service)
         val dbCollection = Collection(
             0,
             serviceId,
             type = Collection.TYPE_CALENDAR,
-            url = "https://example.com".toHttpUrl()
+            url = "https://example.com".toUrl()
         )
-        localJtxCollection = localJtxCollectionStore.create(provider, dbCollection)!!
+        localJtxCollection = localJtxCollectionStore.create(provider, dbCollection)
         syncManager = jtxSyncManagerFactory.jtxSyncManager(
-            account = account,
+            accountId = accountId,
             httpClient = httpClientBuilder.build(),
             syncResult = SyncResult(),
             localCollection = localJtxCollection,
             collection = dbCollection,
-            resync = null
+            resync = null,
+            settings = SyncSettingsFixtures.default()
         )
     }
 
@@ -111,13 +114,13 @@ class JtxSyncManagerTest {
         if (this::provider.isInitialized)
             provider.close()
 
-        if (this::account.isInitialized)
-            TestAccount.remove(account)
+        if (this::accountId.isInitialized)
+            TestAccount.remove(accountId.androidAccount)
     }
 
 
     @Test
-    fun testProcessICalObject_addsVtodo() {
+    fun testProcessICalObject_addsVtodo() = runTest {
         val calendar = "BEGIN:VCALENDAR\n" +
                 "PRODID:-Vivaldi Calendar V1.0//EN\n" +
                 "VERSION:2.0\n" +
@@ -129,17 +132,23 @@ class JtxSyncManagerTest {
                 "END:VCALENDAR"
 
         // Should create "demo-calendar"
-        syncManager.processICalObject("demo-calendar", "abc123", StringReader(calendar))
+        syncManager.processICalObject("demo-calendar", "abc123", "scheduleTag", StringReader(calendar))
 
         // Verify main VTODO is created
-        val localJtxIcalObject = localJtxCollection.findByName("demo-calendar")!!
-        assertEquals("47a23c66-8c1a-4b44-bbe8-ebf33f8cf80f", localJtxIcalObject.uid)
-        assertEquals("abc123", localJtxIcalObject.eTag)
-        assertEquals("Test Task (Main VTODO)", localJtxIcalObject.summary)
+        val localJtxObject = localJtxCollection.findByName("demo-calendar")!!
+        assertEquals(
+            "47a23c66-8c1a-4b44-bbe8-ebf33f8cf80f",
+            localJtxObject.jtxObjectAndExceptions.main.entityValues.getAsString(JtxContract.JtxICalObject.UID)
+        )
+        assertEquals("abc123", localJtxObject.eTag)
+        assertEquals(
+            "Test Task (Main VTODO)",
+            localJtxObject.jtxObjectAndExceptions.main.entityValues.getAsString(JtxContract.JtxICalObject.SUMMARY)
+        )
     }
 
     @Test
-    fun testProcessICalObject_addsRecurringVtodo_withoutDtStart() {
+    fun testProcessICalObject_addsRecurringVtodo_withoutDtStart() = runTest {
         // Valid calendar example (See bitfireAT/davx5-ose#1265)
         // Note: We don't support starting a recurrence from DUE (RFC 5545  leaves it open to interpretation)
         val calendar = "BEGIN:VCALENDAR\n" +
@@ -167,20 +176,26 @@ class JtxSyncManagerTest {
                 "END:VCALENDAR"
 
         // Create and store calendar
-        syncManager.processICalObject("demo-calendar", "abc123", StringReader(calendar))
+        syncManager.processICalObject("demo-calendar", "abc123", "scheduleTag", StringReader(calendar))
 
         // Verify main VTODO was created with RRULE present
-        val mainVtodo = localJtxCollection.findByName("demo-calendar")!!
-        assertEquals("Test Task (Main VTODO)", mainVtodo.summary)
-        assertEquals("FREQ=WEEKLY;UNTIL=20250505T235959Z;INTERVAL=1;BYDAY=FR", mainVtodo.rrule)
+        val localJtxObject = localJtxCollection.findByName("demo-calendar")!!
+        val mainTask = localJtxObject.jtxObjectAndExceptions.main
+        assertEquals("Test Task (Main VTODO)", mainTask.entityValues.getAsString(JtxContract.JtxICalObject.SUMMARY))
+        assertEquals(
+            "FREQ=WEEKLY;UNTIL=20250505T235959Z;INTERVAL=1;BYDAY=FR",
+            mainTask.entityValues.getAsString(JtxContract.JtxICalObject.RRULE)
+        )
 
         // Verify the RRULE exception instance was created with correct recurrence-id timezone
-        val vtodoException = localJtxCollection.findRecurInstance(
-            uid = "47a23c66-8c1a-4b44-bbe8-ebf33f8cf80f",
-            recurid = "20250228T130000"
-        )!!
-        assertEquals("Test Task (Exception)", vtodoException.summary)
-        assertEquals("America/New_York", vtodoException.recuridTimezone)
+        val firstException = localJtxObject.jtxObjectAndExceptions.exceptions.first()
+        assertEquals(
+            "Test Task (Exception)",
+            firstException.entityValues.getAsString(JtxContract.JtxICalObject.SUMMARY)
+        )
+        assertEquals(
+            "America/New_York",
+            firstException.entityValues.getAsString(JtxContract.JtxICalObject.RECURID_TIMEZONE)
+        )
     }
-
 }

@@ -6,6 +6,7 @@ package at.bitfire.davdroid.ui
 
 import android.accounts.Account
 import android.accounts.AccountManager
+import android.app.ActivityManager
 import android.app.usage.UsageStatsManager
 import android.content.ContentUris
 import android.content.Context
@@ -15,6 +16,7 @@ import android.content.pm.PackageManager
 import android.net.ConnectivityManager
 import android.net.Uri
 import android.os.Build
+import android.os.Debug
 import android.os.Environment
 import android.os.LocaleList
 import android.os.PowerManager
@@ -31,8 +33,10 @@ import androidx.core.content.pm.PackageInfoCompat
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.WorkQuery
-import at.bitfire.dav4jvm.okhttp.exception.DavException
+import at.bitfire.dav4jvm.ktor.exception.DavException
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.accounts.AccountId
+import at.bitfire.davdroid.accounts.toAccountId
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.resource.LocalAddressBook
@@ -44,6 +48,7 @@ import at.bitfire.davdroid.sync.adapter.SyncFrameworkIntegration
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker
 import at.bitfire.davdroid.util.TextTable
 import at.bitfire.synctools.storage.TaskProvider
+import at.bitfire.synctools.storage.contacts.AndroidAddressBook
 import at.techbee.jtx.JtxContract
 import dagger.hilt.android.qualifiers.ApplicationContext
 import org.dmfs.tasks.contract.TaskContract
@@ -53,13 +58,14 @@ import java.time.Instant
 import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
+import java.util.Locale
 import java.util.TimeZone
 import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
 import kotlin.use
-import at.bitfire.ical4android.util.MiscUtils.asSyncAdapter as asCalendarSyncAdapter
-import at.bitfire.synctools.util.Utils.asSyncAdapter as asContactsSyncAdapter
+import at.bitfire.synctools.storage.calendar.EventsContract.asSyncAdapter as asCalendarSyncAdapter
+import at.bitfire.synctools.storage.contacts.AddressContract.asSyncAdapter as asContactsSyncAdapter
 import at.techbee.jtx.JtxContract.asSyncAdapter as asJtxSyncAdapter
 
 @WorkerThread
@@ -74,7 +80,7 @@ class DebugInfoGenerator @Inject constructor(
 ) {
 
     operator fun invoke(
-        syncAccount: Account?,
+        syncAccountId: AccountId?,
         syncDataType: String?,
         cause: Throwable?,
         localResource: String?,
@@ -96,10 +102,12 @@ class DebugInfoGenerator @Inject constructor(
         }
 
         // continue with most specific information
-        if (syncAccount != null || syncDataType != null) {
+        if (syncAccountId != null || syncDataType != null) {
             writer.append("SYNCHRONIZATION INFO\n")
-            if (syncAccount != null)
-                writer.append("Account: $syncAccount\n")
+            if (syncAccountId != null) {
+                val accountName = accountRepository.getAccountNameBlocking(syncAccountId)
+                writer.append("Account: $accountName (ID: $syncAccountId)\n")
+            }
             if (syncDataType != null)
                 writer.append("SyncDataType: $syncDataType\n")
             writer.append("\n")
@@ -191,10 +199,12 @@ class DebugInfoGenerator @Inject constructor(
         val filesPath = Environment.getDataDirectory()
         val statFs = StatFs(filesPath.path)
         writer.append("Internal memory ($filesPath): ")
-            .append(Formatter.formatFileSize(context, statFs.availableBytes))
+            .append(formatFileSize(statFs.availableBytes))
             .append(" free of ")
-            .append(Formatter.formatFileSize(context, statFs.totalBytes))
-            .append("\n\n")
+            .append(formatFileSize(statFs.totalBytes))
+            .append('\n')
+        dumpRamInfo(writer)
+        writer.append('\n')
 
         // power saving
         if (Build.VERSION.SDK_INT >= 28)
@@ -307,7 +317,7 @@ class DebugInfoGenerator @Inject constructor(
         // accounts
         writer.append("\nACCOUNTS")
         val accountManager = AccountManager.get(context)
-        val accounts = accountRepository.getAll()
+        val accounts = accountRepository.getAllBlocking()
         for (account in accounts)
             dumpAccount(account, writer)
 
@@ -332,6 +342,86 @@ class DebugInfoGenerator @Inject constructor(
 
         writer.append("--- END DEBUG INFO ---\n")
     }
+
+    /**
+     * Appends current system and process memory information.
+     */
+    private fun dumpRamInfo(writer: Writer) {
+        context.getSystemService<ActivityManager>()?.let { activityManager ->
+            val memoryInfo = ActivityManager.MemoryInfo()
+            activityManager.getMemoryInfo(memoryInfo)
+
+            writer.append("System RAM: ")
+                .append(formatFileSize(memoryInfo.availMem))
+                .append(" available of ")
+                .append(formatFileSize(memoryInfo.totalMem))
+                .append(" total (")
+                .append(formatPercent(memoryInfo.availMem, memoryInfo.totalMem))
+                .append(" available)\n")
+                .append("System RAM threshold: ")
+                .append(formatFileSize(memoryInfo.threshold))
+                .append("; low memory: ")
+                .append(if (memoryInfo.lowMemory) "yes" else "no")
+                .append("; low-RAM device: ")
+                .append(if (activityManager.isLowRamDevice) "yes" else "no")
+                .append('\n')
+            if (Build.VERSION.SDK_INT >= 34 && memoryInfo.advertisedMem > 0)
+                writer.append("System advertised RAM: ")
+                    .append(formatFileSize(memoryInfo.advertisedMem))
+                    .append('\n')
+            if (Build.VERSION.SDK_INT >= 37)
+                writer.append("System free RAM: ")
+                    .append(formatFileSize(memoryInfo.freeMem))
+                    .append('\n')
+
+            writer.append("App heap class: ")
+                .append(activityManager.memoryClass.toString())
+                .append(" MB; large heap class: ")
+                .append(activityManager.largeMemoryClass.toString())
+                .append(" MB\n")
+        }
+
+        val runtime = Runtime.getRuntime()
+        val allocatedHeap = runtime.totalMemory()
+        val freeHeap = runtime.freeMemory()
+        val maxHeap = runtime.maxMemory()
+        val usedHeap = allocatedHeap - freeHeap
+        writer.append("App heap: ")
+            .append(formatFileSize(usedHeap))
+            .append(" used; ")
+            .append(formatFileSize(freeHeap))
+            .append(" free of ")
+            .append(formatFileSize(allocatedHeap))
+            .append(" allocated; ")
+            .append(formatFileSize(maxHeap))
+            .append(" max (")
+            .append(formatPercent(usedHeap, maxHeap))
+            .append(" used)\n")
+
+        val processMemoryInfo = Debug.MemoryInfo()
+        Debug.getMemoryInfo(processMemoryInfo)
+        writer.append("App PSS: ")
+            .append(formatKib(processMemoryInfo.totalPss))
+            .append(" total (Dalvik ")
+            .append(formatKib(processMemoryInfo.dalvikPss))
+            .append(", native ")
+            .append(formatKib(processMemoryInfo.nativePss))
+            .append(", other ")
+            .append(formatKib(processMemoryInfo.otherPss))
+            .append(")\n")
+    }
+
+    private fun formatFileSize(bytes: Long): String =
+        Formatter.formatFileSize(context, bytes)
+
+    private fun formatKib(kib: Int): String =
+        formatFileSize(kib.toLong() * 1024)
+
+    private fun formatPercent(part: Long, total: Long): String =
+        if (total > 0)
+            String.format(Locale.ROOT, "%.1f%%", part.toDouble() / total.toDouble() * 100)
+        else
+            "n/a"
 
     /**
      * Appends relevant android account information the given writer.
@@ -387,7 +477,7 @@ class DebugInfoGenerator @Inject constructor(
         val table = dumpAndroidAccount(account, AccountDumpInfo.addressBookAccount(account))
         writer.append(TextTable.indent(table, 4))
             .append("Collection ID: ${accountManager.getUserData(account, LocalAddressBook.USER_DATA_COLLECTION_ID)}\n")
-            .append("    Read-only: ${accountManager.getUserData(account, LocalAddressBook.USER_DATA_READ_ONLY) ?: 0}\n\n")
+            .append("    Read-only: ${accountManager.getUserData(account, AndroidAddressBook.USER_DATA_READ_ONLY) ?: 0}\n\n")
     }
 
     /**
@@ -489,7 +579,7 @@ class DebugInfoGenerator @Inject constructor(
     private fun dumpSyncWorkers(account: Account, writer: Writer) {
         writer.append(workersInfoTable(
             WorkQuery.Builder.fromTags(
-                SyncDataType.entries.map { BaseSyncWorker.commonTag(account, it) }
+                SyncDataType.entries.map { BaseSyncWorker.commonTag(account.toAccountId(), it) }
             ).build(),
             mapOf(
                 1 to ("Data Type" to { workInfo: WorkInfo ->
@@ -519,7 +609,7 @@ class DebugInfoGenerator @Inject constructor(
      */
     private fun dumpOtherWorkers(accounts: Array<Account>, writer: Writer) {
         val syncWorkersTags = accounts.flatMap { account ->
-            SyncDataType.entries.map { BaseSyncWorker.commonTag(account, it) }
+            SyncDataType.entries.map { BaseSyncWorker.commonTag(account.toAccountId(), it) }
         }
 
         writer.append(workersInfoTable(

@@ -6,8 +6,8 @@ package at.bitfire.synctools.mapping.jtx.builder
 
 import android.content.ContentValues
 import android.content.Entity
-import at.bitfire.ical4android.JtxICalObject
 import at.bitfire.synctools.icalendar.plusAssign
+import at.bitfire.synctools.mapping.jtx.JtxProperty
 import at.techbee.jtx.JtxContract
 import net.fortuna.ical4j.model.component.VToDo
 import net.fortuna.ical4j.model.property.XProperty
@@ -38,7 +38,7 @@ class ExtendedStatusBuilderTest {
     fun `X-STATUS has text`() {
         val output = Entity(ContentValues())
         val task = VToDo().apply {
-            this += XProperty(JtxICalObject.X_PROP_XSTATUS, "Bla")
+            this += XProperty(JtxProperty.X_XSTATUS, "Bla")
         }
         val main = VToDo()
 

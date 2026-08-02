@@ -15,9 +15,9 @@ import android.system.OsConstants
 import androidx.annotation.RequiresApi
 import androidx.core.content.getSystemService
 import at.bitfire.dav4jvm.HttpUtils
-import at.bitfire.dav4jvm.okhttp.DavResource
-import at.bitfire.dav4jvm.okhttp.exception.DavException
-import at.bitfire.dav4jvm.okhttp.exception.HttpException
+import at.bitfire.dav4jvm.ktor.DavResource
+import at.bitfire.dav4jvm.ktor.exception.DavException
+import at.bitfire.dav4jvm.ktor.exception.HttpException
 import at.bitfire.davdroid.util.DavUtils
 import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
@@ -26,25 +26,27 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.qualifiers.ApplicationContext
+import io.ktor.client.HttpClient
+import io.ktor.client.statement.bodyAsBytes
+import io.ktor.http.ContentType
+import io.ktor.http.Headers
+import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpStatusCode
+import io.ktor.http.Url
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.runInterruptible
-import okhttp3.Headers
-import okhttp3.HttpUrl
-import okhttp3.MediaType
-import okhttp3.OkHttpClient
 import java.io.InterruptedIOException
 import java.util.logging.Logger
+import javax.annotation.WillClose
 
 @RequiresApi(26)
 class RandomAccessCallback @AssistedInject constructor(
-    @Assisted private val httpClient: OkHttpClient,
-    @Assisted private val url: HttpUrl,
-    @Assisted private val mimeType: MediaType?,
+    @Assisted @WillClose private val httpClient: HttpClient,
+    @Assisted private val url: Url,
+    @Assisted private val mimeType: ContentType?,
     @Assisted headResponse: HeadResponse,
     @Assisted private val externalScope: CoroutineScope,
     @ApplicationContext private val context: Context,
@@ -62,7 +64,7 @@ class RandomAccessCallback @AssistedInject constructor(
 
     @AssistedFactory
     interface Factory {
-        fun create(httpClient: OkHttpClient, url: HttpUrl, mimeType: MediaType?, headResponse: HeadResponse, externalScope: CoroutineScope): RandomAccessCallback
+        fun create(httpClient: HttpClient, url: Url, mimeType: ContentType?, headResponse: HeadResponse, externalScope: CoroutineScope): RandomAccessCallback
     }
 
     data class PageIdentifier(
@@ -76,7 +78,7 @@ class RandomAccessCallback @AssistedInject constructor(
     private val documentState = headResponse.toDocumentState() ?: throw IllegalArgumentException("Can only be used with ETag/Last-Modified")
 
     private val pageLoader = PageLoader(externalScope)
-    private val pageCache: LoadingCache<PageIdentifier, ByteArray> = CacheBuilder.newBuilder()
+    private val pageCache: LoadingCache<PageIdentifier, Deferred<ByteArray>> = CacheBuilder.newBuilder()
         .maximumSize(10)    // don't cache more than 10 entries (MAX_PAGE_SIZE each)
         .softValues()       // use SoftReference for the page contents so they will be garbage-collected if memory is needed
         .build(pageLoader)  // fetch actual content using pageLoader
@@ -126,6 +128,7 @@ class RandomAccessCallback @AssistedInject constructor(
 
         // free resources
         ioThread.quitSafely()
+        httpClient.close()
     }
 
 
@@ -139,7 +142,7 @@ class RandomAccessCallback @AssistedInject constructor(
      *
      * @param functionName  name of the operation, passed to [ErrnoException] in case of cancellation
      */
-    private fun<T> runBlockingFd(functionName: String, block: () -> T): T =
+    private fun<T> runBlockingFd(functionName: String, block: suspend () -> T): T =
         runBlocking {
             try {
                 externalScope.async {
@@ -149,7 +152,7 @@ class RandomAccessCallback @AssistedInject constructor(
                 logger.warning("Random file access cancelled in $functionName, throwing ErrnoException(EINTR)")
                 throw ErrnoException(functionName, OsConstants.EINTR, e)
             } catch (e: Throwable) {
-                throw e.toErrNoException("onRead")
+                throw e.toErrNoException(functionName)
             }
         }
 
@@ -175,48 +178,36 @@ class RandomAccessCallback @AssistedInject constructor(
     /**
      * Responsible for loading (= downloading) a single page from the WebDAV resource.
      *
-     * @param scope     cancellable scope the loader runs in (loader cancels I/O) when this scope is cancelled
+     * @param scope     cancellable scope the loader runs in (loader cancels I/O when this scope is cancelled)
      */
     inner class PageLoader(
-        private val scope: CoroutineScope,
-        private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
-    ): CacheLoader<PageIdentifier, ByteArray>() {
+        private val scope: CoroutineScope
+    ): CacheLoader<PageIdentifier, Deferred<ByteArray>>() {
 
-        override fun load(key: PageIdentifier) = runBlocking {
-            scope.async(ioDispatcher) {
-                loadAsync(key)
-            }.await()
-        }
-
-        private suspend fun loadAsync(key: PageIdentifier): ByteArray {
+        override fun load(key: PageIdentifier): Deferred<ByteArray> = scope.async {
             val offset = key.offset
             val size = key.size
             logger.fine("Loading page $url $offset/$size")
 
-            val ifMatch: Headers =
+            val headers = Headers.build {
+                append(HttpHeaders.Accept, DavUtils.acceptAnything(preferred = mimeType))
                 documentState.eTag?.let { eTag ->
-                    Headers.headersOf("If-Match", "\"$eTag\"")
+                    append(HttpHeaders.IfMatch, "\"$eTag\"")
                 } ?: documentState.lastModified?.let { lastModified ->
-                    Headers.headersOf("If-Unmodified-Since", HttpUtils.formatDate(lastModified))
+                    append(HttpHeaders.IfUnmodifiedSince, HttpUtils.formatDate(lastModified))
                 } ?: throw DavException("ETag/Last-Modified required for random access")
-
-            return runInterruptible {   // network I/O that should be cancelled by Thread interruption
-                var result: ByteArray? = null
-                dav.getRange(
-                    DavUtils.acceptAnything(preferred = mimeType),
-                    offset,
-                    size,
-                    ifMatch
-                ) { response ->
-                    if (response.code == 200)       // server doesn't support ranged requests
-                        throw PartialContentNotSupportedException()
-                    else if (response.code != 206)
-                        throw HttpException(response)
-
-                    result = response.body.bytes()
-                }
-                result ?: throw DavException("No response body")
             }
+
+            var result: ByteArray? = null
+            dav.getRange(offset, size, headers) { response ->
+                if (response.status == HttpStatusCode.OK)       // server doesn't support ranged requests
+                    throw PartialContentNotSupportedException()
+                if (response.status != HttpStatusCode.PartialContent)
+                    throw HttpException.fromResponse(response)
+
+                result = response.bodyAsBytes()
+            }
+            result ?: throw DavException("No response body")
         }
 
     }

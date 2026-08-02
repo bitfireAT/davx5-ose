@@ -9,7 +9,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
-import okhttp3.HttpUrl
+import io.ktor.http.Url
 
 @Dao
 interface PrincipalDao {
@@ -24,7 +24,7 @@ interface PrincipalDao {
     fun getByService(serviceId: Long): List<Principal>
 
     @Query("SELECT * FROM principal WHERE serviceId=:serviceId AND url=:url")
-    fun getByUrl(serviceId: Long, url: HttpUrl): Principal?
+    fun getByUrl(serviceId: Long, url: Url): Principal?
 
     /**
      * Gets all principals who do not own any collections

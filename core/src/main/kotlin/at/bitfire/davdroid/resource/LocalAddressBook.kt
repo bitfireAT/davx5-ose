@@ -6,20 +6,23 @@ package at.bitfire.davdroid.resource
 import android.accounts.Account
 import android.accounts.AccountManager
 import android.content.ContentProviderClient
+import android.content.ContentValues
 import android.content.Context
-import android.os.RemoteException
 import android.provider.ContactsContract
 import android.provider.ContactsContract.CommonDataKinds.GroupMembership
 import android.provider.ContactsContract.Groups
 import android.provider.ContactsContract.RawContacts
 import androidx.annotation.OpenForTesting
 import androidx.core.content.contentValuesOf
-import at.bitfire.davdroid.resource.LocalAddressBook.Companion.USER_DATA_READ_ONLY
 import at.bitfire.davdroid.resource.workaround.ContactDirtyVerifier
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.adapter.SyncFrameworkIntegration
-import at.bitfire.synctools.storage.BatchOperation
+import at.bitfire.synctools.mapping.contacts.Contact
+import at.bitfire.synctools.storage.LocalStorageException
+import at.bitfire.synctools.storage.contacts.AddressContract.GroupColumns
+import at.bitfire.synctools.storage.contacts.AddressContract.RawContactColumns
+import at.bitfire.synctools.storage.contacts.AddressContract.asSyncAdapter
 import at.bitfire.synctools.storage.contacts.AndroidAddressBook
 import at.bitfire.synctools.storage.contacts.AndroidContact
 import at.bitfire.synctools.storage.contacts.AndroidGroup
@@ -31,10 +34,14 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.qualifiers.ApplicationContext
-import java.util.LinkedList
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.merge
+import java.io.FileNotFoundException
 import java.util.Optional
-import java.util.logging.Level
 import java.util.logging.Logger
+import kotlin.jvm.optionals.getOrNull
 
 /**
  * A local address book. Requires its own Android account, because Android manages contacts per
@@ -52,13 +59,13 @@ open class LocalAddressBook @AssistedInject constructor(
     @Assisted("account") val account: Account,
     @Assisted("addressBookAccount") _addressBookAccount: Account,
     @Assisted provider: ContentProviderClient,
-    @Assisted open override val groupMethod: GroupMethod,
+    @Assisted val groupMethod: GroupMethod,
     private val accountSettingsFactory: AccountSettings.Factory,
     @ApplicationContext private val context: Context,
     internal val dirtyVerifier: Optional<ContactDirtyVerifier>,
     private val logger: Logger,
     private val syncFramework: SyncFrameworkIntegration
-): AndroidAddressBook<LocalContact, LocalGroup>(_addressBookAccount, provider, LocalContact.Factory, LocalGroup.Factory), LocalCollection<LocalAddress> {
+) : LocalCollection<LocalAddress> {
 
     @AssistedFactory
     interface Factory {
@@ -70,13 +77,17 @@ open class LocalAddressBook @AssistedInject constructor(
         ): LocalAddressBook
     }
 
+    private val accountManager by lazy { AccountManager.get(context) }
+
+    internal val ab = AndroidAddressBook(context, _addressBookAccount, provider, groupMethod)
+
+    var addressBookAccount: Account by ab::addressBookAccount
+
     override val tag: String
         get() = "contacts-${addressBookAccount.name}"
 
     override val title
         get() = addressBookAccount.name
-
-    private val accountManager by lazy { AccountManager.get(context) }
 
     val includeGroups
         get() = groupMethod == GroupMethod.GROUP_VCARDS
@@ -87,36 +98,11 @@ open class LocalAddressBook @AssistedInject constructor(
             accountManager.setAndVerifyUserData(addressBookAccount, USER_DATA_COLLECTION_ID, id.toString())
         }
 
-    /**
-     * Read-only flag for the address book itself.
-     *
-     * Setting this flag:
-     *
-     * - stores the new value in [USER_DATA_READ_ONLY] and
-     * - sets the read-only flag for all contacts and groups in the address book in the content provider, which will
-     * prevent non-sync-adapter apps from modifying them. However new entries can still be created, so the address book
-     * is not really read-only.
-     *
-     * Reading this flag returns the stored value from [USER_DATA_READ_ONLY].
-     */
-    override var readOnly: Boolean
-        get() = accountManager.getUserData(addressBookAccount, USER_DATA_READ_ONLY) != null
-        set(readOnly) {
-            // set read-only flag for address book itself
-            accountManager.setAndVerifyUserData(addressBookAccount, USER_DATA_READ_ONLY, if (readOnly) "1" else null)
+    override var readOnly: Boolean by ab::readOnly
 
-            // update raw contacts
-            val rawContactValues = contentValuesOf(RawContacts.RAW_CONTACT_IS_READ_ONLY to if (readOnly) 1 else 0)
-            provider!!.update(rawContactsSyncUri(), rawContactValues, null, null)
+    var settings: ContentValues by ab::settings
 
-            // update data rows
-            val dataValues = contentValuesOf(ContactsContract.Data.IS_READ_ONLY to if (readOnly) 1 else 0)
-            provider!!.update(syncAdapterURI(ContactsContract.Data.CONTENT_URI), dataValues, null, null)
-
-            // update group rows
-            val groupValues = contentValuesOf(Groups.GROUP_IS_READ_ONLY to if (readOnly) 1 else 0)
-            provider!!.update(groupsSyncUri(), groupValues, null, null)
-        }
+    var syncState: ByteArray? by ab::syncState
 
     override var lastSyncState: SyncState?
         get() = syncState?.let { SyncState.fromString(String(it)) }
@@ -128,27 +114,26 @@ open class LocalAddressBook @AssistedInject constructor(
     /* operations on the collection (address book) itself */
 
     override fun markNotDirty(flags: Int): Int {
-        val values = contentValuesOf(LocalContact.COLUMN_FLAGS to flags)
-        var number = provider!!.update(rawContactsSyncUri(), values, "${RawContacts.DIRTY}=0", null)
-
-        if (includeGroups) {
-            values.clear()
-            values.put(LocalGroup.COLUMN_FLAGS, flags)
-            number += provider!!.update(groupsSyncUri(), values, "NOT ${Groups.DIRTY}", null)
-        }
-
-        return number
+        val batch = ContactsBatchOperation(ab.provider)
+        ab.updateRawContactRows(
+            contentValuesOf(RawContactColumns.FLAGS to flags),
+            "${RawContacts.DIRTY}=0", null,
+            batch
+        )
+        if (includeGroups)
+            ab.updateGroups(contentValuesOf(GroupColumns.FLAGS to flags), "NOT ${Groups.DIRTY}", null, batch)
+        return batch.commit()
     }
 
-    override fun removeNotDirtyMarked(flags: Int): Int {
-        var number = provider!!.delete(rawContactsSyncUri(),
-                "NOT ${RawContacts.DIRTY} AND ${LocalContact.COLUMN_FLAGS}=?", arrayOf(flags.toString()))
-
+    override suspend fun removeNotDirtyMarked(flags: Int): Int {
+        val batch = ContactsBatchOperation(ab.provider)
+        ab.deleteRawContacts(
+            "NOT ${RawContacts.DIRTY} AND ${RawContactColumns.FLAGS}=?", arrayOf(flags.toString()),
+            batch
+        )
         if (includeGroups)
-            number += provider!!.delete(groupsSyncUri(),
-                    "NOT ${Groups.DIRTY} AND ${LocalGroup.COLUMN_FLAGS}=?", arrayOf(flags.toString()))
-
-        return number
+            ab.deleteGroups("NOT ${Groups.DIRTY} AND ${GroupColumns.FLAGS}=?", arrayOf(flags.toString()), batch)
+        return batch.commit()
     }
 
     /**
@@ -174,20 +159,19 @@ open class LocalAddressBook @AssistedInject constructor(
             return false
 
         // move contacts and groups to new account
-        val batch = ContactsBatchOperation(provider!!)
-        batch += BatchOperation.CpoBuilder
-            .newUpdate(groupsSyncUri())
-            .withSelection(Groups.ACCOUNT_NAME + "=? AND " + Groups.ACCOUNT_TYPE + "=?", arrayOf(oldAccount.name, oldAccount.type))
-            .withValue(Groups.ACCOUNT_NAME, newAccount.name)
-            .withValue(Groups.ACCOUNT_TYPE, newAccount.type)
-        batch += BatchOperation.CpoBuilder
-            .newUpdate(rawContactsSyncUri())
-            .withSelection(RawContacts.ACCOUNT_NAME + "=? AND " + RawContacts.ACCOUNT_TYPE + "=?", arrayOf(oldAccount.name, oldAccount.type))
-            .withValue(RawContacts.ACCOUNT_NAME, newAccount.name)
-            .withValue(RawContacts.ACCOUNT_TYPE, newAccount.type)
+        // no explicit account WHERE needed: updateGroups/updateRawContactRows scope via asSyncAdapter(addressBookAccount)
+        val batch = ContactsBatchOperation(ab.provider)
+        ab.updateGroups(
+            contentValuesOf(Groups.ACCOUNT_NAME to newAccount.name, Groups.ACCOUNT_TYPE to newAccount.type),
+            null, null, batch
+        )
+        ab.updateRawContactRows(
+            contentValuesOf(RawContacts.ACCOUNT_NAME to newAccount.name, RawContacts.ACCOUNT_TYPE to newAccount.type),
+            null, null, batch
+        )
         batch.commit()
 
-        // update AndroidAddressBook.account
+        // update addressBookAccount
         addressBookAccount = newAccount
 
         // delete old account
@@ -215,91 +199,203 @@ open class LocalAddressBook @AssistedInject constructor(
 
     /* operations on members (contacts/groups) */
 
-    override fun countAll(): Int =
-        countContacts(null, null)
+    override fun countAll(): Int {
+        val contacts = ab.countRawContacts(null, null)
+        val groups = if (includeGroups) ab.countGroups(null, null) else 0
+        return contacts + groups
+    }
 
-    override fun countDeleted(): Int =
-        countContacts(RawContacts.DELETED, null)
+    override fun countDeleted(): Int {
+        val deletedContacts = ab.countRawContacts(RawContacts.DELETED, null)
+        val deletedGroups = if (includeGroups) ab.countGroups(Groups.DELETED, null) else 0
+        return deletedContacts + deletedGroups
+    }
 
-    override fun countModified(): Int =
-        countContacts("${RawContacts.DIRTY} AND NOT ${RawContacts.DELETED}", null)
+    override fun countModified(): Int {
+        val modifiedContacts = ab.countRawContacts("${RawContacts.DIRTY} AND NOT ${RawContacts.DELETED}", null)
+        val modifiedGroups = if (includeGroups) ab.countGroups("${Groups.DIRTY} AND NOT ${Groups.DELETED}", null) else 0
+        return modifiedContacts + modifiedGroups
+    }
 
-    override fun findByName(name: String): LocalAddress? {
-        val result = queryContacts("${AndroidContact.COLUMN_FILENAME}=?", arrayOf(name)).firstOrNull()
+    override fun countDirty(): Int {
+        val dirtyContacts = ab.countRawContacts(RawContacts.DIRTY, null)
+        val dirtyGroups = if (includeGroups) ab.countGroups(Groups.DIRTY, null) else 0
+        return dirtyContacts + dirtyGroups
+    }
+
+    override suspend fun findByName(name: String): LocalAddress? {
+        val result = findContact("${RawContactColumns.FILENAME}=?", arrayOf(name))
         return if (includeGroups)
-            result ?: queryGroups("${AndroidGroup.COLUMN_FILENAME}=?", arrayOf(name)).firstOrNull()
+            result ?: queryGroups("${GroupColumns.FILENAME}=?", arrayOf(name)).firstOrNull()
         else
             result
     }
 
 
     /**
-     * Returns an array of local contacts/groups which have been deleted locally. (DELETED != 0).
-     * @throws RemoteException on content provider errors
+     * Finds local contacts which have been deleted locally. (DELETED != 0).
+     * @throws LocalStorageException on content provider errors
      */
-    override fun findDeleted() =
-            if (includeGroups)
-                findDeletedContacts() + findDeletedGroups()
-            else
-                findDeletedContacts()
-
-    fun findDeletedContacts() = queryContacts(RawContacts.DELETED, null)
-    fun findDeletedGroups() = queryGroups(Groups.DELETED, null)
+    fun findDeletedContacts(): Flow<LocalContact> =
+        ab.queryRawContactRows(RawContacts.DELETED, null).map { LocalContact(this, AndroidContact(ab, it)) }
 
     /**
-     * Returns an array of local contacts/groups which have been changed locally (DIRTY != 0).
-     * @throws RemoteException on content provider errors
+     * Finds local groups which have been deleted locally. (DELETED != 0).
+     * @throws LocalStorageException on content provider errors
      */
-    override fun findDirty() =
-            if (includeGroups)
-                findDirtyContacts() + findDirtyGroups()
-            else
-                findDirtyContacts()
-    fun findDirtyContacts() = queryContacts(RawContacts.DIRTY, null)
-    fun findDirtyGroups() = queryGroups(Groups.DIRTY, null)
+    fun findDeletedGroups(): Flow<LocalGroup> =
+        ab.queryGroupRows(null, Groups.DELETED, null).map { LocalGroup(AndroidGroup(ab, it)) }
+
+    /**
+     * Finds local contacts/groups which have been deleted locally. (DELETED != 0).
+     * @throws LocalStorageException on content provider errors
+     */
+    override fun findDeleted(): Flow<LocalAddress> =
+        if (includeGroups)
+            merge(findDeletedContacts(), findDeletedGroups())
+        else
+            findDeletedContacts()
+
+    /**
+     * Finds local contacts which have been changed locally (DIRTY != 0).
+     * @throws LocalStorageException on content provider errors
+     */
+    fun findDirtyContacts(): Flow<LocalContact> =
+        ab.queryRawContactRows(RawContacts.DIRTY, null).map { LocalContact(this, AndroidContact(ab, it)) }
+
+    /**
+     * Finds local groups which have been changed locally (DIRTY != 0).
+     * @throws LocalStorageException on content provider errors
+     */
+    fun findDirtyGroups(): Flow<LocalGroup> =
+        ab.queryGroupRows(null, Groups.DIRTY, null).map { LocalGroup(AndroidGroup(ab, it)) }
+
+    /**
+     * Finds local contacts/groups which have been changed locally (DIRTY != 0).
+     * @throws LocalStorageException on content provider errors
+     */
+    override fun findDirty(): Flow<LocalAddress> =
+        if (includeGroups)
+            merge(findDirtyContacts(), findDirtyGroups())
+        else
+            findDirtyContacts()
 
     override fun forgetETags() {
-        if (includeGroups) {
-            val values = contentValuesOf(AndroidGroup.COLUMN_ETAG to null)
-            provider!!.update(groupsSyncUri(), values, null, null)
-        }
-        val values = contentValuesOf(AndroidContact.COLUMN_ETAG to null)
-        provider!!.update(rawContactsSyncUri(), values, null, null)
+        val batch = ContactsBatchOperation(ab.provider)
+        if (includeGroups)
+            ab.updateGroups(contentValuesOf(GroupColumns.ETAG to null), null, null, batch)
+        ab.updateRawContactRows(contentValuesOf(RawContactColumns.ETAG to null), null, null, batch)
+        batch.commit()
     }
 
 
-    fun getContactIdsByGroupMembership(groupId: Long): List<Long> {
-        val ids = LinkedList<Long>()
-        provider!!.query(syncAdapterURI(ContactsContract.Data.CONTENT_URI), arrayOf(GroupMembership.RAW_CONTACT_ID),
+    fun addContact(data: Contact, fileName: String?, eTag: String?, flags: Int): LocalContact {
+        val androidContact = AndroidContact(ab, data, fileName, eTag, flags)
+        androidContact.add()
+        return LocalContact(this, androidContact)
+    }
+
+    fun addGroup(data: Contact, fileName: String?, eTag: String?, flags: Int): LocalGroup {
+        val androidGroup = AndroidGroup(ab, data, fileName, eTag, flags)
+        androidGroup.add()
+        return LocalGroup(androidGroup)
+    }
+
+    private suspend fun findContact(where: String?, whereArgs: Array<String>?): LocalContact? =
+        ab.queryRawContactRows(where, whereArgs).firstOrNull()?.let {
+            LocalContact(this, AndroidContact(ab, it))
+        }
+
+    fun queryGroups(where: String?, whereArgs: Array<String>?): Flow<LocalGroup> =
+        ab.queryGroupRows(null, where, whereArgs).map { LocalGroup(AndroidGroup(ab, it)) }
+
+    @Throws(FileNotFoundException::class)
+    fun findContactById(id: Long): LocalContact =
+        ab.getRawContactRowOrNull("${RawContacts._ID}=?", arrayOf(id.toString()))
+            ?.let { LocalContact(this, AndroidContact(ab, it)) }
+            ?: throw FileNotFoundException()
+
+    fun findContactByUid(uid: String): LocalContact? =
+        ab.getRawContactRowOrNull("${RawContactColumns.UID}=?", arrayOf(uid))
+            ?.let { LocalContact(this, AndroidContact(ab, it)) }
+
+    @Throws(FileNotFoundException::class)
+    fun findGroupById(id: Long): LocalGroup =
+        ab.getGroupOrNull("${Groups._ID}=?", arrayOf(id.toString()))
+            ?.let { LocalGroup(AndroidGroup(ab, it)) }
+            ?: throw FileNotFoundException()
+
+
+    fun getContactIdsByGroupMembership(groupId: Long): List<Long> = buildList {
+        ab.provider.query(
+            ContactsContract.Data.CONTENT_URI.asSyncAdapter(), arrayOf(GroupMembership.RAW_CONTACT_ID),
             "(${GroupMembership.MIMETYPE}=? AND ${GroupMembership.GROUP_ROW_ID}=?)",
-            arrayOf(GroupMembership.CONTENT_ITEM_TYPE, groupId.toString()), null)?.use { cursor ->
+            arrayOf(GroupMembership.CONTENT_ITEM_TYPE, groupId.toString()), null
+        )?.use { cursor ->
             while (cursor.moveToNext())
-                ids += cursor.getLong(0)
+                add(cursor.getLong(0))
         }
-        return ids
     }
 
-    fun getContactUidFromId(contactId: Long): String? {
-        provider!!.query(rawContactsSyncUri(), arrayOf(AndroidContact.COLUMN_UID),
-            "${RawContacts._ID}=?", arrayOf(contactId.toString()), null)?.use { cursor ->
-            if (cursor.moveToNext())
-                return cursor.getString(0)
-        }
-        return null
-    }
+    fun getContactUidFromId(contactId: Long): String? =
+        ab.getRawContactRowOrNull("${RawContacts._ID}=?", arrayOf(contactId.toString()))
+            ?.getAsString(RawContactColumns.UID)
 
 
     /* special group operations */
 
-    fun removeEmptyGroups() {
-        // find groups without members
-        /** should be done using {@link Groups.SUMMARY_COUNT}, but it's not implemented in Android yet */
-        queryGroups(null, null).filter { it.getMembers().isEmpty() }.forEach { group ->
-            logger.log(Level.FINE, "Deleting group", group)
-            group.delete()
+    /**
+     * Processes all groups with pending memberships: applies them (if possible) to keep cached
+     * memberships in sync.
+     */
+    suspend fun applyPendingMemberships() {
+        logger.info("Assigning memberships of contact groups")
+
+        queryGroups(
+            "${Groups.ACCOUNT_TYPE}=? AND ${Groups.ACCOUNT_NAME}=?",
+            arrayOf(addressBookAccount.type, addressBookAccount.name)
+        ).collect { group ->
+            val groupId = group.id!!
+            val pendingMemberUids = group.androidGroup.pendingMemberships.toMutableSet()
+            val batch = ContactsBatchOperation(ab.provider)
+
+            val changeContactIDs = HashSet<Long>()
+
+            for (currentMemberId in getContactIdsByGroupMembership(groupId)) {
+                val uid = getContactUidFromId(currentMemberId) ?: continue
+
+                if (!pendingMemberUids.contains(uid)) {
+                    logger.fine("$currentMemberId removed from group $groupId; removing group membership")
+                    val currentMember = findContactById(currentMemberId)
+                    currentMember.androidContact.removeGroupMemberships(batch)
+                    changeContactIDs += currentMemberId
+                }
+
+                pendingMemberUids -= uid
+            }
+
+            for (missingMemberUid in pendingMemberUids) {
+                val missingMember = findContactByUid(missingMemberUid)
+                if (missingMember == null) {
+                    logger.warning("Group $groupId has member $missingMemberUid which is not found in the address book; ignoring")
+                    continue
+                }
+
+                logger.fine("Assigning member $missingMember to group $groupId")
+                missingMember.androidContact.addToGroup(batch, groupId)
+                changeContactIDs += missingMember.id!!
+            }
+
+            dirtyVerifier.getOrNull()?.let { verifier ->
+                // workaround for Android 7 which sets DIRTY flag when only meta-data is changed
+                changeContactIDs
+                    .map { id -> findContactById(id) }
+                    .forEach { contact -> verifier.updateHashCode(contact, batch) }
+            }
+
+            batch.commit()
         }
     }
-
 
     companion object {
 
@@ -312,13 +408,6 @@ open class LocalAddressBook @AssistedInject constructor(
          * User data of the address book account (Long).
          */
         const val USER_DATA_COLLECTION_ID = "collection_id"
-
-        /**
-         * Indicates whether the address book is currently set to read-only (i.e. its contacts and groups have the read-only flag).
-         *
-         * User data of the address book account (Boolean).
-         */
-        const val USER_DATA_READ_ONLY = "read_only"
 
     }
 

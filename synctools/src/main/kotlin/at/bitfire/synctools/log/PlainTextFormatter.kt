@@ -7,6 +7,7 @@ package at.bitfire.synctools.log
 import com.google.common.base.Ascii
 import java.io.PrintWriter
 import java.io.StringWriter
+import java.text.MessageFormat
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -17,34 +18,33 @@ import java.util.logging.LogRecord
  * Logging formatter for logging as formatted plain text.
  */
 class PlainTextFormatter(
-    private val withTime: Boolean,
+    private val withTimeAndThreadId: Boolean,
     private val withSource: Boolean,
-    private val padSource: Int = 0,
     private val withException: Boolean,
-    private val lineSeparator: String?
-): Formatter() {
+    private val padSource: Int = 0,
+    private val lineSeparator: String? = System.lineSeparator()
+) : Formatter() {
 
     companion object {
 
         /**
          * Formatter intended for logcat output.
          */
-        val LOGCAT = PlainTextFormatter(
-            withTime = false,
-            withSource = false,
-            withException = false,
-            lineSeparator = null
+        val FOR_LOGCAT = PlainTextFormatter(
+            withTimeAndThreadId = false,    // logged by logcat, not needed in text
+            withSource = false,             // source class is used as tag in LogcatHandler, not needed in text
+            withException = false,          // exception is attached natively by LogcatHandler, not needed in text
+            lineSeparator = null            // omit line separators for logcat
         )
 
         /**
-         * Formatter intended for file output.
+         * Formatter intended for custom log file output.
          */
-        val DEFAULT = PlainTextFormatter(
-            withTime = true,
+        val FOR_FILE = PlainTextFormatter(
+            withTimeAndThreadId = true,
             withSource = true,
-            padSource = 35,
             withException = true,
-            lineSeparator = System.lineSeparator()
+            padSource = 35
         )
 
         /**
@@ -60,9 +60,10 @@ class PlainTextFormatter(
     override fun format(r: LogRecord): String {
         val builder = StringBuilder()
 
-        if (withTime)
-            builder .append(timeFormat.format(Date(r.millis)))
-                    .append(" ").append(r.threadID).append(" ")
+        if (withTimeAndThreadId)
+            builder
+                .append(timeFormat.format(Date(r.millis)))
+                .append(" ").append(r.threadID).append(" ")
 
         if (withSource && r.sourceClassName != null) {
             val className = ClassNameUtils.shortenClassName(r.sourceClassName, classNameFirst = false)
@@ -72,7 +73,17 @@ class PlainTextFormatter(
             }
         }
 
-        builder.append(truncate(r.message))
+        val formattedMessage =
+            if (r.parameters == null)
+                r.message
+            else
+                try {
+                    MessageFormat.format(r.message, *r.parameters)
+                } catch (_: IllegalArgumentException) {
+                    // fall back to message when it couldn't be parsed
+                    r.message
+                }
+        builder.append(truncate(formattedMessage))
 
         if (withException && r.thrown != null) {
             val indentedStackTrace = stackTrace(r.thrown)
@@ -81,51 +92,17 @@ class PlainTextFormatter(
             builder.append("\n\tEXCEPTION ").append(indentedStackTrace)
         }
 
-        r.parameters?.let {
-            for ((idx, param) in it.withIndex()) {
-                builder.append("\n\tPARAMETER #").append(idx + 1).append(" = ")
-
-                val valStr = if (param == null)
-                    "(null)"
-                else
-                    truncate(param.toString())
-                builder.append(valStr)
-            }
-        }
-
         if (lineSeparator != null)
             builder.append(lineSeparator)
 
         return builder.toString()
     }
 
-    fun shortClassName(className: String): String {
-        // remove $... that is appended for anonymous classes
-        val withoutSuffix = className.replace(Regex("\\$.*$"), "")
-
-        // shorten all but the last part of the package name
-        val parts = withoutSuffix.split('.')
-        val shortened =
-            if (parts.isNotEmpty()) {
-                val lastIdx = parts.size - 1
-                val shortenedParts = parts.mapIndexed { idx, part ->
-                    if (idx == lastIdx)
-                        part
-                    else
-                        part[0]
-                }
-                shortenedParts.joinToString(".")
-            } else
-                ""
-
-        return shortened
-    }
-
-    private fun stackTrace(ex: Throwable): String {
-        val writer = StringWriter()
-        ex.printStackTrace(PrintWriter(writer))
-        return writer.toString()
-    }
+    private fun stackTrace(ex: Throwable): String =
+        StringWriter().run {
+            ex.printStackTrace(PrintWriter(this))
+            toString()
+        }
 
     private fun truncate(s: String) =
         Ascii.truncate(s, MAX_LENGTH, "[…]")

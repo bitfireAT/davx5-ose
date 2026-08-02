@@ -17,7 +17,7 @@ class IsChildDocumentOperation @Inject constructor(
 
     private val documentDao = db.webDavDocumentDao()
 
-    operator fun invoke(parentDocumentId: String, documentId: String): Boolean {
+    suspend operator fun invoke(parentDocumentId: String, documentId: String): Boolean {
         logger.fine("WebDAV isChildDocument $parentDocumentId $documentId")
         val parent = documentDao.get(parentDocumentId.toLong()) ?: throw FileNotFoundException()
 

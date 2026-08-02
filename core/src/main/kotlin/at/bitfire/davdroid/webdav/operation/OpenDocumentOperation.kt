@@ -8,32 +8,29 @@ import android.content.Context
 import android.os.Build
 import android.os.CancellationSignal
 import android.os.ParcelFileDescriptor
+import at.bitfire.dav4jvm.ktor.toContentTypeOrNull
 import at.bitfire.davdroid.db.AppDatabase
-import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.webdav.DavHttpClientBuilder
 import at.bitfire.davdroid.webdav.DocumentProviderUtils
 import at.bitfire.davdroid.webdav.HeadResponse
 import at.bitfire.davdroid.webdav.RandomAccessCallbackWrapper
 import at.bitfire.davdroid.webdav.StreamingFileDescriptor
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.CoroutineDispatcher
+import io.ktor.client.HttpClient
+import io.ktor.http.Url
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.runInterruptible
-import okhttp3.HttpUrl
-import okhttp3.OkHttpClient
 import java.io.FileNotFoundException
 import java.util.logging.Logger
+import javax.annotation.WillNotClose
 import javax.inject.Inject
 
 class OpenDocumentOperation @Inject constructor(
     @ApplicationContext private val context: Context,
     private val db: AppDatabase,
-    private val httpClientBuilder: DavHttpClientBuilder,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
+    private val davClientBuilder: DavHttpClientBuilder,
     private val logger: Logger,
     private val randomAccessCallbackWrapperFactory: RandomAccessCallbackWrapper.Factory,
     private val streamingFileDescriptorFactory: StreamingFileDescriptor.Factory
@@ -41,12 +38,12 @@ class OpenDocumentOperation @Inject constructor(
 
     private val documentDao = db.webDavDocumentDao()
 
-    operator fun invoke(documentId: String, mode: String, signal: CancellationSignal?): ParcelFileDescriptor = runBlocking {
+    suspend operator fun invoke(documentId: String, mode: String, signal: CancellationSignal?): ParcelFileDescriptor {
         logger.fine("WebDAV openDocument $documentId $mode $signal")
 
         val doc = documentDao.get(documentId.toLong()) ?: throw FileNotFoundException()
-        val url = doc.toHttpUrl(db)
-        val client = httpClientBuilder.build(doc.mountId, logBody = false)
+        val url = doc.toKtorUrl(db)
+        val client = davClientBuilder.build(doc.mountId, logBody = false)
 
         val readOnlyMode = when (mode) {
             "r" -> true
@@ -65,8 +62,10 @@ class OpenDocumentOperation @Inject constructor(
         }.await()
         logger.fine("Received file info: $fileInfo")
 
+        val contentType = doc.mimeType?.toString().toContentTypeOrNull()
+
         // RandomAccessCallback.Wrapper / StreamingFileDescriptor are responsible for closing httpClient
-        return@runBlocking if (
+        return if (
             androidSupportsRandomAccess &&
             readOnlyMode &&                     // WebDAV doesn't support random write access (natively)
             fileInfo.size != null &&            // file descriptor must return a useful value on getFileSize()
@@ -74,12 +73,12 @@ class OpenDocumentOperation @Inject constructor(
             fileInfo.supportsPartial == true    // WebDAV server must advertise random access
         ) {
             logger.fine("Creating RandomAccessCallback for $url")
-            val accessor = randomAccessCallbackWrapperFactory.create(client, url, doc.mimeType, fileInfo, accessScope)
+            val accessor = randomAccessCallbackWrapperFactory.create(client, url, contentType, fileInfo, accessScope)
             accessor.fileDescriptor()
 
         } else {
             logger.fine("Creating StreamingFileDescriptor for $url")
-            val fd = streamingFileDescriptorFactory.create(client, url, doc.mimeType, accessScope) { transferred, success ->
+            val fd = streamingFileDescriptorFactory.create(client, url, contentType, accessScope) { transferred, success ->
                 // called when transfer is finished
                 if (!success)
                     return@create
@@ -100,9 +99,8 @@ class OpenDocumentOperation @Inject constructor(
         }
     }
 
-    private suspend fun headRequest(client: OkHttpClient, url: HttpUrl): HeadResponse = runInterruptible(ioDispatcher) {
+    private suspend fun headRequest(@WillNotClose client: HttpClient, url: Url): HeadResponse =
         HeadResponse.fromUrl(client, url)
-    }
 
 
     companion object {

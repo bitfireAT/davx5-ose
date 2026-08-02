@@ -8,15 +8,12 @@ import android.content.Context
 import at.bitfire.dav4jvm.ktor.DavResource
 import at.bitfire.dav4jvm.ktor.exception.HttpException
 import at.bitfire.davdroid.db.AppDatabase
-import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.webdav.DavHttpClientBuilder
 import at.bitfire.davdroid.webdav.DocumentProviderUtils
 import at.bitfire.davdroid.webdav.DocumentProviderUtils.displayNameToMemberName
 import at.bitfire.davdroid.webdav.throwForDocumentProvider
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.ktor.http.URLBuilder
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.runBlocking
 import java.io.FileNotFoundException
 import java.util.logging.Logger
 import javax.inject.Inject
@@ -24,19 +21,18 @@ import javax.inject.Inject
 class RenameDocumentOperation @Inject constructor(
     @ApplicationContext private val context: Context,
     private val db: AppDatabase,
-    private val httpClientBuilder: DavHttpClientBuilder,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
+    private val davClientBuilder: DavHttpClientBuilder,
     private val logger: Logger
 ) {
 
     private val documentDao = db.webDavDocumentDao()
 
-    operator fun invoke(documentId: String, displayName: String): String? = runBlocking(ioDispatcher) {
+    suspend operator fun invoke(documentId: String, displayName: String): String? {
         logger.fine("WebDAV renameDocument $documentId $displayName")
         val doc = documentDao.get(documentId.toLong()) ?: throw FileNotFoundException()
 
-        httpClientBuilder
-            .buildKtor(doc.mountId)
+        davClientBuilder
+            .build(doc.mountId)
             .use { httpClient ->
                 for (attempt in 0..DocumentProviderUtils.MAX_DISPLAYNAME_TO_MEMBERNAME_ATTEMPTS) {
                     val newName = displayNameToMemberName(displayName, attempt)
@@ -55,14 +51,14 @@ class RenameDocumentOperation @Inject constructor(
 
                         DocumentProviderUtils.notifyFolderChanged(context, doc.parentId)
 
-                        return@runBlocking doc.id.toString()
+                        return doc.id.toString()
                     } catch (e: HttpException) {
                         e.throwForDocumentProvider(context, true)
                     }
                 }
             }
 
-        null
+        return null
     }
 
 }

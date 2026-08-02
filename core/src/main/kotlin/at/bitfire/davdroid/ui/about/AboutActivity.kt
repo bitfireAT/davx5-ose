@@ -42,7 +42,6 @@ import at.bitfire.davdroid.ui.ExternalUris
 import at.bitfire.davdroid.ui.ExternalUris.withStatParams
 import at.bitfire.davdroid.ui.composable.AppTheme
 import com.mikepenz.aboutlibraries.Libs
-import com.mikepenz.aboutlibraries.ui.compose.LibraryDefaults
 import com.mikepenz.aboutlibraries.ui.compose.m3.LibrariesContainer
 import com.mikepenz.aboutlibraries.util.withContext
 import dagger.hilt.android.AndroidEntryPoint
@@ -155,12 +154,7 @@ class AboutActivity: AppCompatActivity() {
 
                                 2 -> LibrariesContainer(
                                     modifier = Modifier.fillMaxSize(),
-                                    padding = LibraryDefaults.libraryPadding(
-                                        contentPadding = PaddingValues(8.dp)
-                                    ),
-                                    dimensions = LibraryDefaults.libraryDimensions(
-                                        itemSpacing = 8.dp
-                                    ),
+                                    contentPadding = PaddingValues(8.dp),
                                     libraries = Libs.Builder()
                                         .withContext(LocalContext.current)
                                         .build()

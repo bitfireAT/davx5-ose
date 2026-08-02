@@ -31,7 +31,7 @@ class AttendeesHandler : AndroidEventEntityHandler {
     }
 
     private fun populateAttendee(row: ContentValues, to: VEvent) {
-        logger.log(Level.FINE, "Read event attendee from calendar provider", row)
+        logger.fine("Read event attendee from calendar provider: $row")
 
         try {
             val attendee: Attendee

@@ -4,11 +4,10 @@
 
 package at.bitfire.davdroid.di
 
-import at.bitfire.davdroid.di.TestCoroutineDispatchersModule.standardTestDispatcher
+import android.os.Looper
+import at.bitfire.davdroid.di.TestCoroutineDispatchersModule.testScheduler
 import at.bitfire.davdroid.di.qualifier.DefaultDispatcher
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
-import at.bitfire.davdroid.di.qualifier.MainDispatcher
-import at.bitfire.davdroid.di.qualifier.SyncDispatcher
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.components.SingletonComponent
@@ -17,47 +16,47 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestCoroutineScheduler
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.setMain
 
 /**
  * Provides test dispatchers to be injected instead of the normal ones.
  *
- * The [standardTestDispatcher] is set as main dispatcher in [at.bitfire.davdroid.HiltTestRunner],
- * so that tests can just use [kotlinx.coroutines.test.runTest] without providing [standardTestDispatcher].
+ * [IoDispatcher] and [Dispatchers.Main] (which is used by
+ * [androidx.lifecycle.viewModelScope] by default) are synchronized with [testScheduler],
+ * so that [kotlinx.coroutines.test.runTest] can determine when launched coroutines are done etc.
+ *
+ * To test code that needs to run on the main [Looper] and for instance must not do network I/O there,
+ * directly use [androidx.test.annotation.UiThreadTest] or [android.app.Instrumentation.runOnMainSync].
  */
 @Module
 @TestInstallIn(
     components = [SingletonComponent::class],
     replaces = [CoroutineDispatchersModule::class]
 )
+@OptIn(ExperimentalCoroutinesApi::class)
 object TestCoroutineDispatchersModule {
 
-    private val standardTestDispatcher = StandardTestDispatcher()
+    // synchronized dispatchers
+
+    private val testScheduler = TestCoroutineScheduler()
+
+    private val defaultDispatcher = StandardTestDispatcher(testScheduler)
+    private val ioDispatcher = StandardTestDispatcher(testScheduler)
+    private val mainDispatcher = UnconfinedTestDispatcher(testScheduler)
 
     @Provides
     @DefaultDispatcher
-    fun defaultDispatcher(): CoroutineDispatcher = standardTestDispatcher
+    fun defaultDispatcher(): CoroutineDispatcher = defaultDispatcher
 
     @Provides
     @IoDispatcher
-    fun ioDispatcher(): CoroutineDispatcher = standardTestDispatcher
+    fun ioDispatcher(): CoroutineDispatcher = ioDispatcher
 
-    @Provides
-    @MainDispatcher
-    fun mainDispatcher(): CoroutineDispatcher = standardTestDispatcher
-
-    @Provides
-    @SyncDispatcher
-    fun syncDispatcher(): CoroutineDispatcher = standardTestDispatcher
-
-   /**
-     * Sets the [standardTestDispatcher] as [Dispatchers.Main] so that test dispatchers
-     * created in the future use the same scheduler. See [StandardTestDispatcher] docs
-     * for more information.
-     */
-    @OptIn(ExperimentalCoroutinesApi::class)
+    /** Syncs [Dispatchers.Main] to [testScheduler] so e.g. `viewModelScope` is deterministic under `runTest`. */
     fun initMainDispatcher() {
-        Dispatchers.setMain(standardTestDispatcher)
+        Dispatchers.setMain(mainDispatcher)
     }
 
 }

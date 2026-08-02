@@ -20,9 +20,9 @@ class SyncWidgetViewModel @Inject constructor(
     private val syncWorkerManager: SyncWorkerManager
 ): ViewModel() {
 
-    fun requestSync() = viewModelScope.launch(Dispatchers.Default) {
-        for (account in accountRepository.getAll())
-            syncWorkerManager.enqueueOneTimeAllAuthorities(account, manual = true)
+    fun requestSync() = viewModelScope.launch(Dispatchers.IO) {
+        for (accountId in accountRepository.getAll())
+            syncWorkerManager.enqueueOneTimeAllAuthorities(accountId, manual = true)
     }
 
 }

@@ -13,6 +13,7 @@ import net.fortuna.ical4j.transform.compliance.DatePropertyRule
 import net.fortuna.ical4j.transform.compliance.Rfc5545PropertyRule
 import java.io.BufferedReader
 import java.io.Reader
+import java.util.logging.Level
 import java.util.logging.Logger
 import javax.annotation.WillNotClose
 
@@ -106,7 +107,7 @@ class ICalPreprocessor {
                 (rule as Rfc5545PropertyRule<Property>).apply(property)
                 val afterStr = runCatching { property.toString() }.getOrNull()
                 if (beforeStr != afterStr)
-                    logger.info("${rule.javaClass.name}: $beforeStr -> $afterStr")
+                    logger.log(Level.INFO, "{0}: {1} -> {2}", arrayOf(rule.javaClass.name, beforeStr, afterStr))
             }
     }
 

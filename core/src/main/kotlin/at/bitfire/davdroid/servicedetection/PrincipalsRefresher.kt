@@ -4,8 +4,9 @@
 
 package at.bitfire.davdroid.servicedetection
 
-import at.bitfire.dav4jvm.okhttp.DavResource
-import at.bitfire.dav4jvm.okhttp.exception.HttpException
+import at.bitfire.dav4jvm.ktor.DavResource
+import at.bitfire.dav4jvm.ktor.exception.HttpException
+import at.bitfire.dav4jvm.ktor.responses
 import at.bitfire.dav4jvm.property.webdav.WebDAV
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Principal
@@ -13,22 +14,24 @@ import at.bitfire.davdroid.db.Service
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import okhttp3.OkHttpClient
+import io.ktor.client.HttpClient
+import kotlinx.coroutines.flow.filter
 import java.util.logging.Logger
+import javax.annotation.WillNotClose
 
 /**
  * Used to update the principals (their current display names) and delete those without collections.
  */
 class PrincipalsRefresher @AssistedInject constructor(
     @Assisted private val service: Service,
-    @Assisted private val httpClient: OkHttpClient,
+    @Assisted @WillNotClose private val httpClient: HttpClient,
     private val db: AppDatabase,
     private val logger: Logger
 ) {
 
     @AssistedFactory
     interface Factory {
-        fun create(service: Service, httpClient: OkHttpClient): PrincipalsRefresher
+        fun create(service: Service, httpClient: HttpClient): PrincipalsRefresher
     }
 
     /**
@@ -43,21 +46,22 @@ class PrincipalsRefresher @AssistedInject constructor(
      * Refreshes the principals (get their current display names).
      * Also removes principals which do not own any collections anymore.
      */
-    fun refreshPrincipals() {
+    suspend fun refreshPrincipals() {
         // Refresh principals (collection owner urls)
         val principals = db.principalDao().getByService(service.id)
         for (oldPrincipal in principals) {
             val principalUrl = oldPrincipal.url
             logger.fine("Querying principal $principalUrl")
             try {
-                DavResource(httpClient, principalUrl).propfind(0, *principalProperties) { response, _ ->
-                    if (!response.isSuccess())
-                        return@propfind
-                    Principal.fromDavResponse(service.id, response)?.let { principal ->
-                        logger.fine("Got principal: $principal")
-                        db.principalDao().insertOrUpdate(service.id, principal)
+                DavResource(httpClient, principalUrl).propfind(0, *principalProperties)
+                    .responses()
+                    .filter { it.isSuccess() }
+                    .collect { response ->
+                        Principal.fromDavResponse(service.id, response)?.let { principal ->
+                            logger.fine("Got principal: $principal")
+                            db.principalDao().insertOrUpdate(service.id, principal)
+                        }
                     }
-                }
             } catch (e: HttpException) {
                 logger.info("Principal update failed with response code ${e.statusCode}. principalUrl=$principalUrl")
             }

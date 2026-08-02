@@ -12,7 +12,8 @@ import net.fortuna.ical4j.model.property.Uid
 
 class UidHandler : JtxObjectEntityHandler {
     override fun process(from: Entity, main: Entity, to: CalendarComponent) {
-        from.entityValues.getAsString(JtxContract.JtxICalObject.UID)?.let { uid ->
+        // Always take UID from main jtx object
+        main.entityValues.getAsString(JtxContract.JtxICalObject.UID)?.let { uid ->
             to += Uid(uid)
         }
     }

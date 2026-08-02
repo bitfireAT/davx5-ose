@@ -7,6 +7,7 @@ package at.bitfire.davdroid.network
 import androidx.annotation.VisibleForTesting
 import org.conscrypt.Conscrypt
 import java.security.Security
+import java.util.logging.Level
 import java.util.logging.Logger
 import javax.net.ssl.SSLContext
 
@@ -19,13 +20,11 @@ class ConscryptIntegration {
     private val logger
         get() = Logger.getLogger(javaClass.name)
 
-    private var initialized = false
-
     /**
      * Loads and initializes Conscrypt (if not already done). Safe to be called multiple times.
      */
     fun initialize() {
-        synchronized(ConscryptIntegration::javaClass) {
+        synchronized(ConscryptIntegration::class.java) {
             if (initialized)
                 return
 
@@ -37,8 +36,12 @@ class ConscryptIntegration {
                 logger.info("Using Conscrypt/${version.major()}.${version.minor()}.${version.patch()} for TLS")
 
                 val engine = SSLContext.getDefault().createSSLEngine()
-                logger.info("Enabled protocols: ${engine.enabledProtocols.joinToString(", ")}")
-                logger.info("Enabled ciphers: ${engine.enabledCipherSuites.joinToString(", ")}")
+                logger.log(
+                    Level.INFO, "Enabled protocols: {0} with ciphers: {1}", arrayOf(
+                        engine.enabledProtocols.joinToString(", "),
+                        engine.enabledCipherSuites.joinToString(", ")
+                    )
+                )
             }
 
             initialized = true
@@ -48,5 +51,11 @@ class ConscryptIntegration {
     @VisibleForTesting
     internal fun conscryptInstalled() =
         Security.getProviders().any { Conscrypt.isConscrypt(it) }
+
+
+    companion object {
+        /** whether Conscrypt is already initialized */
+        private var initialized = false
+    }
 
 }

@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.ui
 
-import android.accounts.Account
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
@@ -20,6 +19,9 @@ import androidx.core.app.ShareCompat
 import androidx.core.content.FileProvider
 import androidx.core.content.IntentCompat
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.accounts.AccountId
+import at.bitfire.davdroid.accounts.AccountIdIntentSerializer
+import at.bitfire.davdroid.log.DebugDirectory
 import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.TasksAppManager
 import at.bitfire.synctools.storage.TaskProvider
@@ -27,7 +29,7 @@ import at.techbee.jtx.JtxContract
 import com.google.common.base.Ascii
 import dagger.Lazy
 import dagger.hilt.android.AndroidEntryPoint
-import okhttp3.HttpUrl
+import io.ktor.http.Url
 import java.io.File
 import java.time.Instant
 import javax.inject.Inject
@@ -61,15 +63,15 @@ class DebugInfoActivity: AppCompatActivity() {
         }
 
         val remoteResource = extras?.getString(EXTRA_REMOTE_RESOURCE)
-        setContent { 
+        setContent {
             DebugInfoScreen(
-                account = IntentCompat.getParcelableExtra(intent, EXTRA_ACCOUNT, Account::class.java),
+                accountId = AccountIdIntentSerializer.fromIntent(intent, EXTRA_ACCOUNT),
                 syncDataType = extras?.getString(EXTRA_SYNC_DATA_TYPE),
                 cause = IntentCompat.getSerializableExtra(intent, EXTRA_CAUSE, Throwable::class.java),
                 canViewResource = viewResourceIntent != null,
                 localResource = extras?.getString(EXTRA_LOCAL_RESOURCE_SUMMARY),
                 remoteResource = remoteResource,
-                logs = extras?.getString(EXTRA_LOGS),
+                debugLogFileName = extras?.getString(EXTRA_DEBUG_LOG_FILE)?.let { DebugDirectory.FileName(it) },
                 timestamp = extras?.getLong(EXTRA_TIMESTAMP),
                 onShareZipFile = ::shareZipFile,
                 onViewFile = ::viewFile,
@@ -192,9 +194,10 @@ class DebugInfoActivity: AppCompatActivity() {
             return this
         }
 
-        fun withAccount(account: Account?): IntentBuilder {
-            if (account != null)
-                intent.putExtra(EXTRA_ACCOUNT, account)
+        fun withAccount(accountId: AccountId?): IntentBuilder {
+            if (accountId != null) {
+                AccountIdIntentSerializer.addExtra(intent, EXTRA_ACCOUNT, accountId)
+            }
             return this
         }
 
@@ -226,16 +229,13 @@ class DebugInfoActivity: AppCompatActivity() {
             return this
         }
 
-        fun withLogs(logs: String?): IntentBuilder {
-            if (logs != null)
-                intent.putExtra(
-                    EXTRA_LOGS,
-                    Ascii.truncate(logs, MAX_ELEMENT_SIZE, "...")
-                )
+        fun withDebugLogFile(fileName: DebugDirectory.FileName?): IntentBuilder {
+            if (fileName != null)
+                intent.putExtra(EXTRA_DEBUG_LOG_FILE, fileName.name)
             return this
         }
 
-        fun withRemoteResource(remote: HttpUrl?): IntentBuilder {
+        fun withRemoteResource(remote: Url?): IntentBuilder {
             if (remote != null)
                 intent.putExtra(EXTRA_REMOTE_RESOURCE, remote.toString())
             return this
@@ -266,8 +266,8 @@ class DebugInfoActivity: AppCompatActivity() {
         /** [Uri] of local resource related to the problem (as [android.os.Parcelable]) */
         internal const val EXTRA_LOCAL_RESOURCE_URI = "localResourceUri"
 
-        /** logs related to the problem (plain-text [String]) */
-        private const val EXTRA_LOGS = "logs"
+        /** file name (not path) of a log file inside [at.bitfire.davdroid.log.DebugDirectory] ([String]) */
+        private const val EXTRA_DEBUG_LOG_FILE = "debugLogFile"
 
         /** URL of remote resource related to the problem (plain-text [String]) */
         private const val EXTRA_REMOTE_RESOURCE = "remoteResource"

@@ -4,10 +4,10 @@
 
 package at.bitfire.davdroid.db
 
+import at.bitfire.davdroid.util.DavUtils.toUrl
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.test.runTest
-import okhttp3.HttpUrl.Companion.toHttpUrl
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
@@ -39,7 +39,7 @@ class WebDavDocumentDaoTest {
         val mountDao = db.webDavMountDao()
         val dao = db.webDavDocumentDao()
 
-        val mount = WebDavMount(id = 1, name = "Test", url = "https://example.com/".toHttpUrl())
+        val mount = WebDavMount(id = 1, name = "Test", url = "https://example.com/".toUrl())
         db.webDavMountDao().insert(mount)
 
         val root = WebDavDocument(

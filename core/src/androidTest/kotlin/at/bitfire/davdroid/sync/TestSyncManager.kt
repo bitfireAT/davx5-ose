@@ -4,56 +4,67 @@
 
 package at.bitfire.davdroid.sync
 
-import android.accounts.Account
-import at.bitfire.dav4jvm.okhttp.DavCollection
-import at.bitfire.dav4jvm.okhttp.MultiResponseCallback
-import at.bitfire.dav4jvm.okhttp.Response
+import at.bitfire.dav4jvm.ktor.DavCollection
+import at.bitfire.dav4jvm.ktor.MultiStatusItem
+import at.bitfire.dav4jvm.ktor.Response
+import at.bitfire.dav4jvm.ktor.selfResponse
 import at.bitfire.dav4jvm.property.caldav.CalDAV
 import at.bitfire.dav4jvm.property.caldav.GetCTag
+import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.db.Collection
-import at.bitfire.davdroid.di.qualifier.SyncDispatcher
+import at.bitfire.davdroid.di.qualifier.IoDispatcher
+import at.bitfire.davdroid.di.qualifier.SyncTransferSemaphore
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.resource.SyncState
 import at.bitfire.davdroid.util.DavUtils.lastSegment
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import io.ktor.client.HttpClient
+import io.ktor.http.Url
+import io.ktor.http.content.ByteArrayContent
 import kotlinx.coroutines.CoroutineDispatcher
-import okhttp3.HttpUrl
-import okhttp3.OkHttpClient
-import okhttp3.RequestBody.Companion.toRequestBody
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.sync.Semaphore
 import org.junit.Assert.assertEquals
 
 class TestSyncManager @AssistedInject constructor(
-    @Assisted account: Account,
-    @Assisted httpClient: OkHttpClient,
+    @Assisted accountId: AccountId,
+    @Assisted httpClient: HttpClient,
     @Assisted syncResult: SyncResult,
     @Assisted localCollection: LocalTestCollection,
     @Assisted collection: Collection,
-    @SyncDispatcher syncDispatcher: CoroutineDispatcher
+    @Assisted settings: SyncSettings,
+    @IoDispatcher ioDispatcher: CoroutineDispatcher,
+    @SyncTransferSemaphore syncTransferSemaphore: Semaphore
 ): SyncManager<LocalTestResource, LocalTestCollection, DavCollection>(
-    account,
+    accountId,
     httpClient,
     SyncDataType.EVENTS,
     syncResult,
     localCollection,
     collection,
     resync = null,
-    syncDispatcher
+    ioDispatcher,
+    syncTransferSemaphore,
+    settings
 ) {
 
     @AssistedFactory
     interface Factory {
         fun create(
-            account: Account,
-            httpClient: OkHttpClient,
+            accountId: AccountId,
+            httpClient: HttpClient,
             syncResult: SyncResult,
             localCollection: LocalTestCollection,
-            collection: Collection
+            collection: Collection,
+            settings: SyncSettings
         ): TestSyncManager
     }
 
-    override fun prepare(): Boolean {
+    override suspend fun prepare(): Boolean {
         davCollection = DavCollection(httpClient, collection.url)
         return true
     }
@@ -64,15 +75,10 @@ class TestSyncManager @AssistedInject constructor(
             throw IllegalStateException("queryCapabilities() must not be called twice")
         didQueryCapabilities = true
 
-        var cTag: SyncState? = null
-        davCollection.propfind(0, CalDAV.GetCTag) { response, rel ->
-            if (rel == Response.HrefRelation.SELF)
-                response[GetCTag::class.java]?.cTag?.let {
-                    cTag = SyncState(SyncState.Type.CTAG, it)
-                }
+        val response = davCollection.propfind(0, CalDAV.GetCTag).selfResponse()
+        return response?.let { it[GetCTag::class.java]?.cTag }?.let {
+            SyncState(SyncState.Type.CTAG, it)
         }
-
-        return cTag
     }
 
     var didGenerateUpload = false
@@ -80,7 +86,9 @@ class TestSyncManager @AssistedInject constructor(
         didGenerateUpload = true
         return GeneratedResource(
             suggestedFileName = resource.fileName ?: "generated-file.txt",
-            requestBody = resource.toString().toRequestBody(),
+            content = ByteArrayContent(
+                bytes = resource.toString().encodeToByteArray()
+            ),
             onSuccessContext = GeneratedResource.OnSuccessContext()
         )
     }
@@ -89,17 +97,16 @@ class TestSyncManager @AssistedInject constructor(
 
     var listAllRemoteResult = emptyList<Pair<Response, Response.HrefRelation>>()
     var didListAllRemote = false
-    override suspend fun listAllRemote(callback: MultiResponseCallback) {
+    override fun listAllRemote(): Flow<MultiStatusItem> {
         if (didListAllRemote)
             throw IllegalStateException("listAllRemote() must not be called twice")
         didListAllRemote = true
-        for (result in listAllRemoteResult)
-            callback.onResponse(result.first, result.second)
+        return listAllRemoteResult.asFlow().map { MultiStatusItem.Response(it.first, it.second) }
     }
 
-    var assertDownloadRemote = emptyMap<HttpUrl, String>()
+    var assertDownloadRemote = emptyMap<Url, String>()
     var didDownloadRemote = false
-    override suspend fun downloadRemote(bunch: List<HttpUrl>) {
+    override suspend fun downloadRemote(bunch: List<Url>) {
         didDownloadRemote = true
         assertEquals(assertDownloadRemote.keys.toList(), bunch)
 
@@ -118,7 +125,7 @@ class TestSyncManager @AssistedInject constructor(
         }
     }
 
-    override fun postProcess() {
+    override suspend fun postProcess() {
     }
 
     override fun notifyInvalidResourceTitle() =

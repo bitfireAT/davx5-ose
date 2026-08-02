@@ -20,7 +20,12 @@ android {
         }
     }
 
-    buildFeatures.buildConfig = true
+    buildFeatures {
+        buildConfig = true
+    }
+    testFixtures {
+        enable = true
+    }
 
     sourceSets {
         getByName("main") {
@@ -85,31 +90,28 @@ dependencies {
     implementation(libs.androidx.annotation)
     implementation(libs.androidx.core)
     implementation(libs.guava)
-
-    compileOnly(libs.spotbugs.annotations)
+    implementation(libs.kotlinx.coroutines)
 
     // ical4j/ez-vcard
     api(libs.ical4j)
     implementation(libs.slf4j.jdk)       // ical4j uses slf4j, this module uses java.util.Logger
     api(libs.ezvcard)
 
+    // useful annotations
+    compileOnly(libs.spotbugs.annotations)
+
     // force some versions for compatibility with our minSdk level (see version catalog for details)
     implementation(libs.commons.codec)
     implementation(libs.commons.lang)
 
-    // synctools.test package also provide test rules
-    implementation(libs.androidx.test.rules)
-
-    // Useful annotations
-    api(libs.spotbugs.annotations)
+    // test fixtures
+    testFixturesImplementation(libs.androidx.test.rules)
 
     // instrumented tests
     androidTestImplementation(libs.androidx.test.rules)
     androidTestImplementation(libs.androidx.test.runner)
     androidTestImplementation(libs.kotlinx.coroutines.test)
     androidTestImplementation(libs.mockk.android)
-    androidTestImplementation(libs.androidx.test.rules)
-    androidTestImplementation(libs.androidx.test.runner)
 
     // install third-party APKs for instrumented tests (if available)
     val apkDir = file("apk")
@@ -129,6 +131,9 @@ dependencies {
 }
 
 tasks.withType<Test>().configureEach {
+    // activate verbose logging for tests
+    systemProperty("java.util.logging.config.file", "$projectDir/src/test/resources/logging.properties")
+
     options {
         // Prevent Robolectric from instrumenting ical4j classes to avoid problems with registering
         // ical4j's ZoneRulesProviderImpl more than once with Java's ZoneRulesProvider.
