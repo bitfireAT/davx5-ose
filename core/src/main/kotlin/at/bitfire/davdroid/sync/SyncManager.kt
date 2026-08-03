@@ -329,7 +329,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
      *
      * @return whether local resources have been processed so that a synchronization is always necessary
      */
-    protected open suspend fun processLocallyDeleted(): Boolean {
+    protected suspend fun processLocallyDeleted(): Boolean {
         if (localCollection.readOnly)
             return readOnlyPolicy.resetDeleted(localCollection)
 
@@ -404,7 +404,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
      * @param forceAsNew    whether the ETag (and Schedule-Tag) of [local] are ignored and the resource
      *                      is created as a new resource on the server
      */
-    protected open suspend fun uploadDirty(local: LocalType, forceAsNew: Boolean = false) {
+    protected suspend fun uploadDirty(local: LocalType, forceAsNew: Boolean = false) {
         val existingFileName = local.fileName
 
         val upload = generateUpload(local)
@@ -553,7 +553,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
      * @return whether data has been changed on the server, i.e. whether running the
      * sync algorithm is required
      */
-    protected open fun syncRequired(state: SyncState?): Boolean {
+    protected fun syncRequired(state: SyncState?): Boolean {
         if (resync != null)
             return true
 
@@ -588,7 +588,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
      *
      * Used together with [deleteNotPresentRemotely].
      */
-    protected open fun resetPresentRemotely() {
+    protected fun resetPresentRemotely() {
         val number = localCollection.markNotDirty(0)
         logger.info("Number of local non-dirty entries: $number")
     }
@@ -599,7 +599,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
      *
      * @param listRemote function to list remote resources (for instance, all since a certain sync-token)
      */
-    protected open suspend fun syncRemote(listRemote: suspend (MultiResponseCallback) -> Unit) =
+    protected suspend fun syncRemote(listRemote: suspend (MultiResponseCallback) -> Unit) =
         coroutineScope {    // structured concurrency
             val batchDownloader = BatchDownloader { batch ->
                 launch {
@@ -667,7 +667,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
 
     protected abstract fun listAllRemote(): Flow<MultiStatusItem>
 
-    protected open suspend fun listRemoteChanges(
+    protected suspend fun listRemoteChanges(
         syncState: SyncState?,
         callback: MultiResponseCallback
     ): Pair<SyncToken, Boolean> {
@@ -728,7 +728,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
      * Used together with [resetPresentRemotely] when a full listing has been received from
      * the server to locally delete resources which are not present remotely (anymore).
      */
-    protected open suspend fun deleteNotPresentRemotely() {
+    protected suspend fun deleteNotPresentRemotely() {
         val removed = localCollection.removeNotDirtyMarked(0)
         logger.info("Removed $removed local resources which are not present on the server anymore")
     }
