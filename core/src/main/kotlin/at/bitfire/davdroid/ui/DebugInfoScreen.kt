@@ -414,11 +414,11 @@ private fun serverErrorMessage(domain: String?): AnnotatedString {
     val appName = stringResource(R.string.app_name).htmlEncode()
     val description = stringResource(R.string.debug_info_http_5xx_description).htmlEncode()
     val contactSupport =
-        if (domain != null)
+        if (!domain.isNullOrEmpty())
             stringResource(R.string.debug_info_http_5xx_contact_support, domain.htmlEncode(), appName)
         else
             stringResource(R.string.debug_info_http_5xx_contact_support_no_domain, appName)
-    return AnnotatedString.fromHtml("$description\n\n$contactSupport")
+    return AnnotatedString.fromHtml("$description $contactSupport")
 }
 
 @Composable
