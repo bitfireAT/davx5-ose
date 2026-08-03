@@ -321,6 +321,9 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
      */
     protected abstract suspend fun queryCapabilities(): SyncState?
 
+
+    //region Processing of locally dirty/deleted items
+
     /**
      * Processes locally deleted entries. This can mean:
      *
@@ -536,6 +539,8 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
         local.clearDirty(Optional.of(newFileName), eTag, scheduleTag)
     }
 
+    //endregion
+
 
     /**
      * Determines whether a sync is required because there were changes on the server.
@@ -665,41 +670,6 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
             batchDownloader.flush()
         }
 
-    protected abstract fun listAllRemote(): Flow<MultiStatusItem>
-
-    protected suspend fun listRemoteChanges(
-        syncState: SyncState?,
-        callback: MultiResponseCallback
-    ): Pair<SyncToken, Boolean> {
-        var furtherResults = false
-
-        val report = davCollection.reportChanges(
-            syncState?.takeIf { syncState.type == SyncState.Type.SYNC_TOKEN }?.value,
-            false, null,
-            WebDAV.GetETag
-        ).forEachResponse { response, relation ->
-            when (relation) {
-                Response.HrefRelation.SELF ->
-                    furtherResults = response.status == HttpStatusCode.InsufficientStorage
-
-                Response.HrefRelation.MEMBER ->
-                    callback(response, relation)
-
-                else ->
-                    logger.fine("Unexpected sync-collection response: $response")
-            }
-        }
-
-        var syncToken: SyncToken? = null
-        report.filterIsInstance<SyncToken>().firstOrNull()?.let {
-            syncToken = it
-        }
-        if (syncToken == null)
-            throw DavException("Received sync-collection response without sync-token")
-
-        return Pair(syncToken, furtherResults)
-    }
-
     /**
      * Downloads and processes resources, given as a list of URLs. Will be called with a list
      * of changed/new remote resources.
@@ -739,10 +709,55 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
     protected abstract suspend fun postProcess()
 
 
-    // sync helpers
+    //region Sync algorithm-specific: PROPFIND/REPORT
 
     private suspend fun querySyncState(): SyncState? =
         davCollection.propfind(0, CalDAV.GetCTag, WebDAV.SyncToken).selfResponse()?.syncState()
+
+    protected abstract fun listAllRemote(): Flow<MultiStatusItem>
+
+    //endregion
+
+
+    //region Sync algorithm-specific: collection-sync
+
+    protected suspend fun listRemoteChanges(
+        syncState: SyncState?,
+        callback: MultiResponseCallback
+    ): Pair<SyncToken, Boolean> {
+        var furtherResults = false
+
+        val report = davCollection.reportChanges(
+            syncState?.takeIf { syncState.type == SyncState.Type.SYNC_TOKEN }?.value,
+            false, null,
+            WebDAV.GetETag
+        ).forEachResponse { response, relation ->
+            when (relation) {
+                Response.HrefRelation.SELF ->
+                    furtherResults = response.status == HttpStatusCode.InsufficientStorage
+
+                Response.HrefRelation.MEMBER ->
+                    callback(response, relation)
+
+                else ->
+                    logger.fine("Unexpected sync-collection response: $response")
+            }
+        }
+
+        var syncToken: SyncToken? = null
+        report.filterIsInstance<SyncToken>().firstOrNull()?.let {
+            syncToken = it
+        }
+        if (syncToken == null)
+            throw DavException("Received sync-collection response without sync-token")
+
+        return Pair(syncToken, furtherResults)
+    }
+
+    //endregion
+
+
+    // sync helpers
 
     /**
      * Logs the exception, updates sync result and shows a notification to the user.
