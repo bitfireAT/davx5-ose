@@ -87,8 +87,17 @@ class AccountSettingsMigration20Test {
         // set up legacy address-book with URL, but without collection ID
         val url = "https://example.com/"
 
-        db.serviceDao().insertOrReplace(Service(id = 1, accountName = account.name, type = Service.TYPE_CARDDAV, principal = null))
-        val collectionId = db.collectionDao().insert(Collection(
+        db.serviceDao()
+            .insertOrReplaceBlocking(
+                Service(
+                    id = 1,
+                    accountName = account.name,
+                    type = Service.TYPE_CARDDAV,
+                    principal = null
+                )
+            )
+        val collectionId = db.collectionDao().insertBlocking(
+            Collection(
             serviceId = 1,
             type = Collection.Companion.TYPE_ADDRESSBOOK,
             url = url.toUrl()
@@ -116,8 +125,16 @@ class AccountSettingsMigration20Test {
         // set up legacy calendar with URL, but without collection ID
         val url = "https://example.com/"
 
-        db.serviceDao().insertOrReplace(Service(id = 1, accountName = account.name, type = Service.TYPE_CALDAV, principal = null))
-        val collectionId = db.collectionDao().insert(
+        db.serviceDao()
+            .insertOrReplaceBlocking(
+                Service(
+                    id = 1,
+                    accountName = account.name,
+                    type = Service.TYPE_CALDAV,
+                    principal = null
+                )
+            )
+        val collectionId = db.collectionDao().insertBlocking(
             Collection(
                 serviceId = 1,
                 type = Collection.Companion.TYPE_CALENDAR,

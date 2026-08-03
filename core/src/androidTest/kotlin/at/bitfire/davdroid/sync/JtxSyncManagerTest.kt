@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.sync
 
-import android.accounts.Account
 import android.content.ContentProviderClient
 import android.content.Context
 import at.bitfire.davdroid.accounts.LegacyAccount
@@ -23,6 +22,7 @@ import at.techbee.jtx.JtxContract
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -93,7 +93,7 @@ class JtxSyncManagerTest {
             type = Collection.TYPE_CALENDAR,
             url = "https://example.com".toUrl()
         )
-        localJtxCollection = localJtxCollectionStore.create(provider, dbCollection)
+        localJtxCollection = runBlocking { localJtxCollectionStore.create(provider, dbCollection) }
         syncManager = jtxSyncManagerFactory.jtxSyncManager(
             accountId = accountId,
             httpClient = httpClientBuilder.build(),

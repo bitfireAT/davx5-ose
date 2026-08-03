@@ -167,7 +167,7 @@ class ContactsSyncManager @AssistedInject constructor(
     }
 
     override suspend fun queryCapabilities(): SyncState? {
-        return SyncException.wrapWithRemoteResource(collection.url) {
+        return collection.url.withExceptionContext {
             val response = davCollection.propfind(
                 0,
                 CardDAV.MaxResourceSize,
@@ -175,7 +175,7 @@ class ContactsSyncManager @AssistedInject constructor(
                 WebDAV.SupportedReportSet,
                 CalDAV.GetCTag,
                 WebDAV.SyncToken
-            ).selfResponse() ?: return@wrapWithRemoteResource null
+            ).selfResponse() ?: return@withExceptionContext null
 
             response[MaxResourceSize::class.java]?.maxSize?.let { maxSize ->
                 logger.info("Address book accepts vCards up to ${Formatter.formatFileSize(context, maxSize)}")
@@ -252,14 +252,14 @@ class ContactsSyncManager @AssistedInject constructor(
     }
 
     override fun listAllRemote(): Flow<MultiStatusItem> = flow {
-        SyncException.wrapWithRemoteResource(collection.url) {
+        collection.url.withExceptionContext {
             emitAll(davCollection.propfind(1, WebDAV.ResourceType, WebDAV.GetETag))
         }
     }
 
     override suspend fun downloadRemote(bunch: List<Url>) {
         logger.info("Downloading ${bunch.size} vCard(s): $bunch")
-        SyncException.wrapWithRemoteResource(collection.url) {
+        collection.url.withExceptionContext {
             val contentType: String?
             val version: String?
             when {
@@ -274,7 +274,7 @@ class ContactsSyncManager @AssistedInject constructor(
             }
             davCollection.multiget(bunch, contentType, version).responses().collect { response ->
                 // See CalendarSyncManager for more information about the multi-get response
-                SyncException.wrapWithRemoteResource(response.href) wrapResource@{
+                response.href.withExceptionContext wrapResource@{
                     if (!response.isSuccess()) {
                         logger.warning("Ignoring non-successful multi-get response for ${response.href}")
                         return@wrapResource
@@ -342,14 +342,14 @@ class ContactsSyncManager @AssistedInject constructor(
             if (newData.group) {
                 logger.info("Creating local group: $newData")
                 val newGroup = localCollection.addGroup(newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT)
-                SyncException.wrapWithLocalResource(newGroup) {
+                newGroup.withExceptionContext {
                     updated = newGroup
                 }
 
             } else {
                 logger.info("Creating local contact: $newData")
                 val newContact = localCollection.addContact(newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT)
-                SyncException.wrapWithLocalResource(newContact) {
+                newContact.withExceptionContext {
                     updated = newContact
                 }
             }
@@ -358,7 +358,7 @@ class ContactsSyncManager @AssistedInject constructor(
             // update existing local contact/group
             logger.info("Updating $fileName in local address book: $newData")
 
-            SyncException.wrapWithLocalResource(existing) {
+            existing.withExceptionContext {
                 if ((existing is LocalGroup && newData.group) || (existing is LocalContact && !newData.group)) {
                     // update contact / group
 
@@ -378,14 +378,14 @@ class ContactsSyncManager @AssistedInject constructor(
                     if (newData.group) {
                         logger.info("Creating local group (was contact before): $newData")
                         val newGroup = localCollection.addGroup(newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT)
-                        SyncException.wrapWithLocalResource(newGroup) {
+                        newGroup.withExceptionContext {
                             updated = newGroup
                         }
 
                     } else {
                         logger.info("Creating local contact (was group before): $newData")
                         val newContact = localCollection.addContact(newData, fileName, eTag, LocalResource.FLAG_REMOTELY_PRESENT)
-                        SyncException.wrapWithLocalResource(newContact) {
+                        newContact.withExceptionContext {
                             updated = newContact
                         }
                     }

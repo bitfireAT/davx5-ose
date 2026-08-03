@@ -91,10 +91,10 @@ class ServiceRefresherTest {
         hiltRule.inject()
         client = HttpClient(buildMockEngine())
 
-        val serviceId = db.serviceDao().insertOrReplace(
+        val serviceId = db.serviceDao().insertOrReplaceBlocking(
             Service(id = 0, accountName = "test", type = Service.TYPE_CARDDAV, principal = null)
         )
-        service = db.serviceDao().get(serviceId)!!
+        service = db.serviceDao().getBlocking(serviceId)!!
     }
 
     @After
@@ -110,7 +110,7 @@ class ServiceRefresherTest {
         serviceRefresherFactory.create(service, client)
             .discoverHomesets(baseUrl)
 
-        val savedHomesets = db.homeSetDao().getByService(service.id)
+        val savedHomesets = db.homeSetDao().getByServiceBlocking(service.id)
         assertEquals(2, savedHomesets.size)
 
         // Home set from current-user-principal

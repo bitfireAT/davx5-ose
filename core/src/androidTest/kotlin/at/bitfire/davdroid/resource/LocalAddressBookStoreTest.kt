@@ -22,6 +22,7 @@ import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit4.MockKRule
 import io.mockk.mockk
 import io.mockk.mockkObject
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -68,10 +69,10 @@ class LocalAddressBookStoreTest {
         service = Service(
             id = 200,
             accountName = account.name,
-            type = Service.Companion.TYPE_CARDDAV,
+            type = Service.TYPE_CARDDAV,
             principal = null
         )
-        db.serviceDao().insertOrReplace(service)
+        db.serviceDao().insertOrReplaceBlocking(service)
         addressBookAccount = Account(
             "MrRobert@example.com",
             addressBookAccountType
@@ -133,7 +134,7 @@ class LocalAddressBookStoreTest {
 
 
     @Test
-    fun test_create_createAccountReturnsNull() {
+    fun test_create_createAccountReturnsNull() = runTest {
         val collection = mockk<Collection>(relaxed = true) {
             every { serviceId } returns service.id
             every { id } returns 1
@@ -147,7 +148,7 @@ class LocalAddressBookStoreTest {
     }
 
     @Test
-    fun test_create_ReadOnly() {
+    fun test_create_ReadOnly() = runTest {
         val collection = mockk<Collection>(relaxed = true) {
             every { serviceId } returns service.id
             every { id } returns 1
@@ -160,7 +161,7 @@ class LocalAddressBookStoreTest {
     }
 
     @Test
-    fun test_create_ReadWrite() {
+    fun test_create_ReadWrite() = runTest {
         val collection = mockk<Collection>(relaxed = true) {
             every { serviceId } returns service.id
             every { id } returns 1

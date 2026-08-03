@@ -7,23 +7,23 @@ package at.bitfire.davdroid.sync
 import at.bitfire.davdroid.resource.LocalResource
 import io.ktor.http.Url
 import io.mockk.mockk
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
+import org.junit.Assert.assertSame
 import org.junit.Test
 
 class SyncExceptionTest {
 
     @Test
-    fun testWrapWithLocalResource_LocalResource_Exception() = runTest {
+    fun testWithExceptionContext_LocalResource_LocalResource() = runTest {
         val outer = mockk<LocalResource>()
         val inner = mockk<LocalResource>()
         val e = Exception()
 
-        val result = assertSyncException {
-            SyncException.wrapWithLocalResource(outer) {
-                SyncException.wrapWithLocalResource(inner) {
+        val result = assertWrapped {
+            outer.withExceptionContext {
+                inner.withExceptionContext {
                     throw e
                 }
             }
@@ -34,32 +34,14 @@ class SyncExceptionTest {
     }
 
     @Test
-    fun testWrapWithLocalResource_LocalResource_SyncException() = runTest {
-        val outer = mockk<LocalResource>()
-        val inner = mockk<LocalResource>()
-        val e = SyncException(Exception())
-
-        val result = assertSyncException {
-            SyncException.wrapWithLocalResource(outer) {
-                SyncException.wrapWithLocalResource(inner) {
-                    throw e
-                }
-            }
-        }
-
-        assertEquals(inner, result.localResource)
-        assertEquals(e, result)
-    }
-
-    @Test
-    fun testWrapWithLocalResource_RemoteResource_Exception() = runTest {
+    fun testWithExceptionContext_LocalResource_RemoteResource() = runTest {
         val local = mockk<LocalResource>()
-        val remote = mockk<Url>()
+        val remote = Url("https://example.com")
         val e = Exception()
 
-        val result = assertSyncException {
-            SyncException.wrapWithLocalResource(local) {
-                SyncException.wrapWithRemoteResource(remote) {
+        val result = assertWrapped {
+            local.withExceptionContext {
+                remote.withExceptionContext {
                     throw e
                 }
             }
@@ -71,34 +53,14 @@ class SyncExceptionTest {
     }
 
     @Test
-    fun testWrapWithLocalResource_RemoteResource_SyncException() = runTest {
-        val local = mockk<LocalResource>()
-        val remote = mockk<Url>()
-        val e = SyncException(Exception())
-
-        val result = assertSyncException {
-            SyncException.wrapWithLocalResource(local) {
-                SyncException.wrapWithRemoteResource(remote) {
-                    throw e
-                }
-            }
-        }
-
-        assertEquals(local, result.localResource)
-        assertEquals(remote, result.remoteResource)
-        assertEquals(e, result)
-    }
-
-
-    @Test
-    fun testWrapWithRemoteResource_LocalResource_Exception() = runTest {
-        val remote = mockk<Url>()
+    fun testWithExceptionContext_RemoteResource_LocalResource() = runTest {
+        val remote = Url("https://example.com")
         val local = mockk<LocalResource>()
         val e = Exception()
 
-        val result = assertSyncException {
-            SyncException.wrapWithRemoteResource(remote) {
-                SyncException.wrapWithLocalResource(local) {
+        val result = assertWrapped {
+            remote.withExceptionContext {
+                local.withExceptionContext {
                     throw e
                 }
             }
@@ -110,33 +72,14 @@ class SyncExceptionTest {
     }
 
     @Test
-    fun testWrapWithRemoteResource_LocalResource_SyncException() = runTest {
-        val remote = mockk<Url>()
-        val local = mockk<LocalResource>()
-        val e = SyncException(Exception())
-
-        val result = assertSyncException {
-            SyncException.wrapWithRemoteResource(remote) {
-                SyncException.wrapWithLocalResource(local) {
-                    throw e
-                }
-            }
-        }
-
-        assertEquals(local, result.localResource)
-        assertEquals(remote, result.remoteResource)
-        assertEquals(e, result)
-    }
-
-    @Test
-    fun testWrapWithRemoteResource_RemoteResource_Exception() = runTest {
-        val outer = mockk<Url>()
-        val inner = mockk<Url>()
+    fun testWithExceptionContext_RemoteResource_RemoteResource() = runTest {
+        val outer = Url("https://example.com/outer")
+        val inner = Url("https://example.com/inner")
         val e = Exception()
 
-        val result = assertSyncException {
-            SyncException.wrapWithRemoteResource(outer) {
-                SyncException.wrapWithRemoteResource(inner) {
+        val result = assertWrapped {
+            outer.withExceptionContext {
+                inner.withExceptionContext {
                     throw e
                 }
             }
@@ -147,61 +90,107 @@ class SyncExceptionTest {
     }
 
     @Test
-    fun testWrapWithRemoteResource_RemoteResource_SyncException() = runTest {
-        val outer = mockk<Url>()
-        val inner = mockk<Url>()
-        val e = SyncException(Exception())
+    fun testWithExceptionContext_CancellationException() = runTest {
+        val local = mockk<LocalResource>()
+        val e = CancellationException()
 
-        val result = assertSyncException {
-            SyncException.wrapWithRemoteResource(outer) {
-                SyncException.wrapWithRemoteResource(inner) {
+        val result = assertThrown {
+            local.withExceptionContext {
+                throw e
+            }
+        }
+
+        assertSame(e, result)
+    }
+
+    @Test
+    fun testWithExceptionContext_CancellationException_Nested() = runTest {
+        val local = mockk<LocalResource>()
+        val remote = Url("https://example.com")
+        val e = CancellationException()
+
+        val result = assertThrown {
+            local.withExceptionContext {
+                remote.withExceptionContext {
                     throw e
                 }
             }
         }
 
-        assertEquals(inner, result.remoteResource)
-        assertEquals(e, result)
+        assertSame(e, result)
+    }
+
+    @Test
+    fun testWithExceptionContext_InterruptedException() = runTest {
+        val remote = Url("https://example.com")
+        val e = InterruptedException()
+
+        val result = assertThrown {
+            remote.withExceptionContext {
+                throw e
+            }
+        }
+
+        assertSame(e, result)
     }
 
 
     @Test
-    fun testUnwrap_Exception() {
+    fun testUnwrapContext_PlainException() {
         val e = Exception()
 
-        var contextProvided = false
-        val unwrapped = SyncException.unwrap(e) {
-            contextProvided = true
-        }
-        assertEquals(e, unwrapped)
-        assertFalse(contextProvided)
+        val ctx = e.unwrapContext()
+        assertEquals(e, ctx.cause)
+        assertEquals(null, ctx.localResource)
+        assertEquals(null, ctx.remoteResource)
     }
 
     @Test
-    fun testUnwrap_SyncException() {
+    fun testUnwrapContext_WrappedException() = runTest {
         val e = Exception()
-        val wrapped = SyncException(e)
+        val local = mockk<LocalResource>()
+        val remote = Url("https://example.com")
 
-        var contextProvided = false
-        val unwrapped = SyncException.unwrap(wrapped) {
-            assertEquals(wrapped, it)
-            contextProvided = true
+        val result = assertWrapped {
+            local.withExceptionContext {
+                remote.withExceptionContext {
+                    throw e
+                }
+            }
         }
-        assertEquals(e, unwrapped)
-        assertTrue(contextProvided)
+
+        assertEquals(e, result.cause)
+        assertEquals(local, result.localResource)
+        assertEquals(remote, result.remoteResource)
     }
 
 
     // helpers
 
-    suspend fun assertSyncException(block: suspend () -> Unit): SyncException {
+    /**
+     * Runs [block], expecting it to throw, and returns the thrown [Throwable] as-is
+     * (without unwrapping it), to verify that it wasn't wrapped into a [SyncException].
+     */
+    suspend fun assertThrown(block: suspend () -> Unit): Throwable {
         try {
             block()
-        } catch(ex: Throwable) {
-            if (ex is SyncException)
-                return ex
+        } catch (ex: Throwable) {
+            return ex
         }
-        throw AssertionError("Expected SyncException")
+        throw AssertionError("Expected an exception to be thrown")
+    }
+
+    /**
+     * Runs [block], expecting it to throw, and returns the [SyncExceptionContext]
+     * recovered from the thrown exception via [unwrapContext].
+     */
+    suspend fun assertWrapped(block: suspend () -> Unit): SyncExceptionContext {
+        try {
+            block()
+        } catch (ex: Throwable) {
+            return ex.unwrapContext()
+        }
+        throw AssertionError("Expected an exception to be thrown")
     }
 
 }

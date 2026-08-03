@@ -137,7 +137,7 @@ class SyncerTest {
     fun testCreateLocalCollections() = runTest {
         val localCollection = mockk<LocalTestCollection>()
         val dbCollection = mockk<Collection>()
-        every { dataStore.create(provider, dbCollection) } returns localCollection
+        coEvery { dataStore.create(provider, dbCollection) } returns localCollection
 
         // Should return list of newly created local collections
         val result = syncer.createLocalCollections(provider, listOf(dbCollection))
@@ -208,7 +208,7 @@ class SyncerTest {
             throw NotImplementedError()
         }
 
-        override fun create(
+        override suspend fun create(
             client: ContentProviderClient,
             fromCollection: Collection
         ): LocalTestCollection? {
