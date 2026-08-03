@@ -6,6 +6,7 @@ package at.bitfire.davdroid.sync
 
 import at.bitfire.davdroid.resource.LocalResource
 import io.ktor.http.Url
+import io.ktor.utils.io.CancellationException
 
 /**
  * A throwable together with the local/remote resource that was being processed
@@ -28,15 +29,25 @@ data class SyncExceptionContext(
 private class SyncException(val context: SyncExceptionContext) : Exception(context.cause)
 
 private suspend fun <T> wrapContext(
-    buildContext: (SyncExceptionContext) -> SyncExceptionContext,
+    updateContext: (SyncExceptionContext) -> SyncExceptionContext,
     body: suspend () -> T
 ): T =
     try {
         body()
     } catch (e: SyncException) {
-        throw SyncException(buildContext(e.context))
+        // already SyncException, just update context
+        throw SyncException(updateContext(e.context))
+
     } catch (e: Throwable) {
-        throw SyncException(buildContext(SyncExceptionContext(e)))
+        when (e) {
+            // don't wrap cancellation (or legacy interruption) exceptions
+            is CancellationException,
+            is InterruptedException ->
+                throw e
+
+            else ->
+                throw SyncException(updateContext(SyncExceptionContext(e)))
+        }
     }
 
 /**
@@ -50,7 +61,7 @@ suspend fun <T> LocalResource?.withExceptionContext(body: suspend () -> T): T {
         body()
     else
         wrapContext(
-            buildContext = { oldContext ->
+            updateContext = { oldContext ->
                 // don't overwrite innermost local resource, if already set
                 if (oldContext.localResource == null)
                     oldContext.copy(localResource = local)
@@ -72,7 +83,7 @@ suspend fun <T> Url?.withExceptionContext(body: suspend () -> T): T {
         body()
     else
         wrapContext(
-            buildContext = { oldContext ->
+            updateContext = { oldContext ->
                 // don't overwrite innermost remote resource, if already set
                 if (oldContext.remoteResource == null)
                     oldContext.copy(remoteResource = remote)
