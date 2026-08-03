@@ -7,8 +7,10 @@ package at.bitfire.davdroid.sync
 import at.bitfire.davdroid.resource.LocalResource
 import io.ktor.http.Url
 import io.mockk.mockk
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertSame
 import org.junit.Test
 
 class SyncExceptionTest {
@@ -87,6 +89,51 @@ class SyncExceptionTest {
         assertEquals(e, result.cause)
     }
 
+    @Test
+    fun testWithExceptionContext_CancellationException() = runTest {
+        val local = mockk<LocalResource>()
+        val e = CancellationException()
+
+        val result = assertThrown {
+            local.withExceptionContext {
+                throw e
+            }
+        }
+
+        assertSame(e, result)
+    }
+
+    @Test
+    fun testWithExceptionContext_CancellationException_Nested() = runTest {
+        val local = mockk<LocalResource>()
+        val remote = Url("https://example.com")
+        val e = CancellationException()
+
+        val result = assertThrown {
+            local.withExceptionContext {
+                remote.withExceptionContext {
+                    throw e
+                }
+            }
+        }
+
+        assertSame(e, result)
+    }
+
+    @Test
+    fun testWithExceptionContext_InterruptedException() = runTest {
+        val remote = Url("https://example.com")
+        val e = InterruptedException()
+
+        val result = assertThrown {
+            remote.withExceptionContext {
+                throw e
+            }
+        }
+
+        assertSame(e, result)
+    }
+
 
     @Test
     fun testUnwrapContext_PlainException() {
@@ -119,6 +166,19 @@ class SyncExceptionTest {
 
 
     // helpers
+
+    /**
+     * Runs [block], expecting it to throw, and returns the thrown [Throwable] as-is
+     * (without unwrapping it), to verify that it wasn't wrapped into a [SyncException].
+     */
+    suspend fun assertThrown(block: suspend () -> Unit): Throwable {
+        try {
+            block()
+        } catch (ex: Throwable) {
+            return ex
+        }
+        throw AssertionError("Expected an exception to be thrown")
+    }
 
     /**
      * Runs [block], expecting it to throw, and returns the [SyncExceptionContext]
