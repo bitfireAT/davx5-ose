@@ -26,6 +26,7 @@ import at.bitfire.davdroid.di.qualifier.SyncTransferSemaphore
 import at.bitfire.davdroid.resource.LocalJtxCollection
 import at.bitfire.davdroid.resource.LocalJtxObject
 import at.bitfire.davdroid.resource.LocalResource
+import at.bitfire.davdroid.resource.syncState
 import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.davdroid.util.DavUtils.lastSegment
 import at.bitfire.synctools.exception.InvalidResourceException
@@ -108,7 +109,7 @@ class JtxSyncManager @AssistedInject constructor(
                 logger.info("Collection accepts resources up to ${Formatter.formatFileSize(context, maxSize)}")
             }
 
-            syncState(response)
+            response.syncState()
         }
 
     override fun generateUpload(resource: LocalJtxObject): GeneratedResource {

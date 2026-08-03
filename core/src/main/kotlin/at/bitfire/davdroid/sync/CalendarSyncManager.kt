@@ -27,6 +27,7 @@ import at.bitfire.davdroid.resource.LocalCalendar
 import at.bitfire.davdroid.resource.LocalEvent
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.resource.SyncState
+import at.bitfire.davdroid.resource.syncState
 import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.davdroid.util.DavUtils.lastSegment
 import at.bitfire.synctools.exception.InvalidResourceException
@@ -130,7 +131,7 @@ class CalendarSyncManager @AssistedInject constructor(
             }
 
             logger.info("Calendar supports Collection Sync: $hasCollectionSync")
-            syncState(response)
+            response.syncState()
         }
 
     override fun syncAlgorithm() =

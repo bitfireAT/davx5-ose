@@ -24,6 +24,7 @@ import at.bitfire.davdroid.di.qualifier.SyncTransferSemaphore
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.resource.LocalTask
 import at.bitfire.davdroid.resource.LocalTaskList
+import at.bitfire.davdroid.resource.syncState
 import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.davdroid.util.DavUtils.lastSegment
 import at.bitfire.synctools.exception.InvalidResourceException
@@ -110,7 +111,7 @@ class TasksSyncManager @AssistedInject constructor(
                 logger.info("Calendar accepts tasks up to ${Formatter.formatFileSize(context, maxSize)}")
             }
 
-            syncState(response)
+            response.syncState()
         }
 
     override fun syncAlgorithm() = SyncAlgorithm.PROPFIND_REPORT

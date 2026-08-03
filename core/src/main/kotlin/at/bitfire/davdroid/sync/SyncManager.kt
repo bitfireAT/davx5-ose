@@ -26,7 +26,6 @@ import at.bitfire.dav4jvm.ktor.exception.ServiceUnavailableException
 import at.bitfire.dav4jvm.ktor.exception.UnauthorizedException
 import at.bitfire.dav4jvm.ktor.selfResponse
 import at.bitfire.dav4jvm.property.caldav.CalDAV
-import at.bitfire.dav4jvm.property.caldav.GetCTag
 import at.bitfire.dav4jvm.property.caldav.ScheduleTag
 import at.bitfire.dav4jvm.property.webdav.GetETag
 import at.bitfire.dav4jvm.property.webdav.ResourceType
@@ -42,6 +41,7 @@ import at.bitfire.davdroid.repository.DavSyncStatsRepository
 import at.bitfire.davdroid.resource.LocalCollection
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.resource.SyncState
+import at.bitfire.davdroid.resource.syncState
 import at.bitfire.davdroid.sync.account.InvalidAccountException
 import at.bitfire.synctools.storage.LocalStorageException
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -741,15 +741,8 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
 
     // sync helpers
 
-    protected fun syncState(dav: Response) =
-        dav[SyncToken::class.java]?.token?.let {
-            SyncState(SyncState.Type.SYNC_TOKEN, it)
-        } ?: dav[GetCTag::class.java]?.cTag?.let {
-            SyncState(SyncState.Type.CTAG, it)
-        }
-
     private suspend fun querySyncState(): SyncState? =
-        davCollection.propfind(0, CalDAV.GetCTag, WebDAV.SyncToken).selfResponse()?.let { syncState(it) }
+        davCollection.propfind(0, CalDAV.GetCTag, WebDAV.SyncToken).selfResponse()?.syncState()
 
     /**
      * Logs the exception, updates sync result and shows a notification to the user.

@@ -4,6 +4,8 @@
 
 package at.bitfire.davdroid.resource
 
+import at.bitfire.dav4jvm.ktor.Response
+import at.bitfire.dav4jvm.property.caldav.GetCTag
 import at.bitfire.dav4jvm.property.webdav.SyncToken
 import org.json.JSONException
 import org.json.JSONObject
@@ -57,3 +59,13 @@ data class SyncState(
     }
 
 }
+
+/**
+ * Extracts the [SyncState] (`sync-token` or `CTag`) reported by this response, if any.
+ */
+fun Response.syncState(): SyncState? =
+    this[SyncToken::class.java]?.token?.let {
+        SyncState(SyncState.Type.SYNC_TOKEN, it)
+    } ?: this[GetCTag::class.java]?.cTag?.let {
+        SyncState(SyncState.Type.CTAG, it)
+    }
