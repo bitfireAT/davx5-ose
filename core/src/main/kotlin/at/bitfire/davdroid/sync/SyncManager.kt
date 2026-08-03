@@ -265,15 +265,9 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
                 logger.info("Remote collection didn't change, no reason to sync")
 
         } catch (potentiallyWrappedException: Throwable) {
-            var local: LocalResource? = null
-            var remote: Url? = null
+            val ctx = potentiallyWrappedException.unwrapContext()
 
-            val e = SyncException.unwrap(potentiallyWrappedException) {
-                local = it.localResource
-                remote = it.remoteResource
-            }
-
-            when (e) {
+            when (val e = ctx.cause) {
                 /* LocalStorageException with cause DeadObjectException may occur when syncing takes too long
                 and process is demoted to cached. In this case, we re-throw to the base Syncer which will
                 treat it as a soft error and re-schedule the sync process. */
@@ -291,7 +285,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
 
                     // when a certificate is rejected by cert4android, the cause will be a CertificateException
                     if (e.cause !is CertificateException)
-                        handleException(e, local, remote)
+                        handleException(e, ctx.localResource, ctx.remoteResource)
                 }
 
                 // specific HTTP errors
@@ -304,7 +298,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
 
                 // all others
                 else ->
-                    handleException(e, local, remote)
+                    handleException(e, ctx.localResource, ctx.remoteResource)
             }
         }
     }
@@ -344,7 +338,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
         // Remove locally deleted entries from server (if they have a name, i.e. if they were uploaded before),
         // but only if they don't have changed on the server. Then finally remove them from the local address book.
         localCollection.findDeleted().collect { local ->
-            SyncException.wrapWithLocalResource(local) {
+            local.withExceptionContext {
                 val fileName = local.fileName
                 if (fileName != null) {
                     val lastScheduleTag = local.scheduleTag
@@ -353,7 +347,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
 
                     val url = URLBuilder(collection.url).appendPathSegments(fileName, encodeSlash = true).build()
                     val remote = DavResource(httpClient, url)
-                    SyncException.wrapWithRemoteResource(url) {
+                    url.withExceptionContext {
                         try {
                             remote.delete(
                                 ifETag = lastETag,
@@ -393,7 +387,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
         var numUploaded = 0
 
         localCollection.findDirty().collect { local ->
-            SyncException.wrapWithLocalResource(local) {
+            local.withExceptionContext {
                 uploadDirty(local)
                 numUploaded++
             }
@@ -420,7 +414,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
         val remote = DavResource(httpClient, uploadUrl)
 
         try {
-            SyncException.wrapWithRemoteResource(uploadUrl) {
+            uploadUrl.withExceptionContext {
                 if (existingFileName == null || forceAsNew) {
                     // create new resource on server
                     logger.log(Level.INFO, "Uploading new resource {0} -> {1}", arrayOf<Any?>(local.id, fileName))
@@ -469,8 +463,8 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
                 }
             }
 
-        } catch (e: SyncException) {
-            when (val ex = e.cause) {
+        } catch (e: Throwable) {
+            when (val ex = e.unwrapContext().cause) {
                 is ForbiddenException -> {
                     // HTTP 403 Forbidden
                     // If and only if the upload failed because of missing permissions, treat it like 412.
@@ -632,7 +626,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
 
                         launch {
                             val local = localCollection.findByName(name)
-                            SyncException.wrapWithLocalResource(local) {
+                            local.withExceptionContext {
                                 if (local == null) {
                                     logger.info("$name has been added remotely, queueing download")
                                     batchDownloader.enqueue(response.href)
@@ -657,7 +651,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
                         // collection sync: resource has been deleted on remote server
                         launch {
                             localCollection.findByName(name)?.let { local ->
-                                SyncException.wrapWithLocalResource(local) {
+                                local.withExceptionContext {
                                     logger.info("$name has been deleted on server, deleting locally")
                                     local.deleteLocal()
                                 }

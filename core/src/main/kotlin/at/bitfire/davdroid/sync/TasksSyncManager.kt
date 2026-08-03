@@ -101,10 +101,10 @@ class TasksSyncManager @AssistedInject constructor(
     }
 
     override suspend fun queryCapabilities() =
-        SyncException.wrapWithRemoteResource(collection.url) {
+        collection.url.withExceptionContext {
             val response =
                 davCollection.propfind(0, CalDAV.MaxResourceSize, CalDAV.GetCTag, WebDAV.SyncToken).selfResponse()
-                    ?: return@wrapWithRemoteResource null
+                    ?: return@withExceptionContext null
 
             response[MaxResourceSize::class.java]?.maxSize?.let { maxSize ->
                 logger.info("Calendar accepts tasks up to ${Formatter.formatFileSize(context, maxSize)}")
@@ -152,7 +152,7 @@ class TasksSyncManager @AssistedInject constructor(
     }
 
     override fun listAllRemote(): Flow<MultiStatusItem> = flow {
-        SyncException.wrapWithRemoteResource(collection.url) {
+        collection.url.withExceptionContext {
             logger.info("Querying tasks")
             emitAll(davCollection.calendarQuery("VTODO", null, null))
         }
@@ -161,10 +161,10 @@ class TasksSyncManager @AssistedInject constructor(
     override suspend fun downloadRemote(bunch: List<Url>) {
         logger.info("Downloading ${bunch.size} iCalendars: $bunch")
         // multiple iCalendars, use calendar-multi-get
-        SyncException.wrapWithRemoteResource(collection.url) {
+        collection.url.withExceptionContext {
             davCollection.multiget(bunch).responses().collect { response ->
                 // See CalendarSyncManager for more information about the multi-get response
-                SyncException.wrapWithRemoteResource(response.href) wrapResource@{
+                response.href.withExceptionContext wrapResource@{
                     if (!response.isSuccess()) {
                         logger.warning("Ignoring non-successful multi-get response for ${response.href}")
                         return@wrapResource
@@ -222,7 +222,7 @@ class TasksSyncManager @AssistedInject constructor(
         // update local task, if it exists
         val local = localCollection.findByName(fileName)
         if (local != null) {
-            SyncException.wrapWithLocalResource(local) {
+            local.withExceptionContext {
                 logger.info("Updating $fileName in local task list: $task")
                 local.update(dmfsTask)
             }
