@@ -6,7 +6,7 @@ package at.bitfire.davdroid.sync
 
 import at.bitfire.davdroid.resource.LocalResource
 import io.ktor.http.Url
-import io.ktor.utils.io.CancellationException
+import kotlinx.coroutines.CancellationException
 
 /**
  * A throwable together with the local/remote resource that was being processed
