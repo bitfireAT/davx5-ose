@@ -62,7 +62,7 @@ class SyncConditionsTest {
     lateinit var network2: Network
 
 
-    private lateinit var accountSettings: AccountSettingsStore<*>
+    private lateinit var accountSettings: AccountSettingsStore
 
     private lateinit var conditions: SyncConditions
 
@@ -73,7 +73,7 @@ class SyncConditionsTest {
         hiltRule.inject()
 
         // prepare accountSettings with some necessary data
-        accountSettings = mockk<AccountSettingsStore<*>> {
+        accountSettings = mockk<AccountSettingsStore> {
             every { accountId } returns LegacyAccount(Account("test", "test"))
             every { getIgnoreVpns() } returns false     // default value
         }

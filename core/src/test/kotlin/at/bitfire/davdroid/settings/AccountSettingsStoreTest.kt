@@ -37,7 +37,7 @@ class AccountSettingsStoreTest {
 
     @Test
     fun test_credentials_get() {
-        val store = mockk<AccountSettingsStore<AccountId>> {}
+        val store = mockk<AccountSettingsStore> {}
         every { store.get(KEY_USERNAME) } returns "username"
         every { store.getSensitiveValue(KEY_PASSWORD) } returns "password".toSensitiveString()
         every { store.get(KEY_CERTIFICATE_ALIAS) } returns "certificateAlias"
@@ -53,7 +53,7 @@ class AccountSettingsStoreTest {
 
     @Test
     fun test_credentials_set() {
-        val store = mockk<AccountSettingsStore<AccountId>>()
+        val store = mockk<AccountSettingsStore>()
         every { store.set(any(), any()) } answers { }
         every { store.setSensitiveValue(any(), any()) } answers { }
         every { store.credentials(any()) } answers { callOriginal() }
@@ -76,7 +76,7 @@ class AccountSettingsStoreTest {
 
     @Test
     fun test_updateUpdateAuthState() {
-        val store = mockk<AccountSettingsStore<AccountId>>()
+        val store = mockk<AccountSettingsStore>()
         val authState = mockk<AuthState>()
         every { store.updateAuthState(any()) } answers { callOriginal() }
         every { store.set(KEY_AUTH_STATE, any()) } answers { }
@@ -89,7 +89,7 @@ class AccountSettingsStoreTest {
 
     @Test
     fun test_changingCredentialsAllowed_noLock() {
-        val store = mockk<AccountSettingsStore<AccountId>>()
+        val store = mockk<AccountSettingsStore>()
         val settingsManager = mockk<SettingsManager>()
         every { store.settingsManager } returns settingsManager
         every { settingsManager.getIntOrNull(CREDENTIALS_LOCK) } returns null
@@ -100,7 +100,7 @@ class AccountSettingsStoreTest {
 
     @Test
     fun test_changingCredentialsAllowed_lockedAtLoginAndSettings() {
-        val store = mockk<AccountSettingsStore<AccountId>>()
+        val store = mockk<AccountSettingsStore>()
         val settingsManager = mockk<SettingsManager>()
         every { store.settingsManager } returns settingsManager
         every { settingsManager.getIntOrNull(CREDENTIALS_LOCK) } returns CREDENTIALS_LOCK_AT_LOGIN_AND_SETTINGS
@@ -111,7 +111,7 @@ class AccountSettingsStoreTest {
 
     @Test
     fun test_getSyncInterval_storedValue() {
-        val store = mockk<AccountSettingsStore<AccountId>>()
+        val store = mockk<AccountSettingsStore>()
         every { store.get(KEY_SYNC_INTERVAL_ADDRESSBOOKS) } returns "3600"
         every { store.getSyncInterval(SyncDataType.CONTACTS) } answers { callOriginal() }
 
@@ -120,7 +120,7 @@ class AccountSettingsStoreTest {
 
     @Test
     fun test_getSyncInterval_manualSync() {
-        val store = mockk<AccountSettingsStore<AccountId>>()
+        val store = mockk<AccountSettingsStore>()
         every { store.get(KEY_SYNC_INTERVAL_ADDRESSBOOKS) } returns SYNC_INTERVAL_MANUALLY.toString()
         every { store.getSyncInterval(SyncDataType.CONTACTS) } answers { callOriginal() }
 
@@ -129,7 +129,7 @@ class AccountSettingsStoreTest {
 
     @Test
     fun test_getSyncInterval_defaultFromSettingsManager() {
-        val store = mockk<AccountSettingsStore<AccountId>>()
+        val store = mockk<AccountSettingsStore>()
         val settingsManager = mockk<SettingsManager>()
         every { store.get(KEY_SYNC_INTERVAL_ADDRESSBOOKS) } returns null
         every { store.settingsManager } returns settingsManager
@@ -141,7 +141,7 @@ class AccountSettingsStoreTest {
 
     @Test
     fun test_setSyncInterval_seconds() {
-        val store = mockk<AccountSettingsStore<AccountId>>()
+        val store = mockk<AccountSettingsStore>()
         val automaticSyncManager = mockk<AutomaticSyncManager>()
         val accountId = mockk<AccountId>()
         every { store.accountId } returns accountId
@@ -158,7 +158,7 @@ class AccountSettingsStoreTest {
 
     @Test
     fun test_setSyncInterval_null() {
-        val store = mockk<AccountSettingsStore<AccountId>>()
+        val store = mockk<AccountSettingsStore>()
         val automaticSyncManager = mockk<AutomaticSyncManager>()
         val accountId = mockk<AccountId>()
         every { store.accountId } returns accountId
@@ -174,7 +174,7 @@ class AccountSettingsStoreTest {
 
     @Test
     fun test_getSyncWifiOnly_fromSettingsManager() {
-        val store = mockk<AccountSettingsStore<AccountId>>()
+        val store = mockk<AccountSettingsStore>()
         val settingsManager = mockk<SettingsManager>()
         every { store.settingsManager } returns settingsManager
         every { settingsManager.containsKey(KEY_WIFI_ONLY) } returns true
@@ -186,7 +186,7 @@ class AccountSettingsStoreTest {
 
     @Test
     fun test_getSyncWifiOnly_fromLocalSetting() {
-        val store = mockk<AccountSettingsStore<AccountId>>()
+        val store = mockk<AccountSettingsStore>()
         val settingsManager = mockk<SettingsManager>()
         every { store.settingsManager } returns settingsManager
         every { settingsManager.containsKey(KEY_WIFI_ONLY) } returns false
@@ -198,7 +198,7 @@ class AccountSettingsStoreTest {
 
     @Test
     fun test_setSyncWiFiOnly() {
-        val store = mockk<AccountSettingsStore<AccountId>>()
+        val store = mockk<AccountSettingsStore>()
         val automaticSyncManager = mockk<AutomaticSyncManager>()
         val accountId = mockk<AccountId>()
         every { store.accountId } returns accountId
@@ -215,7 +215,7 @@ class AccountSettingsStoreTest {
 
     @Test
     fun test_getSyncWifiOnlySSIDs_wifiOnlyDisabled() {
-        val store = mockk<AccountSettingsStore<AccountId>>()
+        val store = mockk<AccountSettingsStore>()
         every { store.getSyncWifiOnly() } returns false
         every { store.getSyncWifiOnlySSIDs() } answers { callOriginal() }
 
@@ -224,7 +224,7 @@ class AccountSettingsStoreTest {
 
     @Test
     fun test_getSyncWifiOnlySSIDs_fromSettingsManager() {
-        val store = mockk<AccountSettingsStore<AccountId>>()
+        val store = mockk<AccountSettingsStore>()
         val settingsManager = mockk<SettingsManager>()
         every { store.getSyncWifiOnly() } returns true
         every { store.settingsManager } returns settingsManager
@@ -237,7 +237,7 @@ class AccountSettingsStoreTest {
 
     @Test
     fun test_setSyncWifiOnlySSIDs() {
-        val store = mockk<AccountSettingsStore<AccountId>>()
+        val store = mockk<AccountSettingsStore>()
         every { store.set(any(), any()) } answers { }
         every { store.setSyncWifiOnlySSIDs(any()) } answers { callOriginal() }
 
@@ -248,7 +248,7 @@ class AccountSettingsStoreTest {
 
     @Test
     fun test_getIgnoreVpns_fromSettingsManager() {
-        val store = mockk<AccountSettingsStore<AccountId>>()
+        val store = mockk<AccountSettingsStore>()
         val settingsManager = mockk<SettingsManager>()
         every { store.get(KEY_IGNORE_VPNS) } returns null
         every { store.settingsManager } returns settingsManager
@@ -260,7 +260,7 @@ class AccountSettingsStoreTest {
 
     @Test
     fun test_getIgnoreVpns_explicitlyDisabled() {
-        val store = mockk<AccountSettingsStore<AccountId>>()
+        val store = mockk<AccountSettingsStore>()
         every { store.get(KEY_IGNORE_VPNS) } returns "0"
         every { store.getIgnoreVpns() } answers { callOriginal() }
 
@@ -269,7 +269,7 @@ class AccountSettingsStoreTest {
 
     @Test
     fun test_setIgnoreVpns() {
-        val store = mockk<AccountSettingsStore<AccountId>>()
+        val store = mockk<AccountSettingsStore>()
         every { store.set(any(), any()) } answers { }
         every { store.setIgnoreVpns(any()) } answers { callOriginal() }
 
@@ -280,7 +280,7 @@ class AccountSettingsStoreTest {
 
     @Test
     fun test_getTimeRangePastDays_default() {
-        val store = mockk<AccountSettingsStore<AccountId>>()
+        val store = mockk<AccountSettingsStore>()
         every { store.get(KEY_TIME_RANGE_PAST_DAYS) } returns null
         every { store.getTimeRangePastDays() } answers { callOriginal() }
 
@@ -289,7 +289,7 @@ class AccountSettingsStoreTest {
 
     @Test
     fun test_getTimeRangePastDays_noLimit() {
-        val store = mockk<AccountSettingsStore<AccountId>>()
+        val store = mockk<AccountSettingsStore>()
         every { store.get(KEY_TIME_RANGE_PAST_DAYS) } returns "-1"
         every { store.getTimeRangePastDays() } answers { callOriginal() }
 
@@ -298,7 +298,7 @@ class AccountSettingsStoreTest {
 
     @Test
     fun test_setTimeRangePastDays() {
-        val store = mockk<AccountSettingsStore<AccountId>>()
+        val store = mockk<AccountSettingsStore>()
         every { store.set(any(), any()) } answers { }
         every { store.setTimeRangePastDays(any()) } answers { callOriginal() }
 
@@ -309,7 +309,7 @@ class AccountSettingsStoreTest {
 
     @Test
     fun test_getDefaultAlarm_fromLocalSetting() {
-        val store = mockk<AccountSettingsStore<AccountId>>()
+        val store = mockk<AccountSettingsStore>()
         every { store.get(KEY_DEFAULT_ALARM) } returns "30"
         every { store.getDefaultAlarm() } answers { callOriginal() }
 
@@ -318,7 +318,7 @@ class AccountSettingsStoreTest {
 
     @Test
     fun test_getDefaultAlarm_disabledInSettingsManager() {
-        val store = mockk<AccountSettingsStore<AccountId>>()
+        val store = mockk<AccountSettingsStore>()
         val settingsManager = mockk<SettingsManager>()
         every { store.get(KEY_DEFAULT_ALARM) } returns null
         every { store.settingsManager } returns settingsManager
@@ -330,7 +330,7 @@ class AccountSettingsStoreTest {
 
     @Test
     fun test_setDefaultAlarm_sameAsSettingsManager_removesLocalSetting() {
-        val store = mockk<AccountSettingsStore<AccountId>>()
+        val store = mockk<AccountSettingsStore>()
         val settingsManager = mockk<SettingsManager>()
         every { store.settingsManager } returns settingsManager
         every { settingsManager.getIntOrNull(KEY_DEFAULT_ALARM) } returns 30
@@ -344,7 +344,7 @@ class AccountSettingsStoreTest {
 
     @Test
     fun test_getManageCalendarColors_fromSettingsManager() {
-        val store = mockk<AccountSettingsStore<AccountId>>()
+        val store = mockk<AccountSettingsStore>()
         val settingsManager = mockk<SettingsManager>()
         every { store.settingsManager } returns settingsManager
         every { settingsManager.containsKey(KEY_MANAGE_CALENDAR_COLORS) } returns true
@@ -356,7 +356,7 @@ class AccountSettingsStoreTest {
 
     @Test
     fun test_getManageCalendarColors_defaultTrue() {
-        val store = mockk<AccountSettingsStore<AccountId>>()
+        val store = mockk<AccountSettingsStore>()
         val settingsManager = mockk<SettingsManager>()
         every { store.settingsManager } returns settingsManager
         every { settingsManager.containsKey(KEY_MANAGE_CALENDAR_COLORS) } returns false
@@ -368,7 +368,7 @@ class AccountSettingsStoreTest {
 
     @Test
     fun test_setManageCalendarColors() {
-        val store = mockk<AccountSettingsStore<AccountId>>()
+        val store = mockk<AccountSettingsStore>()
         every { store.set(any(), any()) } answers { }
         every { store.setManageCalendarColors(any()) } answers { callOriginal() }
 
@@ -379,7 +379,7 @@ class AccountSettingsStoreTest {
 
     @Test
     fun test_getEventColors_fromSettingsManager() {
-        val store = mockk<AccountSettingsStore<AccountId>>()
+        val store = mockk<AccountSettingsStore>()
         val settingsManager = mockk<SettingsManager>()
         every { store.settingsManager } returns settingsManager
         every { settingsManager.containsKey(KEY_EVENT_COLORS) } returns true
@@ -391,7 +391,7 @@ class AccountSettingsStoreTest {
 
     @Test
     fun test_getEventColors_defaultFalse() {
-        val store = mockk<AccountSettingsStore<AccountId>>()
+        val store = mockk<AccountSettingsStore>()
         val settingsManager = mockk<SettingsManager>()
         every { store.settingsManager } returns settingsManager
         every { settingsManager.containsKey(KEY_EVENT_COLORS) } returns false
@@ -403,7 +403,7 @@ class AccountSettingsStoreTest {
 
     @Test
     fun test_setEventColors() {
-        val store = mockk<AccountSettingsStore<AccountId>>()
+        val store = mockk<AccountSettingsStore>()
         every { store.set(any(), any()) } answers { }
         every { store.setEventColors(any()) } answers { callOriginal() }
 
@@ -414,7 +414,7 @@ class AccountSettingsStoreTest {
 
     @Test
     fun test_getGroupMethod_fromSettingsManager() {
-        val store = mockk<AccountSettingsStore<AccountId>>()
+        val store = mockk<AccountSettingsStore>()
         val settingsManager = mockk<SettingsManager>()
         every { store.settingsManager } returns settingsManager
         every { settingsManager.getString(KEY_CONTACT_GROUP_METHOD) } returns "CATEGORIES"
@@ -425,7 +425,7 @@ class AccountSettingsStoreTest {
 
     @Test
     fun test_getGroupMethod_defaultWhenInvalid() {
-        val store = mockk<AccountSettingsStore<AccountId>>()
+        val store = mockk<AccountSettingsStore>()
         val settingsManager = mockk<SettingsManager>()
         every { store.settingsManager } returns settingsManager
         every { settingsManager.getString(KEY_CONTACT_GROUP_METHOD) } returns null
@@ -437,7 +437,7 @@ class AccountSettingsStoreTest {
 
     @Test
     fun test_setGroupMethod() {
-        val store = mockk<AccountSettingsStore<AccountId>>()
+        val store = mockk<AccountSettingsStore>()
         every { store.set(any(), any()) } answers { }
         every { store.setGroupMethod(any()) } answers { callOriginal() }
 
@@ -448,7 +448,7 @@ class AccountSettingsStoreTest {
 
     @Test
     fun test_getShowOnlyPersonal_lockedTrue() {
-        val store = mockk<AccountSettingsStore<AccountId>>()
+        val store = mockk<AccountSettingsStore>()
         val settingsManager = mockk<SettingsManager>()
         every { store.settingsManager } returns settingsManager
         every { settingsManager.getIntOrNull(KEY_SHOW_ONLY_PERSONAL) } returns 1
@@ -459,7 +459,7 @@ class AccountSettingsStoreTest {
 
     @Test
     fun test_getShowOnlyPersonal_fromLocalSetting() {
-        val store = mockk<AccountSettingsStore<AccountId>>()
+        val store = mockk<AccountSettingsStore>()
         val settingsManager = mockk<SettingsManager>()
         every { store.settingsManager } returns settingsManager
         every { settingsManager.getIntOrNull(KEY_SHOW_ONLY_PERSONAL) } returns null
@@ -471,7 +471,7 @@ class AccountSettingsStoreTest {
 
     @Test
     fun test_getShowOnlyPersonalLocked_true() {
-        val store = mockk<AccountSettingsStore<AccountId>>()
+        val store = mockk<AccountSettingsStore>()
         val settingsManager = mockk<SettingsManager>()
         every { store.settingsManager } returns settingsManager
         every { settingsManager.getIntOrNull(KEY_SHOW_ONLY_PERSONAL) } returns 0
@@ -482,7 +482,7 @@ class AccountSettingsStoreTest {
 
     @Test
     fun test_getShowOnlyPersonalLocked_false() {
-        val store = mockk<AccountSettingsStore<AccountId>>()
+        val store = mockk<AccountSettingsStore>()
         val settingsManager = mockk<SettingsManager>()
         every { store.settingsManager } returns settingsManager
         every { settingsManager.getIntOrNull(KEY_SHOW_ONLY_PERSONAL) } returns null
@@ -493,7 +493,7 @@ class AccountSettingsStoreTest {
 
     @Test
     fun test_setShowOnlyPersonal() {
-        val store = mockk<AccountSettingsStore<AccountId>>()
+        val store = mockk<AccountSettingsStore>()
         every { store.set(any(), any()) } answers { }
         every { store.setShowOnlyPersonal(any()) } answers { callOriginal() }
 
