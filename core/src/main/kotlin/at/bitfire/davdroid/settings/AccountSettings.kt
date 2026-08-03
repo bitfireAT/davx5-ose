@@ -67,7 +67,7 @@ class AccountSettings @AssistedInject constructor(
 
     init {
         if (Looper.getMainLooper() == Looper.myLooper())
-            throw IllegalThreadStateException("AccountManagerSettingsStore may not be used on main thread")
+            throw IllegalThreadStateException("AccountSettings may not be used on main thread")
     }
 
     private val account: Account = accountId.androidAccount
@@ -75,12 +75,12 @@ class AccountSettings @AssistedInject constructor(
     val accountManager: AccountManager = AccountManager.get(context)
     init {
         if (account.type != context.getString(R.string.account_type))
-            throw IllegalArgumentException("Invalid account type for AccountManagerSettingsStore(): ${account.type}")
+            throw IllegalArgumentException("Invalid account type for AccountSettings(): ${account.type}")
 
         // synchronize because account migration must only be run one time
         synchronized(currentlyUpdating) {
             if (currentlyUpdating.contains(account))
-                logger.warning("AccountManagerSettingsStore created during migration of $account – not running update()")
+                logger.warning("AccountSettings created during migration of $account – not running update()")
             else {
                 val versionStr = accountManager.getUserData(account, KEY_SETTINGS_VERSION) ?: throw InvalidAccountException(account)
                 var version = 0
@@ -134,9 +134,9 @@ class AccountSettings @AssistedInject constructor(
 
             val migration = migrations[toVersion]
             if (migration == null) {
-                logger.severe("No AccountManagerSettingsStore migration $fromVersion → $toVersion")
+                logger.severe("No AccountSettings migration $fromVersion → $toVersion")
                 if (abortOnMissingMigration)
-                    throw IllegalArgumentException("Missing AccountManagerSettingsStore migration $fromVersion → $toVersion")
+                    throw IllegalArgumentException("Missing AccountSettings migration $fromVersion → $toVersion")
             } else {
                 try {
                     migration.get().migrate(account)
@@ -144,7 +144,7 @@ class AccountSettings @AssistedInject constructor(
                     logger.info("Account settings version update to $toVersion successful")
                     accountManager.setAndVerifyUserData(account, KEY_SETTINGS_VERSION, toVersion.toString())
                 } catch (e: Exception) {
-                    logger.log(Level.SEVERE, "Couldn't run AccountManagerSettingsStore migration $fromVersion → $toVersion", e)
+                    logger.log(Level.SEVERE, "Couldn't run AccountSettings migration $fromVersion → $toVersion", e)
                 }
             }
         }
