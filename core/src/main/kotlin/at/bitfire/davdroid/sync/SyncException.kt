@@ -16,6 +16,8 @@ import kotlinx.coroutines.CancellationException
  * - [Throwable.unwrapContext] to retrieve it after catching an exception.
  *
  * If multiple `withExceptionContext` calls are nested, the innermost ones are unwrapped.
+ *
+ * Methods of this class never wrap / touch [CancellationException] and [InterruptedException].
  */
 data class SyncExceptionContext(
     val cause: Throwable,
@@ -40,7 +42,7 @@ private suspend fun <T> wrapContext(
 
     } catch (e: Throwable) {
         when (e) {
-            // don't wrap cancellation (or legacy interruption) exceptions
+            // don't wrap cancellation (or interruption) exceptions
             is CancellationException,
             is InterruptedException ->
                 throw e
