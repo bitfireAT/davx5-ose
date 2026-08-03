@@ -112,14 +112,14 @@ class CalendarSyncManager @AssistedInject constructor(
     }
 
     override suspend fun queryCapabilities(): SyncState? =
-        SyncException.wrapWithRemoteResource(collection.url) {
+        collection.url.withExceptionContext {
             val response = davCollection.propfind(
                 0,
                 CalDAV.MaxResourceSize,
                 WebDAV.SupportedReportSet,
                 CalDAV.GetCTag,
                 WebDAV.SyncToken
-            ).selfResponse() ?: return@wrapWithRemoteResource null
+            ).selfResponse() ?: return@withExceptionContext null
 
             response[MaxResourceSize::class.java]?.maxSize?.let { maxSize ->
                 logger.info("Calendar accepts events up to ${Formatter.formatFileSize(context, maxSize)}")
@@ -181,7 +181,7 @@ class CalendarSyncManager @AssistedInject constructor(
             ZonedDateTime.now().minusDays(pastDays.toLong()).toInstant()
         }
 
-        SyncException.wrapWithRemoteResource(collection.url) {
+        collection.url.withExceptionContext {
             logger.info("Querying events since $limitStart")
             emitAll(davCollection.calendarQuery(Component.VEVENT, limitStart, null))
         }
@@ -189,7 +189,7 @@ class CalendarSyncManager @AssistedInject constructor(
 
     override suspend fun downloadRemote(bunch: List<Url>) {
         logger.info("Downloading ${bunch.size} iCalendars: $bunch")
-        SyncException.wrapWithRemoteResource(collection.url) {
+        collection.url.withExceptionContext {
             davCollection.multiget(bunch).responses().collect { response ->
                 /*
                  * Real-world servers may return:
@@ -204,7 +204,7 @@ class CalendarSyncManager @AssistedInject constructor(
                  * - ignore responses without requested calendar data (should also ignore collections and hopefully unrelated resources), and
                  * - take the last segment of the href as the file name and assume that it's in the requested collection.
                  */
-                SyncException.wrapWithRemoteResource(response.href) wrapResource@{
+                response.href.withExceptionContext wrapResource@{
                     if (!response.isSuccess()) {
                         logger.warning("Ignoring non-successful multi-get response for ${response.href}")
                         return@wrapResource
@@ -271,7 +271,7 @@ class CalendarSyncManager @AssistedInject constructor(
         // create/update local event in calendar provider
         val local = localCollection.findByName(fileName)
         if (local != null) {
-            SyncException.wrapWithLocalResource(local) {
+            local.withExceptionContext {
                 logger.info("Updating $fileName in local calendar: $event")
                 local.update(androidEvent)
             }
