@@ -11,6 +11,9 @@ import android.os.Build
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
+/**
+ * A class to manage Android [Account]s.
+ */
 class AndroidAccountManager @Inject constructor(
     @ApplicationContext private val context: Context
 ) {
@@ -20,6 +23,9 @@ class AndroidAccountManager @Inject constructor(
         }
     }
 
+    /**
+     * Make sure a DAVx Android account is visible to a given third-party app (jtx board, tasks app).
+     */
     fun ensureAccountVisibility(accountId: AccountId, packageName: String) {
         if (Build.VERSION.SDK_INT >= 26) {
             // Warning: If setAccountVisibility is called, Android 12 broadcasts the

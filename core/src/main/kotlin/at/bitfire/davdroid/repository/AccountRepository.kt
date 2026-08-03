@@ -192,6 +192,12 @@ class AccountRepository @Inject constructor(
     fun fromName(accountName: String) =
         Account(accountName, accountType)
 
+    /**
+     * Returns the [AccountId] for a given account name.
+     *
+     * TODO: Remove this once [Service] references accounts by database ID instead of name.
+     */
+    @Deprecated("Only use this method when resolving which account a `at.bitfire.davdroid.db.Service` instance belongs to.")
     suspend fun getAccountIdFromName(accountName: String): AccountId {
         // Note: In the future this will have to perform a database lookup
         return LegacyAccount(fromName(accountName))
