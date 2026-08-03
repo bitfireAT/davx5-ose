@@ -181,85 +181,11 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
 
             if (modificationsPresent || syncRequired(remoteSyncState))
                 when (syncAlgorithm()) {
-                    SyncAlgorithm.PROPFIND_REPORT -> {
-                        logger.info("Sync algorithm: full listing as one result (PROPFIND/REPORT)")
-                        resetPresentRemotely()
+                    SyncAlgorithm.PROPFIND_REPORT ->
+                        syncPropfindReport(modificationsPresent, remoteSyncState)
 
-                        // get current sync state
-                        if (modificationsPresent)
-                            remoteSyncState = querySyncState()
-
-                        // list and process all entries at current sync state (which may be the same as or newer than remoteSyncState)
-                        logger.info("Processing remote entries")
-                        syncRemote { callback ->
-                            listAllRemote().forEachResponse(callback)
-                        }
-
-                        logger.info("Deleting entries which are not present remotely anymore")
-                        deleteNotPresentRemotely()
-
-                        logger.info("Post-processing")
-                        postProcess()
-
-                        logger.info("Saving sync state: $remoteSyncState")
-                        localCollection.lastSyncState = remoteSyncState
-                    }
-
-                    SyncAlgorithm.COLLECTION_SYNC -> {
-                        var syncState = localCollection.lastSyncState?.takeIf { it.type == SyncState.Type.SYNC_TOKEN }
-
-                        var initialSync = false
-                        if (syncState == null) {
-                            logger.info("Starting initial sync")
-                            initialSync = true
-                            resetPresentRemotely()
-                        } else if (syncState.initialSync == true) {
-                            logger.info("Continuing initial sync")
-                            initialSync = true
-                        }
-
-                        var furtherChanges = false
-                        do {
-                            logger.info("Listing changes since $syncState")
-                            syncRemote { callback ->
-                                try {
-                                    val result = listRemoteChanges(syncState, callback)
-                                    syncState = SyncState.fromSyncToken(result.first, initialSync)
-                                    furtherChanges = result.second
-                                } catch (e: HttpException) {
-                                    if (e.errors.contains(Error(WebDAV.ValidSyncToken))) {
-                                        logger.info("Sync token invalid, performing initial sync")
-                                        initialSync = true
-                                        resetPresentRemotely()
-
-                                        val result = listRemoteChanges(null, callback)
-                                        syncState = SyncState.fromSyncToken(result.first, initialSync)
-                                        furtherChanges = result.second
-                                    } else
-                                        throw e
-                                }
-                            }
-
-                            logger.info("Saving sync state: $syncState")
-                            localCollection.lastSyncState = syncState
-
-                            logger.info("Server has further changes: $furtherChanges")
-                        } while (furtherChanges)
-
-                        if (initialSync) {
-                            // initial sync is finished, remove all local resources which have not been listed by server
-                            logger.info("Deleting local resources which are not on server (anymore)")
-                            deleteNotPresentRemotely()
-
-                            // remove initial sync flag
-                            syncState!!.initialSync = false
-                            logger.info("Initial sync completed, saving sync state: $syncState")
-                            localCollection.lastSyncState = syncState
-                        }
-
-                        logger.info("Post-processing")
-                        postProcess()
-                    }
+                    SyncAlgorithm.COLLECTION_SYNC ->
+                        syncCollectionSync()
                 }
             else
                 logger.info("Remote collection didn't change, no reason to sync")
@@ -711,6 +637,31 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
 
     //region Sync algorithm-specific: PROPFIND/REPORT
 
+    private suspend fun syncPropfindReport(modificationsPresent: Boolean, remoteSyncState: SyncState?) {
+        logger.info("Sync algorithm: full listing as one result (PROPFIND/REPORT)")
+        resetPresentRemotely()
+
+        // get current sync state
+        var currentSyncState = remoteSyncState
+        if (modificationsPresent)
+            currentSyncState = querySyncState()
+
+        // list and process all entries at current sync state (which may be the same as or newer than remoteSyncState)
+        logger.info("Processing remote entries")
+        syncRemote { callback ->
+            listAllRemote().forEachResponse(callback)
+        }
+
+        logger.info("Deleting entries which are not present remotely anymore")
+        deleteNotPresentRemotely()
+
+        logger.info("Post-processing")
+        postProcess()
+
+        logger.info("Saving sync state: $currentSyncState")
+        localCollection.lastSyncState = currentSyncState
+    }
+
     private suspend fun querySyncState(): SyncState? =
         davCollection.propfind(0, CalDAV.GetCTag, WebDAV.SyncToken).selfResponse()?.syncState()
 
@@ -721,14 +672,70 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
 
     //region Sync algorithm-specific: collection-sync
 
+    private suspend fun syncCollectionSync() {
+        var syncState = localCollection.lastSyncState?.takeIf { it.type == SyncState.Type.SYNC_TOKEN }
+
+        var initialSync = false
+        if (syncState == null) {
+            logger.info("Starting initial sync")
+            initialSync = true
+            resetPresentRemotely()
+        } else if (syncState.initialSync == true) {
+            logger.info("Continuing initial sync")
+            initialSync = true
+        }
+
+        var furtherChanges = false
+        do {
+            logger.info("Listing changes since $syncState")
+            syncRemote { callback ->
+                try {
+                    val result = listRemoteChanges(syncState, callback)
+                    syncState = SyncState.fromSyncToken(result.first, initialSync)
+                    furtherChanges = result.second
+                } catch (e: HttpException) {
+                    if (e.errors.contains(Error(WebDAV.ValidSyncToken))) {
+                        logger.info("Sync token invalid, performing initial sync")
+                        initialSync = true
+                        resetPresentRemotely()
+
+                        val result = listRemoteChanges(null, callback)
+                        syncState = SyncState.fromSyncToken(result.first, initialSync)
+                        furtherChanges = result.second
+                    } else
+                        throw e
+                }
+            }
+
+            logger.info("Saving sync state: $syncState")
+            localCollection.lastSyncState = syncState
+
+            logger.info("Server has further changes: $furtherChanges")
+        } while (furtherChanges)
+
+        if (initialSync) {
+            // initial sync is finished, remove all local resources which have not been listed by server
+            logger.info("Deleting local resources which are not on server (anymore)")
+            deleteNotPresentRemotely()
+
+            // remove initial sync flag
+            syncState!!.initialSync = false
+            logger.info("Initial sync completed, saving sync state: $syncState")
+            localCollection.lastSyncState = syncState
+        }
+
+        logger.info("Post-processing")
+        postProcess()
+    }
+
     protected suspend fun listRemoteChanges(
-        syncState: SyncState?,
+        since: SyncState?,
         callback: MultiResponseCallback
     ): Pair<SyncToken, Boolean> {
         var furtherResults = false
 
         val report = davCollection.reportChanges(
-            syncState?.takeIf { syncState.type == SyncState.Type.SYNC_TOKEN }?.value,
+            since?.takeIf { since.type == SyncState.Type.SYNC_TOKEN }?.value,
             false, null,
             WebDAV.GetETag
         ).forEachResponse { response, relation ->
