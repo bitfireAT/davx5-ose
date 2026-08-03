@@ -200,8 +200,8 @@ class AccountRepositoryTest {
     fun testRename_updatesAutomaticSync() = runTest {
         accountRepository.rename(account.name, newName)
 
-        val newAccount = accountRepository.fromName(newName)
-        coVerify { automaticSyncManager.updateAutomaticSync(newAccount) }
+        val newAccountId = accountRepository.getAccountIdFromName(newName)
+        coVerify { automaticSyncManager.updateAutomaticSync(newAccountId) }
     }
 
     @Test

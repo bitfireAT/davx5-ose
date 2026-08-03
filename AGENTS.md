@@ -33,6 +33,15 @@ Android library. The sync engine, database layer, and Jetpack Compose UI for DAV
 
 **Repository pattern** — DAOs (in `db/`) are always wrapped by a repository in `repository/`. UI code and sync managers talk to repositories, never to DAOs directly.
 
+**DAO/repository naming convention** — applies to both DAO methods (`db/`) and their repository wrappers (
+`repository/`):
+
+- Suspending functions have **no suffix** (e.g. `get`, `insert`) — never `...Async`.
+- Non-suspending (blocking) functions have a **`Blocking`** suffix (e.g. `getBlocking`, `insertBlocking`).
+- Functions returning `Flow` have a **`Flow`** suffix (e.g. `getAllFlow`).
+- Functions returning `PagingSource` use a **`page`/`pageXxx`** prefix instead of a suffix (e.g.
+  `pageByServiceAndType`), mirroring how `Flow`-returning functions are marked.
+
 **ViewModel pattern** — Each Compose screen has a `@HiltViewModel` in `ui/`. Keep business logic out of Composables; Composables observe state from the ViewModel.
 
 **Startup actions** — App-initialization hooks implement the `StartupAction` interface and are registered via set-based

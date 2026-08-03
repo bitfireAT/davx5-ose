@@ -160,7 +160,7 @@ class SyncWorkerManager @Inject constructor(
         )
 
         if (fromPush)
-            pushNotificationManager.get().notify(accountId.toAndroidAccount(), dataType)
+            pushNotificationManager.get().notify(accountId, dataType)
 
         /* We want to append only one work request, regardless of how many sync requests came in.
         So we have to append the work one time, and as soon as there is already a pending

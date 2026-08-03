@@ -15,6 +15,7 @@ import at.bitfire.dav4jvm.property.webdav.GetETag
 import at.bitfire.davdroid.MockEngineQueue
 import at.bitfire.davdroid.TestUtils
 import at.bitfire.davdroid.TestUtils.assertWithin
+import at.bitfire.davdroid.accounts.LegacyAccount
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.repository.DavSyncStatsRepository
 import at.bitfire.davdroid.resource.SyncState
@@ -73,7 +74,7 @@ class SyncManagerTest {
     @Inject
     lateinit var workerFactory: HiltWorkerFactory
 
-    private lateinit var account: Account
+    private lateinit var accountId: LegacyAccount
     private lateinit var client: HttpClient
 
     private val mockEngineQueue = MockEngineQueue()
@@ -109,14 +110,14 @@ class SyncManagerTest {
 
         TestUtils.setUpWorkManager(context, workerFactory)
 
-        account = TestAccount.create()
+        accountId = LegacyAccount(TestAccount.create())
 
         client = HttpClient(mockEngineQueue.engine)
     }
 
     @After
     fun tearDown() {
-        TestAccount.remove(account)
+        TestAccount.remove(accountId.androidAccount)
 
         // clear annoying syncError notifications
         NotificationManagerCompat.from(context).cancelAll()
@@ -533,7 +534,7 @@ class SyncManagerTest {
             every { url } returns Url("$BASE_URL/")
         }
     ) = syncManagerFactory.create(
-        account,
+        accountId,
         client,
         syncResult,
         localCollection,

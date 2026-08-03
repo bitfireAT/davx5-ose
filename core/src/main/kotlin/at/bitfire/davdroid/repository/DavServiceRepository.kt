@@ -21,21 +21,25 @@ class DavServiceRepository @Inject constructor(
 
     // Read
 
-    fun getBlocking(id: Long): Service? = dao.get(id)
-    suspend fun get(id: Long): Service? = dao.getAsync(id)
+    suspend fun get(id: Long): Service? = dao.get(id)
+    fun getBlocking(id: Long): Service? = dao.getBlocking(id)
 
     suspend fun getAll(): List<Service> = dao.getAll()
 
     suspend fun getByAccountAndType(name: String, @ServiceType serviceType: String): Service? =
         dao.getByAccountAndType(name, serviceType)
 
-    suspend fun getByAccountAndType(accountId: AccountId, @ServiceType serviceType: String): Service? {
-        return dao.getByAccountAndType(accountId, serviceType)
+    suspend fun getByAccountIdAndType(accountId: AccountId, @ServiceType serviceType: String): Service? {
+        return dao.getByAccountIdAndType(accountId, serviceType)
     }
 
     @WorkerThread
     fun getByAccountAndTypeBlocking(name: String, @ServiceType serviceType: String): Service? =
         dao.getByAccountAndTypeBlocking(name, serviceType)
+
+    @WorkerThread
+    fun getByAccountIdAndTypeBlocking(accountId: AccountId, @ServiceType serviceType: String): Service? =
+        dao.getByAccountIdAndTypeBlocking(accountId, serviceType)
 
     fun getCalDavServiceFlow(accountName: String) =
         dao.getByAccountAndTypeFlow(accountName, Service.TYPE_CALDAV)
@@ -51,7 +55,7 @@ class DavServiceRepository @Inject constructor(
     // Create & update
 
     fun insertOrReplaceBlocking(service: Service) =
-        dao.insertOrReplace(service)
+        dao.insertOrReplaceBlocking(service)
 
     suspend fun renameAccount(oldName: String, newName: String) =
         dao.renameAccount(oldName, newName)
@@ -59,7 +63,7 @@ class DavServiceRepository @Inject constructor(
 
     // Delete
 
-    fun deleteAllBlocking() = dao.deleteAll()
+    fun deleteAllBlocking() = dao.deleteAllBlocking()
 
     suspend fun deleteByAccount(accountId: AccountId) =
         dao.deleteByAccount(accountId)

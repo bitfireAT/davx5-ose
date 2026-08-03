@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.settings.migration
 
 import android.accounts.Account
+import at.bitfire.davdroid.accounts.toAccountId
 import at.bitfire.davdroid.sync.AutomaticSyncManager
 import dagger.Binds
 import dagger.Module
@@ -25,7 +26,7 @@ class AccountSettingsMigration15 @Inject constructor(
 ): AccountSettingsMigration {
 
     override fun migrate(account: Account) {
-        automaticSyncManager.updateAutomaticSync(account)
+        automaticSyncManager.updateAutomaticSync(account.toAccountId())
     }
 
 

@@ -8,6 +8,7 @@ import android.accounts.Account
 import android.accounts.AccountManager
 import android.content.ContentProviderClient
 import android.os.Build
+import at.bitfire.davdroid.accounts.toAccountId
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.resource.LocalTaskList
@@ -86,7 +87,7 @@ class TaskSyncer @AssistedInject constructor(
         )
 
         val syncManager = tasksSyncManagerFactory.tasksSyncManager(
-            account,
+            account.toAccountId(),
             httpClient,
             syncResult,
             localCollection,

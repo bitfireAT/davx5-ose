@@ -8,6 +8,7 @@ import android.accounts.Account
 import android.accounts.AccountManager
 import android.content.ContentProviderClient
 import android.os.Build
+import at.bitfire.davdroid.accounts.toAccountId
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.resource.LocalJtxCollection
@@ -79,7 +80,7 @@ class JtxSyncer @AssistedInject constructor(
         logger.info("Synchronizing jtx collection $localCollection")
 
         val syncManager = jtxSyncManagerFactory.jtxSyncManager(
-            account,
+            account.toAccountId(),
             httpClient,
             syncResult,
             localCollection,

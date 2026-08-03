@@ -18,13 +18,19 @@ import kotlinx.coroutines.flow.Flow
 interface HomeSetDao {
 
     @Query("SELECT * FROM homeset WHERE id=:homesetId")
-    fun getById(homesetId: Long): HomeSet?
+    fun getByIdBlocking(homesetId: Long): HomeSet?
 
     @Query("SELECT * FROM homeset WHERE serviceId=:serviceId AND url=:url")
-    fun getByUrl(serviceId: Long, url: String): HomeSet?
+    suspend fun getByUrl(serviceId: Long, url: String): HomeSet?
+
+    @Query("SELECT * FROM homeset WHERE serviceId=:serviceId AND url=:url")
+    fun getByUrlBlocking(serviceId: Long, url: String): HomeSet?
 
     @Query("SELECT * FROM homeset WHERE serviceId=:serviceId")
-    fun getByService(serviceId: Long): List<HomeSet>
+    suspend fun getByService(serviceId: Long): List<HomeSet>
+
+    @Query("SELECT * FROM homeset WHERE serviceId=:serviceId")
+    fun getByServiceBlocking(serviceId: Long): List<HomeSet>
 
     @Query("SELECT * FROM homeset WHERE serviceId=(SELECT id FROM service WHERE accountName=:accountName AND type=:serviceType) AND privBind ORDER BY displayName, url COLLATE NOCASE")
     fun getBindableByAccountAndServiceTypeFlow(accountName: String, @ServiceType serviceType: String): Flow<List<HomeSet>>
@@ -44,10 +50,16 @@ interface HomeSetDao {
     fun getBindableByServiceFlow(serviceId: Long): Flow<List<HomeSet>>
 
     @Insert
-    fun insert(homeSet: HomeSet): Long
+    suspend fun insert(homeSet: HomeSet): Long
+
+    @Insert
+    fun insertBlocking(homeSet: HomeSet): Long
 
     @Update
-    fun update(homeset: HomeSet)
+    suspend fun update(homeset: HomeSet)
+
+    @Update
+    fun updateBlocking(homeset: HomeSet)
 
     /**
      * If a homeset with the given service ID and URL already exists, it is updated with the other fields.
@@ -61,13 +73,23 @@ interface HomeSetDao {
      * @return ID of the row that has been inserted or updated. -1 If the insert fails due to other reasons.
      */
     @Transaction
-    fun insertOrUpdateByUrlBlocking(homeSet: HomeSet): Long =
+    suspend fun insertOrUpdateByUrl(homeSet: HomeSet): Long =
         getByUrl(homeSet.serviceId, homeSet.url.toString())?.let { existingHomeset ->
             update(homeSet.copy(id = existingHomeset.id))
             existingHomeset.id
         } ?: insert(homeSet)
 
+    @Transaction
+    fun insertOrUpdateByUrlBlocking(homeSet: HomeSet): Long =
+        getByUrlBlocking(homeSet.serviceId, homeSet.url.toString())?.let { existingHomeset ->
+            updateBlocking(homeSet.copy(id = existingHomeset.id))
+            existingHomeset.id
+        } ?: insertBlocking(homeSet)
+
     @Delete
-    fun delete(homeset: HomeSet)
+    suspend fun delete(homeset: HomeSet)
+
+    @Delete
+    fun deleteBlocking(homeset: HomeSet)
 
 }

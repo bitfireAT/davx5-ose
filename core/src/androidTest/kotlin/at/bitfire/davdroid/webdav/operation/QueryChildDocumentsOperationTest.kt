@@ -22,7 +22,7 @@ import io.ktor.http.Url
 import io.ktor.http.headersOf
 import io.ktor.http.withCharset
 import io.ktor.utils.io.charsets.Charsets
-import io.mockk.every
+import io.mockk.coEvery
 import io.mockk.junit4.MockKRule
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
@@ -60,7 +60,7 @@ class QueryChildDocumentsOperationTest {
     @Before
     fun setUp() {
         hiltRule.inject()
-        every { httpClientBuilder.build(any(), any()) } answers { HttpClient(buildDefaultEngine()) }
+        coEvery { httpClientBuilder.build(any(), any()) } answers { HttpClient(buildDefaultEngine()) }
 
         // create WebDAV mount and root document in DB
         runBlocking {
@@ -75,7 +75,7 @@ class QueryChildDocumentsOperationTest {
     @After
     fun tearDown() {
         runBlocking {
-            db.webDavMountDao().deleteAsync(mount)
+            db.webDavMountDao().delete(mount)
         }
     }
 
@@ -136,7 +136,7 @@ class QueryChildDocumentsOperationTest {
         )
         assertNotNull(db.webDavDocumentDao().get(childId))
 
-        every { httpClientBuilder.build(any(), any()) } answers {
+        coEvery { httpClientBuilder.build(any(), any()) } answers {
             HttpClient(MockEngine.basic(statusCode = HttpStatusCode.InternalServerError))
         }
 

@@ -5,22 +5,21 @@
 package at.bitfire.davdroid.ui.account
 
 import at.bitfire.davdroid.accounts.AccountId
-import at.bitfire.davdroid.di.qualifier.IoDispatcher
+import at.bitfire.davdroid.di.qualifier.ApplicationScope
 import at.bitfire.davdroid.push.PushRegistrationManager
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
-import at.bitfire.davdroid.ui.account.CollectionSelectedUseCase.Companion.DELAY_MS
-import kotlinx.coroutines.CoroutineDispatcher
+import at.bitfire.davdroid.ui.account.CollectionSelectedUseCase.Companion.SYNC_DELAY
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.time.Duration.Companion.seconds
 
 /**
  * Performs actions when a collection was (un)selected for synchronization.
@@ -30,18 +29,17 @@ import javax.inject.Singleton
 @Singleton
 class CollectionSelectedUseCase @Inject constructor(
     private val accountRepository: AccountRepository,
+    @ApplicationScope private val applicationScope: CoroutineScope,
     private val collectionRepository: DavCollectionRepository,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val pushRegistrationManager: PushRegistrationManager,
     private val serviceRepository: DavServiceRepository,
     private val syncWorkerManager: SyncWorkerManager
 ) {
 
     private val delayJobs: ConcurrentHashMap<AccountId, Job> = ConcurrentHashMap()
-    private val scope = CoroutineScope(SupervisorJob())
 
     /**
-     * After a delay of [DELAY_MS] ms:
+     * After a delay of [SYNC_DELAY]:
      *
      * 1. Enqueues a one-time sync for account of the collection.
      * 2. Updates push subscriptions for the service of the collection.
@@ -60,9 +58,9 @@ class CollectionSelectedUseCase @Inject constructor(
             // Stop previous delay, if exists
             previousJob?.cancel()
 
-            scope.launch(ioDispatcher) {
+            applicationScope.launch {
                 // wait
-                delay(DELAY_MS)
+                delay(SYNC_DELAY)
 
                 // enqueue sync
                 syncWorkerManager.enqueueOneTimeAllAuthorities(accountId)
@@ -80,9 +78,9 @@ class CollectionSelectedUseCase @Inject constructor(
     companion object {
 
         /**
-         * Length of delay in milliseconds
+         * Length of delay
          */
-        const val DELAY_MS = 5000L     // 5 seconds
+        private val SYNC_DELAY = 5.seconds
 
     }
 

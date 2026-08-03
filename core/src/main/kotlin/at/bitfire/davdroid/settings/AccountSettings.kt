@@ -10,6 +10,7 @@ import android.content.Context
 import android.os.Looper
 import androidx.annotation.WorkerThread
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.accounts.toAccountId
 import at.bitfire.davdroid.accounts.LegacyAccount
 import at.bitfire.davdroid.settings.AccountSettingsStore.Companion.KEY_AUTH_STATE
 import at.bitfire.davdroid.settings.AccountSettingsStore.Companion.KEY_CERTIFICATE_ALIAS
@@ -30,6 +31,18 @@ import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Provider
 
+/**
+ * Manages settings of an account.
+ *
+ * **Must not be called from main thread as it uses blocking I/O and may run migrations.**
+ *
+ * @param account                   account to take settings from
+ * @param abortOnMissingMigration   whether to throw an [IllegalArgumentException] when migrations are missing (useful for testing)
+ *
+ * @throws InvalidAccountException   on construction when the account doesn't exist (anymore)
+ * @throws IllegalArgumentException  when the account is not a DAVx5 account or migrations are missing and [abortOnMissingMigration] is set
+ */
+@WorkerThread   
 class AccountSettings @AssistedInject constructor(
     @Assisted override val accountId: LegacyAccount,
     @Assisted val abortOnMissingMigration: Boolean,

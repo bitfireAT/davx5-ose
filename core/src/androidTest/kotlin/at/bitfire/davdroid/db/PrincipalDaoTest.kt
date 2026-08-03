@@ -8,9 +8,9 @@ import android.database.sqlite.SQLiteConstraintException
 import at.bitfire.davdroid.util.DavUtils.toUrl
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import io.mockk.coVerify
 import io.mockk.junit4.MockKRule
 import io.mockk.spyk
-import io.mockk.verify
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -42,7 +42,7 @@ class PrincipalDaoTest {
         principalDao = spyk(db.principalDao())
 
         service = Service(id = 1, accountName = "account", type = "webdav")
-        db.serviceDao().insertOrReplace(service)
+        db.serviceDao().insertOrReplaceBlocking(service)
     }
 
     @Test
@@ -51,9 +51,9 @@ class PrincipalDaoTest {
         val id = principalDao.insertOrUpdate(service.id, principal)
         assertTrue(id > 0)
 
-        val stored = principalDao.get(id)
+        val stored = principalDao.getBlocking(id)
         assertEquals("principal", stored.displayName)
-        verify(exactly = 0) { principalDao.update(any()) }
+        coVerify(exactly = 0) { principalDao.update(any()) }
     }
 
     @Test
@@ -65,9 +65,9 @@ class PrincipalDaoTest {
         val idNew = principalDao.insertOrUpdate(service.id, principalNew)
 
         assertEquals(idOld, idNew)
-        val stored = principalDao.get(idOld)
+        val stored = principalDao.getBlocking(idOld)
         assertEquals("principalOld", stored.displayName)
-        verify(exactly = 0) { principalDao.update(any()) }
+        coVerify(exactly = 0) { principalDao.update(any()) }
     }
 
     @Test
@@ -80,9 +80,9 @@ class PrincipalDaoTest {
 
         assertEquals(idOld, idNew)
 
-        val updated = principalDao.get(idOld)
+        val updated = principalDao.getBlocking(idOld)
         assertEquals("principalNew", updated.displayName)
-        verify(exactly = 1) { principalDao.update(any()) }
+        coVerify(exactly = 1) { principalDao.update(any()) }
     }
 
     @Test(expected = SQLiteConstraintException::class)

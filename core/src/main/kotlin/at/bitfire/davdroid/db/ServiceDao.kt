@@ -21,9 +21,15 @@ interface ServiceDao {
     @Query("SELECT * FROM service WHERE accountName=:accountName AND type=:type")
     fun getByAccountAndTypeBlocking(accountName: String, @ServiceType type: String): Service?
 
-    suspend fun getByAccountAndType(accountId: AccountId, @ServiceType type: String): Service? {
+    suspend fun getByAccountIdAndType(accountId: AccountId, @ServiceType type: String): Service? {
         return when (accountId) {
             is LegacyAccount -> getByAccountAndType(accountId.androidAccount.name, type)
+        }
+    }
+
+    fun getByAccountIdAndTypeBlocking(accountId: AccountId, @ServiceType type: String): Service? {
+        return when (accountId) {
+            is LegacyAccount -> getByAccountAndTypeBlocking(accountId.androidAccount.name, type)
         }
     }
 
@@ -37,22 +43,22 @@ interface ServiceDao {
     }
 
     @Query("SELECT id FROM service WHERE accountName=:accountName")
-    suspend fun getIdsByAccountAsync(accountName: String): List<Long>
+    suspend fun getIdsByAccount(accountName: String): List<Long>
 
     @Query("SELECT * FROM service WHERE id=:id")
-    fun get(id: Long): Service?
+    suspend fun get(id: Long): Service?
 
     @Query("SELECT * FROM service WHERE id=:id")
-    suspend fun getAsync(id: Long): Service?
+    fun getBlocking(id: Long): Service?
 
     @Query("SELECT * FROM service")
     suspend fun getAll(): List<Service>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertOrReplace(service: Service): Long
+    fun insertOrReplaceBlocking(service: Service): Long
 
     @Query("DELETE FROM service")
-    fun deleteAll()
+    fun deleteAllBlocking()
 
     @Query("DELETE FROM service WHERE accountName=:accountName")
     suspend fun deleteByAccount(accountName: String)
@@ -64,7 +70,7 @@ interface ServiceDao {
     }
 
     @Query("DELETE FROM service WHERE accountName NOT IN (:accountNames)")
-    fun deleteExceptAccounts(accountNames: Array<String>)
+    fun deleteExceptAccountsBlocking(accountNames: Array<String>)
 
     @Query("UPDATE service SET accountName=:newName WHERE accountName=:oldName")
     suspend fun renameAccount(oldName: String, newName: String)

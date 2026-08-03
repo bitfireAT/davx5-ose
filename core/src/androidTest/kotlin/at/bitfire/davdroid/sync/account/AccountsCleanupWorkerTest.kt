@@ -77,8 +77,16 @@ class AccountsCleanupWorkerTest {
     @Test
     fun testCleanUpServices_noAccount() {
         // Insert service that reference to invalid account
-        db.serviceDao().insertOrReplace(Service(id = 1, accountName = "test", type = Service.TYPE_CALDAV, principal = null))
-        assertNotNull(db.serviceDao().get(1))
+        db.serviceDao()
+            .insertOrReplaceBlocking(
+                Service(
+                    id = 1,
+                    accountName = "test",
+                    type = Service.TYPE_CALDAV,
+                    principal = null
+                )
+            )
+        assertNotNull(db.serviceDao().getBlocking(1))
 
         // Create worker and run the method
         val worker = TestListenableWorkerBuilder<AccountsCleanupWorker>(context)
@@ -87,18 +95,34 @@ class AccountsCleanupWorkerTest {
         worker.cleanUpServices()
 
         // Verify that service is deleted
-        assertNull(db.serviceDao().get(1))
+        assertNull(db.serviceDao().getBlocking(1))
     }
 
     @Test
     fun testCleanUpServices_oneAccount() {
         TestAccount.provide { existingAccount ->
             // Insert services, one that reference the existing account and one that references an invalid account
-            db.serviceDao().insertOrReplace(Service(id = 1, accountName = existingAccount.name, type = Service.TYPE_CALDAV, principal = null))
-            assertNotNull(db.serviceDao().get(1))
+            db.serviceDao()
+                .insertOrReplaceBlocking(
+                    Service(
+                        id = 1,
+                        accountName = existingAccount.name,
+                        type = Service.TYPE_CALDAV,
+                        principal = null
+                    )
+                )
+            assertNotNull(db.serviceDao().getBlocking(1))
 
-            db.serviceDao().insertOrReplace(Service(id = 2, accountName = "not existing", type = Service.TYPE_CARDDAV, principal = null))
-            assertNotNull(db.serviceDao().get(2))
+            db.serviceDao()
+                .insertOrReplaceBlocking(
+                    Service(
+                        id = 2,
+                        accountName = "not existing",
+                        type = Service.TYPE_CARDDAV,
+                        principal = null
+                    )
+                )
+            assertNotNull(db.serviceDao().getBlocking(2))
 
             // Create worker and run the method
             val worker = TestListenableWorkerBuilder<AccountsCleanupWorker>(context)
@@ -107,8 +131,8 @@ class AccountsCleanupWorkerTest {
             worker.cleanUpServices()
 
             // Verify that one service is deleted and the other one is kept
-            assertNotNull(db.serviceDao().get(1))
-            assertNull(db.serviceDao().get(2))
+            assertNotNull(db.serviceDao().getBlocking(1))
+            assertNull(db.serviceDao().getBlocking(2))
         }
     }
 
@@ -156,8 +180,8 @@ class AccountsCleanupWorkerTest {
 
     private fun createTestService(): Service {
         val service = Service(id=0, accountName="test", type=Service.TYPE_CARDDAV, principal = null)
-        val serviceId = db.serviceDao().insertOrReplace(service)
-        return db.serviceDao().get(serviceId)!!
+        val serviceId = db.serviceDao().insertOrReplaceBlocking(service)
+        return db.serviceDao().getBlocking(serviceId)!!
     }
 
 }

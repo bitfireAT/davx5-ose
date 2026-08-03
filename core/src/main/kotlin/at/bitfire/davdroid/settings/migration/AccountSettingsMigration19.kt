@@ -8,6 +8,7 @@ import android.accounts.Account
 import android.content.Context
 import android.provider.CalendarContract
 import androidx.work.WorkManager
+import at.bitfire.davdroid.accounts.toAccountId
 import at.bitfire.davdroid.sync.AutomaticSyncManager
 import at.bitfire.synctools.storage.TaskProvider
 import dagger.Binds
@@ -43,7 +44,7 @@ class AccountSettingsMigration19 @Inject constructor(
         }
 
         // enqueue new workers
-        automaticSyncManager.updateAutomaticSync(account)
+        automaticSyncManager.updateAutomaticSync(account.toAccountId())
     }
 
 

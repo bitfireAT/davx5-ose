@@ -6,6 +6,7 @@ package at.bitfire.davdroid.di
 
 import android.os.Looper
 import at.bitfire.davdroid.di.TestCoroutineDispatchersModule.testScheduler
+import at.bitfire.davdroid.di.qualifier.DefaultDispatcher
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import dagger.Module
 import dagger.Provides
@@ -41,8 +42,13 @@ object TestCoroutineDispatchersModule {
 
     private val testScheduler = TestCoroutineScheduler()
 
+    private val defaultDispatcher = StandardTestDispatcher(testScheduler)
     private val ioDispatcher = StandardTestDispatcher(testScheduler)
     private val mainDispatcher = UnconfinedTestDispatcher(testScheduler)
+
+    @Provides
+    @DefaultDispatcher
+    fun defaultDispatcher(): CoroutineDispatcher = defaultDispatcher
 
     @Provides
     @IoDispatcher

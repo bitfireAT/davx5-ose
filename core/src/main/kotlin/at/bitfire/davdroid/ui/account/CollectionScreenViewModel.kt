@@ -18,6 +18,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
+import at.bitfire.davdroid.di.qualifier.ApplicationScope
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavCollectionRepository
@@ -40,7 +41,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
@@ -64,6 +65,7 @@ class CollectionScreenViewModel @AssistedInject constructor(
     @ApplicationContext val context: Context,
     private val accountRepository: AccountRepository,
     private val accountSettingsFactory: AccountSettings.Factory,
+    @ApplicationScope private val applicationScope: CoroutineScope,
     @Assisted val collectionId: Long,
     private val collectionRepository: DavCollectionRepository,
     private val collectionSelectedUseCase: Lazy<CollectionSelectedUseCase>,
@@ -73,9 +75,9 @@ class CollectionScreenViewModel @AssistedInject constructor(
     private val localCalendarStore: Lazy<LocalCalendarStore>,
     private val logger: Logger,
     private val serviceRepository: DavServiceRepository,
-    private val tasksAppManager: Lazy<TasksAppManager>,
     settings: SettingsManager,
-    syncStatsRepository: DavSyncStatsRepository
+    syncStatsRepository: DavSyncStatsRepository,
+    private val tasksAppManager: Lazy<TasksAppManager>
 ): ViewModel() {
 
     @AssistedFactory
@@ -136,7 +138,7 @@ class CollectionScreenViewModel @AssistedInject constructor(
     private val principalDao = db.principalDao()
     val owner: Flow<String?> = collection.map { collection ->
         collection?.ownerId?.let { ownerId ->
-            val principal = principalDao.getAsync(ownerId)
+            val principal = principalDao.get(ownerId)
             principal.displayName ?: principal.url.lastSegment
         }
     }
@@ -170,10 +172,6 @@ class CollectionScreenViewModel @AssistedInject constructor(
     }.flatMapLatest { it }
 
 
-
-    /** Scope for operations that must not be cancelled. */
-    private val noCancellationScope = CoroutineScope(SupervisorJob())
-
     /**
      * Deletes the collection from the database and the server.
      */
@@ -181,9 +179,11 @@ class CollectionScreenViewModel @AssistedInject constructor(
         val collection = collection.value ?: return
 
         inProgress = true
-        noCancellationScope.launch {
+        viewModelScope.launch {
             try {
-                collectionRepository.deleteRemote(collection)
+                applicationScope.async {
+                    collectionRepository.deleteRemote(collection)
+                }.await()
             } catch (e: Exception) {
                 error = e
             } finally {
