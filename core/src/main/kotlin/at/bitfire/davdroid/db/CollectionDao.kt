@@ -18,10 +18,10 @@ import kotlinx.coroutines.flow.Flow
 interface CollectionDao {
 
     @Query("SELECT * FROM collection WHERE id=:id")
-    fun get(id: Long): Collection?
+    suspend fun get(id: Long): Collection?
 
     @Query("SELECT * FROM collection WHERE id=:id")
-    suspend fun getAsync(id: Long): Collection?
+    fun getBlocking(id: Long): Collection?
 
     @Query("SELECT * FROM collection WHERE id=:id")
     fun getFlow(id: Long): Flow<Collection?>
@@ -33,17 +33,14 @@ interface CollectionDao {
     fun getByServiceBlocking(serviceId: Long): List<Collection>
 
     @Query("SELECT * FROM collection WHERE serviceId=:serviceId AND homeSetId IS :homeSetId")
-    fun getByServiceAndHomeset(serviceId: Long, homeSetId: Long?): List<Collection>
-
-    @Query("SELECT * FROM collection WHERE serviceId=:serviceId AND type=:type ORDER BY displayName COLLATE NOCASE, url COLLATE NOCASE")
-    fun getByServiceAndType(serviceId: Long, @CollectionType type: String): List<Collection>
+    suspend fun getByServiceAndHomeset(serviceId: Long, homeSetId: Long?): List<Collection>
 
     @Query("SELECT * FROM collection WHERE pushTopic=:topic AND sync")
     suspend fun getSyncableByPushTopic(topic: String): Collection?
 
     @Suppress("unused")     // for build variant
     @Query("SELECT * FROM collection WHERE sync")
-    fun getSyncCollections(): List<Collection>
+    fun getSyncCollectionsBlocking(): List<Collection>
 
     @Query("SELECT pushVapidKey FROM collection WHERE serviceId=:serviceId AND pushVapidKey IS NOT NULL LIMIT 1")
     suspend fun getFirstVapidKey(serviceId: Long): String?
@@ -56,7 +53,7 @@ interface CollectionDao {
 
     @Query("SELECT COUNT(*) FROM collection WHERE sync")
     suspend fun countSyncEnabled(): Int
-    
+
     @Query("SELECT COUNT(*) FROM collection WHERE supportsWebPush AND pushTopic IS NOT NULL and sync")
     suspend fun countSyncEnabledPushCapable(): Int
 
@@ -70,22 +67,22 @@ interface CollectionDao {
     fun pageByServiceAndType(serviceId: Long, @CollectionType type: String): PagingSource<Int, Collection>
 
     @Query("SELECT * FROM collection WHERE serviceId=:serviceId AND sync")
-    fun getByServiceAndSync(serviceId: Long): List<Collection>
+    fun getByServiceAndSyncBlocking(serviceId: Long): List<Collection>
 
     @Query("SELECT collection.* FROM collection, homeset WHERE collection.serviceId=:serviceId AND type=:type AND homeSetId=homeset.id AND homeset.personal ORDER BY collection.displayName COLLATE NOCASE, collection.url COLLATE NOCASE")
     fun pagePersonalByServiceAndType(serviceId: Long, @CollectionType type: String): PagingSource<Int, Collection>
 
     @Query("SELECT * FROM collection WHERE serviceId=:serviceId AND url=:url")
-    fun getByServiceAndUrl(serviceId: Long, url: String): Collection?
+    fun getByServiceAndUrlBlocking(serviceId: Long, url: String): Collection?
 
     @Query("SELECT * FROM collection WHERE serviceId=:serviceId AND type='${Collection.TYPE_CALENDAR}' AND supportsVEVENT AND sync ORDER BY displayName COLLATE NOCASE, url COLLATE NOCASE")
-    fun getSyncCalendars(serviceId: Long): List<Collection>
+    fun getSyncCalendarsBlocking(serviceId: Long): List<Collection>
 
     @Query("SELECT * FROM collection WHERE serviceId=:serviceId AND type='${Collection.TYPE_CALENDAR}' AND (supportsVTODO OR supportsVJOURNAL) AND sync ORDER BY displayName COLLATE NOCASE, url COLLATE NOCASE")
-    fun getSyncJtxCollections(serviceId: Long): List<Collection>
+    fun getSyncJtxCollectionsBlocking(serviceId: Long): List<Collection>
 
     @Query("SELECT * FROM collection WHERE serviceId=:serviceId AND type='${Collection.TYPE_CALENDAR}' AND supportsVTODO AND sync ORDER BY displayName COLLATE NOCASE, url COLLATE NOCASE")
-    fun getSyncTaskLists(serviceId: Long): List<Collection>
+    fun getSyncTaskListsBlocking(serviceId: Long): List<Collection>
 
     /**
      * Get a list of collections that are both sync enabled and push capable (supportsWebPush and
@@ -101,13 +98,13 @@ interface CollectionDao {
     suspend fun getPushRegisteredAndNotSyncable(serviceId: Long): List<Collection>
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    fun insert(collection: Collection): Long
+    suspend fun insert(collection: Collection): Long
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertAsync(collection: Collection): Long
+    fun insertBlocking(collection: Collection): Long
 
     @Update
-    fun update(collection: Collection)
+    fun updateBlocking(collection: Collection)
 
     @Query("UPDATE collection SET forceReadOnly=:forceReadOnly WHERE id=:id")
     suspend fun updateForceReadOnly(id: Long, forceReadOnly: Boolean)
@@ -133,15 +130,15 @@ interface CollectionDao {
      * @return ID of the row, that has been inserted or updated. -1 If the insert fails due to other reasons.
      */
     @Transaction
-    fun insertOrUpdateByUrl(collection: Collection): Long = getByServiceAndUrl(
+    fun insertOrUpdateByUrlBlocking(collection: Collection): Long = getByServiceAndUrlBlocking(
         collection.serviceId,
         collection.url.toString()
     )?.let { localCollection ->
-        update(collection.copy(id = localCollection.id))
+        updateBlocking(collection.copy(id = localCollection.id))
         localCollection.id
-    } ?: insert(collection)
+    } ?: insertBlocking(collection)
 
     @Delete
-    fun delete(collection: Collection)
+    fun deleteBlocking(collection: Collection)
 
 }

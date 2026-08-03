@@ -72,7 +72,7 @@ class MoveDocumentOperationTest {
 
     @After
     fun tearDown() {
-        runBlocking { mountDao.deleteAsync(mount) }
+        runBlocking { mountDao.delete(mount) }
     }
 
 

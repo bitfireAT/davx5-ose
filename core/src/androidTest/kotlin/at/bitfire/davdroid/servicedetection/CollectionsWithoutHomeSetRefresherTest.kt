@@ -91,10 +91,10 @@ class CollectionsWithoutHomeSetRefresherTest {
         hiltRule.inject()
         client = HttpClient(buildMockEngine())
 
-        val serviceId = db.serviceDao().insertOrReplace(
+        val serviceId = db.serviceDao().insertOrReplaceBlocking(
             Service(id = 0, accountName = "test", type = Service.TYPE_CARDDAV, principal = null)
         )
-        service = db.serviceDao().get(serviceId)!!
+        service = db.serviceDao().getBlocking(serviceId)!!
     }
 
     @After
@@ -107,7 +107,7 @@ class CollectionsWithoutHomeSetRefresherTest {
 
     @Test
     fun refreshCollectionsWithoutHomeSet_updatesExistingCollection() = runTest {
-        val collectionId = db.collectionDao().insertOrUpdateByUrl(
+        val collectionId = db.collectionDao().insertOrUpdateByUrlBlocking(
             Collection(
                 0, service.id, null, null,
                 Collection.TYPE_ADDRESSBOOK,
@@ -126,13 +126,13 @@ class CollectionsWithoutHomeSetRefresherTest {
                 displayName = "My Contacts",
                 description = "My Contacts Description"
             ),
-            db.collectionDao().get(collectionId)
+            db.collectionDao().getBlocking(collectionId)
         )
     }
 
     @Test
     fun refreshCollectionsWithoutHomeSet_deletesInaccessibleCollectionsWithoutHomeSet() = runTest {
-        val collectionId = db.collectionDao().insertOrUpdateByUrl(
+        val collectionId = db.collectionDao().insertOrUpdateByUrlBlocking(
             Collection(
                 0, service.id, null, null,
                 Collection.TYPE_ADDRESSBOOK,
@@ -142,12 +142,12 @@ class CollectionsWithoutHomeSetRefresherTest {
 
         refresherFactory.create(service, client).refreshCollectionsWithoutHomeSet()
 
-        assertEquals(null, db.collectionDao().get(collectionId))
+        assertEquals(null, db.collectionDao().getBlocking(collectionId))
     }
 
     @Test
     fun refreshCollectionsWithoutHomeSet_addsOwnerUrls() = runTest {
-        val collectionId = db.collectionDao().insertOrUpdateByUrl(
+        val collectionId = db.collectionDao().insertOrUpdateByUrlBlocking(
             Collection(
                 0, service.id, null, null,
                 Collection.TYPE_ADDRESSBOOK,
@@ -164,7 +164,7 @@ class CollectionsWithoutHomeSetRefresherTest {
         assertEquals(null, principals[0].displayName)
         assertEquals(
             principals[0].id,
-            db.collectionDao().get(collectionId)!!.ownerId
+            db.collectionDao().getBlocking(collectionId)!!.ownerId
         )
     }
 

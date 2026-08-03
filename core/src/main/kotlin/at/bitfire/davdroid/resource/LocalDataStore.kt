@@ -44,7 +44,7 @@ interface LocalDataStore<T: LocalCollection<*>> {
      *
      * @return the new local collection, or `null` if creation failed
      */
-    fun create(client: ContentProviderClient, fromCollection: Collection): T?
+    suspend fun create(client: ContentProviderClient, fromCollection: Collection): T?
 
     /**
      * Returns all local collections of the data store, including those which don't have a corresponding remote

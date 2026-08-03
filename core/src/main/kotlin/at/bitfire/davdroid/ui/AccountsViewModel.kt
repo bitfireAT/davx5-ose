@@ -150,7 +150,7 @@ class AccountsViewModel @AssistedInject constructor(
         accounts
             .sortedWith { a, b -> collator.compare(a.name, b.name) }
             .map { account ->
-                val services = db.serviceDao().getIdsByAccountAsync(account.name)
+                val services = db.serviceDao().getIdsByAccount(account.name)
                 val progress = when {
                     workInfos.any { info ->
                         info.state == WorkInfo.State.RUNNING && (

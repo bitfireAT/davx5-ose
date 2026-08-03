@@ -65,9 +65,9 @@ class AccountsCleanupWorker @AssistedInject constructor(
         logger.info("Cleaning up accounts. Currently existing accounts: ${accounts.contentToString()}")
         val serviceDao = db.serviceDao()
         if (accounts.isEmpty())
-            serviceDao.deleteAll()
+            serviceDao.deleteAllBlocking()
         else
-            serviceDao.deleteExceptAccounts(accounts.map { it.name }.toTypedArray())
+            serviceDao.deleteExceptAccountsBlocking(accounts.map { it.name }.toTypedArray())
     }
 
     /**

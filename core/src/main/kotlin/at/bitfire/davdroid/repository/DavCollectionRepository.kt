@@ -127,7 +127,7 @@ class DavCollectionRepository @Inject constructor(
             displayName = displayName,
             description = description
         )
-        dao.insertAsync(collection)
+        dao.insert(collection)
     }
 
     /**
@@ -181,7 +181,7 @@ class DavCollectionRepository @Inject constructor(
             supportsVTODO = supportVTODO,
             supportsVJOURNAL = supportVJOURNAL
         )
-        dao.insertAsync(collection)
+        dao.insert(collection)
 
         // Trigger service detection (because the collection may actually have other properties than the ones we have inserted).
         // Some servers are known to change the supported components (VEVENT, …) after creation.
@@ -219,22 +219,22 @@ class DavCollectionRepository @Inject constructor(
 
     suspend fun getSyncableByTopic(topic: String) = dao.getSyncableByPushTopic(topic)
 
-    fun get(id: Long) = dao.get(id)
-    suspend fun getAsync(id: Long) = dao.getAsync(id)
+    fun get(id: Long) = dao.getBlocking(id)
+    suspend fun getAsync(id: Long) = dao.get(id)
 
     fun getFlow(id: Long) = dao.getFlow(id)
 
     suspend fun getByService(serviceId: Long) = dao.getByService(serviceId)
 
-    fun getByServiceAndUrl(serviceId: Long, url: String) = dao.getByServiceAndUrl(serviceId, url)
+    fun getByServiceAndUrl(serviceId: Long, url: String) = dao.getByServiceAndUrlBlocking(serviceId, url)
 
-    fun getByServiceAndSync(serviceId: Long) = dao.getByServiceAndSync(serviceId)
+    fun getByServiceAndSync(serviceId: Long) = dao.getByServiceAndSyncBlocking(serviceId)
 
-    fun getSyncCalendars(serviceId: Long) = dao.getSyncCalendars(serviceId)
+    fun getSyncCalendars(serviceId: Long) = dao.getSyncCalendarsBlocking(serviceId)
 
-    fun getSyncJtxCollections(serviceId: Long) = dao.getSyncJtxCollections(serviceId)
+    fun getSyncJtxCollections(serviceId: Long) = dao.getSyncJtxCollectionsBlocking(serviceId)
 
-    fun getSyncTaskLists(serviceId: Long) = dao.getSyncTaskLists(serviceId)
+    fun getSyncTaskLists(serviceId: Long) = dao.getSyncTaskListsBlocking(serviceId)
 
     /** Returns all collections that are both selected for synchronization and push-capable. */
     suspend fun getPushCapableAndSyncable(serviceId: Long) = dao.getPushCapableSyncCollections(serviceId)
@@ -257,7 +257,7 @@ class DavCollectionRepository @Inject constructor(
     fun insertOrUpdateByUrlRememberSync(newCollection: Collection) {
         db.runInTransaction {
             // remember locally set flags
-            val oldCollection = dao.getByServiceAndUrl(newCollection.serviceId, newCollection.url.toString())
+            val oldCollection = dao.getByServiceAndUrlBlocking(newCollection.serviceId, newCollection.url.toString())
             val newCollectionWithFlags =
                 if (oldCollection != null)
                     newCollection.copy(sync = oldCollection.sync, forceReadOnly = oldCollection.forceReadOnly)
@@ -273,7 +273,7 @@ class DavCollectionRepository @Inject constructor(
      * Creates or updates the existing collection if it exists (URL)
      */
     fun insertOrUpdateByUrl(collection: Collection) {
-        dao.insertOrUpdateByUrl(collection)
+        dao.insertOrUpdateByUrlBlocking(collection)
     }
 
     /**
@@ -321,7 +321,7 @@ class DavCollectionRepository @Inject constructor(
      * Deletes the collection locally
      */
     fun delete(collection: Collection) {
-        dao.delete(collection)
+        dao.deleteBlocking(collection)
     }
 
 
