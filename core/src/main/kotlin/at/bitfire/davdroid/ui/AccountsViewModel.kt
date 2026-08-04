@@ -23,7 +23,6 @@ import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.WorkQuery
 import at.bitfire.davdroid.accounts.AccountId
-import at.bitfire.davdroid.accounts.toAndroidAccount
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
@@ -120,7 +119,7 @@ class AccountsViewModel @AssistedInject constructor(
                     // for each existing account with unknown sync pending state ...
                     accountIds.map { accountId ->
                         // ... create a Flow<Boolean> which emits the sync pending state
-                        syncFrameWork.isSyncPending(accountId.toAndroidAccount(), SyncDataType.entries)
+                        syncFrameWork.isSyncPending(accountId, SyncDataType.entries)
                             .map { hasPendingSync ->
                                 // ... and map this boolean answer back to its Account if it is pending, or null if not.
                                 if (hasPendingSync) accountId else null
