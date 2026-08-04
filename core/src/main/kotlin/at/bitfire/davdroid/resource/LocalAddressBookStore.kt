@@ -116,6 +116,7 @@ class LocalAddressBookStore @Inject constructor(
     internal fun createAddressBookAccount(account: Account, name: String, id: Long): Account? {
         // create address book account with reference to account, collection ID and URL
         val addressBookAccount = Account(name, context.getString(R.string.account_type_address_book))
+        // TODO: Reference DAVx accounts by database account ID instead of by name.
         val userData: Map<String, String> = mapOf(
             LocalAddressBook.USER_DATA_ACCOUNT_NAME to account.name,
             LocalAddressBook.USER_DATA_ACCOUNT_TYPE to account.type,

@@ -205,11 +205,20 @@ class AccountRepository @Inject constructor(
 
     suspend fun getAll(): List<AccountId> {
         return withContext(ioDispatcher) {
-            getAllBlocking().map { account -> account.toAccountId() }
+            getAllBlocking()
         }
     }
 
-    fun getAllBlocking() = accountManager.getAccountsByType(accountType)
+    fun getAllBlocking(): List<AccountId> {
+        return accountManager.getAccountsByType(accountType)
+            .map { account -> LegacyAccount(account) }
+    }
+
+    @Deprecated("Only use this method when mapping LocalAddressBook accounts to app accounts")
+    fun getAllAccountNamesBlocking(): List<String> {
+        return accountManager.getAccountsByType(accountType)
+            .map { account -> account.name }
+    }
 
     fun getAllFlow() = callbackFlow<Set<Account>> {
         val listener = OnAccountsUpdateListener { accounts ->
