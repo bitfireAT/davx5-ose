@@ -39,12 +39,23 @@ class AutomaticSyncManager @Inject constructor(
 ) {
 
     /**
+     * All authorities [dataType] could possibly use, including the DAVx⁵-hosted tasks provider's
+     * runtime-discovered authority (D1) — which isn't a [at.bitfire.synctools.storage.TaskProvider.ProviderName]
+     * and therefore isn't covered by [SyncDataType.possibleAuthorities].
+     */
+    private fun allPossibleAuthorities(dataType: SyncDataType): List<String> =
+        if (dataType == SyncDataType.TASKS)
+            dataType.possibleAuthorities() + tasksAppManager.get().builtInAuthority
+        else
+            dataType.possibleAuthorities()
+
+    /**
      * Disable automatic synchronization for the given account and data type.
      */
     private fun disableAutomaticSync(accountId: AccountId, dataType: SyncDataType) {
         workerManager.disablePeriodic(accountId, dataType)
 
-        for (authority in dataType.possibleAuthorities()) {
+        for (authority in allPossibleAuthorities(dataType)) {
             syncFramework.disableSyncAbility(accountId.toAndroidAccount(), authority)
             // no need to disable content-triggered sync, as it can't be active when sync-ability is disabled
         }
@@ -89,11 +100,17 @@ class AutomaticSyncManager @Inject constructor(
 
         } else {
             // everything but contacts
-            val possibleAuthorities = dataType.possibleAuthorities()
+            val possibleAuthorities = allPossibleAuthorities(dataType)
             val authority: String? = when (dataType) {
                 SyncDataType.CONTACTS -> throw IllegalStateException()  // handled above
                 SyncDataType.EVENTS -> CalendarContract.AUTHORITY
-                SyncDataType.TASKS -> tasksAppManager.get().currentProvider()?.authority
+                SyncDataType.TASKS -> {
+                    val tasksApp = tasksAppManager.get()
+                    if (tasksApp.isBuiltInProviderSelected())
+                        tasksApp.builtInAuthority
+                    else
+                        tasksApp.currentProvider()?.authority
+                }
             }
             if (authority != null && syncInterval != null) {
                 // enable given authority, but completely disable all other possible authorities
@@ -141,7 +158,7 @@ class AutomaticSyncManager @Inject constructor(
         val hasService = serviceRepository.getByAccountIdAndTypeBlocking(accountId, serviceType) != null
 
         val hasProvider = if (dataType == SyncDataType.TASKS)
-            tasksAppManager.get().currentProvider() != null
+            tasksAppManager.get().let { it.currentProvider() != null || it.isBuiltInProviderSelected() }
         else
             true
 

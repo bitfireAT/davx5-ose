@@ -50,16 +50,19 @@ enum class SyncDataType {
         when (this) {
             CONTACTS -> ContactsContract.AUTHORITY
             EVENTS -> CalendarContract.AUTHORITY
-            TASKS -> EntryPointAccessors.fromApplication<SyncDataTypeEntryPoint>(context)
-                .tasksAppManager()
-                .currentProvider()
-                ?.authority
+            TASKS -> {
+                val tasksAppManager = EntryPointAccessors.fromApplication<SyncDataTypeEntryPoint>(context).tasksAppManager()
+                if (tasksAppManager.isBuiltInProviderSelected())
+                    tasksAppManager.builtInAuthority
+                else
+                    tasksAppManager.currentProvider()?.authority
+            }
         }
 
 
     companion object {
 
-        fun fromAuthority(authority: String): SyncDataType {
+        fun fromAuthority(authority: String, context: Context): SyncDataType {
             return when (authority) {
                 ContactsContract.AUTHORITY ->
                     CONTACTS
@@ -68,6 +71,8 @@ enum class SyncDataType {
                 TaskProvider.ProviderName.JtxBoard.authority,
                 TaskProvider.ProviderName.TasksOrg.authority,
                 TaskProvider.ProviderName.OpenTasks.authority ->
+                    TASKS
+                EntryPointAccessors.fromApplication<SyncDataTypeEntryPoint>(context).tasksAppManager().builtInAuthority ->
                     TASKS
                 else -> throw IllegalArgumentException("Unknown authority: $authority")
             }

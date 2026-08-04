@@ -204,6 +204,17 @@
                 android:name="android.content.SyncAdapter"
                 android:resource="@xml/sync_tasks_org"/>
         </service>
+        <service
+            android:name=".sync.adapter.DavTasksSyncAdapterService"
+            android:exported="true"
+            tools:ignore="ExportedService">
+            <intent-filter>
+                <action android:name="android.content.SyncAdapter"/>
+            </intent-filter>
+            <meta-data
+                android:name="android.content.SyncAdapter"
+                android:resource="@xml/sync_davtasks"/>
+        </service>
 
         <!-- account type "DAVx⁵ Address book" -->
         <service

@@ -549,6 +549,10 @@
     <!-- WebDAV accounts -->
     <!-- Test-only placeholder; always overridden by resValue in the app module (e.g. app-ose). -->
     <string name="webdav_authority" translatable="false">core.test.provider.webdav</string>
+
+    <!-- DAVx5-hosted tasks provider (doc/tasks-provider.md) -->
+    <!-- Test-only placeholder; always overridden by resValue in the app module (e.g. app-ose). -->
+    <string name="tasks_provider_authority" translatable="false">core.test.provider.tasks</string>
     <string name="webdav_mounts_title">WebDAV mounts</string>
     <string name="webdav_mounts_quota_used_available">Quota used: %1$s / available: %2$s</string>
     <string name="webdav_mounts_share_content">Share content</string>

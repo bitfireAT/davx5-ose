@@ -17,6 +17,7 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.toAccountId
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.resource.LocalDataStore
+import at.bitfire.davdroid.resource.LocalDavTaskListStore
 import at.bitfire.davdroid.resource.LocalJtxCollectionStore
 import at.bitfire.davdroid.resource.LocalTaskListStore
 import at.bitfire.davdroid.settings.Settings
@@ -44,7 +45,24 @@ class TasksAppManager @Inject constructor(
     private val settingsManager: SettingsManager,
     private val localTaskListStoreFactory: LocalTaskListStore.Factory,
     private val localJtxCollectionStore: Lazy<LocalJtxCollectionStore>,
+    private val localDavTaskListStore: Lazy<LocalDavTaskListStore>,
 ) {
+
+    /**
+     * Authority of the DAVx⁵-hosted tasks provider (doc/tasks-provider.md), unlike
+     * [ProviderName]'s authorities not a compile-time constant (D1).
+     */
+    val builtInAuthority: String
+        get() = context.getString(R.string.tasks_provider_authority)
+
+    /**
+     * Whether the DAVx⁵-hosted tasks provider is currently the selected tasks app.
+     *
+     * Not yet reachable from the Settings UI (a known follow-up, see doc/tasks-provider.md) —
+     * but [getDataStore] and the sync worker dispatch already honor it once selected.
+     */
+    fun isBuiltInProviderSelected(): Boolean =
+        settingsManager.getString(Settings.SELECTED_TASKS_PROVIDER) == builtInAuthority
 
     /**
      * Gets the currently selected tasks app, if installed.
@@ -140,6 +158,9 @@ class TasksAppManager @Inject constructor(
     }
 
     fun getDataStore(): LocalDataStore<*>? {
+        if (isBuiltInProviderSelected())
+            return localDavTaskListStore.get()
+
         val provider = currentProvider() ?: return null
         return when (provider) {
             ProviderName.TasksOrg, ProviderName.OpenTasks -> localTaskListStoreFactory.create(provider)
