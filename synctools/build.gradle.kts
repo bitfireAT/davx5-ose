@@ -84,6 +84,9 @@ android {
 }
 
 dependencies {
+    // public contract of the DAVx5-hosted tasks provider (storage/davtasks, mapping/davtasks)
+    api(project(":tasks-provider-contract"))
+
     implementation(libs.kotlin.stdlib)
     coreLibraryDesugaring(libs.android.desugaring)
 

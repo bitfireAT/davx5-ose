@@ -104,10 +104,6 @@ operator fun PropertyContainer.plusAssign(property: Property) {
     add<PropertyContainer>(property)
 }
 
-operator fun PropertyList.plusAssign(property: Property) {
-    add(property)
-}
-
 operator fun Property.plusAssign(parameter: Parameter) {
     add<Property>(parameter)
 }
