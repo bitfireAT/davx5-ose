@@ -79,8 +79,8 @@ class AccountScreenViewModel @AssistedInject constructor(
     }
 
     /** whether the account is invalid and the screen shall be closed */
-    val invalidAccount = accountRepository.getAllFlow().map { accounts ->
-        !accounts.contains(accountId.toAndroidAccount())
+    val invalidAccount = accountRepository.getAllFlow().map { accountIds ->
+        accountId !in accountIds
     }
 
     /**
