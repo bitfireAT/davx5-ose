@@ -187,7 +187,7 @@ abstract class BaseSyncWorker(
             .putString("syncresult", syncResult.toString())
 
         // Check for errors
-        if (syncResult.hasError()) {
+        if (syncResult.hasError) {
             val softErrorNotificationTag = "${account.type}-${account.name}-$dataType"
 
             // On soft errors the sync is retried a few times before considered failed

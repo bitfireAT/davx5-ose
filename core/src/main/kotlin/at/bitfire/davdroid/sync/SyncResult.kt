@@ -17,7 +17,7 @@ data class SyncResult(
     /**
      * Whether a hard or a soft error occurred.
      */
-    fun hasError(): Boolean =
-        hardError || softError
+    val hasError: Boolean
+        get() = hardError || softError
 
 }
