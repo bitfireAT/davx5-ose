@@ -26,7 +26,6 @@ import at.bitfire.dav4jvm.ktor.exception.ServiceUnavailableException
 import at.bitfire.dav4jvm.ktor.exception.UnauthorizedException
 import at.bitfire.dav4jvm.ktor.selfResponse
 import at.bitfire.dav4jvm.property.caldav.CalDAV
-import at.bitfire.dav4jvm.property.caldav.GetCTag
 import at.bitfire.dav4jvm.property.caldav.ScheduleTag
 import at.bitfire.dav4jvm.property.webdav.GetETag
 import at.bitfire.dav4jvm.property.webdav.ResourceType
@@ -42,6 +41,7 @@ import at.bitfire.davdroid.repository.DavSyncStatsRepository
 import at.bitfire.davdroid.resource.LocalCollection
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.resource.SyncState
+import at.bitfire.davdroid.resource.syncState
 import at.bitfire.davdroid.sync.account.InvalidAccountException
 import at.bitfire.synctools.storage.LocalStorageException
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -181,85 +181,11 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
 
             if (modificationsPresent || syncRequired(remoteSyncState))
                 when (syncAlgorithm()) {
-                    SyncAlgorithm.PROPFIND_REPORT -> {
-                        logger.info("Sync algorithm: full listing as one result (PROPFIND/REPORT)")
-                        resetPresentRemotely()
+                    SyncAlgorithm.PROPFIND_REPORT ->
+                        syncPropfindReport(modificationsPresent, remoteSyncState)
 
-                        // get current sync state
-                        if (modificationsPresent)
-                            remoteSyncState = querySyncState()
-
-                        // list and process all entries at current sync state (which may be the same as or newer than remoteSyncState)
-                        logger.info("Processing remote entries")
-                        syncRemote { callback ->
-                            listAllRemote().forEachResponse(callback)
-                        }
-
-                        logger.info("Deleting entries which are not present remotely anymore")
-                        deleteNotPresentRemotely()
-
-                        logger.info("Post-processing")
-                        postProcess()
-
-                        logger.info("Saving sync state: $remoteSyncState")
-                        localCollection.lastSyncState = remoteSyncState
-                    }
-
-                    SyncAlgorithm.COLLECTION_SYNC -> {
-                        var syncState = localCollection.lastSyncState?.takeIf { it.type == SyncState.Type.SYNC_TOKEN }
-
-                        var initialSync = false
-                        if (syncState == null) {
-                            logger.info("Starting initial sync")
-                            initialSync = true
-                            resetPresentRemotely()
-                        } else if (syncState.initialSync == true) {
-                            logger.info("Continuing initial sync")
-                            initialSync = true
-                        }
-
-                        var furtherChanges = false
-                        do {
-                            logger.info("Listing changes since $syncState")
-                            syncRemote { callback ->
-                                try {
-                                    val result = listRemoteChanges(syncState, callback)
-                                    syncState = SyncState.fromSyncToken(result.first, initialSync)
-                                    furtherChanges = result.second
-                                } catch (e: HttpException) {
-                                    if (e.errors.contains(Error(WebDAV.ValidSyncToken))) {
-                                        logger.info("Sync token invalid, performing initial sync")
-                                        initialSync = true
-                                        resetPresentRemotely()
-
-                                        val result = listRemoteChanges(null, callback)
-                                        syncState = SyncState.fromSyncToken(result.first, initialSync)
-                                        furtherChanges = result.second
-                                    } else
-                                        throw e
-                                }
-                            }
-
-                            logger.info("Saving sync state: $syncState")
-                            localCollection.lastSyncState = syncState
-
-                            logger.info("Server has further changes: $furtherChanges")
-                        } while (furtherChanges)
-
-                        if (initialSync) {
-                            // initial sync is finished, remove all local resources which have not been listed by server
-                            logger.info("Deleting local resources which are not on server (anymore)")
-                            deleteNotPresentRemotely()
-
-                            // remove initial sync flag
-                            syncState!!.initialSync = false
-                            logger.info("Initial sync completed, saving sync state: $syncState")
-                            localCollection.lastSyncState = syncState
-                        }
-
-                        logger.info("Post-processing")
-                        postProcess()
-                    }
+                    SyncAlgorithm.COLLECTION_SYNC ->
+                        syncCollectionSync()
                 }
             else
                 logger.info("Remote collection didn't change, no reason to sync")
@@ -321,6 +247,9 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
      */
     protected abstract suspend fun queryCapabilities(): SyncState?
 
+
+    //region Processing of locally dirty/deleted items
+
     /**
      * Processes locally deleted entries. This can mean:
      *
@@ -329,7 +258,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
      *
      * @return whether local resources have been processed so that a synchronization is always necessary
      */
-    protected open suspend fun processLocallyDeleted(): Boolean {
+    protected suspend fun processLocallyDeleted(): Boolean {
         if (localCollection.readOnly)
             return readOnlyPolicy.resetDeleted(localCollection)
 
@@ -404,7 +333,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
      * @param forceAsNew    whether the ETag (and Schedule-Tag) of [local] are ignored and the resource
      *                      is created as a new resource on the server
      */
-    protected open suspend fun uploadDirty(local: LocalType, forceAsNew: Boolean = false) {
+    protected suspend fun uploadDirty(local: LocalType, forceAsNew: Boolean = false) {
         val existingFileName = local.fileName
 
         val upload = generateUpload(local)
@@ -536,6 +465,8 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
         local.clearDirty(Optional.of(newFileName), eTag, scheduleTag)
     }
 
+    //endregion
+
 
     /**
      * Determines whether a sync is required because there were changes on the server.
@@ -553,7 +484,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
      * @return whether data has been changed on the server, i.e. whether running the
      * sync algorithm is required
      */
-    protected open fun syncRequired(state: SyncState?): Boolean {
+    protected fun syncRequired(state: SyncState?): Boolean {
         if (resync != null)
             return true
 
@@ -588,7 +519,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
      *
      * Used together with [deleteNotPresentRemotely].
      */
-    protected open fun resetPresentRemotely() {
+    protected fun resetPresentRemotely() {
         val number = localCollection.markNotDirty(0)
         logger.info("Number of local non-dirty entries: $number")
     }
@@ -599,7 +530,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
      *
      * @param listRemote function to list remote resources (for instance, all since a certain sync-token)
      */
-    protected open suspend fun syncRemote(listRemote: suspend (MultiResponseCallback) -> Unit) =
+    protected suspend fun syncRemote(listRemote: suspend (MultiResponseCallback) -> Unit) =
         coroutineScope {    // structured concurrency
             val batchDownloader = BatchDownloader { batch ->
                 launch {
@@ -665,41 +596,6 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
             batchDownloader.flush()
         }
 
-    protected abstract fun listAllRemote(): Flow<MultiStatusItem>
-
-    protected open suspend fun listRemoteChanges(
-        syncState: SyncState?,
-        callback: MultiResponseCallback
-    ): Pair<SyncToken, Boolean> {
-        var furtherResults = false
-
-        val report = davCollection.reportChanges(
-            syncState?.takeIf { syncState.type == SyncState.Type.SYNC_TOKEN }?.value,
-            false, null,
-            WebDAV.GetETag
-        ).forEachResponse { response, relation ->
-            when (relation) {
-                Response.HrefRelation.SELF ->
-                    furtherResults = response.status == HttpStatusCode.InsufficientStorage
-
-                Response.HrefRelation.MEMBER ->
-                    callback(response, relation)
-
-                else ->
-                    logger.fine("Unexpected sync-collection response: $response")
-            }
-        }
-
-        var syncToken: SyncToken? = null
-        report.filterIsInstance<SyncToken>().firstOrNull()?.let {
-            syncToken = it
-        }
-        if (syncToken == null)
-            throw DavException("Received sync-collection response without sync-token")
-
-        return Pair(syncToken, furtherResults)
-    }
-
     /**
      * Downloads and processes resources, given as a list of URLs. Will be called with a list
      * of changed/new remote resources.
@@ -728,7 +624,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
      * Used together with [resetPresentRemotely] when a full listing has been received from
      * the server to locally delete resources which are not present remotely (anymore).
      */
-    protected open suspend fun deleteNotPresentRemotely() {
+    protected suspend fun deleteNotPresentRemotely() {
         val removed = localCollection.removeNotDirtyMarked(0)
         logger.info("Removed $removed local resources which are not present on the server anymore")
     }
@@ -739,17 +635,136 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
     protected abstract suspend fun postProcess()
 
 
-    // sync helpers
+    //region Sync algorithm-specific: PROPFIND/REPORT
 
-    protected fun syncState(dav: Response) =
-        dav[SyncToken::class.java]?.token?.let {
-            SyncState(SyncState.Type.SYNC_TOKEN, it)
-        } ?: dav[GetCTag::class.java]?.cTag?.let {
-            SyncState(SyncState.Type.CTAG, it)
+    private suspend fun syncPropfindReport(modificationsPresent: Boolean, remoteSyncState: SyncState?) {
+        logger.info("Sync algorithm: full listing as one result (PROPFIND/REPORT)")
+        resetPresentRemotely()
+
+        // get current sync state
+        var currentSyncState = remoteSyncState
+        if (modificationsPresent)
+            currentSyncState = querySyncState()
+
+        // list and process all entries at current sync state (which may be the same as or newer than remoteSyncState)
+        logger.info("Processing remote entries")
+        syncRemote { callback ->
+            listAllRemote().forEachResponse(callback)
         }
 
+        logger.info("Deleting entries which are not present remotely anymore")
+        deleteNotPresentRemotely()
+
+        logger.info("Post-processing")
+        postProcess()
+
+        logger.info("Saving sync state: $currentSyncState")
+        localCollection.lastSyncState = currentSyncState
+    }
+
     private suspend fun querySyncState(): SyncState? =
-        davCollection.propfind(0, CalDAV.GetCTag, WebDAV.SyncToken).selfResponse()?.let { syncState(it) }
+        davCollection.propfind(0, CalDAV.GetCTag, WebDAV.SyncToken).selfResponse()?.syncState()
+
+    protected abstract fun listAllRemote(): Flow<MultiStatusItem>
+
+    //endregion
+
+
+    //region Sync algorithm-specific: collection-sync
+
+    private suspend fun syncCollectionSync() {
+        var syncState = localCollection.lastSyncState?.takeIf { it.type == SyncState.Type.SYNC_TOKEN }
+
+        var initialSync = false
+        if (syncState == null) {
+            logger.info("Starting initial sync")
+            initialSync = true
+            resetPresentRemotely()
+        } else if (syncState.initialSync == true) {
+            logger.info("Continuing initial sync")
+            initialSync = true
+        }
+
+        var furtherChanges = false
+        do {
+            logger.info("Listing changes since $syncState")
+            syncRemote { callback ->
+                try {
+                    val result = listRemoteChanges(syncState, callback)
+                    syncState = SyncState.fromSyncToken(result.first, initialSync)
+                    furtherChanges = result.second
+                } catch (e: HttpException) {
+                    if (e.errors.contains(Error(WebDAV.ValidSyncToken))) {
+                        logger.info("Sync token invalid, performing initial sync")
+                        initialSync = true
+                        resetPresentRemotely()
+
+                        val result = listRemoteChanges(null, callback)
+                        syncState = SyncState.fromSyncToken(result.first, initialSync)
+                        furtherChanges = result.second
+                    } else
+                        throw e
+                }
+            }
+
+            logger.info("Saving sync state: $syncState")
+            localCollection.lastSyncState = syncState
+
+            logger.info("Server has further changes: $furtherChanges")
+        } while (furtherChanges)
+
+        if (initialSync) {
+            // initial sync is finished, remove all local resources which have not been listed by server
+            logger.info("Deleting local resources which are not on server (anymore)")
+            deleteNotPresentRemotely()
+
+            // remove initial sync flag
+            syncState!!.initialSync = false
+            logger.info("Initial sync completed, saving sync state: $syncState")
+            localCollection.lastSyncState = syncState
+        }
+
+        logger.info("Post-processing")
+        postProcess()
+    }
+
+    protected suspend fun listRemoteChanges(
+        since: SyncState?,
+        callback: MultiResponseCallback
+    ): Pair<SyncToken, Boolean> {
+        var furtherResults = false
+
+        val report = davCollection.reportChanges(
+            since?.takeIf { since.type == SyncState.Type.SYNC_TOKEN }?.value,
+            false, null,
+            WebDAV.GetETag
+        ).forEachResponse { response, relation ->
+            when (relation) {
+                Response.HrefRelation.SELF ->
+                    furtherResults = response.status == HttpStatusCode.InsufficientStorage
+
+                Response.HrefRelation.MEMBER ->
+                    callback(response, relation)
+
+                else ->
+                    logger.fine("Unexpected sync-collection response: $response")
+            }
+        }
+
+        var syncToken: SyncToken? = null
+        report.filterIsInstance<SyncToken>().firstOrNull()?.let {
+            syncToken = it
+        }
+        if (syncToken == null)
+            throw DavException("Received sync-collection response without sync-token")
+
+        return Pair(syncToken, furtherResults)
+    }
+
+    //endregion
+
+
+    // sync helpers
 
     /**
      * Logs the exception, updates sync result and shows a notification to the user.

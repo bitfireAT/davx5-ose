@@ -31,6 +31,7 @@ import at.bitfire.davdroid.resource.LocalContact
 import at.bitfire.davdroid.resource.LocalGroup
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.resource.SyncState
+import at.bitfire.davdroid.resource.syncState
 import at.bitfire.davdroid.resource.workaround.ContactDirtyVerifier
 import at.bitfire.davdroid.sync.groups.CategoriesStrategy
 import at.bitfire.davdroid.sync.groups.VCard4Strategy
@@ -191,7 +192,7 @@ class ContactsSyncManager @AssistedInject constructor(
             logger.info("Address book supports vCard4: $hasVCard4")
             logger.info("Address book supports Collection Sync: $hasCollectionSync")
 
-            syncState(response)
+            response.syncState()
         }
     }
 
