@@ -105,7 +105,7 @@ class ContactsSyncManager @AssistedInject constructor(
     @Assisted httpClient: HttpClient,
     @Assisted syncResult: SyncResult,
     @Assisted val provider: ContentProviderClient,
-    @Assisted localAddressBook: LocalAddressBook,
+    @Assisted override val localCollection: LocalAddressBook,
     @Assisted collection: Collection,
     @Assisted resync: ResyncType?,
     @Assisted val syncFrameworkUpload: Boolean,
@@ -115,12 +115,11 @@ class ContactsSyncManager @AssistedInject constructor(
     private val productIds: ProductIds,
     private val resourceRetrieverFactory: ResourceRetriever.Factory,
     @SyncTransferSemaphore syncTransferSemaphore: Semaphore
-): SyncManager<LocalAddress, LocalAddressBook, DavAddressBook>(
+): SyncManager<LocalAddress, DavAddressBook>(
     accountId,
     httpClient,
     SyncDataType.CONTACTS,
     syncResult,
-    localAddressBook,
     collection,
     resync,
     ioDispatcher,
@@ -149,8 +148,8 @@ class ContactsSyncManager @AssistedInject constructor(
 
     private var hasVCard4 = false
     private val groupStrategy = when (settings.groupMethod) {
-        GroupMethod.GROUP_VCARDS -> VCard4Strategy(localAddressBook)
-        GroupMethod.CATEGORIES -> CategoriesStrategy(localAddressBook)
+        GroupMethod.GROUP_VCARDS -> VCard4Strategy(localCollection)
+        GroupMethod.CATEGORIES -> CategoriesStrategy(localCollection)
     }
 
 

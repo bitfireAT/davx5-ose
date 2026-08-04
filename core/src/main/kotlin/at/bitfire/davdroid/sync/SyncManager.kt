@@ -75,24 +75,21 @@ import javax.net.ssl.SSLHandshakeException
  * Synchronizes a local collection with a remote collection.
  *
  * @param LocalType         type of local resources
- * @param CollectionType    type of local collection
  * @param RemoteType        type of remote collection
  *
  * @param accountId         [AccountId] of the account to synchronize
  * @param httpClient        HTTP client to use for network requests, already authenticated with credentials from the account
  * @param dataType          data type to synchronize
  * @param syncResult        receiver for result of the synchronization (will be updated by [performSync])
- * @param localCollection   local collection to synchronize (interface to content provider)
  * @param collection        collection info in the database
  * @param resync            whether re-synchronization is requested
  * @param settings          snapshot of the account settings relevant for this sync run
  */
-abstract class SyncManager<LocalType : LocalResource, out CollectionType : LocalCollection<LocalType>, RemoteType : DavCollection>(
+abstract class SyncManager<LocalType : LocalResource, RemoteType : DavCollection>(
     val accountId: AccountId,
     val httpClient: HttpClient,
     val dataType: SyncDataType,
     val syncResult: SyncResult,
-    val localCollection: CollectionType,
     val collection: Collection,
     val resync: ResyncType?,
     val ioDispatcher: CoroutineDispatcher,
@@ -131,6 +128,9 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
     @Inject
     lateinit var syncNotificationManagerFactory: SyncNotificationManager.Factory
 
+
+    /** local collection to synchronize (interface to content provider) */
+    protected abstract val localCollection: LocalCollection<LocalType>
 
     protected lateinit var davCollection: RemoteType
 
