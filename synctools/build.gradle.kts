@@ -112,6 +112,8 @@ dependencies {
     androidTestImplementation(libs.androidx.test.runner)
     androidTestImplementation(libs.kotlinx.coroutines.test)
     androidTestImplementation(libs.mockk.android)
+    // to test storage/davtasks against a real (test-registered) DavTasksProvider instance
+    androidTestImplementation(project(":tasks-provider"))
 
     // install third-party APKs for instrumented tests (if available)
     val apkDir = file("apk")

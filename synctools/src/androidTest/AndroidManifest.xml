@@ -21,5 +21,13 @@
                     android:name="android.accounts.AccountAuthenticator"
                     android:resource="@xml/test_account_authenticator" />
         </service>
+
+        <!-- Test-only registration of the real DavTasksProvider (fixed test authority instead of
+        the D1 runtime-discovered one) so storage/davtasks can be tested against a real provider
+        instance, same as the DMFS/jtx tests do against their respective real providers. -->
+        <provider
+                android:name="at.bitfire.davdroid.tasks.provider.DavTasksProvider"
+                android:authorities="at.bitfire.synctools.test.davtasks"
+                android:exported="false" />
     </application>
 </manifest>

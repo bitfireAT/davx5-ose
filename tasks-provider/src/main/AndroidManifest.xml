@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
+  -->
+
+<!--
+  The <provider> element itself (with its authority and permissions) is declared by the
+  consuming application module (e.g. app-ose), because the authority is derived from the
+  applicationId (D1: fixed authority would make OSE / Managed / Select collide). See
+  DavTasksProvider.
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" />
