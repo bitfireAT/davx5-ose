@@ -139,14 +139,22 @@ object Tasks {
     /** RFC 5545 §3.3.4 (DATE) vs §3.3.5 (DATE-TIME) value type of [DTSTART]/[DUE]. */
     const val IS_ALLDAY = "is_allday"
 
-    /** RFC 5545 §3.8.5.3 RRULE (RECUR, §3.3.10). */
+    /** RFC 5545 §3.8.5.3 RRULE (RECUR, §3.3.10) — the raw RRULE value, e.g. `FREQ=DAILY;COUNT=5`. */
     const val RRULE = "rrule"
 
-    /** RFC 5545 §3.8.5.2 RDATE, comma-separated. */
+    /**
+     * RFC 5545 §3.8.5.2 RDATE — comma-separated occurrence dates to add to the recurrence set
+     * defined by [RRULE] (or, with no [RRULE], the complete set beyond [DTSTART] itself).
+     *
+     * Each value is `yyyyMMdd` if [IS_ALLDAY], otherwise `yyyyMMdd'T'HHmmss` (in [DTSTART_TZ]) or
+     * `yyyyMMdd'T'HHmmss'Z'` (UTC) — the same VALUE type and time zone as [DTSTART], per §3.8.5.2.
+     * Example: `20260101T090000Z,20260201T090000Z`.
+     */
     const val RDATE = "rdate"
 
     /**
-     * RFC 5545 §3.8.5.1 EXDATE, comma-separated.
+     * RFC 5545 §3.8.5.1 EXDATE — comma-separated occurrence dates to remove from the recurrence
+     * set. Same value format as [RDATE].
      *
      * There is deliberately no `EXRULE` column: it is RFC 2445 legacy, removed by RFC 5545.
      * It is preserved as an opaque [TaskProperties.MIMETYPE_UNKNOWN_PROPERTY] row instead.

@@ -37,6 +37,10 @@ android {
         resources {
             excludes += listOf("META-INF/DEPENDENCIES", "META-INF/LICENSE", "META-INF/*.md")
             excludes += listOf("LICENSE", "META-INF/LICENSE.txt", "META-INF/NOTICE.txt")
+            // ical4j.properties reaches the androidTest classpath twice: synctools' own direct
+            // ical4j dependency, and transitively via tasks-provider (androidTest-only, to test
+            // DavTasksProvider against a real instance) - same file both times, just pick one.
+            pickFirsts += listOf("ical4j.properties")
         }
     }
 

@@ -271,7 +271,7 @@ ATTACH (AUDIO action).
 The current `mapping/tasks/builder/AlarmsBuilder` collapses all of this to
 `minutes_before` + a START/DUE enum. Full-fidelity means not doing that.
 
-### 3.5 `Instances` — provider-maintained, read-mostly
+### 3.5 `Instances` — provider-maintained, read-only
 
 | Column | Source |
 |---|---|
@@ -281,6 +281,16 @@ The current `mapping/tasks/builder/AlarmsBuilder` collapses all of this to
 | `distance_from_current` | `PROV` |
 
 The sorting columns are not optional: CalendarProvider and DMFS both need them.
+
+Implemented (Phase 3, `tasks-provider/.../recurrence/`): `RecurrenceExpander` expands RRULE ∪
+RDATE − EXDATE anchored on DTSTART (RFC 5545 §3.8.5) and folds in RECURRENCE-ID overrides (§3.8.4.4)
+— an exception's own row replaces the occurrence it overrides, keyed on `original_instance_time`.
+`InstanceMaintainer` re-derives a task's whole family (main + all its exceptions) from scratch on
+every write, wired into `DavTasksProvider.insert/update/delete`. Deliberately bounded and
+deterministic rather than a rolling time window: expansion stops at whichever of the RRULE's own
+COUNT/UNTIL, 500 occurrences, or 10 years past DTSTART comes first — cheap enough to fully
+re-derive per write, at the cost of an indefinitely-recurring task's instances not growing further
+without another write to that task once the 10-year horizon from its *last write* is exhausted.
 
 ---
 
@@ -324,15 +334,15 @@ the min-version table in `TaskProvider.ProviderName`.
 
 ## 6. Phasing
 
-| Phase | Work | Est. |
-|---|---|---|
-| **0. Contract agreement** | Contract class + spec doc with the §3 traceability matrix filled in and RFC section numbers verified. Circulate to rfc2822 and the OpenTasks / tasks.org / jtx authors. **No provider code before sign-off.** | 2–3 w |
-| **1. Provider core** | Room schema, URI matcher, CRUD, sync semantics, batch/bulk, notifications, strict query builder, permissions. Instrumented tests against the real provider (project convention — no mocking). | 6–8 w |
-| **2. Sync integration** | synctools storage + mapping, `LocalDataStore` impl, sync adapter, UI/settings/debug-info. First end-to-end sync. | 4–6 w |
-| **3. Instances & recurrence** | Expansion engine, RECURRENCE-ID override support (#2357), instance maintenance on write, DST/all-day correctness. | 4–6 w |
-| **4. Attachments** | Blob storage, `openFile`, URI grants. (RFC 8607 managed attachments out of scope v1.) | 2–3 w |
-| **5. Client library + docs + sample frontend** | Without this, nobody adopts it. | 2–3 w |
-| **6. Migration** | Opt-in import from OpenTasks / tasks.org; dual-run period. | 3–4 w |
+| Phase | Work | Est. | Status |
+|---|---|---|---|
+| **0. Contract agreement** | Contract class + spec doc with the §3 traceability matrix filled in and RFC section numbers verified. Circulate to rfc2822 and the OpenTasks / tasks.org / jtx authors. **No provider code before sign-off.** | 2–3 w | |
+| **1. Provider core** | Room schema, URI matcher, CRUD, sync semantics, batch/bulk, notifications, strict query builder, permissions. Instrumented tests against the real provider (project convention — no mocking). | 6–8 w | done |
+| **2. Sync integration** | synctools storage + mapping, `LocalDataStore` impl, sync adapter, UI/settings/debug-info. First end-to-end sync. | 4–6 w | done |
+| **3. Instances & recurrence** | Expansion engine (`RecurrenceExpander`), RECURRENCE-ID override support (#2357), instance maintenance on write (`InstanceMaintainer`). Bounded/deterministic (500 occurrences or 10y past DTSTART, whichever first) rather than a rolling time window — see `TaskInstances` KDoc. DST-correct via zoned expansion; all-day via DATE arithmetic. | 4–6 w | done (bounded v1 — no periodic re-expansion background job) |
+| **4. Attachments** | Blob storage, `openFile`, URI grants. (RFC 8607 managed attachments out of scope v1.) | 2–3 w | |
+| **5. Client library + docs + sample frontend** | Without this, nobody adopts it. | 2–3 w | |
+| **6. Migration** | Opt-in import from OpenTasks / tasks.org; dual-run period. | 3–4 w | |
 
 **~6 months** focused single-developer work to something shippable — then a
 permanently frozen public API to maintain.

@@ -62,6 +62,11 @@ interface TaskDao {
     @Query("SELECT * FROM ${Tasks.PATH} WHERE ${Tasks._UID} = :uid AND ${Tasks.LIST_ID} = :listId AND ${Tasks.ORIGINAL_INSTANCE_ID} IS NULL")
     fun getMainByUid(uid: String, listId: Long): TaskEntity?
 
+    /** All RECURRENCE-ID override rows of [rootId] — including tombstoned ones, so callers that
+     * need to know a family's complete row set (e.g. [at.bitfire.davdroid.tasks.provider.recurrence.InstanceMaintainer]) don't miss any. */
+    @Query("SELECT * FROM ${Tasks.PATH} WHERE ${Tasks.ORIGINAL_INSTANCE_ID} = :rootId")
+    fun getAllExceptions(rootId: Long): List<TaskEntity>
+
     /** Marks a task dirty — used to propagate dirtiness from a child [TaskPropertyEntity]/[TaskAlarmEntity] row (§4). */
     @Query("UPDATE ${Tasks.PATH} SET ${Tasks._DIRTY} = 1 WHERE ${Tasks._ID} = :id")
     fun markDirty(id: Long)
@@ -126,9 +131,15 @@ interface TaskInstanceDao {
     @Insert
     fun insert(instance: TaskInstanceEntity): Long
 
+    @Insert
+    fun insertAll(instances: List<TaskInstanceEntity>): List<Long>
+
     @Query("SELECT * FROM ${at.bitfire.tasks.contract.TaskInstances.PATH} WHERE ${at.bitfire.tasks.contract.TaskInstances.TASK_ID} = :taskId")
     fun getByTask(taskId: Long): List<TaskInstanceEntity>
 
     @Query("DELETE FROM ${at.bitfire.tasks.contract.TaskInstances.PATH} WHERE ${at.bitfire.tasks.contract.TaskInstances.TASK_ID} = :taskId")
     fun deleteByTask(taskId: Long)
+
+    @Query("DELETE FROM ${at.bitfire.tasks.contract.TaskInstances.PATH} WHERE ${at.bitfire.tasks.contract.TaskInstances.TASK_ID} IN (:taskIds)")
+    fun deleteByTasks(taskIds: List<Long>)
 }

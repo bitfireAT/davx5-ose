@@ -9,12 +9,24 @@ import android.provider.BaseColumns
 
 /**
  * Provider-maintained, read-only expansion of recurring tasks (RFC 5545 §3.8.5 RRULE/RDATE/EXDATE)
- * into concrete occurrences. Frontends read this table instead of expanding RRULE themselves (D3).
+ * into concrete occurrences, with RECURRENCE-ID overrides (§3.8.4.4) folded in. Frontends read this
+ * table instead of expanding RRULE themselves (D3).
  *
- * v1 note: every non-recurring task has exactly one row here (itself). Full RRULE expansion
- * (multiple rows per recurring task, DST/all-day correctness, RECURRENCE-ID override folding) is
- * tracked as Phase 3 in the design doc and not yet implemented — the table exists so frontends can
- * already be written against it.
+ * A non-recurring task has exactly one row here (itself). A RECURRENCE-ID exception row's own
+ * instance replaces the occurrence it overrides — [TASK_ID] for that occurrence is the exception's
+ * id, not the main task's.
+ *
+ * Bounded, deterministic expansion: stops at whichever of the RRULE's own COUNT/UNTIL, 500
+ * occurrences, or 10 years past DTSTART comes first (see `RecurrenceExpander.MAX_INSTANCES` /
+ * `MAX_HORIZON` in the provider implementation). An indefinitely-recurring task (no COUNT/UNTIL)
+ * only gets instances up to that horizon — the same practical limit every mainstream calendar/task
+ * app imposes. Instances are fully regenerated on every write to the task (or one of its
+ * RECURRENCE-ID exceptions), so this horizon is relative to *DTSTART*, not to "now"; a task that
+ * hasn't been touched in years and recurs indefinitely won't grow new instances just from the
+ * passage of time.
+ *
+ * [DISTANCE_FROM_CURRENT] is computed against wall-clock time at that last write and therefore
+ * goes stale the same way.
  */
 object TaskInstances {
 

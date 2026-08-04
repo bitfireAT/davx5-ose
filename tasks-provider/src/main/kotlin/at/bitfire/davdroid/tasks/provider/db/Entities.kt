@@ -226,10 +226,8 @@ data class AlarmPropertyEntity(
 
 /**
  * Room representation of [at.bitfire.tasks.contract.TaskInstances]. Maintained by the provider
- * on every write to [TaskEntity] (see `InstanceMaintainer`); read-only from the outside.
- *
- * v1 note: exactly one row per non-exception task (RRULE expansion is Phase 3, not yet
- * implemented — see the design doc).
+ * on every write to [TaskEntity] (see
+ * [at.bitfire.davdroid.tasks.provider.recurrence.InstanceMaintainer]); read-only from the outside.
  */
 @Entity(
     tableName = at.bitfire.tasks.contract.TaskInstances.PATH,

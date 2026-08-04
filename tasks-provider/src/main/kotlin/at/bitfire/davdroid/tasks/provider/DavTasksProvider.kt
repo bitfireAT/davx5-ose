@@ -17,6 +17,7 @@ import android.net.Uri
 import android.os.Build
 import androidx.sqlite.db.SimpleSQLiteQuery
 import at.bitfire.davdroid.tasks.provider.db.TasksDatabase
+import at.bitfire.davdroid.tasks.provider.recurrence.InstanceMaintainer
 import at.bitfire.tasks.contract.AlarmProperties
 import at.bitfire.tasks.contract.TaskAlarms
 import at.bitfire.tasks.contract.TaskInstances
@@ -139,9 +140,11 @@ class DavTasksProvider : ContentProvider() {
     }
 
     private lateinit var database: TasksDatabase
+    private lateinit var instanceMaintainer: InstanceMaintainer
 
     override fun onCreate(): Boolean {
         database = TasksDatabase.getInstance(requireNotNull(context))
+        instanceMaintainer = InstanceMaintainer(database)
         return true
     }
 
@@ -226,6 +229,27 @@ class DavTasksProvider : ContentProvider() {
         distinctLongColumn(TaskAlarms.PATH, TaskAlarms.TASK_ID, "${TaskAlarms._ID} = ?", arrayOf(alarmId.toString()))
             .firstOrNull()
 
+    /**
+     * Resolves each of [taskIds] to its recurrence family root ([Tasks.ORIGINAL_INSTANCE_ID] if
+     * it's a RECURRENCE-ID exception row, itself otherwise) — the id [InstanceMaintainer.refreshFamily]
+     * expects. Looked up fresh (not from caller-supplied values) so it reflects the current DB state.
+     */
+    private fun rootsForTaskIds(taskIds: Set<Long>): Set<Long> {
+        if (taskIds.isEmpty()) return emptySet()
+        val placeholders = taskIds.joinToString(",") { "?" }
+        val sql = "SELECT ${Tasks._ID}, ${Tasks.ORIGINAL_INSTANCE_ID} FROM ${Tasks.PATH} WHERE ${Tasks._ID} IN ($placeholders)"
+        val bindArgs: Array<Any?> = taskIds.map { it as Any? }.toTypedArray()
+        val roots = mutableSetOf<Long>()
+        database.query(SimpleSQLiteQuery(sql, bindArgs)).use { cursor ->
+            while (cursor.moveToNext()) {
+                val id = cursor.getLong(0)
+                val originalInstanceId = if (cursor.isNull(1)) null else cursor.getLong(1)
+                roots += originalInstanceId ?: id
+            }
+        }
+        return roots
+    }
+
     /** Dirty propagation from a sub-row to its parent task (§4) — skipped for sync-adapter writes,
      * which represent data that just came from the server and is therefore not locally modified. */
     private fun markTaskDirty(taskId: Long) {
@@ -302,6 +326,9 @@ class DavTasksProvider : ContentProvider() {
             }
         }
 
+        if (match == TASKS)
+            instanceMaintainer.refreshFamily(cv.getAsLong(Tasks.ORIGINAL_INSTANCE_ID) ?: id)
+
         notify(uri, syncAdapter)
         return ContentUris.withAppendedId(TasksContract.contentUri(requireNotNull(uri.authority), spec.tableName), id)
     }
@@ -345,10 +372,17 @@ class DavTasksProvider : ContentProvider() {
             else -> emptySet()
         } else emptySet()
 
+        // capture affected tasks' family roots before mutating too - a caller can change which
+        // family a row belongs to (Tasks.ORIGINAL_INSTANCE_ID), so both the old and new root need
+        // a refresh; looking up by the fixed id set (not re-running finalSelection) survives that
+        val affectedTaskIds = if (match == TASKS || match == TASK_ID) distinctLongColumn(Tasks.PATH, Tasks._ID, finalSelection, finalArgs) else emptySet()
+        val preRoots = rootsForTaskIds(affectedTaskIds)
+
         val count = database.openHelper.writableDatabase.update(spec.tableName, android.database.sqlite.SQLiteDatabase.CONFLICT_NONE, cv, finalSelection, finalArgs)
 
         if (count > 0) {
             dirtyTaskIds.forEach(::markTaskDirty)
+            (preRoots + rootsForTaskIds(affectedTaskIds)).forEach(instanceMaintainer::refreshFamily)
             notify(uri, syncAdapter)
         }
         return count
@@ -372,6 +406,14 @@ class DavTasksProvider : ContentProvider() {
             else -> emptySet()
         } else emptySet()
 
+        // capture family roots before the row disappears (physical delete) or gets tombstoned -
+        // either way, whatever family it belonged to needs its instances refreshed: a tombstoned/
+        // removed exception's occurrence reverts to the main task, and a removed main's family
+        // simply produces nothing once refreshed (its rows are gone by then, refresh is then a no-op)
+        val affectedRoots = if (match == TASKS || match == TASK_ID)
+            rootsForTaskIds(distinctLongColumn(Tasks.PATH, Tasks._ID, finalSelection, finalArgs))
+        else emptySet()
+
         // Tombstone instead of physical delete for non-sync-adapter deletes of tasks (§4): the
         // deletion still needs to be uploaded. Sync-adapter deletes (after successful upload, or
         // during a clean download) really remove the row, cascading to properties/alarms/instances.
@@ -387,6 +429,7 @@ class DavTasksProvider : ContentProvider() {
 
         if (count > 0) {
             dirtyTaskIds.forEach(::markTaskDirty)
+            affectedRoots.forEach(instanceMaintainer::refreshFamily)
             notify(uri, syncAdapter)
         }
         return count
