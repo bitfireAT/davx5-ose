@@ -83,7 +83,7 @@ class CreateAddressBookViewModel @AssistedInject constructor(
             uiState = try {
                 applicationScope.async {
                     collectionRepository.createAddressBook(
-                        account = accountId.toAndroidAccount(),
+                        accountId = accountId,
                         homeSet = homeSet,
                         displayName = uiState.displayName,
                         description = uiState.description

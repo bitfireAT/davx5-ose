@@ -55,7 +55,7 @@ class AccountRepository @Inject constructor(
     private val accountSettingsFactory: AccountSettings.Factory,
     private val automaticSyncManager: Lazy<AutomaticSyncManager>,
     @ApplicationContext private val context: Context,
-    private val collectionRepository: DavCollectionRepository,
+    private val collectionRepository: Lazy<DavCollectionRepository>,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val homeSetRepository: DavHomeSetRepository,
     private val localCalendarStore: Lazy<LocalCalendarStore>,
@@ -166,7 +166,7 @@ class AccountRepository @Inject constructor(
 
             // delete address books (= address book accounts)
             serviceRepository.getByAccountIdAndType(accountId, Service.TYPE_CARDDAV)?.let { service ->
-                collectionRepository.getByService(service.id).forEach { collection ->
+                collectionRepository.get().getByService(service.id).forEach { collection ->
                     localAddressBookStore.get().deleteByCollectionId(collection.id)
                 }
             }
@@ -192,6 +192,12 @@ class AccountRepository @Inject constructor(
     fun fromName(accountName: String) =
         Account(accountName, accountType)
 
+    /**
+     * Returns the [AccountId] for a given account name.
+     *
+     * TODO: Remove this once [Service] references accounts by database ID instead of name.
+     */
+    @Deprecated("Only use this method when resolving which account a `at.bitfire.davdroid.db.Service` instance belongs to.")
     suspend fun getAccountIdFromName(accountName: String): AccountId {
         // Note: In the future this will have to perform a database lookup
         return LegacyAccount(fromName(accountName))
@@ -329,7 +335,7 @@ class AccountRepository @Inject constructor(
 
         // insert collections
         for (collection in info.collections.values) {
-            collectionRepository.insertOrUpdateByUrl(collection.copy(serviceId = serviceId))
+            collectionRepository.get().insertOrUpdateByUrl(collection.copy(serviceId = serviceId))
         }
 
         return serviceId
