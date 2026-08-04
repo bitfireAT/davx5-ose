@@ -138,7 +138,7 @@ class CreateCalendarViewModel @AssistedInject constructor(
             uiState = try {
                 applicationScope.async {
                     collectionRepository.createCalendar(
-                        account = accountId.toAndroidAccount(),
+                        accountId = accountId,
                         homeSet = homeSet,
                         color = uiState.color,
                         displayName = uiState.displayName,

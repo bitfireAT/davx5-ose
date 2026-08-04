@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.sync
 
-import android.accounts.Account
 import at.bitfire.davdroid.MockEngineUtils.basic
 import at.bitfire.davdroid.accounts.LegacyAccount
 import at.bitfire.davdroid.accounts.toAndroidAccount
@@ -80,7 +79,7 @@ class ResourceRetrieverTest {
             httpClientBuilder
                 // fromAccount() restricts authentication to the given domain; build the test client the
                 // same way production code does so that restriction is actually exercised.
-                .fromAccount(accountId.toAndroidAccount(), authDomain = "example.com")
+                .fromAccount(accountId, authDomain = "example.com")
                 .build(engine)
                 .use { httpClient ->
                     val retriever = resourceRetrieverFactory.create(accountId, "example.com", httpClient)
@@ -99,7 +98,7 @@ class ResourceRetrieverTest {
     fun testRetrieve_SameDomain() = runTest {
         MockEngine.basic("TEST").use { engine ->
             httpClientBuilder
-                .fromAccount(accountId.toAndroidAccount(), authDomain = "example.com")
+                .fromAccount(accountId, authDomain = "example.com")
                 .build(engine)
                 .use { httpClient ->
                     val retriever = resourceRetrieverFactory.create(accountId, "example.com", httpClient)

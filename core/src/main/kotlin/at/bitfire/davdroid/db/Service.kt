@@ -28,6 +28,7 @@ data class Service(
     @PrimaryKey(autoGenerate = true)
     val id: Long,
 
+    // TODO: Reference accounts by their database ID once we've gotten rid of `LegacyAccount`.
     val accountName: String,
 
     @ServiceType

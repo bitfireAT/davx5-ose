@@ -197,9 +197,9 @@ class PushRegistrationManager @Inject constructor(
         // calculate next worker run (later needed to check expiry); duplicate days for safety (times are not exact)
         val nextWorkerRun = Instant.now() + Duration.ofDays(2 * WORKER_INTERVAL_DAYS)
 
-        val account = accountRepository.get().fromName(service.accountName)
+        val accountId = accountRepository.get().getAccountIdFromName(service.accountName)
         httpClientBuilder
-            .fromAccountAsync(account)
+            .fromAccountAsync(accountId)
             .build()
             .use { httpClient ->
             for (collection in subscribeTo) {
@@ -325,9 +325,9 @@ class PushRegistrationManager @Inject constructor(
         if (from.isEmpty())
             return
 
-        val account = accountRepository.get().fromName(service.accountName)
+        val accountId = accountRepository.get().getAccountIdFromName(service.accountName)
         httpClientBuilder
-            .fromAccountAsync(account)
+            .fromAccountAsync(accountId)
             .build()
             .use { httpClient ->
             for (collection in from)

@@ -4,11 +4,9 @@
 
 package at.bitfire.davdroid.sync
 
-import android.accounts.Account
-import android.accounts.AccountManager
 import android.content.ContentProviderClient
-import android.os.Build
-import at.bitfire.davdroid.accounts.toAccountId
+import at.bitfire.davdroid.accounts.AccountId
+import at.bitfire.davdroid.accounts.AndroidAccountManager
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.resource.LocalTaskList
@@ -23,7 +21,7 @@ import java.util.logging.Level
  * Sync logic for tasks in CalDAV collections ({@code VTODO}).
  */
 class TaskSyncer @AssistedInject constructor(
-    @Assisted account: Account,
+    @Assisted accountId: AccountId,
     @Assisted val providerName: TaskProvider.ProviderName,
     @Assisted resync: ResyncType?,
     @Assisted syncResult: SyncResult,
@@ -31,12 +29,12 @@ class TaskSyncer @AssistedInject constructor(
     localTaskListStoreFactory: LocalTaskListStore.Factory,
     private val tasksAppManager: dagger.Lazy<TasksAppManager>,
     private val tasksSyncManagerFactory: TasksSyncManager.Factory,
-) : Syncer<LocalTaskListStore, LocalTaskList>(account, resync, syncResult, settings) {
+) : Syncer<LocalTaskListStore, LocalTaskList>(accountId, resync, syncResult, settings) {
 
     @AssistedFactory
     interface Factory {
         fun create(
-            account: Account,
+            accountId: AccountId,
             providerName: TaskProvider.ProviderName,
             resyncType: ResyncType?,
             syncResult: SyncResult,
@@ -61,14 +59,8 @@ class TaskSyncer @AssistedInject constructor(
         }
 
         // make sure account can be seen by task provider
-        if (Build.VERSION.SDK_INT >= 26) {
-            /* Warning: If setAccountVisibility is called, Android 12 broadcasts the
-               AccountManager.LOGIN_ACCOUNTS_CHANGED_ACTION Intent. This cancels running syncs
-               and starts them again! So make sure setAccountVisibility is only called when necessary. */
-            val am = AccountManager.get(context)
-            if (am.getAccountVisibility(account, providerName.packageName) != AccountManager.VISIBILITY_VISIBLE)
-                am.setAccountVisibility(account, providerName.packageName, AccountManager.VISIBILITY_VISIBLE)
-        }
+        androidAccountManager.ensureAccountVisibility(accountId, providerName.packageName)
+
         return true
     }
 
@@ -87,7 +79,7 @@ class TaskSyncer @AssistedInject constructor(
         )
 
         val syncManager = tasksSyncManagerFactory.tasksSyncManager(
-            account.toAccountId(),
+            accountId,
             httpClient,
             syncResult,
             localCollection,

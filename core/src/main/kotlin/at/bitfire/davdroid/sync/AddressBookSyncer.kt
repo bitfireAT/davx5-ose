@@ -4,11 +4,10 @@
 
 package at.bitfire.davdroid.sync
 
-import android.accounts.Account
 import android.accounts.AccountManager
 import android.content.ContentProviderClient
 import android.provider.ContactsContract
-import at.bitfire.davdroid.accounts.toAccountId
+import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
@@ -28,7 +27,7 @@ import java.util.logging.Level
  * Sync logic for address books
  */
 class AddressBookSyncer @AssistedInject constructor(
-    @Assisted account: Account,
+    @Assisted accountId: AccountId,
     @Assisted resync: ResyncType?,
     @Assisted val syncFrameworkUpload: Boolean,
     @Assisted syncResult: SyncResult,
@@ -36,12 +35,12 @@ class AddressBookSyncer @AssistedInject constructor(
     addressBookStore: LocalAddressBookStore,
     private val contactsSyncManagerFactory: ContactsSyncManager.Factory,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher
-) : Syncer<LocalAddressBookStore, LocalAddressBook>(account, resync, syncResult, settings) {
+) : Syncer<LocalAddressBookStore, LocalAddressBook>(accountId, resync, syncResult, settings) {
 
     @AssistedFactory
     interface Factory {
         fun create(
-            account: Account,
+            accountId: AccountId,
             resyncType: ResyncType?,
             syncFrameworkUpload: Boolean,
             syncResult: SyncResult,
@@ -65,7 +64,7 @@ class AddressBookSyncer @AssistedInject constructor(
     ) {
         logger.log(Level.INFO, "Synchronizing address book: {0}", arrayOf(localCollection.addressBookAccount.name))
         syncAddressBook(
-            account = account,
+            accountId = accountId,
             addressBook = localCollection,
             provideHttpClient = { httpClient },
             provider = provider,
@@ -84,7 +83,7 @@ class AddressBookSyncer @AssistedInject constructor(
      * @param collection        the database collection associated with this address book
      */
     private suspend fun syncAddressBook(
-        account: Account,
+        accountId: AccountId,
         addressBook: LocalAddressBook,
         provideHttpClient: () -> HttpClient,
         provider: ContentProviderClient,
@@ -92,10 +91,10 @@ class AddressBookSyncer @AssistedInject constructor(
         collection: Collection
     ) {
         try {
-            handleGroupMethodChange(account, addressBook, provider)
+            handleGroupMethodChange(addressBook, provider)
 
             val syncManager = contactsSyncManagerFactory.contactsSyncManager(
-                account.toAccountId(),
+                accountId,
                 provideHttpClient(),
                 syncResult,
                 provider,
@@ -115,17 +114,15 @@ class AddressBookSyncer @AssistedInject constructor(
     }
 
     private suspend fun handleGroupMethodChange(
-        account: Account,
         addressBook: LocalAddressBook,
         provider: ContentProviderClient
     ) {
         withContext(ioDispatcher) {
-            handleGroupMethodChangeBlocking(account, addressBook, provider)
+            handleGroupMethodChangeBlocking(addressBook, provider)
         }
     }
 
     private fun handleGroupMethodChangeBlocking(
-        account: Account,
         addressBook: LocalAddressBook,
         provider: ContentProviderClient
     ) {
