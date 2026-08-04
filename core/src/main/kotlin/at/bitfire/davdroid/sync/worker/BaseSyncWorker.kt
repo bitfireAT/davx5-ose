@@ -191,7 +191,7 @@ abstract class BaseSyncWorker(
             val softErrorNotificationTag = "${account.type}-${account.name}-$dataType"
 
             // On soft errors the sync is retried a few times before considered failed
-            if (syncResult.hasSoftError()) {
+            if (syncResult.softError) {
                 logger.warning("Soft error while syncing: $syncResult")
                 if (runAttemptCount < MAX_RUN_ATTEMPTS) {
                     val blockDuration = syncResult.delayUntil - System.currentTimeMillis() / 1000
@@ -232,7 +232,7 @@ abstract class BaseSyncWorker(
 
             // On a hard error - fail with an error message
             // Note: SyncManager should have notified the user
-            if (syncResult.hasHardError()) {
+            if (syncResult.hardError) {
                 logger.warning("Hard error while syncing: $syncResult")
                 return Result.failure(output.build())
             }

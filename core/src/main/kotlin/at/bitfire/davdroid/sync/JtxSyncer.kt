@@ -53,7 +53,7 @@ class JtxSyncer @AssistedInject constructor(
             TaskProvider.checkVersion(context, TaskProvider.ProviderName.JtxBoard)
         } catch (e: TaskProvider.ProviderTooOldException) {
             tasksAppManager.get().notifyProviderTooOld(e)
-            syncResult.contentProviderError = true
+            syncResult.hardError = true
             return false // Don't sync
         }
 
