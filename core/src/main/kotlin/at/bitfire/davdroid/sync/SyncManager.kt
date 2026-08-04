@@ -58,6 +58,7 @@ import io.ktor.util.appendAll
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
@@ -528,9 +529,9 @@ abstract class SyncManager<LocalType : LocalResource, RemoteType : DavCollection
      * Calls a function to list remote resources. All resources from the returned
      * list are downloaded and processed.
      *
-     * @param listRemote function to list remote resources (for instance, all since a certain sync-token)
+     * @param remoteItems Multi-Status items to process (collected exactly once)
      */
-    protected suspend fun syncRemote(listRemote: suspend (MultiResponseCallback) -> Unit) =
+    protected suspend fun syncRemote(remoteItems: Flow<MultiStatusItem>) =
         coroutineScope {    // structured concurrency
             val batchDownloader = BatchDownloader { batch ->
                 launch {
@@ -541,14 +542,14 @@ abstract class SyncManager<LocalType : LocalResource, RemoteType : DavCollection
             }
 
             coroutineScope {    // structured concurrency
-                listRemote { response, relation ->
+                remoteItems.forEachResponse { response, relation ->
                     // ignore non-members
                     if (relation != Response.HrefRelation.MEMBER)
-                        return@listRemote
+                        return@forEachResponse
 
                     // ignore collections
                     if (response[ResourceType::class.java]?.types?.contains(WebDAV.Collection) == true)
-                        return@listRemote
+                        return@forEachResponse
 
                     val name = response.hrefName()
 
@@ -648,9 +649,8 @@ abstract class SyncManager<LocalType : LocalResource, RemoteType : DavCollection
 
         // list and process all entries at current sync state (which may be the same as or newer than remoteSyncState)
         logger.info("Processing remote entries")
-        syncRemote { callback ->
-            listAllRemote().forEachResponse(callback)
-        }
+        val listingFlow = listAllRemote()
+        syncRemote(listingFlow)
 
         logger.info("Deleting entries which are not present remotely anymore")
         deleteNotPresentRemotely()
@@ -688,24 +688,24 @@ abstract class SyncManager<LocalType : LocalResource, RemoteType : DavCollection
         var furtherChanges = false
         do {
             logger.info("Listing changes since $syncState")
-            syncRemote { callback ->
-                try {
-                    val result = listRemoteChanges(syncState, callback)
-                    syncState = SyncState.fromSyncToken(result.first, initialSync)
-                    furtherChanges = result.second
-                } catch (e: HttpException) {
-                    if (e.errors.contains(Error(WebDAV.ValidSyncToken))) {
-                        logger.info("Sync token invalid, performing initial sync")
-                        initialSync = true
-                        resetPresentRemotely()
+            val changesResult = SyncCollectionResult()
+            try {
+                syncRemote(listRemoteChanges(syncState, changesResult))
+            } catch (e: HttpException) {
+                if (e.errors.contains(Error(WebDAV.ValidSyncToken))) {
+                    logger.info("Sync token invalid, performing initial sync")
+                    initialSync = true
+                    resetPresentRemotely()
 
-                        val result = listRemoteChanges(null, callback)
-                        syncState = SyncState.fromSyncToken(result.first, initialSync)
-                        furtherChanges = result.second
-                    } else
-                        throw e
-                }
+                    syncRemote(listRemoteChanges(null, changesResult))
+                } else
+                    throw e
             }
+
+            val syncToken = changesResult.syncToken
+                ?: throw DavException("Received sync-collection response without sync-token")
+            syncState = SyncState.fromSyncToken(syncToken, initialSync)
+            furtherChanges = changesResult.furtherResults
 
             logger.info("Saving sync state: $syncState")
             localCollection.lastSyncState = syncState
@@ -728,38 +728,52 @@ abstract class SyncManager<LocalType : LocalResource, RemoteType : DavCollection
         postProcess()
     }
 
-    protected suspend fun listRemoteChanges(
-        since: SyncState?,
-        callback: MultiResponseCallback
-    ): Pair<SyncToken, Boolean> {
-        var furtherResults = false
+    /**
+     * Holds the sync-token / further-results reported by a `sync-collection` REPORT besides
+     * the member responses (which are exposed as a [Flow] instead, see [listRemoteChanges]).
+     *
+     * Temporary helper for the migration to Flow-based processing; will be removed once
+     * [syncRemote] and friends work with [Flow] end-to-end.
+     */
+    protected class SyncCollectionResult {
+        var syncToken: SyncToken? = null
+        var furtherResults: Boolean = false
+    }
 
-        val report = davCollection.reportChanges(
+    /**
+     * Builds a [Flow] of the member responses of a `sync-collection` REPORT (RFC 6578).
+     *
+     * @param since  sync state to list the changes since; `null` for an initial sync
+     * @param result mutable holder that [SyncCollectionResult.syncToken] and
+     *               [SyncCollectionResult.furtherResults] are written into while the returned
+     *               flow is collected (i.e. only valid after the flow has been fully collected,
+     *               for instance by [syncRemote])
+     */
+    protected fun listRemoteChanges(
+        since: SyncState?,
+        result: SyncCollectionResult
+    ): Flow<MultiStatusItem> =
+        davCollection.reportChanges(
             since?.takeIf { since.type == SyncState.Type.SYNC_TOKEN }?.value,
             false, null,
             WebDAV.GetETag
-        ).forEachResponse { response, relation ->
-            when (relation) {
-                Response.HrefRelation.SELF ->
-                    furtherResults = response.status == HttpStatusCode.InsufficientStorage
+        ).transform { item ->
+            when (item) {
+                is MultiStatusItem.Response -> when (item.relation) {
+                    Response.HrefRelation.SELF ->
+                        result.furtherResults = item.response.status == HttpStatusCode.InsufficientStorage
 
-                Response.HrefRelation.MEMBER ->
-                    callback(response, relation)
+                    Response.HrefRelation.MEMBER ->
+                        emit(item)
 
-                else ->
-                    logger.fine("Unexpected sync-collection response: $response")
+                    else ->
+                        logger.fine("Unexpected sync-collection response: ${item.response}")
+                }
+
+                is MultiStatusItem.ExtraProperty ->
+                    (item.property as? SyncToken)?.let { result.syncToken = it }
             }
         }
-
-        var syncToken: SyncToken? = null
-        report.filterIsInstance<SyncToken>().firstOrNull()?.let {
-            syncToken = it
-        }
-        if (syncToken == null)
-            throw DavException("Received sync-collection response without sync-token")
-
-        return Pair(syncToken, furtherResults)
-    }
 
     //endregion
 
