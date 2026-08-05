@@ -219,7 +219,7 @@ abstract class SyncManager<LocalType : LocalResource, RemoteType : DavCollection
                     logger.log(Level.WARNING, "Got 503 Service unavailable, trying again later", e)
                     // determine when to retry
                     syncResult.delayUntil = e.getDelayUntil().epochSecond
-                    syncResult.numServiceUnavailableExceptions++ // Indicate a soft error occurred
+                    syncResult.softError = true
                 }
 
                 // all others
@@ -774,31 +774,31 @@ abstract class SyncManager<LocalType : LocalResource, RemoteType : DavCollection
         when (e) {
             is IOException -> {
                 logger.log(Level.WARNING, "I/O error", e)
-                syncResult.numIoExceptions++
+                syncResult.softError = true
                 message = context.getString(R.string.sync_error_io, e.localizedMessage)
             }
 
             is UnauthorizedException -> {
                 logger.log(Level.SEVERE, "Not authorized anymore", e)
-                syncResult.numAuthExceptions++
+                syncResult.hardError = true
                 message = context.getString(R.string.sync_error_authentication_failed)
             }
 
             is HttpException, is DavException -> {
                 logger.log(Level.SEVERE, "HTTP/DAV exception", e)
-                syncResult.numHttpExceptions++
+                syncResult.hardError = true
                 message = context.getString(R.string.sync_error_http_dav, e.localizedMessage)
             }
 
             is LocalStorageException, is RemoteException -> {
                 logger.log(Level.SEVERE, "Couldn't access local storage", e)
-                syncResult.localStorageError = true
+                syncResult.hardError = true
                 message = context.getString(R.string.sync_error_local_storage, e.localizedMessage)
             }
 
             else -> {
                 logger.log(Level.SEVERE, "Unclassified sync error", e)
-                syncResult.numUnclassifiedErrors++
+                syncResult.hardError = true
                 message = e.localizedMessage ?: e::class.java.simpleName
             }
         }
