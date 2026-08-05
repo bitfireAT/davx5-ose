@@ -14,7 +14,6 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.TaskStackBuilder
 import androidx.core.net.toUri
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.accounts.toAccountId
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.resource.LocalDataStore
 import at.bitfire.davdroid.resource.LocalJtxCollectionStore

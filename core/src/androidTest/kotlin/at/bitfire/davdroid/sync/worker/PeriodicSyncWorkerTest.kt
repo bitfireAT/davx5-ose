@@ -12,11 +12,9 @@ import androidx.work.WorkManager
 import androidx.work.WorkerFactory
 import androidx.work.WorkerParameters
 import androidx.work.testing.TestListenableWorkerBuilder
-import androidx.work.workDataOf
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.TestUtils
 import at.bitfire.davdroid.accounts.LegacyAccount
-import at.bitfire.davdroid.accounts.toAccountId
 import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.account.TestAccount
 import dagger.hilt.android.qualifiers.ApplicationContext
