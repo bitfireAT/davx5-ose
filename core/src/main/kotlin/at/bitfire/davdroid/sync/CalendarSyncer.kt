@@ -4,9 +4,9 @@
 
 package at.bitfire.davdroid.sync
 
-import android.accounts.Account
 import android.content.ContentProviderClient
-import at.bitfire.davdroid.accounts.toAccountId
+import at.bitfire.davdroid.accounts.AccountId
+import at.bitfire.davdroid.accounts.AndroidAccountManager
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.resource.LocalCalendar
@@ -21,18 +21,18 @@ import java.util.logging.Level
  * Sync logic for calendars
  */
 class CalendarSyncer @AssistedInject constructor(
-    @Assisted account: Account,
+    @Assisted accountId: AccountId,
     @Assisted resync: ResyncType?,
     @Assisted syncResult: SyncResult,
     @Assisted settings: SyncSettings,
     calendarStore: LocalCalendarStore,
     private val calendarSyncManagerFactory: CalendarSyncManager.Factory
-) : Syncer<LocalCalendarStore, LocalCalendar>(account, resync, syncResult, settings) {
+) : Syncer<LocalCalendarStore, LocalCalendar>(accountId, resync, syncResult, settings) {
 
     @AssistedFactory
     interface Factory {
         fun create(
-            account: Account,
+            accountId: AccountId,
             resyncType: ResyncType?,
             syncResult: SyncResult,
             settings: SyncSettings
@@ -47,6 +47,7 @@ class CalendarSyncer @AssistedInject constructor(
 
     override fun prepare(provider: ContentProviderClient): Boolean {
         // Update colors
+        val account = androidAccountManager.getAndroidAccount(accountId)
         val calendarProvider = AndroidCalendarProvider(account, provider)
         if (settings.eventColors)
             calendarProvider.provideCss3ColorIndices()
@@ -74,7 +75,7 @@ class CalendarSyncer @AssistedInject constructor(
         )
 
         val syncManager = calendarSyncManagerFactory.calendarSyncManager(
-            account.toAccountId(),
+            accountId,
             httpClient,
             syncResult,
             localCollection,

@@ -4,13 +4,14 @@
 
 package at.bitfire.davdroid.network
 
-import android.accounts.Account
 import androidx.annotation.VisibleForTesting
 import androidx.annotation.WorkerThread
 import at.bitfire.dav4jvm.ktor.DomainAuthProvider
 import at.bitfire.dav4jvm.ktor.PreemptiveBasicDigestAuthProvider
 import at.bitfire.dav4jvm.ktor.UrlUtils
 import at.bitfire.davdroid.ProductIds
+import at.bitfire.davdroid.accounts.AccountId
+import at.bitfire.davdroid.accounts.toAndroidAccount
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Credentials
@@ -227,7 +228,7 @@ class HttpClientBuilder private constructor(
      *
      * **Must not be run on main thread, because it creates [AccountSettings]!** Use [fromAccountAsync] if possible.
      *
-     * @param account       the account to take authentication from
+     * @param accountId     [AccountId] of the account to take the authentication credentials from
      * @param authDomain    (optional) Send credentials only for the hosts of the given domain. Can be:
      *
      * - a full host name (`caldav.example.com`): then credentials are only sent for the domain of that host name (`example.com`), or
@@ -237,8 +238,8 @@ class HttpClientBuilder private constructor(
      * @throws at.bitfire.davdroid.sync.account.InvalidAccountException     when the account doesn't exist
      */
     @WorkerThread
-    fun fromAccount(account: Account, authDomain: String? = null): HttpClientBuilder {
-        val accountSettings = accountSettingsFactory.create(account)
+    fun fromAccount(accountId: AccountId, authDomain: String? = null): HttpClientBuilder {
+        val accountSettings = accountSettingsFactory.create(accountId.toAndroidAccount())
         return authenticate(
             domain = UrlUtils.hostToDomain(authDomain),
             getCredentials = {
@@ -255,9 +256,9 @@ class HttpClientBuilder private constructor(
      *
      * @throws at.bitfire.davdroid.sync.account.InvalidAccountException     when the account doesn't exist
      */
-    suspend fun fromAccountAsync(account: Account, onlyHost: String? = null): HttpClientBuilder =
+    suspend fun fromAccountAsync(accountId: AccountId, onlyHost: String? = null): HttpClientBuilder =
         withContext(ioDispatcher) {
-            fromAccount(account, onlyHost)
+            fromAccount(accountId, onlyHost)
         }
 
 

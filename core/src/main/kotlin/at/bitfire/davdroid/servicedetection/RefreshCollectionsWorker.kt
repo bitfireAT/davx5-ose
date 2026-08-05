@@ -23,8 +23,6 @@ import androidx.work.WorkerParameters
 import at.bitfire.dav4jvm.ktor.exception.UnauthorizedException
 import at.bitfire.davdroid.IoCoroutineWorker
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.accounts.toAccountId
-import at.bitfire.davdroid.accounts.toAndroidAccount
 import at.bitfire.davdroid.network.HttpClientBuilder
 import at.bitfire.davdroid.push.PushRegistrationManager
 import at.bitfire.davdroid.repository.AccountRepository
@@ -154,7 +152,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
 
             // create authenticating HttpClient (credentials taken from account settings)
             httpClientBuilder
-                .fromAccount(accountId.toAndroidAccount())
+                .fromAccount(accountId)
                 .build()
                 .use { httpClient ->
                     val refresher = collectionsWithoutHomeSetRefresherFactory.create(service, httpClient)
