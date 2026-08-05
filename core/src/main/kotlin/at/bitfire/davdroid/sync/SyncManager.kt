@@ -9,7 +9,6 @@ import android.os.DeadObjectException
 import android.os.RemoteException
 import androidx.annotation.VisibleForTesting
 import at.bitfire.dav4jvm.Error
-import at.bitfire.dav4jvm.Property
 import at.bitfire.dav4jvm.QuotedStringUtils
 import at.bitfire.dav4jvm.ktor.DavCollection
 import at.bitfire.dav4jvm.ktor.DavResource
@@ -24,6 +23,7 @@ import at.bitfire.dav4jvm.ktor.exception.NotFoundException
 import at.bitfire.dav4jvm.ktor.exception.PreconditionFailedException
 import at.bitfire.dav4jvm.ktor.exception.ServiceUnavailableException
 import at.bitfire.dav4jvm.ktor.exception.UnauthorizedException
+import at.bitfire.dav4jvm.ktor.responsesWithRelation
 import at.bitfire.dav4jvm.ktor.selfResponse
 import at.bitfire.dav4jvm.property.caldav.CalDAV
 import at.bitfire.dav4jvm.property.caldav.ScheduleTag
@@ -542,14 +542,14 @@ abstract class SyncManager<LocalType : LocalResource, RemoteType : DavCollection
             }
 
             coroutineScope {    // structured concurrency
-                remoteItems.forEachResponse { response, relation ->
+                remoteItems.responsesWithRelation().collect { (response, relation) ->
                     // ignore non-members
                     if (relation != Response.HrefRelation.MEMBER)
-                        return@forEachResponse
+                        return@collect
 
                     // ignore collections
                     if (response[ResourceType::class.java]?.types?.contains(WebDAV.Collection) == true)
-                        return@forEachResponse
+                        return@collect
 
                     val name = response.hrefName()
 
@@ -904,29 +904,4 @@ abstract class SyncManager<LocalType : LocalResource, RemoteType : DavCollection
         )
     }
 
-    /**
-     * Bridges a [Flow] of [MultiStatusItem]s back to callback style, invoking [callback]
-     * for every [MultiStatusItem.Response] the flow emits.
-     *
-     * This is a temporary adapter to keep [syncRemote] and friends close to their
-     * pre-[Flow] shape. The goal is to migrate them to work with [Flow] directly and
-     * drop callback-style processing (and this helper) entirely.
-     *
-     * @return properties found outside `<response>` elements (for instance `sync-token`)
-     */
-    private suspend fun Flow<MultiStatusItem>.forEachResponse(
-        callback: MultiResponseCallback
-    ): List<Property> {
-        val extraProperties = mutableListOf<Property>()
-        collect { item ->
-            when (item) {
-                is MultiStatusItem.Response -> callback(item.response, item.relation)
-                is MultiStatusItem.ExtraProperty -> extraProperties += item.property
-            }
-        }
-        return extraProperties
-    }
-
 }
-
-typealias MultiResponseCallback = suspend (Response, Response.HrefRelation) -> Unit
