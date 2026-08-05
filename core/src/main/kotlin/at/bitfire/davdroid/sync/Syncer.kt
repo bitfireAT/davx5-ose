@@ -79,10 +79,13 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
         syncNotificationManagerFactory.create(accountId)
     }
 
-    @WillCloseWhenClosed
-    val httpClient by lazy {
+    private val lazyHttpClient = lazy {
         httpClientBuilder.fromAccount(accountId).build()
     }
+
+    /** authenticated HTTP client to be used by subclasses */
+    @WillCloseWhenClosed
+    val httpClient by lazyHttpClient
 
     /**
      * Creates, updates and/or deletes local collections (calendars, address books, etc) according to
@@ -222,7 +225,7 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
     }
 
     override fun close() {
-        if (::httpClient.isInitialized)
+        if (lazyHttpClient.isInitialized())
             httpClient.close()
     }
 
