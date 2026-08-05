@@ -8,6 +8,9 @@ import android.accounts.Account
 import android.content.ContentResolver
 import android.content.Context
 import androidx.annotation.WorkerThread
+import at.bitfire.davdroid.accounts.AccountId
+import at.bitfire.davdroid.accounts.AndroidAccountManager
+import at.bitfire.davdroid.accounts.toAndroidAccount
 import at.bitfire.davdroid.resource.LocalAddressBookStore
 import at.bitfire.davdroid.sync.SyncDataType
 import dagger.Lazy
@@ -31,6 +34,7 @@ import javax.inject.Inject
  * Sync requests from the Sync Adapter Framework are handled by [SyncAdapterService].
  */
 class SyncFrameworkIntegration @Inject constructor(
+    private val androidAccountManager: AndroidAccountManager,
     @ApplicationContext private val context: Context,
     private val localAddressBookStore: Lazy<LocalAddressBookStore>,
     private val logger: Logger
@@ -174,21 +178,26 @@ class SyncFrameworkIntegration @Inject constructor(
      * _Note:_ the sync framework doesn't reliably mark a finished one-time sync as "not pending"
      * anymore, see [SyncAdapterImpl.hasAlwaysPendingIssue].
      *
-     * @param account   account to observe sync status for
+     * @param accountId [AccountId] of the account to observe sync status for
      * @param dataTypes data types to observe sync status for
      *
      * @return flow emitting true if any of the given data types has a sync pending, false otherwise
      */
     @OptIn(ExperimentalCoroutinesApi::class)
-    fun isSyncPending(account: Account, dataTypes: Iterable<SyncDataType>): Flow<Boolean> {
+    fun isSyncPending(accountId: AccountId, dataTypes: Iterable<SyncDataType>): Flow<Boolean> {
         // Determine the pending state for each data type of the account as separate flows
         val pendingStateFlows: List<Flow<Boolean>> = dataTypes.mapNotNull { dataType ->
             // Map datatype to authority
             dataType.currentAuthority(context)?.let { authority ->
                 // If checking contacts, we need to check all address book accounts instead of the single main account
                 val accountsFlow: Flow<List<Account>> = when (dataType) {
-                    SyncDataType.CONTACTS -> localAddressBookStore.get().getAddressBookAccountsFlow(account)
-                    else -> flowOf(listOf(account))
+                    SyncDataType.CONTACTS -> {
+                        localAddressBookStore.get().getAddressBookAccountsFlow(accountId.toAndroidAccount())
+                    }
+                    else -> {
+                        val account = androidAccountManager.getAndroidAccount(accountId)
+                        flowOf(listOf(account))
+                    }
                 }
 
                 // Return the pending state flow for accounts with this authority

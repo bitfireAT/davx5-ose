@@ -39,6 +39,7 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
 import java.util.logging.Level
@@ -205,15 +206,29 @@ class AccountRepository @Inject constructor(
 
     suspend fun getAll(): List<AccountId> {
         return withContext(ioDispatcher) {
-            getAllBlocking().map { account -> account.toAccountId() }
+            getAllBlocking()
         }
     }
 
-    fun getAllBlocking() = accountManager.getAccountsByType(accountType)
+    fun getAllBlocking(): List<AccountId> {
+        return accountManager.getAccountsByType(accountType)
+            .map { account -> LegacyAccount(account) }
+    }
 
-    fun getAllFlow() = callbackFlow<Set<Account>> {
+    @Deprecated("Only use this method when mapping LocalAddressBook accounts to app accounts")
+    fun getAllAccountNamesBlocking(): List<String> {
+        return accountManager.getAccountsByType(accountType)
+            .map { account -> account.name }
+    }
+
+    fun getAllFlow() = callbackFlow<Set<AccountId>> {
         val listener = OnAccountsUpdateListener { accounts ->
-            trySend(accounts.filter { it.type == accountType }.toSet())
+            val accountIds = accounts
+                .filter { it.type == accountType }
+                .map { LegacyAccount(it) }
+                .toSet()
+
+            trySend(accountIds)
         }
         withContext(ioDispatcher) {  // causes disk I/O
             accountManager.addOnAccountsUpdatedListener(listener, null, true)
@@ -222,7 +237,7 @@ class AccountRepository @Inject constructor(
         awaitClose {
             accountManager.removeOnAccountsUpdatedListener(listener)
         }
-    }
+    }.distinctUntilChanged()
 
     /**
      * Renames an account.

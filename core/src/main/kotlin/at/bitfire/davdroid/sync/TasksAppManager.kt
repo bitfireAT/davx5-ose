@@ -91,8 +91,8 @@ class TasksAppManager @Inject constructor(
             notificationRegistry.get().notifyPermissions()
 
         // check all accounts and update task sync
-        for (account in accountRepository.get().getAllBlocking())
-            automaticSyncManager.updateAutomaticSync(account.toAccountId(), SyncDataType.TASKS)
+        for (accountId in accountRepository.get().getAllBlocking())
+            automaticSyncManager.updateAutomaticSync(accountId, SyncDataType.TASKS)
     }
 
 
