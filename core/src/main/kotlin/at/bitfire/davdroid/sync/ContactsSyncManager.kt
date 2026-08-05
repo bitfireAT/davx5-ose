@@ -149,12 +149,6 @@ class ContactsSyncManager @AssistedInject constructor(
         return true
     }
 
-    override suspend fun queryCapabilities(): WebDavCollection.Capabilities {
-        val capabilities = super.queryCapabilities()
-        logger.info("Address book supports vCard4: ${capabilities.supportsVCard4}")
-        return capabilities
-    }
-
     override fun syncAlgorithm(capabilities: WebDavCollection.Capabilities) =
         if (capabilities.supportsCollectionSync)
             SyncAlgorithm.COLLECTION_SYNC

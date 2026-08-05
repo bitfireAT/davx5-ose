@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.resource.remote
 
-import at.bitfire.dav4jvm.Property
 import at.bitfire.dav4jvm.QuotedStringUtils
 import at.bitfire.dav4jvm.ktor.DavCollection
 import at.bitfire.dav4jvm.ktor.DavResource
@@ -13,12 +12,13 @@ import at.bitfire.dav4jvm.ktor.Response
 import at.bitfire.dav4jvm.ktor.selfResponse
 import at.bitfire.dav4jvm.property.caldav.CalDAV
 import at.bitfire.dav4jvm.property.caldav.ScheduleTag
+import at.bitfire.dav4jvm.property.carddav.CardDAV
+import at.bitfire.dav4jvm.property.carddav.SupportedAddressData
 import at.bitfire.dav4jvm.property.webdav.GetETag
 import at.bitfire.dav4jvm.property.webdav.SupportedReportSet
 import at.bitfire.dav4jvm.property.webdav.SyncToken
 import at.bitfire.dav4jvm.property.webdav.WebDAV
 import at.bitfire.davdroid.resource.SyncState
-import at.bitfire.davdroid.resource.remote.WebDavCollection.Capabilities
 import at.bitfire.davdroid.resource.syncState
 import at.bitfire.davdroid.sync.withExceptionContext
 import io.ktor.client.HttpClient
@@ -34,11 +34,13 @@ import io.ktor.util.appendAll
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.transform
 import java.util.logging.Logger
+import at.bitfire.dav4jvm.property.caldav.MaxResourceSize as CalDavMaxResourceSize
+import at.bitfire.dav4jvm.property.carddav.MaxResourceSize as CardDavMaxResourceSize
 
 /**
  * Common implementation for [CalDavCollection] and [CardDavCollection], based on dav4jvm.
  */
-abstract class AbstractWebDavCollection(
+abstract class BaseWebDavCollection(
     val davCollection: DavCollection,
     private val httpClient: HttpClient,
     private val pushSubscription: String? = null
@@ -58,36 +60,25 @@ abstract class AbstractWebDavCollection(
         } ?: emptyMap()
     }
 
-    /**
-     * Properties requested by [queryCapabilities] in addition to the common ones
-     * ([WebDAV.SupportedReportSet], [CalDAV.GetCTag], [WebDAV.SyncToken]).
-     */
-    protected abstract val capabilityProperties: Array<Property.Name>
-
-    /**
-     * Fills in the collection-type specific parts of [Capabilities] (for instance `maxResourceSize`),
-     * based on [base] (which already has `syncState` and `supportsCollectionSync` set).
-     */
-    protected abstract fun capabilitiesOf(
-        response: Response,
-        base: Capabilities
-    ): Capabilities
-
-    override suspend fun queryCapabilities(): Capabilities =
+    override suspend fun queryCapabilities(): WebDavCollection.Capabilities =
         url.withExceptionContext {
             val response = davCollection.propfind(
                 0,
                 WebDAV.SupportedReportSet,
                 CalDAV.GetCTag,
                 WebDAV.SyncToken,
-                *capabilityProperties
-            ).selfResponse() ?: return@withExceptionContext Capabilities()
+                CalDAV.MaxResourceSize,
+                CardDAV.MaxResourceSize,
+                CardDAV.SupportedAddressData
+            ).selfResponse() ?: return@withExceptionContext WebDavCollection.Capabilities()
 
-            val base = Capabilities(
+            WebDavCollection.Capabilities(
                 syncState = response.syncState(),
-                supportsCollectionSync = response[SupportedReportSet::class.java]?.reports?.contains(WebDAV.SyncCollection) == true
+                supportsCollectionSync = response[SupportedReportSet::class.java]?.reports?.contains(WebDAV.SyncCollection) == true,
+                maxResourceSize = response[CalDavMaxResourceSize::class.java]?.maxSize
+                    ?: response[CardDavMaxResourceSize::class.java]?.maxSize,
+                supportsVCard4 = response[SupportedAddressData::class.java]?.hasVCard4() == true
             )
-            capabilitiesOf(response, base)
         }
 
     override suspend fun querySyncState(): SyncState? =

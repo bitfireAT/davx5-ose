@@ -4,12 +4,8 @@
 
 package at.bitfire.davdroid.resource.remote
 
-import at.bitfire.dav4jvm.Property
 import at.bitfire.dav4jvm.ktor.DavCalendar
 import at.bitfire.dav4jvm.ktor.MultiStatusItem
-import at.bitfire.dav4jvm.ktor.Response
-import at.bitfire.dav4jvm.property.caldav.CalDAV
-import at.bitfire.dav4jvm.property.caldav.MaxResourceSize
 import at.bitfire.davdroid.sync.withExceptionContext
 import io.ktor.client.HttpClient
 import io.ktor.http.Url
@@ -30,15 +26,7 @@ class CalDavCollection(
     private val components: List<String>,
     pushSubscription: String? = null,
     private val timeRangePastDays: Int? = null
-) : AbstractWebDavCollection(davCalendar, httpClient, pushSubscription) {
-
-    override val capabilityProperties: Array<Property.Name> = arrayOf(CalDAV.MaxResourceSize)
-
-    override fun capabilitiesOf(
-        response: Response,
-        base: WebDavCollection.Capabilities
-    ): WebDavCollection.Capabilities =
-        base.copy(maxResourceSize = response[MaxResourceSize::class.java]?.maxSize)
+) : BaseWebDavCollection(davCalendar, httpClient, pushSubscription) {
 
     override fun listAll(): Flow<MultiStatusItem> = flow {
         val limitStart = timeRangePastDays?.let { pastDays ->

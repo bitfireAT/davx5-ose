@@ -7,7 +7,6 @@ package at.bitfire.davdroid.sync
 import android.content.Context
 import android.os.DeadObjectException
 import android.os.RemoteException
-import android.text.format.Formatter
 import androidx.annotation.VisibleForTesting
 import at.bitfire.dav4jvm.Error
 import at.bitfire.dav4jvm.ktor.MultiStatusItem
@@ -135,7 +134,8 @@ abstract class SyncManager<LocalType : LocalResource>(
             syncStatsRepository.logSyncTime(collectionInfo.id, dataType)
 
             logger.info("Querying server capabilities")
-            var capabilities = queryCapabilities()
+            var capabilities = remoteCollection.queryCapabilities()
+            logger.info("Capabilities: $capabilities")
 
             logger.info("Processing local deletes/updates")
             val modificationsPresent =
@@ -209,25 +209,6 @@ abstract class SyncManager<LocalType : LocalResource>(
      * @return whether synchronization shall be performed
      */
     protected open suspend fun prepare(): Boolean = true
-
-    /**
-     * Queries the server for synchronization capabilities like specific report types,
-     * data formats etc.
-     *
-     * Should also query and save the initial sync state (e.g. CTag/sync-token).
-     *
-     * @return current capabilities, including the sync state
-     */
-    protected open suspend fun queryCapabilities(): WebDavCollection.Capabilities {
-        val capabilities = remoteCollection.queryCapabilities()
-
-        capabilities.maxResourceSize?.let { maxSize ->
-            logger.info("Collection accepts resources up to ${Formatter.formatFileSize(context, maxSize)}")
-        }
-        logger.info("Collection supports Collection Sync: ${capabilities.supportsCollectionSync}")
-
-        return capabilities
-    }
 
 
     //region Processing of locally dirty/deleted items

@@ -4,13 +4,8 @@
 
 package at.bitfire.davdroid.resource.remote
 
-import at.bitfire.dav4jvm.Property
 import at.bitfire.dav4jvm.ktor.DavAddressBook
 import at.bitfire.dav4jvm.ktor.MultiStatusItem
-import at.bitfire.dav4jvm.ktor.Response
-import at.bitfire.dav4jvm.property.carddav.CardDAV
-import at.bitfire.dav4jvm.property.carddav.MaxResourceSize
-import at.bitfire.dav4jvm.property.carddav.SupportedAddressData
 import at.bitfire.dav4jvm.property.webdav.WebDAV
 import at.bitfire.davdroid.sync.withExceptionContext
 import at.bitfire.davdroid.util.DavUtils
@@ -28,19 +23,7 @@ class CardDavCollection(
     private val davAddressBook: DavAddressBook,
     httpClient: HttpClient,
     pushSubscription: String? = null
-) : AbstractWebDavCollection(davAddressBook, httpClient, pushSubscription) {
-
-    override val capabilityProperties: Array<Property.Name> =
-        arrayOf(CardDAV.MaxResourceSize, CardDAV.SupportedAddressData)
-
-    override fun capabilitiesOf(
-        response: Response,
-        base: WebDavCollection.Capabilities
-    ): WebDavCollection.Capabilities =
-        base.copy(
-            maxResourceSize = response[MaxResourceSize::class.java]?.maxSize,
-            supportsVCard4 = response[SupportedAddressData::class.java]?.hasVCard4() == true
-        )
+) : BaseWebDavCollection(davAddressBook, httpClient, pushSubscription) {
 
     override fun listAll(): Flow<MultiStatusItem> = flow {
         url.withExceptionContext {
