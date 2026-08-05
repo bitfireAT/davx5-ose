@@ -29,7 +29,7 @@ import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.sync.SyncDataType
-import at.bitfire.davdroid.sync.adapter.SyncFrameworkIntegration
+import at.bitfire.davdroid.sync.adapter.SyncPendingProvider
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker
 import at.bitfire.davdroid.sync.worker.OneTimeSyncWorker
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
@@ -70,7 +70,7 @@ class AccountsViewModel @AssistedInject constructor(
     private val logger: Logger,
     private val settings: SettingsManager,
     private val syncWorkerManager: SyncWorkerManager,
-    private val syncFrameWork: SyncFrameworkIntegration
+    private val syncPendingProvider: SyncPendingProvider
 ): ViewModel() {
 
     @AssistedFactory
@@ -119,7 +119,7 @@ class AccountsViewModel @AssistedInject constructor(
                     // for each existing account with unknown sync pending state ...
                     accountIds.map { accountId ->
                         // ... create a Flow<Boolean> which emits the sync pending state
-                        syncFrameWork.isSyncPending(accountId, SyncDataType.entries)
+                        syncPendingProvider.isSyncPending(accountId, SyncDataType.entries)
                             .map { hasPendingSync ->
                                 // ... and map this boolean answer back to its Account if it is pending, or null if not.
                                 if (hasPendingSync) accountId else null
