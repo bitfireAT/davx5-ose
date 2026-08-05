@@ -719,7 +719,7 @@ abstract class SyncManager<LocalType : LocalResource, RemoteType : DavCollection
             deleteNotPresentRemotely()
 
             // remove initial sync flag
-            syncState!!.initialSync = false
+            syncState.initialSync = false
             logger.info("Initial sync completed, saving sync state: $syncState")
             localCollection.lastSyncState = syncState
         }
