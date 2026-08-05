@@ -66,12 +66,13 @@ class CalendarSyncManager @AssistedInject constructor(
     @Assisted syncResult: SyncResult,
     @Assisted override val localCollection: LocalCalendar,
     @Assisted collection: Collection,
+    @Assisted override val davCollection: DavCalendar,
     @Assisted resync: ResyncType?,
     @Assisted settings: SyncSettings,
     @IoDispatcher ioDispatcher: CoroutineDispatcher,
     private val productIds: ProductIds,
     @SyncTransferSemaphore syncTransferSemaphore: Semaphore
-) : SyncManager<LocalEvent, DavCalendar>(
+) : SyncManager<LocalEvent>(
     accountId,
     httpClient,
     SyncDataType.EVENTS,
@@ -91,6 +92,7 @@ class CalendarSyncManager @AssistedInject constructor(
             syncResult: SyncResult,
             localCalendar: LocalCalendar,
             collection: Collection,
+            davCollection: DavCalendar,
             resync: ResyncType?,
             settings: SyncSettings
         ): CalendarSyncManager
@@ -98,8 +100,6 @@ class CalendarSyncManager @AssistedInject constructor(
 
 
     override suspend fun prepare(): Boolean {
-        davCollection = DavCalendar(httpClient, collection.url)
-
         // if there are dirty exceptions for events, mark their master events as dirty, too
         val recurringCalendar = localCollection.recurringCalendar
         recurringCalendar.processDeletedExceptions()

@@ -63,12 +63,13 @@ class TasksSyncManager @AssistedInject constructor(
     @Assisted syncResult: SyncResult,
     @Assisted override val localCollection: LocalTaskList,
     @Assisted collection: Collection,
+    @Assisted override val davCollection: DavCalendar,
     @Assisted resync: ResyncType?,
     @Assisted settings: SyncSettings,
     @IoDispatcher ioDispatcher: CoroutineDispatcher,
     private val productIds: ProductIds,
     @SyncTransferSemaphore syncTransferSemaphore: Semaphore
-): SyncManager<LocalTask, DavCalendar>(
+) : SyncManager<LocalTask>(
     accountId,
     httpClient,
     SyncDataType.TASKS,
@@ -88,17 +89,12 @@ class TasksSyncManager @AssistedInject constructor(
             syncResult: SyncResult,
             localCollection: LocalTaskList,
             collection: Collection,
+            davCollection: DavCalendar,
             resync: ResyncType?,
             settings: SyncSettings
         ): TasksSyncManager
     }
 
-
-    override suspend fun prepare(): Boolean {
-        davCollection = DavCalendar(httpClient, collection.url)
-
-        return true
-    }
 
     override suspend fun queryCapabilities() =
         collection.url.withExceptionContext {

@@ -61,12 +61,13 @@ class JtxSyncManager @AssistedInject constructor(
     @Assisted syncResult: SyncResult,
     @Assisted override val localCollection: LocalJtxCollection,
     @Assisted collection: Collection,
+    @Assisted override val davCollection: DavCalendar,
     @Assisted resync: ResyncType?,
     @Assisted settings: SyncSettings,
     @IoDispatcher ioDispatcher: CoroutineDispatcher,
     private val productIds: ProductIds,
     @SyncTransferSemaphore syncTransferSemaphore: Semaphore
-): SyncManager<LocalJtxObject, DavCalendar>(
+) : SyncManager<LocalJtxObject>(
     accountId,
     httpClient,
     SyncDataType.TASKS,
@@ -86,17 +87,12 @@ class JtxSyncManager @AssistedInject constructor(
             syncResult: SyncResult,
             localCollection: LocalJtxCollection,
             collection: Collection,
+            davCollection: DavCalendar,
             resync: ResyncType?,
             settings: SyncSettings
         ): JtxSyncManager
     }
 
-
-    override suspend fun prepare(): Boolean {
-        davCollection = DavCalendar(httpClient, collection.url)
-
-        return true
-    }
 
     override suspend fun queryCapabilities() =
         collection.url.withExceptionContext {

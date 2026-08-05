@@ -86,7 +86,7 @@ import javax.net.ssl.SSLHandshakeException
  * @param resync            whether re-synchronization is requested
  * @param settings          snapshot of the account settings relevant for this sync run
  */
-abstract class SyncManager<LocalType : LocalResource, RemoteType : DavCollection>(
+abstract class SyncManager<LocalType : LocalResource>(
     val accountId: AccountId,
     val httpClient: HttpClient,
     val dataType: SyncDataType,
@@ -133,7 +133,7 @@ abstract class SyncManager<LocalType : LocalResource, RemoteType : DavCollection
     /** local collection to synchronize (interface to content provider) */
     protected abstract val localCollection: LocalCollection<LocalType>
 
-    protected lateinit var davCollection: RemoteType
+    protected abstract val davCollection: DavCollection
 
     protected var hasCollectionSync = false
 
@@ -232,11 +232,11 @@ abstract class SyncManager<LocalType : LocalResource, RemoteType : DavCollection
 
 
     /**
-     * Prepares synchronization. Sets the lateinit property [davCollection].
+     * Prepares synchronization.
      *
      * @return whether synchronization shall be performed
      */
-    protected abstract suspend fun prepare(): Boolean
+    protected open suspend fun prepare(): Boolean = true
 
     /**
      * Queries the server for synchronization capabilities like specific report types,

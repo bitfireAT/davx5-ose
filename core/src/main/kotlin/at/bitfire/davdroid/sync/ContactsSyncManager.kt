@@ -107,6 +107,7 @@ class ContactsSyncManager @AssistedInject constructor(
     @Assisted val provider: ContentProviderClient,
     @Assisted override val localCollection: LocalAddressBook,
     @Assisted collection: Collection,
+    @Assisted override val davCollection: DavAddressBook,
     @Assisted resync: ResyncType?,
     @Assisted val syncFrameworkUpload: Boolean,
     @Assisted settings: SyncSettings,
@@ -115,7 +116,7 @@ class ContactsSyncManager @AssistedInject constructor(
     private val productIds: ProductIds,
     private val resourceRetrieverFactory: ResourceRetriever.Factory,
     @SyncTransferSemaphore syncTransferSemaphore: Semaphore
-): SyncManager<LocalAddress, DavAddressBook>(
+) : SyncManager<LocalAddress>(
     accountId,
     httpClient,
     SyncDataType.CONTACTS,
@@ -136,6 +137,7 @@ class ContactsSyncManager @AssistedInject constructor(
             provider: ContentProviderClient,
             localAddressBook: LocalAddressBook,
             collection: Collection,
+            davCollection: DavAddressBook,
             resync: ResyncType?,
             syncFrameworkUpload: Boolean,
             settings: SyncSettings
@@ -159,8 +161,6 @@ class ContactsSyncManager @AssistedInject constructor(
             if (!dirtyVerifier.get().prepareAddressBook(localCollection, isUpload = syncFrameworkUpload))
                 return false
         }
-
-        davCollection = DavAddressBook(httpClient, collection.url)
 
         logger.info("Contact group strategy: ${groupStrategy::class.java.simpleName}")
         return true

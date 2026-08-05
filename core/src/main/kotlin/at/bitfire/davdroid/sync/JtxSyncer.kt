@@ -5,8 +5,8 @@
 package at.bitfire.davdroid.sync
 
 import android.content.ContentProviderClient
+import at.bitfire.dav4jvm.ktor.DavCalendar
 import at.bitfire.davdroid.accounts.AccountId
-import at.bitfire.davdroid.accounts.AndroidAccountManager
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.resource.LocalJtxCollection
@@ -72,13 +72,14 @@ class JtxSyncer @AssistedInject constructor(
         logger.info("Synchronizing jtx collection $localCollection")
 
         val syncManager = jtxSyncManagerFactory.jtxSyncManager(
-            accountId,
-            httpClient,
-            syncResult,
-            localCollection,
-            remoteCollection,
-            resync,
-            settings
+            accountId = accountId,
+            httpClient = httpClient,
+            syncResult = syncResult,
+            localCollection = localCollection,
+            collection = remoteCollection,
+            davCollection = DavCalendar(httpClient, remoteCollection.url),
+            resync = resync,
+            settings = settings
         )
         syncManager.performSync()
     }
