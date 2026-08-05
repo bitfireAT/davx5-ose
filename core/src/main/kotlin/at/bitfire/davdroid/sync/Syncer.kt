@@ -279,7 +279,7 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
                 I.E. system app (like "calendar storage") is missing or disabled */
                 logger.warning("Couldn't connect to content provider of authority ${dataStore.authority}")
                 syncNotificationManager.notifyProviderError(dataStore.authority)
-                syncResult.contentProviderError = true
+                syncResult.hardError = true
                 return // Don't continue without provider
             }
 
@@ -306,7 +306,7 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
                     is suddenly forbidden because our sync process was demoted from a "service process" to a "cached process". */
                     is LocalStorageException if e.cause is DeadObjectException -> {
                         logger.log(Level.WARNING, "Received DeadObjectException, treating as soft error", e)
-                        syncResult.numDeadObjectExceptions++
+                        syncResult.softError = true
                     }
 
                     is InvalidAccountException ->
@@ -314,7 +314,7 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
 
                     else -> {
                         logger.log(Level.SEVERE, "Couldn't sync ${dataStore.authority}", e)
-                        syncResult.numUnclassifiedErrors++ // Hard sync error
+                        syncResult.hardError = true
                     }
                 }
 

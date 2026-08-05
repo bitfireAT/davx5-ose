@@ -54,7 +54,7 @@ class TaskSyncer @AssistedInject constructor(
             TaskProvider.checkVersion(context, providerName)
         } catch (e: TaskProvider.ProviderTooOldException) {
             tasksAppManager.get().notifyProviderTooOld(e)
-            syncResult.contentProviderError = true
+            syncResult.hardError = true
             return false // Don't sync
         }
 

@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.sync
 
-import android.accounts.Account
 import android.content.Context
 import androidx.core.app.NotificationManagerCompat
 import androidx.hilt.work.HiltWorkerFactory
@@ -152,7 +151,7 @@ class SyncManagerTest {
         assertFalse(syncManager.didGenerateUpload)
         assertTrue(syncManager.didListAllRemote)
         assertFalse(syncManager.didDownloadRemote)
-        assertFalse(syncManager.syncResult.hasError())
+        assertFalse(syncManager.syncResult.hasError)
         assertTrue(collection.entries.isEmpty())
     }
 
@@ -192,7 +191,7 @@ class SyncManagerTest {
         assertTrue(syncManager.didGenerateUpload)
         assertTrue(syncManager.didListAllRemote)
         assertFalse(syncManager.didDownloadRemote)
-        assertFalse(syncManager.syncResult.hasError())
+        assertFalse(syncManager.syncResult.hasError)
         assertEquals(1, collection.entries.size)
         assertEquals("etag-from-put", collection.entries.first().eTag)
     }
@@ -237,7 +236,7 @@ class SyncManagerTest {
         assertTrue(syncManager.didGenerateUpload)
         assertTrue(syncManager.didListAllRemote)
         assertFalse(syncManager.didDownloadRemote)
-        assertFalse(syncManager.syncResult.hasError())
+        assertFalse(syncManager.syncResult.hasError)
         assertEquals(1, collection.entries.size)
         assertEquals("etag-from-put", collection.entries.first().eTag)
     }
@@ -282,7 +281,7 @@ class SyncManagerTest {
         assertTrue(syncManager.didGenerateUpload)
         assertTrue(syncManager.didListAllRemote)
         assertTrue(syncManager.didDownloadRemote)
-        assertFalse(syncManager.syncResult.hasError())
+        assertFalse(syncManager.syncResult.hasError)
         assertEquals(1, collection.entries.size)
         assertEquals("etag-from-propfind", collection.entries.first().eTag)
     }
@@ -327,7 +326,7 @@ class SyncManagerTest {
         assertTrue(syncManager.didGenerateUpload)
         assertTrue(syncManager.didListAllRemote)
         assertTrue(syncManager.didDownloadRemote)
-        assertFalse(syncManager.syncResult.hasError())
+        assertFalse(syncManager.syncResult.hasError)
         assertEquals(1, collection.entries.size)
         assertEquals("changed-etag-from-server", collection.entries.first().eTag)
     }
@@ -364,7 +363,7 @@ class SyncManagerTest {
         assertFalse(syncManager.didGenerateUpload)
         assertTrue(syncManager.didListAllRemote)
         assertFalse(syncManager.didDownloadRemote)
-        assertFalse(syncManager.syncResult.hasError())
+        assertFalse(syncManager.syncResult.hasError)
         assertEquals(1, collection.entries.size)
         assertEquals("MemberETag1", collection.entries.first().eTag)
     }
@@ -398,7 +397,7 @@ class SyncManagerTest {
         assertFalse(syncManager.didGenerateUpload)
         assertTrue(syncManager.didListAllRemote)
         assertTrue(syncManager.didDownloadRemote)
-        assertFalse(syncManager.syncResult.hasError())
+        assertFalse(syncManager.syncResult.hasError)
         assertEquals(1, collection.entries.size)
         assertEquals("NewMemberETag1", collection.entries.first().eTag)
     }
@@ -436,7 +435,7 @@ class SyncManagerTest {
         assertFalse(syncManager.didGenerateUpload)
         assertTrue(syncManager.didListAllRemote)
         assertTrue(syncManager.didDownloadRemote)
-        assertFalse(syncManager.syncResult.hasError())
+        assertFalse(syncManager.syncResult.hasError)
         assertEquals(1, collection.entries.size)
         assertEquals("MemberETag2", collection.entries.first().eTag)
     }
@@ -457,7 +456,7 @@ class SyncManagerTest {
         assertFalse(syncManager.didGenerateUpload)
         assertTrue(syncManager.didListAllRemote)
         assertFalse(syncManager.didDownloadRemote)
-        assertFalse(syncManager.syncResult.hasError())
+        assertFalse(syncManager.syncResult.hasError)
         assertTrue(collection.entries.isEmpty())
     }
 
@@ -474,7 +473,7 @@ class SyncManagerTest {
         assertFalse(syncManager.didGenerateUpload)
         assertFalse(syncManager.didListAllRemote)
         assertFalse(syncManager.didDownloadRemote)
-        assertFalse(syncManager.syncResult.hasError())
+        assertFalse(syncManager.syncResult.hasError)
         assertTrue(collection.entries.isEmpty())
     }
 

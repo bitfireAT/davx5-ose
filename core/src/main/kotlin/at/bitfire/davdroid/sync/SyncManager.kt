@@ -75,24 +75,21 @@ import javax.net.ssl.SSLHandshakeException
  * Synchronizes a local collection with a remote collection.
  *
  * @param LocalType         type of local resources
- * @param CollectionType    type of local collection
  * @param RemoteType        type of remote collection
  *
  * @param accountId         [AccountId] of the account to synchronize
  * @param httpClient        HTTP client to use for network requests, already authenticated with credentials from the account
  * @param dataType          data type to synchronize
  * @param syncResult        receiver for result of the synchronization (will be updated by [performSync])
- * @param localCollection   local collection to synchronize (interface to content provider)
  * @param collection        collection info in the database
  * @param resync            whether re-synchronization is requested
  * @param settings          snapshot of the account settings relevant for this sync run
  */
-abstract class SyncManager<LocalType : LocalResource, out CollectionType : LocalCollection<LocalType>, RemoteType : DavCollection>(
+abstract class SyncManager<LocalType : LocalResource, RemoteType : DavCollection>(
     val accountId: AccountId,
     val httpClient: HttpClient,
     val dataType: SyncDataType,
     val syncResult: SyncResult,
-    val localCollection: CollectionType,
     val collection: Collection,
     val resync: ResyncType?,
     val ioDispatcher: CoroutineDispatcher,
@@ -131,6 +128,9 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
     @Inject
     lateinit var syncNotificationManagerFactory: SyncNotificationManager.Factory
 
+
+    /** local collection to synchronize (interface to content provider) */
+    protected abstract val localCollection: LocalCollection<LocalType>
 
     protected lateinit var davCollection: RemoteType
 
@@ -219,7 +219,7 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
                     logger.log(Level.WARNING, "Got 503 Service unavailable, trying again later", e)
                     // determine when to retry
                     syncResult.delayUntil = e.getDelayUntil().epochSecond
-                    syncResult.numServiceUnavailableExceptions++ // Indicate a soft error occurred
+                    syncResult.softError = true
                 }
 
                 // all others
@@ -774,31 +774,31 @@ abstract class SyncManager<LocalType : LocalResource, out CollectionType : Local
         when (e) {
             is IOException -> {
                 logger.log(Level.WARNING, "I/O error", e)
-                syncResult.numIoExceptions++
+                syncResult.softError = true
                 message = context.getString(R.string.sync_error_io, e.localizedMessage)
             }
 
             is UnauthorizedException -> {
                 logger.log(Level.SEVERE, "Not authorized anymore", e)
-                syncResult.numAuthExceptions++
+                syncResult.hardError = true
                 message = context.getString(R.string.sync_error_authentication_failed)
             }
 
             is HttpException, is DavException -> {
                 logger.log(Level.SEVERE, "HTTP/DAV exception", e)
-                syncResult.numHttpExceptions++
+                syncResult.hardError = true
                 message = context.getString(R.string.sync_error_http_dav, e.localizedMessage)
             }
 
             is LocalStorageException, is RemoteException -> {
                 logger.log(Level.SEVERE, "Couldn't access local storage", e)
-                syncResult.localStorageError = true
+                syncResult.hardError = true
                 message = context.getString(R.string.sync_error_local_storage, e.localizedMessage)
             }
 
             else -> {
                 logger.log(Level.SEVERE, "Unclassified sync error", e)
-                syncResult.numUnclassifiedErrors++
+                syncResult.hardError = true
                 message = e.localizedMessage ?: e::class.java.simpleName
             }
         }

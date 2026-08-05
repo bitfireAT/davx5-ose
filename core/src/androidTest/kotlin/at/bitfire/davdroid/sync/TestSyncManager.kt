@@ -34,17 +34,16 @@ class TestSyncManager @AssistedInject constructor(
     @Assisted accountId: AccountId,
     @Assisted httpClient: HttpClient,
     @Assisted syncResult: SyncResult,
-    @Assisted localCollection: LocalTestCollection,
+    @Assisted override val localCollection: LocalTestCollection,
     @Assisted collection: Collection,
     @Assisted settings: SyncSettings,
     @IoDispatcher ioDispatcher: CoroutineDispatcher,
     @SyncTransferSemaphore syncTransferSemaphore: Semaphore
-): SyncManager<LocalTestResource, LocalTestCollection, DavCollection>(
+): SyncManager<LocalTestResource, DavCollection>(
     accountId,
     httpClient,
     SyncDataType.EVENTS,
     syncResult,
-    localCollection,
     collection,
     resync = null,
     ioDispatcher,

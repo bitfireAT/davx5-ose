@@ -64,19 +64,18 @@ class CalendarSyncManager @AssistedInject constructor(
     @Assisted accountId: AccountId,
     @Assisted httpClient: HttpClient,
     @Assisted syncResult: SyncResult,
-    @Assisted localCalendar: LocalCalendar,
+    @Assisted override val localCollection: LocalCalendar,
     @Assisted collection: Collection,
     @Assisted resync: ResyncType?,
     @Assisted settings: SyncSettings,
     @IoDispatcher ioDispatcher: CoroutineDispatcher,
     private val productIds: ProductIds,
     @SyncTransferSemaphore syncTransferSemaphore: Semaphore
-) : SyncManager<LocalEvent, LocalCalendar, DavCalendar>(
+) : SyncManager<LocalEvent, DavCalendar>(
     accountId,
     httpClient,
     SyncDataType.EVENTS,
     syncResult,
-    localCalendar,
     collection,
     resync,
     ioDispatcher,
