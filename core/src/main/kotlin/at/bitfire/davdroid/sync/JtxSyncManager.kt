@@ -26,6 +26,7 @@ import at.bitfire.davdroid.di.qualifier.SyncTransferSemaphore
 import at.bitfire.davdroid.resource.LocalJtxCollection
 import at.bitfire.davdroid.resource.LocalJtxObject
 import at.bitfire.davdroid.resource.LocalResource
+import at.bitfire.davdroid.resource.remote.CalDavCollection
 import at.bitfire.davdroid.resource.syncState
 import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.davdroid.util.DavUtils.lastSegment
@@ -61,7 +62,7 @@ class JtxSyncManager @AssistedInject constructor(
     @Assisted syncResult: SyncResult,
     @Assisted override val localCollection: LocalJtxCollection,
     @Assisted collectionInfo: Collection,
-    @Assisted override val davCollection: DavCalendar,
+    @Assisted override val remoteCollection: CalDavCollection,
     @Assisted resync: ResyncType?,
     @Assisted settings: SyncSettings,
     @IoDispatcher ioDispatcher: CoroutineDispatcher,
@@ -87,7 +88,7 @@ class JtxSyncManager @AssistedInject constructor(
             syncResult: SyncResult,
             localCollection: LocalJtxCollection,
             collectionInfo: Collection,
-            davCollection: DavCalendar,
+            remoteCollection: CalDavCollection,
             resync: ResyncType?,
             settings: SyncSettings
         ): JtxSyncManager
@@ -97,7 +98,8 @@ class JtxSyncManager @AssistedInject constructor(
     override suspend fun queryCapabilities() =
         collectionInfo.url.withExceptionContext {
             val response =
-                davCollection.propfind(0, CalDAV.GetCTag, CalDAV.MaxResourceSize, WebDAV.SyncToken).selfResponse()
+                remoteCollection.davCollection.propfind(0, CalDAV.GetCTag, CalDAV.MaxResourceSize, WebDAV.SyncToken)
+                    .selfResponse()
                     ?: return@withExceptionContext null
 
             response[MaxResourceSize::class.java]?.maxSize?.let { maxSize ->
@@ -146,12 +148,12 @@ class JtxSyncManager @AssistedInject constructor(
         collectionInfo.url.withExceptionContext {
             if (localCollection.supportsVTODO) {
                 logger.info("Querying tasks")
-                emitAll(davCollection.calendarQuery("VTODO", null, null))
+                emitAll(remoteCollection.davCollection.calendarQuery("VTODO", null, null))
             }
 
             if (localCollection.supportsVJOURNAL) {
                 logger.info("Querying journals")
-                emitAll(davCollection.calendarQuery("VJOURNAL", null, null))
+                emitAll(remoteCollection.davCollection.calendarQuery("VJOURNAL", null, null))
             }
         }
     }
@@ -160,7 +162,7 @@ class JtxSyncManager @AssistedInject constructor(
         logger.info("Downloading ${bunch.size} iCalendars: $bunch")
         // multiple iCalendars, use calendar-multi-get
         collectionInfo.url.withExceptionContext {
-            davCollection.multiget(bunch).responses().collect { response ->
+            remoteCollection.davCollection.multiget(bunch).responses().collect { response ->
                 // See CalendarSyncManager for more information about the multi-get response
                 response.href.withExceptionContext wrapResource@{
                     if (!response.isSuccess()) {

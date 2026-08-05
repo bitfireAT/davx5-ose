@@ -27,6 +27,7 @@ import at.bitfire.davdroid.resource.LocalCalendar
 import at.bitfire.davdroid.resource.LocalEvent
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.resource.SyncState
+import at.bitfire.davdroid.resource.remote.CalDavCollection
 import at.bitfire.davdroid.resource.syncState
 import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.davdroid.util.DavUtils.lastSegment
@@ -66,7 +67,7 @@ class CalendarSyncManager @AssistedInject constructor(
     @Assisted syncResult: SyncResult,
     @Assisted override val localCollection: LocalCalendar,
     @Assisted collectionInfo: Collection,
-    @Assisted override val davCollection: DavCalendar,
+    @Assisted override val remoteCollection: CalDavCollection,
     @Assisted resync: ResyncType?,
     @Assisted settings: SyncSettings,
     @IoDispatcher ioDispatcher: CoroutineDispatcher,
@@ -92,7 +93,7 @@ class CalendarSyncManager @AssistedInject constructor(
             syncResult: SyncResult,
             localCalendar: LocalCalendar,
             collectionInfo: Collection,
-            davCollection: DavCalendar,
+            remoteCollection: CalDavCollection,
             resync: ResyncType?,
             settings: SyncSettings
         ): CalendarSyncManager
@@ -113,7 +114,7 @@ class CalendarSyncManager @AssistedInject constructor(
 
     override suspend fun queryCapabilities(): SyncState? =
         collectionInfo.url.withExceptionContext {
-            val response = davCollection.propfind(
+            val response = remoteCollection.davCollection.propfind(
                 0,
                 CalDAV.MaxResourceSize,
                 WebDAV.SupportedReportSet,
@@ -183,14 +184,14 @@ class CalendarSyncManager @AssistedInject constructor(
 
         collectionInfo.url.withExceptionContext {
             logger.info("Querying events since $limitStart")
-            emitAll(davCollection.calendarQuery(Component.VEVENT, limitStart, null))
+            emitAll(remoteCollection.davCollection.calendarQuery(Component.VEVENT, limitStart, null))
         }
     }
 
     override suspend fun downloadRemote(bunch: List<Url>) {
         logger.info("Downloading ${bunch.size} iCalendars: $bunch")
         collectionInfo.url.withExceptionContext {
-            davCollection.multiget(bunch).responses().collect { response ->
+            remoteCollection.davCollection.multiget(bunch).responses().collect { response ->
                 /*
                  * Real-world servers may return:
                  *

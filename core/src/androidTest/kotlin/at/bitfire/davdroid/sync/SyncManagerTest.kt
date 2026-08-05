@@ -539,7 +539,7 @@ class SyncManagerTest {
         syncResult,
         localCollection,
         collection,
-        DavCollection(client, collection.url),
+        TestWebDavCollection(DavCollection(client, collection.url)),
         SyncSettingsFixtures.default()
     )
 
