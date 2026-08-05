@@ -94,9 +94,10 @@ class AddressBookSyncer @AssistedInject constructor(
         try {
             handleGroupMethodChange(addressBook, provider)
 
+            val httpClient = provideHttpClient()
             val syncManager = contactsSyncManagerFactory.contactsSyncManager(
                 accountId = accountId,
-                httpClient = provideHttpClient(),
+                httpClient = httpClient,
                 syncResult = syncResult,
                 provider = provider,
                 localAddressBook = addressBook,

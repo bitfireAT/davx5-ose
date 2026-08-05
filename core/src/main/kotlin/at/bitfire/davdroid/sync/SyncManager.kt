@@ -76,7 +76,6 @@ import javax.net.ssl.SSLHandshakeException
  * Synchronizes a local collection with a remote collection.
  *
  * @param LocalType         type of local resources
- * @param RemoteType        type of remote collection
  *
  * @param accountId         [AccountId] of the account to synchronize
  * @param httpClient        HTTP client to use for network requests, already authenticated with credentials from the account

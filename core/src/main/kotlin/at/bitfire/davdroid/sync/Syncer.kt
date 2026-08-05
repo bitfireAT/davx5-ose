@@ -222,7 +222,8 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
     }
 
     override fun close() {
-        httpClient.close()
+        if (::httpClient.isInitialized)
+            httpClient.close()
     }
 
     /**
