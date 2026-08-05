@@ -248,13 +248,13 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
      *
      * @param provider The content provider client to access the local collection to be updated
      * @param localCollection The local collection to be synchronized
-     * @param remoteCollection The database collection representing the remote collection. Contains
+     * @param remoteCollectionInfo The database collection representing the remote collection. Contains
      * remote address of the collection to be synchronized.
      */
     abstract suspend fun syncCollection(
         provider: ContentProviderClient,
         localCollection: CollectionType,
-        remoteCollection: Collection
+        remoteCollectionInfo: Collection
     )
 
     /**

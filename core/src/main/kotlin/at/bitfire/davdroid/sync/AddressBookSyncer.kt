@@ -61,7 +61,7 @@ class AddressBookSyncer @AssistedInject constructor(
     override suspend fun syncCollection(
         provider: ContentProviderClient,
         localCollection: LocalAddressBook,
-        remoteCollection: Collection
+        remoteCollectionInfo: Collection
     ) {
         logger.log(Level.INFO, "Synchronizing address book: {0}", arrayOf(localCollection.addressBookAccount.name))
         syncAddressBook(
@@ -70,7 +70,7 @@ class AddressBookSyncer @AssistedInject constructor(
             provideHttpClient = { httpClient },
             provider = provider,
             syncResult = syncResult,
-            collection = remoteCollection
+            collection = remoteCollectionInfo
         )
     }
 
@@ -101,7 +101,7 @@ class AddressBookSyncer @AssistedInject constructor(
                 syncResult = syncResult,
                 provider = provider,
                 localAddressBook = addressBook,
-                collection = collection,
+                collectionInfo = collection,
                 davCollection = DavAddressBook(httpClient, collection.url),
                 resync = resync,
                 syncFrameworkUpload = syncFrameworkUpload,

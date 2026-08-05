@@ -82,7 +82,7 @@ import javax.net.ssl.SSLHandshakeException
  * @param httpClient        HTTP client to use for network requests, already authenticated with credentials from the account
  * @param dataType          data type to synchronize
  * @param syncResult        receiver for result of the synchronization (will be updated by [performSync])
- * @param collection        collection info in the database
+ * @param collectionInfo    remote collection info in the database
  * @param resync            whether re-synchronization is requested
  * @param settings          snapshot of the account settings relevant for this sync run
  */
@@ -91,7 +91,7 @@ abstract class SyncManager<LocalType : LocalResource>(
     val httpClient: HttpClient,
     val dataType: SyncDataType,
     val syncResult: SyncResult,
-    val collection: Collection,
+    val collectionInfo: Collection,
     val resync: ResyncType?,
     val ioDispatcher: CoroutineDispatcher,
     val syncTransferSemaphore: Semaphore,
@@ -145,7 +145,7 @@ abstract class SyncManager<LocalType : LocalResource>(
      * Push-Dont-Notify header, added to PUT and DELETE requests if subscription exists.
      */
     private val pushDontNotifyHeader by lazy {
-        collection.pushSubscription?.let { pushSubscription ->
+        collectionInfo.pushSubscription?.let { pushSubscription ->
             mapOf("Push-Dont-Notify" to QuotedStringUtils.asQuotedString(pushSubscription))
         } ?: emptyMap()
     }
@@ -160,7 +160,7 @@ abstract class SyncManager<LocalType : LocalResource>(
                 logger.info("No reason to synchronize, aborting")
                 return@withContext
             }
-            syncStatsRepository.logSyncTime(collection.id, dataType)
+            syncStatsRepository.logSyncTime(collectionInfo.id, dataType)
 
             logger.info("Querying server capabilities")
             var remoteSyncState = queryCapabilities()
@@ -275,7 +275,7 @@ abstract class SyncManager<LocalType : LocalResource>(
                     val lastETag = if (lastScheduleTag == null) local.eTag else null
                     logger.info("$fileName has been deleted locally -> deleting from server (ETag $lastETag / schedule-tag $lastScheduleTag)")
 
-                    val url = URLBuilder(collection.url).appendPathSegments(fileName, encodeSlash = true).build()
+                    val url = URLBuilder(collectionInfo.url).appendPathSegments(fileName, encodeSlash = true).build()
                     val remote = DavResource(httpClient, url)
                     url.withExceptionContext {
                         try {
@@ -340,7 +340,7 @@ abstract class SyncManager<LocalType : LocalResource>(
         val upload = generateUpload(local)
 
         val fileName = existingFileName ?: upload.suggestedFileName
-        val uploadUrl = URLBuilder(collection.url).appendPathSegments(fileName, encodeSlash = true).build()
+        val uploadUrl = URLBuilder(collectionInfo.url).appendPathSegments(fileName, encodeSlash = true).build()
         val remote = DavResource(httpClient, uploadUrl)
 
         try {
@@ -832,7 +832,7 @@ abstract class SyncManager<LocalType : LocalResource>(
         syncNotificationManager.notifyInvalidResource(
             dataType,
             localCollection.tag,
-            collection,
+            collectionInfo,
             e,
             fileName,
             notifyInvalidResourceTitle()

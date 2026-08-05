@@ -35,7 +35,7 @@ class TestSyncManager @AssistedInject constructor(
     @Assisted httpClient: HttpClient,
     @Assisted syncResult: SyncResult,
     @Assisted override val localCollection: LocalTestCollection,
-    @Assisted collection: Collection,
+    @Assisted collectionInfo: Collection,
     @Assisted override val davCollection: DavCollection,
     @Assisted settings: SyncSettings,
     @IoDispatcher ioDispatcher: CoroutineDispatcher,
@@ -45,7 +45,7 @@ class TestSyncManager @AssistedInject constructor(
     httpClient,
     SyncDataType.EVENTS,
     syncResult,
-    collection,
+    collectionInfo,
     resync = null,
     ioDispatcher,
     syncTransferSemaphore,
@@ -59,7 +59,7 @@ class TestSyncManager @AssistedInject constructor(
             httpClient: HttpClient,
             syncResult: SyncResult,
             localCollection: LocalTestCollection,
-            collection: Collection,
+            collectionInfo: Collection,
             davCollection: DavCollection,
             settings: SyncSettings
         ): TestSyncManager

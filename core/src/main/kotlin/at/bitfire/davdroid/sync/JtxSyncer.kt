@@ -67,7 +67,7 @@ class JtxSyncer @AssistedInject constructor(
     override suspend fun syncCollection(
         provider: ContentProviderClient,
         localCollection: LocalJtxCollection,
-        remoteCollection: Collection
+        remoteCollectionInfo: Collection
     ) {
         logger.info("Synchronizing jtx collection $localCollection")
 
@@ -76,8 +76,8 @@ class JtxSyncer @AssistedInject constructor(
             httpClient = httpClient,
             syncResult = syncResult,
             localCollection = localCollection,
-            collection = remoteCollection,
-            davCollection = DavCalendar(httpClient, remoteCollection.url),
+            collectionInfo = remoteCollectionInfo,
+            davCollection = DavCalendar(httpClient, remoteCollectionInfo.url),
             resync = resync,
             settings = settings
         )

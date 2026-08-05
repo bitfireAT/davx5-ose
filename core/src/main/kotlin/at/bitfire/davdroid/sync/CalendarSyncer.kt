@@ -62,7 +62,7 @@ class CalendarSyncer @AssistedInject constructor(
     override suspend fun syncCollection(
         provider: ContentProviderClient,
         localCollection: LocalCalendar,
-        remoteCollection: Collection
+        remoteCollectionInfo: Collection
     ) {
         logger.log(
             Level.INFO,
@@ -79,8 +79,8 @@ class CalendarSyncer @AssistedInject constructor(
             httpClient = httpClient,
             syncResult = syncResult,
             localCalendar = localCollection,
-            collection = remoteCollection,
-            davCollection = DavCalendar(httpClient, remoteCollection.url),
+            collectionInfo = remoteCollectionInfo,
+            davCollection = DavCalendar(httpClient, remoteCollectionInfo.url),
             resync = resync,
             settings = settings
         )

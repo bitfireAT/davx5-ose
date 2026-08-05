@@ -70,7 +70,7 @@ class TaskSyncer @AssistedInject constructor(
     override suspend fun syncCollection(
         provider: ContentProviderClient,
         localCollection: LocalTaskList,
-        remoteCollection: Collection
+        remoteCollectionInfo: Collection
     ) {
         logger.log(
             Level.INFO,
@@ -83,8 +83,8 @@ class TaskSyncer @AssistedInject constructor(
             httpClient = httpClient,
             syncResult = syncResult,
             localCollection = localCollection,
-            collection = remoteCollection,
-            davCollection = DavCalendar(httpClient, remoteCollection.url),
+            collectionInfo = remoteCollectionInfo,
+            davCollection = DavCalendar(httpClient, remoteCollectionInfo.url),
             resync = resync,
             settings = settings
         )

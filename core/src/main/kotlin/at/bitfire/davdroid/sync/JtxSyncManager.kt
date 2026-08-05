@@ -60,7 +60,7 @@ class JtxSyncManager @AssistedInject constructor(
     @Assisted httpClient: HttpClient,
     @Assisted syncResult: SyncResult,
     @Assisted override val localCollection: LocalJtxCollection,
-    @Assisted collection: Collection,
+    @Assisted collectionInfo: Collection,
     @Assisted override val davCollection: DavCalendar,
     @Assisted resync: ResyncType?,
     @Assisted settings: SyncSettings,
@@ -72,7 +72,7 @@ class JtxSyncManager @AssistedInject constructor(
     httpClient,
     SyncDataType.TASKS,
     syncResult,
-    collection,
+    collectionInfo,
     resync,
     ioDispatcher,
     syncTransferSemaphore,
@@ -86,7 +86,7 @@ class JtxSyncManager @AssistedInject constructor(
             httpClient: HttpClient,
             syncResult: SyncResult,
             localCollection: LocalJtxCollection,
-            collection: Collection,
+            collectionInfo: Collection,
             davCollection: DavCalendar,
             resync: ResyncType?,
             settings: SyncSettings
@@ -95,7 +95,7 @@ class JtxSyncManager @AssistedInject constructor(
 
 
     override suspend fun queryCapabilities() =
-        collection.url.withExceptionContext {
+        collectionInfo.url.withExceptionContext {
             val response =
                 davCollection.propfind(0, CalDAV.GetCTag, CalDAV.MaxResourceSize, WebDAV.SyncToken).selfResponse()
                     ?: return@withExceptionContext null
@@ -143,7 +143,7 @@ class JtxSyncManager @AssistedInject constructor(
     override fun syncAlgorithm() = SyncAlgorithm.PROPFIND_REPORT
 
     override fun listAllRemote(): Flow<MultiStatusItem> = flow {
-        collection.url.withExceptionContext {
+        collectionInfo.url.withExceptionContext {
             if (localCollection.supportsVTODO) {
                 logger.info("Querying tasks")
                 emitAll(davCollection.calendarQuery("VTODO", null, null))
@@ -159,7 +159,7 @@ class JtxSyncManager @AssistedInject constructor(
     override suspend fun downloadRemote(bunch: List<Url>) {
         logger.info("Downloading ${bunch.size} iCalendars: $bunch")
         // multiple iCalendars, use calendar-multi-get
-        collection.url.withExceptionContext {
+        collectionInfo.url.withExceptionContext {
             davCollection.multiget(bunch).responses().collect { response ->
                 // See CalendarSyncManager for more information about the multi-get response
                 response.href.withExceptionContext wrapResource@{

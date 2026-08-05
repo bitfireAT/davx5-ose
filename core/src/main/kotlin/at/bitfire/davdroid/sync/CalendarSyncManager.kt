@@ -65,7 +65,7 @@ class CalendarSyncManager @AssistedInject constructor(
     @Assisted httpClient: HttpClient,
     @Assisted syncResult: SyncResult,
     @Assisted override val localCollection: LocalCalendar,
-    @Assisted collection: Collection,
+    @Assisted collectionInfo: Collection,
     @Assisted override val davCollection: DavCalendar,
     @Assisted resync: ResyncType?,
     @Assisted settings: SyncSettings,
@@ -77,7 +77,7 @@ class CalendarSyncManager @AssistedInject constructor(
     httpClient,
     SyncDataType.EVENTS,
     syncResult,
-    collection,
+    collectionInfo,
     resync,
     ioDispatcher,
     syncTransferSemaphore,
@@ -91,7 +91,7 @@ class CalendarSyncManager @AssistedInject constructor(
             httpClient: HttpClient,
             syncResult: SyncResult,
             localCalendar: LocalCalendar,
-            collection: Collection,
+            collectionInfo: Collection,
             davCollection: DavCalendar,
             resync: ResyncType?,
             settings: SyncSettings
@@ -112,7 +112,7 @@ class CalendarSyncManager @AssistedInject constructor(
     }
 
     override suspend fun queryCapabilities(): SyncState? =
-        collection.url.withExceptionContext {
+        collectionInfo.url.withExceptionContext {
             val response = davCollection.propfind(
                 0,
                 CalDAV.MaxResourceSize,
@@ -181,7 +181,7 @@ class CalendarSyncManager @AssistedInject constructor(
             ZonedDateTime.now().minusDays(pastDays.toLong()).toInstant()
         }
 
-        collection.url.withExceptionContext {
+        collectionInfo.url.withExceptionContext {
             logger.info("Querying events since $limitStart")
             emitAll(davCollection.calendarQuery(Component.VEVENT, limitStart, null))
         }
@@ -189,7 +189,7 @@ class CalendarSyncManager @AssistedInject constructor(
 
     override suspend fun downloadRemote(bunch: List<Url>) {
         logger.info("Downloading ${bunch.size} iCalendars: $bunch")
-        collection.url.withExceptionContext {
+        collectionInfo.url.withExceptionContext {
             davCollection.multiget(bunch).responses().collect { response ->
                 /*
                  * Real-world servers may return:
