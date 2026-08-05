@@ -61,19 +61,18 @@ class TasksSyncManager @AssistedInject constructor(
     @Assisted accountId: AccountId,
     @Assisted httpClient: HttpClient,
     @Assisted syncResult: SyncResult,
-    @Assisted localCollection: LocalTaskList,
+    @Assisted override val localCollection: LocalTaskList,
     @Assisted collection: Collection,
     @Assisted resync: ResyncType?,
     @Assisted settings: SyncSettings,
     @IoDispatcher ioDispatcher: CoroutineDispatcher,
     private val productIds: ProductIds,
     @SyncTransferSemaphore syncTransferSemaphore: Semaphore
-): SyncManager<LocalTask, LocalTaskList, DavCalendar>(
+): SyncManager<LocalTask, DavCalendar>(
     accountId,
     httpClient,
     SyncDataType.TASKS,
     syncResult,
-    localCollection,
     collection,
     resync,
     ioDispatcher,

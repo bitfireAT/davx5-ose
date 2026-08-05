@@ -59,19 +59,18 @@ class JtxSyncManager @AssistedInject constructor(
     @Assisted accountId: AccountId,
     @Assisted httpClient: HttpClient,
     @Assisted syncResult: SyncResult,
-    @Assisted localCollection: LocalJtxCollection,
+    @Assisted override val localCollection: LocalJtxCollection,
     @Assisted collection: Collection,
     @Assisted resync: ResyncType?,
     @Assisted settings: SyncSettings,
     @IoDispatcher ioDispatcher: CoroutineDispatcher,
     private val productIds: ProductIds,
     @SyncTransferSemaphore syncTransferSemaphore: Semaphore
-): SyncManager<LocalJtxObject, LocalJtxCollection, DavCalendar>(
+): SyncManager<LocalJtxObject, DavCalendar>(
     accountId,
     httpClient,
     SyncDataType.TASKS,
     syncResult,
-    localCollection,
     collection,
     resync,
     ioDispatcher,
