@@ -70,7 +70,7 @@ interface ServiceDao {
     }
 
     @Query("DELETE FROM service WHERE accountName NOT IN (:accountNames)")
-    fun deleteExceptAccountsBlocking(accountNames: Array<String>)
+    fun deleteExceptAccountsBlocking(accountNames: List<String>)
 
     @Query("UPDATE service SET accountName=:newName WHERE accountName=:oldName")
     suspend fun renameAccount(oldName: String, newName: String)

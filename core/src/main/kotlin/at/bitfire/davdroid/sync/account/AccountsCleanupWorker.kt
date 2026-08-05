@@ -61,13 +61,15 @@ class AccountsCleanupWorker @AssistedInject constructor(
         // Later, accounts which are not in the DB should be deleted here
 
         // Delete orphaned services in DB – only necessary as long as accounts are implemented as system accounts (not in DB)
-        val accounts = accountRepository.getAllBlocking()
-        logger.info("Cleaning up accounts. Currently existing accounts: ${accounts.contentToString()}")
+        val accountIds = accountRepository.getAllBlocking()
+        logger.info("Cleaning up accounts. Currently existing accounts: ${accountIds.joinToString()}")
         val serviceDao = db.serviceDao()
-        if (accounts.isEmpty())
+        if (accountIds.isEmpty()) {
             serviceDao.deleteAllBlocking()
-        else
-            serviceDao.deleteExceptAccountsBlocking(accounts.map { it.name }.toTypedArray())
+        } else {
+            val accountNames = accountIds.map { accountId -> accountRepository.getAccountNameBlocking(accountId) }
+            serviceDao.deleteExceptAccountsBlocking(accountNames)
+        }
     }
 
     /**
@@ -75,11 +77,12 @@ class AccountsCleanupWorker @AssistedInject constructor(
      */
     @VisibleForTesting
     internal fun cleanUpAddressBooks() {
-        val accounts = accountRepository.getAllBlocking()
+        val accountNames = accountRepository.getAllAccountNamesBlocking().toSet()
+        val ourAccountType = context.getString(R.string.account_type)
         for (addressBookAccount in accountManager.getAccountsByType(context.getString(R.string.account_type_address_book))) {
             val accountName = accountManager.getUserData(addressBookAccount, LocalAddressBook.USER_DATA_ACCOUNT_NAME)
             val accountType = accountManager.getUserData(addressBookAccount, LocalAddressBook.USER_DATA_ACCOUNT_TYPE)
-            if (!accounts.any { it.name == accountName && it.type == accountType }) {
+            if (accountType != ourAccountType || accountName !in accountNames) {
                 // If no valid account exists for this address book, we can delete it
                 logger.info("Deleting address book account without valid account: $addressBookAccount")
                 accountManager.removeAccountExplicitly(addressBookAccount)
