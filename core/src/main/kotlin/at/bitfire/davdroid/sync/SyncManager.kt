@@ -529,7 +529,7 @@ abstract class SyncManager<LocalType : LocalResource, RemoteType : DavCollection
      * Calls a function to list remote resources. All resources from the returned
      * list are downloaded and processed.
      *
-     * @param remoteItems Multi-Status items to process (collected exactly once)
+     * @param remoteItems Multi-Status items to process
      */
     protected suspend fun syncRemote(remoteItems: Flow<MultiStatusItem>) =
         coroutineScope {    // structured concurrency
@@ -710,7 +710,7 @@ abstract class SyncManager<LocalType : LocalResource, RemoteType : DavCollection
             logger.info("Saving sync state: $syncState")
             localCollection.lastSyncState = syncState
 
-            logger.info("Server has further changes: ${changesResult.furtherResults}")
+            logger.info("Server has further changes = ${changesResult.furtherResults}")
         } while (changesResult.furtherResults)
 
         if (initialSync) {
@@ -729,11 +729,7 @@ abstract class SyncManager<LocalType : LocalResource, RemoteType : DavCollection
     }
 
     /**
-     * Holds the sync-token / further-results reported by a `sync-collection` REPORT besides
-     * the member responses (which are exposed as a [Flow] instead, see [listRemoteChanges]).
-     *
-     * Temporary helper for the migration to Flow-based processing; will be removed once
-     * [syncRemote] and friends work with [Flow] end-to-end.
+     * Holds the sync-token / further-results reported by a `sync-collection` REPORT.
      */
     protected class SyncCollectionResult {
         var syncToken: SyncToken? = null
@@ -742,33 +738,38 @@ abstract class SyncManager<LocalType : LocalResource, RemoteType : DavCollection
 
     /**
      * Builds a [Flow] of the member responses of a `sync-collection` REPORT (RFC 6578), together
-     * with a [SyncCollectionResult] that's written into as a side effect while the flow is
-     * collected (i.e. only valid after the flow has been fully collected, for instance by
-     * [syncRemote]).
+     * with a [SyncCollectionResult].
      *
      * @param since sync state to list the changes since; `null` for an initial sync
      */
     protected fun listRemoteChanges(since: SyncState?): Pair<Flow<MultiStatusItem>, SyncCollectionResult> {
         val result = SyncCollectionResult()
         val flow = davCollection.reportChanges(
-            since?.takeIf { since.type == SyncState.Type.SYNC_TOKEN }?.value,
-            false, null,
+            syncToken = since?.takeIf { since.type == SyncState.Type.SYNC_TOKEN }?.value,
+            infiniteDepth = false,
+            limit = null,
             WebDAV.GetETag
         ).transform { item ->
             when (item) {
                 is MultiStatusItem.Response -> when (item.relation) {
-                    Response.HrefRelation.SELF ->
+                    Response.HrefRelation.SELF -> {
+                        // incoming self response, update result
                         result.furtherResults = item.response.status == HttpStatusCode.InsufficientStorage
+                    }
 
-                    Response.HrefRelation.MEMBER ->
+                    Response.HrefRelation.MEMBER -> {
+                        // incoming (changed/deleted) member response, emit to flow
                         emit(item)
+                    }
 
                     else ->
-                        logger.fine("Unexpected sync-collection response: ${item.response}")
+                        logger.warning("Unexpected sync-collection response: ${item.response}")
                 }
 
-                is MultiStatusItem.ExtraProperty ->
+                is MultiStatusItem.ExtraProperty -> {
+                    // incoming sync-token, update result
                     (item.property as? SyncToken)?.let { result.syncToken = it }
+                }
             }
         }
         return flow to result
