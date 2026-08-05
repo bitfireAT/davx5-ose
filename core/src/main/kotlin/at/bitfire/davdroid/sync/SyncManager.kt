@@ -588,7 +588,7 @@ abstract class SyncManager<LocalType : LocalResource>(
     protected abstract suspend fun postProcess()
 
 
-    //region Sync algorithm-specific: PROPFIND/REPORT
+    // sync algorithm: PROPFIND/REPORT
 
     private suspend fun syncPropfindReport(modificationsPresent: Boolean, capabilities: WebDavCollection.Capabilities) {
         logger.info("Sync algorithm: full listing as one result (PROPFIND/REPORT)")
@@ -613,10 +613,8 @@ abstract class SyncManager<LocalType : LocalResource>(
         localCollection.lastSyncState = currentSyncState
     }
 
-    //endregion
 
-
-    //region Sync algorithm-specific: collection-sync
+    // sync algorithm: collection-sync
 
     private suspend fun syncCollectionSync(capabilities: WebDavCollection.Capabilities) {
         var syncState = localCollection.lastSyncState?.takeIf { it.type == SyncState.Type.SYNC_TOKEN }
@@ -676,8 +674,6 @@ abstract class SyncManager<LocalType : LocalResource>(
         logger.info("Post-processing")
         postProcess()
     }
-
-    //endregion
 
 
     // sync helpers
