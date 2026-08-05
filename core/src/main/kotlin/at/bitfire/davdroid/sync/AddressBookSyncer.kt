@@ -67,7 +67,7 @@ class AddressBookSyncer @AssistedInject constructor(
         syncAddressBook(
             accountId = accountId,
             addressBook = localCollection,
-            provideHttpClient = { httpClient },
+            httpClient = httpClient,
             provider = provider,
             syncResult = syncResult,
             collection = remoteCollectionInfo
@@ -78,7 +78,7 @@ class AddressBookSyncer @AssistedInject constructor(
      * Synchronizes an address book
      *
      * @param addressBook       local address book
-     * @param provideHttpClient returns HTTP client on demand (no need to close)
+     * @param httpClient        HTTP client to use for network requests
      * @param provider          content provider to access android contacts
      * @param syncResult        stores hard and soft sync errors
      * @param collection        the database collection associated with this address book
@@ -86,7 +86,7 @@ class AddressBookSyncer @AssistedInject constructor(
     private suspend fun syncAddressBook(
         accountId: AccountId,
         addressBook: LocalAddressBook,
-        provideHttpClient: () -> HttpClient,
+        httpClient: HttpClient,
         provider: ContentProviderClient,
         syncResult: SyncResult,
         collection: Collection
@@ -94,7 +94,6 @@ class AddressBookSyncer @AssistedInject constructor(
         try {
             handleGroupMethodChange(addressBook, provider)
 
-            val httpClient = provideHttpClient()
             val syncManager = contactsSyncManagerFactory.contactsSyncManager(
                 accountId = accountId,
                 httpClient = httpClient,
