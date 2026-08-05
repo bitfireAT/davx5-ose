@@ -14,6 +14,7 @@ import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalAddressBookStore
+import at.bitfire.davdroid.resource.remote.CardDavCollection
 import at.bitfire.synctools.storage.contacts.AddressContract.asSyncAdapter
 import at.bitfire.synctools.util.setAndVerifyUserData
 import dagger.assisted.Assisted
@@ -96,12 +97,15 @@ class AddressBookSyncer @AssistedInject constructor(
 
             val syncManager = contactsSyncManagerFactory.contactsSyncManager(
                 accountId = accountId,
-                httpClient = httpClient,
                 syncResult = syncResult,
                 provider = provider,
                 localAddressBook = addressBook,
                 collectionInfo = collection,
-                davCollection = DavAddressBook(httpClient, collection.url),
+                remoteCollection = CardDavCollection(
+                    davAddressBook = DavAddressBook(httpClient, collection.url),
+                    httpClient = httpClient,
+                    pushSubscription = collection.pushSubscription
+                ),
                 resync = resync,
                 syncFrameworkUpload = syncFrameworkUpload,
                 settings = settings

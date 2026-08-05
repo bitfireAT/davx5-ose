@@ -11,10 +11,12 @@ import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.resource.LocalCalendar
 import at.bitfire.davdroid.resource.LocalCalendarStore
+import at.bitfire.davdroid.resource.remote.CalDavCollection
 import at.bitfire.synctools.storage.calendar.AndroidCalendarProvider
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import net.fortuna.ical4j.model.Component
 import java.util.logging.Level
 
 /**
@@ -76,11 +78,16 @@ class CalendarSyncer @AssistedInject constructor(
 
         val syncManager = calendarSyncManagerFactory.calendarSyncManager(
             accountId = accountId,
-            httpClient = httpClient,
             syncResult = syncResult,
             localCalendar = localCollection,
             collectionInfo = remoteCollectionInfo,
-            davCollection = DavCalendar(httpClient, remoteCollectionInfo.url),
+            remoteCollection = CalDavCollection(
+                davCalendar = DavCalendar(httpClient, remoteCollectionInfo.url),
+                httpClient = httpClient,
+                components = listOf(Component.VEVENT),
+                pushSubscription = remoteCollectionInfo.pushSubscription,
+                timeRangePastDays = settings.timeRangePastDays
+            ),
             resync = resync,
             settings = settings
         )

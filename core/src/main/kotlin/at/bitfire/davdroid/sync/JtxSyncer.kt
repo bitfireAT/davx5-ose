@@ -11,6 +11,7 @@ import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.resource.LocalJtxCollection
 import at.bitfire.davdroid.resource.LocalJtxCollectionStore
+import at.bitfire.davdroid.resource.remote.CalDavCollection
 import at.bitfire.synctools.storage.TaskProvider
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -71,13 +72,22 @@ class JtxSyncer @AssistedInject constructor(
     ) {
         logger.info("Synchronizing jtx collection $localCollection")
 
+        val components = buildList {
+            if (localCollection.supportsVTODO) add("VTODO")
+            if (localCollection.supportsVJOURNAL) add("VJOURNAL")
+        }
+
         val syncManager = jtxSyncManagerFactory.jtxSyncManager(
             accountId = accountId,
-            httpClient = httpClient,
             syncResult = syncResult,
             localCollection = localCollection,
             collectionInfo = remoteCollectionInfo,
-            davCollection = DavCalendar(httpClient, remoteCollectionInfo.url),
+            remoteCollection = CalDavCollection(
+                davCalendar = DavCalendar(httpClient, remoteCollectionInfo.url),
+                httpClient = httpClient,
+                components = components,
+                pushSubscription = remoteCollectionInfo.pushSubscription
+            ),
             resync = resync,
             settings = settings
         )

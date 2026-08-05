@@ -11,6 +11,7 @@ import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.resource.LocalTaskList
 import at.bitfire.davdroid.resource.LocalTaskListStore
+import at.bitfire.davdroid.resource.remote.CalDavCollection
 import at.bitfire.synctools.storage.TaskProvider
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -80,11 +81,15 @@ class TaskSyncer @AssistedInject constructor(
 
         val syncManager = tasksSyncManagerFactory.tasksSyncManager(
             accountId = accountId,
-            httpClient = httpClient,
             syncResult = syncResult,
             localCollection = localCollection,
             collectionInfo = remoteCollectionInfo,
-            davCollection = DavCalendar(httpClient, remoteCollectionInfo.url),
+            remoteCollection = CalDavCollection(
+                davCalendar = DavCalendar(httpClient, remoteCollectionInfo.url),
+                httpClient = httpClient,
+                components = listOf("VTODO"),
+                pushSubscription = remoteCollectionInfo.pushSubscription
+            ),
             resync = resync,
             settings = settings
         )
