@@ -16,6 +16,8 @@ import android.provider.CalendarContract.Reminders
 import androidx.core.content.contentValuesOf
 import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.accounts.AccountId
+import at.bitfire.davdroid.accounts.AndroidAccountManager
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.settings.AccountSettings
@@ -32,6 +34,7 @@ import javax.inject.Inject
 class LocalCalendarStore @Inject constructor(
     @ApplicationContext private val context: Context,
     private val accountSettingsFactory: AccountSettings.Factory,
+    private val androidAccountManager: AndroidAccountManager,
     private val localCalendarFactory: LocalCalendar.Factory,
     private val logger: Logger,
     private val serviceRepository: DavServiceRepository
@@ -83,15 +86,23 @@ class LocalCalendarStore @Inject constructor(
         return localCalendarFactory.create(provider.createAndGetCalendar(values))
     }
 
-    override fun getAll(account: Account, client: ContentProviderClient) =
-        AndroidCalendarProvider(account, client)
+    override fun getAll(accountId: AccountId, client: ContentProviderClient): List<LocalCalendar> {
+        val account = androidAccountManager.getAndroidAccount(accountId)
+        return AndroidCalendarProvider(account, client)
             .findCalendars("${Calendars.SYNC_EVENTS}!=0", null)
             .map { localCalendarFactory.create(it) }
+    }
 
-    override fun getByDbCollectionId(account: Account, client: ContentProviderClient, dbCollectionId: Long): LocalCalendar? =
-        AndroidCalendarProvider(account, client)
+    override fun getByDbCollectionId(
+        accountId: AccountId,
+        client: ContentProviderClient,
+        dbCollectionId: Long
+    ): LocalCalendar? {
+        val account = androidAccountManager.getAndroidAccount(accountId)
+        return AndroidCalendarProvider(account, client)
             .findFirstCalendar("${Calendars._SYNC_ID}=?", arrayOf(dbCollectionId.toString()))
             ?.let { localCalendarFactory.create(it) }
+    }
 
     override fun update(client: ContentProviderClient, localCollection: LocalCalendar, fromCollection: Collection) {
         val accountSettings = accountSettingsFactory.create(localCollection.androidCalendar.account)

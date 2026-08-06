@@ -87,7 +87,7 @@ class AutomaticSyncManager @Inject constructor(
 
             // pass through request to update all existing address books
             localAddressBookStore.acquireContentProvider()?.use { provider ->
-                for (addressBookAccount in localAddressBookStore.getAll(account, provider))
+                for (addressBookAccount in localAddressBookStore.getAll(accountId, provider))
                     addressBookAccount.updateSyncFrameworkSettings()
             }
 

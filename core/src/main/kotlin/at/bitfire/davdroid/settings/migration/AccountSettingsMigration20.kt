@@ -10,6 +10,7 @@ import android.content.Context
 import android.provider.CalendarContract
 import androidx.annotation.OpenForTesting
 import androidx.core.content.contentValuesOf
+import at.bitfire.davdroid.accounts.toAccountId
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
@@ -63,7 +64,7 @@ class AccountSettingsMigration20 @Inject constructor(
     @OpenForTesting
     internal fun migrateAddressBooks(account: Account, cardDavServiceId: Long) {
         addressBookStore.acquireContentProvider()?.use { provider ->
-            for (addressBook in addressBookStore.getAll(account, provider)) {
+            for (addressBook in addressBookStore.getAll(account.toAccountId(), provider)) {
                 val url = accountManager.getUserData(addressBook.addressBookAccount, ADDRESS_BOOK_USER_DATA_URL) ?: continue
                 val collection = collectionRepository.getByServiceAndUrl(cardDavServiceId, url) ?: continue
                 addressBook.dbCollectionId = collection.id
@@ -92,7 +93,7 @@ class AccountSettingsMigration20 @Inject constructor(
     internal fun migrateTaskLists(account: Account, calDavServiceId: Long) {
         val taskListStore = tasksAppManager.getDataStore() ?: /* no tasks app */ return
         taskListStore.acquireContentProvider()?.use { provider ->
-            for (taskList in taskListStore.getAll(account, provider)) {
+            for (taskList in taskListStore.getAll(account.toAccountId(), provider)) {
                 when (taskList) {
                     is LocalTaskList -> {       // tasks.org, OpenTasks
                         val url = taskList.dmfsTaskList.syncId ?: continue
