@@ -30,7 +30,6 @@ import at.bitfire.synctools.storage.contacts.AndroidContact
 import at.bitfire.synctools.storage.contacts.AndroidGroup
 import at.bitfire.synctools.storage.contacts.ContactsBatchOperation
 import at.bitfire.synctools.util.AndroidAccountUtils
-import at.bitfire.synctools.util.setAndVerifyUserData
 import at.bitfire.synctools.vcard.GroupMethod
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -63,6 +62,7 @@ open class LocalAddressBook @AssistedInject constructor(
     @Assisted provider: ContentProviderClient,
     @Assisted val groupMethod: GroupMethod,
     private val accountSettingsFactory: AccountSettings.Factory,
+    private val addressBookAccountProperties: AddressBookAccountProperties,
     @ApplicationContext private val context: Context,
     internal val dirtyVerifier: Optional<ContactDirtyVerifier>,
     private val logger: Logger,
@@ -95,9 +95,9 @@ open class LocalAddressBook @AssistedInject constructor(
         get() = groupMethod == GroupMethod.GROUP_VCARDS
 
     override var dbCollectionId: Long?
-        get() = accountManager.getUserData(addressBookAccount, USER_DATA_COLLECTION_ID)?.toLongOrNull()
+        get() = addressBookAccountProperties.getCollectionId(addressBookAccount)
         set(id) {
-            accountManager.setAndVerifyUserData(addressBookAccount, USER_DATA_COLLECTION_ID, id.toString())
+            addressBookAccountProperties.setCollectionId(addressBookAccount, id)
         }
 
     override var readOnly: Boolean by ab::readOnly
@@ -397,20 +397,6 @@ open class LocalAddressBook @AssistedInject constructor(
 
             batch.commit()
         }
-    }
-
-    companion object {
-
-        const val USER_DATA_ACCOUNT_NAME = "account_name"
-        const val USER_DATA_ACCOUNT_TYPE = "account_type"
-
-        /**
-         * ID of the corresponding database [at.bitfire.davdroid.db.Collection].
-         *
-         * User data of the address book account (Long).
-         */
-        const val USER_DATA_COLLECTION_ID = "collection_id"
-
     }
 
 }

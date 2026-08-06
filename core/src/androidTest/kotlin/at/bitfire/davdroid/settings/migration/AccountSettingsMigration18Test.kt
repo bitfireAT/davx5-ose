@@ -11,7 +11,9 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
-import at.bitfire.davdroid.resource.LocalAddressBook
+import at.bitfire.davdroid.settings.migration.AccountSettingsMigration18.Companion.USER_DATA_ACCOUNT_NAME
+import at.bitfire.davdroid.settings.migration.AccountSettingsMigration18.Companion.USER_DATA_ACCOUNT_TYPE
+import at.bitfire.davdroid.settings.migration.AccountSettingsMigration18.Companion.USER_DATA_COLLECTION_ID
 import at.bitfire.davdroid.util.DavUtils.toUrl
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -58,7 +60,7 @@ class AccountSettingsMigration18Test {
         val accountManager = AccountManager.get(context)
         mockkObject(accountManager)
         every { accountManager.getAccountsByType(addressBookAccountType) } returns arrayOf(addressBookAccount)
-        every { accountManager.getUserData(addressBookAccount, LocalAddressBook.USER_DATA_COLLECTION_ID) } returns "123"
+        every { accountManager.getUserData(addressBookAccount, USER_DATA_COLLECTION_ID) } returns "123"
 
         val account = Account("test", "test")
         migration.migrate(account)
@@ -76,7 +78,7 @@ class AccountSettingsMigration18Test {
         val accountManager = AccountManager.get(context)
         mockkObject(accountManager)
         every { accountManager.getAccountsByType(addressBookAccountType) } returns arrayOf(addressBookAccount)
-        every { accountManager.getUserData(addressBookAccount, LocalAddressBook.USER_DATA_COLLECTION_ID) } returns "123"
+        every { accountManager.getUserData(addressBookAccount, USER_DATA_COLLECTION_ID) } returns "123"
 
         val account = Account("test", "test")
         migration.migrate(account)
@@ -111,13 +113,13 @@ class AccountSettingsMigration18Test {
         val accountManager = AccountManager.get(context)
         mockkObject(accountManager)
         every { accountManager.getAccountsByType(addressBookAccountType) } returns arrayOf(addressBookAccount)
-        every { accountManager.getUserData(addressBookAccount, LocalAddressBook.USER_DATA_COLLECTION_ID) } returns "100"
+        every { accountManager.getUserData(addressBookAccount, USER_DATA_COLLECTION_ID) } returns "100"
 
         migration.migrate(account)
 
         verify {
-            accountManager.setUserData(addressBookAccount, LocalAddressBook.USER_DATA_ACCOUNT_NAME, account.name)
-            accountManager.setUserData(addressBookAccount, LocalAddressBook.USER_DATA_ACCOUNT_TYPE, account.type)
+            accountManager.setUserData(addressBookAccount, USER_DATA_ACCOUNT_NAME, account.name)
+            accountManager.setUserData(addressBookAccount, USER_DATA_ACCOUNT_TYPE, account.type)
         }
     }
 

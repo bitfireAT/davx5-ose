@@ -17,9 +17,12 @@ import at.bitfire.davdroid.accounts.toAccountId
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
-import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalCalendarStore
 import at.bitfire.davdroid.resource.LocalTestAddressBook
+import at.bitfire.davdroid.settings.migration.AccountSettingsMigration18.Companion.USER_DATA_ACCOUNT_NAME
+import at.bitfire.davdroid.settings.migration.AccountSettingsMigration18.Companion.USER_DATA_ACCOUNT_TYPE
+import at.bitfire.davdroid.settings.migration.AccountSettingsMigration18.Companion.USER_DATA_COLLECTION_ID
+import at.bitfire.davdroid.settings.migration.AccountSettingsMigration20.Companion.ADDRESS_BOOK_USER_DATA_URL
 import at.bitfire.davdroid.sync.account.TestAccount
 import at.bitfire.davdroid.util.DavUtils.toUrl
 import at.bitfire.synctools.storage.calendar.EventsContract.asSyncAdapter
@@ -106,16 +109,16 @@ class AccountSettingsMigration20Test {
 
         localTestAddressBook.provide(account.toAccountId(), mockk(relaxed = true), GroupMethod.GROUP_VCARDS) { addressBook ->
 
-            accountManager.setAndVerifyUserData(addressBook.addressBookAccount, LocalAddressBook.USER_DATA_ACCOUNT_NAME, account.name)
-            accountManager.setAndVerifyUserData(addressBook.addressBookAccount, LocalAddressBook.USER_DATA_ACCOUNT_TYPE, account.type)
-            accountManager.setAndVerifyUserData(addressBook.addressBookAccount, AccountSettingsMigration20.ADDRESS_BOOK_USER_DATA_URL, url)
-            accountManager.setAndVerifyUserData(addressBook.addressBookAccount, LocalAddressBook.USER_DATA_COLLECTION_ID, null)
+            accountManager.setAndVerifyUserData(addressBook.addressBookAccount, USER_DATA_ACCOUNT_NAME, account.name)
+            accountManager.setAndVerifyUserData(addressBook.addressBookAccount, USER_DATA_ACCOUNT_TYPE, account.type)
+            accountManager.setAndVerifyUserData(addressBook.addressBookAccount, ADDRESS_BOOK_USER_DATA_URL, url)
+            accountManager.setAndVerifyUserData(addressBook.addressBookAccount, USER_DATA_COLLECTION_ID, null)
 
             migration.migrateAddressBooks(account, cardDavServiceId = 1)
 
             assertEquals(
                 collectionId,
-                accountManager.getUserData(addressBook.addressBookAccount, LocalAddressBook.USER_DATA_COLLECTION_ID).toLongOrNull()
+                accountManager.getUserData(addressBook.addressBookAccount, USER_DATA_COLLECTION_ID).toLongOrNull()
             )
         }
     }

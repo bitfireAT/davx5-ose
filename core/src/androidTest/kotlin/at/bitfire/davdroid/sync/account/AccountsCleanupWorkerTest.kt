@@ -12,9 +12,11 @@ import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.testing.TestListenableWorkerBuilder
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.TestUtils
+import at.bitfire.davdroid.accounts.LegacyAccount
+import at.bitfire.davdroid.accounts.toAccountId
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Service
-import at.bitfire.davdroid.resource.LocalAddressBook
+import at.bitfire.davdroid.resource.AddressBookAccountProperties
 import at.bitfire.davdroid.settings.SettingsManager
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -37,6 +39,9 @@ class AccountsCleanupWorkerTest {
 
     @Inject
     lateinit var accountsCleanupWorkerFactory: AccountsCleanupWorker.Factory
+
+    @Inject
+    lateinit var addressBookAccountProperties: AddressBookAccountProperties
 
     @Inject @ApplicationContext
     lateinit var context: Context
@@ -157,11 +162,8 @@ class AccountsCleanupWorkerTest {
     fun testCleanUpAddressBooks_keepsAddressBookWithAccount() {
         TestAccount.provide { existingAccount ->
             // Create address book account _with_ corresponding account and verify
-            val userData = Bundle(2).apply {
-                putString(LocalAddressBook.USER_DATA_ACCOUNT_NAME, existingAccount.name)
-                putString(LocalAddressBook.USER_DATA_ACCOUNT_TYPE, existingAccount.type)
-            }
-            assertTrue(accountManager.addAccountExplicitly(addressBookAccount, null, userData))
+            assertTrue(accountManager.addAccountExplicitly(addressBookAccount, null, Bundle()))
+            addressBookAccountProperties.setAppAccount(addressBookAccount, LegacyAccount(existingAccount))
             assertEquals(listOf(addressBookAccount), accountManager.getAccountsByType(addressBookAccountType).toList())
 
             // Create worker and run the method
