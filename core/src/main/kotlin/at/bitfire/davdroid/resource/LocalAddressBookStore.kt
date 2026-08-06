@@ -15,7 +15,10 @@ import androidx.annotation.VisibleForTesting
 import androidx.annotation.WorkerThread
 import androidx.core.content.contentValuesOf
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.accounts.toAccountId
+import at.bitfire.davdroid.accounts.toAndroidAccount
 import at.bitfire.davdroid.db.Collection
+import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Settings
@@ -32,6 +35,7 @@ import java.util.logging.Logger
 import javax.inject.Inject
 
 class LocalAddressBookStore @Inject constructor(
+    private val accountRepository: AccountRepository,
     private val accountSettingsFactory: AccountSettings.Factory,
     @ApplicationContext private val context: Context,
     private val localAddressBookFactory: LocalAddressBook.Factory,
@@ -92,17 +96,22 @@ class LocalAddressBookStore @Inject constructor(
     override suspend fun create(client: ContentProviderClient, fromCollection: Collection): LocalAddressBook? {
         val service = serviceRepository.get(fromCollection.serviceId)
             ?: throw IllegalArgumentException("Couldn't fetch DB service from collection")
-        val account = Account(service.accountName, context.getString(R.string.account_type))
+        val accountId = accountRepository.getAccountIdFromName(service.accountName)
 
         val name = accountName(fromCollection)
         val addressBookAccount = createAddressBookAccount(
-            account = account,
+            account = accountId.toAndroidAccount(),
             name = name,
             id = fromCollection.id
         ) ?: return null
 
-        val accountSettings = accountSettingsFactory.create(account)
-        val addressBook = localAddressBookFactory.create(account, addressBookAccount, client, accountSettings.getGroupMethod())
+        val accountSettings = accountSettingsFactory.create(accountId.toAndroidAccount())
+        val addressBook = localAddressBookFactory.create(
+            accountId = accountId,
+            addressBookAccount = addressBookAccount,
+            provider = client,
+            groupMethod = accountSettings.getGroupMethod()
+        )
 
         // update settings
         addressBook.updateSyncFrameworkSettings()
@@ -133,8 +142,9 @@ class LocalAddressBookStore @Inject constructor(
     override fun getAll(account: Account, client: ContentProviderClient): List<LocalAddressBook> {
         val accountSettings = accountSettingsFactory.create(account)
         val groupMethod = accountSettings.getGroupMethod()
-        return getAddressBookAccounts(account).map { addressBookAccount ->
-            localAddressBookFactory.create(account, addressBookAccount, client, groupMethod)
+        val accountId = account.toAccountId()
+        return getAddressBookAccounts(accountId.toAndroidAccount()).map { addressBookAccount ->
+            localAddressBookFactory.create(accountId, addressBookAccount, client, groupMethod)
         }
     }
 
@@ -154,9 +164,10 @@ class LocalAddressBookStore @Inject constructor(
         }
 
         // Update the account user data
+        val account = localCollection.accountId.toAndroidAccount()
         val accountManager = AccountManager.get(context)
-        accountManager.setAndVerifyUserData(currentAccount, LocalAddressBook.USER_DATA_ACCOUNT_NAME, localCollection.account.name)
-        accountManager.setAndVerifyUserData(currentAccount, LocalAddressBook.USER_DATA_ACCOUNT_TYPE, localCollection.account.type)
+        accountManager.setAndVerifyUserData(currentAccount, LocalAddressBook.USER_DATA_ACCOUNT_NAME, account.name)
+        accountManager.setAndVerifyUserData(currentAccount, LocalAddressBook.USER_DATA_ACCOUNT_TYPE, account.type)
         accountManager.setAndVerifyUserData(currentAccount, LocalAddressBook.USER_DATA_COLLECTION_ID, fromCollection.id.toString())
 
         // Set contacts provider settings

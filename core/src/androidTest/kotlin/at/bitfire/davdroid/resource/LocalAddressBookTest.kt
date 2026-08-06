@@ -17,6 +17,7 @@ import android.provider.ContactsContract.RawContacts
 import androidx.core.content.contentValuesOf
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
+import at.bitfire.davdroid.accounts.LegacyAccount
 import at.bitfire.synctools.mapping.contacts.Contact
 import at.bitfire.synctools.mapping.contacts.LabeledProperty
 import at.bitfire.synctools.mapping.contacts.PendingMemberships
@@ -56,7 +57,7 @@ class LocalAddressBookTest {
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
 
-    val account = Account("Test Account", "Test Account Type")
+    val accountId = LegacyAccount(Account("Test Account", "Test Account Type"))
 
     @Before
     fun setUp() {
@@ -66,7 +67,7 @@ class LocalAddressBookTest {
 
     @Test
     fun test_readOnly() {
-        localTestAddressBook.provide(account, provider) { addressBook ->
+        localTestAddressBook.provide(accountId, provider) { addressBook ->
             // insert contact with phone number and a group
             val localContact = addressBook.addContact(
                 Contact(
@@ -108,7 +109,7 @@ class LocalAddressBookTest {
      */
     @Test
     fun test_renameAccount_retainsContacts() {
-        localTestAddressBook.provide(account, provider) { addressBook ->
+        localTestAddressBook.provide(accountId, provider) { addressBook ->
             // insert contact with data row
             val uid = "12345"
             val contact = Contact(
@@ -142,7 +143,7 @@ class LocalAddressBookTest {
      */
     @Test
     fun test_renameAccount_retainsGroups() {
-        localTestAddressBook.provide(account, provider) { addressBook ->
+        localTestAddressBook.provide(accountId, provider) { addressBook ->
             // insert group
             val localGroup = addressBook.addGroup(Contact(displayName = "Test Group"), null, null, 0)
             val id = localGroup.id!!
@@ -168,7 +169,7 @@ class LocalAddressBookTest {
 
     @Test
     fun testApplyPendingMemberships_addPendingMembership() {
-        localTestAddressBook.provide(account, provider, GroupMethod.GROUP_VCARDS) { localAddressBook ->
+        localTestAddressBook.provide(accountId, provider, GroupMethod.GROUP_VCARDS) { localAddressBook ->
             val contact1 = localAddressBook.addContact(Contact().apply {
                 uid = "test1"
                 displayName = "Test"
@@ -218,7 +219,7 @@ class LocalAddressBookTest {
 
     @Test
     fun testApplyPendingMemberships_removeMembership() {
-        localTestAddressBook.provide(account, provider, GroupMethod.GROUP_VCARDS) { localAddressBook ->
+        localTestAddressBook.provide(accountId, provider, GroupMethod.GROUP_VCARDS) { localAddressBook ->
             val contact1 = localAddressBook.addContact(Contact().apply {
                 uid = "test1"
                 displayName = "Test"

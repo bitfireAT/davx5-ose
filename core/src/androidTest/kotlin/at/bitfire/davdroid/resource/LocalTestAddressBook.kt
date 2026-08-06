@@ -9,6 +9,7 @@ import android.accounts.AccountManager
 import android.content.ContentProviderClient
 import android.content.Context
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.synctools.vcard.GroupMethod
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.util.UUID
@@ -22,12 +23,12 @@ class LocalTestAddressBook @Inject constructor(
     private val accountManager = AccountManager.get(context)
 
     fun provide(
-        account: Account,
+        accountId: AccountId,
         provider: ContentProviderClient,
         groupMethod: GroupMethod = GroupMethod.GROUP_VCARDS,
         block: (LocalAddressBook) -> Unit
     ) {
-        val ab = create(account, provider, groupMethod)
+        val ab = create(accountId, provider, groupMethod)
         try {
             block(ab)
         } finally {
@@ -38,21 +39,21 @@ class LocalTestAddressBook @Inject constructor(
     /**
      * Creates a new local address book for testing purposes.
      *
-     * @param account The account to associate with the new address book.
+     * @param accountId The [AccountId] of the app account to associate with the new address book.
      * @param provider The content provider client to use for the new address book.
      * @param groupMethod The method to use for grouping contacts in the address book.
      * Defaults to [GroupMethod.GROUP_VCARDS].
      * @return The newly created local address book.
      */
     fun create(
-        account: Account,
+        accountId: AccountId,
         provider: ContentProviderClient,
         groupMethod: GroupMethod = GroupMethod.GROUP_VCARDS
     ): LocalAddressBook {
         val accountType = context.getString(R.string.account_type_address_book)
         val abAccount = Account("Test Address Book ${UUID.randomUUID()}", accountType)
         accountManager.addAccountExplicitly(abAccount, null, null)
-        return factory.create(account, abAccount, provider, groupMethod)
+        return factory.create(accountId, abAccount, provider, groupMethod)
     }
 
     /**

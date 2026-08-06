@@ -13,6 +13,7 @@ import android.provider.CalendarContract.Calendars
 import androidx.core.content.contentValuesOf
 import androidx.core.database.getLongOrNull
 import androidx.test.rule.GrantPermissionRule
+import at.bitfire.davdroid.accounts.toAccountId
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
@@ -103,7 +104,7 @@ class AccountSettingsMigration20Test {
             url = url.toUrl()
         ))
 
-        localTestAddressBook.provide(account, mockk(relaxed = true), GroupMethod.GROUP_VCARDS) { addressBook ->
+        localTestAddressBook.provide(account.toAccountId(), mockk(relaxed = true), GroupMethod.GROUP_VCARDS) { addressBook ->
 
             accountManager.setAndVerifyUserData(addressBook.addressBookAccount, LocalAddressBook.USER_DATA_ACCOUNT_NAME, account.name)
             accountManager.setAndVerifyUserData(addressBook.addressBookAccount, LocalAddressBook.USER_DATA_ACCOUNT_TYPE, account.type)
