@@ -9,4 +9,4 @@ import at.bitfire.dav4jvm.ktor.DavCalendar
 /**
  * Remote CalDAV collection, as used for calendars, jtx boards and task lists.
  */
-class CalDavCollection(override val davCollection: DavCalendar) : WebDavCollection
+class CalDavCollection(override val davCollection: DavCalendar) : BaseWebDavCollection(davCollection)

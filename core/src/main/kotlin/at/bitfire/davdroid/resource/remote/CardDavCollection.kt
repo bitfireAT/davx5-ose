@@ -9,4 +9,4 @@ import at.bitfire.dav4jvm.ktor.DavAddressBook
 /**
  * Remote CardDAV collection, as used for address books.
  */
-class CardDavCollection(override val davCollection: DavAddressBook) : WebDavCollection
+class CardDavCollection(override val davCollection: DavAddressBook) : BaseWebDavCollection(davCollection)
