@@ -29,12 +29,16 @@ interface WebDavCollection {
     )
 
     data class Capabilities(
-        // CalDAV only
+        /** whether the server supports Collection Sync (RFC 6578) */
+        val canCollectionSync: Boolean = false,
+
+        /** max. CalDAV resource size */
         val maxCalResourceSize: Long? = null,
 
-        // CardDAV only
+        /** max. CardDAV resource size */
         val maxCardResourceSize: Long? = null,
-        val supportsCollectionSync: Boolean = false,
+
+        /** whether the (CardDAV) server supports vCard/4 */
         val supportsVCard4: Boolean = false
     )
 

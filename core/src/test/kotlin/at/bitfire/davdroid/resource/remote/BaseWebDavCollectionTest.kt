@@ -84,7 +84,7 @@ class BaseWebDavCollectionTest {
     }
 
     @Test
-    fun `queryCapabilities() with SupportedReportSet containing sync-collection sets supportsCollectionSync`() =
+    fun `queryCapabilities() with SupportedReportSet containing sync-collection sets canCollectionSync`() =
         runTest {
             val result = collection(
                 "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
@@ -107,11 +107,11 @@ class BaseWebDavCollectionTest {
                         "</multistatus>"
             ).queryCapabilities()
 
-            assertTrue(result.capabilities.supportsCollectionSync)
+            assertTrue(result.capabilities.canCollectionSync)
         }
 
     @Test
-    fun `queryCapabilities() with SupportedReportSet without sync-collection leaves supportsCollectionSync false`() =
+    fun `queryCapabilities() with SupportedReportSet without sync-collection leaves canCollectionSync false`() =
         runTest {
             val result = collection(
                 "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
@@ -134,7 +134,7 @@ class BaseWebDavCollectionTest {
                         "</multistatus>"
             ).queryCapabilities()
 
-            assertFalse(result.capabilities.supportsCollectionSync)
+            assertFalse(result.capabilities.canCollectionSync)
         }
 
     @Test

@@ -106,7 +106,7 @@ class CalendarSyncManager @AssistedInject constructor(
     }
 
     override fun syncAlgorithm(capabilities: WebDavCollection.Capabilities) =
-        if (settings.timeRangePastDays != null || !capabilities.supportsCollectionSync)
+        if (settings.timeRangePastDays != null || !capabilities.canCollectionSync)
             SyncAlgorithm.PROPFIND_REPORT
         else
             SyncAlgorithm.COLLECTION_SYNC

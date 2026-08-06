@@ -159,7 +159,7 @@ class ContactsSyncManager @AssistedInject constructor(
     }
 
     override fun syncAlgorithm(capabilities: WebDavCollection.Capabilities) =
-        if (capabilities.supportsCollectionSync)
+        if (capabilities.canCollectionSync)
             SyncAlgorithm.COLLECTION_SYNC
         else
             SyncAlgorithm.PROPFIND_REPORT

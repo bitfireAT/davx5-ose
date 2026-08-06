@@ -42,7 +42,7 @@ abstract class BaseWebDavCollection(
         return WebDavCollection.QueryCapabilitiesResult(
             syncState = response.syncState(),
             capabilities = WebDavCollection.Capabilities(
-                supportsCollectionSync = response[SupportedReportSet::class.java]?.reports?.contains(WebDAV.SyncCollection) == true,
+                canCollectionSync = response[SupportedReportSet::class.java]?.reports?.contains(WebDAV.SyncCollection) == true,
                 maxCalResourceSize = response[CalDavMaxResourceSize::class.java]?.maxSize,
                 maxCardResourceSize = response[CardDavMaxResourceSize::class.java]?.maxSize,
                 supportsVCard4 = response[SupportedAddressData::class.java]?.hasVCard4() == true

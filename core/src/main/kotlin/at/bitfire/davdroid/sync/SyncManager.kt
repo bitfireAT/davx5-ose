@@ -160,13 +160,16 @@ abstract class SyncManager<LocalType : LocalResource>(
             syncStatsRepository.logSyncTime(collectionInfo.id, dataType)
 
             logger.info("Querying server capabilities")
-            val (syncState, capabilities) = collectionInfo.url.withExceptionContext { remoteCollection.queryCapabilities() }
-            logger.info("Sync state: $syncState, capabilities: $capabilities")
-            var remoteSyncState = syncState
+            val (initialSyncState, capabilities) = collectionInfo.url.withExceptionContext {
+                remoteCollection.queryCapabilities()
+            }
+            logger.info("Sync state = $initialSyncState, capabilities = $capabilities")
+            var remoteSyncState = initialSyncState
 
             logger.info("Processing local deletes/updates")
             val modificationsPresent =
-                processLocallyDeleted() or uploadDirty(capabilities)     // bitwise OR guarantees that both expressions are evaluated
+                // bitwise OR guarantees that both expressions are evaluated
+                processLocallyDeleted() or uploadDirty(capabilities)
 
             if (resync == ResyncType.RESYNC_ENTRIES) {
                 logger.info("Forcing re-synchronization of all entries")
