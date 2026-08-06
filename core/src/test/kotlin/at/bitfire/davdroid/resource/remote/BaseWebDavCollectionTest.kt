@@ -176,7 +176,7 @@ class BaseWebDavCollectionTest {
                     "</multistatus>"
         ).queryCapabilities()
 
-        assertEquals(102400L, result.capabilities.maxResourceSize)
+        assertEquals(102400L, result.capabilities.maxCalResourceSize)
     }
 
     @Test
@@ -196,7 +196,7 @@ class BaseWebDavCollectionTest {
                     "</multistatus>"
         ).queryCapabilities()
 
-        assertEquals(204800L, result.capabilities.maxResourceSize)
+        assertEquals(204800L, result.capabilities.maxCardResourceSize)
     }
 
 }

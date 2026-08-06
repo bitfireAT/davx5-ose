@@ -10,7 +10,7 @@ import at.bitfire.davdroid.resource.SyncState
 /**
  * Provides remote collection access as required for [at.bitfire.davdroid.sync.SyncManager].
  *
- * Currently, call sites just call through [davCollection], but the goal is to provide all remote collection
+ * Currently, most call sites just call through [davCollection], but the goal is to provide all remote collection
  * operations that are required for synchronization here.
  */
 interface WebDavCollection {
@@ -18,28 +18,23 @@ interface WebDavCollection {
     val davCollection: DavCollection
 
     /**
-     * Queries the collection's current sync state and capabilities (in one PROPFIND request).
+     * Queries the collection's current capabilities. Also fetches the [SyncState]
+     * in the same PROPFIND request to save a network round-trip.
      */
     suspend fun queryCapabilities(): QueryCapabilitiesResult
 
-    /**
-     * Result of [queryCapabilities]: the sync state and the capabilities, fetched together in one
-     * PROPFIND request to save a round-trip, but kept as two separate values since they're different
-     * concepts (a point-in-time change marker vs. a static server capability).
-     */
     data class QueryCapabilitiesResult(
         val syncState: SyncState?,
         val capabilities: Capabilities
     )
 
-    /**
-     * Result of [queryCapabilities] — shared by all implementations; properties that a specific
-     * collection type doesn't report keep their default value.
-     */
     data class Capabilities(
-        val maxResourceSize: Long? = null,
+        // CalDAV only
+        val maxCalResourceSize: Long? = null,
+
+        // CardDAV only
+        val maxCardResourceSize: Long? = null,
         val supportsCollectionSync: Boolean = false,
-        /** CardDAV only */
         val supportsVCard4: Boolean = false
     )
 

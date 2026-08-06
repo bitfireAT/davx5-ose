@@ -526,7 +526,6 @@ abstract class SyncManager<LocalType : LocalResource>(
      * Calls a function to list remote resources. All resources from the returned
      * list are downloaded and processed.
      *
-<<<<<<< HEAD
      * @param remoteItems   Multi-Status items to process
      * @param capabilities  current capabilities of the remote collection (passed on to [downloadRemote])
      */

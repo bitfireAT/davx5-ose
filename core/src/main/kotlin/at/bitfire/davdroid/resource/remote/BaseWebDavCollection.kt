@@ -16,9 +16,7 @@ import at.bitfire.dav4jvm.property.caldav.MaxResourceSize as CalDavMaxResourceSi
 import at.bitfire.dav4jvm.property.carddav.MaxResourceSize as CardDavMaxResourceSize
 
 /**
- * Common implementation of [WebDavCollection] for [CalDavCollection] and [CardDavCollection], based on dav4jvm.
- *
- * Not meant to be used directly — only its concrete subclasses represent an actual remote collection type.
+ * Common implementation of [WebDavCollection] for [CalDavCollection] and [CardDavCollection].
  */
 abstract class BaseWebDavCollection(
     open override val davCollection: DavCollection
@@ -27,10 +25,13 @@ abstract class BaseWebDavCollection(
     override suspend fun queryCapabilities(): WebDavCollection.QueryCapabilitiesResult {
         val response = davCollection.propfind(
             depth = 0,
+            // WebDAV
             WebDAV.SupportedReportSet,
-            CalDAV.GetCTag,
             WebDAV.SyncToken,
+            // CalDAV
+            CalDAV.GetCTag,
             CalDAV.MaxResourceSize,
+            // CardDAV
             CardDAV.MaxResourceSize,
             CardDAV.SupportedAddressData
         ).selfResponse() ?: return WebDavCollection.QueryCapabilitiesResult(
@@ -42,8 +43,8 @@ abstract class BaseWebDavCollection(
             syncState = response.syncState(),
             capabilities = WebDavCollection.Capabilities(
                 supportsCollectionSync = response[SupportedReportSet::class.java]?.reports?.contains(WebDAV.SyncCollection) == true,
-                maxResourceSize = response[CalDavMaxResourceSize::class.java]?.maxSize
-                    ?: response[CardDavMaxResourceSize::class.java]?.maxSize,
+                maxCalResourceSize = response[CalDavMaxResourceSize::class.java]?.maxSize,
+                maxCardResourceSize = response[CardDavMaxResourceSize::class.java]?.maxSize,
                 supportsVCard4 = response[SupportedAddressData::class.java]?.hasVCard4() == true
             )
         )
