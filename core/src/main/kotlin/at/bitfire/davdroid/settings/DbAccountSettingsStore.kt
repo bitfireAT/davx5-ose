@@ -9,9 +9,9 @@ import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.synctools.util.SensitiveString
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
-import jakarta.inject.Inject
+import dagger.assisted.AssistedInject
 
-class DbAccountSettingsStore @Inject constructor(@Assisted private val account: AccountId, db: AppDatabase) : AccountSettingsStore {
+class DbAccountSettingsStore @AssistedInject constructor(@Assisted private val account: AccountId, db: AppDatabase) : AccountSettingsStore {
     private val dao = db.dbAccountDao()
 
     @AssistedFactory
