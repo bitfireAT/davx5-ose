@@ -237,7 +237,6 @@ abstract class SyncManager<LocalType : LocalResource>(
      */
     protected open suspend fun prepare(): Boolean = true
 
-
     //region Processing of locally dirty/deleted items
 
     /**
@@ -527,6 +526,7 @@ abstract class SyncManager<LocalType : LocalResource>(
      * Calls a function to list remote resources. All resources from the returned
      * list are downloaded and processed.
      *
+<<<<<<< HEAD
      * @param remoteItems   Multi-Status items to process
      * @param capabilities  current capabilities of the remote collection (passed on to [downloadRemote])
      */
