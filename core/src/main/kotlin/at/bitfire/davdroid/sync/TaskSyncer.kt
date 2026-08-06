@@ -5,7 +5,6 @@
 package at.bitfire.davdroid.sync
 
 import android.content.ContentProviderClient
-import at.bitfire.dav4jvm.ktor.DavCalendar
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
@@ -85,7 +84,7 @@ class TaskSyncer @AssistedInject constructor(
             syncResult = syncResult,
             localCollection = localCollection,
             collectionInfo = remoteCollectionInfo,
-            remoteCollection = CalDavCollection(DavCalendar(httpClient, remoteCollectionInfo.url)),
+            remoteCollection = CalDavCollection(httpClient, remoteCollectionInfo.url),
             resync = resync,
             settings = settings
         )
