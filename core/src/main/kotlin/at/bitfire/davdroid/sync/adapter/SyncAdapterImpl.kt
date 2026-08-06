@@ -19,7 +19,6 @@ import androidx.work.WorkManager
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.accounts.AndroidAccountManager
-import at.bitfire.davdroid.accounts.toAndroidAccount
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
@@ -170,7 +169,7 @@ class SyncAdapterImpl @Inject constructor(
      */
     private fun checkSyncConditions(accountId: AccountId): Boolean {
         val accountSettings = try {
-            accountSettingsFactory.create(account.toAccountId())
+            accountSettingsFactory.create(accountId)
         } catch (e: InvalidAccountException) {
             logger.log(Level.WARNING, "Account doesn't exist anymore", e)
             return false

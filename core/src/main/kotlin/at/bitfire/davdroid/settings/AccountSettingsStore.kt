@@ -6,7 +6,7 @@ package at.bitfire.davdroid.settings
 
 import at.bitfire.synctools.util.SensitiveString
 
-sealed interface AccountSettingsStore {
+interface AccountSettingsStore {
     /**
      * Gets the value stored at [key].
      */

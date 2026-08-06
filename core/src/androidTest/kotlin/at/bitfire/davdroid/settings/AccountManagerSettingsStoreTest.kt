@@ -20,13 +20,13 @@ import org.junit.Test
 import javax.inject.Inject
 
 @HiltAndroidTest
-class AccountSettingsTest {
+class AccountManagerSettingsStoreTest {
 
     @Inject @ApplicationContext
     lateinit var context: Context
 
     @Inject
-    lateinit var accountSettingsFactory: AccountSettings.Factory
+    lateinit var factory: AccountManagerSettingsStore.Factory
 
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
@@ -43,7 +43,7 @@ class AccountSettingsTest {
     fun testUpdate_MissingMigrations() {
         TestAccount.provide(version = 1) { account ->
             // will run AccountSettings.update
-            accountSettingsFactory.create(account, abortOnMissingMigration = true)
+            factory.create(account, abortOnMissingMigration = true)
         }
     }
 
@@ -51,7 +51,7 @@ class AccountSettingsTest {
     fun testUpdate_RunAllMigrations() {
         TestAccount.provide(version = 6) { account ->
             // will run AccountSettings.update
-            accountSettingsFactory.create(account, abortOnMissingMigration = true)
+            factory.create(account, abortOnMissingMigration = true)
 
             val accountManager = AccountManager.get(context)
             val version = accountManager.getUserData(account, AccountSettings.KEY_SETTINGS_VERSION).toInt()

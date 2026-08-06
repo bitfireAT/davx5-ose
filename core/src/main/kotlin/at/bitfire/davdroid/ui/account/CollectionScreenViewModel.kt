@@ -16,6 +16,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import at.bitfire.davdroid.accounts.toAccountId
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.di.qualifier.ApplicationScope
@@ -27,7 +28,7 @@ import at.bitfire.davdroid.repository.DavSyncStatsRepository
 import at.bitfire.davdroid.resource.LocalAddressBookStore
 import at.bitfire.davdroid.resource.LocalCalendarStore
 import at.bitfire.davdroid.resource.LocalDataStore
-import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.settings.AccountSettingsFactory
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.sync.TasksAppManager
@@ -64,7 +65,7 @@ import java.util.logging.Logger
 class CollectionScreenViewModel @AssistedInject constructor(
     @ApplicationContext val context: Context,
     private val accountRepository: AccountRepository,
-    private val accountSettingsFactory: AccountSettings.Factory,
+    private val accountSettingsFactory: AccountSettingsFactory,
     @ApplicationScope private val applicationScope: CoroutineScope,
     @Assisted val collectionId: Long,
     private val collectionRepository: DavCollectionRepository,
@@ -158,7 +159,7 @@ class CollectionScreenViewModel @AssistedInject constructor(
 
     private suspend fun getTimeRangePastDays(account: Account): Int? {
         return withContext(ioDispatcher) {
-            val accountSettings = accountSettingsFactory.create(account)
+            val accountSettings = accountSettingsFactory.create(account.toAccountId())
             accountSettings.getTimeRangePastDays()
         }
     }

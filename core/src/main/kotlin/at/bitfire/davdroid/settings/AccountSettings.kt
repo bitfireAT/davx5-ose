@@ -4,7 +4,6 @@
 package at.bitfire.davdroid.settings
 
 import android.accounts.AccountManager
-import android.os.Looper
 import androidx.annotation.WorkerThread
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.settings.AccountSettings.Companion.CREDENTIALS_LOCK
@@ -21,12 +20,7 @@ import net.openid.appauth.AuthState
 
 /**
  * Manages settings of an account.
- *
- * **Must not be called from main thread as it uses blocking I/O and may run migrations.**
- *
  * @param accountId                 account to take settings from
- *
- * @throws IllegalThreadStateException On construction if on main thread.
  */
 @WorkerThread   
 class AccountSettings @AssistedInject constructor(
@@ -40,11 +34,6 @@ class AccountSettings @AssistedInject constructor(
     interface Factory {
         @WorkerThread
         fun create(account: AccountId, store: AccountSettingsStore): AccountSettings
-    }
-
-    init {
-        if (Looper.getMainLooper() == Looper.myLooper())
-            throw IllegalThreadStateException("AccountSettings may not be used on main thread")
     }
 
 

@@ -7,6 +7,7 @@ package at.bitfire.davdroid.settings
 import android.accounts.Account
 import android.accounts.AccountManager
 import android.content.Context
+import android.os.Looper
 import androidx.annotation.WorkerThread
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.settings.AccountSettings.Companion.CURRENT_VERSION
@@ -18,15 +19,19 @@ import at.bitfire.synctools.util.SensitiveString.Companion.toSensitiveString
 import at.bitfire.synctools.util.setAndVerifyUserData
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import java.util.Collections
 import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Provider
 
-class AccountManagerSettingsStore(
+/**
+ * **Must not be called from main thread as it uses blocking I/O and may run migrations.**
+ */
+class AccountManagerSettingsStore @AssistedInject constructor(
+    @Assisted val account: Account,
     @Assisted val abortOnMissingMigration: Boolean,
     context: Context,
-    val account: Account,
     private val logger: Logger,
     private val migrations: Map<Int, @JvmSuppressWildcards Provider<AccountSettingsMigration>>,
 ) : AccountSettingsStore {
@@ -41,6 +46,11 @@ class AccountManagerSettingsStore(
     }
 
     private val accountManager = AccountManager.get(context)
+
+    init {
+        if (Looper.getMainLooper() == Looper.myLooper())
+            throw IllegalThreadStateException("AccountManagerSettingsStore may not be used on main thread")
+    }
 
     init {
         if (account.type != context.getString(R.string.account_type))

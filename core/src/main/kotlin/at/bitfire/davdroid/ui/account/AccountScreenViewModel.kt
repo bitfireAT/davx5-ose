@@ -14,7 +14,6 @@ import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.accounts.toAccountId
-import at.bitfire.davdroid.accounts.toAndroidAccount
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.repository.AccountRepository
@@ -22,6 +21,7 @@ import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.settings.AccountSettingsFactory
 import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.TasksAppManager
 import at.bitfire.davdroid.sync.account.InvalidAccountException
@@ -49,7 +49,7 @@ class AccountScreenViewModel @AssistedInject constructor(
     @Assisted val accountId: AccountId,
     private val accountRepository: AccountRepository,
     accountProgressUseCase: AccountProgressUseCase,
-    private val accountSettingsFactory: AccountSettings.Factory,
+    private val accountSettingsFactory: AccountSettingsFactory,
     private val collectionRepository: DavCollectionRepository,
     @ApplicationContext val context: Context,
     private val collectionSelectedUseCase: Lazy<CollectionSelectedUseCase>,
@@ -72,7 +72,7 @@ class AccountScreenViewModel @AssistedInject constructor(
      */
     private val accountSettings: AccountSettings? by lazy {
         try {
-            accountSettingsFactory.create(accountId.toAndroidAccount())
+            accountSettingsFactory.create(accountId)
         } catch (_: InvalidAccountException) {
             null
         }
