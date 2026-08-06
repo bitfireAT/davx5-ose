@@ -27,6 +27,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.ktor.client.engine.mock.toByteArray
+import io.ktor.http.Url
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import okio.Buffer
@@ -144,7 +145,7 @@ class CalendarSyncManagerTest {
         syncResult = mockk(),
         localCalendar = mockk(),
         collectionInfo = mockk(),
-        remoteCollection = CalDavCollection(mockk()),
+        remoteCollection = CalDavCollection(mockk(), Url("https://example.com/dav/")),
         resync = mockk(),
         settings = SyncSettingsFixtures.default()
     )

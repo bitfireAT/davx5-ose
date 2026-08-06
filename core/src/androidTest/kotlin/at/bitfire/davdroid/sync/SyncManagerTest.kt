@@ -7,7 +7,6 @@ package at.bitfire.davdroid.sync
 import android.content.Context
 import androidx.core.app.NotificationManagerCompat
 import androidx.hilt.work.HiltWorkerFactory
-import at.bitfire.dav4jvm.ktor.DavCollection
 import at.bitfire.dav4jvm.ktor.PropStat
 import at.bitfire.dav4jvm.ktor.Response
 import at.bitfire.dav4jvm.ktor.Response.HrefRelation
@@ -544,7 +543,7 @@ class SyncManagerTest {
         syncResult,
         localCollection,
         collection,
-        spyk(TestWebDavCollection(DavCollection(client, collection.url))),
+        spyk(TestWebDavCollection(client, collection.url)),
         SyncSettingsFixtures.default()
     )
 

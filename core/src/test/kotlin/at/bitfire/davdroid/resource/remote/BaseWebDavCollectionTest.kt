@@ -9,7 +9,9 @@ import at.bitfire.davdroid.resource.SyncState
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
+import io.ktor.client.request.HttpRequestData
 import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.Url
 import io.ktor.http.headersOf
@@ -28,8 +30,17 @@ class BaseWebDavCollectionTest {
         val engine = MockEngine { _ ->
             respond(xmlResponse, HttpStatusCode.MultiStatus, headersOf(HttpHeaders.ContentType, "text/xml"))
         }
-        return object : BaseWebDavCollection(DavCollection(HttpClient(engine), url)) {}
+        return collection(engine)
     }
+
+    private fun collection(engine: MockEngine): BaseWebDavCollection {
+        val httpClient = HttpClient(engine)
+        return object : BaseWebDavCollection(httpClient, url) {
+            override val davCollection = DavCollection(httpClient, url)
+        }
+    }
+
+    // read/query
 
     @Test
     fun `queryCapabilities() with no self-response returns defaults`() = runTest {
@@ -248,6 +259,64 @@ class BaseWebDavCollectionTest {
         ).querySyncState()
 
         assertEquals(SyncState(SyncState.Type.SYNC_TOKEN, "http://example.com/ns/sync/token123"), syncState)
+    }
+
+    // delete
+
+    @Test
+    fun `deleteMember() sends DELETE to the member URL`() = runTest {
+        var request: HttpRequestData? = null
+        val engine = MockEngine { req ->
+            request = req
+            respond("", HttpStatusCode.NoContent)
+        }
+
+        collection(engine).deleteMember("some-file.ics")
+
+        assertEquals(HttpMethod.Delete, request?.method)
+        assertEquals(Url("https://example.com/dav/some-file.ics"), request?.url)
+    }
+
+    @Test
+    fun `deleteMember() sets If-Match when ifETag is given`() = runTest {
+        var request: HttpRequestData? = null
+        val engine = MockEngine { req ->
+            request = req
+            respond("", HttpStatusCode.NoContent)
+        }
+
+        collection(engine).deleteMember("some-file.ics", ifETag = "some-etag")
+
+        assertEquals("\"some-etag\"", request?.headers?.get(HttpHeaders.IfMatch))
+    }
+
+    @Test
+    fun `deleteMember() sets If-Schedule-Tag-Match when ifScheduleTag is given`() = runTest {
+        var request: HttpRequestData? = null
+        val engine = MockEngine { req ->
+            request = req
+            respond("", HttpStatusCode.NoContent)
+        }
+
+        collection(engine).deleteMember("some-file.ics", ifScheduleTag = "some-schedule-tag")
+
+        assertEquals("\"some-schedule-tag\"", request?.headers?.get(HttpHeaders.IfScheduleTagMatch))
+    }
+
+    @Test
+    fun `deleteMember() passes through additionalHeaders`() = runTest {
+        var request: HttpRequestData? = null
+        val engine = MockEngine { req ->
+            request = req
+            respond("", HttpStatusCode.NoContent)
+        }
+
+        collection(engine).deleteMember(
+            "some-file.ics",
+            additionalHeaders = mapOf("Push-Dont-Notify" to "\"some-subscription\"")
+        )
+
+        assertEquals("\"some-subscription\"", request?.headers?.get("Push-Dont-Notify"))
     }
 
 }

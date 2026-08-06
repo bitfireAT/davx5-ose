@@ -6,7 +6,6 @@ package at.bitfire.davdroid.sync
 
 import android.content.ContentProviderClient
 import android.content.Context
-import at.bitfire.dav4jvm.ktor.DavCalendar
 import at.bitfire.davdroid.accounts.LegacyAccount
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
@@ -103,7 +102,7 @@ class JtxSyncManagerTest {
             syncResult = SyncResult(),
             localCollection = localJtxCollection,
             collectionInfo = dbCollection,
-            remoteCollection = CalDavCollection(DavCalendar(httpClient, dbCollection.url)),
+            remoteCollection = CalDavCollection(httpClient, dbCollection.url),
             resync = null,
             settings = SyncSettingsFixtures.default()
         )
