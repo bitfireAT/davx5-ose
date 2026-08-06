@@ -6,4 +6,4 @@ package at.bitfire.davdroid.resource.remote
 
 import at.bitfire.dav4jvm.ktor.DavCollection
 
-class TestWebDavCollection(override val davCollection: DavCollection) : WebDavCollection
+class TestWebDavCollection(davCollection: DavCollection) : BaseWebDavCollection(davCollection)

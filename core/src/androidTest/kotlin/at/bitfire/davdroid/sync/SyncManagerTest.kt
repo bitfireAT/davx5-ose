@@ -31,10 +31,12 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.Url
 import io.ktor.http.headersOf
+import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit4.MockKRule
 import io.mockk.mockk
+import io.mockk.spyk
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -150,6 +152,7 @@ class SyncManagerTest {
         val syncManager = syncManager(collection)
         syncManager.performSync()
 
+        coVerify(exactly = 1) { syncManager.remoteCollection.queryCapabilities() }
         assertFalse(syncManager.didGenerateUpload)
         assertTrue(syncManager.didListAllRemote)
         assertFalse(syncManager.didDownloadRemote)
@@ -190,6 +193,7 @@ class SyncManagerTest {
         }
         syncManager.performSync()
 
+        coVerify(exactly = 1) { syncManager.remoteCollection.queryCapabilities() }
         assertTrue(syncManager.didGenerateUpload)
         assertTrue(syncManager.didListAllRemote)
         assertFalse(syncManager.didDownloadRemote)
@@ -540,7 +544,7 @@ class SyncManagerTest {
         syncResult,
         localCollection,
         collection,
-        TestWebDavCollection(DavCollection(client, collection.url)),
+        spyk(TestWebDavCollection(DavCollection(client, collection.url))),
         SyncSettingsFixtures.default()
     )
 
