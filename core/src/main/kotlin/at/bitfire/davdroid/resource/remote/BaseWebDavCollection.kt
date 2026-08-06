@@ -31,6 +31,8 @@ abstract class BaseWebDavCollection(
     protected val url: Url
 ) : WebDavCollection {
 
+    // read/query
+
     override suspend fun queryCapabilities(): WebDavCollection.QueryCapabilitiesResult {
         val response = davCollection.propfind(
             depth = 0,
@@ -62,6 +64,9 @@ abstract class BaseWebDavCollection(
     override suspend fun querySyncState(): SyncState? =
         davCollection.propfind(depth = 0, CalDAV.GetCTag, WebDAV.SyncToken).selfResponse()?.syncState()
 
+
+    // delete
+
     override suspend fun deleteMember(
         fileName: String,
         ifETag: String?,
@@ -71,16 +76,20 @@ abstract class BaseWebDavCollection(
         val memberUrl = URLBuilder(url).appendPathSegments(fileName, encodeSlash = true).build()
         DavResource(httpClient, memberUrl).delete(
             additionalHeaders = headers {
-                if (ifETag != null)
-                // only delete specific version
+                if (ifETag != null) {
+                    // only delete specific version
                     append(HttpHeaders.IfMatch, QuotedStringUtils.asQuotedString(ifETag))
-                if (ifScheduleTag != null)
-                // only delete specific version
+                }
+                if (ifScheduleTag != null) {
+                    // only delete specific version
                     append(HttpHeaders.IfScheduleTagMatch, QuotedStringUtils.asQuotedString(ifScheduleTag))
+                }
 
                 appendAll(additionalHeaders)
             }
-        ) {}
+        ) {
+            // don't do anything special on success
+        }
     }
 
 }

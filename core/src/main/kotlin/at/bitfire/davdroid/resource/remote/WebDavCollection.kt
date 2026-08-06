@@ -17,6 +17,9 @@ interface WebDavCollection {
 
     val davCollection: DavCollection
 
+
+    // read/query
+
     /**
      * Queries the collection's current capabilities. Also fetches the [SyncState]
      * in the same PROPFIND request to save a network round-trip.
@@ -46,6 +49,9 @@ interface WebDavCollection {
      * Queries the collection's current [SyncState] (`sync-token` or `CTag`).
      */
     suspend fun querySyncState(): SyncState?
+
+
+    // delete
 
     /**
      * Deletes a member (non-collection resource) of this collection (HTTP `DELETE`).
