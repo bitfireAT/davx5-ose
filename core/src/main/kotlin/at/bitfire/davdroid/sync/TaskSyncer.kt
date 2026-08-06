@@ -5,8 +5,8 @@
 package at.bitfire.davdroid.sync
 
 import android.content.ContentProviderClient
+import at.bitfire.dav4jvm.ktor.DavCalendar
 import at.bitfire.davdroid.accounts.AccountId
-import at.bitfire.davdroid.accounts.AndroidAccountManager
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.resource.LocalTaskList
@@ -70,7 +70,7 @@ class TaskSyncer @AssistedInject constructor(
     override suspend fun syncCollection(
         provider: ContentProviderClient,
         localCollection: LocalTaskList,
-        remoteCollection: Collection
+        remoteCollectionInfo: Collection
     ) {
         logger.log(
             Level.INFO,
@@ -79,13 +79,14 @@ class TaskSyncer @AssistedInject constructor(
         )
 
         val syncManager = tasksSyncManagerFactory.tasksSyncManager(
-            accountId,
-            httpClient,
-            syncResult,
-            localCollection,
-            remoteCollection,
-            resync,
-            settings
+            accountId = accountId,
+            httpClient = httpClient,
+            syncResult = syncResult,
+            localCollection = localCollection,
+            collectionInfo = remoteCollectionInfo,
+            davCollection = DavCalendar(httpClient, remoteCollectionInfo.url),
+            resync = resync,
+            settings = settings
         )
         syncManager.performSync()
     }

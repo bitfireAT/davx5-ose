@@ -79,10 +79,13 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
         syncNotificationManagerFactory.create(accountId)
     }
 
-    @WillCloseWhenClosed
-    val httpClient by lazy {
+    private val lazyHttpClient = lazy {
         httpClientBuilder.fromAccount(accountId).build()
     }
+
+    /** authenticated HTTP client to be used by subclasses */
+    @WillCloseWhenClosed
+    val httpClient by lazyHttpClient
 
     /**
      * Creates, updates and/or deletes local collections (calendars, address books, etc) according to
@@ -222,7 +225,8 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
     }
 
     override fun close() {
-        httpClient.close()
+        if (lazyHttpClient.isInitialized())
+            httpClient.close()
     }
 
     /**
@@ -248,13 +252,13 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
      *
      * @param provider The content provider client to access the local collection to be updated
      * @param localCollection The local collection to be synchronized
-     * @param remoteCollection The database collection representing the remote collection. Contains
+     * @param remoteCollectionInfo The database collection representing the remote collection. Contains
      * remote address of the collection to be synchronized.
      */
     abstract suspend fun syncCollection(
         provider: ContentProviderClient,
         localCollection: CollectionType,
-        remoteCollection: Collection
+        remoteCollectionInfo: Collection
     )
 
     /**

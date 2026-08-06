@@ -192,7 +192,7 @@ class SyncerTest {
         override suspend fun syncCollection(
             provider: ContentProviderClient,
             localCollection: LocalTestCollection,
-            remoteCollection: Collection
+            remoteCollectionInfo: Collection
         ) {
             throw NotImplementedError()
         }

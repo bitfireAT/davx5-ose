@@ -106,7 +106,8 @@ class ContactsSyncManager @AssistedInject constructor(
     @Assisted syncResult: SyncResult,
     @Assisted val provider: ContentProviderClient,
     @Assisted override val localCollection: LocalAddressBook,
-    @Assisted collection: Collection,
+    @Assisted collectionInfo: Collection,
+    @Assisted override val davCollection: DavAddressBook,
     @Assisted resync: ResyncType?,
     @Assisted val syncFrameworkUpload: Boolean,
     @Assisted settings: SyncSettings,
@@ -115,12 +116,12 @@ class ContactsSyncManager @AssistedInject constructor(
     private val productIds: ProductIds,
     private val resourceRetrieverFactory: ResourceRetriever.Factory,
     @SyncTransferSemaphore syncTransferSemaphore: Semaphore
-): SyncManager<LocalAddress, DavAddressBook>(
+) : SyncManager<LocalAddress>(
     accountId,
     httpClient,
     SyncDataType.CONTACTS,
     syncResult,
-    collection,
+    collectionInfo,
     resync,
     ioDispatcher,
     syncTransferSemaphore,
@@ -135,7 +136,8 @@ class ContactsSyncManager @AssistedInject constructor(
             syncResult: SyncResult,
             provider: ContentProviderClient,
             localAddressBook: LocalAddressBook,
-            collection: Collection,
+            collectionInfo: Collection,
+            davCollection: DavAddressBook,
             resync: ResyncType?,
             syncFrameworkUpload: Boolean,
             settings: SyncSettings
@@ -160,14 +162,12 @@ class ContactsSyncManager @AssistedInject constructor(
                 return false
         }
 
-        davCollection = DavAddressBook(httpClient, collection.url)
-
         logger.info("Contact group strategy: ${groupStrategy::class.java.simpleName}")
         return true
     }
 
     override suspend fun queryCapabilities(): SyncState? {
-        return collection.url.withExceptionContext {
+        return collectionInfo.url.withExceptionContext {
             val response = davCollection.propfind(
                 0,
                 CardDAV.MaxResourceSize,
@@ -252,14 +252,14 @@ class ContactsSyncManager @AssistedInject constructor(
     }
 
     override fun listAllRemote(): Flow<MultiStatusItem> = flow {
-        collection.url.withExceptionContext {
+        collectionInfo.url.withExceptionContext {
             emitAll(davCollection.propfind(1, WebDAV.ResourceType, WebDAV.GetETag))
         }
     }
 
     override suspend fun downloadRemote(bunch: List<Url>) {
         logger.info("Downloading ${bunch.size} vCard(s): $bunch")
-        collection.url.withExceptionContext {
+        collectionInfo.url.withExceptionContext {
             val contentType: String?
             val version: String?
             when {
