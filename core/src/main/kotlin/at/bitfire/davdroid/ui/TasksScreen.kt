@@ -96,6 +96,8 @@ fun TasksCard(
     val openTasksInstalled = model.openTasksInstalled
     val openTasksSelected by model.openTasksSelected.collectAsStateWithLifecycle(false)
 
+    val builtInSelected by model.builtInSelected.collectAsStateWithLifecycle(false)
+
     val showAgain by model.showAgain.collectAsStateWithLifecycle(true)
 
     TasksCard(
@@ -105,12 +107,16 @@ fun TasksCard(
         tasksOrgInstalled = tasksOrgInstalled,
         openTasksSelected = openTasksSelected,
         openTasksInstalled = openTasksInstalled,
+        builtInSelected = builtInSelected,
         showAgain = showAgain,
         onSetShowAgain = model::setShowAgain,
         onProviderSelected = { provider ->
             if (currentProvider != provider)
                 model.selectProvider(provider)
         },
+        // always re-apply, even if already selected: harmless, and lets the user force a
+        // re-sync of the automatic-sync setup (e.g. after an app update) without switching away first
+        onBuiltInSelected = model::selectBuiltInProvider,
         installApp = { packageName ->
             val uri = ("market://details?id=$packageName&referrer=" +
                     Uri.encode("utm_source=" + context.packageName)).toUri()
@@ -137,7 +143,9 @@ fun TasksCard(
     tasksOrgInstalled: Boolean,
     openTasksSelected: Boolean,
     openTasksInstalled: Boolean,
+    builtInSelected: Boolean = false,
     onProviderSelected: (TaskProvider.ProviderName) -> Unit = {},
+    onBuiltInSelected: () -> Unit = {},
     installApp: (String) -> Unit = {},
     showAgain: Boolean,
     onSetShowAgain: (Boolean) -> Unit = {}
@@ -204,6 +212,22 @@ fun TasksCard(
                 onToggled = { toggled ->
                     if (toggled) installApp(TaskProvider.ProviderName.OpenTasks.packageName)
                 },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 12.dp)
+            )
+
+            RadioWithSwitch(
+                title = stringResource(R.string.intro_tasks_davx5_builtin),
+                summary = {
+                    Text(stringResource(R.string.intro_tasks_davx5_builtin_info))
+                },
+                isSelected = builtInSelected,
+                isToggled = true,
+                enabled = true,
+                switchEnabled = false,
+                onSelected = onBuiltInSelected,
+                onToggled = { /* always available, nothing to install - switch is disabled */ },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 12.dp)

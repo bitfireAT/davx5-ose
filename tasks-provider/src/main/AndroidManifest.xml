@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
+  -->
+
+<!--
+  The <provider> element itself (with its authority) is declared by the consuming application
+  module (e.g. app-ose), because the authority is derived from the applicationId (D1: a fixed
+  authority would make OSE / Managed / Select collide). See DavTasksProvider.
+
+  The permissions that gate access to it are vendor-neutral (not "...davdroid...", see
+  TasksContract) and declared here, travelling with this module regardless of which app hosts
+  the provider.
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <permission
+        android:name="at.bitfire.tasks.permission.READ"
+        android:label="@string/tasks_provider_permission_read_label"
+        android:description="@string/tasks_provider_permission_read_description"
+        android:protectionLevel="dangerous" />
+    <permission
+        android:name="at.bitfire.tasks.permission.WRITE"
+        android:label="@string/tasks_provider_permission_write_label"
+        android:description="@string/tasks_provider_permission_write_description"
+        android:protectionLevel="dangerous" />
+
+</manifest>

@@ -11,6 +11,7 @@ import android.os.Bundle
 import android.provider.ContactsContract
 import at.bitfire.davdroid.resource.LocalAddressBookStore
 import at.bitfire.davdroid.sync.SyncDataType
+import at.bitfire.davdroid.sync.TasksAppManager
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -32,7 +33,8 @@ import javax.inject.Inject
  */
 class AccountSettingsMigration21 @Inject constructor(
     private val localAddressBookStore: LocalAddressBookStore,
-    private val logger: Logger
+    private val logger: Logger,
+    private val tasksAppManager: dagger.Lazy<TasksAppManager>
 ): AccountSettingsMigration {
 
     /**
@@ -48,7 +50,8 @@ class AccountSettingsMigration21 @Inject constructor(
 
             // Request calendar and tasks syncs and cancel all syncs account wide
             val possibleAuthorities = SyncDataType.EVENTS.possibleAuthorities() +
-                    SyncDataType.TASKS.possibleAuthorities()
+                    SyncDataType.TASKS.possibleAuthorities() +
+                    tasksAppManager.get().builtInAuthority
             for (authority in possibleAuthorities) {
                 ContentResolver.requestSync(account, authority, extras)
                 logger.info("Android 14+: Canceling all (possibly forever pending) sync adapter syncs for $authority and $account")

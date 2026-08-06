@@ -122,7 +122,7 @@ class SyncAdapterImpl @Inject constructor(
         logger.info("Starting OneTimeSyncWorker for $account $authority and waiting for it")
         val workerName = syncWorkerManager.enqueueOneTime(
             account.toAccountId(),
-            dataType = SyncDataType.fromAuthority(authority),
+            dataType = SyncDataType.fromAuthority(authority, context),
             fromUpload = upload
         )
 

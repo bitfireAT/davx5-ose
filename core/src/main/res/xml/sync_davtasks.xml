@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
+  -->
+
+<!-- Sync adapter for the DAVx⁵-hosted tasks provider (doc/tasks-provider.md). Unlike the other
+sync_*.xml resources, contentAuthority isn't a fixed literal: it's derived from applicationId
+(D1), resolved via the same @string/tasks_provider_authority resValue override the provider's
+own authority uses (see app-ose/build.gradle.kts). -->
+<sync-adapter xmlns:android="http://schemas.android.com/apk/res/android"
+    android:contentAuthority="@string/tasks_provider_authority"
+    android:accountType="@string/account_type"
+    android:userVisible="false"
+    android:supportsUploading="true"
+    android:allowParallelSyncs="true"
+    android:isAlwaysSyncable="true" />

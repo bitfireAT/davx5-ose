@@ -45,6 +45,22 @@
                     android:resource="@xml/debug_paths" />
         </provider>
 
+        <!-- DAVx5-hosted VTODO tasks provider for third-party frontend apps, see
+        doc/tasks-provider.md. Authority is derived from applicationId (not fixed), so OSE /
+        Managed / Select can be installed side by side (D1); frontends discover it at runtime
+        via the TASKS_PROVIDER intent-filter, not via a hardcoded authority. -->
+        <provider
+                android:name="at.bitfire.davdroid.tasks.provider.DavTasksProvider"
+                android:authorities="${tasksAuthority}"
+                android:exported="true"
+                android:grantUriPermissions="true"
+                android:readPermission="at.bitfire.tasks.permission.READ"
+                android:writePermission="at.bitfire.tasks.permission.WRITE">
+            <intent-filter>
+                <action android:name="at.bitfire.tasks.action.TASKS_PROVIDER" />
+            </intent-filter>
+        </provider>
+
     </application>
 
 </manifest>

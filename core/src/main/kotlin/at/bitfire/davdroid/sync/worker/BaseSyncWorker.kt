@@ -22,6 +22,7 @@ import at.bitfire.davdroid.push.PushNotificationManager
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.AddressBookSyncer
 import at.bitfire.davdroid.sync.CalendarSyncer
+import at.bitfire.davdroid.sync.DavTaskSyncer
 import at.bitfire.davdroid.sync.JtxSyncer
 import at.bitfire.davdroid.sync.ResyncType
 import at.bitfire.davdroid.sync.SyncConditions
@@ -82,6 +83,9 @@ abstract class BaseSyncWorker(
 
     @Inject
     lateinit var taskSyncer: TaskSyncer.Factory
+
+    @Inject
+    lateinit var davTaskSyncer: DavTaskSyncer.Factory
 
     override suspend fun doIoWork(): Result {
         val accountId = requireNotNull(inputData.getAccountId()) { "AccountId required" }
@@ -164,7 +168,9 @@ abstract class BaseSyncWorker(
             SyncDataType.EVENTS ->
                 calendarSyncer.create(accountId, resyncType, syncResult, settings)
             SyncDataType.TASKS -> {
-                when (val currentProvider = tasksAppManager.get().currentProvider()) {
+                if (tasksAppManager.get().isBuiltInProviderSelected())
+                    davTaskSyncer.create(account, resyncType, syncResult, settings)
+                else when (val currentProvider = tasksAppManager.get().currentProvider()) {
                     TaskProvider.ProviderName.JtxBoard ->
                         jtxSyncer.create(accountId, resyncType, syncResult, settings)
                     TaskProvider.ProviderName.OpenTasks,

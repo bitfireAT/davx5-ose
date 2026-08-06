@@ -17,6 +17,7 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.toAccountId
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.resource.LocalDataStore
+import at.bitfire.davdroid.resource.LocalDavTaskListStore
 import at.bitfire.davdroid.resource.LocalJtxCollectionStore
 import at.bitfire.davdroid.resource.LocalTaskListStore
 import at.bitfire.davdroid.settings.Settings
@@ -44,7 +45,24 @@ class TasksAppManager @Inject constructor(
     private val settingsManager: SettingsManager,
     private val localTaskListStoreFactory: LocalTaskListStore.Factory,
     private val localJtxCollectionStore: Lazy<LocalJtxCollectionStore>,
+    private val localDavTaskListStore: Lazy<LocalDavTaskListStore>,
 ) {
+
+    /**
+     * Authority of the DAVx⁵-hosted tasks provider (doc/tasks-provider.md), unlike
+     * [ProviderName]'s authorities not a compile-time constant (D1).
+     */
+    val builtInAuthority: String
+        get() = context.getString(R.string.tasks_provider_authority)
+
+    /**
+     * Whether the DAVx⁵-hosted tasks provider is currently the selected tasks app.
+     *
+     * Not yet reachable from the Settings UI (a known follow-up, see doc/tasks-provider.md) —
+     * but [getDataStore] and the sync worker dispatch already honor it once selected.
+     */
+    fun isBuiltInProviderSelected(): Boolean =
+        settingsManager.getString(Settings.SELECTED_TASKS_PROVIDER) == builtInAuthority
 
     /**
      * Gets the currently selected tasks app, if installed.
@@ -95,6 +113,20 @@ class TasksAppManager @Inject constructor(
             automaticSyncManager.updateAutomaticSync(accountId, SyncDataType.TASKS)
     }
 
+    /**
+     * Selects the DAVx⁵-hosted tasks provider as the tasks app. No permission check needed
+     * (it's part of this app, not an external one to grant permissions to).
+     */
+    @WorkerThread
+    fun selectBuiltInProvider() {
+        logger.info("Selecting tasks app: built-in ($builtInAuthority)")
+
+        settingsManager.putString(Settings.SELECTED_TASKS_PROVIDER, builtInAuthority)
+
+        for (account in accountRepository.get().getAllBlocking())
+            automaticSyncManager.updateAutomaticSync(account.toAccountId(), SyncDataType.TASKS)
+    }
+
 
     /**
      * Show a notification that starts an Intent and redirects the user to the tasks app in the app store.
@@ -140,6 +172,9 @@ class TasksAppManager @Inject constructor(
     }
 
     fun getDataStore(): LocalDataStore<*>? {
+        if (isBuiltInProviderSelected())
+            return localDavTaskListStore.get()
+
         val provider = currentProvider() ?: return null
         return when (provider) {
             ProviderName.TasksOrg, ProviderName.OpenTasks -> localTaskListStoreFactory.create(provider)

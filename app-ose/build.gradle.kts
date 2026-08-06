@@ -24,12 +24,15 @@ android {
         can be installed beside DAVx5. */
         val webdavAuthority = "${applicationId}.provider.webdav"
         val debugInfoAuthority = "${applicationId}.provider.debuginfo"
+        val tasksAuthority = "${applicationId}.tasks"
         manifestPlaceholders["webdavAuthority"] = webdavAuthority
         manifestPlaceholders["debugInfoAuthority"] = debugInfoAuthority
+        manifestPlaceholders["tasksAuthority"] = tasksAuthority
         /* Override the default string values from the core library (core/src/main/res/values/strings.xml)
         so that code using getString(R.string.webdav_authority) etc. gets the correct authority. */
         resValue("string", "webdav_authority", webdavAuthority)
         resValue("string", "authority_debug_provider", debugInfoAuthority)
+        resValue("string", "tasks_provider_authority", tasksAuthority)
 
         // Currently no instrumentation tests for app-ose, so no testInstrumentationRunner
     }
@@ -94,6 +97,7 @@ android {
 dependencies {
     // include core subproject (manages its own dependencies itself, however from same version catalog)
     implementation(project(":core"))
+    implementation(project(":tasks-provider"))
 
     // Kotlin / Android
     implementation(libs.kotlin.stdlib)
