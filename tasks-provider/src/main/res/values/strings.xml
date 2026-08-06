@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
+  -->
+
+<resources>
+    <string name="tasks_provider_permission_read_label">read your tasks</string>
+    <string name="tasks_provider_permission_read_description">Allows apps to read task lists and tasks stored by DAVx5, entirely on-device — no network access.</string>
+    <string name="tasks_provider_permission_write_label">create and edit your tasks</string>
+    <string name="tasks_provider_permission_write_description">Allows apps to create, edit and delete tasks in DAVx5\'s task lists, entirely on-device — no network access.</string>
+</resources>
