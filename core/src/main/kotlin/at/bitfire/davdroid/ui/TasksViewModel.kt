@@ -12,6 +12,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
+import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.sync.TasksAppManager
 import at.bitfire.davdroid.util.packageChangedFlow
@@ -55,6 +56,10 @@ class TasksViewModel @Inject constructor(
     val tasksOrgSelected = currentProvider.map { it == TaskProvider.ProviderName.TasksOrg }
     val openTasksSelected = currentProvider.map { it == TaskProvider.ProviderName.OpenTasks }
 
+    /** The DAVx⁵-hosted tasks provider isn't a [TaskProvider.ProviderName], so it needs its own flow. */
+    val builtInSelected = settings.getStringFlow(Settings.SELECTED_TASKS_PROVIDER)
+        .map { it == tasksAppManager.builtInAuthority }
+
     var jtxInstalled by mutableStateOf(false)
     var tasksOrgInstalled by mutableStateOf(false)
     var openTasksInstalled by mutableStateOf(false)
@@ -79,6 +84,10 @@ class TasksViewModel @Inject constructor(
 
     fun selectProvider(provider: TaskProvider.ProviderName) = viewModelScope.launch(ioDispatcher) {
         tasksAppManager.selectProvider(provider)
+    }
+
+    fun selectBuiltInProvider() = viewModelScope.launch(ioDispatcher) {
+        tasksAppManager.selectBuiltInProvider()
     }
 
 }

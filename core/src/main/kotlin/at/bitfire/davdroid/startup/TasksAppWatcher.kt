@@ -49,6 +49,14 @@ class TasksAppWatcher @Inject constructor(
     @WorkerThread
     private fun onPackageChanged() {
         val manager = tasksAppManager.get()
+
+        // the built-in provider is part of this app, not a separate package to watch for
+        // (un)installation - manager.currentProvider() doesn't know about it (it only covers
+        // ProviderName, the three external providers) and would wrongly report "none selected",
+        // causing the block below to clear the selection
+        if (manager.isBuiltInProviderSelected())
+            return
+
         val currentProvider = manager.currentProvider()
         logger.info("App launched or package (un)installed; current tasks provider = $currentProvider")
 

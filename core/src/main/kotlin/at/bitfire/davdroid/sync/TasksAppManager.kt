@@ -113,6 +113,20 @@ class TasksAppManager @Inject constructor(
             automaticSyncManager.updateAutomaticSync(account.toAccountId(), SyncDataType.TASKS)
     }
 
+    /**
+     * Selects the DAVx⁵-hosted tasks provider as the tasks app. No permission check needed
+     * (it's part of this app, not an external one to grant permissions to).
+     */
+    @WorkerThread
+    fun selectBuiltInProvider() {
+        logger.info("Selecting tasks app: built-in ($builtInAuthority)")
+
+        settingsManager.putString(Settings.SELECTED_TASKS_PROVIDER, builtInAuthority)
+
+        for (account in accountRepository.get().getAllBlocking())
+            automaticSyncManager.updateAutomaticSync(account.toAccountId(), SyncDataType.TASKS)
+    }
+
 
     /**
      * Show a notification that starts an Intent and redirects the user to the tasks app in the app store.

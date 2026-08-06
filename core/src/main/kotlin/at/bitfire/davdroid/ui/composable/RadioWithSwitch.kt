@@ -30,6 +30,9 @@ import androidx.compose.ui.tooling.preview.Preview
  * @param isToggled Whether the switch is toggled.
  * @param modifier Any modifiers to apply to the row.
  * @param enabled Whether the radio button should be enabled.
+ * @param switchEnabled Whether the switch should be interactive. Set to `false` for rows where
+ * the switch is purely informational (e.g. "always available", nothing to install/toggle) so it
+ * doesn't look like a live control that does nothing when tapped.
  * @param onSelected Gets called whenever the user requests this row to be enabled. Either by
  * selecting the radio button or tapping the text.
  * @param onToggled Gets called whenever the switch gets updated. Contains the checked status.
@@ -42,6 +45,7 @@ fun RadioWithSwitch(
     isToggled: Boolean,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
+    switchEnabled: Boolean = enabled,
     onSelected: () -> Unit,
     onToggled: (Boolean) -> Unit
 ) {
@@ -67,6 +71,7 @@ fun RadioWithSwitch(
 
         Switch(
             checked = isToggled,
+            enabled = switchEnabled,
             onCheckedChange = onToggled
         )
     }
