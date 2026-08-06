@@ -11,6 +11,7 @@ import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.resource.LocalCalendar
 import at.bitfire.davdroid.resource.LocalCalendarStore
+import at.bitfire.davdroid.resource.remote.CalDavCollection
 import at.bitfire.synctools.storage.calendar.AndroidCalendarProvider
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -80,7 +81,7 @@ class CalendarSyncer @AssistedInject constructor(
             syncResult = syncResult,
             localCalendar = localCollection,
             collectionInfo = remoteCollectionInfo,
-            davCollection = DavCalendar(httpClient, remoteCollectionInfo.url),
+            remoteCollection = CalDavCollection(DavCalendar(httpClient, remoteCollectionInfo.url)),
             resync = resync,
             settings = settings
         )

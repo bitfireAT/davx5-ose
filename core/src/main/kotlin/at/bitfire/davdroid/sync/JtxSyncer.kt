@@ -11,6 +11,7 @@ import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.resource.LocalJtxCollection
 import at.bitfire.davdroid.resource.LocalJtxCollectionStore
+import at.bitfire.davdroid.resource.remote.CalDavCollection
 import at.bitfire.synctools.storage.TaskProvider
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -77,7 +78,7 @@ class JtxSyncer @AssistedInject constructor(
             syncResult = syncResult,
             localCollection = localCollection,
             collectionInfo = remoteCollectionInfo,
-            davCollection = DavCalendar(httpClient, remoteCollectionInfo.url),
+            remoteCollection = CalDavCollection(DavCalendar(httpClient, remoteCollectionInfo.url)),
             resync = resync,
             settings = settings
         )

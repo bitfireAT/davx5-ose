@@ -10,7 +10,6 @@ import android.os.RemoteException
 import androidx.annotation.VisibleForTesting
 import at.bitfire.dav4jvm.Error
 import at.bitfire.dav4jvm.QuotedStringUtils
-import at.bitfire.dav4jvm.ktor.DavCollection
 import at.bitfire.dav4jvm.ktor.DavResource
 import at.bitfire.dav4jvm.ktor.MultiStatusItem
 import at.bitfire.dav4jvm.ktor.Response
@@ -41,6 +40,7 @@ import at.bitfire.davdroid.repository.DavSyncStatsRepository
 import at.bitfire.davdroid.resource.LocalCollection
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.resource.SyncState
+import at.bitfire.davdroid.resource.remote.WebDavCollection
 import at.bitfire.davdroid.resource.syncState
 import at.bitfire.davdroid.sync.account.InvalidAccountException
 import at.bitfire.synctools.storage.LocalStorageException
@@ -132,7 +132,7 @@ abstract class SyncManager<LocalType : LocalResource>(
     /** local collection to synchronize (interface to content provider) */
     protected abstract val localCollection: LocalCollection<LocalType>
 
-    protected abstract val davCollection: DavCollection
+    protected abstract val remoteCollection: WebDavCollection
 
     protected var hasCollectionSync = false
 
@@ -661,7 +661,7 @@ abstract class SyncManager<LocalType : LocalResource>(
     }
 
     private suspend fun querySyncState(): SyncState? =
-        davCollection.propfind(0, CalDAV.GetCTag, WebDAV.SyncToken).selfResponse()?.syncState()
+        remoteCollection.davCollection.propfind(0, CalDAV.GetCTag, WebDAV.SyncToken).selfResponse()?.syncState()
 
     protected abstract fun listAllRemote(): Flow<MultiStatusItem>
 
@@ -743,7 +743,7 @@ abstract class SyncManager<LocalType : LocalResource>(
      */
     protected fun listRemoteChanges(since: SyncState?): Pair<Flow<MultiStatusItem>, SyncCollectionResult> {
         val result = SyncCollectionResult()
-        val flow = davCollection.reportChanges(
+        val flow = remoteCollection.davCollection.reportChanges(
             syncToken = since?.takeIf { since.type == SyncState.Type.SYNC_TOKEN }?.value,
             infiniteDepth = false,
             limit = null,

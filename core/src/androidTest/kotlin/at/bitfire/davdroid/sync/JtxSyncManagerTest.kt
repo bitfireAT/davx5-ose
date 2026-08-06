@@ -14,6 +14,7 @@ import at.bitfire.davdroid.network.HttpClientBuilder
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.resource.LocalJtxCollection
 import at.bitfire.davdroid.resource.LocalJtxCollectionStore
+import at.bitfire.davdroid.resource.remote.CalDavCollection
 import at.bitfire.davdroid.sync.account.TestAccount
 import at.bitfire.davdroid.util.DavUtils.toUrl
 import at.bitfire.davdroid.util.PermissionUtils
@@ -102,7 +103,7 @@ class JtxSyncManagerTest {
             syncResult = SyncResult(),
             localCollection = localJtxCollection,
             collectionInfo = dbCollection,
-            davCollection = DavCalendar(httpClient, dbCollection.url),
+            remoteCollection = CalDavCollection(DavCalendar(httpClient, dbCollection.url)),
             resync = null,
             settings = SyncSettingsFixtures.default()
         )

@@ -11,6 +11,7 @@ import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.resource.LocalTaskList
 import at.bitfire.davdroid.resource.LocalTaskListStore
+import at.bitfire.davdroid.resource.remote.CalDavCollection
 import at.bitfire.synctools.storage.TaskProvider
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -84,7 +85,7 @@ class TaskSyncer @AssistedInject constructor(
             syncResult = syncResult,
             localCollection = localCollection,
             collectionInfo = remoteCollectionInfo,
-            davCollection = DavCalendar(httpClient, remoteCollectionInfo.url),
+            remoteCollection = CalDavCollection(DavCalendar(httpClient, remoteCollectionInfo.url)),
             resync = resync,
             settings = settings
         )

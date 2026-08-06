@@ -24,6 +24,7 @@ import at.bitfire.davdroid.di.qualifier.SyncTransferSemaphore
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.resource.LocalTask
 import at.bitfire.davdroid.resource.LocalTaskList
+import at.bitfire.davdroid.resource.remote.CalDavCollection
 import at.bitfire.davdroid.resource.syncState
 import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.davdroid.util.DavUtils.lastSegment
@@ -63,7 +64,7 @@ class TasksSyncManager @AssistedInject constructor(
     @Assisted syncResult: SyncResult,
     @Assisted override val localCollection: LocalTaskList,
     @Assisted collectionInfo: Collection,
-    @Assisted override val davCollection: DavCalendar,
+    @Assisted override val remoteCollection: CalDavCollection,
     @Assisted resync: ResyncType?,
     @Assisted settings: SyncSettings,
     @IoDispatcher ioDispatcher: CoroutineDispatcher,
@@ -89,7 +90,7 @@ class TasksSyncManager @AssistedInject constructor(
             syncResult: SyncResult,
             localCollection: LocalTaskList,
             collectionInfo: Collection,
-            davCollection: DavCalendar,
+            remoteCollection: CalDavCollection,
             resync: ResyncType?,
             settings: SyncSettings
         ): TasksSyncManager
@@ -99,7 +100,8 @@ class TasksSyncManager @AssistedInject constructor(
     override suspend fun queryCapabilities() =
         collectionInfo.url.withExceptionContext {
             val response =
-                davCollection.propfind(0, CalDAV.MaxResourceSize, CalDAV.GetCTag, WebDAV.SyncToken).selfResponse()
+                remoteCollection.davCollection.propfind(0, CalDAV.MaxResourceSize, CalDAV.GetCTag, WebDAV.SyncToken)
+                    .selfResponse()
                     ?: return@withExceptionContext null
 
             response[MaxResourceSize::class.java]?.maxSize?.let { maxSize ->
@@ -150,7 +152,7 @@ class TasksSyncManager @AssistedInject constructor(
     override fun listAllRemote(): Flow<MultiStatusItem> = flow {
         collectionInfo.url.withExceptionContext {
             logger.info("Querying tasks")
-            emitAll(davCollection.calendarQuery("VTODO", null, null))
+            emitAll(remoteCollection.davCollection.calendarQuery("VTODO", null, null))
         }
     }
 
@@ -158,7 +160,7 @@ class TasksSyncManager @AssistedInject constructor(
         logger.info("Downloading ${bunch.size} iCalendars: $bunch")
         // multiple iCalendars, use calendar-multi-get
         collectionInfo.url.withExceptionContext {
-            davCollection.multiget(bunch).responses().collect { response ->
+            remoteCollection.davCollection.multiget(bunch).responses().collect { response ->
                 // See CalendarSyncManager for more information about the multi-get response
                 response.href.withExceptionContext wrapResource@{
                     if (!response.isSuccess()) {
