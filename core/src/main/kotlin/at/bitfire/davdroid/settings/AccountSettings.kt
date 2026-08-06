@@ -4,7 +4,6 @@
 package at.bitfire.davdroid.settings
 
 import android.accounts.AccountManager
-import android.content.Context
 import android.os.Looper
 import androidx.annotation.WorkerThread
 import at.bitfire.davdroid.accounts.AccountId
@@ -13,13 +12,11 @@ import at.bitfire.davdroid.settings.AccountSettings.Companion.CREDENTIALS_LOCK_A
 import at.bitfire.davdroid.settings.migration.AccountSettingsMigration
 import at.bitfire.davdroid.sync.AutomaticSyncManager
 import at.bitfire.davdroid.sync.SyncDataType
-import at.bitfire.davdroid.sync.account.InvalidAccountException
 import at.bitfire.synctools.util.trimToNull
 import at.bitfire.synctools.vcard.GroupMethod
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import dagger.hilt.android.qualifiers.ApplicationContext
 import net.openid.appauth.AuthState
 
 /**
@@ -27,18 +24,15 @@ import net.openid.appauth.AuthState
  *
  * **Must not be called from main thread as it uses blocking I/O and may run migrations.**
  *
- * @param account                   account to take settings from
- * @param abortOnMissingMigration   whether to throw an [IllegalArgumentException] when migrations are missing (useful for testing)
+ * @param accountId                 account to take settings from
  *
- * @throws InvalidAccountException   on construction when the account doesn't exist (anymore)
- * @throws IllegalArgumentException  when the account is not a DAVx5 account or migrations are missing and [abortOnMissingMigration] is set
+ * @throws IllegalThreadStateException On construction if on main thread.
  */
 @WorkerThread   
 class AccountSettings @AssistedInject constructor(
     @Assisted val accountId: AccountId,
     @Assisted private val store: AccountSettingsStore,
     private val automaticSyncManager: AutomaticSyncManager,
-    @ApplicationContext private val context: Context,
     private val settingsManager: SettingsManager
 ) {
 

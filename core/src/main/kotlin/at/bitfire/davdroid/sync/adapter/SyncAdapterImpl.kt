@@ -21,7 +21,7 @@ import at.bitfire.davdroid.accounts.toAccountId
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.resource.LocalAddressBook
-import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.settings.AccountSettingsFactory
 import at.bitfire.davdroid.sync.SyncConditions
 import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.account.InvalidAccountException
@@ -51,7 +51,7 @@ import kotlin.time.Duration.Companion.minutes
  * and does not run the sync itself.
  */
 class SyncAdapterImpl @Inject constructor(
-    private val accountSettingsFactory: AccountSettings.Factory,
+    private val accountSettingsFactory: AccountSettingsFactory,
     private val collectionRepository: DavCollectionRepository,
     private val serviceRepository: DavServiceRepository,
     @ApplicationContext context: Context,
@@ -161,7 +161,7 @@ class SyncAdapterImpl @Inject constructor(
      */
     private fun checkSyncConditions(account: Account): Boolean {
         val accountSettings = try {
-            accountSettingsFactory.create(account)
+            accountSettingsFactory.create(account.toAccountId())
         } catch (e: InvalidAccountException) {
             logger.log(Level.WARNING, "Account doesn't exist anymore", e)
             return false

@@ -15,9 +15,10 @@ import androidx.annotation.VisibleForTesting
 import androidx.annotation.WorkerThread
 import androidx.core.content.contentValuesOf
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.accounts.toAccountId
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.repository.DavServiceRepository
-import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.settings.AccountSettingsFactory
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.util.DavUtils.lastSegment
@@ -32,7 +33,7 @@ import java.util.logging.Logger
 import javax.inject.Inject
 
 class LocalAddressBookStore @Inject constructor(
-    private val accountSettingsFactory: AccountSettings.Factory,
+    private val accountSettingsFactory: AccountSettingsFactory,
     @ApplicationContext private val context: Context,
     private val localAddressBookFactory: LocalAddressBook.Factory,
     private val logger: Logger,
@@ -101,7 +102,7 @@ class LocalAddressBookStore @Inject constructor(
             id = fromCollection.id
         ) ?: return null
 
-        val accountSettings = accountSettingsFactory.create(account)
+        val accountSettings = accountSettingsFactory.create(account.toAccountId())
         val addressBook = localAddressBookFactory.create(account, addressBookAccount, client, accountSettings.getGroupMethod())
 
         // update settings
@@ -130,7 +131,7 @@ class LocalAddressBookStore @Inject constructor(
     }
 
     override fun getAll(account: Account, client: ContentProviderClient): List<LocalAddressBook> {
-        val accountSettings = accountSettingsFactory.create(account)
+        val accountSettings = accountSettingsFactory.create(account.toAccountId())
         val groupMethod = accountSettings.getGroupMethod()
         return getAddressBookAccounts(account).map { addressBookAccount ->
             localAddressBookFactory.create(account, addressBookAccount, client, groupMethod)
