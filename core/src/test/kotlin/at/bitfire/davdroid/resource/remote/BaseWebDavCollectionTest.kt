@@ -199,4 +199,55 @@ class BaseWebDavCollectionTest {
         assertEquals(204800L, result.capabilities.maxCardResourceSize)
     }
 
+    @Test
+    fun `querySyncState() with no self-response returns null`() = runTest {
+        val syncState = collection(
+            "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
+                    "<multistatus xmlns=\"DAV:\"/>"
+        ).querySyncState()
+
+        assertNull(syncState)
+    }
+
+    @Test
+    fun `querySyncState() with GetCTag returns sync state`() = runTest {
+        val syncState = collection(
+            "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
+                    "<multistatus xmlns=\"DAV:\" xmlns:CS=\"http://calendarserver.org/ns/\">\n" +
+                    "  <response>\n" +
+                    "    <href>/dav/</href>\n" +
+                    "    <propstat>\n" +
+                    "      <prop>\n" +
+                    "        <CS:getctag>abc123</CS:getctag>\n" +
+                    "      </prop>\n" +
+                    "      <status>HTTP/1.1 200 OK</status>\n" +
+                    "    </propstat>\n" +
+                    "  </response>\n" +
+                    "</multistatus>"
+        ).querySyncState()
+
+        assertEquals(SyncState(SyncState.Type.CTAG, "abc123"), syncState)
+    }
+
+    @Test
+    fun `querySyncState() prefers SyncToken over GetCTag`() = runTest {
+        val syncState = collection(
+            "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
+                    "<multistatus xmlns=\"DAV:\" xmlns:CS=\"http://calendarserver.org/ns/\">\n" +
+                    "  <response>\n" +
+                    "    <href>/dav/</href>\n" +
+                    "    <propstat>\n" +
+                    "      <prop>\n" +
+                    "        <sync-token>http://example.com/ns/sync/token123</sync-token>\n" +
+                    "        <CS:getctag>abc123</CS:getctag>\n" +
+                    "      </prop>\n" +
+                    "      <status>HTTP/1.1 200 OK</status>\n" +
+                    "    </propstat>\n" +
+                    "  </response>\n" +
+                    "</multistatus>"
+        ).querySyncState()
+
+        assertEquals(SyncState(SyncState.Type.SYNC_TOKEN, "http://example.com/ns/sync/token123"), syncState)
+    }
+
 }
