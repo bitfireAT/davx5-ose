@@ -6,6 +6,7 @@ package at.bitfire.davdroid.sync
 
 import android.content.ContentProviderClient
 import android.content.Context
+import at.bitfire.dav4jvm.ktor.DavCalendar
 import at.bitfire.davdroid.accounts.LegacyAccount
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
@@ -13,6 +14,7 @@ import at.bitfire.davdroid.network.HttpClientBuilder
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.resource.LocalJtxCollection
 import at.bitfire.davdroid.resource.LocalJtxCollectionStore
+import at.bitfire.davdroid.resource.remote.CalDavCollection
 import at.bitfire.davdroid.sync.account.TestAccount
 import at.bitfire.davdroid.util.DavUtils.toUrl
 import at.bitfire.davdroid.util.PermissionUtils
@@ -94,12 +96,14 @@ class JtxSyncManagerTest {
             url = "https://example.com".toUrl()
         )
         localJtxCollection = runBlocking { localJtxCollectionStore.create(provider, dbCollection) }
+        val httpClient = httpClientBuilder.build()
         syncManager = jtxSyncManagerFactory.jtxSyncManager(
             accountId = accountId,
-            httpClient = httpClientBuilder.build(),
+            httpClient = httpClient,
             syncResult = SyncResult(),
             localCollection = localJtxCollection,
-            collection = dbCollection,
+            collectionInfo = dbCollection,
+            remoteCollection = CalDavCollection(DavCalendar(httpClient, dbCollection.url)),
             resync = null,
             settings = SyncSettingsFixtures.default()
         )

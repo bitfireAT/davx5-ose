@@ -5,12 +5,13 @@
 package at.bitfire.davdroid.sync
 
 import android.content.ContentProviderClient
+import at.bitfire.dav4jvm.ktor.DavCalendar
 import at.bitfire.davdroid.accounts.AccountId
-import at.bitfire.davdroid.accounts.AndroidAccountManager
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.resource.LocalCalendar
 import at.bitfire.davdroid.resource.LocalCalendarStore
+import at.bitfire.davdroid.resource.remote.CalDavCollection
 import at.bitfire.synctools.storage.calendar.AndroidCalendarProvider
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -62,7 +63,7 @@ class CalendarSyncer @AssistedInject constructor(
     override suspend fun syncCollection(
         provider: ContentProviderClient,
         localCollection: LocalCalendar,
-        remoteCollection: Collection
+        remoteCollectionInfo: Collection
     ) {
         logger.log(
             Level.INFO,
@@ -75,13 +76,14 @@ class CalendarSyncer @AssistedInject constructor(
         )
 
         val syncManager = calendarSyncManagerFactory.calendarSyncManager(
-            accountId,
-            httpClient,
-            syncResult,
-            localCollection,
-            remoteCollection,
-            resync,
-            settings
+            accountId = accountId,
+            httpClient = httpClient,
+            syncResult = syncResult,
+            localCalendar = localCollection,
+            collectionInfo = remoteCollectionInfo,
+            remoteCollection = CalDavCollection(DavCalendar(httpClient, remoteCollectionInfo.url)),
+            resync = resync,
+            settings = settings
         )
         syncManager.performSync()
     }

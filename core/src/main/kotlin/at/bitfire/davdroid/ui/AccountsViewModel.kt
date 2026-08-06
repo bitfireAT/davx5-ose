@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.ui
 
-import android.accounts.Account
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
@@ -24,14 +23,13 @@ import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.WorkQuery
 import at.bitfire.davdroid.accounts.AccountId
-import at.bitfire.davdroid.accounts.toAccountId
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.sync.SyncDataType
-import at.bitfire.davdroid.sync.adapter.SyncFrameworkIntegration
+import at.bitfire.davdroid.sync.adapter.SyncPendingProvider
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker
 import at.bitfire.davdroid.sync.worker.OneTimeSyncWorker
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
@@ -72,7 +70,7 @@ class AccountsViewModel @AssistedInject constructor(
     private val logger: Logger,
     private val settings: SettingsManager,
     private val syncWorkerManager: SyncWorkerManager,
-    private val syncFrameWork: SyncFrameworkIntegration
+    private val syncPendingProvider: SyncPendingProvider
 ): ViewModel() {
 
     @AssistedFactory
@@ -94,37 +92,37 @@ class AccountsViewModel @AssistedInject constructor(
         val progress: AccountProgress
     )
 
-    private val accounts = accountRepository.getAllFlow()
+    private val accountIds = accountRepository.getAllFlow()
 
     private val maxAccounts = settings.getIntFlow(Settings.MAX_ACCOUNTS)
-    val showAddAccount: Flow<FABStyle> = combine(accounts, maxAccounts) { accounts, maxAccounts ->
-        if (maxAccounts != null && accounts.size >= maxAccounts)
+    val showAddAccount: Flow<FABStyle> = combine(accountIds, maxAccounts) { accountIds, maxAccounts ->
+        if (maxAccounts != null && accountIds.size >= maxAccounts)
             FABStyle.None
-        else if (accounts.isEmpty())
+        else if (accountIds.isEmpty())
             FABStyle.WithText
         else
             FABStyle.Standard
     }
-    val showSyncAll: Flow<Boolean> = accounts.map { it.isNotEmpty() }
+    val showSyncAll: Flow<Boolean> = accountIds.map { it.isNotEmpty() }
 
     private val workManager = WorkManager.getInstance(context)
     private val runningWorkers = workManager.getWorkInfosFlow(WorkQuery.fromStates(WorkInfo.State.ENQUEUED, WorkInfo.State.RUNNING))
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    private val accountsSyncPending: Flow<List<Account>> =
-        accounts.flatMapLatest { accounts ->
-            if (accounts.isEmpty())
+    private val accountIdsSyncPending: Flow<List<AccountId>> =
+        accountIds.flatMapLatest { accountIds ->
+            if (accountIds.isEmpty())
                 flowOf(emptyList())
             else {
-                // To create the Flow<List<Account?>> that emits the accounts with pending sync,
-                val pendingSyncAccountsFlows: List<Flow<Account?>> =
+                // To create the Flow<List<AccountId?>> that emits the accounts with pending sync,
+                val pendingSyncAccountsFlows: List<Flow<AccountId?>> =
                     // for each existing account with unknown sync pending state ...
-                    accounts.map { account ->
+                    accountIds.map { accountId ->
                         // ... create a Flow<Boolean> which emits the sync pending state
-                        syncFrameWork.isSyncPending(account, SyncDataType.entries)
+                        syncPendingProvider.isSyncPending(accountId, SyncDataType.entries)
                             .map { hasPendingSync ->
                                 // ... and map this boolean answer back to its Account if it is pending, or null if not.
-                                if (hasPendingSync) account else null
+                                if (hasPendingSync) accountId else null
                             }
                     }
                 // Combine all account flows Flow<Account?> in the list into a single flow, emitting a list of
@@ -141,45 +139,46 @@ class AccountsViewModel @AssistedInject constructor(
 
 
     val accountInfos: Flow<List<AccountInfo>> = combine(
-        accounts,
+        accountIds,
         runningWorkers,
-        accountsSyncPending
-    ) { accounts, workInfos, accountsSyncPending ->
+        accountIdsSyncPending
+    ) { accountIds, workInfos, accountIdsSyncPending ->
         val collator = Collator.getInstance()
 
-        accounts
-            .sortedWith { a, b -> collator.compare(a.name, b.name) }
-            .map { account ->
-                val services = db.serviceDao().getIdsByAccount(account.name)
+        accountIds
+            .map { accountId ->
+                val accountName = accountRepository.getAccountName(accountId)
+                val services = db.serviceDao().getIdsByAccount(accountName)
                 val progress = when {
                     workInfos.any { info ->
                         info.state == WorkInfo.State.RUNNING && (
                                 services.any { serviceId ->
                                     info.tags.contains(RefreshCollectionsWorker.workerName(serviceId))
                                 } || SyncDataType.entries.any { dataType ->
-                                    info.tags.contains(BaseSyncWorker.commonTag(account.toAccountId(), dataType))
+                                    info.tags.contains(BaseSyncWorker.commonTag(accountId, dataType))
                                 }
                             )
                     } -> AccountProgress.Active
 
                     workInfos.any { info ->
                         info.state == WorkInfo.State.ENQUEUED && SyncDataType.entries.any { dataType ->
-                            info.tags.contains(OneTimeSyncWorker.workerName(account.toAccountId(), dataType))
+                            info.tags.contains(OneTimeSyncWorker.workerName(accountId, dataType))
                         }
                     } -> AccountProgress.Pending
 
-                    account in accountsSyncPending
+                    accountId in accountIdsSyncPending
                         -> AccountProgress.Pending
 
                     else -> AccountProgress.Idle
                 }
 
                 AccountInfo(
-                    id = account.toAccountId(),
-                    name = account.name,
+                    id = accountId,
+                    name = accountName,
                     progress = progress
                 )
             }
+            .sortedWith { a, b -> collator.compare(a.name, b.name) }
     }
 
 

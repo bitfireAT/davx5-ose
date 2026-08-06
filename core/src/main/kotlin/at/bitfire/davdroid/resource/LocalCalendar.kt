@@ -6,7 +6,6 @@ package at.bitfire.davdroid.resource
 
 import android.provider.CalendarContract.Calendars
 import android.provider.CalendarContract.Events
-import androidx.annotation.VisibleForTesting
 import androidx.core.content.contentValuesOf
 import at.bitfire.synctools.storage.BatchOperation
 import at.bitfire.synctools.storage.calendar.AndroidCalendar
@@ -57,7 +56,6 @@ class LocalCalendar @AssistedInject constructor(
             androidCalendar.writeSyncState(state.toString())
         }
 
-    @VisibleForTesting
     internal val recurringCalendar = AndroidRecurringCalendar(androidCalendar)
 
 

@@ -27,6 +27,7 @@ import at.bitfire.davdroid.resource.LocalCalendar
 import at.bitfire.davdroid.resource.LocalEvent
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.resource.SyncState
+import at.bitfire.davdroid.resource.remote.CalDavCollection
 import at.bitfire.davdroid.resource.syncState
 import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.davdroid.util.DavUtils.lastSegment
@@ -64,20 +65,20 @@ class CalendarSyncManager @AssistedInject constructor(
     @Assisted accountId: AccountId,
     @Assisted httpClient: HttpClient,
     @Assisted syncResult: SyncResult,
-    @Assisted localCalendar: LocalCalendar,
-    @Assisted collection: Collection,
+    @Assisted override val localCollection: LocalCalendar,
+    @Assisted collectionInfo: Collection,
+    @Assisted override val remoteCollection: CalDavCollection,
     @Assisted resync: ResyncType?,
     @Assisted settings: SyncSettings,
     @IoDispatcher ioDispatcher: CoroutineDispatcher,
     private val productIds: ProductIds,
     @SyncTransferSemaphore syncTransferSemaphore: Semaphore
-) : SyncManager<LocalEvent, LocalCalendar, DavCalendar>(
+) : SyncManager<LocalEvent>(
     accountId,
     httpClient,
     SyncDataType.EVENTS,
     syncResult,
-    localCalendar,
-    collection,
+    collectionInfo,
     resync,
     ioDispatcher,
     syncTransferSemaphore,
@@ -91,7 +92,8 @@ class CalendarSyncManager @AssistedInject constructor(
             httpClient: HttpClient,
             syncResult: SyncResult,
             localCalendar: LocalCalendar,
-            collection: Collection,
+            collectionInfo: Collection,
+            remoteCollection: CalDavCollection,
             resync: ResyncType?,
             settings: SyncSettings
         ): CalendarSyncManager
@@ -99,8 +101,6 @@ class CalendarSyncManager @AssistedInject constructor(
 
 
     override suspend fun prepare(): Boolean {
-        davCollection = DavCalendar(httpClient, collection.url)
-
         // if there are dirty exceptions for events, mark their master events as dirty, too
         val recurringCalendar = localCollection.recurringCalendar
         recurringCalendar.processDeletedExceptions()
@@ -113,8 +113,8 @@ class CalendarSyncManager @AssistedInject constructor(
     }
 
     override suspend fun queryCapabilities(): SyncState? =
-        collection.url.withExceptionContext {
-            val response = davCollection.propfind(
+        collectionInfo.url.withExceptionContext {
+            val response = remoteCollection.davCollection.propfind(
                 0,
                 CalDAV.MaxResourceSize,
                 WebDAV.SupportedReportSet,
@@ -182,16 +182,16 @@ class CalendarSyncManager @AssistedInject constructor(
             ZonedDateTime.now().minusDays(pastDays.toLong()).toInstant()
         }
 
-        collection.url.withExceptionContext {
+        collectionInfo.url.withExceptionContext {
             logger.info("Querying events since $limitStart")
-            emitAll(davCollection.calendarQuery(Component.VEVENT, limitStart, null))
+            emitAll(remoteCollection.davCollection.calendarQuery(Component.VEVENT, limitStart, null))
         }
     }
 
     override suspend fun downloadRemote(bunch: List<Url>) {
         logger.info("Downloading ${bunch.size} iCalendars: $bunch")
-        collection.url.withExceptionContext {
-            davCollection.multiget(bunch).responses().collect { response ->
+        collectionInfo.url.withExceptionContext {
+            remoteCollection.davCollection.multiget(bunch).responses().collect { response ->
                 /*
                  * Real-world servers may return:
                  *

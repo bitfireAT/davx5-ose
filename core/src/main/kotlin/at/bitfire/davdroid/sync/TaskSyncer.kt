@@ -5,12 +5,13 @@
 package at.bitfire.davdroid.sync
 
 import android.content.ContentProviderClient
+import at.bitfire.dav4jvm.ktor.DavCalendar
 import at.bitfire.davdroid.accounts.AccountId
-import at.bitfire.davdroid.accounts.AndroidAccountManager
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.resource.LocalTaskList
 import at.bitfire.davdroid.resource.LocalTaskListStore
+import at.bitfire.davdroid.resource.remote.CalDavCollection
 import at.bitfire.synctools.storage.TaskProvider
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -54,7 +55,7 @@ class TaskSyncer @AssistedInject constructor(
             TaskProvider.checkVersion(context, providerName)
         } catch (e: TaskProvider.ProviderTooOldException) {
             tasksAppManager.get().notifyProviderTooOld(e)
-            syncResult.contentProviderError = true
+            syncResult.hardError = true
             return false // Don't sync
         }
 
@@ -70,7 +71,7 @@ class TaskSyncer @AssistedInject constructor(
     override suspend fun syncCollection(
         provider: ContentProviderClient,
         localCollection: LocalTaskList,
-        remoteCollection: Collection
+        remoteCollectionInfo: Collection
     ) {
         logger.log(
             Level.INFO,
@@ -79,13 +80,14 @@ class TaskSyncer @AssistedInject constructor(
         )
 
         val syncManager = tasksSyncManagerFactory.tasksSyncManager(
-            accountId,
-            httpClient,
-            syncResult,
-            localCollection,
-            remoteCollection,
-            resync,
-            settings
+            accountId = accountId,
+            httpClient = httpClient,
+            syncResult = syncResult,
+            localCollection = localCollection,
+            collectionInfo = remoteCollectionInfo,
+            remoteCollection = CalDavCollection(DavCalendar(httpClient, remoteCollectionInfo.url)),
+            resync = resync,
+            settings = settings
         )
         syncManager.performSync()
     }

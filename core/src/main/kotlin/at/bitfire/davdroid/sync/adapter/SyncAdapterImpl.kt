@@ -17,7 +17,10 @@ import android.os.IBinder
 import androidx.annotation.VisibleForTesting
 import androidx.work.WorkManager
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.accounts.toAccountId
+import at.bitfire.davdroid.accounts.AccountId
+import at.bitfire.davdroid.accounts.AndroidAccountManager
+import at.bitfire.davdroid.accounts.toAndroidAccount
+import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.resource.LocalAddressBook
@@ -51,7 +54,9 @@ import kotlin.time.Duration.Companion.minutes
  * and does not run the sync itself.
  */
 class SyncAdapterImpl @Inject constructor(
+    private val accountRepository: AccountRepository,
     private val accountSettingsFactory: AccountSettingsFactory,
+    private val androidAccountManager: AndroidAccountManager,
     private val collectionRepository: DavCollectionRepository,
     private val serviceRepository: DavServiceRepository,
     @ApplicationContext context: Context,
@@ -113,15 +118,15 @@ class SyncAdapterImpl @Inject constructor(
         logger.info("Sync request via sync framework for $accountOrAddressBookAccount $authority (upload=$upload)")
 
         // If we should sync an address book account: find the main account
-        val account = getAccount(accountOrAddressBookAccount) ?: return
+        val accountId = getAccountId(accountOrAddressBookAccount) ?: return
 
         // Check sync conditions (don't enqueue worker if sync conditions are not met)
-        if (!checkSyncConditions(account))
+        if (!checkSyncConditions(accountId))
             return
 
-        logger.info("Starting OneTimeSyncWorker for $account $authority and waiting for it")
+        logger.info("Starting OneTimeSyncWorker for $accountId $authority and waiting for it")
         val workerName = syncWorkerManager.enqueueOneTime(
-            account.toAccountId(),
+            accountId,
             dataType = SyncDataType.fromAuthority(authority),
             fromUpload = upload
         )
@@ -133,33 +138,37 @@ class SyncAdapterImpl @Inject constructor(
     }
 
     /**
-     * Resolves the account that should actually be used for syncing. If [accountOrAddressBookAccount]
+     * Resolves the [AccountId] of the app account that should be used for syncing. If [accountOrAddressBookAccount]
      * is an address book account, looks up the collection and service it belongs to and returns the
-     * account storing the settings for that service. Otherwise, [accountOrAddressBookAccount] is directly returned.
+     * `AccountId` of the app account storing the settings for that service. Otherwise, the `AccountId` of the app
+     * account that corresponds to the Android account is returned.
      *
-     * @return the resolved account, or `null` if an address book account doesn't have an associated collection
+     * @return the `AccountId` of the app account, or `null` if an address book account doesn't have an associated
+     *   collection.
      */
-    private suspend fun getAccount(accountOrAddressBookAccount: Account): Account? =
-        if (accountOrAddressBookAccount.type == context.getString(R.string.account_type_address_book))
+    private suspend fun getAccountId(accountOrAddressBookAccount: Account): AccountId? {
+        return if (accountOrAddressBookAccount.type == context.getString(R.string.account_type_address_book)) {
             AccountManager.get(context)
                 .getUserData(accountOrAddressBookAccount, LocalAddressBook.USER_DATA_COLLECTION_ID)
                 ?.toLongOrNull()
                 ?.let { collectionId ->
                     collectionRepository.getAsync(collectionId)?.let { collection ->
                         serviceRepository.get(collection.serviceId)?.let { service ->
-                            Account(service.accountName, context.getString(R.string.account_type))
+                            accountRepository.getAccountIdFromName(service.accountName)
                         }
                     }
                 }
-        else
-            accountOrAddressBookAccount
+        } else {
+            androidAccountManager.getAccountId(accountOrAddressBookAccount)
+        }
+    }
 
     /**
-     * Checks whether a sync framework initiated sync should actually run for [account].
+     * Checks whether a sync framework initiated sync should actually run for an account.
      *
      * @return whether the sync conditions are met (`false` also when the account doesn't exist anymore)
      */
-    private fun checkSyncConditions(account: Account): Boolean {
+    private fun checkSyncConditions(accountId: AccountId): Boolean {
         val accountSettings = try {
             accountSettingsFactory.create(account.toAccountId())
         } catch (e: InvalidAccountException) {

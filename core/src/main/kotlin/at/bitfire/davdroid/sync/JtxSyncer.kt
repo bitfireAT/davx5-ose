@@ -5,12 +5,13 @@
 package at.bitfire.davdroid.sync
 
 import android.content.ContentProviderClient
+import at.bitfire.dav4jvm.ktor.DavCalendar
 import at.bitfire.davdroid.accounts.AccountId
-import at.bitfire.davdroid.accounts.AndroidAccountManager
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.resource.LocalJtxCollection
 import at.bitfire.davdroid.resource.LocalJtxCollectionStore
+import at.bitfire.davdroid.resource.remote.CalDavCollection
 import at.bitfire.synctools.storage.TaskProvider
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -51,7 +52,7 @@ class JtxSyncer @AssistedInject constructor(
             TaskProvider.checkVersion(context, TaskProvider.ProviderName.JtxBoard)
         } catch (e: TaskProvider.ProviderTooOldException) {
             tasksAppManager.get().notifyProviderTooOld(e)
-            syncResult.contentProviderError = true
+            syncResult.hardError = true
             return false // Don't sync
         }
 
@@ -67,18 +68,19 @@ class JtxSyncer @AssistedInject constructor(
     override suspend fun syncCollection(
         provider: ContentProviderClient,
         localCollection: LocalJtxCollection,
-        remoteCollection: Collection
+        remoteCollectionInfo: Collection
     ) {
         logger.info("Synchronizing jtx collection $localCollection")
 
         val syncManager = jtxSyncManagerFactory.jtxSyncManager(
-            accountId,
-            httpClient,
-            syncResult,
-            localCollection,
-            remoteCollection,
-            resync,
-            settings
+            accountId = accountId,
+            httpClient = httpClient,
+            syncResult = syncResult,
+            localCollection = localCollection,
+            collectionInfo = remoteCollectionInfo,
+            remoteCollection = CalDavCollection(DavCalendar(httpClient, remoteCollectionInfo.url)),
+            resync = resync,
+            settings = settings
         )
         syncManager.performSync()
     }

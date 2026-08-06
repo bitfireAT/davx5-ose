@@ -79,10 +79,13 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
         syncNotificationManagerFactory.create(accountId)
     }
 
-    @WillCloseWhenClosed
-    val httpClient by lazy {
+    private val lazyHttpClient = lazy {
         httpClientBuilder.fromAccount(accountId).build()
     }
+
+    /** authenticated HTTP client to be used by subclasses */
+    @WillCloseWhenClosed
+    val httpClient by lazyHttpClient
 
     /**
      * Creates, updates and/or deletes local collections (calendars, address books, etc) according to
@@ -222,7 +225,8 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
     }
 
     override fun close() {
-        httpClient.close()
+        if (lazyHttpClient.isInitialized())
+            httpClient.close()
     }
 
     /**
@@ -248,13 +252,13 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
      *
      * @param provider The content provider client to access the local collection to be updated
      * @param localCollection The local collection to be synchronized
-     * @param remoteCollection The database collection representing the remote collection. Contains
+     * @param remoteCollectionInfo The database collection representing the remote collection. Contains
      * remote address of the collection to be synchronized.
      */
     abstract suspend fun syncCollection(
         provider: ContentProviderClient,
         localCollection: CollectionType,
-        remoteCollection: Collection
+        remoteCollectionInfo: Collection
     )
 
     /**
@@ -279,7 +283,7 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
                 I.E. system app (like "calendar storage") is missing or disabled */
                 logger.warning("Couldn't connect to content provider of authority ${dataStore.authority}")
                 syncNotificationManager.notifyProviderError(dataStore.authority)
-                syncResult.contentProviderError = true
+                syncResult.hardError = true
                 return // Don't continue without provider
             }
 
@@ -306,7 +310,7 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
                     is suddenly forbidden because our sync process was demoted from a "service process" to a "cached process". */
                     is LocalStorageException if e.cause is DeadObjectException -> {
                         logger.log(Level.WARNING, "Received DeadObjectException, treating as soft error", e)
-                        syncResult.numDeadObjectExceptions++
+                        syncResult.softError = true
                     }
 
                     is InvalidAccountException ->
@@ -314,7 +318,7 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
 
                     else -> {
                         logger.log(Level.SEVERE, "Couldn't sync ${dataStore.authority}", e)
-                        syncResult.numUnclassifiedErrors++ // Hard sync error
+                        syncResult.hardError = true
                     }
                 }
 

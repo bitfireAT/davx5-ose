@@ -12,8 +12,6 @@ import androidx.annotation.WorkerThread
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.accounts.LegacyAccount
-import at.bitfire.davdroid.accounts.toAccountId
-import at.bitfire.davdroid.accounts.toAndroidAccount
 import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.db.ServiceType
@@ -40,6 +38,7 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
 import java.util.logging.Level
@@ -118,6 +117,7 @@ class AccountRepository @Inject constructor(
         preconfigurationUrl: String?,
     ): AccountId? {
         val account = fromName(accountName)
+        val accountId = LegacyAccount(account)
 
         // create Android account
         val userData = AccountSettings.initialUserData(credentials, preconfigurationUrl)
@@ -150,7 +150,7 @@ class AccountRepository @Inject constructor(
             }
 
             // set up automatic sync (processes inserted services)
-            automaticSyncManager.get().updateAutomaticSync(account.toAccountId())
+            automaticSyncManager.get().updateAutomaticSync(accountId)
 
         } catch (e: InvalidAccountException) {
             logger.log(Level.SEVERE, "Couldn't access account settings", e)
@@ -160,7 +160,8 @@ class AccountRepository @Inject constructor(
     }
 
     suspend fun delete(accountId: AccountId): Boolean {
-        val account = accountId.toAndroidAccount()
+        require(accountId is LegacyAccount) { "Only LegacyAccount is supported right now" }
+        val account = accountId.androidAccount
         // remove account directly (bypassing the authenticator, which is our own)
         return try {
             accountManager.removeAccountExplicitly(account)
@@ -206,15 +207,29 @@ class AccountRepository @Inject constructor(
 
     suspend fun getAll(): List<AccountId> {
         return withContext(ioDispatcher) {
-            getAllBlocking().map { account -> account.toAccountId() }
+            getAllBlocking()
         }
     }
 
-    fun getAllBlocking() = accountManager.getAccountsByType(accountType)
+    fun getAllBlocking(): List<AccountId> {
+        return accountManager.getAccountsByType(accountType)
+            .map { account -> LegacyAccount(account) }
+    }
 
-    fun getAllFlow() = callbackFlow<Set<Account>> {
+    @Deprecated("Only use this method when mapping LocalAddressBook accounts to app accounts")
+    fun getAllAccountNamesBlocking(): List<String> {
+        return accountManager.getAccountsByType(accountType)
+            .map { account -> account.name }
+    }
+
+    fun getAllFlow() = callbackFlow<Set<AccountId>> {
         val listener = OnAccountsUpdateListener { accounts ->
-            trySend(accounts.filter { it.type == accountType }.toSet())
+            val accountIds = accounts
+                .filter { it.type == accountType }
+                .map { LegacyAccount(it) }
+                .toSet()
+
+            trySend(accountIds)
         }
         withContext(ioDispatcher) {  // causes disk I/O
             accountManager.addOnAccountsUpdatedListener(listener, null, true)
@@ -223,7 +238,7 @@ class AccountRepository @Inject constructor(
         awaitClose {
             accountManager.removeOnAccountsUpdatedListener(listener)
         }
-    }
+    }.distinctUntilChanged()
 
     /**
      * Renames an account.
@@ -240,7 +255,9 @@ class AccountRepository @Inject constructor(
      */
     suspend fun rename(oldName: String, newName: String): Unit = withContext(ioDispatcher) {
         val oldAccount = fromName(oldName)
+        val oldAccountId = LegacyAccount(oldAccount)
         val newAccount = fromName(newName)
+        val newAccountId = LegacyAccount(newAccount)
 
         // check whether new account name already exists
         if (accountManager.getAccountsByType(context.getString(R.string.account_type)).contains(newAccount))
@@ -268,11 +285,11 @@ class AccountRepository @Inject constructor(
             accountRenameFlow.emit(AccountRename(oldAccount.name, newName))
             
             // account renamed, cancel maybe running synchronization of old account
-            syncWorkerManager.get().cancelAllWork(oldAccount.toAccountId())
+            syncWorkerManager.get().cancelAllWork(oldAccountId)
 
             // disable periodic syncs for old account
             for (dataType in SyncDataType.entries)
-                syncWorkerManager.get().disablePeriodic(oldAccount.toAccountId(), dataType)
+                syncWorkerManager.get().disablePeriodic(oldAccountId, dataType)
 
             // update account name references in database
             serviceRepository.renameAccount(oldName, newName)
@@ -305,7 +322,7 @@ class AccountRepository @Inject constructor(
             }
 
             // update automatic sync
-            automaticSyncManager.get().updateAutomaticSync(newAccount.toAccountId())
+            automaticSyncManager.get().updateAutomaticSync(newAccountId)
         } finally {
             // release AccountsCleanupWorker mutex at the end of this async coroutine
             AccountsCleanupWorker.unlockAccountsCleanup()

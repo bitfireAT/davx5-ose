@@ -26,6 +26,7 @@ import at.bitfire.davdroid.di.qualifier.SyncTransferSemaphore
 import at.bitfire.davdroid.resource.LocalJtxCollection
 import at.bitfire.davdroid.resource.LocalJtxObject
 import at.bitfire.davdroid.resource.LocalResource
+import at.bitfire.davdroid.resource.remote.CalDavCollection
 import at.bitfire.davdroid.resource.syncState
 import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.davdroid.util.DavUtils.lastSegment
@@ -59,20 +60,20 @@ class JtxSyncManager @AssistedInject constructor(
     @Assisted accountId: AccountId,
     @Assisted httpClient: HttpClient,
     @Assisted syncResult: SyncResult,
-    @Assisted localCollection: LocalJtxCollection,
-    @Assisted collection: Collection,
+    @Assisted override val localCollection: LocalJtxCollection,
+    @Assisted collectionInfo: Collection,
+    @Assisted override val remoteCollection: CalDavCollection,
     @Assisted resync: ResyncType?,
     @Assisted settings: SyncSettings,
     @IoDispatcher ioDispatcher: CoroutineDispatcher,
     private val productIds: ProductIds,
     @SyncTransferSemaphore syncTransferSemaphore: Semaphore
-): SyncManager<LocalJtxObject, LocalJtxCollection, DavCalendar>(
+) : SyncManager<LocalJtxObject>(
     accountId,
     httpClient,
     SyncDataType.TASKS,
     syncResult,
-    localCollection,
-    collection,
+    collectionInfo,
     resync,
     ioDispatcher,
     syncTransferSemaphore,
@@ -86,23 +87,19 @@ class JtxSyncManager @AssistedInject constructor(
             httpClient: HttpClient,
             syncResult: SyncResult,
             localCollection: LocalJtxCollection,
-            collection: Collection,
+            collectionInfo: Collection,
+            remoteCollection: CalDavCollection,
             resync: ResyncType?,
             settings: SyncSettings
         ): JtxSyncManager
     }
 
 
-    override suspend fun prepare(): Boolean {
-        davCollection = DavCalendar(httpClient, collection.url)
-
-        return true
-    }
-
     override suspend fun queryCapabilities() =
-        collection.url.withExceptionContext {
+        collectionInfo.url.withExceptionContext {
             val response =
-                davCollection.propfind(0, CalDAV.GetCTag, CalDAV.MaxResourceSize, WebDAV.SyncToken).selfResponse()
+                remoteCollection.davCollection.propfind(0, CalDAV.GetCTag, CalDAV.MaxResourceSize, WebDAV.SyncToken)
+                    .selfResponse()
                     ?: return@withExceptionContext null
 
             response[MaxResourceSize::class.java]?.maxSize?.let { maxSize ->
@@ -148,15 +145,15 @@ class JtxSyncManager @AssistedInject constructor(
     override fun syncAlgorithm() = SyncAlgorithm.PROPFIND_REPORT
 
     override fun listAllRemote(): Flow<MultiStatusItem> = flow {
-        collection.url.withExceptionContext {
+        collectionInfo.url.withExceptionContext {
             if (localCollection.supportsVTODO) {
                 logger.info("Querying tasks")
-                emitAll(davCollection.calendarQuery("VTODO", null, null))
+                emitAll(remoteCollection.davCollection.calendarQuery("VTODO", null, null))
             }
 
             if (localCollection.supportsVJOURNAL) {
                 logger.info("Querying journals")
-                emitAll(davCollection.calendarQuery("VJOURNAL", null, null))
+                emitAll(remoteCollection.davCollection.calendarQuery("VJOURNAL", null, null))
             }
         }
     }
@@ -164,8 +161,8 @@ class JtxSyncManager @AssistedInject constructor(
     override suspend fun downloadRemote(bunch: List<Url>) {
         logger.info("Downloading ${bunch.size} iCalendars: $bunch")
         // multiple iCalendars, use calendar-multi-get
-        collection.url.withExceptionContext {
-            davCollection.multiget(bunch).responses().collect { response ->
+        collectionInfo.url.withExceptionContext {
+            remoteCollection.davCollection.multiget(bunch).responses().collect { response ->
                 // See CalendarSyncManager for more information about the multi-get response
                 response.href.withExceptionContext wrapResource@{
                     if (!response.isSuccess()) {

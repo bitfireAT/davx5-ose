@@ -24,6 +24,7 @@ import at.bitfire.davdroid.di.qualifier.SyncTransferSemaphore
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.resource.LocalTask
 import at.bitfire.davdroid.resource.LocalTaskList
+import at.bitfire.davdroid.resource.remote.CalDavCollection
 import at.bitfire.davdroid.resource.syncState
 import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.davdroid.util.DavUtils.lastSegment
@@ -61,20 +62,20 @@ class TasksSyncManager @AssistedInject constructor(
     @Assisted accountId: AccountId,
     @Assisted httpClient: HttpClient,
     @Assisted syncResult: SyncResult,
-    @Assisted localCollection: LocalTaskList,
-    @Assisted collection: Collection,
+    @Assisted override val localCollection: LocalTaskList,
+    @Assisted collectionInfo: Collection,
+    @Assisted override val remoteCollection: CalDavCollection,
     @Assisted resync: ResyncType?,
     @Assisted settings: SyncSettings,
     @IoDispatcher ioDispatcher: CoroutineDispatcher,
     private val productIds: ProductIds,
     @SyncTransferSemaphore syncTransferSemaphore: Semaphore
-): SyncManager<LocalTask, LocalTaskList, DavCalendar>(
+) : SyncManager<LocalTask>(
     accountId,
     httpClient,
     SyncDataType.TASKS,
     syncResult,
-    localCollection,
-    collection,
+    collectionInfo,
     resync,
     ioDispatcher,
     syncTransferSemaphore,
@@ -88,23 +89,19 @@ class TasksSyncManager @AssistedInject constructor(
             httpClient: HttpClient,
             syncResult: SyncResult,
             localCollection: LocalTaskList,
-            collection: Collection,
+            collectionInfo: Collection,
+            remoteCollection: CalDavCollection,
             resync: ResyncType?,
             settings: SyncSettings
         ): TasksSyncManager
     }
 
 
-    override suspend fun prepare(): Boolean {
-        davCollection = DavCalendar(httpClient, collection.url)
-
-        return true
-    }
-
     override suspend fun queryCapabilities() =
-        collection.url.withExceptionContext {
+        collectionInfo.url.withExceptionContext {
             val response =
-                davCollection.propfind(0, CalDAV.MaxResourceSize, CalDAV.GetCTag, WebDAV.SyncToken).selfResponse()
+                remoteCollection.davCollection.propfind(0, CalDAV.MaxResourceSize, CalDAV.GetCTag, WebDAV.SyncToken)
+                    .selfResponse()
                     ?: return@withExceptionContext null
 
             response[MaxResourceSize::class.java]?.maxSize?.let { maxSize ->
@@ -153,17 +150,17 @@ class TasksSyncManager @AssistedInject constructor(
     }
 
     override fun listAllRemote(): Flow<MultiStatusItem> = flow {
-        collection.url.withExceptionContext {
+        collectionInfo.url.withExceptionContext {
             logger.info("Querying tasks")
-            emitAll(davCollection.calendarQuery("VTODO", null, null))
+            emitAll(remoteCollection.davCollection.calendarQuery("VTODO", null, null))
         }
     }
 
     override suspend fun downloadRemote(bunch: List<Url>) {
         logger.info("Downloading ${bunch.size} iCalendars: $bunch")
         // multiple iCalendars, use calendar-multi-get
-        collection.url.withExceptionContext {
-            davCollection.multiget(bunch).responses().collect { response ->
+        collectionInfo.url.withExceptionContext {
+            remoteCollection.davCollection.multiget(bunch).responses().collect { response ->
                 // See CalendarSyncManager for more information about the multi-get response
                 response.href.withExceptionContext wrapResource@{
                     if (!response.isSuccess()) {

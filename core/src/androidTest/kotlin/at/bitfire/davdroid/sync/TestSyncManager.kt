@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.sync
 
-import at.bitfire.dav4jvm.ktor.DavCollection
 import at.bitfire.dav4jvm.ktor.MultiStatusItem
 import at.bitfire.dav4jvm.ktor.Response
 import at.bitfire.dav4jvm.ktor.selfResponse
@@ -16,6 +15,7 @@ import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.di.qualifier.SyncTransferSemaphore
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.resource.SyncState
+import at.bitfire.davdroid.resource.remote.WebDavCollection
 import at.bitfire.davdroid.util.DavUtils.lastSegment
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -34,18 +34,18 @@ class TestSyncManager @AssistedInject constructor(
     @Assisted accountId: AccountId,
     @Assisted httpClient: HttpClient,
     @Assisted syncResult: SyncResult,
-    @Assisted localCollection: LocalTestCollection,
-    @Assisted collection: Collection,
+    @Assisted override val localCollection: LocalTestCollection,
+    @Assisted collectionInfo: Collection,
+    @Assisted override val remoteCollection: WebDavCollection,
     @Assisted settings: SyncSettings,
     @IoDispatcher ioDispatcher: CoroutineDispatcher,
     @SyncTransferSemaphore syncTransferSemaphore: Semaphore
-): SyncManager<LocalTestResource, LocalTestCollection, DavCollection>(
+) : SyncManager<LocalTestResource>(
     accountId,
     httpClient,
     SyncDataType.EVENTS,
     syncResult,
-    localCollection,
-    collection,
+    collectionInfo,
     resync = null,
     ioDispatcher,
     syncTransferSemaphore,
@@ -59,14 +59,10 @@ class TestSyncManager @AssistedInject constructor(
             httpClient: HttpClient,
             syncResult: SyncResult,
             localCollection: LocalTestCollection,
-            collection: Collection,
+            collectionInfo: Collection,
+            remoteCollection: WebDavCollection,
             settings: SyncSettings
         ): TestSyncManager
-    }
-
-    override suspend fun prepare(): Boolean {
-        davCollection = DavCollection(httpClient, collection.url)
-        return true
     }
 
     var didQueryCapabilities = false
@@ -75,7 +71,7 @@ class TestSyncManager @AssistedInject constructor(
             throw IllegalStateException("queryCapabilities() must not be called twice")
         didQueryCapabilities = true
 
-        val response = davCollection.propfind(0, CalDAV.GetCTag).selfResponse()
+        val response = remoteCollection.davCollection.propfind(0, CalDAV.GetCTag).selfResponse()
         return response?.let { it[GetCTag::class.java]?.cTag }?.let {
             SyncState(SyncState.Type.CTAG, it)
         }

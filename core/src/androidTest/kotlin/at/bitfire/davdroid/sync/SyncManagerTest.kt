@@ -4,10 +4,10 @@
 
 package at.bitfire.davdroid.sync
 
-import android.accounts.Account
 import android.content.Context
 import androidx.core.app.NotificationManagerCompat
 import androidx.hilt.work.HiltWorkerFactory
+import at.bitfire.dav4jvm.ktor.DavCollection
 import at.bitfire.dav4jvm.ktor.PropStat
 import at.bitfire.dav4jvm.ktor.Response
 import at.bitfire.dav4jvm.ktor.Response.HrefRelation
@@ -19,6 +19,7 @@ import at.bitfire.davdroid.accounts.LegacyAccount
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.repository.DavSyncStatsRepository
 import at.bitfire.davdroid.resource.SyncState
+import at.bitfire.davdroid.resource.remote.TestWebDavCollection
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.account.TestAccount
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -152,7 +153,7 @@ class SyncManagerTest {
         assertFalse(syncManager.didGenerateUpload)
         assertTrue(syncManager.didListAllRemote)
         assertFalse(syncManager.didDownloadRemote)
-        assertFalse(syncManager.syncResult.hasError())
+        assertFalse(syncManager.syncResult.hasError)
         assertTrue(collection.entries.isEmpty())
     }
 
@@ -192,7 +193,7 @@ class SyncManagerTest {
         assertTrue(syncManager.didGenerateUpload)
         assertTrue(syncManager.didListAllRemote)
         assertFalse(syncManager.didDownloadRemote)
-        assertFalse(syncManager.syncResult.hasError())
+        assertFalse(syncManager.syncResult.hasError)
         assertEquals(1, collection.entries.size)
         assertEquals("etag-from-put", collection.entries.first().eTag)
     }
@@ -237,7 +238,7 @@ class SyncManagerTest {
         assertTrue(syncManager.didGenerateUpload)
         assertTrue(syncManager.didListAllRemote)
         assertFalse(syncManager.didDownloadRemote)
-        assertFalse(syncManager.syncResult.hasError())
+        assertFalse(syncManager.syncResult.hasError)
         assertEquals(1, collection.entries.size)
         assertEquals("etag-from-put", collection.entries.first().eTag)
     }
@@ -282,7 +283,7 @@ class SyncManagerTest {
         assertTrue(syncManager.didGenerateUpload)
         assertTrue(syncManager.didListAllRemote)
         assertTrue(syncManager.didDownloadRemote)
-        assertFalse(syncManager.syncResult.hasError())
+        assertFalse(syncManager.syncResult.hasError)
         assertEquals(1, collection.entries.size)
         assertEquals("etag-from-propfind", collection.entries.first().eTag)
     }
@@ -327,7 +328,7 @@ class SyncManagerTest {
         assertTrue(syncManager.didGenerateUpload)
         assertTrue(syncManager.didListAllRemote)
         assertTrue(syncManager.didDownloadRemote)
-        assertFalse(syncManager.syncResult.hasError())
+        assertFalse(syncManager.syncResult.hasError)
         assertEquals(1, collection.entries.size)
         assertEquals("changed-etag-from-server", collection.entries.first().eTag)
     }
@@ -364,7 +365,7 @@ class SyncManagerTest {
         assertFalse(syncManager.didGenerateUpload)
         assertTrue(syncManager.didListAllRemote)
         assertFalse(syncManager.didDownloadRemote)
-        assertFalse(syncManager.syncResult.hasError())
+        assertFalse(syncManager.syncResult.hasError)
         assertEquals(1, collection.entries.size)
         assertEquals("MemberETag1", collection.entries.first().eTag)
     }
@@ -398,7 +399,7 @@ class SyncManagerTest {
         assertFalse(syncManager.didGenerateUpload)
         assertTrue(syncManager.didListAllRemote)
         assertTrue(syncManager.didDownloadRemote)
-        assertFalse(syncManager.syncResult.hasError())
+        assertFalse(syncManager.syncResult.hasError)
         assertEquals(1, collection.entries.size)
         assertEquals("NewMemberETag1", collection.entries.first().eTag)
     }
@@ -436,7 +437,7 @@ class SyncManagerTest {
         assertFalse(syncManager.didGenerateUpload)
         assertTrue(syncManager.didListAllRemote)
         assertTrue(syncManager.didDownloadRemote)
-        assertFalse(syncManager.syncResult.hasError())
+        assertFalse(syncManager.syncResult.hasError)
         assertEquals(1, collection.entries.size)
         assertEquals("MemberETag2", collection.entries.first().eTag)
     }
@@ -457,7 +458,7 @@ class SyncManagerTest {
         assertFalse(syncManager.didGenerateUpload)
         assertTrue(syncManager.didListAllRemote)
         assertFalse(syncManager.didDownloadRemote)
-        assertFalse(syncManager.syncResult.hasError())
+        assertFalse(syncManager.syncResult.hasError)
         assertTrue(collection.entries.isEmpty())
     }
 
@@ -474,7 +475,7 @@ class SyncManagerTest {
         assertFalse(syncManager.didGenerateUpload)
         assertFalse(syncManager.didListAllRemote)
         assertFalse(syncManager.didDownloadRemote)
-        assertFalse(syncManager.syncResult.hasError())
+        assertFalse(syncManager.syncResult.hasError)
         assertTrue(collection.entries.isEmpty())
     }
 
@@ -539,6 +540,7 @@ class SyncManagerTest {
         syncResult,
         localCollection,
         collection,
+        TestWebDavCollection(DavCollection(client, collection.url)),
         SyncSettingsFixtures.default()
     )
 

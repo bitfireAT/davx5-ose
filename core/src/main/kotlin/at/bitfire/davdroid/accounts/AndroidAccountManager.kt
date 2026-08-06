@@ -23,8 +23,12 @@ class AndroidAccountManager @Inject constructor(
         }
     }
 
+    fun getAccountId(account: Account): AccountId {
+        return LegacyAccount(account)
+    }
+
     /**
-     * Make sure a DAVx Android account is visible to a given third-party app (jtx board, tasks app).
+     * Make sure a DAVx⁵ Android account is visible to a given third-party app (jtx board, tasks app).
      */
     fun ensureAccountVisibility(accountId: AccountId, packageName: String) {
         if (Build.VERSION.SDK_INT >= 26) {

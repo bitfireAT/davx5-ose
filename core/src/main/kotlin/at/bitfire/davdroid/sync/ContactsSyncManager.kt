@@ -31,6 +31,7 @@ import at.bitfire.davdroid.resource.LocalContact
 import at.bitfire.davdroid.resource.LocalGroup
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.resource.SyncState
+import at.bitfire.davdroid.resource.remote.CardDavCollection
 import at.bitfire.davdroid.resource.syncState
 import at.bitfire.davdroid.resource.workaround.ContactDirtyVerifier
 import at.bitfire.davdroid.sync.groups.CategoriesStrategy
@@ -105,8 +106,9 @@ class ContactsSyncManager @AssistedInject constructor(
     @Assisted httpClient: HttpClient,
     @Assisted syncResult: SyncResult,
     @Assisted val provider: ContentProviderClient,
-    @Assisted localAddressBook: LocalAddressBook,
-    @Assisted collection: Collection,
+    @Assisted override val localCollection: LocalAddressBook,
+    @Assisted collectionInfo: Collection,
+    @Assisted override val remoteCollection: CardDavCollection,
     @Assisted resync: ResyncType?,
     @Assisted val syncFrameworkUpload: Boolean,
     @Assisted settings: SyncSettings,
@@ -115,13 +117,12 @@ class ContactsSyncManager @AssistedInject constructor(
     private val productIds: ProductIds,
     private val resourceRetrieverFactory: ResourceRetriever.Factory,
     @SyncTransferSemaphore syncTransferSemaphore: Semaphore
-): SyncManager<LocalAddress, LocalAddressBook, DavAddressBook>(
+) : SyncManager<LocalAddress>(
     accountId,
     httpClient,
     SyncDataType.CONTACTS,
     syncResult,
-    localAddressBook,
-    collection,
+    collectionInfo,
     resync,
     ioDispatcher,
     syncTransferSemaphore,
@@ -136,7 +137,8 @@ class ContactsSyncManager @AssistedInject constructor(
             syncResult: SyncResult,
             provider: ContentProviderClient,
             localAddressBook: LocalAddressBook,
-            collection: Collection,
+            collectionInfo: Collection,
+            remoteCollection: CardDavCollection,
             resync: ResyncType?,
             syncFrameworkUpload: Boolean,
             settings: SyncSettings
@@ -149,8 +151,8 @@ class ContactsSyncManager @AssistedInject constructor(
 
     private var hasVCard4 = false
     private val groupStrategy = when (settings.groupMethod) {
-        GroupMethod.GROUP_VCARDS -> VCard4Strategy(localAddressBook)
-        GroupMethod.CATEGORIES -> CategoriesStrategy(localAddressBook)
+        GroupMethod.GROUP_VCARDS -> VCard4Strategy(localCollection)
+        GroupMethod.CATEGORIES -> CategoriesStrategy(localCollection)
     }
 
 
@@ -161,15 +163,13 @@ class ContactsSyncManager @AssistedInject constructor(
                 return false
         }
 
-        davCollection = DavAddressBook(httpClient, collection.url)
-
         logger.info("Contact group strategy: ${groupStrategy::class.java.simpleName}")
         return true
     }
 
     override suspend fun queryCapabilities(): SyncState? {
-        return collection.url.withExceptionContext {
-            val response = davCollection.propfind(
+        return collectionInfo.url.withExceptionContext {
+            val response = remoteCollection.davCollection.propfind(
                 0,
                 CardDAV.MaxResourceSize,
                 CardDAV.SupportedAddressData,
@@ -253,14 +253,14 @@ class ContactsSyncManager @AssistedInject constructor(
     }
 
     override fun listAllRemote(): Flow<MultiStatusItem> = flow {
-        collection.url.withExceptionContext {
-            emitAll(davCollection.propfind(1, WebDAV.ResourceType, WebDAV.GetETag))
+        collectionInfo.url.withExceptionContext {
+            emitAll(remoteCollection.davCollection.propfind(1, WebDAV.ResourceType, WebDAV.GetETag))
         }
     }
 
     override suspend fun downloadRemote(bunch: List<Url>) {
         logger.info("Downloading ${bunch.size} vCard(s): $bunch")
-        collection.url.withExceptionContext {
+        collectionInfo.url.withExceptionContext {
             val contentType: String?
             val version: String?
             when {
@@ -273,7 +273,7 @@ class ContactsSyncManager @AssistedInject constructor(
                     version = null     // 3.0 is the default version; don't request 3.0 explicitly because maybe some vCard3-only servers don't understand it
                 }
             }
-            davCollection.multiget(bunch, contentType, version).responses().collect { response ->
+            remoteCollection.davCollection.multiget(bunch, contentType, version).responses().collect { response ->
                 // See CalendarSyncManager for more information about the multi-get response
                 response.href.withExceptionContext wrapResource@{
                     if (!response.isSuccess()) {
@@ -297,7 +297,10 @@ class ContactsSyncManager @AssistedInject constructor(
                         downloader = object : Contact.Downloader {
                             override suspend fun download(url: String, accepts: String): ByteArray? {
                                 // retrieve external resource (like a photo) from a URL (not necessarily HTTP[S])
-                                val retriever = resourceRetrieverFactory.create(accountId, davCollection.location.host)
+                                val retriever = resourceRetrieverFactory.create(
+                                    accountId,
+                                    remoteCollection.davCollection.location.host
+                                )
                                 return retriever.retrieve(url)
                             }
                         }

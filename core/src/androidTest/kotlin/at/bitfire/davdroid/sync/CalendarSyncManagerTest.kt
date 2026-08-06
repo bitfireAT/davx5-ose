@@ -5,7 +5,6 @@
 package at.bitfire.davdroid.sync
 
 import android.Manifest
-import android.accounts.Account
 import android.content.ContentProviderClient
 import android.content.Context
 import android.content.Entity
@@ -14,11 +13,11 @@ import android.provider.CalendarContract.Calendars
 import android.provider.CalendarContract.Events
 import androidx.core.content.contentValuesOf
 import androidx.test.rule.GrantPermissionRule
-import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.accounts.LegacyAccount
 import at.bitfire.davdroid.accounts.toAndroidAccount
 import at.bitfire.davdroid.resource.LocalCalendar
 import at.bitfire.davdroid.resource.LocalEvent
+import at.bitfire.davdroid.resource.remote.CalDavCollection
 import at.bitfire.davdroid.sync.account.TestAccount
 import at.bitfire.synctools.storage.calendar.AndroidCalendar
 import at.bitfire.synctools.storage.calendar.AndroidCalendarProvider
@@ -141,7 +140,8 @@ class CalendarSyncManagerTest {
         httpClient = mockk(),
         syncResult = mockk(),
         localCalendar = mockk(),
-        collection = mockk(),
+        collectionInfo = mockk(),
+        remoteCollection = CalDavCollection(mockk()),
         resync = mockk(),
         settings = SyncSettingsFixtures.default()
     )
