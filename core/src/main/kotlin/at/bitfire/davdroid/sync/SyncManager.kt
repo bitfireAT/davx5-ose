@@ -160,7 +160,7 @@ abstract class SyncManager<LocalType : LocalResource>(
             syncStatsRepository.logSyncTime(collectionInfo.id, dataType)
 
             logger.info("Querying server capabilities")
-            val (syncState, capabilities) = remoteCollection.queryCapabilities()
+            val (syncState, capabilities) = collectionInfo.url.withExceptionContext { remoteCollection.queryCapabilities() }
             logger.info("Sync state: $syncState, capabilities: $capabilities")
             var remoteSyncState = syncState
 

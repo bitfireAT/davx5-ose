@@ -12,7 +12,6 @@ import at.bitfire.dav4jvm.property.carddav.SupportedAddressData
 import at.bitfire.dav4jvm.property.webdav.SupportedReportSet
 import at.bitfire.dav4jvm.property.webdav.WebDAV
 import at.bitfire.davdroid.resource.syncState
-import at.bitfire.davdroid.sync.withExceptionContext
 import at.bitfire.dav4jvm.property.caldav.MaxResourceSize as CalDavMaxResourceSize
 import at.bitfire.dav4jvm.property.carddav.MaxResourceSize as CardDavMaxResourceSize
 
@@ -25,30 +24,29 @@ abstract class BaseWebDavCollection(
     open override val davCollection: DavCollection
 ) : WebDavCollection {
 
-    override suspend fun queryCapabilities(): WebDavCollection.QueryCapabilitiesResult =
-        davCollection.location.withExceptionContext {
-            val response = davCollection.propfind(
-                0,
-                WebDAV.SupportedReportSet,
-                CalDAV.GetCTag,
-                WebDAV.SyncToken,
-                CalDAV.MaxResourceSize,
-                CardDAV.MaxResourceSize,
-                CardDAV.SupportedAddressData
-            ).selfResponse() ?: return@withExceptionContext WebDavCollection.QueryCapabilitiesResult(
-                syncState = null,
-                capabilities = WebDavCollection.Capabilities()
-            )
+    override suspend fun queryCapabilities(): WebDavCollection.QueryCapabilitiesResult {
+        val response = davCollection.propfind(
+            depth = 0,
+            WebDAV.SupportedReportSet,
+            CalDAV.GetCTag,
+            WebDAV.SyncToken,
+            CalDAV.MaxResourceSize,
+            CardDAV.MaxResourceSize,
+            CardDAV.SupportedAddressData
+        ).selfResponse() ?: return WebDavCollection.QueryCapabilitiesResult(
+            syncState = null,
+            capabilities = WebDavCollection.Capabilities()
+        )
 
-            WebDavCollection.QueryCapabilitiesResult(
-                syncState = response.syncState(),
-                capabilities = WebDavCollection.Capabilities(
-                    supportsCollectionSync = response[SupportedReportSet::class.java]?.reports?.contains(WebDAV.SyncCollection) == true,
-                    maxResourceSize = response[CalDavMaxResourceSize::class.java]?.maxSize
-                        ?: response[CardDavMaxResourceSize::class.java]?.maxSize,
-                    supportsVCard4 = response[SupportedAddressData::class.java]?.hasVCard4() == true
-                )
+        return WebDavCollection.QueryCapabilitiesResult(
+            syncState = response.syncState(),
+            capabilities = WebDavCollection.Capabilities(
+                supportsCollectionSync = response[SupportedReportSet::class.java]?.reports?.contains(WebDAV.SyncCollection) == true,
+                maxResourceSize = response[CalDavMaxResourceSize::class.java]?.maxSize
+                    ?: response[CardDavMaxResourceSize::class.java]?.maxSize,
+                supportsVCard4 = response[SupportedAddressData::class.java]?.hasVCard4() == true
             )
-        }
+        )
+    }
 
 }
