@@ -39,6 +39,7 @@ import at.bitfire.davdroid.resource.LocalCollection
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.resource.SyncState
 import at.bitfire.davdroid.resource.remote.WebDavCollection
+import at.bitfire.davdroid.resource.remote.member
 import at.bitfire.davdroid.sync.account.InvalidAccountException
 import at.bitfire.synctools.storage.LocalStorageException
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -263,7 +264,7 @@ abstract class SyncManager<LocalType : LocalResource>(
                     val lastETag = if (lastScheduleTag == null) local.eTag else null
                     logger.info("$fileName has been deleted locally -> deleting from server (ETag $lastETag / schedule-tag $lastScheduleTag)")
 
-                    memberUrl(fileName).withExceptionContext {
+                    collectionInfo.url.member(fileName).withExceptionContext {
                         try {
                             remoteCollection.deleteMember(
                                 fileName = fileName,
@@ -874,11 +875,5 @@ abstract class SyncManager<LocalType : LocalResource>(
             callback = callback
         )
     }
-
-    /**
-     * URL of a member (non-collection resource) of the remote collection, for debugging/exception context only.
-     */
-    private fun memberUrl(fileName: String): Url =
-        URLBuilder(collectionInfo.url).appendPathSegments(fileName, encodeSlash = true).build()
 
 }

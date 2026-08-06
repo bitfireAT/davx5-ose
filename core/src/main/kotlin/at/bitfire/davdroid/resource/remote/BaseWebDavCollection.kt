@@ -15,9 +15,7 @@ import at.bitfire.dav4jvm.property.webdav.WebDAV
 import at.bitfire.davdroid.resource.SyncState
 import io.ktor.client.HttpClient
 import io.ktor.http.HttpHeaders
-import io.ktor.http.URLBuilder
 import io.ktor.http.Url
-import io.ktor.http.appendPathSegments
 import io.ktor.http.headers
 import io.ktor.util.appendAll
 import at.bitfire.dav4jvm.property.caldav.MaxResourceSize as CalDavMaxResourceSize
@@ -73,8 +71,7 @@ abstract class BaseWebDavCollection(
         ifScheduleTag: String?,
         additionalHeaders: Map<String, String>
     ) {
-        val memberUrl = URLBuilder(url).appendPathSegments(fileName, encodeSlash = true).build()
-        DavResource(httpClient, memberUrl).delete(
+        DavResource(httpClient, url.member(fileName)).delete(
             additionalHeaders = headers {
                 if (ifETag != null) {
                     // only delete specific version
