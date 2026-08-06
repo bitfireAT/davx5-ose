@@ -47,9 +47,7 @@ import io.ktor.client.HttpClient
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
-import io.ktor.http.URLBuilder
 import io.ktor.http.Url
-import io.ktor.http.appendPathSegments
 import io.ktor.http.content.OutgoingContent
 import io.ktor.http.headers
 import io.ktor.util.appendAll
@@ -333,7 +331,7 @@ abstract class SyncManager<LocalType : LocalResource>(
         val upload = generateUpload(local, capabilities)
 
         val fileName = existingFileName ?: upload.suggestedFileName
-        val uploadUrl = URLBuilder(collectionInfo.url).appendPathSegments(fileName, encodeSlash = true).build()
+        val uploadUrl = collectionInfo.url.member(fileName)
         val remote = DavResource(httpClient, uploadUrl)
 
         try {
