@@ -205,11 +205,10 @@ class AccountScreenViewModel @AssistedInject constructor(
     fun renameAccount(newName: String) {
         viewModelScope.launch {
             try {
-                accountRepository.rename(accountId, newName)
+                val newAccountId = accountRepository.rename(accountId, newName)
 
                 // synchronize again
-                val newAccount = Account(newName, context.getString(R.string.account_type))
-                syncWorkerManager.enqueueOneTimeAllAuthorities(newAccount.toAccountId(), manual = true)
+                syncWorkerManager.enqueueOneTimeAllAuthorities(newAccountId, manual = true)
             } catch (e: Exception) {
                 logger.log(Level.SEVERE, "Couldn't rename account", e)
                 error = e.localizedMessage
