@@ -10,10 +10,12 @@ import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
 import io.ktor.client.request.HttpRequestData
+import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.Url
+import io.ktor.http.content.TextContent
 import io.ktor.http.headersOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -39,6 +41,74 @@ class BaseWebDavCollectionTest {
             override val davCollection = DavCollection(httpClient, url)
         }
     }
+
+
+    // create
+
+    @Test
+    fun `createMember() sends PUT to the member URL`() = runTest {
+        var request: HttpRequestData? = null
+        val engine = MockEngine { req ->
+            request = req
+            respond("", HttpStatusCode.Created)
+        }
+
+        collection(engine).createMember("some-file.ics", TextContent("BEGIN:VCALENDAR", ContentType.Text.Plain))
+
+        assertEquals(HttpMethod.Put, request?.method)
+        assertEquals(Url("https://example.com/dav/some-file.ics"), request?.url)
+    }
+
+    @Test
+    fun `createMember() sets If-None-Match`() = runTest {
+        var request: HttpRequestData? = null
+        val engine = MockEngine { req ->
+            request = req
+            respond("", HttpStatusCode.Created)
+        }
+
+        collection(engine).createMember("some-file.ics", TextContent("BEGIN:VCALENDAR", ContentType.Text.Plain))
+
+        assertEquals("*", request?.headers?.get(HttpHeaders.IfNoneMatch))
+    }
+
+    @Test
+    fun `createMember() passes through additionalHeaders`() = runTest {
+        var request: HttpRequestData? = null
+        val engine = MockEngine { req ->
+            request = req
+            respond("", HttpStatusCode.Created)
+        }
+
+        collection(engine).createMember(
+            "some-file.ics",
+            TextContent("BEGIN:VCALENDAR", ContentType.Text.Plain),
+            additionalHeaders = mapOf("Push-Dont-Notify" to "\"some-subscription\"")
+        )
+
+        assertEquals("\"some-subscription\"", request?.headers?.get("Push-Dont-Notify"))
+    }
+
+    @Test
+    fun `createMember() returns ETag and Schedule-Tag from response`() = runTest {
+        val engine = MockEngine {
+            respond(
+                "",
+                HttpStatusCode.Created,
+                headersOf(
+                    HttpHeaders.ETag to listOf("\"new-etag\""),
+                    HttpHeaders.ScheduleTag to listOf("\"new-schedule-tag\"")
+                )
+            )
+        }
+
+        val result =
+            collection(engine).createMember("some-file.ics", TextContent("BEGIN:VCALENDAR", ContentType.Text.Plain))
+
+        assertEquals("new-etag", result.eTag)
+        assertEquals("new-schedule-tag", result.scheduleTag)
+    }
+
 
     // read/query
 
@@ -260,6 +330,109 @@ class BaseWebDavCollectionTest {
 
         assertEquals(SyncState(SyncState.Type.SYNC_TOKEN, "http://example.com/ns/sync/token123"), syncState)
     }
+
+
+    // update
+
+    @Test
+    fun `updateMember() sends PUT to the member URL`() = runTest {
+        var request: HttpRequestData? = null
+        val engine = MockEngine { req ->
+            request = req
+            respond("", HttpStatusCode.NoContent)
+        }
+
+        collection(engine).updateMember("some-file.ics", TextContent("BEGIN:VCALENDAR", ContentType.Text.Plain))
+
+        assertEquals(HttpMethod.Put, request?.method)
+        assertEquals(Url("https://example.com/dav/some-file.ics"), request?.url)
+    }
+
+    @Test
+    fun `updateMember() sets If-Match when ifETag is given`() = runTest {
+        var request: HttpRequestData? = null
+        val engine = MockEngine { req ->
+            request = req
+            respond("", HttpStatusCode.NoContent)
+        }
+
+        collection(engine).updateMember(
+            "some-file.ics",
+            TextContent("BEGIN:VCALENDAR", ContentType.Text.Plain),
+            ifETag = "some-etag"
+        )
+
+        assertEquals("\"some-etag\"", request?.headers?.get(HttpHeaders.IfMatch))
+    }
+
+    @Test
+    fun `updateMember() sets If-Schedule-Tag-Match when ifScheduleTag is given`() = runTest {
+        var request: HttpRequestData? = null
+        val engine = MockEngine { req ->
+            request = req
+            respond("", HttpStatusCode.NoContent)
+        }
+
+        collection(engine).updateMember(
+            "some-file.ics",
+            TextContent("BEGIN:VCALENDAR", ContentType.Text.Plain),
+            ifScheduleTag = "some-schedule-tag"
+        )
+
+        assertEquals("\"some-schedule-tag\"", request?.headers?.get(HttpHeaders.IfScheduleTagMatch))
+    }
+
+    @Test
+    fun `updateMember() sets no precondition headers when no tags are given`() = runTest {
+        var request: HttpRequestData? = null
+        val engine = MockEngine { req ->
+            request = req
+            respond("", HttpStatusCode.NoContent)
+        }
+
+        collection(engine).updateMember("some-file.ics", TextContent("BEGIN:VCALENDAR", ContentType.Text.Plain))
+
+        assertNull(request?.headers?.get(HttpHeaders.IfMatch))
+        assertNull(request?.headers?.get(HttpHeaders.IfScheduleTagMatch))
+    }
+
+    @Test
+    fun `updateMember() passes through additionalHeaders`() = runTest {
+        var request: HttpRequestData? = null
+        val engine = MockEngine { req ->
+            request = req
+            respond("", HttpStatusCode.NoContent)
+        }
+
+        collection(engine).updateMember(
+            "some-file.ics",
+            TextContent("BEGIN:VCALENDAR", ContentType.Text.Plain),
+            additionalHeaders = mapOf("Push-Dont-Notify" to "\"some-subscription\"")
+        )
+
+        assertEquals("\"some-subscription\"", request?.headers?.get("Push-Dont-Notify"))
+    }
+
+    @Test
+    fun `updateMember() returns ETag and Schedule-Tag from response`() = runTest {
+        val engine = MockEngine {
+            respond(
+                "",
+                HttpStatusCode.NoContent,
+                headersOf(
+                    HttpHeaders.ETag to listOf("\"updated-etag\""),
+                    HttpHeaders.ScheduleTag to listOf("\"updated-schedule-tag\"")
+                )
+            )
+        }
+
+        val result =
+            collection(engine).updateMember("some-file.ics", TextContent("BEGIN:VCALENDAR", ContentType.Text.Plain))
+
+        assertEquals("updated-etag", result.eTag)
+        assertEquals("updated-schedule-tag", result.scheduleTag)
+    }
+
 
     // delete
 

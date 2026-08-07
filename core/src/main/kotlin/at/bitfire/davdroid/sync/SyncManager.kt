@@ -10,7 +10,6 @@ import android.os.RemoteException
 import androidx.annotation.VisibleForTesting
 import at.bitfire.dav4jvm.Error
 import at.bitfire.dav4jvm.QuotedStringUtils
-import at.bitfire.dav4jvm.ktor.DavResource
 import at.bitfire.dav4jvm.ktor.MultiStatusItem
 import at.bitfire.dav4jvm.ktor.Response
 import at.bitfire.dav4jvm.ktor.exception.ConflictException
@@ -23,7 +22,6 @@ import at.bitfire.dav4jvm.ktor.exception.PreconditionFailedException
 import at.bitfire.dav4jvm.ktor.exception.ServiceUnavailableException
 import at.bitfire.dav4jvm.ktor.exception.UnauthorizedException
 import at.bitfire.dav4jvm.ktor.responsesWithRelation
-import at.bitfire.dav4jvm.property.caldav.ScheduleTag
 import at.bitfire.dav4jvm.property.webdav.GetETag
 import at.bitfire.dav4jvm.property.webdav.ResourceType
 import at.bitfire.dav4jvm.property.webdav.SyncToken
@@ -44,13 +42,8 @@ import at.bitfire.davdroid.sync.account.InvalidAccountException
 import at.bitfire.synctools.storage.LocalStorageException
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.ktor.client.HttpClient
-import io.ktor.client.statement.HttpResponse
-import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.Url
-import io.ktor.http.content.OutgoingContent
-import io.ktor.http.headers
-import io.ktor.util.appendAll
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
@@ -332,7 +325,6 @@ abstract class SyncManager<LocalType : LocalResource>(
 
         val fileName = existingFileName ?: upload.suggestedFileName
         val uploadUrl = collectionInfo.url.member(fileName)
-        val remote = DavResource(httpClient, uploadUrl)
 
         try {
             uploadUrl.withExceptionContext {
@@ -340,20 +332,20 @@ abstract class SyncManager<LocalType : LocalResource>(
                     // create new resource on server
                     logger.log(Level.INFO, "Uploading new resource {0} -> {1}", arrayOf<Any?>(local.id, fileName))
 
-                    var newETag: String? = null
-                    var newScheduleTag: String? = null
-                    remote.put(
-                        upload.content,
-                        ifNoneMatch = true,     // fails if there's already a resource with that name
-                        callback = { response ->
-                            newETag = GetETag.fromHttpResponse(response)?.eTag
-                            newScheduleTag = ScheduleTag.fromHttpResponse(response)?.scheduleTag
-                        },
-                        headers = pushDontNotifyHeader
+                    val result = remoteCollection.createMember(
+                        fileName = fileName,
+                        content = upload.content,
+                        additionalHeaders = pushDontNotifyHeader
                     )
 
                     // success (no exception thrown)
-                    onSuccessfulUpload(local, fileName, newETag, newScheduleTag, upload.onSuccessContext)
+                    onSuccessfulUpload(
+                        local = local,
+                        newFileName = fileName,
+                        eTag = result.eTag,
+                        scheduleTag = result.scheduleTag,
+                        context = upload.onSuccessContext
+                    )
 
                 } else {
                     // update resource on server
@@ -366,21 +358,22 @@ abstract class SyncManager<LocalType : LocalResource>(
                         arrayOf<Any?>(local.id, fileName, ifETag, ifScheduleTag)
                     )
 
-                    var updatedETag: String? = null
-                    var updatedScheduleTag: String? = null
-                    remote.put(
-                        upload.content,
+                    val result = remoteCollection.updateMember(
+                        fileName = fileName,
+                        content = upload.content,
                         ifETag = ifETag,
                         ifScheduleTag = ifScheduleTag,
-                        callback = { response ->
-                            updatedETag = GetETag.fromHttpResponse(response)?.eTag
-                            updatedScheduleTag = ScheduleTag.fromHttpResponse(response)?.scheduleTag
-                        },
-                        headers = pushDontNotifyHeader
+                        additionalHeaders = pushDontNotifyHeader
                     )
 
                     // success (no exception thrown)
-                    onSuccessfulUpload(local, fileName, updatedETag, updatedScheduleTag, upload.onSuccessContext)
+                    onSuccessfulUpload(
+                        local = local,
+                        newFileName = fileName,
+                        eTag = result.eTag,
+                        scheduleTag = result.scheduleTag,
+                        context = upload.onSuccessContext
+                    )
                 }
             }
 
@@ -836,42 +829,5 @@ abstract class SyncManager<LocalType : LocalResource>(
         )
 
     protected abstract fun notifyInvalidResourceTitle(): String
-
-    /**
-     * A wrapper for making `PUT` requests with conditional headers.
-     * @param content The content to send in the PUT request.
-     * @param ifETag If one is given, the `If-Match` header will have this value.
-     * @param ifScheduleTag If one is given, the `If-Schedule-Tag-Match` header will have this value.
-     * @param ifNoneMatch If `true`, the `If-None-Match` header will be set to `*`.
-     * @param headers Any other headers to append to the request.
-     * @param callback Will be called with the request's response.
-     */
-    private suspend fun DavResource.put(
-        content: OutgoingContent,
-        ifETag: String? = null,
-        ifScheduleTag: String? = null,
-        ifNoneMatch: Boolean = false,
-        headers: Map<String, String> = emptyMap(),
-        callback: suspend (HttpResponse) -> Unit
-    ) {
-        put(
-            content,
-            additionalHeaders = headers {
-                if (ifETag != null)
-                // only overwrite specific version
-                    append(HttpHeaders.IfMatch, QuotedStringUtils.asQuotedString(ifETag))
-                if (ifScheduleTag != null)
-                // only overwrite specific version
-                    append(HttpHeaders.IfScheduleTagMatch, QuotedStringUtils.asQuotedString(ifScheduleTag))
-                if (ifNoneMatch)
-                // don't overwrite anything existing
-                    append(HttpHeaders.IfNoneMatch, "*")
-
-                // Append all custom headers
-                appendAll(headers)
-            },
-            callback = callback
-        )
-    }
 
 }
