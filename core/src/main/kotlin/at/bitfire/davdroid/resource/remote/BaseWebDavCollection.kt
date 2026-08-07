@@ -4,7 +4,8 @@
 
 package at.bitfire.davdroid.resource.remote
 
-import at.bitfire.dav4jvm.ktor.DavCollection
+import at.bitfire.dav4jvm.QuotedStringUtils
+import at.bitfire.dav4jvm.ktor.DavResource
 import at.bitfire.dav4jvm.ktor.selfResponse
 import at.bitfire.dav4jvm.property.caldav.CalDAV
 import at.bitfire.dav4jvm.property.carddav.CardDAV
@@ -12,6 +13,11 @@ import at.bitfire.dav4jvm.property.carddav.SupportedAddressData
 import at.bitfire.dav4jvm.property.webdav.SupportedReportSet
 import at.bitfire.dav4jvm.property.webdav.WebDAV
 import at.bitfire.davdroid.resource.SyncState
+import io.ktor.client.HttpClient
+import io.ktor.http.HttpHeaders
+import io.ktor.http.Url
+import io.ktor.http.headers
+import io.ktor.util.appendAll
 import at.bitfire.dav4jvm.property.caldav.MaxResourceSize as CalDavMaxResourceSize
 import at.bitfire.dav4jvm.property.carddav.MaxResourceSize as CardDavMaxResourceSize
 
@@ -19,8 +25,11 @@ import at.bitfire.dav4jvm.property.carddav.MaxResourceSize as CardDavMaxResource
  * Common implementation of [WebDavCollection] for [CalDavCollection] and [CardDavCollection].
  */
 abstract class BaseWebDavCollection(
-    override val davCollection: DavCollection
+    protected val httpClient: HttpClient,
+    protected val url: Url
 ) : WebDavCollection {
+
+    // read/query
 
     override suspend fun queryCapabilities(): WebDavCollection.QueryCapabilitiesResult {
         val response = davCollection.propfind(
@@ -52,5 +61,32 @@ abstract class BaseWebDavCollection(
 
     override suspend fun querySyncState(): SyncState? =
         davCollection.propfind(depth = 0, CalDAV.GetCTag, WebDAV.SyncToken).selfResponse()?.syncState()
+
+
+    // delete
+
+    override suspend fun deleteMember(
+        fileName: String,
+        ifETag: String?,
+        ifScheduleTag: String?,
+        additionalHeaders: Map<String, String>
+    ) {
+        DavResource(httpClient, url.member(fileName)).delete(
+            additionalHeaders = headers {
+                if (ifETag != null) {
+                    // only delete specific version
+                    append(HttpHeaders.IfMatch, QuotedStringUtils.asQuotedString(ifETag))
+                }
+                if (ifScheduleTag != null) {
+                    // only delete specific version
+                    append(HttpHeaders.IfScheduleTagMatch, QuotedStringUtils.asQuotedString(ifScheduleTag))
+                }
+
+                appendAll(additionalHeaders)
+            }
+        ) {
+            // don't do anything special on success
+        }
+    }
 
 }

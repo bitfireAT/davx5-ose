@@ -39,6 +39,7 @@ import at.bitfire.davdroid.resource.LocalCollection
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.resource.SyncState
 import at.bitfire.davdroid.resource.remote.WebDavCollection
+import at.bitfire.davdroid.resource.remote.member
 import at.bitfire.davdroid.sync.account.InvalidAccountException
 import at.bitfire.synctools.storage.LocalStorageException
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -46,9 +47,7 @@ import io.ktor.client.HttpClient
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
-import io.ktor.http.URLBuilder
 import io.ktor.http.Url
-import io.ktor.http.appendPathSegments
 import io.ktor.http.content.OutgoingContent
 import io.ktor.http.headers
 import io.ktor.util.appendAll
@@ -263,15 +262,14 @@ abstract class SyncManager<LocalType : LocalResource>(
                     val lastETag = if (lastScheduleTag == null) local.eTag else null
                     logger.info("$fileName has been deleted locally -> deleting from server (ETag $lastETag / schedule-tag $lastScheduleTag)")
 
-                    val url = URLBuilder(collectionInfo.url).appendPathSegments(fileName, encodeSlash = true).build()
-                    val remote = DavResource(httpClient, url)
-                    url.withExceptionContext {
+                    collectionInfo.url.member(fileName).withExceptionContext {
                         try {
-                            remote.delete(
+                            remoteCollection.deleteMember(
+                                fileName = fileName,
                                 ifETag = lastETag,
                                 ifScheduleTag = lastScheduleTag,
-                                headers = pushDontNotifyHeader,
-                            ) {}
+                                additionalHeaders = pushDontNotifyHeader,
+                            )
                             numDeleted++
                         } catch (_: HttpException) {
                             logger.warning("Couldn't delete $fileName from server; ignoring (may be downloaded again)")
@@ -333,7 +331,7 @@ abstract class SyncManager<LocalType : LocalResource>(
         val upload = generateUpload(local, capabilities)
 
         val fileName = existingFileName ?: upload.suggestedFileName
-        val uploadUrl = URLBuilder(collectionInfo.url).appendPathSegments(fileName, encodeSlash = true).build()
+        val uploadUrl = collectionInfo.url.member(fileName)
         val remote = DavResource(httpClient, uploadUrl)
 
         try {
@@ -868,33 +866,6 @@ abstract class SyncManager<LocalType : LocalResource>(
                 if (ifNoneMatch)
                 // don't overwrite anything existing
                     append(HttpHeaders.IfNoneMatch, "*")
-
-                // Append all custom headers
-                appendAll(headers)
-            },
-            callback = callback
-        )
-    }
-
-    /**
-     * A wrapper for making `DELETE` requests with conditional headers.
-     * @param ifETag If one is given, the `If-Match` header will have this value.
-     * @param ifScheduleTag If one is given, the `If-Schedule-Tag-Match` header will have this value.
-     * @param headers Any other headers to append to the request.
-     * @param callback Will be called with the request's response.
-     */
-    private suspend fun DavResource.delete(
-        ifETag: String? = null,
-        ifScheduleTag: String? = null,
-        headers: Map<String, String> = emptyMap(),
-        callback: suspend (HttpResponse) -> Unit
-    ) {
-        delete(
-            additionalHeaders = headers {
-                if (ifETag != null)
-                    append(HttpHeaders.IfMatch, QuotedStringUtils.asQuotedString(ifETag))
-                if (ifScheduleTag != null)
-                    append(HttpHeaders.IfScheduleTagMatch, QuotedStringUtils.asQuotedString(ifScheduleTag))
 
                 // Append all custom headers
                 appendAll(headers)
