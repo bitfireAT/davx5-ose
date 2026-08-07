@@ -46,24 +46,28 @@ class ResponseExtensionsTest {
 
     @Test
     fun `asMultiGetItem() with unsuccessful response throws IllegalArgumentException`() = runTest {
+        val response = response(HttpStatusCode.NotFound, listOf(GetETag("some-etag")))
+
         assertThrows(IllegalArgumentException("Must only be called for successful responses")) {
-            response(HttpStatusCode.NotFound, listOf(GetETag("some-etag"))).asMultiGetItem { "BEGIN:VCALENDAR" }
+            response.asMultiGetItem { "BEGIN:VCALENDAR" }
         }
     }
 
     @Test
     fun `asMultiGetItem() with missing content throws DavException`() = runTest {
-        val e = assertThrows<Throwable> {
-            response(null, listOf(GetETag("some-etag"))).asMultiGetItem { null }
-        }
+        val response = response(null, listOf(GetETag("some-etag")))
+
+        val e = assertThrows<Throwable> { response.asMultiGetItem { null } }
+
         assertEquals("Received multi-get response without data", e.unwrapContext().cause.message)
     }
 
     @Test
     fun `asMultiGetItem() with missing ETag throws DavException`() = runTest {
-        val e = assertThrows<Throwable> {
-            response(null, emptyList()).asMultiGetItem { "BEGIN:VCALENDAR" }
-        }
+        val response = response(null, emptyList())
+
+        val e = assertThrows<Throwable> { response.asMultiGetItem { "BEGIN:VCALENDAR" } }
+
         assertEquals("Received multi-get response without ETag", e.unwrapContext().cause.message)
     }
 

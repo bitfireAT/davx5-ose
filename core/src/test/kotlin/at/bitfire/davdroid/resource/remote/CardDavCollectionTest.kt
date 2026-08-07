@@ -49,7 +49,9 @@ class CardDavCollectionTest {
             )
         }
 
-        val items = CardDavCollection(HttpClient(engine), url).multiget(
+        val collection = CardDavCollection(HttpClient(engine), url)
+
+        val items = collection.multiget(
             listOf(Url("https://example.com/dav/contacts/contact1.vcf")),
             WebDavCollection.Capabilities()
         ).toList()
@@ -113,12 +115,15 @@ class CardDavCollectionTest {
             )
         }
 
-        val flow = CardDavCollection(HttpClient(engine), url).multiget(
-            listOf(Url("https://example.com/dav/contacts/contact1.vcf")),
-            WebDavCollection.Capabilities()
-        )
+        val collection = CardDavCollection(HttpClient(engine), url)
 
-        val e = assertThrows<Throwable> { flow.toList() }
+        val e = assertThrows<Throwable> {
+            collection.multiget(
+                listOf(Url("https://example.com/dav/contacts/contact1.vcf")),
+                WebDavCollection.Capabilities()
+            ).toList()
+        }
+
         assertEquals("Received multi-get response without data", e.unwrapContext().cause.message)
     }
 

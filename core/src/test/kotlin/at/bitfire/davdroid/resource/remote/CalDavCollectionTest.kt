@@ -25,7 +25,7 @@ class CalDavCollectionTest {
 
     @Test
     fun `multiget() extracts calendar-data into MultiGetItem`() = runTest {
-        val items = collection(
+        val calendar = collection(
             """
             <?xml version="1.0" encoding="utf-8"?>
             <multistatus xmlns="DAV:" xmlns:C="urn:ietf:params:xml:ns:caldav">
@@ -43,7 +43,12 @@ class CalDavCollectionTest {
               </response>
             </multistatus>
             """.trimIndent()
-        ).multiget(listOf(Url("https://example.com/dav/calendar/event1.ics")), WebDavCollection.Capabilities()).toList()
+        )
+
+        val items = calendar.multiget(
+            listOf(Url("https://example.com/dav/calendar/event1.ics")),
+            WebDavCollection.Capabilities()
+        ).toList()
 
         assertEquals(
             listOf(
@@ -85,7 +90,7 @@ class CalDavCollectionTest {
 
     @Test
     fun `multiget() throws when a member response lacks calendar-data`() = runTest {
-        val flow = collection(
+        val calendar = collection(
             """
             <?xml version="1.0" encoding="utf-8"?>
             <multistatus xmlns="DAV:">
@@ -100,9 +105,15 @@ class CalDavCollectionTest {
               </response>
             </multistatus>
             """.trimIndent()
-        ).multiget(listOf(Url("https://example.com/dav/calendar/event1.ics")), WebDavCollection.Capabilities())
+        )
 
-        val e = assertThrows<Throwable> { flow.toList() }
+        val e = assertThrows<Throwable> {
+            calendar.multiget(
+                listOf(Url("https://example.com/dav/calendar/event1.ics")),
+                WebDavCollection.Capabilities()
+            ).toList()
+        }
+
         assertEquals("Received multi-get response without data", e.unwrapContext().cause.message)
     }
 
