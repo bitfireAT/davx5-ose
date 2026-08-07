@@ -7,6 +7,6 @@ package at.bitfire.davdroid.resource.remote
 import at.bitfire.dav4jvm.ktor.DavCalendar
 
 /**
- * Remote CalDAV collection, as used for calendars, jtx boards and task lists.
+ * Remote CalDAV collection, as used for calendars, jtx board collections and task lists.
  */
 class CalDavCollection(override val davCollection: DavCalendar) : WebDavCollection
