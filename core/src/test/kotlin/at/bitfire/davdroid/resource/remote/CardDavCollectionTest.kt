@@ -13,8 +13,10 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.http.Url
 import io.ktor.http.headersOf
 import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertThrows
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -94,6 +96,37 @@ class CardDavCollectionTest {
 
         val body = requestBody(engine)
         assertTrue(body.contains("<CARD:address-data content-type=\"text/vcard\" />"))
+    }
+
+    @Test
+    fun `multiget() throws when a member response lacks address-data`() = runTest {
+        val engine = MockEngine { _ ->
+            respond(
+                "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
+                        "<multistatus xmlns=\"DAV:\">\n" +
+                        "  <response>\n" +
+                        "    <href>/dav/contacts/contact1.vcf</href>\n" +
+                        "    <propstat>\n" +
+                        "      <prop>\n" +
+                        "        <getetag>\"contact-etag\"</getetag>\n" +
+                        "      </prop>\n" +
+                        "      <status>HTTP/1.1 200 OK</status>\n" +
+                        "    </propstat>\n" +
+                        "  </response>\n" +
+                        "</multistatus>",
+                HttpStatusCode.MultiStatus,
+                headersOf(HttpHeaders.ContentType, "text/xml")
+            )
+        }
+
+        val flow = CardDavCollection(HttpClient(engine), url).multiget(
+            listOf(Url("https://example.com/dav/contacts/contact1.vcf")),
+            WebDavCollection.Capabilities()
+        )
+
+        assertThrows(Throwable::class.java) {
+            runBlocking { flow.toList() }
+        }
     }
 
 }

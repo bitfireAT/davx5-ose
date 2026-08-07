@@ -4,15 +4,8 @@
 
 package at.bitfire.davdroid.resource.remote
 
-import at.bitfire.dav4jvm.Property
 import at.bitfire.dav4jvm.ktor.DavCollection
-import at.bitfire.dav4jvm.ktor.PropStat
-import at.bitfire.dav4jvm.ktor.Response
-import at.bitfire.dav4jvm.ktor.exception.DavException
-import at.bitfire.dav4jvm.property.caldav.ScheduleTag
-import at.bitfire.dav4jvm.property.webdav.GetETag
 import at.bitfire.davdroid.resource.SyncState
-import at.bitfire.davdroid.sync.unwrapContext
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
@@ -25,12 +18,10 @@ import io.ktor.http.Url
 import io.ktor.http.content.TextContent
 import io.ktor.http.headersOf
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
-import org.junit.Assert.assertThrows
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -45,8 +36,6 @@ class BaseWebDavCollectionTest {
             capabilities: WebDavCollection.Capabilities
         ): Flow<WebDavCollection.MultiGetItem> =
             throw NotImplementedError()
-
-        suspend fun testBuildMultiGetItem(response: Response, content: String?) = buildMultiGetItem(response, content)
     }
 
     private fun collection(xmlResponse: String): BaseWebDavCollection {
@@ -346,67 +335,6 @@ class BaseWebDavCollectionTest {
         ).querySyncState()
 
         assertEquals(SyncState(SyncState.Type.SYNC_TOKEN, "http://example.com/ns/sync/token123"), syncState)
-    }
-
-
-    // multiget (buildMultiGetItem)
-
-    private fun response(status: HttpStatusCode?, properties: List<Property>) = Response(
-        url,
-        Url("https://example.com/dav/some-file.ics"),
-        status,
-        listOf(PropStat(properties, HttpStatusCode.OK))
-    )
-
-    @Test
-    fun `buildMultiGetItem() with successful response and content returns MultiGetItem`() = runTest {
-        val item = TestCollection(HttpClient(MockEngine { respond("") }), url).testBuildMultiGetItem(
-            response(null, listOf(GetETag("some-etag"), ScheduleTag("some-schedule-tag"))),
-            "BEGIN:VCALENDAR"
-        )
-
-        assertEquals(
-            WebDavCollection.MultiGetItem(
-                url = Url("https://example.com/dav/some-file.ics"),
-                eTag = "some-etag",
-                scheduleTag = "some-schedule-tag",
-                content = "BEGIN:VCALENDAR"
-            ),
-            item
-        )
-    }
-
-    @Test
-    fun `buildMultiGetItem() with unsuccessful response returns null`() = runTest {
-        val item = TestCollection(HttpClient(MockEngine { respond("") }), url).testBuildMultiGetItem(
-            response(HttpStatusCode.NotFound, listOf(GetETag("some-etag"))),
-            "BEGIN:VCALENDAR"
-        )
-
-        assertNull(item)
-    }
-
-    @Test
-    fun `buildMultiGetItem() with missing content returns null`() = runTest {
-        val item = TestCollection(HttpClient(MockEngine { respond("") }), url).testBuildMultiGetItem(
-            response(null, listOf(GetETag("some-etag"))),
-            null
-        )
-
-        assertNull(item)
-    }
-
-    @Test
-    fun `buildMultiGetItem() with missing ETag throws DavException`() = runTest {
-        val e = assertThrows(Throwable::class.java) {
-            runBlocking {
-                TestCollection(HttpClient(MockEngine { respond("") }), url).testBuildMultiGetItem(
-                    response(null, emptyList()),
-                    "BEGIN:VCALENDAR"
-                )
-            }
-        }
-        assertTrue(e.unwrapContext().cause is DavException)
     }
 
 

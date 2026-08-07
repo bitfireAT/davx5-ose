@@ -6,8 +6,6 @@ package at.bitfire.davdroid.resource.remote
 
 import at.bitfire.dav4jvm.QuotedStringUtils
 import at.bitfire.dav4jvm.ktor.DavResource
-import at.bitfire.dav4jvm.ktor.Response
-import at.bitfire.dav4jvm.ktor.exception.DavException
 import at.bitfire.dav4jvm.ktor.selfResponse
 import at.bitfire.dav4jvm.property.caldav.CalDAV
 import at.bitfire.dav4jvm.property.caldav.ScheduleTag
@@ -17,7 +15,6 @@ import at.bitfire.dav4jvm.property.webdav.GetETag
 import at.bitfire.dav4jvm.property.webdav.SupportedReportSet
 import at.bitfire.dav4jvm.property.webdav.WebDAV
 import at.bitfire.davdroid.resource.SyncState
-import at.bitfire.davdroid.sync.withExceptionContext
 import io.ktor.client.HttpClient
 import io.ktor.http.Headers
 import io.ktor.http.HttpHeaders
@@ -87,26 +84,6 @@ abstract class BaseWebDavCollection(
 
     override suspend fun querySyncState(): SyncState? =
         davCollection.propfind(depth = 0, CalDAV.GetCTag, WebDAV.SyncToken).selfResponse()?.syncState()
-
-    /**
-     * Turns one multi-get [response] into a [WebDavCollection.MultiGetItem], or `null` if the
-     * response was not successful or didn't contain the expected resource data.
-     *
-     * @param content the resource data already extracted from [response] (for instance calendar-data or address-data)
-     */
-    protected suspend fun buildMultiGetItem(response: Response, content: String?): WebDavCollection.MultiGetItem? =
-        response.href.withExceptionContext {
-            if (!response.isSuccess() || content == null)
-                return@withExceptionContext null
-            val eTag = response[GetETag::class.java]?.eTag
-                ?: throw DavException("Received multi-get response without ETag")
-            WebDavCollection.MultiGetItem(
-                url = response.href,
-                eTag = eTag,
-                scheduleTag = response[ScheduleTag::class.java]?.scheduleTag,
-                content = content
-            )
-        }
 
 
     // update
