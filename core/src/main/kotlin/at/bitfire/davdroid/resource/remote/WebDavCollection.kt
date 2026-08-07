@@ -42,4 +42,9 @@ interface WebDavCollection {
         val supportsVCard4: Boolean = false
     )
 
+    /**
+     * Queries the collection's current [SyncState] (`sync-token` or `CTag`).
+     */
+    suspend fun querySyncState(): SyncState?
+
 }

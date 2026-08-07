@@ -23,8 +23,6 @@ import at.bitfire.dav4jvm.ktor.exception.PreconditionFailedException
 import at.bitfire.dav4jvm.ktor.exception.ServiceUnavailableException
 import at.bitfire.dav4jvm.ktor.exception.UnauthorizedException
 import at.bitfire.dav4jvm.ktor.responsesWithRelation
-import at.bitfire.dav4jvm.ktor.selfResponse
-import at.bitfire.dav4jvm.property.caldav.CalDAV
 import at.bitfire.dav4jvm.property.caldav.ScheduleTag
 import at.bitfire.dav4jvm.property.webdav.GetETag
 import at.bitfire.dav4jvm.property.webdav.ResourceType
@@ -41,7 +39,6 @@ import at.bitfire.davdroid.resource.LocalCollection
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.resource.SyncState
 import at.bitfire.davdroid.resource.remote.WebDavCollection
-import at.bitfire.davdroid.resource.syncState
 import at.bitfire.davdroid.sync.account.InvalidAccountException
 import at.bitfire.synctools.storage.LocalStorageException
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -650,7 +647,7 @@ abstract class SyncManager<LocalType : LocalResource>(
         // get current sync state
         var currentSyncState = remoteSyncState
         if (modificationsPresent)
-            currentSyncState = querySyncState()
+            currentSyncState = remoteCollection.querySyncState()
 
         // list and process all entries at current sync state (which may be the same as or newer than remoteSyncState)
         logger.info("Processing remote entries")
@@ -665,9 +662,6 @@ abstract class SyncManager<LocalType : LocalResource>(
         logger.info("Saving sync state: $currentSyncState")
         localCollection.lastSyncState = currentSyncState
     }
-
-    private suspend fun querySyncState(): SyncState? =
-        remoteCollection.davCollection.propfind(0, CalDAV.GetCTag, WebDAV.SyncToken).selfResponse()?.syncState()
 
     protected abstract fun listAllRemote(): Flow<MultiStatusItem>
 
