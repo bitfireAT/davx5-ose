@@ -9,6 +9,7 @@ import android.content.ContentResolver
 import android.os.Build
 import android.os.Bundle
 import android.provider.ContactsContract
+import at.bitfire.davdroid.accounts.toAccountId
 import at.bitfire.davdroid.resource.LocalAddressBookStore
 import at.bitfire.davdroid.sync.SyncDataType
 import dagger.Binds
@@ -59,7 +60,7 @@ class AccountSettingsMigration21 @Inject constructor(
             }
 
             // Request contacts sync (per address book account) and cancel all syncs address book account wide
-            val addressBookAccounts = localAddressBookStore.getAddressBookAccounts(account) + account
+            val addressBookAccounts = localAddressBookStore.getAddressBookAccounts(account.toAccountId()) + account
             for (addressBookAccount in addressBookAccounts) {
                 ContentResolver.requestSync(addressBookAccount, ContactsContract.AUTHORITY, extras)
                 logger.info("Android 14+: Canceling all (possibly forever pending) sync adapter syncs for $addressBookAccount")

@@ -21,7 +21,12 @@ object AndroidAccountUtils {
      *
      * @return whether the account has been created
      */
-    fun createAccount(context: Context, account: Account, userData: Map<String, String>, password: SensitiveString? = null): Boolean {
+    fun createAccount(
+        context: Context,
+        account: Account,
+        userData: Map<String, String> = emptyMap(),
+        password: SensitiveString? = null
+    ): Boolean {
         val userDataBundle = Bundle(userData.size).apply {
             for ((key, value) in userData)
                 putString(key, value)

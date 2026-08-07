@@ -17,7 +17,7 @@ import androidx.work.WorkerParameters
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.repository.AccountRepository
-import at.bitfire.davdroid.resource.LocalAddressBook
+import at.bitfire.davdroid.resource.AddressBookAccountProperties
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -30,6 +30,7 @@ class AccountsCleanupWorker @AssistedInject constructor(
     @Assisted val context: Context,
     @Assisted workerParameters: WorkerParameters,
     private val accountRepository: AccountRepository,
+    private val addressBookAccountProperties: AddressBookAccountProperties,
     private val db: AppDatabase,
     private val logger: Logger
 ): Worker(context, workerParameters) {
@@ -77,12 +78,10 @@ class AccountsCleanupWorker @AssistedInject constructor(
      */
     @VisibleForTesting
     internal fun cleanUpAddressBooks() {
-        val accountNames = accountRepository.getAllAccountNamesBlocking().toSet()
-        val ourAccountType = context.getString(R.string.account_type)
+        val accountIds = accountRepository.getAllBlocking().toSet()
         for (addressBookAccount in accountManager.getAccountsByType(context.getString(R.string.account_type_address_book))) {
-            val accountName = accountManager.getUserData(addressBookAccount, LocalAddressBook.USER_DATA_ACCOUNT_NAME)
-            val accountType = accountManager.getUserData(addressBookAccount, LocalAddressBook.USER_DATA_ACCOUNT_TYPE)
-            if (accountType != ourAccountType || accountName !in accountNames) {
+            val accountId = addressBookAccountProperties.getAppAccount(addressBookAccount)
+            if (accountId !in accountIds) {
                 // If no valid account exists for this address book, we can delete it
                 logger.info("Deleting address book account without valid account: $addressBookAccount")
                 accountManager.removeAccountExplicitly(addressBookAccount)

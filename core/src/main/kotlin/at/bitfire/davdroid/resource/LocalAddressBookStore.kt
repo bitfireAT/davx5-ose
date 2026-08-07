@@ -15,14 +15,17 @@ import androidx.annotation.VisibleForTesting
 import androidx.annotation.WorkerThread
 import androidx.core.content.contentValuesOf
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.accounts.AccountId
+import at.bitfire.davdroid.accounts.toAccountId
+import at.bitfire.davdroid.accounts.toAndroidAccount
 import at.bitfire.davdroid.db.Collection
+import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.util.DavUtils.lastSegment
 import at.bitfire.synctools.util.AndroidAccountUtils
-import at.bitfire.synctools.util.setAndVerifyUserData
 import com.google.common.base.CharMatcher
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.channels.awaitClose
@@ -32,7 +35,9 @@ import java.util.logging.Logger
 import javax.inject.Inject
 
 class LocalAddressBookStore @Inject constructor(
+    private val accountRepository: AccountRepository,
     private val accountSettingsFactory: AccountSettings.Factory,
+    private val addressBookAccountProperties: AddressBookAccountProperties,
     @ApplicationContext private val context: Context,
     private val localAddressBookFactory: LocalAddressBook.Factory,
     private val logger: Logger,
@@ -92,17 +97,22 @@ class LocalAddressBookStore @Inject constructor(
     override suspend fun create(client: ContentProviderClient, fromCollection: Collection): LocalAddressBook? {
         val service = serviceRepository.get(fromCollection.serviceId)
             ?: throw IllegalArgumentException("Couldn't fetch DB service from collection")
-        val account = Account(service.accountName, context.getString(R.string.account_type))
+        val accountId = accountRepository.getAccountIdFromName(service.accountName)
 
         val name = accountName(fromCollection)
         val addressBookAccount = createAddressBookAccount(
-            account = account,
+            accountId = accountId,
             name = name,
             id = fromCollection.id
         ) ?: return null
 
-        val accountSettings = accountSettingsFactory.create(account)
-        val addressBook = localAddressBookFactory.create(account, addressBookAccount, client, accountSettings.getGroupMethod())
+        val accountSettings = accountSettingsFactory.create(accountId.toAndroidAccount())
+        val addressBook = localAddressBookFactory.create(
+            accountId = accountId,
+            addressBookAccount = addressBookAccount,
+            provider = client,
+            groupMethod = accountSettings.getGroupMethod()
+        )
 
         // update settings
         addressBook.updateSyncFrameworkSettings()
@@ -113,19 +123,16 @@ class LocalAddressBookStore @Inject constructor(
     }
 
     @OpenForTesting
-    internal fun createAddressBookAccount(account: Account, name: String, id: Long): Account? {
+    internal fun createAddressBookAccount(accountId: AccountId, name: String, id: Long): Account? {
         // create address book account with reference to account, collection ID and URL
         val addressBookAccount = Account(name, context.getString(R.string.account_type_address_book))
-        // TODO: Reference DAVx⁵ accounts by database account ID instead of by name.
-        val userData: Map<String, String> = mapOf(
-            LocalAddressBook.USER_DATA_ACCOUNT_NAME to account.name,
-            LocalAddressBook.USER_DATA_ACCOUNT_TYPE to account.type,
-            LocalAddressBook.USER_DATA_COLLECTION_ID to id.toString()
-        )
-        if (!AndroidAccountUtils.createAccount(context, addressBookAccount, userData)) {
+        if (!AndroidAccountUtils.createAccount(context, addressBookAccount)) {
             logger.warning("Couldn't create address book account: $addressBookAccount")
             return null
         }
+
+        addressBookAccountProperties.setAppAccount(addressBookAccount, accountId)
+        addressBookAccountProperties.setCollectionId(addressBookAccount, id)
 
         return addressBookAccount
     }
@@ -133,8 +140,9 @@ class LocalAddressBookStore @Inject constructor(
     override fun getAll(account: Account, client: ContentProviderClient): List<LocalAddressBook> {
         val accountSettings = accountSettingsFactory.create(account)
         val groupMethod = accountSettings.getGroupMethod()
-        return getAddressBookAccounts(account).map { addressBookAccount ->
-            localAddressBookFactory.create(account, addressBookAccount, client, groupMethod)
+        val accountId = account.toAccountId()
+        return getAddressBookAccounts(accountId).map { addressBookAccount ->
+            localAddressBookFactory.create(accountId, addressBookAccount, client, groupMethod)
         }
     }
 
@@ -154,10 +162,8 @@ class LocalAddressBookStore @Inject constructor(
         }
 
         // Update the account user data
-        val accountManager = AccountManager.get(context)
-        accountManager.setAndVerifyUserData(currentAccount, LocalAddressBook.USER_DATA_ACCOUNT_NAME, localCollection.account.name)
-        accountManager.setAndVerifyUserData(currentAccount, LocalAddressBook.USER_DATA_ACCOUNT_TYPE, localCollection.account.type)
-        accountManager.setAndVerifyUserData(currentAccount, LocalAddressBook.USER_DATA_COLLECTION_ID, fromCollection.id.toString())
+        addressBookAccountProperties.setAppAccount(currentAccount, localCollection.accountId)
+        addressBookAccountProperties.setCollectionId(currentAccount, fromCollection.id)
 
         // Set contacts provider settings
         localCollection.settings = contactsProviderSettings
@@ -181,15 +187,16 @@ class LocalAddressBookStore @Inject constructor(
      * @param client        content provider client (not needed/does not exist for address books)
      */
     override fun updateAccount(oldAccount: Account, newAccount: Account, client: ContentProviderClient?) {
+        val oldAccountId = oldAccount.toAccountId()
+        val newAccountId = newAccount.toAccountId()
+
         val accountManager = AccountManager.get(context)
         accountManager.getAccountsByType(context.getString(R.string.account_type_address_book))
             .filter { addressBookAccount ->
-                accountManager.getUserData(addressBookAccount, LocalAddressBook.USER_DATA_ACCOUNT_NAME) == oldAccount.name &&
-                accountManager.getUserData(addressBookAccount, LocalAddressBook.USER_DATA_ACCOUNT_TYPE) == oldAccount.type
+                addressBookAccountProperties.getAppAccount(addressBookAccount) == oldAccountId
             }
             .forEach { addressBookAccount ->
-                accountManager.setAndVerifyUserData(addressBookAccount, LocalAddressBook.USER_DATA_ACCOUNT_NAME, newAccount.name)
-                accountManager.setAndVerifyUserData(addressBookAccount, LocalAddressBook.USER_DATA_ACCOUNT_TYPE, newAccount.type)
+                addressBookAccountProperties.setAppAccount(addressBookAccount, newAccountId)
             }
     }
 
@@ -206,7 +213,7 @@ class LocalAddressBookStore @Inject constructor(
     fun deleteByCollectionId(id: Long) {
         val accountManager = AccountManager.get(context)
         val addressBookAccount = accountManager.getAccountsByType(context.getString(R.string.account_type_address_book)).firstOrNull { account ->
-            accountManager.getUserData(account, LocalAddressBook.USER_DATA_COLLECTION_ID)?.toLongOrNull() == id
+            addressBookAccountProperties.getCollectionId(account) == id
         }
         if (addressBookAccount != null)
             accountManager.removeAccountExplicitly(addressBookAccount)
@@ -215,33 +222,27 @@ class LocalAddressBookStore @Inject constructor(
     /**
      * Returns all address book accounts that belong to the given account.
      *
-     * @param account    Account which has the address books.
+     * @param accountId [AccountId] of the app account that owns the address books.
      * @return List of address book accounts.
      */
-    fun getAddressBookAccounts(account: Account): List<Account> =
-        AccountManager.get(context).let { accountManager ->
-            accountManager.getAccountsByType(context.getString(R.string.account_type_address_book))
-                .filter { addressBookAccount ->
-                    account.name == accountManager.getUserData(
-                        addressBookAccount,
-                        LocalAddressBook.USER_DATA_ACCOUNT_NAME
-                    ) && account.type == accountManager.getUserData(
-                        addressBookAccount,
-                        LocalAddressBook.USER_DATA_ACCOUNT_TYPE
-                    )
-                }
-        }
+    fun getAddressBookAccounts(accountId: AccountId): List<Account> {
+        val accountManager = AccountManager.get(context)
+        return accountManager.getAccountsByType(context.getString(R.string.account_type_address_book))
+            .filter { addressBookAccount ->
+                addressBookAccountProperties.getAppAccount(addressBookAccount) == accountId
+            }
+    }
 
     /**
      * Returns all address book accounts that belong to the given account in a flow.
      *
-     * @param account    Account which has the address books.
+     * @param accountId [AccountId] of the app account that owns the address books.
      * @return List of address book accounts as flow.
      */
-    fun getAddressBookAccountsFlow(account: Account): Flow<List<Account>> = callbackFlow {
+    fun getAddressBookAccountsFlow(accountId: AccountId): Flow<List<Account>> = callbackFlow {
         val accountManager = AccountManager.get(context)
-        val listener = OnAccountsUpdateListener { accounts ->
-            trySend(getAddressBookAccounts(account))
+        val listener = OnAccountsUpdateListener { _ ->
+            trySend(getAddressBookAccounts(accountId))
         }
         accountManager.addOnAccountsUpdatedListener(
             /* listener = */ listener,
