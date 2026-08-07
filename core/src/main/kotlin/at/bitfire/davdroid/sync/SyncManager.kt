@@ -526,8 +526,10 @@ abstract class SyncManager<LocalType : LocalResource>(
                 launch {
                     syncTransferSemaphore.withPermit {
                         logger.info("Downloading ${batch.size} resources: $batch")
-                        remoteCollection.multiget(batch, capabilities).collect { result ->
-                            processDownload(result)
+                        collectionInfo.url.withExceptionContext {
+                            remoteCollection.multiget(batch, capabilities).collect { result ->
+                                processDownload(result)
+                            }
                         }
                     }
                 }
