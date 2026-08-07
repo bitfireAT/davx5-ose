@@ -103,10 +103,10 @@ interface WebDavCollection {
      */
     sealed class SyncCollectionItem {
         /** Member is new or has changed on the server (may still be locally up to date, e.g. after our own upload). */
-        data class ChangedMember(val name: String, val href: Url, val eTag: String) : SyncCollectionItem()
+        data class ChangedMember(val href: Url, val eTag: String) : SyncCollectionItem()
 
         /** Member has been removed on the server (HTTP 404 in the sync-collection response). */
-        data class RemovedMember(val name: String) : SyncCollectionItem()
+        data class RemovedMember(val href: Url) : SyncCollectionItem()
     }
 
     /**
