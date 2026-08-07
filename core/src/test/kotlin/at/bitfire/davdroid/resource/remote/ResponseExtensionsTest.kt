@@ -46,7 +46,7 @@ class ResponseExtensionsTest {
 
     @Test
     fun `asMultiGetItem() with unsuccessful response throws IllegalArgumentException`() = runTest {
-        assertThrows(IllegalArgumentException("asMultiGetItem() must only be called for successful responses")) {
+        assertThrows(IllegalArgumentException("Must only be called for successful responses")) {
             response(HttpStatusCode.NotFound, listOf(GetETag("some-etag"))).asMultiGetItem { "BEGIN:VCALENDAR" }
         }
     }

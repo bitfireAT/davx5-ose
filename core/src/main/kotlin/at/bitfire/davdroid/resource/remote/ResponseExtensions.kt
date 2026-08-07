@@ -19,12 +19,11 @@ import at.bitfire.davdroid.sync.withExceptionContext
  * @param getContent extracts the data (calendar-data or address-data) from this response
  *
  * @throws DavException if this response doesn't contain the expected resource data or an ETag
- * @throws IllegalArgumentException if this response is not successful (callers must filter beforehand,
- *   for instance to [Response.HrefRelation.MEMBER] responses only)
+ * @throws IllegalArgumentException if this response is not successful (callers must filter beforehand)
  */
 suspend fun Response.asMultiGetItem(getContent: (Response) -> String?): WebDavCollection.MultiGetItem {
     val response = this
-    require(response.isSuccess()) { "asMultiGetItem() must only be called for successful responses" }
+    require(response.isSuccess()) { "Must only be called for successful responses" }
 
     return response.href.withExceptionContext {
         val content = getContent(response)
