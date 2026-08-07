@@ -11,12 +11,11 @@ import at.bitfire.dav4jvm.ktor.exception.DavException
 import at.bitfire.dav4jvm.property.caldav.ScheduleTag
 import at.bitfire.dav4jvm.property.webdav.GetETag
 import at.bitfire.davdroid.sync.unwrapContext
+import at.bitfire.synctools.test.assertThrows
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.Url
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertThrows
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -49,29 +48,23 @@ class ResponseExtensionsTest {
 
     @Test
     fun `asMultiGetItem() with unsuccessful response throws IllegalArgumentException`() = runTest {
-        assertThrows(IllegalArgumentException::class.java) {
-            runBlocking {
-                response(HttpStatusCode.NotFound, listOf(GetETag("some-etag"))).asMultiGetItem { "BEGIN:VCALENDAR" }
-            }
+        assertThrows<IllegalArgumentException> {
+            response(HttpStatusCode.NotFound, listOf(GetETag("some-etag"))).asMultiGetItem { "BEGIN:VCALENDAR" }
         }
     }
 
     @Test
     fun `asMultiGetItem() with missing content throws DavException`() = runTest {
-        val e = assertThrows(Throwable::class.java) {
-            runBlocking {
-                response(null, listOf(GetETag("some-etag"))).asMultiGetItem { null }
-            }
+        val e = assertThrows<Throwable> {
+            response(null, listOf(GetETag("some-etag"))).asMultiGetItem { null }
         }
         assertTrue(e.unwrapContext().cause is DavException)
     }
 
     @Test
     fun `asMultiGetItem() with missing ETag throws DavException`() = runTest {
-        val e = assertThrows(Throwable::class.java) {
-            runBlocking {
-                response(null, emptyList()).asMultiGetItem { "BEGIN:VCALENDAR" }
-            }
+        val e = assertThrows<Throwable> {
+            response(null, emptyList()).asMultiGetItem { "BEGIN:VCALENDAR" }
         }
         assertTrue(e.unwrapContext().cause is DavException)
     }

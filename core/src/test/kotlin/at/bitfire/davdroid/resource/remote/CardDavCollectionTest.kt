@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid.resource.remote
 
+import at.bitfire.synctools.test.assertThrows
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
@@ -13,10 +14,8 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.http.Url
 import io.ktor.http.headersOf
 import kotlinx.coroutines.flow.toList
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertThrows
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -124,9 +123,7 @@ class CardDavCollectionTest {
             WebDavCollection.Capabilities()
         )
 
-        assertThrows(Throwable::class.java) {
-            runBlocking { flow.toList() }
-        }
+        assertThrows<Throwable> { flow.toList() }
     }
 
 }

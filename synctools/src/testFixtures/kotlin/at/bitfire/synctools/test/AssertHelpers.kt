@@ -62,6 +62,24 @@ fun assertExceptionsEqual(
     }
 }
 
+/**
+ * Runs [block] and asserts it throws a [T], returning it. Unlike [org.junit.Assert.assertThrows],
+ * accepts a suspending block.
+ *
+ * @throws AssertionError if [block] doesn't throw anything
+ * @throws Throwable whatever [block] throws, if it isn't a [T]
+ */
+suspend inline fun <reified T : Throwable> assertThrows(block: suspend () -> Unit): T {
+    try {
+        block()
+    } catch (e: Throwable) {
+        if (e is T)
+            return e
+        throw e
+    }
+    throw AssertionError("Expected ${T::class.simpleName} to be thrown, but nothing was thrown")
+}
+
 
 // provider-specific assert helpers
 
