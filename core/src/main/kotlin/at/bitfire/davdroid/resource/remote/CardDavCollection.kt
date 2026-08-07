@@ -28,11 +28,18 @@ class CardDavCollection(httpClient: HttpClient, url: Url) : BaseWebDavCollection
         capabilities: WebDavCollection.Capabilities
     ): Flow<WebDavCollection.MultiGetItem> {
         val contentType = DavUtils.MEDIA_TYPE_VCARD.toString()
-        // 3.0 is the default version; don't request it explicitly because maybe some vCard3-only servers don't understand it
-        val version = if (capabilities.supportsVCard4) VCardVersion.V4_0.version else null
-        return davCollection.multiget(urls, contentType, version).responsesWithRelation()
+        val vCardVersion = if (capabilities.supportsVCard4)
+            VCardVersion.V4_0.version
+        else {
+            // 3.0 is the default version; don't request it explicitly because some vCard3-only servers may not understand it
+            null
+        }
+
+        return davCollection.multiget(urls, contentType, vCardVersion).responsesWithRelation()
             .filter { it.relation == Response.HrefRelation.MEMBER }
-            .mapNotNull { it.response.asMultiGetItem { r -> r[AddressData::class.java]?.card } }
+            .mapNotNull {
+                it.response.asMultiGetItem { r -> r[AddressData::class.java]?.card }
+            }
     }
 
 }

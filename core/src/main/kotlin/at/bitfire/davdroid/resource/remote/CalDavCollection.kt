@@ -27,6 +27,8 @@ class CalDavCollection(httpClient: HttpClient, url: Url) : BaseWebDavCollection(
     ): Flow<WebDavCollection.MultiGetItem> =
         davCollection.multiget(urls).responsesWithRelation()
             .filter { it.relation == Response.HrefRelation.MEMBER }
-            .mapNotNull { it.response.asMultiGetItem { r -> r[CalendarData::class.java]?.iCalendar } }
+            .mapNotNull {
+                it.response.asMultiGetItem { r -> r[CalendarData::class.java]?.iCalendar }
+            }
 
 }

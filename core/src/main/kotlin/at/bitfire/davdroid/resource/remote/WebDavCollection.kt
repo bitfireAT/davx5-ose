@@ -90,7 +90,7 @@ interface WebDavCollection {
      * @param urls          members to download (max. size depends on server limits, so this should be a reasonably sized batch)
      * @param capabilities  current capabilities of the collection (used by CardDAV to select the vCard version)
      *
-     * @throws at.bitfire.dav4jvm.ktor.exception.DavException if a successful response is missing its ETag
+     * @throws at.bitfire.dav4jvm.ktor.exception.DavException on invalid response (like missing ETag or content)
      * @throws at.bitfire.dav4jvm.ktor.exception.HttpException on HTTP errors
      */
     fun multiget(urls: List<Url>, capabilities: Capabilities): Flow<MultiGetItem>
