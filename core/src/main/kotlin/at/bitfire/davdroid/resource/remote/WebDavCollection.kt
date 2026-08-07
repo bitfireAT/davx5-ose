@@ -6,6 +6,7 @@ package at.bitfire.davdroid.resource.remote
 
 import at.bitfire.dav4jvm.ktor.DavCollection
 import at.bitfire.davdroid.resource.SyncState
+import io.ktor.http.content.OutgoingContent
 
 /**
  * Provides remote collection access as required for [at.bitfire.davdroid.sync.SyncManager].
@@ -49,6 +50,52 @@ interface WebDavCollection {
      * Queries the collection's current [SyncState] (`sync-token` or `CTag`).
      */
     suspend fun querySyncState(): SyncState?
+
+
+    // create
+
+    /**
+     * Creates a new member (non-collection resource) of this collection (HTTP `PUT`).
+     * Fails if a member with that file name already exists (`If-None-Match: *`).
+     *
+     * @param fileName          file name of the member to create
+     * @param content           content to upload
+     * @param additionalHeaders further headers to send (for instance `Push-Dont-Notify`)
+     *
+     * @return the new member's ETag / Schedule-Tag, if returned by the server
+     */
+    suspend fun createMember(
+        fileName: String,
+        content: OutgoingContent,
+        additionalHeaders: Map<String, String> = emptyMap()
+    ): PutMemberResult
+
+
+    // update
+
+    /**
+     * Updates an existing member (non-collection resource) of this collection (HTTP `PUT`).
+     *
+     * @param fileName          file name of the member to update
+     * @param content           new content to upload
+     * @param ifETag            if given, sets `If-Match` so that the update only succeeds if the member's ETag matches
+     * @param ifScheduleTag     if given, sets `If-Schedule-Tag-Match` so that the update only succeeds if the member's Schedule-Tag matches
+     * @param additionalHeaders further headers to send (for instance `Push-Dont-Notify`)
+     *
+     * @return the updated member's ETag / Schedule-Tag, if returned by the server
+     */
+    suspend fun updateMember(
+        fileName: String,
+        content: OutgoingContent,
+        ifETag: String? = null,
+        ifScheduleTag: String? = null,
+        additionalHeaders: Map<String, String> = emptyMap()
+    ): PutMemberResult
+
+    data class PutMemberResult(
+        val eTag: String? = null,
+        val scheduleTag: String? = null
+    )
 
 
     // delete

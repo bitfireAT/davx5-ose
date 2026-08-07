@@ -8,14 +8,18 @@ import at.bitfire.dav4jvm.QuotedStringUtils
 import at.bitfire.dav4jvm.ktor.DavResource
 import at.bitfire.dav4jvm.ktor.selfResponse
 import at.bitfire.dav4jvm.property.caldav.CalDAV
+import at.bitfire.dav4jvm.property.caldav.ScheduleTag
 import at.bitfire.dav4jvm.property.carddav.CardDAV
 import at.bitfire.dav4jvm.property.carddav.SupportedAddressData
+import at.bitfire.dav4jvm.property.webdav.GetETag
 import at.bitfire.dav4jvm.property.webdav.SupportedReportSet
 import at.bitfire.dav4jvm.property.webdav.WebDAV
 import at.bitfire.davdroid.resource.SyncState
 import io.ktor.client.HttpClient
+import io.ktor.http.Headers
 import io.ktor.http.HttpHeaders
 import io.ktor.http.Url
+import io.ktor.http.content.OutgoingContent
 import io.ktor.http.headers
 import io.ktor.util.appendAll
 import at.bitfire.dav4jvm.property.caldav.MaxResourceSize as CalDavMaxResourceSize
@@ -63,6 +67,52 @@ abstract class BaseWebDavCollection(
         davCollection.propfind(depth = 0, CalDAV.GetCTag, WebDAV.SyncToken).selfResponse()?.syncState()
 
 
+    // create
+
+    override suspend fun createMember(
+        fileName: String,
+        content: OutgoingContent,
+        additionalHeaders: Map<String, String>
+    ): WebDavCollection.PutMemberResult =
+        putMember(
+            fileName,
+            content,
+            additionalHeaders = headers {
+                // fail if a member with that file name already exists
+                append(HttpHeaders.IfNoneMatch, "*")
+
+                appendAll(additionalHeaders)
+            }
+        )
+
+
+    // update
+
+    override suspend fun updateMember(
+        fileName: String,
+        content: OutgoingContent,
+        ifETag: String?,
+        ifScheduleTag: String?,
+        additionalHeaders: Map<String, String>
+    ): WebDavCollection.PutMemberResult =
+        putMember(
+            fileName,
+            content,
+            additionalHeaders = headers {
+                if (ifETag != null) {
+                    // only update specific version
+                    append(HttpHeaders.IfMatch, QuotedStringUtils.asQuotedString(ifETag))
+                }
+                if (ifScheduleTag != null) {
+                    // only update specific version
+                    append(HttpHeaders.IfScheduleTagMatch, QuotedStringUtils.asQuotedString(ifScheduleTag))
+                }
+
+                appendAll(additionalHeaders)
+            }
+        )
+
+
     // delete
 
     override suspend fun deleteMember(
@@ -88,5 +138,20 @@ abstract class BaseWebDavCollection(
             // don't do anything special on success
         }
     }
+
+
+    // request helpers
+
+    private suspend fun putMember(
+        fileName: String,
+        content: OutgoingContent,
+        additionalHeaders: Headers
+    ): WebDavCollection.PutMemberResult =
+        DavResource(httpClient, url.member(fileName)).put(content, additionalHeaders) { response ->
+            WebDavCollection.PutMemberResult(
+                eTag = GetETag.fromHttpResponse(response)?.eTag,
+                scheduleTag = ScheduleTag.fromHttpResponse(response)?.scheduleTag
+            )
+        }
 
 }
