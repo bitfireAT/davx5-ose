@@ -5,14 +5,12 @@
 package at.bitfire.davdroid.resource.remote
 
 import at.bitfire.dav4jvm.ktor.DavCalendar
-import at.bitfire.dav4jvm.ktor.Response
 import at.bitfire.dav4jvm.ktor.responsesWithRelation
 import at.bitfire.dav4jvm.property.caldav.CalendarData
 import io.ktor.client.HttpClient
 import io.ktor.http.Url
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.flow.map
 
 /**
  * Remote CalDAV collection, as used for calendars, jtx board collections and task lists.
@@ -26,8 +24,8 @@ class CalDavCollection(httpClient: HttpClient, url: Url) : BaseWebDavCollection(
         capabilities: WebDavCollection.Capabilities
     ): Flow<WebDavCollection.MultiGetItem> =
         davCollection.multiget(urls).responsesWithRelation()
-            .filter { it.relation == Response.HrefRelation.MEMBER }
-            .mapNotNull {
+            .filterSuccessfulMembers()
+            .map {
                 it.response.asMultiGetItem { r -> r[CalendarData::class.java]?.iCalendar }
             }
 

@@ -16,7 +16,6 @@ import io.ktor.http.Url
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNull
 import org.junit.Assert.assertThrows
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -49,11 +48,12 @@ class ResponseExtensionsTest {
     }
 
     @Test
-    fun `asMultiGetItem() with unsuccessful response returns null`() = runTest {
-        val item = response(HttpStatusCode.NotFound, listOf(GetETag("some-etag")))
-            .asMultiGetItem { "BEGIN:VCALENDAR" }
-
-        assertNull(item)
+    fun `asMultiGetItem() with unsuccessful response throws IllegalArgumentException`() = runTest {
+        assertThrows(IllegalArgumentException::class.java) {
+            runBlocking {
+                response(HttpStatusCode.NotFound, listOf(GetETag("some-etag"))).asMultiGetItem { "BEGIN:VCALENDAR" }
+            }
+        }
     }
 
     @Test

@@ -5,7 +5,6 @@
 package at.bitfire.davdroid.resource.remote
 
 import at.bitfire.dav4jvm.ktor.DavAddressBook
-import at.bitfire.dav4jvm.ktor.Response
 import at.bitfire.dav4jvm.ktor.responsesWithRelation
 import at.bitfire.dav4jvm.property.carddav.AddressData
 import at.bitfire.davdroid.util.DavUtils
@@ -13,8 +12,7 @@ import ezvcard.VCardVersion
 import io.ktor.client.HttpClient
 import io.ktor.http.Url
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.flow.map
 
 /**
  * Remote CardDAV collection, as used for address books.
@@ -36,8 +34,8 @@ class CardDavCollection(httpClient: HttpClient, url: Url) : BaseWebDavCollection
         }
 
         return davCollection.multiget(urls, contentType, vCardVersion).responsesWithRelation()
-            .filter { it.relation == Response.HrefRelation.MEMBER }
-            .mapNotNull {
+            .filterSuccessfulMembers()
+            .map {
                 it.response.asMultiGetItem { r -> r[AddressData::class.java]?.card }
             }
     }
