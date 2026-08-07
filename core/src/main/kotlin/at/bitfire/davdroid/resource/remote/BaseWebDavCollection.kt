@@ -33,6 +33,25 @@ abstract class BaseWebDavCollection(
     protected val url: Url
 ) : WebDavCollection {
 
+    // create
+
+    override suspend fun createMember(
+        fileName: String,
+        content: OutgoingContent,
+        additionalHeaders: Map<String, String>
+    ): WebDavCollection.PutMemberResult =
+        putMember(
+            fileName,
+            content,
+            additionalHeaders = headers {
+                // fail if a member with that file name already exists
+                append(HttpHeaders.IfNoneMatch, "*")
+
+                appendAll(additionalHeaders)
+            }
+        )
+
+
     // read/query
 
     override suspend fun queryCapabilities(): WebDavCollection.QueryCapabilitiesResult {
@@ -65,25 +84,6 @@ abstract class BaseWebDavCollection(
 
     override suspend fun querySyncState(): SyncState? =
         davCollection.propfind(depth = 0, CalDAV.GetCTag, WebDAV.SyncToken).selfResponse()?.syncState()
-
-
-    // create
-
-    override suspend fun createMember(
-        fileName: String,
-        content: OutgoingContent,
-        additionalHeaders: Map<String, String>
-    ): WebDavCollection.PutMemberResult =
-        putMember(
-            fileName,
-            content,
-            additionalHeaders = headers {
-                // fail if a member with that file name already exists
-                append(HttpHeaders.IfNoneMatch, "*")
-
-                appendAll(additionalHeaders)
-            }
-        )
 
 
     // update

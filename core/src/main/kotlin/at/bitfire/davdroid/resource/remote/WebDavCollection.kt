@@ -18,6 +18,32 @@ interface WebDavCollection {
 
     val davCollection: DavCollection
 
+    // create
+
+    /**
+     * Creates a new member (non-collection resource) of this collection (HTTP `PUT`).
+     * Fails if a member with that file name already exists (`If-None-Match: *`).
+     *
+     * @param fileName          file name of the member to create
+     * @param content           content to upload
+     * @param additionalHeaders further headers to send (for instance `Push-Dont-Notify`)
+     *
+     * @return the new member's ETag / Schedule-Tag, if returned by the server
+     *
+     * @throws at.bitfire.dav4jvm.ktor.exception.PreconditionFailedException if a member with that file name already exists
+     * @throws at.bitfire.dav4jvm.ktor.exception.HttpException on other HTTP errors
+     */
+    suspend fun createMember(
+        fileName: String,
+        content: OutgoingContent,
+        additionalHeaders: Map<String, String> = emptyMap()
+    ): PutMemberResult
+
+    data class PutMemberResult(
+        val eTag: String? = null,
+        val scheduleTag: String? = null
+    )
+
 
     // read/query
 
@@ -56,28 +82,6 @@ interface WebDavCollection {
     suspend fun querySyncState(): SyncState?
 
 
-    // create
-
-    /**
-     * Creates a new member (non-collection resource) of this collection (HTTP `PUT`).
-     * Fails if a member with that file name already exists (`If-None-Match: *`).
-     *
-     * @param fileName          file name of the member to create
-     * @param content           content to upload
-     * @param additionalHeaders further headers to send (for instance `Push-Dont-Notify`)
-     *
-     * @return the new member's ETag / Schedule-Tag, if returned by the server
-     *
-     * @throws at.bitfire.dav4jvm.ktor.exception.PreconditionFailedException if a member with that file name already exists
-     * @throws at.bitfire.dav4jvm.ktor.exception.HttpException on other HTTP errors
-     */
-    suspend fun createMember(
-        fileName: String,
-        content: OutgoingContent,
-        additionalHeaders: Map<String, String> = emptyMap()
-    ): PutMemberResult
-
-
     // update
 
     /**
@@ -102,11 +106,6 @@ interface WebDavCollection {
         ifScheduleTag: String? = null,
         additionalHeaders: Map<String, String> = emptyMap()
     ): PutMemberResult
-
-    data class PutMemberResult(
-        val eTag: String? = null,
-        val scheduleTag: String? = null
-    )
 
 
     // delete
