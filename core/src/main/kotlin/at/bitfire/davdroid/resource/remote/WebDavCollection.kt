@@ -10,8 +10,8 @@ import at.bitfire.davdroid.resource.SyncState
 /**
  * Provides remote collection access as required for [at.bitfire.davdroid.sync.SyncManager].
  *
- * Currently, most call sites just call through [davCollection], but the goal is to provide all remote collection
- * operations that are required for synchronization here.
+ * Currently, most call sites just call through [davCollection], but the goal is to provide
+ * all remote collection operations that are required for synchronization here.
  */
 interface WebDavCollection {
 
