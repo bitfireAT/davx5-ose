@@ -88,7 +88,7 @@ interface WebDavCollection {
      * responses that contain the expected resource data are emitted.
      *
      * @param urls          members to download (max. size depends on server limits, so this should be a reasonably sized batch)
-     * @param capabilities  current capabilities of the collection (used by CardDAV to select the vCard version)
+     * @param capabilities  current capabilities of the collection
      *
      * @throws at.bitfire.dav4jvm.ktor.exception.DavException on invalid response (like missing ETag or content)
      * @throws at.bitfire.dav4jvm.ktor.exception.HttpException on HTTP errors
