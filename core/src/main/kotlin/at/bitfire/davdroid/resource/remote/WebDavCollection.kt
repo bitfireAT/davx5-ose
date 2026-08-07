@@ -24,6 +24,8 @@ interface WebDavCollection {
     /**
      * Queries the collection's current capabilities. Also fetches the [SyncState]
      * in the same PROPFIND request to save a network round-trip.
+     *
+     * @throws at.bitfire.dav4jvm.ktor.exception.HttpException on HTTP errors
      */
     suspend fun queryCapabilities(): QueryCapabilitiesResult
 
@@ -48,6 +50,8 @@ interface WebDavCollection {
 
     /**
      * Queries the collection's current [SyncState] (`sync-token` or `CTag`).
+     *
+     * @throws at.bitfire.dav4jvm.ktor.exception.HttpException on HTTP errors
      */
     suspend fun querySyncState(): SyncState?
 
@@ -63,6 +67,9 @@ interface WebDavCollection {
      * @param additionalHeaders further headers to send (for instance `Push-Dont-Notify`)
      *
      * @return the new member's ETag / Schedule-Tag, if returned by the server
+     *
+     * @throws at.bitfire.dav4jvm.ktor.exception.PreconditionFailedException if a member with that file name already exists
+     * @throws at.bitfire.dav4jvm.ktor.exception.HttpException on other HTTP errors
      */
     suspend fun createMember(
         fileName: String,
@@ -83,6 +90,10 @@ interface WebDavCollection {
      * @param additionalHeaders further headers to send (for instance `Push-Dont-Notify`)
      *
      * @return the updated member's ETag / Schedule-Tag, if returned by the server
+     *
+     * @throws at.bitfire.dav4jvm.ktor.exception.PreconditionFailedException if ifETag or ifScheduleTag is given and
+     *   doesn't match the member's current state (also if the file doesn't exist on the server)
+     * @throws at.bitfire.dav4jvm.ktor.exception.HttpException on other HTTP errors
      */
     suspend fun updateMember(
         fileName: String,
@@ -107,6 +118,10 @@ interface WebDavCollection {
      * @param ifETag            if given, sets `If-Match` so that the deletion only succeeds if the member's ETag matches
      * @param ifScheduleTag     if given, sets `If-Schedule-Tag-Match` so that the deletion only succeeds if the member's Schedule-Tag matches
      * @param additionalHeaders further headers to send (for instance `Push-Dont-Notify`)
+     *
+     * @throws at.bitfire.dav4jvm.ktor.exception.PreconditionFailedException if ifETag or ifScheduleTag is given and
+     *   doesn't match the member's current state (also if the file doesn't exist on the server)
+     * @throws at.bitfire.dav4jvm.ktor.exception.HttpException on HTTP errors
      */
     suspend fun deleteMember(
         fileName: String,
