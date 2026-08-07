@@ -6,7 +6,9 @@ package at.bitfire.davdroid.resource.remote
 
 import at.bitfire.dav4jvm.ktor.DavCollection
 import at.bitfire.davdroid.resource.SyncState
+import io.ktor.http.Url
 import io.ktor.http.content.OutgoingContent
+import kotlinx.coroutines.flow.Flow
 
 /**
  * Provides remote collection access as required for [at.bitfire.davdroid.sync.SyncManager].
@@ -80,6 +82,25 @@ interface WebDavCollection {
      * @throws at.bitfire.dav4jvm.ktor.exception.HttpException on HTTP errors
      */
     suspend fun querySyncState(): SyncState?
+
+    /**
+     * Downloads a batch of members via multi-get (CalDAV/CardDAV report). Only successful
+     * responses that contain the expected resource data are emitted.
+     *
+     * @param urls          members to download (max. size depends on server limits, so this should be a reasonably sized batch)
+     * @param capabilities  current capabilities of the collection (used by CardDAV to select the vCard version)
+     *
+     * @throws at.bitfire.dav4jvm.ktor.exception.DavException if a successful response is missing its ETag
+     * @throws at.bitfire.dav4jvm.ktor.exception.HttpException on HTTP errors
+     */
+    fun multiget(urls: List<Url>, capabilities: Capabilities): Flow<MultiGetItem>
+
+    data class MultiGetItem(
+        val url: Url,
+        val eTag: String,
+        val scheduleTag: String? = null,
+        val content: String
+    )
 
 
     // update

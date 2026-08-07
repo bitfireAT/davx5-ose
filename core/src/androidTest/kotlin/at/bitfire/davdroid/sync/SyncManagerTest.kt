@@ -19,6 +19,7 @@ import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.repository.DavSyncStatsRepository
 import at.bitfire.davdroid.resource.SyncState
 import at.bitfire.davdroid.resource.remote.TestWebDavCollection
+import at.bitfire.davdroid.resource.remote.WebDavCollection
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.account.TestAccount
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -36,6 +37,7 @@ import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit4.MockKRule
 import io.mockk.mockk
 import io.mockk.spyk
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -154,7 +156,7 @@ class SyncManagerTest {
         coVerify(exactly = 1) { syncManager.remoteCollection.queryCapabilities() }
         assertFalse(syncManager.didGenerateUpload)
         assertTrue(syncManager.didListAllRemote)
-        assertFalse(syncManager.didDownloadRemote)
+        assertTrue(syncManager.processedDownloads.isEmpty())
         assertFalse(syncManager.syncResult.hasError)
         assertTrue(collection.entries.isEmpty())
     }
@@ -195,7 +197,7 @@ class SyncManagerTest {
         coVerify(exactly = 1) { syncManager.remoteCollection.queryCapabilities() }
         assertTrue(syncManager.didGenerateUpload)
         assertTrue(syncManager.didListAllRemote)
-        assertFalse(syncManager.didDownloadRemote)
+        assertTrue(syncManager.processedDownloads.isEmpty())
         assertFalse(syncManager.syncResult.hasError)
         assertEquals(1, collection.entries.size)
         assertEquals("etag-from-put", collection.entries.first().eTag)
@@ -233,14 +235,12 @@ class SyncManagerTest {
                             ))
                     ), HrefRelation.MEMBER)
             )
-
-            assertDownloadRemote = mapOf(Pair(Url("$BASE_URL/existing-file.txt"), "etag-from-put"))
         }
         syncManager.performSync()
 
         assertTrue(syncManager.didGenerateUpload)
         assertTrue(syncManager.didListAllRemote)
-        assertFalse(syncManager.didDownloadRemote)
+        assertTrue(syncManager.processedDownloads.isEmpty())
         assertFalse(syncManager.syncResult.hasError)
         assertEquals(1, collection.entries.size)
         assertEquals("etag-from-put", collection.entries.first().eTag)
@@ -278,14 +278,24 @@ class SyncManagerTest {
                             ))
                     ), HrefRelation.MEMBER)
             )
-
-            assertDownloadRemote = mapOf(Pair(Url("$BASE_URL/existing-file.txt"), "etag-from-propfind"))
         }
+        every { syncManager.remoteCollection.multiget(any(), any()) } returns flowOf(
+            WebDavCollection.MultiGetItem(Url("$BASE_URL/existing-file.txt"), "etag-from-propfind", content = "ignored")
+        )
         syncManager.performSync()
 
         assertTrue(syncManager.didGenerateUpload)
         assertTrue(syncManager.didListAllRemote)
-        assertTrue(syncManager.didDownloadRemote)
+        assertEquals(
+            listOf(
+                WebDavCollection.MultiGetItem(
+                    Url("$BASE_URL/existing-file.txt"),
+                    "etag-from-propfind",
+                    content = "ignored"
+                )
+            ),
+            syncManager.processedDownloads
+        )
         assertFalse(syncManager.syncResult.hasError)
         assertEquals(1, collection.entries.size)
         assertEquals("etag-from-propfind", collection.entries.first().eTag)
@@ -323,14 +333,28 @@ class SyncManagerTest {
                             ))
                     ), HrefRelation.MEMBER)
             )
-
-            assertDownloadRemote = mapOf(Pair(Url("$BASE_URL/existing-file.txt"), "changed-etag-from-server"))
         }
+        every { syncManager.remoteCollection.multiget(any(), any()) } returns flowOf(
+            WebDavCollection.MultiGetItem(
+                Url("$BASE_URL/existing-file.txt"),
+                "changed-etag-from-server",
+                content = "ignored"
+            )
+        )
         syncManager.performSync()
 
         assertTrue(syncManager.didGenerateUpload)
         assertTrue(syncManager.didListAllRemote)
-        assertTrue(syncManager.didDownloadRemote)
+        assertEquals(
+            listOf(
+                WebDavCollection.MultiGetItem(
+                    Url("$BASE_URL/existing-file.txt"),
+                    "changed-etag-from-server",
+                    content = "ignored"
+                )
+            ),
+            syncManager.processedDownloads
+        )
         assertFalse(syncManager.syncResult.hasError)
         assertEquals(1, collection.entries.size)
         assertEquals("changed-etag-from-server", collection.entries.first().eTag)
@@ -367,7 +391,7 @@ class SyncManagerTest {
 
         assertFalse(syncManager.didGenerateUpload)
         assertTrue(syncManager.didListAllRemote)
-        assertFalse(syncManager.didDownloadRemote)
+        assertTrue(syncManager.processedDownloads.isEmpty())
         assertFalse(syncManager.syncResult.hasError)
         assertEquals(1, collection.entries.size)
         assertEquals("MemberETag1", collection.entries.first().eTag)
@@ -394,14 +418,24 @@ class SyncManagerTest {
                             ))
                     ), HrefRelation.MEMBER)
             )
-
-            assertDownloadRemote = mapOf(Pair(Url("$BASE_URL/new-member.txt"), "NewMemberETag1"))
         }
+        every { syncManager.remoteCollection.multiget(any(), any()) } returns flowOf(
+            WebDavCollection.MultiGetItem(Url("$BASE_URL/new-member.txt"), "NewMemberETag1", content = "ignored")
+        )
         syncManager.performSync()
 
         assertFalse(syncManager.didGenerateUpload)
         assertTrue(syncManager.didListAllRemote)
-        assertTrue(syncManager.didDownloadRemote)
+        assertEquals(
+            listOf(
+                WebDavCollection.MultiGetItem(
+                    Url("$BASE_URL/new-member.txt"),
+                    "NewMemberETag1",
+                    content = "ignored"
+                )
+            ),
+            syncManager.processedDownloads
+        )
         assertFalse(syncManager.syncResult.hasError)
         assertEquals(1, collection.entries.size)
         assertEquals("NewMemberETag1", collection.entries.first().eTag)
@@ -432,14 +466,24 @@ class SyncManagerTest {
                             ))
                     ), HrefRelation.MEMBER)
             )
-
-            assertDownloadRemote = mapOf(Pair(Url("$BASE_URL/downloaded-member.txt"), "MemberETag2"))
         }
+        every { syncManager.remoteCollection.multiget(any(), any()) } returns flowOf(
+            WebDavCollection.MultiGetItem(Url("$BASE_URL/downloaded-member.txt"), "MemberETag2", content = "ignored")
+        )
         syncManager.performSync()
 
         assertFalse(syncManager.didGenerateUpload)
         assertTrue(syncManager.didListAllRemote)
-        assertTrue(syncManager.didDownloadRemote)
+        assertEquals(
+            listOf(
+                WebDavCollection.MultiGetItem(
+                    Url("$BASE_URL/downloaded-member.txt"),
+                    "MemberETag2",
+                    content = "ignored"
+                )
+            ),
+            syncManager.processedDownloads
+        )
         assertFalse(syncManager.syncResult.hasError)
         assertEquals(1, collection.entries.size)
         assertEquals("MemberETag2", collection.entries.first().eTag)
@@ -460,7 +504,7 @@ class SyncManagerTest {
 
         assertFalse(syncManager.didGenerateUpload)
         assertTrue(syncManager.didListAllRemote)
-        assertFalse(syncManager.didDownloadRemote)
+        assertTrue(syncManager.processedDownloads.isEmpty())
         assertFalse(syncManager.syncResult.hasError)
         assertTrue(collection.entries.isEmpty())
     }
@@ -477,7 +521,7 @@ class SyncManagerTest {
 
         assertFalse(syncManager.didGenerateUpload)
         assertFalse(syncManager.didListAllRemote)
-        assertFalse(syncManager.didDownloadRemote)
+        assertTrue(syncManager.processedDownloads.isEmpty())
         assertFalse(syncManager.syncResult.hasError)
         assertTrue(collection.entries.isEmpty())
     }
