@@ -7,7 +7,6 @@ package at.bitfire.davdroid.resource.remote
 import at.bitfire.dav4jvm.Property
 import at.bitfire.dav4jvm.ktor.PropStat
 import at.bitfire.dav4jvm.ktor.Response
-import at.bitfire.dav4jvm.ktor.exception.DavException
 import at.bitfire.dav4jvm.property.caldav.ScheduleTag
 import at.bitfire.dav4jvm.property.webdav.GetETag
 import at.bitfire.davdroid.sync.unwrapContext
@@ -16,7 +15,6 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.http.Url
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class ResponseExtensionsTest {
@@ -48,7 +46,7 @@ class ResponseExtensionsTest {
 
     @Test
     fun `asMultiGetItem() with unsuccessful response throws IllegalArgumentException`() = runTest {
-        assertThrows<IllegalArgumentException> {
+        assertThrows(IllegalArgumentException("asMultiGetItem() must only be called for successful responses")) {
             response(HttpStatusCode.NotFound, listOf(GetETag("some-etag"))).asMultiGetItem { "BEGIN:VCALENDAR" }
         }
     }
@@ -58,7 +56,7 @@ class ResponseExtensionsTest {
         val e = assertThrows<Throwable> {
             response(null, listOf(GetETag("some-etag"))).asMultiGetItem { null }
         }
-        assertTrue(e.unwrapContext().cause is DavException)
+        assertEquals("Received multi-get response without data", e.unwrapContext().cause.message)
     }
 
     @Test
@@ -66,7 +64,7 @@ class ResponseExtensionsTest {
         val e = assertThrows<Throwable> {
             response(null, emptyList()).asMultiGetItem { "BEGIN:VCALENDAR" }
         }
-        assertTrue(e.unwrapContext().cause is DavException)
+        assertEquals("Received multi-get response without ETag", e.unwrapContext().cause.message)
     }
 
 }

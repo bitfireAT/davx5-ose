@@ -80,6 +80,15 @@ suspend inline fun <reified T : Throwable> assertThrows(block: suspend () -> Uni
     throw AssertionError("Expected ${T::class.simpleName} to be thrown, but nothing was thrown")
 }
 
+/**
+ * Like [assertThrows], but also asserts that the thrown exception's message matches [expected]'s message.
+ */
+suspend inline fun <reified T : Throwable> assertThrows(expected: T, block: suspend () -> Unit): T {
+    val actual = assertThrows<T>(block)
+    assertEquals(expected.message, actual.message)
+    return actual
+}
+
 
 // provider-specific assert helpers
 

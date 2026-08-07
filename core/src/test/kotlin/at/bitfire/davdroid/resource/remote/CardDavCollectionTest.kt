@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid.resource.remote
 
+import at.bitfire.davdroid.sync.unwrapContext
 import at.bitfire.synctools.test.assertThrows
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
@@ -23,34 +24,26 @@ class CardDavCollectionTest {
 
     private val url = Url("https://example.com/dav/contacts/")
 
-    private fun minimalMultiStatus() = MockEngine { _ ->
-        respond(
-            "<?xml version=\"1.0\" encoding=\"utf-8\"?><multistatus xmlns=\"DAV:\"/>",
-            HttpStatusCode.MultiStatus,
-            headersOf(HttpHeaders.ContentType, "text/xml")
-        )
-    }
-
-    private suspend fun requestBody(engine: MockEngine) =
-        engine.requestHistory.last().body.toByteArray().toString(Charsets.UTF_8)
-
     @Test
     fun `multiget() extracts address-data into MultiGetItem`() = runTest {
         val engine = MockEngine { _ ->
             respond(
-                "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
-                        "<multistatus xmlns=\"DAV:\" xmlns:CARD=\"urn:ietf:params:xml:ns:carddav\">\n" +
-                        "  <response>\n" +
-                        "    <href>/dav/contacts/contact1.vcf</href>\n" +
-                        "    <propstat>\n" +
-                        "      <prop>\n" +
-                        "        <getetag>\"contact-etag\"</getetag>\n" +
-                        "        <CARD:address-data>BEGIN:VCARD\nEND:VCARD</CARD:address-data>\n" +
-                        "      </prop>\n" +
-                        "      <status>HTTP/1.1 200 OK</status>\n" +
-                        "    </propstat>\n" +
-                        "  </response>\n" +
-                        "</multistatus>",
+                """
+                <?xml version="1.0" encoding="utf-8"?>
+                <multistatus xmlns="DAV:" xmlns:CARD="urn:ietf:params:xml:ns:carddav">
+                  <response>
+                    <href>/dav/contacts/contact1.vcf</href>
+                    <propstat>
+                      <prop>
+                        <getetag>"contact-etag"</getetag>
+                        <CARD:address-data>BEGIN:VCARD
+                END:VCARD</CARD:address-data>
+                      </prop>
+                      <status>HTTP/1.1 200 OK</status>
+                    </propstat>
+                  </response>
+                </multistatus>
+                """.trimIndent(),
                 HttpStatusCode.MultiStatus,
                 headersOf(HttpHeaders.ContentType, "text/xml")
             )
@@ -101,18 +94,20 @@ class CardDavCollectionTest {
     fun `multiget() throws when a member response lacks address-data`() = runTest {
         val engine = MockEngine { _ ->
             respond(
-                "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
-                        "<multistatus xmlns=\"DAV:\">\n" +
-                        "  <response>\n" +
-                        "    <href>/dav/contacts/contact1.vcf</href>\n" +
-                        "    <propstat>\n" +
-                        "      <prop>\n" +
-                        "        <getetag>\"contact-etag\"</getetag>\n" +
-                        "      </prop>\n" +
-                        "      <status>HTTP/1.1 200 OK</status>\n" +
-                        "    </propstat>\n" +
-                        "  </response>\n" +
-                        "</multistatus>",
+                """
+                <?xml version="1.0" encoding="utf-8"?>
+                <multistatus xmlns="DAV:">
+                  <response>
+                    <href>/dav/contacts/contact1.vcf</href>
+                    <propstat>
+                      <prop>
+                        <getetag>"contact-etag"</getetag>
+                      </prop>
+                      <status>HTTP/1.1 200 OK</status>
+                    </propstat>
+                  </response>
+                </multistatus>
+                """.trimIndent(),
                 HttpStatusCode.MultiStatus,
                 headersOf(HttpHeaders.ContentType, "text/xml")
             )
@@ -123,7 +118,19 @@ class CardDavCollectionTest {
             WebDavCollection.Capabilities()
         )
 
-        assertThrows<Throwable> { flow.toList() }
+        val e = assertThrows<Throwable> { flow.toList() }
+        assertEquals("Received multi-get response without data", e.unwrapContext().cause.message)
     }
+
+    private fun minimalMultiStatus() = MockEngine { _ ->
+        respond(
+            "<?xml version=\"1.0\" encoding=\"utf-8\"?><multistatus xmlns=\"DAV:\"/>",
+            HttpStatusCode.MultiStatus,
+            headersOf(HttpHeaders.ContentType, "text/xml")
+        )
+    }
+
+    private suspend fun requestBody(engine: MockEngine) =
+        engine.requestHistory.last().body.toByteArray().toString(Charsets.UTF_8)
 
 }

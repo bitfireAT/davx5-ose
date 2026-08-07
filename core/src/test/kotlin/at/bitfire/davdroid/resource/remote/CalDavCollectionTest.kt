@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid.resource.remote
 
+import at.bitfire.davdroid.sync.unwrapContext
 import at.bitfire.synctools.test.assertThrows
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
@@ -22,30 +23,26 @@ class CalDavCollectionTest {
 
     private val url = Url("https://example.com/dav/calendar/")
 
-    private fun collection(xmlResponse: String): CalDavCollection {
-        val engine = MockEngine { _ ->
-            respond(xmlResponse, HttpStatusCode.MultiStatus, headersOf(HttpHeaders.ContentType, "text/xml"))
-        }
-        return CalDavCollection(HttpClient(engine), url)
-    }
-
     @Test
     fun `multiget() extracts calendar-data into MultiGetItem`() = runTest {
         val items = collection(
-            "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
-                    "<multistatus xmlns=\"DAV:\" xmlns:C=\"urn:ietf:params:xml:ns:caldav\">\n" +
-                    "  <response>\n" +
-                    "    <href>/dav/calendar/event1.ics</href>\n" +
-                    "    <propstat>\n" +
-                    "      <prop>\n" +
-                    "        <getetag>\"event-etag\"</getetag>\n" +
-                    "        <C:schedule-tag>\"event-schedule-tag\"</C:schedule-tag>\n" +
-                    "        <C:calendar-data>BEGIN:VCALENDAR\nEND:VCALENDAR</C:calendar-data>\n" +
-                    "      </prop>\n" +
-                    "      <status>HTTP/1.1 200 OK</status>\n" +
-                    "    </propstat>\n" +
-                    "  </response>\n" +
-                    "</multistatus>"
+            """
+            <?xml version="1.0" encoding="utf-8"?>
+            <multistatus xmlns="DAV:" xmlns:C="urn:ietf:params:xml:ns:caldav">
+              <response>
+                <href>/dav/calendar/event1.ics</href>
+                <propstat>
+                  <prop>
+                    <getetag>"event-etag"</getetag>
+                    <C:schedule-tag>"event-schedule-tag"</C:schedule-tag>
+                    <C:calendar-data>BEGIN:VCALENDAR
+            END:VCALENDAR</C:calendar-data>
+                  </prop>
+                  <status>HTTP/1.1 200 OK</status>
+                </propstat>
+              </response>
+            </multistatus>
+            """.trimIndent()
         ).multiget(listOf(Url("https://example.com/dav/calendar/event1.ics")), WebDavCollection.Capabilities()).toList()
 
         assertEquals(
@@ -63,20 +60,25 @@ class CalDavCollectionTest {
 
     @Test
     fun `multiget() ignores the collection's own response`() = runTest {
-        val items = collection(
-            "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
-                    "<multistatus xmlns=\"DAV:\">\n" +
-                    "  <response>\n" +
-                    "    <href>/dav/calendar/</href>\n" +
-                    "    <propstat>\n" +
-                    "      <prop>\n" +
-                    "        <getetag>\"collection-etag\"</getetag>\n" +
-                    "      </prop>\n" +
-                    "      <status>HTTP/1.1 200 OK</status>\n" +
-                    "    </propstat>\n" +
-                    "  </response>\n" +
-                    "</multistatus>"
-        ).multiget(listOf(Url("https://example.com/dav/calendar/")), WebDavCollection.Capabilities()).toList()
+        val calendar = collection(
+            """
+            <?xml version="1.0" encoding="utf-8"?>
+            <multistatus xmlns="DAV:">
+              <response>
+                <href>/dav/calendar/</href>
+                <propstat>
+                  <prop>
+                    <getetag>"collection-etag"</getetag>
+                  </prop>
+                  <status>HTTP/1.1 200 OK</status>
+                </propstat>
+              </response>
+            </multistatus>
+            """.trimIndent()
+        )
+
+        val items = calendar.multiget(listOf(Url("https://example.com/dav/calendar/")), WebDavCollection.Capabilities())
+            .toList()
 
         assertTrue(items.isEmpty())
     }
@@ -84,21 +86,31 @@ class CalDavCollectionTest {
     @Test
     fun `multiget() throws when a member response lacks calendar-data`() = runTest {
         val flow = collection(
-            "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
-                    "<multistatus xmlns=\"DAV:\">\n" +
-                    "  <response>\n" +
-                    "    <href>/dav/calendar/event1.ics</href>\n" +
-                    "    <propstat>\n" +
-                    "      <prop>\n" +
-                    "        <getetag>\"event-etag\"</getetag>\n" +
-                    "      </prop>\n" +
-                    "      <status>HTTP/1.1 200 OK</status>\n" +
-                    "    </propstat>\n" +
-                    "  </response>\n" +
-                    "</multistatus>"
+            """
+            <?xml version="1.0" encoding="utf-8"?>
+            <multistatus xmlns="DAV:">
+              <response>
+                <href>/dav/calendar/event1.ics</href>
+                <propstat>
+                  <prop>
+                    <getetag>"event-etag"</getetag>
+                  </prop>
+                  <status>HTTP/1.1 200 OK</status>
+                </propstat>
+              </response>
+            </multistatus>
+            """.trimIndent()
         ).multiget(listOf(Url("https://example.com/dav/calendar/event1.ics")), WebDavCollection.Capabilities())
 
-        assertThrows<Throwable> { flow.toList() }
+        val e = assertThrows<Throwable> { flow.toList() }
+        assertEquals("Received multi-get response without data", e.unwrapContext().cause.message)
+    }
+
+    private fun collection(xmlResponse: String): CalDavCollection {
+        val engine = MockEngine { _ ->
+            respond(xmlResponse, HttpStatusCode.MultiStatus, headersOf(HttpHeaders.ContentType, "text/xml"))
+        }
+        return CalDavCollection(HttpClient(engine), url)
     }
 
 }
