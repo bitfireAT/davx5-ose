@@ -89,23 +89,21 @@ class TestSyncManager @AssistedInject constructor(
 
     var assertDownloadRemote = emptyMap<Url, String>()
     var didDownloadRemote = false
-    override suspend fun downloadRemote(bunch: List<Url>, capabilities: WebDavCollection.Capabilities) {
+    override suspend fun processDownload(result: WebDavCollection.MultiGetItem) {
         didDownloadRemote = true
-        assertEquals(assertDownloadRemote.keys.toList(), bunch)
+        assertEquals(assertDownloadRemote[result.url], result.eTag)
 
-        for ((url, eTag) in assertDownloadRemote) {
-            val fileName = url.lastSegment
-            var localEntry = localCollection.entries.firstOrNull { it.fileName == fileName }
-            if (localEntry == null) {
-                val newEntry = LocalTestResource().also {
-                    it.fileName = fileName
-                }
-                localCollection.entries += newEntry
-                localEntry = newEntry
+        val fileName = result.url.lastSegment
+        var localEntry = localCollection.entries.firstOrNull { it.fileName == fileName }
+        if (localEntry == null) {
+            val newEntry = LocalTestResource().also {
+                it.fileName = fileName
             }
-            localEntry.eTag = eTag
-            localEntry.flags = LocalResource.FLAG_REMOTELY_PRESENT
+            localCollection.entries += newEntry
+            localEntry = newEntry
         }
+        localEntry.eTag = result.eTag
+        localEntry.flags = LocalResource.FLAG_REMOTELY_PRESENT
     }
 
     override suspend fun postProcess() {

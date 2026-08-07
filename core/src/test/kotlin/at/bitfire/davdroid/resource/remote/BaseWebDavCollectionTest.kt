@@ -17,6 +17,7 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.http.Url
 import io.ktor.http.content.TextContent
 import io.ktor.http.headersOf
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -39,6 +40,11 @@ class BaseWebDavCollectionTest {
         val httpClient = HttpClient(engine)
         return object : BaseWebDavCollection(httpClient, url) {
             override val davCollection = DavCollection(httpClient, url)
+            override fun multiget(
+                urls: List<Url>,
+                capabilities: WebDavCollection.Capabilities
+            ): Flow<WebDavCollection.MultiGetItem> =
+                throw NotImplementedError()
         }
     }
 
