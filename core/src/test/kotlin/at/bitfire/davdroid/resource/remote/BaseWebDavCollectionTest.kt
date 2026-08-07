@@ -17,6 +17,7 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.http.Url
 import io.ktor.http.content.TextContent
 import io.ktor.http.headersOf
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -28,6 +29,15 @@ class BaseWebDavCollectionTest {
 
     private val url = Url("https://example.com/dav/")
 
+    private class TestCollection(httpClient: HttpClient, url: Url) : BaseWebDavCollection(httpClient, url) {
+        override val davCollection = DavCollection(httpClient, url)
+        override fun multiget(
+            urls: List<Url>,
+            capabilities: WebDavCollection.Capabilities
+        ): Flow<WebDavCollection.MultiGetItem> =
+            throw NotImplementedError()
+    }
+
     private fun collection(xmlResponse: String): BaseWebDavCollection {
         val engine = MockEngine { _ ->
             respond(xmlResponse, HttpStatusCode.MultiStatus, headersOf(HttpHeaders.ContentType, "text/xml"))
@@ -35,12 +45,8 @@ class BaseWebDavCollectionTest {
         return collection(engine)
     }
 
-    private fun collection(engine: MockEngine): BaseWebDavCollection {
-        val httpClient = HttpClient(engine)
-        return object : BaseWebDavCollection(httpClient, url) {
-            override val davCollection = DavCollection(httpClient, url)
-        }
-    }
+    private fun collection(engine: MockEngine): BaseWebDavCollection =
+        TestCollection(HttpClient(engine), url)
 
 
     // create
