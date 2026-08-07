@@ -332,10 +332,20 @@ abstract class SyncManager<LocalType : LocalResource>(
                     // create new resource on server
                     logger.log(Level.INFO, "Uploading new resource {0} -> {1}", arrayOf<Any?>(local.id, fileName))
 
-                    val result = remoteCollection.createMember(fileName, upload.content, pushDontNotifyHeader)
+                    val result = remoteCollection.createMember(
+                        fileName = fileName,
+                        content = upload.content,
+                        additionalHeaders = pushDontNotifyHeader
+                    )
 
                     // success (no exception thrown)
-                    onSuccessfulUpload(local, fileName, result.eTag, result.scheduleTag, upload.onSuccessContext)
+                    onSuccessfulUpload(
+                        local = local,
+                        newFileName = fileName,
+                        eTag = result.eTag,
+                        scheduleTag = result.scheduleTag,
+                        context = upload.onSuccessContext
+                    )
 
                 } else {
                     // update resource on server
@@ -349,15 +359,21 @@ abstract class SyncManager<LocalType : LocalResource>(
                     )
 
                     val result = remoteCollection.updateMember(
-                        fileName,
-                        upload.content,
-                        ifETag,
-                        ifScheduleTag,
-                        pushDontNotifyHeader
+                        fileName = fileName,
+                        content = upload.content,
+                        ifETag = ifETag,
+                        ifScheduleTag = ifScheduleTag,
+                        additionalHeaders = pushDontNotifyHeader
                     )
 
                     // success (no exception thrown)
-                    onSuccessfulUpload(local, fileName, result.eTag, result.scheduleTag, upload.onSuccessContext)
+                    onSuccessfulUpload(
+                        local = local,
+                        newFileName = fileName,
+                        eTag = result.eTag,
+                        scheduleTag = result.scheduleTag,
+                        context = upload.onSuccessContext
+                    )
                 }
             }
 
