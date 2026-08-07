@@ -18,6 +18,7 @@ import at.bitfire.davdroid.accounts.toAndroidAccount
 import at.bitfire.davdroid.resource.LocalCalendar
 import at.bitfire.davdroid.resource.LocalEvent
 import at.bitfire.davdroid.resource.remote.CalDavCollection
+import at.bitfire.davdroid.resource.remote.WebDavCollection
 import at.bitfire.davdroid.sync.account.TestAccount
 import at.bitfire.synctools.storage.calendar.AndroidCalendar
 import at.bitfire.synctools.storage.calendar.AndroidCalendarProvider
@@ -98,7 +99,8 @@ class CalendarSyncManagerTest {
                 )),
                 exceptions = emptyList()
             )
-        ))
+        ), WebDavCollection.Capabilities()
+        )
 
         assertEquals("existing-uid.ics", result.suggestedFileName)
 
@@ -120,7 +122,8 @@ class CalendarSyncManagerTest {
                 )),
                 exceptions = emptyList()
             )
-        ))
+        ), WebDavCollection.Capabilities()
+        )
 
         assertTrue(result.suggestedFileName.matches(UUID_FILENAME_REGEX))
         val uuid = result.suggestedFileName.removeSuffix(".ics")

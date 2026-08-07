@@ -4,19 +4,13 @@
 
 package at.bitfire.davdroid.sync
 
-import android.text.format.Formatter
 import at.bitfire.dav4jvm.ktor.DavCalendar
 import at.bitfire.dav4jvm.ktor.MultiStatusItem
 import at.bitfire.dav4jvm.ktor.exception.DavException
 import at.bitfire.dav4jvm.ktor.responses
-import at.bitfire.dav4jvm.ktor.selfResponse
-import at.bitfire.dav4jvm.property.caldav.CalDAV
 import at.bitfire.dav4jvm.property.caldav.CalendarData
-import at.bitfire.dav4jvm.property.caldav.MaxResourceSize
 import at.bitfire.dav4jvm.property.caldav.ScheduleTag
 import at.bitfire.dav4jvm.property.webdav.GetETag
-import at.bitfire.dav4jvm.property.webdav.SupportedReportSet
-import at.bitfire.dav4jvm.property.webdav.WebDAV
 import at.bitfire.davdroid.ProductIds
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
@@ -26,9 +20,8 @@ import at.bitfire.davdroid.di.qualifier.SyncTransferSemaphore
 import at.bitfire.davdroid.resource.LocalCalendar
 import at.bitfire.davdroid.resource.LocalEvent
 import at.bitfire.davdroid.resource.LocalResource
-import at.bitfire.davdroid.resource.SyncState
 import at.bitfire.davdroid.resource.remote.CalDavCollection
-import at.bitfire.davdroid.resource.syncState
+import at.bitfire.davdroid.resource.remote.WebDavCollection
 import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.davdroid.util.DavUtils.lastSegment
 import at.bitfire.synctools.exception.InvalidResourceException
@@ -112,35 +105,13 @@ class CalendarSyncManager @AssistedInject constructor(
         return true
     }
 
-    override suspend fun queryCapabilities(): SyncState? =
-        collectionInfo.url.withExceptionContext {
-            val response = remoteCollection.davCollection.propfind(
-                0,
-                CalDAV.MaxResourceSize,
-                WebDAV.SupportedReportSet,
-                CalDAV.GetCTag,
-                WebDAV.SyncToken
-            ).selfResponse() ?: return@withExceptionContext null
-
-            response[MaxResourceSize::class.java]?.maxSize?.let { maxSize ->
-                logger.info("Calendar accepts events up to ${Formatter.formatFileSize(context, maxSize)}")
-            }
-
-            response[SupportedReportSet::class.java]?.let { supported ->
-                hasCollectionSync = supported.reports.contains(WebDAV.SyncCollection)
-            }
-
-            logger.info("Calendar supports Collection Sync: $hasCollectionSync")
-            response.syncState()
-        }
-
-    override fun syncAlgorithm() =
-        if (settings.timeRangePastDays != null || !hasCollectionSync)
+    override fun syncAlgorithm(capabilities: WebDavCollection.Capabilities) =
+        if (settings.timeRangePastDays != null || !capabilities.canCollectionSync)
             SyncAlgorithm.PROPFIND_REPORT
         else
             SyncAlgorithm.COLLECTION_SYNC
 
-    override fun generateUpload(resource: LocalEvent): GeneratedResource {
+    override fun generateUpload(resource: LocalEvent, capabilities: WebDavCollection.Capabilities): GeneratedResource {
         val localEvent = resource.androidEvent
         logger.log(Level.FINE, "Preparing upload of event #{0}: {1}", arrayOf(resource.id, localEvent))
 
@@ -188,7 +159,7 @@ class CalendarSyncManager @AssistedInject constructor(
         }
     }
 
-    override suspend fun downloadRemote(bunch: List<Url>) {
+    override suspend fun downloadRemote(bunch: List<Url>, capabilities: WebDavCollection.Capabilities) {
         logger.info("Downloading ${bunch.size} iCalendars: $bunch")
         collectionInfo.url.withExceptionContext {
             remoteCollection.davCollection.multiget(bunch).responses().collect { response ->

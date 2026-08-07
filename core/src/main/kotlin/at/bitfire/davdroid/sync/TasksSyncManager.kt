@@ -4,17 +4,12 @@
 
 package at.bitfire.davdroid.sync
 
-import android.text.format.Formatter
 import at.bitfire.dav4jvm.ktor.DavCalendar
 import at.bitfire.dav4jvm.ktor.MultiStatusItem
 import at.bitfire.dav4jvm.ktor.exception.DavException
 import at.bitfire.dav4jvm.ktor.responses
-import at.bitfire.dav4jvm.ktor.selfResponse
-import at.bitfire.dav4jvm.property.caldav.CalDAV
 import at.bitfire.dav4jvm.property.caldav.CalendarData
-import at.bitfire.dav4jvm.property.caldav.MaxResourceSize
 import at.bitfire.dav4jvm.property.webdav.GetETag
-import at.bitfire.dav4jvm.property.webdav.WebDAV
 import at.bitfire.davdroid.ProductIds
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
@@ -25,7 +20,7 @@ import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.resource.LocalTask
 import at.bitfire.davdroid.resource.LocalTaskList
 import at.bitfire.davdroid.resource.remote.CalDavCollection
-import at.bitfire.davdroid.resource.syncState
+import at.bitfire.davdroid.resource.remote.WebDavCollection
 import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.davdroid.util.DavUtils.lastSegment
 import at.bitfire.synctools.exception.InvalidResourceException
@@ -97,23 +92,9 @@ class TasksSyncManager @AssistedInject constructor(
     }
 
 
-    override suspend fun queryCapabilities() =
-        collectionInfo.url.withExceptionContext {
-            val response =
-                remoteCollection.davCollection.propfind(0, CalDAV.MaxResourceSize, CalDAV.GetCTag, WebDAV.SyncToken)
-                    .selfResponse()
-                    ?: return@withExceptionContext null
+    override fun syncAlgorithm(capabilities: WebDavCollection.Capabilities) = SyncAlgorithm.PROPFIND_REPORT
 
-            response[MaxResourceSize::class.java]?.maxSize?.let { maxSize ->
-                logger.info("Calendar accepts tasks up to ${Formatter.formatFileSize(context, maxSize)}")
-            }
-
-            response.syncState()
-        }
-
-    override fun syncAlgorithm() = SyncAlgorithm.PROPFIND_REPORT
-
-    override fun generateUpload(resource: LocalTask): GeneratedResource {
+    override fun generateUpload(resource: LocalTask, capabilities: WebDavCollection.Capabilities): GeneratedResource {
         val localTask = resource.taskAndExceptions
         logger.log(Level.FINE, "Preparing upload of task #{0}: {1}", arrayOf(resource.id, localTask))
 
@@ -156,7 +137,7 @@ class TasksSyncManager @AssistedInject constructor(
         }
     }
 
-    override suspend fun downloadRemote(bunch: List<Url>) {
+    override suspend fun downloadRemote(bunch: List<Url>, capabilities: WebDavCollection.Capabilities) {
         logger.info("Downloading ${bunch.size} iCalendars: $bunch")
         // multiple iCalendars, use calendar-multi-get
         collectionInfo.url.withExceptionContext {
