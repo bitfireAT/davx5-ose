@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.resource.remote
 
 import at.bitfire.dav4jvm.ktor.DavCollection
+import at.bitfire.dav4jvm.property.webdav.SyncToken
 import at.bitfire.davdroid.resource.SyncState
 import io.ktor.http.Url
 import io.ktor.http.content.OutgoingContent
@@ -82,6 +83,31 @@ interface WebDavCollection {
      * @throws at.bitfire.dav4jvm.ktor.exception.HttpException on HTTP errors
      */
     suspend fun querySyncState(): SyncState?
+
+    // Collection Sync listChanges() will be moved here.
+    // The new listChanges() will then return a Flow<SyncCollectionItem>, where every item can be
+    // - the sync token / further results,
+    // - or a changed/removed member,
+    // mirroring the actual incoming multistatus response.
+
+    /**
+     * Holds the sync-token / further-results reported by a `sync-collection` REPORT.
+     */
+    class SyncCollectionResult {
+        var syncToken: SyncToken? = null
+        var furtherResults: Boolean = false
+    }
+
+    /**
+     * One classified member response of a `sync-collection` REPORT (RFC 6578).
+     */
+    sealed class SyncCollectionItem {
+        /** Member is new or has changed on the server (may still be locally up to date, e.g. after our own upload). */
+        data class ChangedMember(val name: String, val href: Url, val eTag: String) : SyncCollectionItem()
+
+        /** Member has been removed on the server (HTTP 404 in the sync-collection response). */
+        data class RemovedMember(val name: String) : SyncCollectionItem()
+    }
 
     /**
      * Downloads a batch of members via multi-get (CalDAV/CardDAV report). Only successful
