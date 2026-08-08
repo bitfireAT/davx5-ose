@@ -79,9 +79,9 @@ class JtxSyncer @AssistedInject constructor(
             localCollection = localCollection,
             collectionInfo = remoteCollectionInfo,
             remoteCollection = CalDavCollection(
-                httpClient,
-                remoteCollectionInfo.url,
-                CalendarQueryFilter(components = buildList {
+                httpClient = httpClient,
+                url = remoteCollectionInfo.url,
+                filter = CalendarQueryFilter(components = buildList {
                     if (localCollection.supportsVTODO) add("VTODO")
                     if (localCollection.supportsVJOURNAL) add("VJOURNAL")
                 })

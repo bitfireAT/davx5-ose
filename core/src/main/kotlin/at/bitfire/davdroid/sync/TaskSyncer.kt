@@ -86,9 +86,9 @@ class TaskSyncer @AssistedInject constructor(
             localCollection = localCollection,
             collectionInfo = remoteCollectionInfo,
             remoteCollection = CalDavCollection(
-                httpClient,
-                remoteCollectionInfo.url,
-                CalendarQueryFilter(components = listOf("VTODO"))
+                httpClient = httpClient,
+                url = remoteCollectionInfo.url,
+                filter = CalendarQueryFilter(components = listOf("VTODO"))
             ),
             resync = resync,
             settings = settings

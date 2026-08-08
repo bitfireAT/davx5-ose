@@ -763,6 +763,7 @@ abstract class SyncManager<LocalType : LocalResource>(
                     }
                 }
             }
+            // we only need the URLs to download
             .map { item -> item.response.href }
             // download items in batches concurrently
             .batchMap(MULTIGET_BATCH_SIZE) { batch -> downloadMembers(batch, capabilities) }
@@ -788,8 +789,9 @@ abstract class SyncManager<LocalType : LocalResource>(
     //region Processing shared by sync algorithms
 
     /**
-     * Decides whether a listed member represents a new or changed resource that needs to be
-     * (re)downloaded, and marks it as remotely present so it won't be deleted by
+     * Decides whether a listed member represents a new or changed resource that needs to be (re)downloaded.
+     *
+     * **Side effect:** Also marks the listed member as remotely present so it won't be deleted by
      * [deleteNotPresentRemotely].
      *
      * @param member    listed member to decide on
@@ -797,23 +799,22 @@ abstract class SyncManager<LocalType : LocalResource>(
      * @return whether [member] needs to be (re)downloaded
      */
     private suspend fun decideDownload(member: InternalMemberState): Boolean {
-        val name = member.fileName
-        logger.fine("Found remote resource: $name")
+        logger.fine("Found remote resource: ${member.fileName}")
 
-        val local = localCollection.findByName(name)
+        val local = localCollection.findByName(member.fileName)
         return local.withExceptionContext {
             if (local == null) {
-                logger.info("$name has been added remotely, queueing download")
+                logger.info("${member.fileName} has been added remotely, queueing download")
                 true
             } else {
                 // mark as remotely present, so that this resource won't be deleted at the end
                 local.updateFlags(LocalResource.FLAG_REMOTELY_PRESENT)
 
                 if (local.eTag == member.eTag) {
-                    logger.info("$name has not been changed on server (ETag still ${member.eTag})")
+                    logger.info("${member.fileName} has not been changed on server (ETag still ${member.eTag})")
                     false
                 } else {
-                    logger.info("$name has been changed on server (current ETag=${member.eTag}, last known ETag=${local.eTag})")
+                    logger.info("${member.fileName} has been changed on server (current ETag=${member.eTag}, last known ETag=${local.eTag})")
                     true
                 }
             }

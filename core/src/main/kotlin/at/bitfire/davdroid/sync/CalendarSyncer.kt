@@ -89,9 +89,9 @@ class CalendarSyncer @AssistedInject constructor(
             localCalendar = localCollection,
             collectionInfo = remoteCollectionInfo,
             remoteCollection = CalDavCollection(
-                httpClient,
-                remoteCollectionInfo.url,
-                CalendarQueryFilter(components = listOf(Component.VEVENT), timeRangeStart = limitStart)
+                httpClient = httpClient,
+                url = remoteCollectionInfo.url,
+                filter = CalendarQueryFilter(components = listOf(Component.VEVENT), timeRangeStart = limitStart)
             ),
             resync = resync,
             settings = settings
