@@ -28,16 +28,23 @@ suspend fun Response.asMultiGetItem(getContent: (Response) -> String?): WebDavCo
     return response.href.withExceptionContext {
         val content = getContent(response)
             ?: throw DavException("Received multi-get response without data")
-        val eTag = response[GetETag::class.java]?.eTag
-            ?: throw DavException("Received multi-get response without ETag")
         WebDavCollection.MultiGetItem(
             url = response.href,
-            eTag = eTag,
+            eTag = response.requireETag(),
             scheduleTag = response[ScheduleTag::class.java]?.scheduleTag,
             content = content
         )
     }
 }
+
+/**
+ * Returns this response's ETag.
+ *
+ * @throws DavException if this response doesn't contain a [GetETag] property
+ */
+fun Response.requireETag(): String =
+    this[GetETag::class.java]?.eTag
+        ?: throw DavException("Server didn't provide ETag for ${this.href}")
 
 /**
  * Extracts the [SyncState] (`sync-token` or `CTag`) reported by this response, if any.

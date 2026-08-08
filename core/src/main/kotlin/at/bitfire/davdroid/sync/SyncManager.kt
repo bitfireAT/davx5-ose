@@ -22,7 +22,6 @@ import at.bitfire.dav4jvm.ktor.exception.PreconditionFailedException
 import at.bitfire.dav4jvm.ktor.exception.ServiceUnavailableException
 import at.bitfire.dav4jvm.ktor.exception.UnauthorizedException
 import at.bitfire.dav4jvm.ktor.responsesWithRelation
-import at.bitfire.dav4jvm.property.webdav.GetETag
 import at.bitfire.dav4jvm.property.webdav.SyncToken
 import at.bitfire.dav4jvm.property.webdav.WebDAV
 import at.bitfire.davdroid.R
@@ -42,6 +41,7 @@ import at.bitfire.davdroid.resource.remote.WebDavCollection
 import at.bitfire.davdroid.resource.remote.filterMembers
 import at.bitfire.davdroid.resource.remote.filterNotCollections
 import at.bitfire.davdroid.resource.remote.member
+import at.bitfire.davdroid.resource.remote.requireETag
 import at.bitfire.davdroid.sync.account.InvalidAccountException
 import at.bitfire.davdroid.util.batchMap
 import at.bitfire.synctools.storage.LocalStorageException
@@ -747,9 +747,7 @@ abstract class SyncManager<LocalType : LocalResource>(
                     response.isSuccess() -> {
                         // marks remotely present members as side effect
                         // TODO: Creating the InternalMemberState here won't be necessary anymore as soon as listChanges is moved to WebDavCollection.
-                        val eTag = response[GetETag::class.java]?.eTag
-                            ?: throw DavException("Server didn't provide ETag")
-                        decideDownload(InternalMemberState(response.href, eTag))
+                        decideDownload(InternalMemberState(response.href, response.requireETag()))
                     }
 
                     // 404 means "removed member"
@@ -832,7 +830,6 @@ abstract class SyncManager<LocalType : LocalResource>(
         capabilities: WebDavCollection.Capabilities
     ): Flow<WebDavCollection.MultiGetItem> = flow {
         syncMultigetSemaphore.withPermit {
-            logger.info("Downloading ${batch.size} resources: $batch")
             collectionInfo.url.withExceptionContext {
                 emitAll(remoteCollection.multiget(batch, capabilities))
             }

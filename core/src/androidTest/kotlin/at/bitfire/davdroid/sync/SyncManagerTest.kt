@@ -136,6 +136,7 @@ class SyncManagerTest {
         val syncManager = syncManager(LocalTestCollection(), result)
         syncManager.performSync()
 
+        verify(exactly = 0) { syncManager.remoteCollection.listFilteredMembers() }
         val expected = Instant.now()
             .plusSeconds(60)
             .toEpochMilli()
@@ -471,6 +472,7 @@ class SyncManagerTest {
         val syncManager = syncManager(collection)
         syncManager.performSync()
 
+        verify(exactly = 1) { syncManager.remoteCollection.listFilteredMembers() }
         // The DELETE request URL must encode the slash as %2F (not split the path).
         val resourceUrl = mockEngineQueue.engine.requestHistory.first { it.url.encodedPath != "/" }.url
         assertEquals("/has%2Fslash.ics", resourceUrl.encodedPath)
@@ -493,6 +495,7 @@ class SyncManagerTest {
         val syncManager = syncManager(collection)
         syncManager.performSync()
 
+        verify(exactly = 1) { syncManager.remoteCollection.listFilteredMembers() }
         // The PUT request URL must encode the slash as %2F (not split the path).
         val resourceUrl = mockEngineQueue.engine.requestHistory.first { it.url.encodedPath != "/" }.url
         assertEquals("/has%2Fslash.ics", resourceUrl.encodedPath)

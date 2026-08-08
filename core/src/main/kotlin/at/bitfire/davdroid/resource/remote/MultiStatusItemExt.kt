@@ -8,7 +8,6 @@ import at.bitfire.dav4jvm.ktor.MultiStatusItem
 import at.bitfire.dav4jvm.ktor.Response
 import at.bitfire.dav4jvm.ktor.exception.DavException
 import at.bitfire.dav4jvm.ktor.responsesWithRelation
-import at.bitfire.dav4jvm.property.webdav.GetETag
 import at.bitfire.dav4jvm.property.webdav.ResourceType
 import at.bitfire.dav4jvm.property.webdav.WebDAV
 import kotlinx.coroutines.flow.Flow
@@ -69,7 +68,6 @@ fun Flow<MultiStatusItem>.toInternalMemberStates(): Flow<InternalMemberState> =
         .map { item ->
             InternalMemberState(
                 href = item.response.href,
-                eTag = item.response[GetETag::class.java]?.eTag
-                    ?: throw DavException("Server didn't provide ETag for ${item.response.href}")
+                eTag = item.response.requireETag()
             )
         }
