@@ -8,7 +8,7 @@ import io.ktor.http.Url
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
-class UrlExtensionsTest {
+class UrlExtTest {
 
     @Test
     fun `member() appends the file name as a path segment`() {

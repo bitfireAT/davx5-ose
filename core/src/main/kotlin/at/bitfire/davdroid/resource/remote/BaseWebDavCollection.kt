@@ -6,9 +6,6 @@ package at.bitfire.davdroid.resource.remote
 
 import at.bitfire.dav4jvm.QuotedStringUtils
 import at.bitfire.dav4jvm.ktor.DavResource
-import at.bitfire.dav4jvm.ktor.MultiStatusItem
-import at.bitfire.dav4jvm.ktor.exception.DavException
-import at.bitfire.dav4jvm.ktor.responsesWithRelation
 import at.bitfire.dav4jvm.ktor.selfResponse
 import at.bitfire.dav4jvm.property.caldav.CalDAV
 import at.bitfire.dav4jvm.property.caldav.ScheduleTag
@@ -25,8 +22,6 @@ import io.ktor.http.Url
 import io.ktor.http.content.OutgoingContent
 import io.ktor.http.headers
 import io.ktor.util.appendAll
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 import at.bitfire.dav4jvm.property.caldav.MaxResourceSize as CalDavMaxResourceSize
 import at.bitfire.dav4jvm.property.carddav.MaxResourceSize as CardDavMaxResourceSize
 
@@ -89,26 +84,6 @@ abstract class BaseWebDavCollection(
 
     override suspend fun querySyncState(): SyncState? =
         davCollection.propfind(depth = 0, CalDAV.GetCTag, WebDAV.SyncToken).selfResponse()?.syncState()
-
-    /**
-     * Maps the member responses of a PROPFIND/REPORT to [InternalMemberState]s, dropping everything
-     * that isn't an actual member: the collection itself, sub-collections and unsuccessful
-     * responses.
-     *
-     * @throws DavException if a member is listed without ETag
-     */
-    protected fun Flow<MultiStatusItem>.toInternalMemberStates(): Flow<InternalMemberState> =
-        responsesWithRelation()
-            .filterMembers()
-            .filterNotCollections()
-            .filterSuccessful()
-            .map { item ->
-                InternalMemberState(
-                    href = item.response.href,
-                    eTag = item.response[GetETag::class.java]?.eTag
-                        ?: throw DavException("Server didn't provide ETag for ${item.response.href}")
-                )
-            }
 
 
     // update

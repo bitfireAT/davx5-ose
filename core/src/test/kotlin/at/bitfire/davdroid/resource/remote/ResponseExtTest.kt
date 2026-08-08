@@ -17,7 +17,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
-class ResponseExtensionsTest {
+class ResponseExtTest {
 
     private val url = Url("https://example.com/dav/")
 
