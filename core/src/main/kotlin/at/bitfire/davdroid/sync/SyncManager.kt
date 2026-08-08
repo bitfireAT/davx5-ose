@@ -29,6 +29,7 @@ import at.bitfire.dav4jvm.property.webdav.WebDAV
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.db.Collection
+import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.di.qualifier.SyncMultigetSemaphore
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavCollectionRepository
@@ -85,7 +86,6 @@ abstract class SyncManager<LocalType : LocalResource>(
     val syncResult: SyncResult,
     val collectionInfo: Collection,
     val resync: ResyncType?,
-    val ioDispatcher: CoroutineDispatcher,
     val settings: SyncSettings
 ) {
 
@@ -104,6 +104,10 @@ abstract class SyncManager<LocalType : LocalResource>(
     @Inject
     @ApplicationContext
     lateinit var context: Context
+
+    @Inject
+    @IoDispatcher
+    lateinit var ioDispatcher: CoroutineDispatcher
 
     @Inject
     lateinit var logger: Logger
@@ -549,8 +553,9 @@ abstract class SyncManager<LocalType : LocalResource>(
      * its URL), or
      * 2. deletes it locally if it has vanished on the server.
      *
-     * **Attention:** This method is a basically a filter (filters member Urls that need
-     * to be downloaded) with side effects (marks as locally present or deletes locally).
+     * **Attention:** This method is a basically a mapping filter (filters
+     * member [Response]s that need to be downloaded) with side effects
+     * (marks as locally present or deletes locally).
      *
      * @return the member's URL if it needs to be (re)downloaded, `null` otherwise
      */
