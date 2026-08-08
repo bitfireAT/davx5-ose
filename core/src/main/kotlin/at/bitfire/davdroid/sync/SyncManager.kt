@@ -52,8 +52,9 @@ import io.ktor.http.Url
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
@@ -599,11 +600,9 @@ abstract class SyncManager<LocalType : LocalResource>(
         capabilities: WebDavCollection.Capabilities
     ) {
         filteredMembers
-            // filter the items we want to download
-            .mapNotNull { member ->
-                // marks remotely present members as side effect
-                decideDownload(member.fileName, member.href, member.eTag)
-            }
+            // filter the items we want to download; marks remotely present members as side effect
+            .filter { member -> decideDownload(member) }
+            .map { member -> member.href }
             // download items in batches concurrently
             .batchMap(MULTIGET_BATCH_SIZE) { batch -> downloadMembers(batch, capabilities) }
             // process and store downloaded items
@@ -740,28 +739,31 @@ abstract class SyncManager<LocalType : LocalResource>(
             // we requested Depth: 1, but may still receive collections which are direct members
             .filterNotCollections()
             // filter the items we want to download
-            .mapNotNull { item ->
+            .filter { item ->
                 val response = item.response
                 when {
                     // 2xx means "new/changed member"
                     response.isSuccess() -> {
                         // marks remotely present members as side effect
-                        decideDownload(response.hrefName(), response.href, response[GetETag::class.java]?.eTag)
+                        val eTag = response[GetETag::class.java]?.eTag
+                            ?: throw DavException("Server didn't provide ETag")
+                        decideDownload(MemberState(response.href, eTag))
                     }
 
                     // 404 means "removed member"
                     response.status == HttpStatusCode.NotFound -> {
                         // locally deletes remotely removed members as side effect
                         deleteRemovedMember(response.hrefName())
-                        null
+                        false
                     }
 
                     else -> {
                         logger.warning("Ignoring response for ${response.href} (${response.status})")
-                        null
+                        false
                     }
                 }
             }
+            .map { item -> item.response.href }
             // download items in batches concurrently
             .batchMap(MULTIGET_BATCH_SIZE) { batch -> downloadMembers(batch, capabilities) }
             // process and store downloaded items
@@ -790,32 +792,29 @@ abstract class SyncManager<LocalType : LocalResource>(
      * (re)downloaded, and marks it as remotely present so it won't be deleted by
      * [deleteNotPresentRemotely].
      *
-     * @param name          file name of the member
-     * @param href          URL of the member
-     * @param remoteETag    current ETag of the member, if provided by the server
+     * @param member    listed member to decide on
      *
-     * @return [href] if the member needs to be (re)downloaded, `null` otherwise
+     * @return whether [member] needs to be (re)downloaded
      */
-    private suspend fun decideDownload(name: String, href: Url, remoteETag: String?): Url? {
+    private suspend fun decideDownload(member: MemberState): Boolean {
+        val name = member.fileName
         logger.fine("Found remote resource: $name")
 
         val local = localCollection.findByName(name)
         return local.withExceptionContext {
             if (local == null) {
                 logger.info("$name has been added remotely, queueing download")
-                href
+                true
             } else {
-                val eTag = remoteETag ?: throw DavException("Server didn't provide ETag")
-
                 // mark as remotely present, so that this resource won't be deleted at the end
                 local.updateFlags(LocalResource.FLAG_REMOTELY_PRESENT)
 
-                if (local.eTag == eTag) {
-                    logger.info("$name has not been changed on server (ETag still $eTag)")
-                    null
+                if (local.eTag == member.eTag) {
+                    logger.info("$name has not been changed on server (ETag still ${member.eTag})")
+                    false
                 } else {
-                    logger.info("$name has been changed on server (current ETag=$eTag, last known ETag=${local.eTag})")
-                    href
+                    logger.info("$name has been changed on server (current ETag=${member.eTag}, last known ETag=${local.eTag})")
+                    true
                 }
             }
         }
