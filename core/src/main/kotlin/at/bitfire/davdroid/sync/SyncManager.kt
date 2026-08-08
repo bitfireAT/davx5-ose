@@ -52,7 +52,7 @@ import io.ktor.http.Url
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
-import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.filterNot
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.transform
@@ -583,23 +583,29 @@ abstract class SyncManager<LocalType : LocalResource>(
     }
 
     /**
-     * Processes a full listing of remote members (PROPFIND/REPORT sync algorithm). Only new or
-     * changed members are queued for download — members that have vanished are cleaned up
-     * separately by [deleteNotPresentRemotely] once the whole listing has been processed.
+     * Processes a full listing of remote members (PROPFIND/REPORT sync algorithm).
+     *
+     * Only new or changed members are queued for download. (Members that have vanished
+     * are cleaned up separately by [deleteNotPresentRemotely] once the whole listing has
+     * been processed).
      *
      * @param remoteItems   Multi-Status items to process
-     * @param capabilities  current capabilities of the remote collection (passed on to [WebDavCollection.multiget])
+     * @param capabilities  current capabilities of the remote collection
      */
     private suspend fun processListing(
         remoteItems: Flow<MultiStatusItem>,
         capabilities: WebDavCollection.Capabilities
     ) {
         remoteItems.responsesWithRelation()
+            // filter successful member responses
             .filterMembers()
             .filterSuccessful()
+            // filter the items we want to download – marks members as remotely present as side effect
             .mapNotNull { item -> decideDownload(item.response) }
+            // download items in batches concurrently
             .batchMap(MULTIGET_BATCH_SIZE) { batch -> downloadMembers(batch, capabilities) }
-            .collect { result -> processDownload(result) }
+            // process and store downloaded items
+            .collect { item -> processDownload(item) }
     }
 
     protected abstract fun listAllRemote(): Flow<MultiStatusItem>
@@ -686,7 +692,8 @@ abstract class SyncManager<LocalType : LocalResource>(
             syncToken = since?.takeIf { since.type == SyncState.Type.SYNC_TOKEN }?.value,
             infiniteDepth = false,
             limit = null,
-            WebDAV.GetETag
+            WebDAV.GetETag,     // we need the ETag for every item
+            WebDAV.ResourceType // we want to ignore sub-collections, so we need to know which items are collections
         ).transform { item ->
             when (item) {
                 is MultiStatusItem.Response -> when (item.relation) {
@@ -714,45 +721,56 @@ abstract class SyncManager<LocalType : LocalResource>(
     }
 
     /**
-     * Processes changes reported by a `sync-collection` REPORT (collection-sync algorithm). Each
-     * member response either represents a new/changed member (queued for download) or a 404
-     * signalling that the member has been deleted on the server (deleted locally).
+     * Processes changes reported by a `sync-collection` REPORT (collection-sync algorithm)
+     * with `Depth: 1`. Each member response either represents
+     *
+     * - a new/changed member → queue for download, or
+     * - a 404 response signaling that the member has been deleted on the server → delete locally.
      *
      * @param remoteItems   Multi-Status items to process
-     * @param capabilities  current capabilities of the remote collection (passed on to [WebDavCollection.multiget])
+     * @param capabilities  current capabilities of the remote collection
      */
     private suspend fun processChanges(
         remoteItems: Flow<MultiStatusItem>,
         capabilities: WebDavCollection.Capabilities
     ) {
         remoteItems.responsesWithRelation()
+            // filter member resources
             .filterMembers()
-            // ignore sub-collections (e.g. nested calendars/address books)
-            .filter { item -> item.response[ResourceType::class.java]?.types?.contains(WebDAV.Collection) != true }
+            // we requested sync-level=1, but may still receive collections which are direct members
+            .filterNot { item -> item.response[ResourceType::class.java]?.types?.contains(WebDAV.Collection) == true }
+            /* filter the items we want to download – two side effects:
+               1. remotely removed members are deleted locally
+               2. locally mark remotely present members (done in decideDownload) */
             .mapNotNull { item ->
                 val response = item.response
                 when {
-                    response.isSuccess() -> decideDownload(response)
+                    // 2xx means "new/changed member"
+                    response.isSuccess() ->
+                        decideDownload(response)
+
+                    // 404 means "removed member"
                     response.status == HttpStatusCode.NotFound -> {
-                        deleteVanishedMember(response)
+                        deleteRemovedMember(response.hrefName())
                         null
                     }
+
                     else -> {
-                        logger.warning("Ignoring member status: ${response.href} (${response.status})")
+                        logger.warning("Ignoring response for ${response.href} (${response.status})")
                         null
                     }
                 }
             }
+            // download items in batches concurrently
             .batchMap(MULTIGET_BATCH_SIZE) { batch -> downloadMembers(batch, capabilities) }
-            .collect { result -> processDownload(result) }
+            // process and store downloaded items
+            .collect { item -> processDownload(item) }
     }
 
     /**
-     * Deletes a member locally after the server reported it as deleted (404 in a `sync-collection`
-     * REPORT response).
+     * Locally deletes a member after the server reported it as deleted remotely.
      */
-    private suspend fun deleteVanishedMember(response: Response) {
-        val name = response.hrefName()
+    private suspend fun deleteRemovedMember(name: String) {
         localCollection.findByName(name)?.let { local ->
             local.withExceptionContext {
                 logger.info("$name has been deleted on server, deleting locally")
