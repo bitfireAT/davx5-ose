@@ -23,7 +23,6 @@ import at.bitfire.dav4jvm.ktor.exception.ServiceUnavailableException
 import at.bitfire.dav4jvm.ktor.exception.UnauthorizedException
 import at.bitfire.dav4jvm.ktor.responsesWithRelation
 import at.bitfire.dav4jvm.property.webdav.GetETag
-import at.bitfire.dav4jvm.property.webdav.ResourceType
 import at.bitfire.dav4jvm.property.webdav.SyncToken
 import at.bitfire.dav4jvm.property.webdav.WebDAV
 import at.bitfire.davdroid.R
@@ -40,6 +39,7 @@ import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.resource.SyncState
 import at.bitfire.davdroid.resource.remote.WebDavCollection
 import at.bitfire.davdroid.resource.remote.filterMembers
+import at.bitfire.davdroid.resource.remote.filterNotCollections
 import at.bitfire.davdroid.resource.remote.filterSuccessful
 import at.bitfire.davdroid.resource.remote.member
 import at.bitfire.davdroid.sync.account.InvalidAccountException
@@ -52,7 +52,6 @@ import io.ktor.http.Url
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
-import kotlinx.coroutines.flow.filterNot
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.transform
@@ -583,7 +582,8 @@ abstract class SyncManager<LocalType : LocalResource>(
     }
 
     /**
-     * Processes a full listing of remote members (PROPFIND/REPORT sync algorithm).
+     * Processes a full listing of remote members (PROPFIND/REPORT sync algorithm) with
+     * `Depth: 1`.
      *
      * Only new or changed members are queued for download. (Members that have vanished
      * are cleaned up separately by [deleteNotPresentRemotely] once the whole listing has
@@ -599,6 +599,8 @@ abstract class SyncManager<LocalType : LocalResource>(
         remoteItems.responsesWithRelation()
             // filter successful member responses
             .filterMembers()
+            // we requested Depth: 1, but may still receive collections which are direct members
+            .filterNotCollections()
             .filterSuccessful()
             // filter the items we want to download
             .mapNotNull { item ->
@@ -740,8 +742,8 @@ abstract class SyncManager<LocalType : LocalResource>(
         remoteItems.responsesWithRelation()
             // filter member resources
             .filterMembers()
-            // we requested sync-level=1, but may still receive collections which are direct members
-            .filterNot { item -> item.response[ResourceType::class.java]?.types?.contains(WebDAV.Collection) == true }
+            // we requested Depth: 1, but may still receive collections which are direct members
+            .filterNotCollections()
             // filter the items we want to download
             .mapNotNull { item ->
                 val response = item.response

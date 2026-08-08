@@ -6,8 +6,11 @@ package at.bitfire.davdroid.resource.remote
 
 import at.bitfire.dav4jvm.ktor.MultiStatusItem
 import at.bitfire.dav4jvm.ktor.Response
+import at.bitfire.dav4jvm.property.webdav.ResourceType
+import at.bitfire.dav4jvm.property.webdav.WebDAV
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.filterNot
 import java.util.logging.Logger
 
 private val logger = Logger.getLogger("at.bitfire.davdroid.resource.remote.MultiStatusItemExtensions")
@@ -25,6 +28,15 @@ fun Flow<MultiStatusItem.Response>.filterMembers(): Flow<MultiStatusItem.Respons
             logger.warning("Ignoring non-member response: ${item.response.href}")
         isMember
     }
+
+/**
+ * Filters this flow down to responses that are not collections.
+ *
+ * Only filters anything if [WebDAV.ResourceType] is present in the response.
+ * **Make sure to request [WebDAV.ResourceType] if you want this filter to actually filter anything.**
+ */
+fun Flow<MultiStatusItem.Response>.filterNotCollections(): Flow<MultiStatusItem.Response> =
+    filterNot { item -> item.response[ResourceType::class.java]?.types?.contains(WebDAV.Collection) == true }
 
 /**
  * Filters this flow down to successful responses.
