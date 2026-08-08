@@ -602,6 +602,7 @@ abstract class SyncManager<LocalType : LocalResource>(
         filteredMembers
             // filter the items we want to download; marks remotely present members as side effect
             .filter { member -> decideDownload(member) }
+            // we only need the URLs to download
             .map { member -> member.href }
             // download items in batches concurrently
             .batchMap(MULTIGET_BATCH_SIZE) { batch -> downloadMembers(batch, capabilities) }
@@ -745,6 +746,7 @@ abstract class SyncManager<LocalType : LocalResource>(
                     // 2xx means "new/changed member"
                     response.isSuccess() -> {
                         // marks remotely present members as side effect
+                        // TODO: Creating the InternalMemberState here won't be necessary anymore as soon as listChanges is moved to WebDavCollection.
                         val eTag = response[GetETag::class.java]?.eTag
                             ?: throw DavException("Server didn't provide ETag")
                         decideDownload(InternalMemberState(response.href, eTag))
