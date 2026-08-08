@@ -101,7 +101,8 @@ interface WebDavCollection {
     fun listFilteredMembers(): Flow<InternalMemberState>
 
     /**
-     * Lists changes since [since] via `sync-collection` REPORT (RFC 6578), with `Depth: 1`.
+     * Lists changes since [since] via `sync-collection` REPORT (RFC 6578), with a
+     * `sync-level` of 1 (one).
      *
      * Must only be called when [Capabilities.canCollectionSync] is `true`; behavior is undefined
      * (server will likely respond with an error) otherwise.

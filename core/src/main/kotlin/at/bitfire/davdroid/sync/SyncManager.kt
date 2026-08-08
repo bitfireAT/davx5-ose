@@ -48,6 +48,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.sync.Semaphore
@@ -668,16 +669,16 @@ abstract class SyncManager<LocalType : LocalResource>(
 
     /**
      * Processes changes reported by a `sync-collection` REPORT (collection-sync algorithm)
-     * with `Depth: 1`. Each item either represents
+     * with a `sync-level` of 1 (one). Each item either represents
      *
-     * - the sync-token or further-changes flag of the response → collected into the returned [SyncCollectionResult],
+     * - the sync-token or further-changes flag of the response → collect into the returned result,
      * - a new/changed member → queue for download, or
      * - a removed member → delete locally.
      *
      * @param remoteItems   items to process, as listed by [WebDavCollection.listChanges]
      * @param capabilities  current capabilities of the remote collection
      *
-     * @return the sync-token / further-results reported for [remoteItems]
+     * @return the received sync-token / further-results
      */
     private suspend fun processChanges(
         remoteItems: Flow<CollectionSyncItem>,
@@ -709,7 +710,8 @@ abstract class SyncManager<LocalType : LocalResource>(
                 }
             }
             // we only need the URLs to download
-            .map { item -> (item as CollectionSyncItem.ChangedMember).memberState.href }
+            .filterIsInstance<CollectionSyncItem.ChangedMember>()
+            .map { item -> item.memberState.href }
             // download items in batches concurrently
             .batchMap(MULTIGET_BATCH_SIZE) { batch -> downloadMembers(batch, capabilities) }
             // process and store downloaded items
