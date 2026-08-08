@@ -11,8 +11,6 @@ import at.bitfire.davdroid.ProductIds
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.db.Collection
-import at.bitfire.davdroid.di.qualifier.IoDispatcher
-import at.bitfire.davdroid.di.qualifier.SyncTransferSemaphore
 import at.bitfire.davdroid.resource.LocalJtxCollection
 import at.bitfire.davdroid.resource.LocalJtxObject
 import at.bitfire.davdroid.resource.LocalResource
@@ -32,11 +30,9 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import io.ktor.client.HttpClient
 import io.ktor.http.content.TextContent
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.sync.Semaphore
 import net.fortuna.ical4j.model.Component
 import net.fortuna.ical4j.model.component.CalendarComponent
 import net.fortuna.ical4j.model.property.ProdId
@@ -54,9 +50,7 @@ class JtxSyncManager @AssistedInject constructor(
     @Assisted override val remoteCollection: CalDavCollection,
     @Assisted resync: ResyncType?,
     @Assisted settings: SyncSettings,
-    @IoDispatcher ioDispatcher: CoroutineDispatcher,
-    private val productIds: ProductIds,
-    @SyncTransferSemaphore syncTransferSemaphore: Semaphore
+    private val productIds: ProductIds
 ) : SyncManager<LocalJtxObject>(
     accountId,
     httpClient,
@@ -64,8 +58,6 @@ class JtxSyncManager @AssistedInject constructor(
     syncResult,
     collectionInfo,
     resync,
-    ioDispatcher,
-    syncTransferSemaphore,
     settings
 ) {
 
