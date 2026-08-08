@@ -600,8 +600,11 @@ abstract class SyncManager<LocalType : LocalResource>(
             // filter successful member responses
             .filterMembers()
             .filterSuccessful()
-            // filter the items we want to download – marks members as remotely present as side effect
-            .mapNotNull { item -> decideDownload(item.response) }
+            // filter the items we want to download
+            .mapNotNull { item ->
+                // marks remotely present members as side effect
+                decideDownload(item.response)
+            }
             // download items in batches concurrently
             .batchMap(MULTIGET_BATCH_SIZE) { batch -> downloadMembers(batch, capabilities) }
             // process and store downloaded items
@@ -739,18 +742,19 @@ abstract class SyncManager<LocalType : LocalResource>(
             .filterMembers()
             // we requested sync-level=1, but may still receive collections which are direct members
             .filterNot { item -> item.response[ResourceType::class.java]?.types?.contains(WebDAV.Collection) == true }
-            /* filter the items we want to download – two side effects:
-               1. remotely removed members are deleted locally
-               2. locally mark remotely present members (done in decideDownload) */
+            // filter the items we want to download
             .mapNotNull { item ->
                 val response = item.response
                 when {
                     // 2xx means "new/changed member"
-                    response.isSuccess() ->
+                    response.isSuccess() -> {
+                        // marks remotely present members as side effect
                         decideDownload(response)
+                    }
 
                     // 404 means "removed member"
                     response.status == HttpStatusCode.NotFound -> {
+                        // locally deletes remotely removed members as side effect
                         deleteRemovedMember(response.hrefName())
                         null
                     }
