@@ -40,7 +40,7 @@ interface CollectionDao {
 
     @Suppress("unused")     // for build variant
     @Query("SELECT * FROM collection WHERE sync")
-    fun getSyncCollectionsBlocking(): List<Collection>
+    suspend fun getSyncCollections(): List<Collection>
 
     @Query("SELECT pushVapidKey FROM collection WHERE serviceId=:serviceId AND pushVapidKey IS NOT NULL LIMIT 1")
     suspend fun getFirstVapidKey(serviceId: Long): String?
