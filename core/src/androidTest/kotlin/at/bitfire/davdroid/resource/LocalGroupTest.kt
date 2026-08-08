@@ -14,6 +14,7 @@ import android.provider.ContactsContract.RawContacts
 import androidx.core.content.contentValuesOf
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
+import at.bitfire.davdroid.accounts.LegacyAccount
 import at.bitfire.synctools.mapping.contacts.Contact
 import at.bitfire.synctools.storage.contacts.AddressContract.CachedGroupMembership
 import at.bitfire.synctools.storage.contacts.AddressContract.asSyncAdapter
@@ -51,7 +52,7 @@ class LocalGroupTest {
 
     lateinit var provider: ContentProviderClient
 
-    val account = Account("Test Account", "Test Account Type")
+    val accountId = LegacyAccount(Account("Test Account", "Test Account Type"))
 
     @Before
     fun setUp() {
@@ -68,7 +69,7 @@ class LocalGroupTest {
 
     @Test
     fun testClearDirty_addCachedGroupMembership() {
-        localTestAddressBook.provide(account, provider, GroupMethod.CATEGORIES) { localAddressBook ->
+        localTestAddressBook.provide(accountId, provider, GroupMethod.CATEGORIES) { localAddressBook ->
             val group = newGroup(localAddressBook)
 
             val contact1 = localAddressBook.addContact(Contact().apply { displayName = "Test" }, "fn.vcf", null, 0)
@@ -105,7 +106,7 @@ class LocalGroupTest {
 
     @Test
     fun testClearDirty_removeCachedGroupMembership() {
-        localTestAddressBook.provide(account, provider, GroupMethod.CATEGORIES) { localAddressBook ->
+        localTestAddressBook.provide(accountId, provider, GroupMethod.CATEGORIES) { localAddressBook ->
             val group = newGroup(localAddressBook)
 
             val contact1 = localAddressBook.addContact(Contact().apply { displayName = "Test" }, "fn.vcf", null, 0)
@@ -137,7 +138,7 @@ class LocalGroupTest {
 
     @Test
     fun testMarkMembersDirty() = runTest {
-        val localAddressBook = localTestAddressBook.create(account, provider, GroupMethod.CATEGORIES)
+        val localAddressBook = localTestAddressBook.create(accountId, provider, GroupMethod.CATEGORIES)
         try {
             val group = newGroup(localAddressBook)
 
@@ -158,7 +159,7 @@ class LocalGroupTest {
 
     @Test
     fun testUpdate() {
-        localTestAddressBook.provide(account, provider) {
+        localTestAddressBook.provide(accountId, provider) {
             val group = newGroup(it)
             group.update(Contact(displayName = "New Group Name"), null, null, null, 0)
         }

@@ -18,6 +18,7 @@ import at.bitfire.davdroid.accounts.toAndroidAccount
 import at.bitfire.davdroid.resource.LocalCalendar
 import at.bitfire.davdroid.resource.LocalEvent
 import at.bitfire.davdroid.resource.remote.CalDavCollection
+import at.bitfire.davdroid.resource.remote.WebDavCollection
 import at.bitfire.davdroid.sync.account.TestAccount
 import at.bitfire.synctools.storage.calendar.AndroidCalendar
 import at.bitfire.synctools.storage.calendar.AndroidCalendarProvider
@@ -26,6 +27,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.ktor.client.engine.mock.toByteArray
+import io.ktor.http.Url
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import okio.Buffer
@@ -98,7 +100,8 @@ class CalendarSyncManagerTest {
                 )),
                 exceptions = emptyList()
             )
-        ))
+        ), WebDavCollection.Capabilities()
+        )
 
         assertEquals("existing-uid.ics", result.suggestedFileName)
 
@@ -120,7 +123,8 @@ class CalendarSyncManagerTest {
                 )),
                 exceptions = emptyList()
             )
-        ))
+        ), WebDavCollection.Capabilities()
+        )
 
         assertTrue(result.suggestedFileName.matches(UUID_FILENAME_REGEX))
         val uuid = result.suggestedFileName.removeSuffix(".ics")
@@ -141,7 +145,7 @@ class CalendarSyncManagerTest {
         syncResult = mockk(),
         localCalendar = mockk(),
         collectionInfo = mockk(),
-        remoteCollection = CalDavCollection(mockk()),
+        remoteCollection = CalDavCollection(mockk(), Url("https://example.com/dav/")),
         resync = mockk(),
         settings = SyncSettingsFixtures.default()
     )

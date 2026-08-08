@@ -92,7 +92,7 @@ class AccountSettingsMigration17Test {
                 assertEquals("Some Address Book (${account.name}) #100", addressBookAccount.name)
 
                 // ID is now assigned
-                assertEquals(100L, accountManager.getUserData(addressBookAccount, LocalAddressBook.USER_DATA_COLLECTION_ID)?.toLong())
+                assertEquals(100L, accountManager.getUserData(addressBookAccount, "collection_id")?.toLong())
             } finally {
                 accountManager.removeAccountExplicitly(addressBookAccount)
             }

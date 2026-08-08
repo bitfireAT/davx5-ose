@@ -4,19 +4,9 @@
 
 package at.bitfire.davdroid.sync
 
-import android.text.format.Formatter
 import androidx.annotation.OpenForTesting
 import at.bitfire.dav4jvm.ktor.DavCalendar
 import at.bitfire.dav4jvm.ktor.MultiStatusItem
-import at.bitfire.dav4jvm.ktor.exception.DavException
-import at.bitfire.dav4jvm.ktor.responses
-import at.bitfire.dav4jvm.ktor.selfResponse
-import at.bitfire.dav4jvm.property.caldav.CalDAV
-import at.bitfire.dav4jvm.property.caldav.CalendarData
-import at.bitfire.dav4jvm.property.caldav.MaxResourceSize
-import at.bitfire.dav4jvm.property.caldav.ScheduleTag
-import at.bitfire.dav4jvm.property.webdav.GetETag
-import at.bitfire.dav4jvm.property.webdav.WebDAV
 import at.bitfire.davdroid.ProductIds
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
@@ -27,7 +17,7 @@ import at.bitfire.davdroid.resource.LocalJtxCollection
 import at.bitfire.davdroid.resource.LocalJtxObject
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.resource.remote.CalDavCollection
-import at.bitfire.davdroid.resource.syncState
+import at.bitfire.davdroid.resource.remote.WebDavCollection
 import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.davdroid.util.DavUtils.lastSegment
 import at.bitfire.synctools.exception.InvalidResourceException
@@ -41,7 +31,6 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import io.ktor.client.HttpClient
-import io.ktor.http.Url
 import io.ktor.http.content.TextContent
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
@@ -95,21 +84,10 @@ class JtxSyncManager @AssistedInject constructor(
     }
 
 
-    override suspend fun queryCapabilities() =
-        collectionInfo.url.withExceptionContext {
-            val response =
-                remoteCollection.davCollection.propfind(0, CalDAV.GetCTag, CalDAV.MaxResourceSize, WebDAV.SyncToken)
-                    .selfResponse()
-                    ?: return@withExceptionContext null
-
-            response[MaxResourceSize::class.java]?.maxSize?.let { maxSize ->
-                logger.info("Collection accepts resources up to ${Formatter.formatFileSize(context, maxSize)}")
-            }
-
-            response.syncState()
-        }
-
-    override fun generateUpload(resource: LocalJtxObject): GeneratedResource {
+    override fun generateUpload(
+        resource: LocalJtxObject,
+        capabilities: WebDavCollection.Capabilities
+    ): GeneratedResource {
         val localJtxObject = resource.jtxObjectAndExceptions
         logger.log(Level.FINE, "Preparing upload of icalobject #{0}: {1}", arrayOf(resource.id, localJtxObject))
 
@@ -142,7 +120,7 @@ class JtxSyncManager @AssistedInject constructor(
         )
     }
 
-    override fun syncAlgorithm() = SyncAlgorithm.PROPFIND_REPORT
+    override fun syncAlgorithm(capabilities: WebDavCollection.Capabilities) = SyncAlgorithm.PROPFIND_REPORT
 
     override fun listAllRemote(): Flow<MultiStatusItem> = flow {
         collectionInfo.url.withExceptionContext {
@@ -158,36 +136,14 @@ class JtxSyncManager @AssistedInject constructor(
         }
     }
 
-    override suspend fun downloadRemote(bunch: List<Url>) {
-        logger.info("Downloading ${bunch.size} iCalendars: $bunch")
-        // multiple iCalendars, use calendar-multi-get
-        collectionInfo.url.withExceptionContext {
-            remoteCollection.davCollection.multiget(bunch).responses().collect { response ->
-                // See CalendarSyncManager for more information about the multi-get response
-                response.href.withExceptionContext wrapResource@{
-                    if (!response.isSuccess()) {
-                        logger.warning("Ignoring non-successful multi-get response for ${response.href}")
-                        return@wrapResource
-                    }
-
-                    val iCal = response[CalendarData::class.java]?.iCalendar
-                    if (iCal == null) {
-                        logger.warning("Ignoring multi-get response without calendar-data")
-                        return@wrapResource
-                    }
-
-                    val eTag = response[GetETag::class.java]?.eTag
-                        ?: throw DavException("Received multi-get response without ETag")
-                    val scheduleTag = response[ScheduleTag::class.java]?.scheduleTag
-                    val fileName = response.href.lastSegment
-
-                    try {
-                        processICalObject(fileName, eTag, scheduleTag, StringReader(iCal))
-                    } catch (e: InvalidResourceException) {
-                        logger.log(Level.WARNING, "Error while processing jtx object", e)
-                        notifyInvalidResource(e, fileName)
-                    }
-                }
+    override suspend fun processDownload(result: WebDavCollection.MultiGetItem) {
+        result.url.withExceptionContext {
+            val fileName = result.url.lastSegment
+            try {
+                processICalObject(fileName, result.eTag, result.scheduleTag, StringReader(result.content))
+            } catch (e: InvalidResourceException) {
+                logger.log(Level.WARNING, "Error while processing jtx object", e)
+                notifyInvalidResource(e, fileName)
             }
         }
     }

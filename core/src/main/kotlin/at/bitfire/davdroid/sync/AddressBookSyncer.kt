@@ -7,7 +7,6 @@ package at.bitfire.davdroid.sync
 import android.accounts.AccountManager
 import android.content.ContentProviderClient
 import android.provider.ContactsContract
-import at.bitfire.dav4jvm.ktor.DavAddressBook
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
@@ -102,7 +101,7 @@ class AddressBookSyncer @AssistedInject constructor(
                 provider = provider,
                 localAddressBook = addressBook,
                 collectionInfo = collection,
-                remoteCollection = CardDavCollection(DavAddressBook(httpClient, collection.url)),
+                remoteCollection = CardDavCollection(httpClient, collection.url),
                 resync = resync,
                 syncFrameworkUpload = syncFrameworkUpload,
                 settings = settings

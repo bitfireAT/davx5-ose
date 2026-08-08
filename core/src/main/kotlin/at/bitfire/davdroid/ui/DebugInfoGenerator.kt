@@ -41,6 +41,8 @@ import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.settings.AccountSettingsFactory
+import at.bitfire.davdroid.resource.AddressBookAccountProperties
+import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.account.InvalidAccountException
@@ -72,6 +74,7 @@ import at.techbee.jtx.JtxContract.asSyncAdapter as asJtxSyncAdapter
 class DebugInfoGenerator @Inject constructor(
     private val accountRepository: AccountRepository,
     private val accountSettingsFactory: AccountSettingsFactory,
+    private val addressBookAccountProperties: AddressBookAccountProperties,
     private val androidAccountManager: AndroidAccountManager,
     @ApplicationContext private val context: Context,
     private val db: AppDatabase,
@@ -479,7 +482,7 @@ class DebugInfoGenerator @Inject constructor(
         writer.append("  * Address book: ${account.name}\n")
         val table = dumpAndroidAccount(account, AccountDumpInfo.addressBookAccount(account))
         writer.append(TextTable.indent(table, 4))
-            .append("Collection ID: ${accountManager.getUserData(account, LocalAddressBook.USER_DATA_COLLECTION_ID)}\n")
+            .append("Collection ID: ${addressBookAccountProperties.getCollectionId(account)}\n")
             .append("    Read-only: ${accountManager.getUserData(account, AndroidAddressBook.USER_DATA_READ_ONLY) ?: 0}\n\n")
     }
 

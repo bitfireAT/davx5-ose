@@ -8,7 +8,6 @@ import android.accounts.Account
 import android.content.Context
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.accounts.AndroidAccountManager
-import at.bitfire.davdroid.accounts.toAndroidAccount
 import at.bitfire.davdroid.resource.LocalAddressBookStore
 import at.bitfire.davdroid.sync.SyncDataType
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -46,7 +45,7 @@ class SyncPendingProvider @Inject constructor(
                 // If checking contacts, we need to check all address book accounts instead of the single main account
                 val accountsFlow: Flow<List<Account>> = when (dataType) {
                     SyncDataType.CONTACTS -> {
-                        localAddressBookStore.getAddressBookAccountsFlow(accountId.toAndroidAccount())
+                        localAddressBookStore.getAddressBookAccountsFlow(accountId)
                     }
                     else -> {
                         val account = androidAccountManager.getAndroidAccount(accountId)

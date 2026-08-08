@@ -14,7 +14,9 @@ import android.provider.ContactsContract.Groups
 import android.provider.ContactsContract.RawContacts
 import androidx.annotation.OpenForTesting
 import androidx.core.content.contentValuesOf
+import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.accounts.toAccountId
+import at.bitfire.davdroid.accounts.toAndroidAccount
 import at.bitfire.davdroid.resource.workaround.ContactDirtyVerifier
 import at.bitfire.davdroid.settings.AccountSettingsFactory
 import at.bitfire.davdroid.sync.SyncDataType
@@ -29,7 +31,6 @@ import at.bitfire.synctools.storage.contacts.AndroidContact
 import at.bitfire.synctools.storage.contacts.AndroidGroup
 import at.bitfire.synctools.storage.contacts.ContactsBatchOperation
 import at.bitfire.synctools.util.AndroidAccountUtils
-import at.bitfire.synctools.util.setAndVerifyUserData
 import at.bitfire.synctools.vcard.GroupMethod
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -49,19 +50,20 @@ import kotlin.jvm.optionals.getOrNull
  * account and there is no such thing as "address books". So, DAVx5 creates a "DAVx5
  * address book" account for every CardDAV address book.
  *
- * @param account             DAVx5 account which "owns" this address book
+ * @param accountId           [AccountId] of the app account which "owns" this address book
  * @param _addressBookAccount Address book account (not: DAVx5 account) storing the actual Android
- * contacts. This is the initial value of [addressBookAccount]. However when the address book is renamed,
+ * contacts. This is the initial value of [addressBookAccount]. However, when the address book is renamed,
  * the new name will only be available in [addressBookAccount], so usually that one should be used.
  * @param provider            Content provider needed to access and modify the address book
  */
 @OpenForTesting
 open class LocalAddressBook @AssistedInject constructor(
-    @Assisted("account") val account: Account,
-    @Assisted("addressBookAccount") _addressBookAccount: Account,
+    @Assisted val accountId: AccountId,
+    @Assisted _addressBookAccount: Account,
     @Assisted provider: ContentProviderClient,
     @Assisted val groupMethod: GroupMethod,
     private val accountSettingsFactory: AccountSettingsFactory,
+    private val addressBookAccountProperties: AddressBookAccountProperties,
     @ApplicationContext private val context: Context,
     internal val dirtyVerifier: Optional<ContactDirtyVerifier>,
     private val logger: Logger,
@@ -71,8 +73,8 @@ open class LocalAddressBook @AssistedInject constructor(
     @AssistedFactory
     interface Factory {
         fun create(
-            @Assisted("account") account: Account,
-            @Assisted("addressBookAccount") addressBookAccount: Account,
+            @Assisted accountId: AccountId,
+            @Assisted addressBookAccount: Account,
             provider: ContentProviderClient,
             groupMethod: GroupMethod
         ): LocalAddressBook
@@ -94,9 +96,9 @@ open class LocalAddressBook @AssistedInject constructor(
         get() = groupMethod == GroupMethod.GROUP_VCARDS
 
     override var dbCollectionId: Long?
-        get() = accountManager.getUserData(addressBookAccount, USER_DATA_COLLECTION_ID)?.toLongOrNull()
+        get() = addressBookAccountProperties.getCollectionId(addressBookAccount)
         set(id) {
-            accountManager.setAndVerifyUserData(addressBookAccount, USER_DATA_COLLECTION_ID, id.toString())
+            addressBookAccountProperties.setCollectionId(addressBookAccount, id)
         }
 
     override var readOnly: Boolean by ab::readOnly
@@ -187,7 +189,7 @@ open class LocalAddressBook @AssistedInject constructor(
      * interval account setting.
      */
     fun updateSyncFrameworkSettings() {
-        val accountSettings = accountSettingsFactory.create(account.toAccountId())
+        val accountSettings = accountSettingsFactory.create(accountId)
         val syncInterval = accountSettings.getSyncInterval(SyncDataType.CONTACTS)
 
         // Enable/Disable content triggered syncs for the address book account.
@@ -396,20 +398,6 @@ open class LocalAddressBook @AssistedInject constructor(
 
             batch.commit()
         }
-    }
-
-    companion object {
-
-        const val USER_DATA_ACCOUNT_NAME = "account_name"
-        const val USER_DATA_ACCOUNT_TYPE = "account_type"
-
-        /**
-         * ID of the corresponding database [at.bitfire.davdroid.db.Collection].
-         *
-         * User data of the address book account (Long).
-         */
-        const val USER_DATA_COLLECTION_ID = "collection_id"
-
     }
 
 }

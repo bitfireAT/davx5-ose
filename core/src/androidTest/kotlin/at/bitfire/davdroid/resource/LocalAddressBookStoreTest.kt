@@ -9,15 +9,18 @@ import android.accounts.AccountManager
 import android.content.ContentProviderClient
 import android.content.Context
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.accounts.LegacyAccount
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.sync.account.TestAccount
 import at.bitfire.davdroid.util.DavUtils.toUrl
 import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.mockk.every
+import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit4.MockKRule
 import io.mockk.mockk
@@ -46,6 +49,9 @@ class LocalAddressBookStoreTest {
 
     @RelaxedMockK
     lateinit var provider: ContentProviderClient
+
+    @BindValue @MockK(relaxed = true)
+    lateinit var addressBookAccountProperties: AddressBookAccountProperties
 
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
@@ -180,8 +186,8 @@ class LocalAddressBookStoreTest {
         val accountManager = AccountManager.get(context)
         mockkObject(accountManager)
         every { accountManager.getAccountsByType(any()) } returns arrayOf(addressBookAccount)
-        every { accountManager.getUserData(addressBookAccount, LocalAddressBook.USER_DATA_ACCOUNT_NAME) } returns "Another Unrelated Account"
-        every { accountManager.getUserData(addressBookAccount, LocalAddressBook.USER_DATA_ACCOUNT_TYPE) } returns account.type
+        val unrelatedAccount = Account("Another Unrelated Account", account.type)
+        every { addressBookAccountProperties.getAppAccount(addressBookAccount) } returns LegacyAccount(unrelatedAccount)
         val result = localAddressBookStore.getAll(account, provider)
         assertTrue(result.isEmpty())
     }
@@ -191,8 +197,7 @@ class LocalAddressBookStoreTest {
         val accountManager = AccountManager.get(context)
         mockkObject(accountManager)
         every { accountManager.getAccountsByType(any()) } returns arrayOf(addressBookAccount)
-        every { accountManager.getUserData(addressBookAccount, LocalAddressBook.USER_DATA_ACCOUNT_NAME) } returns account.name
-        every { accountManager.getUserData(addressBookAccount, LocalAddressBook.USER_DATA_ACCOUNT_TYPE) } returns account.type
+        every { addressBookAccountProperties.getAppAccount(addressBookAccount) } returns LegacyAccount(account)
         val result = localAddressBookStore.getAll(account, provider)
         assertEquals(1, result.size)
         assertEquals(addressBookAccount, result.first().addressBookAccount)

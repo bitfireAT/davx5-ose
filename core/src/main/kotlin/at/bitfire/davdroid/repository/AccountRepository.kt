@@ -217,12 +217,6 @@ class AccountRepository @Inject constructor(
             .map { account -> LegacyAccount(account) }
     }
 
-    @Deprecated("Only use this method when mapping LocalAddressBook accounts to app accounts")
-    fun getAllAccountNamesBlocking(): List<String> {
-        return accountManager.getAccountsByType(accountType)
-            .map { account -> account.name }
-    }
-
     fun getAllFlow() = callbackFlow<Set<AccountId>> {
         val listener = OnAccountsUpdateListener { accounts ->
             val accountIds = accounts

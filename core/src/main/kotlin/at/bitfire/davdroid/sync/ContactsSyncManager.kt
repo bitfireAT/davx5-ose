@@ -5,19 +5,8 @@
 package at.bitfire.davdroid.sync
 
 import android.content.ContentProviderClient
-import android.text.format.Formatter
 import at.bitfire.dav4jvm.ktor.DavAddressBook
 import at.bitfire.dav4jvm.ktor.MultiStatusItem
-import at.bitfire.dav4jvm.ktor.exception.DavException
-import at.bitfire.dav4jvm.ktor.responses
-import at.bitfire.dav4jvm.ktor.selfResponse
-import at.bitfire.dav4jvm.property.caldav.CalDAV
-import at.bitfire.dav4jvm.property.carddav.AddressData
-import at.bitfire.dav4jvm.property.carddav.CardDAV
-import at.bitfire.dav4jvm.property.carddav.MaxResourceSize
-import at.bitfire.dav4jvm.property.carddav.SupportedAddressData
-import at.bitfire.dav4jvm.property.webdav.GetETag
-import at.bitfire.dav4jvm.property.webdav.SupportedReportSet
 import at.bitfire.dav4jvm.property.webdav.WebDAV
 import at.bitfire.davdroid.ProductIds
 import at.bitfire.davdroid.R
@@ -30,9 +19,8 @@ import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalContact
 import at.bitfire.davdroid.resource.LocalGroup
 import at.bitfire.davdroid.resource.LocalResource
-import at.bitfire.davdroid.resource.SyncState
 import at.bitfire.davdroid.resource.remote.CardDavCollection
-import at.bitfire.davdroid.resource.syncState
+import at.bitfire.davdroid.resource.remote.WebDavCollection
 import at.bitfire.davdroid.resource.workaround.ContactDirtyVerifier
 import at.bitfire.davdroid.sync.groups.CategoriesStrategy
 import at.bitfire.davdroid.sync.groups.VCard4Strategy
@@ -50,7 +38,6 @@ import ezvcard.VCardVersion
 import ezvcard.io.CannotParseException
 import io.ktor.client.HttpClient
 import io.ktor.http.ContentType
-import io.ktor.http.Url
 import io.ktor.http.content.TextContent
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
@@ -149,7 +136,6 @@ class ContactsSyncManager @AssistedInject constructor(
         infix fun <T> Set<T>.disjunct(other: Set<T>) = (this - other) union (other - this)
     }
 
-    private var hasVCard4 = false
     private val groupStrategy = when (settings.groupMethod) {
         GroupMethod.GROUP_VCARDS -> VCard4Strategy(localCollection)
         GroupMethod.CATEGORIES -> CategoriesStrategy(localCollection)
@@ -167,42 +153,13 @@ class ContactsSyncManager @AssistedInject constructor(
         return true
     }
 
-    override suspend fun queryCapabilities(): SyncState? {
-        return collectionInfo.url.withExceptionContext {
-            val response = remoteCollection.davCollection.propfind(
-                0,
-                CardDAV.MaxResourceSize,
-                CardDAV.SupportedAddressData,
-                WebDAV.SupportedReportSet,
-                CalDAV.GetCTag,
-                WebDAV.SyncToken
-            ).selfResponse() ?: return@withExceptionContext null
-
-            response[MaxResourceSize::class.java]?.maxSize?.let { maxSize ->
-                logger.info("Address book accepts vCards up to ${Formatter.formatFileSize(context, maxSize)}")
-            }
-
-            response[SupportedAddressData::class.java]?.let { supported ->
-                hasVCard4 = supported.hasVCard4()
-            }
-            response[SupportedReportSet::class.java]?.let { supported ->
-                hasCollectionSync = supported.reports.contains(WebDAV.SyncCollection)
-            }
-
-            logger.info("Address book supports vCard4: $hasVCard4")
-            logger.info("Address book supports Collection Sync: $hasCollectionSync")
-
-            response.syncState()
-        }
-    }
-
-    override fun syncAlgorithm() =
-        if (hasCollectionSync)
+    override fun syncAlgorithm(capabilities: WebDavCollection.Capabilities) =
+        if (capabilities.canCollectionSync)
             SyncAlgorithm.COLLECTION_SYNC
         else
             SyncAlgorithm.PROPFIND_REPORT
 
-    override suspend fun uploadDirty(): Boolean {
+    override suspend fun uploadDirty(capabilities: WebDavCollection.Capabilities): Boolean {
         // local group housekeeping is needed regardless of whether we're actually uploading
         groupStrategy.resolveLocalGroupChanges()
 
@@ -211,10 +168,13 @@ class ContactsSyncManager @AssistedInject constructor(
             groupStrategy.beforeUploadDirty()
         }
 
-        return super.uploadDirty()
+        return super.uploadDirty(capabilities)
     }
 
-    override fun generateUpload(resource: LocalAddress): GeneratedResource {
+    override fun generateUpload(
+        resource: LocalAddress,
+        capabilities: WebDavCollection.Capabilities
+    ): GeneratedResource {
         val contact: Contact = when (resource) {
             is LocalContact -> resource.androidContact.getContact()
             is LocalGroup -> resource.androidGroup.getContact()
@@ -235,7 +195,7 @@ class ContactsSyncManager @AssistedInject constructor(
         val mimeType: ContentType
         val vCardVersion: VCardVersion
         when {
-            hasVCard4 -> {
+            capabilities.supportsVCard4 -> {
                 mimeType = DavAddressBook.MIME_VCARD4
                 vCardVersion = VCardVersion.V4_0
             }
@@ -258,55 +218,23 @@ class ContactsSyncManager @AssistedInject constructor(
         }
     }
 
-    override suspend fun downloadRemote(bunch: List<Url>) {
-        logger.info("Downloading ${bunch.size} vCard(s): $bunch")
-        collectionInfo.url.withExceptionContext {
-            val contentType: String?
-            val version: String?
-            when {
-                hasVCard4 -> {
-                    contentType = DavUtils.MEDIA_TYPE_VCARD.toString()
-                    version = VCardVersion.V4_0.version
-                }
-                else -> {
-                    contentType = DavUtils.MEDIA_TYPE_VCARD.toString()
-                    version = null     // 3.0 is the default version; don't request 3.0 explicitly because maybe some vCard3-only servers don't understand it
-                }
-            }
-            remoteCollection.davCollection.multiget(bunch, contentType, version).responses().collect { response ->
-                // See CalendarSyncManager for more information about the multi-get response
-                response.href.withExceptionContext wrapResource@{
-                    if (!response.isSuccess()) {
-                        logger.warning("Ignoring non-successful multi-get response for ${response.href}")
-                        return@wrapResource
+    override suspend fun processDownload(result: WebDavCollection.MultiGetItem) {
+        result.url.withExceptionContext {
+            processCard(
+                fileName = result.url.lastSegment,
+                eTag = result.eTag,
+                reader = StringReader(result.content),
+                downloader = object : Contact.Downloader {
+                    override suspend fun download(url: String, accepts: String): ByteArray? {
+                        // retrieve external resource (like a photo) from a URL (not necessarily HTTP[S])
+                        val retriever = resourceRetrieverFactory.create(
+                            accountId,
+                            remoteCollection.davCollection.location.host
+                        )
+                        return retriever.retrieve(url)
                     }
-
-                    val card = response[AddressData::class.java]?.card
-                    if (card == null) {
-                        logger.warning("Ignoring multi-get response without address-data")
-                        return@wrapResource
-                    }
-
-                    val eTag = response[GetETag::class.java]?.eTag
-                        ?: throw DavException("Received multi-get response without ETag")
-
-                    processCard(
-                        fileName = response.href.lastSegment,
-                        eTag = eTag,
-                        reader = StringReader(card),
-                        downloader = object : Contact.Downloader {
-                            override suspend fun download(url: String, accepts: String): ByteArray? {
-                                // retrieve external resource (like a photo) from a URL (not necessarily HTTP[S])
-                                val retriever = resourceRetrieverFactory.create(
-                                    accountId,
-                                    remoteCollection.davCollection.location.host
-                                )
-                                return retriever.retrieve(url)
-                            }
-                        }
-                    )
                 }
-            }
+            )
         }
     }
 
