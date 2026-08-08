@@ -68,7 +68,7 @@ class FlowUtilsTest {
     }
 
     @Test
-    fun `batchMap() with batch size 1 downloads each url separately`() = runTest {
+    fun `batchMap() with batch size 1 downloads each item separately`() = runTest {
         val batches = mutableListOf<List<Int>>()
 
         val result = flowOf(1)
