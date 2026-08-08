@@ -39,6 +39,7 @@ import at.bitfire.davdroid.resource.SyncState
 import at.bitfire.davdroid.resource.remote.WebDavCollection
 import at.bitfire.davdroid.resource.remote.member
 import at.bitfire.davdroid.sync.account.InvalidAccountException
+import at.bitfire.davdroid.util.batchMap
 import at.bitfire.synctools.storage.LocalStorageException
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.ktor.client.HttpClient
@@ -530,7 +531,7 @@ abstract class SyncManager<LocalType : LocalResource>(
                         response[ResourceType::class.java]?.types?.contains(WebDAV.Collection) != true
             }
             .mapNotNull { (response, _) -> processMember(response) }
-            .downloadBatch { batch -> downloadMembers(batch, capabilities) }
+            .batchMap(MULTIGET_BATCH_SIZE) { batch -> downloadMembers(batch, capabilities) }
             .collect { result -> processDownload(result) }
     }
 
@@ -837,5 +838,10 @@ abstract class SyncManager<LocalType : LocalResource>(
         )
 
     protected abstract fun notifyInvalidResourceTitle(): String
+
+
+    companion object {
+        const val MULTIGET_BATCH_SIZE = 10
+    }
 
 }
