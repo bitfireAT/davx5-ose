@@ -11,9 +11,9 @@ import at.bitfire.dav4jvm.ktor.PreemptiveBasicDigestAuthProvider
 import at.bitfire.dav4jvm.ktor.UrlUtils
 import at.bitfire.davdroid.ProductIds
 import at.bitfire.davdroid.accounts.AccountId
-import at.bitfire.davdroid.accounts.toAndroidAccount
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.settings.AccountSettingsFactory
 import at.bitfire.davdroid.settings.Credentials
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
@@ -59,7 +59,7 @@ import javax.inject.Inject
  */
 class HttpClientBuilder private constructor(
     // below are coming from Hilt
-    private val accountSettingsFactory: AccountSettings.Factory,
+    private val accountSettingsFactory: AccountSettingsFactory,
     private val connectionSecurityManager: ConnectionSecurityManager,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val oAuthProviderFactory: OAuthProvider.Factory,
@@ -72,7 +72,7 @@ class HttpClientBuilder private constructor(
     // public constructor, delegating to private constructor with empty Config()
     @Inject
     constructor(
-        accountSettingsFactory: AccountSettings.Factory,
+        accountSettingsFactory: AccountSettingsFactory,
         connectionSecurityManager: ConnectionSecurityManager,
         defaultLogger: Logger,
         @IoDispatcher ioDispatcher: CoroutineDispatcher,
@@ -239,7 +239,7 @@ class HttpClientBuilder private constructor(
      */
     @WorkerThread
     fun fromAccount(accountId: AccountId, authDomain: String? = null): HttpClientBuilder {
-        val accountSettings = accountSettingsFactory.create(accountId.toAndroidAccount())
+        val accountSettings = accountSettingsFactory.create(accountId)
         return authenticate(
             domain = UrlUtils.hostToDomain(authDomain),
             getCredentials = {

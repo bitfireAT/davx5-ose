@@ -3,121 +3,61 @@
  */
 package at.bitfire.davdroid.settings
 
-import android.accounts.Account
 import android.accounts.AccountManager
-import android.content.Context
-import android.os.Looper
 import androidx.annotation.WorkerThread
-import at.bitfire.davdroid.R
-import at.bitfire.davdroid.accounts.toAccountId
+import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.settings.AccountSettings.Companion.CREDENTIALS_LOCK
 import at.bitfire.davdroid.settings.AccountSettings.Companion.CREDENTIALS_LOCK_AT_LOGIN_AND_SETTINGS
 import at.bitfire.davdroid.settings.migration.AccountSettingsMigration
 import at.bitfire.davdroid.sync.AutomaticSyncManager
 import at.bitfire.davdroid.sync.SyncDataType
-import at.bitfire.davdroid.sync.account.InvalidAccountException
-import at.bitfire.synctools.util.SensitiveString.Companion.toSensitiveString
-import at.bitfire.synctools.util.setAndVerifyUserData
 import at.bitfire.synctools.util.trimToNull
 import at.bitfire.synctools.vcard.GroupMethod
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import dagger.hilt.android.qualifiers.ApplicationContext
 import net.openid.appauth.AuthState
-import java.util.Collections
-import java.util.logging.Level
-import java.util.logging.Logger
-import javax.inject.Provider
 
 /**
  * Manages settings of an account.
- *
- * **Must not be called from main thread as it uses blocking I/O and may run migrations.**
- *
- * @param account                   account to take settings from
- * @param abortOnMissingMigration   whether to throw an [IllegalArgumentException] when migrations are missing (useful for testing)
- *
- * @throws InvalidAccountException   on construction when the account doesn't exist (anymore)
- * @throws IllegalArgumentException  when the account is not a DAVx5 account or migrations are missing and [abortOnMissingMigration] is set
+ * @param accountId                 account to take settings from
  */
 @WorkerThread   
 class AccountSettings @AssistedInject constructor(
-    @Assisted val account: Account,
-    @Assisted val abortOnMissingMigration: Boolean,
+    @Assisted val accountId: AccountId,
+    @Assisted private val store: AccountSettingsStore,
     private val automaticSyncManager: AutomaticSyncManager,
-    @ApplicationContext private val context: Context,
-    private val logger: Logger,
-    private val migrations: Map<Int, @JvmSuppressWildcards Provider<AccountSettingsMigration>>,
     private val settingsManager: SettingsManager
 ) {
 
     @AssistedFactory
     interface Factory {
-        /**
-         * **Must not be called on main thread. Throws exceptions!** See [AccountSettings] for details.
-         */
         @WorkerThread
-        fun create(account: Account, abortOnMissingMigration: Boolean = false): AccountSettings
+        fun create(account: AccountId, store: AccountSettingsStore): AccountSettings
     }
 
-    init {
-        if (Looper.getMainLooper() == Looper.myLooper())
-            throw IllegalThreadStateException("AccountSettings may not be used on main thread")
-    }
-
-    val accountManager: AccountManager = AccountManager.get(context)
-    init {
-        if (account.type != context.getString(R.string.account_type))
-            throw IllegalArgumentException("Invalid account type for AccountSettings(): ${account.type}")
-
-        // synchronize because account migration must only be run one time
-        synchronized(currentlyUpdating) {
-            if (currentlyUpdating.contains(account))
-                logger.warning("AccountSettings created during migration of $account – not running update()")
-            else {
-                val versionStr = accountManager.getUserData(account, KEY_SETTINGS_VERSION) ?: throw InvalidAccountException(account)
-                var version = 0
-                try {
-                    version = Integer.parseInt(versionStr)
-                } catch (e: NumberFormatException) {
-                    logger.log(Level.SEVERE, "Invalid account version: $versionStr", e)
-                }
-                logger.fine("Account ${account.name} has version $version, current version: $CURRENT_VERSION")
-
-                if (version < CURRENT_VERSION) {
-                    currentlyUpdating += account
-                    try {
-                        update(version, abortOnMissingMigration)
-                    } finally {
-                        currentlyUpdating -= account
-                    }
-                }
-            }
-        }
-    }
 
 
     // authentication settings
 
     fun credentials() = Credentials(
-        accountManager.getUserData(account, KEY_USERNAME),
-        accountManager.getPassword(account)?.toSensitiveString(),
+        store.getValue(KEY_USERNAME),
+        store.getSensitiveValue(KEY_PASSWORD),
 
-        accountManager.getUserData(account, KEY_CERTIFICATE_ALIAS),
+        store.getValue(KEY_CERTIFICATE_ALIAS),
 
-        accountManager.getUserData(account, KEY_AUTH_STATE)?.let { json ->
+        store.getValue(KEY_AUTH_STATE)?.let { json ->
             AuthState.jsonDeserialize(json)
         }
     )
 
     fun credentials(credentials: Credentials) {
         // Basic/Digest auth
-        accountManager.setAndVerifyUserData(account, KEY_USERNAME, credentials.username)
-        accountManager.setPassword(account, credentials.password?.asString())
+        store.putValue(KEY_USERNAME, credentials.username)
+        store.putSensitiveValue(KEY_PASSWORD, credentials.password)
 
         // client certificate
-        accountManager.setAndVerifyUserData(account, KEY_CERTIFICATE_ALIAS, credentials.certificateAlias)
+        store.putValue(KEY_CERTIFICATE_ALIAS, credentials.certificateAlias)
 
         // OAuth
         credentials.authState?.let { authState ->
@@ -126,7 +66,7 @@ class AccountSettings @AssistedInject constructor(
     }
 
     fun updateAuthState(authState: AuthState) {
-        accountManager.setAndVerifyUserData(account, KEY_AUTH_STATE, authState.jsonSerializeString())
+        store.putValue(KEY_AUTH_STATE, authState.jsonSerializeString())
     }
 
     /**
@@ -153,7 +93,7 @@ class AccountSettings @AssistedInject constructor(
             SyncDataType.EVENTS -> KEY_SYNC_INTERVAL_CALENDARS
             SyncDataType.TASKS -> KEY_SYNC_INTERVAL_TASKS
         }
-        val seconds = accountManager.getUserData(account, key)?.toLong()
+        val seconds = store.getValue(key)?.toLong()
         return when (seconds) {
             null -> settingsManager.getLongOrNull(Settings.DEFAULT_SYNC_INTERVAL)   // no setting → default value
             SYNC_INTERVAL_MANUALLY -> null      // manual sync
@@ -174,20 +114,20 @@ class AccountSettings @AssistedInject constructor(
             SyncDataType.TASKS -> KEY_SYNC_INTERVAL_TASKS
         }
         val newValue = seconds ?: SYNC_INTERVAL_MANUALLY
-        accountManager.setAndVerifyUserData(account, key, newValue.toString())
+        store.putValue(key, newValue.toString())
 
-        automaticSyncManager.updateAutomaticSync(account.toAccountId(), dataType)
+        automaticSyncManager.updateAutomaticSync(accountId, dataType)
     }
 
     fun getSyncWifiOnly() =
         if (settingsManager.containsKey(KEY_WIFI_ONLY))
             settingsManager.getBoolean(KEY_WIFI_ONLY)
         else
-            accountManager.getUserData(account, KEY_WIFI_ONLY) != null
+            store.getValue(KEY_WIFI_ONLY) != null
 
     fun setSyncWiFiOnly(wiFiOnly: Boolean) {
-        accountManager.setAndVerifyUserData(account, KEY_WIFI_ONLY, if (wiFiOnly) "1" else null)
-        automaticSyncManager.updateAutomaticSync(account.toAccountId())
+        store.putValue(KEY_WIFI_ONLY, if (wiFiOnly) "1" else null)
+        automaticSyncManager.updateAutomaticSync(accountId)
     }
 
     fun getSyncWifiOnlySSIDs(): List<String>? =
@@ -195,28 +135,28 @@ class AccountSettings @AssistedInject constructor(
             val strSsids = if (settingsManager.containsKey(KEY_WIFI_ONLY_SSIDS))
                 settingsManager.getString(KEY_WIFI_ONLY_SSIDS)
             else
-                accountManager.getUserData(account, KEY_WIFI_ONLY_SSIDS)
+                store.getValue(KEY_WIFI_ONLY_SSIDS)
             strSsids?.split(',')
         } else
             null
     fun setSyncWifiOnlySSIDs(ssids: List<String>?) =
-        accountManager.setAndVerifyUserData(account, KEY_WIFI_ONLY_SSIDS, ssids?.joinToString(",").trimToNull())
+        store.putValue(KEY_WIFI_ONLY_SSIDS, ssids?.joinToString(",").trimToNull())
 
     fun getIgnoreVpns(): Boolean =
-        when (accountManager.getUserData(account, KEY_IGNORE_VPNS)) {
+        when (store.getValue(KEY_IGNORE_VPNS)) {
             null -> settingsManager.getBoolean(KEY_IGNORE_VPNS)
             "0" -> false
             else -> true
         }
 
     fun setIgnoreVpns(ignoreVpns: Boolean) =
-        accountManager.setAndVerifyUserData(account, KEY_IGNORE_VPNS, if (ignoreVpns) "1" else "0")
+        store.putValue(KEY_IGNORE_VPNS, if (ignoreVpns) "1" else "0")
 
 
     // CalDAV settings
 
     fun getTimeRangePastDays(): Int? {
-        val strDays = accountManager.getUserData(account, KEY_TIME_RANGE_PAST_DAYS)
+        val strDays = store.getValue(KEY_TIME_RANGE_PAST_DAYS)
         return if (strDays != null) {
             val days = strDays.toInt()
             if (days < 0)
@@ -228,7 +168,7 @@ class AccountSettings @AssistedInject constructor(
     }
 
     fun setTimeRangePastDays(days: Int?) =
-        accountManager.setAndVerifyUserData(account, KEY_TIME_RANGE_PAST_DAYS, (days ?: -1).toString())
+        store.putValue(KEY_TIME_RANGE_PAST_DAYS, (days ?: -1).toString())
 
     /**
      * Takes the default alarm setting (in this order) from
@@ -240,7 +180,7 @@ class AccountSettings @AssistedInject constructor(
      * non-full-day event without reminder. *null*: No default reminders shall be created.
      */
     fun getDefaultAlarm() =
-        accountManager.getUserData(account, KEY_DEFAULT_ALARM)?.toInt() ?:
+        store.getValue(KEY_DEFAULT_ALARM)?.toInt() ?:
         settingsManager.getIntOrNull(KEY_DEFAULT_ALARM)?.takeIf { it != -1 }
 
     /**
@@ -253,7 +193,7 @@ class AccountSettings @AssistedInject constructor(
      * start of every non-full-day event without reminder. *null*: No default reminders shall be created.
      */
     fun setDefaultAlarm(minBefore: Int?) =
-        accountManager.setAndVerifyUserData(account, KEY_DEFAULT_ALARM,
+        store.putValue(KEY_DEFAULT_ALARM,
                 if (minBefore == settingsManager.getIntOrNull(KEY_DEFAULT_ALARM)?.takeIf { it != -1 })
                     null
                 else
@@ -263,23 +203,23 @@ class AccountSettings @AssistedInject constructor(
         if (settingsManager.containsKey(KEY_MANAGE_CALENDAR_COLORS))
             settingsManager.getBoolean(KEY_MANAGE_CALENDAR_COLORS)
         else
-            accountManager.getUserData(account, KEY_MANAGE_CALENDAR_COLORS) == null
+            store.getValue(KEY_MANAGE_CALENDAR_COLORS) == null
     fun setManageCalendarColors(manage: Boolean) =
-            accountManager.setAndVerifyUserData(account, KEY_MANAGE_CALENDAR_COLORS, if (manage) null else "0")
+            store.putValue(KEY_MANAGE_CALENDAR_COLORS, if (manage) null else "0")
 
     fun getEventColors() =
         if (settingsManager.containsKey(KEY_EVENT_COLORS))
             settingsManager.getBoolean(KEY_EVENT_COLORS)
         else
-            accountManager.getUserData(account, KEY_EVENT_COLORS) != null
+            store.getValue(KEY_EVENT_COLORS) != null
     fun setEventColors(useColors: Boolean) =
-            accountManager.setAndVerifyUserData(account, KEY_EVENT_COLORS, if (useColors) "1" else null)
+            store.putValue(KEY_EVENT_COLORS, if (useColors) "1" else null)
 
     // CardDAV settings
 
     fun getGroupMethod(): GroupMethod {
         val name = settingsManager.getString(KEY_CONTACT_GROUP_METHOD) ?:
-                accountManager.getUserData(account, KEY_CONTACT_GROUP_METHOD)
+                store.getValue(KEY_CONTACT_GROUP_METHOD)
         if (name != null)
             try {
                 return GroupMethod.valueOf(name)
@@ -290,7 +230,7 @@ class AccountSettings @AssistedInject constructor(
     }
 
     fun setGroupMethod(method: GroupMethod) {
-        accountManager.setAndVerifyUserData(account, KEY_CONTACT_GROUP_METHOD, method.name)
+        store.putValue(KEY_CONTACT_GROUP_METHOD, method.name)
     }
 
 
@@ -304,7 +244,7 @@ class AccountSettings @AssistedInject constructor(
     fun getShowOnlyPersonal(): Boolean = when (settingsManager.getIntOrNull(KEY_SHOW_ONLY_PERSONAL)) {
         0 -> false
         1 -> true
-        else /* including -1 */ -> accountManager.getUserData(account, KEY_SHOW_ONLY_PERSONAL) != null
+        else /* including -1 */ -> store.getValue(KEY_SHOW_ONLY_PERSONAL) != null
     }
 
     /**
@@ -318,33 +258,7 @@ class AccountSettings @AssistedInject constructor(
     }
 
     fun setShowOnlyPersonal(showOnlyPersonal: Boolean) {
-        accountManager.setAndVerifyUserData(account, KEY_SHOW_ONLY_PERSONAL, if (showOnlyPersonal) "1" else null)
-    }
-
-
-    // update from previous account settings
-
-    private fun update(baseVersion: Int, abortOnMissingMigration: Boolean) {
-        for (toVersion in baseVersion+1 ..CURRENT_VERSION) {
-            val fromVersion = toVersion - 1
-            logger.info("Updating account ${account.name} settings version $fromVersion → $toVersion")
-
-            val migration = migrations[toVersion]
-            if (migration == null) {
-                logger.severe("No AccountSettings migration $fromVersion → $toVersion")
-                if (abortOnMissingMigration)
-                    throw IllegalArgumentException("Missing AccountSettings migration $fromVersion → $toVersion")
-            } else {
-                try {
-                    migration.get().migrate(account)
-
-                    logger.info("Account settings version update to $toVersion successful")
-                    accountManager.setAndVerifyUserData(account, KEY_SETTINGS_VERSION, toVersion.toString())
-                } catch (e: Exception) {
-                    logger.log(Level.SEVERE, "Couldn't run AccountSettings migration $fromVersion → $toVersion", e)
-                }
-            }
-        }
+        store.putValue(KEY_SHOW_ONLY_PERSONAL, if (showOnlyPersonal) "1" else null)
     }
 
 
@@ -365,6 +279,7 @@ class AccountSettings @AssistedInject constructor(
         const val KEY_SYNC_INTERVAL_TASKS = "sync_interval_tasks"
 
         const val KEY_USERNAME = "user_name"
+        const val KEY_PASSWORD = "password"
         const val KEY_CERTIFICATE_ALIAS = "certificate_alias"
 
         const val CREDENTIALS_LOCK = "login_credentials_lock"
@@ -419,9 +334,6 @@ class AccountSettings @AssistedInject constructor(
         const val KEY_SHOW_ONLY_PERSONAL = "show_only_personal"
 
         internal const val SYNC_INTERVAL_MANUALLY = -1L
-
-        /** Static property to remember which AccountSettings updates/migrations are currently running */
-        private val currentlyUpdating = Collections.synchronizedSet(mutableSetOf<Account>())
 
         /**
          * Returns the initial user data (as in [AccountManager.setUserData]) for creating a new account.

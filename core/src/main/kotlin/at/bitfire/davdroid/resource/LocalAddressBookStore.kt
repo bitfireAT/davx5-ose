@@ -21,7 +21,7 @@ import at.bitfire.davdroid.accounts.toAndroidAccount
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
-import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.settings.AccountSettingsFactory
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.util.DavUtils.lastSegment
@@ -36,7 +36,7 @@ import javax.inject.Inject
 
 class LocalAddressBookStore @Inject constructor(
     private val accountRepository: AccountRepository,
-    private val accountSettingsFactory: AccountSettings.Factory,
+    private val accountSettingsFactory: AccountSettingsFactory,
     private val addressBookAccountProperties: AddressBookAccountProperties,
     @ApplicationContext private val context: Context,
     private val localAddressBookFactory: LocalAddressBook.Factory,
@@ -106,7 +106,7 @@ class LocalAddressBookStore @Inject constructor(
             id = fromCollection.id
         ) ?: return null
 
-        val accountSettings = accountSettingsFactory.create(accountId.toAndroidAccount())
+        val accountSettings = accountSettingsFactory.create(accountId)
         val addressBook = localAddressBookFactory.create(
             accountId = accountId,
             addressBookAccount = addressBookAccount,
@@ -138,7 +138,7 @@ class LocalAddressBookStore @Inject constructor(
     }
 
     override fun getAll(account: Account, client: ContentProviderClient): List<LocalAddressBook> {
-        val accountSettings = accountSettingsFactory.create(account)
+        val accountSettings = accountSettingsFactory.create(account.toAccountId())
         val groupMethod = accountSettings.getGroupMethod()
         val accountId = account.toAccountId()
         return getAddressBookAccounts(accountId).map { addressBookAccount ->

@@ -8,7 +8,7 @@ import android.accounts.Account
 import android.content.Context
 import androidx.work.WorkManager
 import at.bitfire.davdroid.accounts.toAccountId
-import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.settings.AccountSettingsFactory
 import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
 import dagger.Binds
@@ -27,7 +27,7 @@ import javax.inject.Inject
  * name and no new workers were enqueued). Here we enqueue all periodic sync workers again with the correct class name.
  */
 class AccountSettingsMigration16 @Inject constructor(
-    private val accountSettingsFactory: AccountSettings.Factory,
+    private val accountSettingsFactory: AccountSettingsFactory,
     @ApplicationContext private val context: Context,
     private val logger: Logger,
     private val syncWorkerManager: SyncWorkerManager
@@ -46,7 +46,7 @@ class AccountSettingsMigration16 @Inject constructor(
             val pruneOp = WorkManager.getInstance(context).pruneWork()
             pruneOp.result.get()    // block until worker with old name is removed from DB
 
-            val accountSettings = accountSettingsFactory.create(account)
+            val accountSettings = accountSettingsFactory.create(account.toAccountId())
             val interval = accountSettings.getSyncInterval(dataType)
             if (interval != null) {
                 // There's a sync interval for this account/authority; a periodic sync worker should be there, too.

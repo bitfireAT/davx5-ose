@@ -10,7 +10,6 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.net.wifi.WifiManager
 import androidx.core.content.getSystemService
-import at.bitfire.davdroid.accounts.toAccountId
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.ui.NotificationRegistry
 import at.bitfire.davdroid.ui.account.WifiPermissionsActivity
@@ -52,7 +51,7 @@ class SyncConditions @AssistedInject constructor(
             // check required permissions and location status
             if (!PermissionUtils.canAccessWifiSsid(context)) {
                 // not all permissions granted; show notification
-                val intent = WifiPermissionsActivity.createIntent(context, accountSettings.account.toAccountId())
+                val intent = WifiPermissionsActivity.createIntent(context, accountSettings.accountId)
                     .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 notificationRegistry.notifyPermissions(intent)
 

@@ -19,7 +19,7 @@ import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.accounts.LegacyAccount
 import at.bitfire.davdroid.accounts.toAndroidAccount
 import at.bitfire.davdroid.push.PushNotificationManager
-import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.settings.AccountSettingsFactory
 import at.bitfire.davdroid.sync.AddressBookSyncer
 import at.bitfire.davdroid.sync.CalendarSyncer
 import at.bitfire.davdroid.sync.JtxSyncer
@@ -51,7 +51,7 @@ abstract class BaseSyncWorker(
 ) : IoCoroutineWorker(context, workerParams) {
 
     @Inject
-    lateinit var accountSettingsFactory: AccountSettings.Factory
+    lateinit var accountSettingsFactory: AccountSettingsFactory
 
     @Inject
     lateinit var addressBookSyncer: AddressBookSyncer.Factory
@@ -101,7 +101,7 @@ abstract class BaseSyncWorker(
 
         try {
             val accountSettings = try {
-                accountSettingsFactory.create(accountId.toAndroidAccount())
+                accountSettingsFactory.create(accountId)
             } catch (_: InvalidAccountException) {
                 val workId = workerParams.id
                 logger.warning("No valid account settings for account $accountId, cancelling worker $workId")
