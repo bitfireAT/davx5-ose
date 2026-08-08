@@ -9,7 +9,6 @@ import at.bitfire.dav4jvm.ktor.Response
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
-import at.bitfire.davdroid.di.qualifier.SyncTransferSemaphore
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.resource.remote.WebDavCollection
 import at.bitfire.davdroid.util.DavUtils.lastSegment
@@ -22,7 +21,6 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.sync.Semaphore
 
 class TestSyncManager @AssistedInject constructor(
     @Assisted accountId: AccountId,
@@ -32,8 +30,7 @@ class TestSyncManager @AssistedInject constructor(
     @Assisted collectionInfo: Collection,
     @Assisted public override val remoteCollection: WebDavCollection,
     @Assisted settings: SyncSettings,
-    @IoDispatcher ioDispatcher: CoroutineDispatcher,
-    @SyncTransferSemaphore syncTransferSemaphore: Semaphore
+    @IoDispatcher ioDispatcher: CoroutineDispatcher
 ) : SyncManager<LocalTestResource>(
     accountId,
     httpClient,
@@ -42,7 +39,6 @@ class TestSyncManager @AssistedInject constructor(
     collectionInfo,
     resync = null,
     ioDispatcher,
-    syncTransferSemaphore,
     settings
 ) {
 

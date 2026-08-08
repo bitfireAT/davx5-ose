@@ -29,6 +29,7 @@ import at.bitfire.dav4jvm.property.webdav.WebDAV
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.db.Collection
+import at.bitfire.davdroid.di.qualifier.SyncMultigetSemaphore
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
@@ -85,7 +86,6 @@ abstract class SyncManager<LocalType : LocalResource>(
     val collectionInfo: Collection,
     val resync: ResyncType?,
     val ioDispatcher: CoroutineDispatcher,
-    val syncTransferSemaphore: Semaphore,
     val settings: SyncSettings
 ) {
 
@@ -116,6 +116,10 @@ abstract class SyncManager<LocalType : LocalResource>(
 
     @Inject
     lateinit var serviceRepository: DavServiceRepository
+
+    @Inject
+    @SyncMultigetSemaphore
+    lateinit var syncMultigetSemaphore: Semaphore
 
     @Inject
     lateinit var syncNotificationManagerFactory: SyncNotificationManager.Factory
@@ -520,8 +524,8 @@ abstract class SyncManager<LocalType : LocalResource>(
      * Calls a function to list remote resources. All resources from the returned
      * list are downloaded and processed.
      *
-     * Batches download concurrently, but local storage access ([processMember], [processDownload])
-     * stays sequential (no `launch`), since concurrent [LocalCollection] access isn't verified safe.
+     * Batches download concurrently, but local storage access stays sequential, since thread-safety
+     * of [LocalCollection] is not explicitly guaranteed.
      *
      * @param remoteItems   Multi-Status items to process
      * @param capabilities  current capabilities of the remote collection (passed on to [WebDavCollection.multiget])
@@ -597,14 +601,14 @@ abstract class SyncManager<LocalType : LocalResource>(
 
     /**
      * Downloads one batch of members via [WebDavCollection.multiget], bounded by
-     * [syncTransferSemaphore] and tagged with [collectionInfo]'s URL for error context.
+     * [syncMultigetSemaphore] and tagged with [collectionInfo]'s URL for error context.
      */
     private fun downloadMembers(
         batch: List<Url>,
         capabilities: WebDavCollection.Capabilities
     ): Flow<WebDavCollection.MultiGetItem> =
         flow {
-            syncTransferSemaphore.withPermit {
+            syncMultigetSemaphore.withPermit {
                 logger.info("Downloading ${batch.size} resources: $batch")
                 collectionInfo.url.withExceptionContext {
                     emitAll(remoteCollection.multiget(batch, capabilities))

@@ -11,7 +11,6 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
-import at.bitfire.davdroid.di.qualifier.SyncTransferSemaphore
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.resource.LocalTask
 import at.bitfire.davdroid.resource.LocalTaskList
@@ -36,7 +35,6 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.sync.Semaphore
 import net.fortuna.ical4j.model.Component
 import net.fortuna.ical4j.model.component.VToDo
 import net.fortuna.ical4j.model.property.ProdId
@@ -58,8 +56,7 @@ class TasksSyncManager @AssistedInject constructor(
     @Assisted resync: ResyncType?,
     @Assisted settings: SyncSettings,
     @IoDispatcher ioDispatcher: CoroutineDispatcher,
-    private val productIds: ProductIds,
-    @SyncTransferSemaphore syncTransferSemaphore: Semaphore
+    private val productIds: ProductIds
 ) : SyncManager<LocalTask>(
     accountId,
     httpClient,
@@ -68,7 +65,6 @@ class TasksSyncManager @AssistedInject constructor(
     collectionInfo,
     resync,
     ioDispatcher,
-    syncTransferSemaphore,
     settings
 ) {
 

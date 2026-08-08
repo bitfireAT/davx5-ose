@@ -13,7 +13,6 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
-import at.bitfire.davdroid.di.qualifier.SyncTransferSemaphore
 import at.bitfire.davdroid.resource.LocalAddress
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalContact
@@ -43,7 +42,6 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.sync.Semaphore
 import java.io.Reader
 import java.io.StringReader
 import java.io.StringWriter
@@ -102,8 +100,7 @@ class ContactsSyncManager @AssistedInject constructor(
     val dirtyVerifier: Optional<ContactDirtyVerifier>,
     @IoDispatcher ioDispatcher: CoroutineDispatcher,
     private val productIds: ProductIds,
-    private val resourceRetrieverFactory: ResourceRetriever.Factory,
-    @SyncTransferSemaphore syncTransferSemaphore: Semaphore
+    private val resourceRetrieverFactory: ResourceRetriever.Factory
 ) : SyncManager<LocalAddress>(
     accountId,
     httpClient,
@@ -112,7 +109,6 @@ class ContactsSyncManager @AssistedInject constructor(
     collectionInfo,
     resync,
     ioDispatcher,
-    syncTransferSemaphore,
     settings
 ) {
 
