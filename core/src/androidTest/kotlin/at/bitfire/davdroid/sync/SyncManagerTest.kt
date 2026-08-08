@@ -7,10 +7,6 @@ package at.bitfire.davdroid.sync
 import android.content.Context
 import androidx.core.app.NotificationManagerCompat
 import androidx.hilt.work.HiltWorkerFactory
-import at.bitfire.dav4jvm.ktor.PropStat
-import at.bitfire.dav4jvm.ktor.Response
-import at.bitfire.dav4jvm.ktor.Response.HrefRelation
-import at.bitfire.dav4jvm.property.webdav.GetETag
 import at.bitfire.davdroid.MockEngineQueue
 import at.bitfire.davdroid.TestUtils
 import at.bitfire.davdroid.TestUtils.assertWithin
@@ -18,6 +14,7 @@ import at.bitfire.davdroid.accounts.LegacyAccount
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.repository.DavSyncStatsRepository
 import at.bitfire.davdroid.resource.SyncState
+import at.bitfire.davdroid.resource.remote.MemberState
 import at.bitfire.davdroid.resource.remote.TestWebDavCollection
 import at.bitfire.davdroid.resource.remote.WebDavCollection
 import at.bitfire.davdroid.settings.AccountSettings
@@ -37,6 +34,7 @@ import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit4.MockKRule
 import io.mockk.mockk
 import io.mockk.spyk
+import io.mockk.verify
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.After
@@ -154,8 +152,8 @@ class SyncManagerTest {
         syncManager.performSync()
 
         coVerify(exactly = 1) { syncManager.remoteCollection.queryCapabilities() }
+        verify(exactly = 1) { syncManager.remoteCollection.listFilteredMembers() }
         assertFalse(syncManager.didGenerateUpload)
-        assertTrue(syncManager.didListAllRemote)
         assertTrue(syncManager.processedDownloads.isEmpty())
         assertFalse(syncManager.syncResult.hasError)
         assertTrue(collection.entries.isEmpty())
@@ -178,25 +176,15 @@ class SyncManagerTest {
         enqueueQueryCapabilities("ctag2")
 
         val syncManager = syncManager(collection).apply {
-            listAllRemoteResult = listOf(
-                    Pair(Response(
-                            Url("$BASE_URL/"),
-                            Url("$BASE_URL/generated-file.txt"),
-                            null,
-                            listOf(PropStat(
-                                    listOf(
-                                            GetETag("\"etag-from-put\"")
-                                    ),
-                                    HttpStatusCode.OK
-                            ))
-                    ), HrefRelation.MEMBER)
+            (remoteCollection as TestWebDavCollection).listFilteredMembersResult = listOf(
+                MemberState(Url("$BASE_URL/generated-file.txt"), "etag-from-put")
             )
         }
         syncManager.performSync()
 
         coVerify(exactly = 1) { syncManager.remoteCollection.queryCapabilities() }
+        verify(exactly = 1) { syncManager.remoteCollection.listFilteredMembers() }
         assertTrue(syncManager.didGenerateUpload)
-        assertTrue(syncManager.didListAllRemote)
         assertTrue(syncManager.processedDownloads.isEmpty())
         assertFalse(syncManager.syncResult.hasError)
         assertEquals(1, collection.entries.size)
@@ -222,24 +210,14 @@ class SyncManagerTest {
         enqueueQueryCapabilities("ctag2")
 
         val syncManager = syncManager(collection).apply {
-            listAllRemoteResult = listOf(
-                    Pair(Response(
-                            Url("$BASE_URL/"),
-                            Url("$BASE_URL/existing-file.txt"),
-                            null,
-                            listOf(PropStat(
-                                    listOf(
-                                            GetETag("etag-from-put")
-                                    ),
-                                    HttpStatusCode.OK
-                            ))
-                    ), HrefRelation.MEMBER)
+            (remoteCollection as TestWebDavCollection).listFilteredMembersResult = listOf(
+                MemberState(Url("$BASE_URL/existing-file.txt"), "etag-from-put")
             )
         }
         syncManager.performSync()
 
+        verify(exactly = 1) { syncManager.remoteCollection.listFilteredMembers() }
         assertTrue(syncManager.didGenerateUpload)
-        assertTrue(syncManager.didListAllRemote)
         assertTrue(syncManager.processedDownloads.isEmpty())
         assertFalse(syncManager.syncResult.hasError)
         assertEquals(1, collection.entries.size)
@@ -265,18 +243,8 @@ class SyncManagerTest {
         enqueueQueryCapabilities("ctag2")
 
         val syncManager = syncManager(collection).apply {
-            listAllRemoteResult = listOf(
-                    Pair(Response(
-                            Url("$BASE_URL/"),
-                            Url("$BASE_URL/existing-file.txt"),
-                            null,
-                            listOf(PropStat(
-                                    listOf(
-                                            GetETag("etag-from-propfind")
-                                    ),
-                                    HttpStatusCode.OK
-                            ))
-                    ), HrefRelation.MEMBER)
+            (remoteCollection as TestWebDavCollection).listFilteredMembersResult = listOf(
+                MemberState(Url("$BASE_URL/existing-file.txt"), "etag-from-propfind")
             )
         }
         every { syncManager.remoteCollection.multiget(any(), any()) } returns flowOf(
@@ -284,8 +252,8 @@ class SyncManagerTest {
         )
         syncManager.performSync()
 
+        verify(exactly = 1) { syncManager.remoteCollection.listFilteredMembers() }
         assertTrue(syncManager.didGenerateUpload)
-        assertTrue(syncManager.didListAllRemote)
         assertEquals(
             listOf(
                 WebDavCollection.MultiGetItem(
@@ -320,18 +288,8 @@ class SyncManagerTest {
         enqueueQueryCapabilities("ctag1")
 
         val syncManager = syncManager(collection).apply {
-            listAllRemoteResult = listOf(
-                    Pair(Response(
-                            Url("$BASE_URL/"),
-                            Url("$BASE_URL/existing-file.txt"),
-                            null,
-                            listOf(PropStat(
-                                    listOf(
-                                            GetETag("changed-etag-from-server")
-                                    ),
-                                    HttpStatusCode.OK
-                            ))
-                    ), HrefRelation.MEMBER)
+            (remoteCollection as TestWebDavCollection).listFilteredMembersResult = listOf(
+                MemberState(Url("$BASE_URL/existing-file.txt"), "changed-etag-from-server")
             )
         }
         every { syncManager.remoteCollection.multiget(any(), any()) } returns flowOf(
@@ -343,8 +301,8 @@ class SyncManagerTest {
         )
         syncManager.performSync()
 
+        verify(exactly = 1) { syncManager.remoteCollection.listFilteredMembers() }
         assertTrue(syncManager.didGenerateUpload)
-        assertTrue(syncManager.didListAllRemote)
         assertEquals(
             listOf(
                 WebDavCollection.MultiGetItem(
@@ -372,25 +330,14 @@ class SyncManagerTest {
         enqueueQueryCapabilities("ctag2")
 
         val syncManager = syncManager(collection).apply {
-            listAllRemoteResult = listOf(
-                    Pair(Response(
-                            Url("$BASE_URL/"),
-                            Url("$BASE_URL/downloaded-member.txt"),
-                            null,
-                            listOf(PropStat(
-                                    listOf(
-                                            GetETag("\"MemberETag1\"")
-                                    ),
-                                    HttpStatusCode.OK
-                            ))
-                    ), HrefRelation.MEMBER)
+            (remoteCollection as TestWebDavCollection).listFilteredMembersResult = listOf(
+                MemberState(Url("$BASE_URL/downloaded-member.txt"), "MemberETag1")
             )
-
         }
         syncManager.performSync()
 
+        verify(exactly = 1) { syncManager.remoteCollection.listFilteredMembers() }
         assertFalse(syncManager.didGenerateUpload)
-        assertTrue(syncManager.didListAllRemote)
         assertTrue(syncManager.processedDownloads.isEmpty())
         assertFalse(syncManager.syncResult.hasError)
         assertEquals(1, collection.entries.size)
@@ -405,18 +352,8 @@ class SyncManagerTest {
         enqueueQueryCapabilities(cTag = "new-ctag")
 
         val syncManager = syncManager(collection).apply {
-            listAllRemoteResult = listOf(
-                    Pair(Response(
-                            Url("$BASE_URL/"),
-                            Url("$BASE_URL/new-member.txt"),
-                            null,
-                            listOf(PropStat(
-                                    listOf(
-                                            GetETag("\"NewMemberETag1\"")
-                                    ),
-                                    HttpStatusCode.OK
-                            ))
-                    ), HrefRelation.MEMBER)
+            (remoteCollection as TestWebDavCollection).listFilteredMembersResult = listOf(
+                MemberState(Url("$BASE_URL/new-member.txt"), "NewMemberETag1")
             )
         }
         every { syncManager.remoteCollection.multiget(any(), any()) } returns flowOf(
@@ -424,8 +361,8 @@ class SyncManagerTest {
         )
         syncManager.performSync()
 
+        verify(exactly = 1) { syncManager.remoteCollection.listFilteredMembers() }
         assertFalse(syncManager.didGenerateUpload)
-        assertTrue(syncManager.didListAllRemote)
         assertEquals(
             listOf(
                 WebDavCollection.MultiGetItem(
@@ -453,18 +390,8 @@ class SyncManagerTest {
         enqueueQueryCapabilities(cTag = "new-ctag")
 
         val syncManager = syncManager(collection).apply {
-            listAllRemoteResult = listOf(
-                    Pair(Response(
-                            Url("$BASE_URL/"),
-                            Url("$BASE_URL/downloaded-member.txt"),
-                            null,
-                            listOf(PropStat(
-                                    listOf(
-                                            GetETag("\"MemberETag2\"")
-                                    ),
-                                    HttpStatusCode.OK
-                            ))
-                    ), HrefRelation.MEMBER)
+            (remoteCollection as TestWebDavCollection).listFilteredMembersResult = listOf(
+                MemberState(Url("$BASE_URL/downloaded-member.txt"), "MemberETag2")
             )
         }
         every { syncManager.remoteCollection.multiget(any(), any()) } returns flowOf(
@@ -472,8 +399,8 @@ class SyncManagerTest {
         )
         syncManager.performSync()
 
+        verify(exactly = 1) { syncManager.remoteCollection.listFilteredMembers() }
         assertFalse(syncManager.didGenerateUpload)
-        assertTrue(syncManager.didListAllRemote)
         assertEquals(
             listOf(
                 WebDavCollection.MultiGetItem(
@@ -502,8 +429,8 @@ class SyncManagerTest {
         val syncManager = syncManager(collection)
         syncManager.performSync()
 
+        verify(exactly = 1) { syncManager.remoteCollection.listFilteredMembers() }
         assertFalse(syncManager.didGenerateUpload)
-        assertTrue(syncManager.didListAllRemote)
         assertTrue(syncManager.processedDownloads.isEmpty())
         assertFalse(syncManager.syncResult.hasError)
         assertTrue(collection.entries.isEmpty())
@@ -519,8 +446,8 @@ class SyncManagerTest {
         val syncManager = syncManager(collection)
         syncManager.performSync()
 
+        verify(exactly = 0) { syncManager.remoteCollection.listFilteredMembers() }
         assertFalse(syncManager.didGenerateUpload)
-        assertFalse(syncManager.didListAllRemote)
         assertTrue(syncManager.processedDownloads.isEmpty())
         assertFalse(syncManager.syncResult.hasError)
         assertTrue(collection.entries.isEmpty())

@@ -6,8 +6,6 @@ package at.bitfire.davdroid.sync
 
 import android.content.ContentProviderClient
 import at.bitfire.dav4jvm.ktor.DavAddressBook
-import at.bitfire.dav4jvm.ktor.MultiStatusItem
-import at.bitfire.dav4jvm.property.webdav.WebDAV
 import at.bitfire.davdroid.ProductIds
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
@@ -37,9 +35,6 @@ import ezvcard.io.CannotParseException
 import io.ktor.client.HttpClient
 import io.ktor.http.ContentType
 import io.ktor.http.content.TextContent
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emitAll
-import kotlinx.coroutines.flow.flow
 import java.io.Reader
 import java.io.StringReader
 import java.io.StringWriter
@@ -202,12 +197,6 @@ class ContactsSyncManager @AssistedInject constructor(
             suggestedFileName = DavUtils.fileNameFromUid(uid, "vcf"),
             content = TextContent(text = writer.toString(), contentType = mimeType)
         )
-    }
-
-    override fun listAllRemote(): Flow<MultiStatusItem> = flow {
-        collectionInfo.url.withExceptionContext {
-            emitAll(remoteCollection.davCollection.propfind(1, WebDAV.ResourceType, WebDAV.GetETag))
-        }
     }
 
     override suspend fun processDownload(result: WebDavCollection.MultiGetItem) {

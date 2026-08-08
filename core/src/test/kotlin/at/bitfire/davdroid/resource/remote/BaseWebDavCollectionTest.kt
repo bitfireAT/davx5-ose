@@ -5,7 +5,10 @@
 package at.bitfire.davdroid.resource.remote
 
 import at.bitfire.dav4jvm.ktor.DavCollection
+import at.bitfire.dav4jvm.property.webdav.WebDAV
 import at.bitfire.davdroid.resource.SyncState
+import at.bitfire.davdroid.sync.unwrapContext
+import at.bitfire.synctools.test.assertThrows
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
@@ -18,6 +21,7 @@ import io.ktor.http.Url
 import io.ktor.http.content.TextContent
 import io.ktor.http.headersOf
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -31,6 +35,8 @@ class BaseWebDavCollectionTest {
 
     private class TestCollection(httpClient: HttpClient, url: Url) : BaseWebDavCollection(httpClient, url) {
         override val davCollection = DavCollection(httpClient, url)
+        override fun listFilteredMembers() =
+            davCollection.propfind(1, WebDAV.ResourceType, WebDAV.GetETag).toMemberStates()
         override fun multiget(
             urls: List<Url>,
             capabilities: WebDavCollection.Capabilities
@@ -335,6 +341,108 @@ class BaseWebDavCollectionTest {
         ).querySyncState()
 
         assertEquals(SyncState(SyncState.Type.SYNC_TOKEN, "http://example.com/ns/sync/token123"), syncState)
+    }
+
+    @Test
+    fun `listFilteredMembers() maps member responses to MemberStates`() = runTest {
+        val members = collection(
+            "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
+                    "<multistatus xmlns=\"DAV:\">\n" +
+                    "  <response>\n" +
+                    "    <href>/dav/member1.ics</href>\n" +
+                    "    <propstat>\n" +
+                    "      <prop>\n" +
+                    "        <getetag>\"member-etag\"</getetag>\n" +
+                    "      </prop>\n" +
+                    "      <status>HTTP/1.1 200 OK</status>\n" +
+                    "    </propstat>\n" +
+                    "  </response>\n" +
+                    "</multistatus>"
+        ).listFilteredMembers().toList()
+
+        assertEquals(
+            listOf(MemberState(Url("https://example.com/dav/member1.ics"), "member-etag")),
+            members
+        )
+    }
+
+    @Test
+    fun `listFilteredMembers() ignores the collection's own response`() = runTest {
+        val members = collection(
+            "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
+                    "<multistatus xmlns=\"DAV:\">\n" +
+                    "  <response>\n" +
+                    "    <href>/dav/</href>\n" +
+                    "    <propstat>\n" +
+                    "      <prop>\n" +
+                    "        <getetag>\"collection-etag\"</getetag>\n" +
+                    "      </prop>\n" +
+                    "      <status>HTTP/1.1 200 OK</status>\n" +
+                    "    </propstat>\n" +
+                    "  </response>\n" +
+                    "</multistatus>"
+        ).listFilteredMembers().toList()
+
+        assertTrue(members.isEmpty())
+    }
+
+    @Test
+    fun `listFilteredMembers() ignores sub-collections`() = runTest {
+        val members = collection(
+            "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
+                    "<multistatus xmlns=\"DAV:\">\n" +
+                    "  <response>\n" +
+                    "    <href>/dav/sub-collection/</href>\n" +
+                    "    <propstat>\n" +
+                    "      <prop>\n" +
+                    "        <resourcetype><collection/></resourcetype>\n" +
+                    "        <getetag>\"sub-collection-etag\"</getetag>\n" +
+                    "      </prop>\n" +
+                    "      <status>HTTP/1.1 200 OK</status>\n" +
+                    "    </propstat>\n" +
+                    "  </response>\n" +
+                    "</multistatus>"
+        ).listFilteredMembers().toList()
+
+        assertTrue(members.isEmpty())
+    }
+
+    @Test
+    fun `listFilteredMembers() ignores non-successful responses`() = runTest {
+        val members = collection(
+            "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
+                    "<multistatus xmlns=\"DAV:\">\n" +
+                    "  <response>\n" +
+                    "    <href>/dav/removed-member.ics</href>\n" +
+                    "    <status>HTTP/1.1 404 Not Found</status>\n" +
+                    "  </response>\n" +
+                    "</multistatus>"
+        ).listFilteredMembers().toList()
+
+        assertTrue(members.isEmpty())
+    }
+
+    @Test
+    fun `listFilteredMembers() throws when a member response lacks an ETag`() = runTest {
+        val e = assertThrows<Throwable> {
+            collection(
+                "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
+                        "<multistatus xmlns=\"DAV:\">\n" +
+                        "  <response>\n" +
+                        "    <href>/dav/member1.ics</href>\n" +
+                        "    <propstat>\n" +
+                        "      <prop/>\n" +
+                        "      <status>HTTP/1.1 200 OK</status>\n" +
+                        "    </propstat>\n" +
+                        "  </response>\n" +
+                        "</multistatus>"
+            ).listFilteredMembers().toList()
+        }
+
+        assertEquals(
+            "Server didn't provide ETag for https://example.com/dav/member1.ics",
+            e.unwrapContext().cause.message
+        )
     }
 
 

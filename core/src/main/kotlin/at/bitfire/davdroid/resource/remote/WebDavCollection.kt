@@ -84,6 +84,21 @@ interface WebDavCollection {
     suspend fun querySyncState(): SyncState?
 
     /**
+     * Lists the filtered members (non-collection resources) of this collection with
+     * their current ETags. Implementations must only request one level (`Depth: 1` /
+     * sync-level 1) and, if collections may be returned, must request
+     * [at.bitfire.dav4jvm.property.webdav.WebDAV.ResourceType] so that they can be filtered out.
+     *
+     * If the collection supports a filter (like [CalDavCollection], which can filter by
+     * component and time range), this collection-wide filter is applied.
+     *
+     * @throws at.bitfire.dav4jvm.ktor.exception.DavException on WebDAV errors, for instance
+     *   when a member is listed without ETag
+     * @throws at.bitfire.dav4jvm.ktor.exception.HttpException on other HTTP errors
+     */
+    fun listFilteredMembers(): Flow<MemberState>
+
+    /**
      * Downloads a batch of members via multi-get (CalDAV/CardDAV report). Only successful
      * responses that contain the expected resource data are emitted.
      *

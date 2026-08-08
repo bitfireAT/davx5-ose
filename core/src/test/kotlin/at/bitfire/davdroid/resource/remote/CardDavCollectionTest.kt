@@ -69,6 +69,46 @@ class CardDavCollectionTest {
     }
 
     @Test
+    fun `listFilteredMembers() sends a Depth 1 PROPFIND`() = runTest {
+        val engine = minimalMultiStatus()
+        CardDavCollection(HttpClient(engine), url).listFilteredMembers().toList()
+
+        val request = engine.requestHistory.last()
+        assertEquals("1", request.headers[HttpHeaders.Depth])
+    }
+
+    @Test
+    fun `listFilteredMembers() maps member responses to MemberStates`() = runTest {
+        val engine = MockEngine { _ ->
+            respond(
+                """
+                <?xml version="1.0" encoding="utf-8"?>
+                <multistatus xmlns="DAV:">
+                  <response>
+                    <href>/dav/contacts/contact1.vcf</href>
+                    <propstat>
+                      <prop>
+                        <getetag>"contact-etag"</getetag>
+                      </prop>
+                      <status>HTTP/1.1 200 OK</status>
+                    </propstat>
+                  </response>
+                </multistatus>
+                """.trimIndent(),
+                HttpStatusCode.MultiStatus,
+                headersOf(HttpHeaders.ContentType, "text/xml")
+            )
+        }
+
+        val members = CardDavCollection(HttpClient(engine), url).listFilteredMembers().toList()
+
+        assertEquals(
+            listOf(MemberState(Url("https://example.com/dav/contacts/contact1.vcf"), "contact-etag")),
+            members
+        )
+    }
+
+    @Test
     fun `multiget() with supportsVCard4 requests vCard 4`() = runTest {
         val engine = minimalMultiStatus()
         CardDavCollection(HttpClient(engine), url).multiget(
