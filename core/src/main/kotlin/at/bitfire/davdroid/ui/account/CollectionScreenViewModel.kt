@@ -16,6 +16,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import at.bitfire.davdroid.accounts.toAccountId
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.di.qualifier.ApplicationScope
@@ -281,7 +282,7 @@ class CollectionScreenViewModel @AssistedInject constructor(
         }
 
         fun queryAndSend() {
-            val count = localDataStore.getByDbCollectionId(account, client, collectionId)?.let { store ->
+            val count = localDataStore.getByDbCollectionId(account.toAccountId(), client, collectionId)?.let { store ->
                 LocalItemsCount(
                     contentProviderName = getProviderAppName(localDataStore.authority),
                     total = store.countAll(),

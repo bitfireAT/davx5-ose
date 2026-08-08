@@ -216,14 +216,14 @@ class SyncerTest {
         }
 
         override fun getAll(
-            account: Account,
+            accountId: AccountId,
             client: ContentProviderClient
         ): List<LocalTestCollection> {
             throw NotImplementedError()
         }
 
         override fun getByDbCollectionId(
-            account: Account,
+            accountId: AccountId,
             client: ContentProviderClient,
             dbCollectionId: Long
         ): LocalTestCollection? {

@@ -137,17 +137,21 @@ class LocalAddressBookStore @Inject constructor(
         return addressBookAccount
     }
 
-    override fun getAll(account: Account, client: ContentProviderClient): List<LocalAddressBook> {
-        val accountSettings = accountSettingsFactory.create(account)
+    override fun getAll(accountId: AccountId, client: ContentProviderClient): List<LocalAddressBook> {
+        val accountSettings = accountSettingsFactory.create(accountId.toAndroidAccount())
         val groupMethod = accountSettings.getGroupMethod()
-        val accountId = account.toAccountId()
         return getAddressBookAccounts(accountId).map { addressBookAccount ->
             localAddressBookFactory.create(accountId, addressBookAccount, client, groupMethod)
         }
     }
 
-    override fun getByDbCollectionId(account: Account, client: ContentProviderClient, dbCollectionId: Long): LocalAddressBook? =
-        getAll(account, client).firstOrNull { it.dbCollectionId == dbCollectionId }
+    override fun getByDbCollectionId(
+        accountId: AccountId,
+        client: ContentProviderClient,
+        dbCollectionId: Long
+    ): LocalAddressBook? {
+        return getAll(accountId, client).firstOrNull { it.dbCollectionId == dbCollectionId }
+    }
 
     override fun update(client: ContentProviderClient, localCollection: LocalAddressBook, fromCollection: Collection) {
         var currentAccount = localCollection.addressBookAccount
