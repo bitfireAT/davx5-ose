@@ -37,7 +37,7 @@ import at.bitfire.davdroid.repository.DavSyncStatsRepository
 import at.bitfire.davdroid.resource.LocalCollection
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.resource.SyncState
-import at.bitfire.davdroid.resource.remote.MemberState
+import at.bitfire.davdroid.resource.remote.InternalMemberState
 import at.bitfire.davdroid.resource.remote.WebDavCollection
 import at.bitfire.davdroid.resource.remote.filterMembers
 import at.bitfire.davdroid.resource.remote.filterNotCollections
@@ -596,7 +596,7 @@ abstract class SyncManager<LocalType : LocalResource>(
      * @param capabilities      current capabilities of the remote collection
      */
     private suspend fun processListing(
-        filteredMembers: Flow<MemberState>,
+        filteredMembers: Flow<InternalMemberState>,
         capabilities: WebDavCollection.Capabilities
     ) {
         filteredMembers
@@ -747,7 +747,7 @@ abstract class SyncManager<LocalType : LocalResource>(
                         // marks remotely present members as side effect
                         val eTag = response[GetETag::class.java]?.eTag
                             ?: throw DavException("Server didn't provide ETag")
-                        decideDownload(MemberState(response.href, eTag))
+                        decideDownload(InternalMemberState(response.href, eTag))
                     }
 
                     // 404 means "removed member"
@@ -796,7 +796,7 @@ abstract class SyncManager<LocalType : LocalResource>(
      *
      * @return whether [member] needs to be (re)downloaded
      */
-    private suspend fun decideDownload(member: MemberState): Boolean {
+    private suspend fun decideDownload(member: InternalMemberState): Boolean {
         val name = member.fileName
         logger.fine("Found remote resource: $name")
 

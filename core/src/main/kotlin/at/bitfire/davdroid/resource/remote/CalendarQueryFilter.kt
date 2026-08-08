@@ -7,8 +7,7 @@ package at.bitfire.davdroid.resource.remote
 import java.time.Instant
 
 /**
- * Restricts the members returned by [CalDavCollection.listFilteredMembers], translated into a
- * `calendar-query` REPORT (RFC 4791 7.8) — one REPORT per entry of [components], concatenated.
+ * Restricts the members returned by [CalDavCollection.listFilteredMembers].
  */
 data class CalendarQueryFilter(
     /** iCalendar component names to query (for instance `VEVENT`, `VTODO`) */

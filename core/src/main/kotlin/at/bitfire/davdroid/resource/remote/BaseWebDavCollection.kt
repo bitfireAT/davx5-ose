@@ -91,19 +91,19 @@ abstract class BaseWebDavCollection(
         davCollection.propfind(depth = 0, CalDAV.GetCTag, WebDAV.SyncToken).selfResponse()?.syncState()
 
     /**
-     * Maps the member responses of a PROPFIND/REPORT to [MemberState]s, dropping everything
+     * Maps the member responses of a PROPFIND/REPORT to [InternalMemberState]s, dropping everything
      * that isn't an actual member: the collection itself, sub-collections and unsuccessful
      * responses.
      *
      * @throws DavException if a member is listed without ETag
      */
-    protected fun Flow<MultiStatusItem>.toMemberStates(): Flow<MemberState> =
+    protected fun Flow<MultiStatusItem>.toInternalMemberStates(): Flow<InternalMemberState> =
         responsesWithRelation()
             .filterMembers()
             .filterNotCollections()
             .filterSuccessful()
             .map { item ->
-                MemberState(
+                InternalMemberState(
                     href = item.response.href,
                     eTag = item.response[GetETag::class.java]?.eTag
                         ?: throw DavException("Server didn't provide ETag for ${item.response.href}")

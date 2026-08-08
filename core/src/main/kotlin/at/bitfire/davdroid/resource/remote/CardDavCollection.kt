@@ -23,14 +23,14 @@ class CardDavCollection(httpClient: HttpClient, url: Url) : BaseWebDavCollection
     override val davCollection = DavAddressBook(httpClient, url)
 
     /**
-     * Lists all members using PROPFIND. CardDAV has no member-listing filter.
+     * Lists all members using PROPFIND. We don't need a member-listing filter for CardDAV.
      *
      * We could use an RFC 6352 8.6 CARDDAV:addressbook-query Report, but an address book
      * "MUST only contain address object resources and collections that are not address book
      * collections" (section 5.2a) anyway, and PROPFIND is more compatible.
      */
-    override fun listFilteredMembers(): Flow<MemberState> =
-        davCollection.propfind(depth = 1, WebDAV.ResourceType, WebDAV.GetETag).toMemberStates()
+    override fun listFilteredMembers(): Flow<InternalMemberState> =
+        davCollection.propfind(depth = 1, WebDAV.ResourceType, WebDAV.GetETag).toInternalMemberStates()
 
     override fun multiget(
         urls: List<Url>,

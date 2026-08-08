@@ -14,7 +14,7 @@ import at.bitfire.davdroid.accounts.LegacyAccount
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.repository.DavSyncStatsRepository
 import at.bitfire.davdroid.resource.SyncState
-import at.bitfire.davdroid.resource.remote.MemberState
+import at.bitfire.davdroid.resource.remote.InternalMemberState
 import at.bitfire.davdroid.resource.remote.TestWebDavCollection
 import at.bitfire.davdroid.resource.remote.WebDavCollection
 import at.bitfire.davdroid.settings.AccountSettings
@@ -177,7 +177,7 @@ class SyncManagerTest {
 
         val syncManager = syncManager(collection).apply {
             (remoteCollection as TestWebDavCollection).listFilteredMembersResult = listOf(
-                MemberState(Url("$BASE_URL/generated-file.txt"), "etag-from-put")
+                InternalMemberState(Url("$BASE_URL/generated-file.txt"), "etag-from-put")
             )
         }
         syncManager.performSync()
@@ -211,7 +211,7 @@ class SyncManagerTest {
 
         val syncManager = syncManager(collection).apply {
             (remoteCollection as TestWebDavCollection).listFilteredMembersResult = listOf(
-                MemberState(Url("$BASE_URL/existing-file.txt"), "etag-from-put")
+                InternalMemberState(Url("$BASE_URL/existing-file.txt"), "etag-from-put")
             )
         }
         syncManager.performSync()
@@ -244,7 +244,7 @@ class SyncManagerTest {
 
         val syncManager = syncManager(collection).apply {
             (remoteCollection as TestWebDavCollection).listFilteredMembersResult = listOf(
-                MemberState(Url("$BASE_URL/existing-file.txt"), "etag-from-propfind")
+                InternalMemberState(Url("$BASE_URL/existing-file.txt"), "etag-from-propfind")
             )
         }
         every { syncManager.remoteCollection.multiget(any(), any()) } returns flowOf(
@@ -289,7 +289,7 @@ class SyncManagerTest {
 
         val syncManager = syncManager(collection).apply {
             (remoteCollection as TestWebDavCollection).listFilteredMembersResult = listOf(
-                MemberState(Url("$BASE_URL/existing-file.txt"), "changed-etag-from-server")
+                InternalMemberState(Url("$BASE_URL/existing-file.txt"), "changed-etag-from-server")
             )
         }
         every { syncManager.remoteCollection.multiget(any(), any()) } returns flowOf(
@@ -331,7 +331,7 @@ class SyncManagerTest {
 
         val syncManager = syncManager(collection).apply {
             (remoteCollection as TestWebDavCollection).listFilteredMembersResult = listOf(
-                MemberState(Url("$BASE_URL/downloaded-member.txt"), "MemberETag1")
+                InternalMemberState(Url("$BASE_URL/downloaded-member.txt"), "MemberETag1")
             )
         }
         syncManager.performSync()
@@ -353,7 +353,7 @@ class SyncManagerTest {
 
         val syncManager = syncManager(collection).apply {
             (remoteCollection as TestWebDavCollection).listFilteredMembersResult = listOf(
-                MemberState(Url("$BASE_URL/new-member.txt"), "NewMemberETag1")
+                InternalMemberState(Url("$BASE_URL/new-member.txt"), "NewMemberETag1")
             )
         }
         every { syncManager.remoteCollection.multiget(any(), any()) } returns flowOf(
@@ -391,7 +391,7 @@ class SyncManagerTest {
 
         val syncManager = syncManager(collection).apply {
             (remoteCollection as TestWebDavCollection).listFilteredMembersResult = listOf(
-                MemberState(Url("$BASE_URL/downloaded-member.txt"), "MemberETag2")
+                InternalMemberState(Url("$BASE_URL/downloaded-member.txt"), "MemberETag2")
             )
         }
         every { syncManager.remoteCollection.multiget(any(), any()) } returns flowOf(

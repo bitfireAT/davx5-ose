@@ -14,8 +14,8 @@ class TestWebDavCollection(httpClient: HttpClient, url: Url) : BaseWebDavCollect
 
     override val davCollection = DavCollection(httpClient, url)
 
-    var listFilteredMembersResult = emptyList<MemberState>()
-    override fun listFilteredMembers(): Flow<MemberState> = listFilteredMembersResult.asFlow()
+    var listFilteredMembersResult = emptyList<InternalMemberState>()
+    override fun listFilteredMembers(): Flow<InternalMemberState> = listFilteredMembersResult.asFlow()
 
     override fun multiget(
         urls: List<Url>,

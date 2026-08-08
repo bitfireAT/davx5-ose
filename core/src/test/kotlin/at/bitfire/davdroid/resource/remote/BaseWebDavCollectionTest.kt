@@ -36,7 +36,7 @@ class BaseWebDavCollectionTest {
     private class TestCollection(httpClient: HttpClient, url: Url) : BaseWebDavCollection(httpClient, url) {
         override val davCollection = DavCollection(httpClient, url)
         override fun listFilteredMembers() =
-            davCollection.propfind(1, WebDAV.ResourceType, WebDAV.GetETag).toMemberStates()
+            davCollection.propfind(1, WebDAV.ResourceType, WebDAV.GetETag).toInternalMemberStates()
         override fun multiget(
             urls: List<Url>,
             capabilities: WebDavCollection.Capabilities
@@ -344,7 +344,7 @@ class BaseWebDavCollectionTest {
     }
 
     @Test
-    fun `listFilteredMembers() maps member responses to MemberStates`() = runTest {
+    fun `listFilteredMembers() maps member responses to InternalMemberStates`() = runTest {
         val members = collection(
             "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
                     "<multistatus xmlns=\"DAV:\">\n" +
@@ -361,7 +361,7 @@ class BaseWebDavCollectionTest {
         ).listFilteredMembers().toList()
 
         assertEquals(
-            listOf(MemberState(Url("https://example.com/dav/member1.ics"), "member-etag")),
+            listOf(InternalMemberState(Url("https://example.com/dav/member1.ics"), "member-etag")),
             members
         )
     }

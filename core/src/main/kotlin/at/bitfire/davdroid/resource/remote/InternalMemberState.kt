@@ -8,13 +8,12 @@ import at.bitfire.davdroid.util.DavUtils.lastSegment
 import io.ktor.http.Url
 
 /**
- * State of a member (non-collection resource) of a remote collection, as returned by
- * [WebDavCollection.listFilteredMembers].
+ * State of a member (non-collection resource) of a remote collection.
  *
  * @param href  URL of the member
  * @param eTag  current ETag of the member
  */
-data class MemberState(
+data class InternalMemberState(
     val href: Url,
     val eTag: String
 ) {

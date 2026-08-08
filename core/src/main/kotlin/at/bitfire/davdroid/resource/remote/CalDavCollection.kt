@@ -28,7 +28,7 @@ class CalDavCollection(
     override val davCollection = DavCalendar(httpClient, url)
 
     /** Lists the members matching [filter], using one `calendar-query` REPORT per component. */
-    override fun listFilteredMembers(): Flow<MemberState> = flow {
+    override fun listFilteredMembers(): Flow<InternalMemberState> = flow {
         for (component in filter.components)
             emitAll(
                 davCollection
@@ -37,7 +37,7 @@ class CalDavCollection(
                         start = filter.timeRangeStart,
                         end = filter.timeRangeEnd
                     )
-                    .toMemberStates()
+                    .toInternalMemberStates()
             )
     }
 

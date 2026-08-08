@@ -78,7 +78,7 @@ class CardDavCollectionTest {
     }
 
     @Test
-    fun `listFilteredMembers() maps member responses to MemberStates`() = runTest {
+    fun `listFilteredMembers() maps member responses to InternalMemberStates`() = runTest {
         val engine = MockEngine { _ ->
             respond(
                 """
@@ -103,7 +103,7 @@ class CardDavCollectionTest {
         val members = CardDavCollection(HttpClient(engine), url).listFilteredMembers().toList()
 
         assertEquals(
-            listOf(MemberState(Url("https://example.com/dav/contacts/contact1.vcf"), "contact-etag")),
+            listOf(InternalMemberState(Url("https://example.com/dav/contacts/contact1.vcf"), "contact-etag")),
             members
         )
     }

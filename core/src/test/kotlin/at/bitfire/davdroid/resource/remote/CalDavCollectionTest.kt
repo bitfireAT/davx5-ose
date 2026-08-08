@@ -56,7 +56,7 @@ class CalDavCollectionTest {
     }
 
     @Test
-    fun `listFilteredMembers() maps member responses to MemberStates`() = runTest {
+    fun `listFilteredMembers() maps member responses to InternalMemberStates`() = runTest {
         val calendar = collection(
             """
             <?xml version="1.0" encoding="utf-8"?>
@@ -78,7 +78,7 @@ class CalDavCollectionTest {
         val members = calendar.listFilteredMembers().toList()
 
         assertEquals(
-            listOf(MemberState(Url("https://example.com/dav/calendar/event1.ics"), "event-etag")),
+            listOf(InternalMemberState(Url("https://example.com/dav/calendar/event1.ics"), "event-etag")),
             members
         )
     }
