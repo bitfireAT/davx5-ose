@@ -8,8 +8,11 @@ import at.bitfire.dav4jvm.Property
 import at.bitfire.dav4jvm.ktor.MultiStatusItem
 import at.bitfire.dav4jvm.ktor.PropStat
 import at.bitfire.dav4jvm.ktor.Response
+import at.bitfire.dav4jvm.ktor.exception.DavException
+import at.bitfire.dav4jvm.property.webdav.GetETag
 import at.bitfire.dav4jvm.property.webdav.ResourceType
 import at.bitfire.dav4jvm.property.webdav.WebDAV
+import at.bitfire.synctools.test.assertThrows
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.Url
 import kotlinx.coroutines.flow.flowOf
@@ -18,7 +21,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
-class MultiStatusItemExtensionsTest {
+class MultiStatusItemExtTest {
 
     private val url = Url("https://example.com/dav/")
 
@@ -85,6 +88,56 @@ class MultiStatusItemExtensionsTest {
             flowOf(item(HttpStatusCode.NotFound, Response.HrefRelation.MEMBER)).filterSuccessful().toList()
 
         assertEquals(emptyList<MultiStatusItem.Response>(), result)
+    }
+
+    @Test
+    fun `toInternalMemberStates() maps a member response to an InternalMemberState`() = runTest {
+        val member = item(null, Response.HrefRelation.MEMBER, properties = listOf(GetETag("\"member-etag\"")))
+        val result = flowOf(member).toInternalMemberStates().toList()
+
+        assertEquals(
+            listOf(InternalMemberState(Url("https://example.com/dav/some-file.ics"), "member-etag")),
+            result
+        )
+    }
+
+    @Test
+    fun `toInternalMemberStates() filters out a SELF response`() = runTest {
+        val self = item(null, Response.HrefRelation.SELF, properties = listOf(GetETag("\"collection-etag\"")))
+        val result = flowOf(self).toInternalMemberStates().toList()
+
+        assertEquals(emptyList<InternalMemberState>(), result)
+    }
+
+    @Test
+    fun `toInternalMemberStates() filters out a collection response`() = runTest {
+        val subCollection = item(
+            null,
+            Response.HrefRelation.MEMBER,
+            properties = listOf(ResourceType(setOf(WebDAV.Collection)), GetETag("\"sub-collection-etag\""))
+        )
+        val result = flowOf(subCollection).toInternalMemberStates().toList()
+
+        assertEquals(emptyList<InternalMemberState>(), result)
+    }
+
+    @Test
+    fun `toInternalMemberStates() filters out a non-successful response`() = runTest {
+        val removed = item(HttpStatusCode.NotFound, Response.HrefRelation.MEMBER)
+        val result = flowOf(removed).toInternalMemberStates().toList()
+
+        assertEquals(emptyList<InternalMemberState>(), result)
+    }
+
+    @Test
+    fun `toInternalMemberStates() throws when a member response lacks an ETag`() = runTest {
+        val member = item(null, Response.HrefRelation.MEMBER)
+
+        val e = assertThrows<DavException> {
+            flowOf(member).toInternalMemberStates().toList()
+        }
+
+        assertEquals("Server didn't provide ETag for https://example.com/dav/some-file.ics", e.message)
     }
 
 }

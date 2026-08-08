@@ -7,19 +7,35 @@ package at.bitfire.davdroid.resource.remote
 import at.bitfire.dav4jvm.ktor.DavAddressBook
 import at.bitfire.dav4jvm.ktor.responsesWithRelation
 import at.bitfire.dav4jvm.property.carddav.AddressData
+import at.bitfire.dav4jvm.property.webdav.WebDAV
 import at.bitfire.davdroid.util.DavUtils
 import ezvcard.VCardVersion
 import io.ktor.client.HttpClient
 import io.ktor.http.Url
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import java.util.logging.Logger
 
 /**
  * Remote CardDAV collection, as used for address books.
  */
 class CardDavCollection(httpClient: HttpClient, url: Url) : BaseWebDavCollection(httpClient, url) {
 
+    private val logger
+        get() = Logger.getLogger(javaClass.name)
+
     override val davCollection = DavAddressBook(httpClient, url)
+
+    /**
+     * Lists all members using PROPFIND. We don't need a member-listing filter for CardDAV.
+     *
+     * We could use an RFC 6352 8.6 CARDDAV:addressbook-query Report, but an address book
+     * "MUST only contain address object resources and collections that are not address book
+     * collections" (section 5.2a) anyway, and PROPFIND is more compatible.
+     */
+    override fun listFilteredMembers(): Flow<InternalMemberState> {
+        return davCollection.propfind(depth = 1, WebDAV.ResourceType, WebDAV.GetETag).toInternalMemberStates()
+    }
 
     override fun multiget(
         urls: List<Url>,
@@ -33,6 +49,7 @@ class CardDavCollection(httpClient: HttpClient, url: Url) : BaseWebDavCollection
             null
         }
 
+        logger.info("Downloading ${urls.size} address object resources: $urls")
         return davCollection.multiget(urls, contentType, vCardVersion).responsesWithRelation()
             .filterMembers()
             .filterSuccessful()

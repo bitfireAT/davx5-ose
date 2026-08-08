@@ -5,7 +5,6 @@
 package at.bitfire.davdroid.sync
 
 import at.bitfire.dav4jvm.ktor.DavCalendar
-import at.bitfire.dav4jvm.ktor.MultiStatusItem
 import at.bitfire.davdroid.ProductIds
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
@@ -30,9 +29,6 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import io.ktor.client.HttpClient
 import io.ktor.http.content.TextContent
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emitAll
-import kotlinx.coroutines.flow.flow
 import net.fortuna.ical4j.model.Component
 import net.fortuna.ical4j.model.component.VToDo
 import net.fortuna.ical4j.model.property.ProdId
@@ -115,13 +111,6 @@ class TasksSyncManager @AssistedInject constructor(
                 sequence = updatedSequence
             )
         )
-    }
-
-    override fun listAllRemote(): Flow<MultiStatusItem> = flow {
-        collectionInfo.url.withExceptionContext {
-            logger.info("Querying tasks")
-            emitAll(remoteCollection.davCollection.calendarQuery("VTODO", null, null))
-        }
     }
 
     override suspend fun processDownload(result: WebDavCollection.MultiGetItem) {

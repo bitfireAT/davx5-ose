@@ -31,6 +31,8 @@ class BaseWebDavCollectionTest {
 
     private class TestCollection(httpClient: HttpClient, url: Url) : BaseWebDavCollection(httpClient, url) {
         override val davCollection = DavCollection(httpClient, url)
+        override fun listFilteredMembers(): Flow<InternalMemberState> =
+            throw NotImplementedError()
         override fun multiget(
             urls: List<Url>,
             capabilities: WebDavCollection.Capabilities

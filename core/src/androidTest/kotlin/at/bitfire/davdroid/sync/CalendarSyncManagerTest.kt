@@ -18,6 +18,7 @@ import at.bitfire.davdroid.accounts.toAndroidAccount
 import at.bitfire.davdroid.resource.LocalCalendar
 import at.bitfire.davdroid.resource.LocalEvent
 import at.bitfire.davdroid.resource.remote.CalDavCollection
+import at.bitfire.davdroid.resource.remote.CalendarQueryFilter
 import at.bitfire.davdroid.resource.remote.WebDavCollection
 import at.bitfire.davdroid.sync.account.TestAccount
 import at.bitfire.synctools.storage.calendar.AndroidCalendar
@@ -145,7 +146,11 @@ class CalendarSyncManagerTest {
         syncResult = mockk(),
         localCalendar = mockk(),
         collectionInfo = mockk(),
-        remoteCollection = CalDavCollection(mockk(), Url("https://example.com/dav/")),
+        remoteCollection = CalDavCollection(
+            mockk(),
+            Url("https://example.com/dav/"),
+            CalendarQueryFilter(components = listOf("VEVENT"))
+        ),
         resync = mockk(),
         settings = SyncSettingsFixtures.default()
     )
