@@ -101,6 +101,21 @@ interface WebDavCollection {
     fun listFilteredMembers(): Flow<InternalMemberState>
 
     /**
+     * Lists changes since [since] via `sync-collection` REPORT (RFC 6578), with `Depth: 1`.
+     *
+     * Must only be called when [Capabilities.canCollectionSync] is `true`; behavior is undefined
+     * (server will likely respond with an error) otherwise.
+     *
+     * @param since sync state to list changes since; `null` for an initial sync
+     *
+     * @throws at.bitfire.dav4jvm.ktor.exception.DavException on WebDAV errors, for instance
+     *   when a changed member is listed without ETag
+     * @throws at.bitfire.dav4jvm.ktor.exception.HttpException on other HTTP errors (for instance,
+     *   if the sync-token is invalid)
+     */
+    fun listChanges(since: SyncState?): Flow<CollectionSyncItem>
+
+    /**
      * Downloads a batch of members via multi-get (CalDAV/CardDAV report). Only successful
      * responses that contain the expected resource data are emitted.
      *
