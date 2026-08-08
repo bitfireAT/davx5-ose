@@ -7,19 +7,21 @@ package at.bitfire.davdroid.util
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.chunked
-import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.flatMapMerge
 
 /**
- * Processes this flow in batches, applying the [block] function to each batch.
+ * Splits this flow into batches and processes each batch with [process].
+ *
+ * Batches are processed concurrently, so the result order across batches isn't guaranteed.
  *
  * @param batchSize The size of each batch.
- * @param block A function that takes a batch (list of [I]) and returns a Flow of [O].
+ * @param process A function that takes a batch (list of [I]) and returns a Flow of [O].
  *
- * @return A Flow of [O] resulting from applying [block] to each batch.
+ * @return A Flow of [O] resulting from applying [process] to each batch.
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 fun <I, O> Flow<I>.batchMap(
     batchSize: Int,
-    block: (List<I>) -> Flow<O>
+    process: (List<I>) -> Flow<O>
 ): Flow<O> =
-    chunked(batchSize).flatMapConcat { block(it) }
+    chunked(batchSize).flatMapMerge { process(it) }

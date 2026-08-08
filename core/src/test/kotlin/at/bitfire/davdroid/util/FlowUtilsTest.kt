@@ -18,7 +18,7 @@ import org.junit.Test
 
 class FlowUtilsTest {
 
-    /** Maps each item of a batch to two values, so that the flattening of batch results can be verified. */
+    /** Maps each item to two values, to verify flattening. */
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun expand(batch: List<Int>): Flow<String> =
         batch.asFlow().flatMapConcat { i -> flowOf("item$i-a", "item$i-b") }
@@ -38,7 +38,7 @@ class FlowUtilsTest {
     }
 
     @Test
-    fun `batchMap() with multiple batches downloads each full batch in order plus remainder`() = runTest {
+    fun `batchMap() with multiple batches downloads each full batch plus remainder`() = runTest {
         val batches = mutableListOf<List<Int>>()
 
         val result = flowOf(1, 2, 3, 4, 5)
@@ -47,6 +47,7 @@ class FlowUtilsTest {
                 expand(batch)
             }.toList()
 
+        // batch formation order is preserved
         assertEquals(
             listOf(
                 listOf(1, 2),
@@ -55,13 +56,14 @@ class FlowUtilsTest {
             ),
             batches
         )
+        // batches process concurrently, so result order isn't guaranteed
         assertEquals(
-            listOf(
+            setOf(
                 "item1-a", "item1-b", "item2-a", "item2-b",
                 "item3-a", "item3-b", "item4-a", "item4-b",
                 "item5-a", "item5-b"
             ),
-            result
+            result.toSet()
         )
     }
 
