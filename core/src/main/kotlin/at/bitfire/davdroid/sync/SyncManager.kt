@@ -10,8 +10,6 @@ import android.os.RemoteException
 import androidx.annotation.VisibleForTesting
 import at.bitfire.dav4jvm.Error
 import at.bitfire.dav4jvm.QuotedStringUtils
-import at.bitfire.dav4jvm.ktor.MultiStatusItem
-import at.bitfire.dav4jvm.ktor.Response
 import at.bitfire.dav4jvm.ktor.exception.ConflictException
 import at.bitfire.dav4jvm.ktor.exception.DavException
 import at.bitfire.dav4jvm.ktor.exception.ForbiddenException
@@ -21,7 +19,6 @@ import at.bitfire.dav4jvm.ktor.exception.NotFoundException
 import at.bitfire.dav4jvm.ktor.exception.PreconditionFailedException
 import at.bitfire.dav4jvm.ktor.exception.ServiceUnavailableException
 import at.bitfire.dav4jvm.ktor.exception.UnauthorizedException
-import at.bitfire.dav4jvm.ktor.responsesWithRelation
 import at.bitfire.dav4jvm.property.webdav.SyncToken
 import at.bitfire.dav4jvm.property.webdav.WebDAV
 import at.bitfire.davdroid.R
@@ -36,26 +33,24 @@ import at.bitfire.davdroid.repository.DavSyncStatsRepository
 import at.bitfire.davdroid.resource.LocalCollection
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.resource.SyncState
+import at.bitfire.davdroid.resource.remote.CollectionSyncItem
 import at.bitfire.davdroid.resource.remote.InternalMemberState
 import at.bitfire.davdroid.resource.remote.WebDavCollection
-import at.bitfire.davdroid.resource.remote.filterMembers
-import at.bitfire.davdroid.resource.remote.filterNotCollections
 import at.bitfire.davdroid.resource.remote.member
-import at.bitfire.davdroid.resource.remote.requireETag
 import at.bitfire.davdroid.sync.account.InvalidAccountException
+import at.bitfire.davdroid.util.DavUtils.lastSegment
 import at.bitfire.davdroid.util.batchMap
 import at.bitfire.synctools.storage.LocalStorageException
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.ktor.client.HttpClient
-import io.ktor.http.HttpStatusCode
 import io.ktor.http.Url
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
 import kotlinx.coroutines.withContext
@@ -284,11 +279,7 @@ abstract class SyncManager<LocalType : LocalResource>(
                         }
                     }
                 } else
-                    logger.log(
-                        Level.INFO,
-                        "Removing local record #{0} which has been deleted locally and was never uploaded",
-                        arrayOf(local.id)
-                    )
+                    logger.info("Removing local record ${local.id} which has been deleted locally and was never uploaded")
                 local.deleteLocal()
             }
         }
@@ -630,19 +621,15 @@ abstract class SyncManager<LocalType : LocalResource>(
 
         do {
             logger.info("Listing changes since $syncState")
-            var (changesFlow, changesResult) = listRemoteChanges(syncState)
-            try {
-                processChanges(changesFlow, capabilities)
+            val changesResult = try {
+                processChanges(remoteCollection.listChanges(syncState), capabilities)
             } catch (e: HttpException) {
                 if (e.errors.contains(Error(WebDAV.ValidSyncToken))) {
                     logger.info("Sync token invalid, performing initial sync")
                     initialSync = true
                     resetPresentRemotely()
 
-                    val (retryFlow, retryResult) = listRemoteChanges(null)
-                    changesFlow = retryFlow
-                    changesResult = retryResult
-                    processChanges(changesFlow, capabilities)
+                    processChanges(remoteCollection.listChanges(null), capabilities)
                 } else
                     throw e
             }
@@ -675,100 +662,61 @@ abstract class SyncManager<LocalType : LocalResource>(
     /**
      * Holds the sync-token / further-results reported by a `sync-collection` REPORT.
      */
-    protected class SyncCollectionResult {
-        var syncToken: SyncToken? = null
-        var furtherResults: Boolean = false
-    }
-
-    /**
-     * Builds a [Flow] of the member responses of a `sync-collection` REPORT (RFC 6578), together
-     * with a [SyncCollectionResult].
-     *
-     * @param since sync state to list the changes since; `null` for an initial sync
-     */
-    private fun listRemoteChanges(since: SyncState?): Pair<Flow<MultiStatusItem>, SyncCollectionResult> {
-        val result = SyncCollectionResult()
-        val flow = remoteCollection.davCollection.reportChanges(
-            syncToken = since?.takeIf { since.type == SyncState.Type.SYNC_TOKEN }?.value,
-            infiniteDepth = false,
-            limit = null,
-            WebDAV.GetETag,     // we need the ETag for every item
-            WebDAV.ResourceType // we want to ignore sub-collections, so we need to know which items are collections
-        ).transform { item ->
-            when (item) {
-                is MultiStatusItem.Response -> when (item.relation) {
-                    Response.HrefRelation.SELF -> {
-                        // incoming self response, update result
-                        result.furtherResults = item.response.status == HttpStatusCode.InsufficientStorage
-                    }
-
-                    Response.HrefRelation.MEMBER -> {
-                        // incoming (changed/deleted) member response, emit to flow
-                        emit(item)
-                    }
-
-                    else ->
-                        logger.warning("Unexpected sync-collection response: ${item.response}")
-                }
-
-                is MultiStatusItem.ExtraProperty -> {
-                    // incoming sync-token, update result
-                    (item.property as? SyncToken)?.let { result.syncToken = it }
-                }
-            }
-        }
-        return flow to result
-    }
+    protected data class SyncCollectionResult(
+        val syncToken: SyncToken? = null,
+        val furtherResults: Boolean = false
+    )
 
     /**
      * Processes changes reported by a `sync-collection` REPORT (collection-sync algorithm)
-     * with `Depth: 1`. Each member response either represents
+     * with a `sync-level` of 1 (one). Each item either represents
      *
+     * - the sync-token or further-changes flag of the response → collect into the returned result,
      * - a new/changed member → queue for download, or
-     * - a 404 response signaling that the member has been deleted on the server → delete locally.
+     * - a removed member → delete locally.
      *
-     * @param remoteItems   Multi-Status items to process
+     * @param remoteItems   items to process, as listed by [WebDavCollection.listChanges]
      * @param capabilities  current capabilities of the remote collection
+     *
+     * @return the received sync-token / further-results
      */
     private suspend fun processChanges(
-        remoteItems: Flow<MultiStatusItem>,
+        remoteItems: Flow<CollectionSyncItem>,
         capabilities: WebDavCollection.Capabilities
-    ) {
-        remoteItems.responsesWithRelation()
-            // filter member resources
-            .filterMembers()
-            // we requested Depth: 1, but may still receive collections which are direct members
-            .filterNotCollections()
-            // filter the items we want to download
+    ): SyncCollectionResult {
+        var syncToken: SyncToken? = null
+        var furtherResults = false
+        remoteItems
+            // filter the items we want to download – with side effects
             .filter { item ->
-                val response = item.response
-                when {
-                    // 2xx means "new/changed member"
-                    response.isSuccess() -> {
+                when (item) {
+                    is CollectionSyncItem.SyncToken -> {
+                        syncToken = item.token
+                        false
+                    }
+                    is CollectionSyncItem.FurtherChanges -> {
+                        furtherResults = true
+                        false
+                    }
+                    is CollectionSyncItem.RemovedMember -> {
+                        // deletes local entry as side effect
+                        deleteRemovedMember(item.href.lastSegment)
+                        false
+                    }
+                    is CollectionSyncItem.ChangedMember -> {
                         // marks remotely present members as side effect
-                        // TODO: Creating the InternalMemberState here won't be necessary anymore as soon as listChanges is moved to WebDavCollection.
-                        decideDownload(InternalMemberState(response.href, response.requireETag()))
-                    }
-
-                    // 404 means "removed member"
-                    response.status == HttpStatusCode.NotFound -> {
-                        // locally deletes remotely removed members as side effect
-                        deleteRemovedMember(response.hrefName())
-                        false
-                    }
-
-                    else -> {
-                        logger.warning("Ignoring response for ${response.href} (${response.status})")
-                        false
+                        decideDownload(item.memberState)
                     }
                 }
             }
             // we only need the URLs to download
-            .map { item -> item.response.href }
+            .filterIsInstance<CollectionSyncItem.ChangedMember>()
+            .map { item -> item.memberState.href }
             // download items in batches concurrently
             .batchMap(MULTIGET_BATCH_SIZE) { batch -> downloadMembers(batch, capabilities) }
             // process and store downloaded items
             .collect { item -> processDownload(item) }
+        return SyncCollectionResult(syncToken, furtherResults)
     }
 
     /**

@@ -5,7 +5,10 @@
 package at.bitfire.davdroid.resource.remote
 
 import at.bitfire.dav4jvm.ktor.DavCollection
+import at.bitfire.dav4jvm.ktor.exception.DavException
+import at.bitfire.dav4jvm.property.webdav.SyncToken
 import at.bitfire.davdroid.resource.SyncState
+import at.bitfire.synctools.test.assertThrows
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
@@ -18,6 +21,7 @@ import io.ktor.http.Url
 import io.ktor.http.content.TextContent
 import io.ktor.http.headersOf
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -337,6 +341,134 @@ class BaseWebDavCollectionTest {
         ).querySyncState()
 
         assertEquals(SyncState(SyncState.Type.SYNC_TOKEN, "http://example.com/ns/sync/token123"), syncState)
+    }
+
+    @Test
+    fun `listChanges() emits the sync-token`() = runTest {
+        val items = collection(
+            "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
+                    "<multistatus xmlns=\"DAV:\">\n" +
+                    "  <sync-token>http://example.com/ns/sync/1234</sync-token>\n" +
+                    "</multistatus>"
+        ).listChanges(since = null).toList()
+
+        assertEquals(listOf(CollectionSyncItem.SyncToken(SyncToken("http://example.com/ns/sync/1234"))), items)
+    }
+
+    @Test
+    fun `listChanges() with 507 on the request-URI emits FurtherChanges`() = runTest {
+        // RFC 6578 section 3.6/3.10: truncation is signaled by a 507 response for the request-URI itself
+        val items = collection(
+            "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
+                    "<multistatus xmlns=\"DAV:\">\n" +
+                    "  <response>\n" +
+                    "    <href>/dav/</href>\n" +
+                    "    <status>HTTP/1.1 507 Insufficient Storage</status>\n" +
+                    "    <error><number-of-matches-within-limits/></error>\n" +
+                    "  </response>\n" +
+                    "  <sync-token>http://example.com/ns/sync/1234</sync-token>\n" +
+                    "</multistatus>"
+        ).listChanges(since = null).toList()
+
+        assertEquals(
+            listOf(
+                CollectionSyncItem.FurtherChanges,
+                CollectionSyncItem.SyncToken(SyncToken("http://example.com/ns/sync/1234"))
+            ),
+            items
+        )
+    }
+
+    @Test
+    fun `listChanges() emits ChangedMember for 2xx member responses`() = runTest {
+        // RFC 6578 section 3.2: a changed/added member is a response with propstat and no top-level status
+        val items = collection(
+            "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
+                    "<multistatus xmlns=\"DAV:\">\n" +
+                    "  <response>\n" +
+                    "    <href>/dav/event1.ics</href>\n" +
+                    "    <propstat>\n" +
+                    "      <prop><getetag>\"event-etag\"</getetag></prop>\n" +
+                    "      <status>HTTP/1.1 200 OK</status>\n" +
+                    "    </propstat>\n" +
+                    "  </response>\n" +
+                    "  <sync-token>http://example.com/ns/sync/1234</sync-token>\n" +
+                    "</multistatus>"
+        ).listChanges(since = null).toList()
+
+        assertEquals(
+            listOf(
+                CollectionSyncItem.ChangedMember(
+                    InternalMemberState(
+                        Url("https://example.com/dav/event1.ics"),
+                        "event-etag"
+                    )
+                ),
+                CollectionSyncItem.SyncToken(SyncToken("http://example.com/ns/sync/1234"))
+            ),
+            items
+        )
+    }
+
+    @Test
+    fun `listChanges() throws when a changed member has no ETag`() = runTest {
+        val flow = collection(
+            "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
+                    "<multistatus xmlns=\"DAV:\">\n" +
+                    "  <response>\n" +
+                    "    <href>/dav/event1.ics</href>\n" +
+                    "    <propstat>\n" +
+                    "      <prop/>\n" +
+                    "      <status>HTTP/1.1 200 OK</status>\n" +
+                    "    </propstat>\n" +
+                    "  </response>\n" +
+                    "  <sync-token>http://example.com/ns/sync/1234</sync-token>\n" +
+                    "</multistatus>"
+        ).listChanges(since = null)
+
+        assertThrows<DavException> { flow.toList() }
+    }
+
+    @Test
+    fun `listChanges() emits RemovedMember for 404 member responses`() = runTest {
+        // RFC 6578 section 3.2: a removed member is a response with status 404 and no propstat
+        val items = collection(
+            "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
+                    "<multistatus xmlns=\"DAV:\">\n" +
+                    "  <response>\n" +
+                    "    <href>/dav/removed.ics</href>\n" +
+                    "    <status>HTTP/1.1 404 Not Found</status>\n" +
+                    "  </response>\n" +
+                    "  <sync-token>http://example.com/ns/sync/1234</sync-token>\n" +
+                    "</multistatus>"
+        ).listChanges(since = null).toList()
+
+        assertEquals(
+            listOf(
+                CollectionSyncItem.RemovedMember(Url("https://example.com/dav/removed.ics")),
+                CollectionSyncItem.SyncToken(SyncToken("http://example.com/ns/sync/1234"))
+            ),
+            items
+        )
+    }
+
+    @Test
+    fun `listChanges() ignores members marked as collections`() = runTest {
+        val items = collection(
+            "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
+                    "<multistatus xmlns=\"DAV:\">\n" +
+                    "  <response>\n" +
+                    "    <href>/dav/subcollection/</href>\n" +
+                    "    <propstat>\n" +
+                    "      <prop><resourcetype><collection/></resourcetype><getetag>\"sub-etag\"</getetag></prop>\n" +
+                    "      <status>HTTP/1.1 200 OK</status>\n" +
+                    "    </propstat>\n" +
+                    "  </response>\n" +
+                    "  <sync-token>http://example.com/ns/sync/1234</sync-token>\n" +
+                    "</multistatus>"
+        ).listChanges(since = null).toList()
+
+        assertEquals(listOf(CollectionSyncItem.SyncToken(SyncToken("http://example.com/ns/sync/1234"))), items)
     }
 
 
