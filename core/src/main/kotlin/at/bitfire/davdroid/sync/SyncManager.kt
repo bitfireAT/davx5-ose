@@ -148,6 +148,8 @@ abstract class SyncManager<LocalType : LocalResource>(
     }
 
     suspend fun performSync() = withContext(ioDispatcher) {
+        // keep generic ioDispatcher until all LocalStorage calls are suspending or wrapped in withContext(ioDispatcher)
+
         // dismiss previous error notifications
         syncNotificationManager.dismissCollectionError(localCollectionTag = localCollection.tag)
 
@@ -536,13 +538,16 @@ abstract class SyncManager<LocalType : LocalResource>(
      */
     protected suspend fun syncRemote(remoteItems: Flow<MultiStatusItem>, capabilities: WebDavCollection.Capabilities) {
         remoteItems.responsesWithRelation()
+            // we only want members and no known collections
             .filter { (response, relation) ->
-                // we only want members and no known collections
                 relation == Response.HrefRelation.MEMBER &&
                         response[ResourceType::class.java]?.types?.contains(WebDAV.Collection) != true
             }
+            // filter the items we want to download – delete remotely removed members as side effect
             .mapNotNull { (response, _) -> processMember(response) }
+            // download items in batches concurrently
             .batchMap(MULTIGET_BATCH_SIZE) { batch -> downloadMembers(batch, capabilities) }
+            // process downloaded items
             .collect { result -> processDownload(result) }
     }
 
@@ -569,7 +574,7 @@ abstract class SyncManager<LocalType : LocalResource>(
                 local.withExceptionContext {
                     if (local == null) {
                         logger.info("$name has been added remotely, queueing download")
-                        response.href
+                        response.href   // return URL to download
                     } else {
                         val localETag = local.eTag
                         val remoteETag = response[GetETag::class.java]?.eTag
@@ -580,10 +585,10 @@ abstract class SyncManager<LocalType : LocalResource>(
 
                         if (localETag == remoteETag) {
                             logger.info("$name has not been changed on server (ETag still $remoteETag)")
-                            null
+                            null    // return null → "don't download"
                         } else {
                             logger.info("$name has been changed on server (current ETag=$remoteETag, last known ETag=$localETag)")
-                            response.href
+                            response.href   // return URL to download
                         }
                     }
                 }
@@ -597,10 +602,13 @@ abstract class SyncManager<LocalType : LocalResource>(
                         local.deleteLocal()
                     }
                 }
-                null
+                null    // return null → "don't download"
             }
 
-            else -> null
+            else -> {
+                logger.warning("Ignoring member status: ${response.href} (${response.status})")
+                null    // return null → "don't download"
+            }
         }
     }
 
@@ -611,15 +619,14 @@ abstract class SyncManager<LocalType : LocalResource>(
     private fun downloadMembers(
         batch: List<Url>,
         capabilities: WebDavCollection.Capabilities
-    ): Flow<WebDavCollection.MultiGetItem> =
-        flow {
-            syncMultigetSemaphore.withPermit {
-                logger.info("Downloading ${batch.size} resources: $batch")
-                collectionInfo.url.withExceptionContext {
-                    emitAll(remoteCollection.multiget(batch, capabilities))
-                }
+    ): Flow<WebDavCollection.MultiGetItem> = flow {
+        syncMultigetSemaphore.withPermit {
+            logger.info("Downloading ${batch.size} resources: $batch")
+            collectionInfo.url.withExceptionContext {
+                emitAll(remoteCollection.multiget(batch, capabilities))
             }
         }
+    }
 
     /**
      * Processes a downloaded resource (retrieved via [WebDavCollection.multiget]): maps it to a
