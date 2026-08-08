@@ -29,6 +29,8 @@ import at.bitfire.dav4jvm.property.webdav.WebDAV
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.db.Collection
+import at.bitfire.davdroid.di.qualifier.IoDispatcher
+import at.bitfire.davdroid.di.qualifier.SyncMultigetSemaphore
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
@@ -39,16 +41,19 @@ import at.bitfire.davdroid.resource.SyncState
 import at.bitfire.davdroid.resource.remote.WebDavCollection
 import at.bitfire.davdroid.resource.remote.member
 import at.bitfire.davdroid.sync.account.InvalidAccountException
+import at.bitfire.davdroid.util.batchMap
 import at.bitfire.synctools.storage.LocalStorageException
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.ktor.client.HttpClient
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.Url
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.transform
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
 import kotlinx.coroutines.withContext
@@ -81,8 +86,6 @@ abstract class SyncManager<LocalType : LocalResource>(
     val syncResult: SyncResult,
     val collectionInfo: Collection,
     val resync: ResyncType?,
-    val ioDispatcher: CoroutineDispatcher,
-    val syncTransferSemaphore: Semaphore,
     val settings: SyncSettings
 ) {
 
@@ -103,6 +106,10 @@ abstract class SyncManager<LocalType : LocalResource>(
     lateinit var context: Context
 
     @Inject
+    @IoDispatcher
+    lateinit var ioDispatcher: CoroutineDispatcher
+
+    @Inject
     lateinit var logger: Logger
 
     @Inject
@@ -113,6 +120,10 @@ abstract class SyncManager<LocalType : LocalResource>(
 
     @Inject
     lateinit var serviceRepository: DavServiceRepository
+
+    @Inject
+    @SyncMultigetSemaphore
+    lateinit var syncMultigetSemaphore: Semaphore
 
     @Inject
     lateinit var syncNotificationManagerFactory: SyncNotificationManager.Factory
@@ -137,6 +148,8 @@ abstract class SyncManager<LocalType : LocalResource>(
     }
 
     suspend fun performSync() = withContext(ioDispatcher) {
+        // keep generic ioDispatcher until all LocalStorage calls are suspending or wrapped in withContext(ioDispatcher)
+
         // dismiss previous error notifications
         syncNotificationManager.dismissCollectionError(localCollectionTag = localCollection.tag)
 
@@ -517,79 +530,103 @@ abstract class SyncManager<LocalType : LocalResource>(
      * Calls a function to list remote resources. All resources from the returned
      * list are downloaded and processed.
      *
+     * Batches download concurrently, but local storage access stays sequential, since thread-safety
+     * of [LocalCollection] is not explicitly guaranteed.
+     *
      * @param remoteItems   Multi-Status items to process
      * @param capabilities  current capabilities of the remote collection (passed on to [WebDavCollection.multiget])
      */
-    protected suspend fun syncRemote(remoteItems: Flow<MultiStatusItem>, capabilities: WebDavCollection.Capabilities) =
-        coroutineScope {    // structured concurrency
-            val batchDownloader = BatchDownloader { batch ->
-                launch {
-                    syncTransferSemaphore.withPermit {
-                        logger.info("Downloading ${batch.size} resources: $batch")
-                        collectionInfo.url.withExceptionContext {
-                            remoteCollection.multiget(batch, capabilities).collect { result ->
-                                processDownload(result)
-                            }
+    protected suspend fun syncRemote(remoteItems: Flow<MultiStatusItem>, capabilities: WebDavCollection.Capabilities) {
+        remoteItems.responsesWithRelation()
+            // we only want members and no known collections
+            .filter { (response, relation) ->
+                relation == Response.HrefRelation.MEMBER &&
+                        response[ResourceType::class.java]?.types?.contains(WebDAV.Collection) != true
+            }
+            // filter the items we want to download – delete remotely removed members as side effect
+            .mapNotNull { (response, _) -> processMember(response) }
+            // download items in batches concurrently
+            .batchMap(MULTIGET_BATCH_SIZE) { batch -> downloadMembers(batch, capabilities) }
+            // process downloaded items
+            .collect { result -> processDownload(result) }
+    }
+
+    /**
+     * Decides what to do with one remote member response:
+     *
+     * 1. marks it as remotely present and queues it for download (by returning
+     * its URL), or
+     * 2. deletes it locally if it has vanished on the server.
+     *
+     * **Attention:** This method is a basically a mapping filter (filters
+     * member [Response]s that need to be downloaded) with side effects
+     * (marks as locally present or deletes locally).
+     *
+     * @return the member's URL if it needs to be (re)downloaded, `null` otherwise
+     */
+    private suspend fun processMember(response: Response): Url? {
+        val name = response.hrefName()
+        return when {
+            response.isSuccess() -> {
+                logger.fine("Found remote resource: $name")
+
+                val local = localCollection.findByName(name)
+                local.withExceptionContext {
+                    if (local == null) {
+                        logger.info("$name has been added remotely, queueing download")
+                        response.href   // return URL to download
+                    } else {
+                        val localETag = local.eTag
+                        val remoteETag = response[GetETag::class.java]?.eTag
+                            ?: throw DavException("Server didn't provide ETag")
+
+                        // mark as remotely present, so that this resource won't be deleted at the end
+                        local.updateFlags(LocalResource.FLAG_REMOTELY_PRESENT)
+
+                        if (localETag == remoteETag) {
+                            logger.info("$name has not been changed on server (ETag still $remoteETag)")
+                            null    // return null → "don't download"
+                        } else {
+                            logger.info("$name has been changed on server (current ETag=$remoteETag, last known ETag=$localETag)")
+                            response.href   // return URL to download
                         }
                     }
                 }
             }
 
-            coroutineScope {    // structured concurrency
-                remoteItems.responsesWithRelation().collect { (response, relation) ->
-                    // ignore non-members
-                    if (relation != Response.HrefRelation.MEMBER)
-                        return@collect
-
-                    // ignore collections
-                    if (response[ResourceType::class.java]?.types?.contains(WebDAV.Collection) == true)
-                        return@collect
-
-                    val name = response.hrefName()
-
-                    if (response.isSuccess()) {
-                        logger.fine("Found remote resource: $name")
-
-                        launch {
-                            val local = localCollection.findByName(name)
-                            local.withExceptionContext {
-                                if (local == null) {
-                                    logger.info("$name has been added remotely, queueing download")
-                                    batchDownloader.enqueue(response.href)
-                                } else {
-                                    val localETag = local.eTag
-                                    val remoteETag = response[GetETag::class.java]?.eTag
-                                        ?: throw DavException("Server didn't provide ETag")
-                                    if (localETag == remoteETag) {
-                                        logger.info("$name has not been changed on server (ETag still $remoteETag)")
-                                    } else {
-                                        logger.info("$name has been changed on server (current ETag=$remoteETag, last known ETag=$localETag)")
-                                        batchDownloader.enqueue(response.href)
-                                    }
-
-                                    // mark as remotely present, so that this resource won't be deleted at the end
-                                    local.updateFlags(LocalResource.FLAG_REMOTELY_PRESENT)
-                                }
-                            }
-                        }
-
-                    } else if (response.status == HttpStatusCode.NotFound) {
-                        // collection sync: resource has been deleted on remote server
-                        launch {
-                            localCollection.findByName(name)?.let { local ->
-                                local.withExceptionContext {
-                                    logger.info("$name has been deleted on server, deleting locally")
-                                    local.deleteLocal()
-                                }
-                            }
-                        }
+            response.status == HttpStatusCode.NotFound -> {
+                // collection sync: resource has been deleted on remote server
+                localCollection.findByName(name)?.let { local ->
+                    local.withExceptionContext {
+                        logger.info("$name has been deleted on server, deleting locally")
+                        local.deleteLocal()
                     }
                 }
+                null    // return null → "don't download"
             }
 
-            // download remaining resources
-            batchDownloader.flush()
+            else -> {
+                logger.warning("Ignoring member status: ${response.href} (${response.status})")
+                null    // return null → "don't download"
+            }
         }
+    }
+
+    /**
+     * Downloads one batch of members via [WebDavCollection.multiget], bounded by
+     * [syncMultigetSemaphore] and tagged with [collectionInfo]'s URL for error context.
+     */
+    private fun downloadMembers(
+        batch: List<Url>,
+        capabilities: WebDavCollection.Capabilities
+    ): Flow<WebDavCollection.MultiGetItem> = flow {
+        syncMultigetSemaphore.withPermit {
+            logger.info("Downloading ${batch.size} resources: $batch")
+            collectionInfo.url.withExceptionContext {
+                emitAll(remoteCollection.multiget(batch, capabilities))
+            }
+        }
+    }
 
     /**
      * Processes a downloaded resource (retrieved via [WebDavCollection.multiget]): maps it to a
@@ -820,5 +857,10 @@ abstract class SyncManager<LocalType : LocalResource>(
         )
 
     protected abstract fun notifyInvalidResourceTitle(): String
+
+
+    companion object {
+        const val MULTIGET_BATCH_SIZE = 10
+    }
 
 }

@@ -12,8 +12,6 @@ import at.bitfire.davdroid.ProductIds
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.db.Collection
-import at.bitfire.davdroid.di.qualifier.IoDispatcher
-import at.bitfire.davdroid.di.qualifier.SyncTransferSemaphore
 import at.bitfire.davdroid.resource.LocalAddress
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalContact
@@ -39,11 +37,9 @@ import ezvcard.io.CannotParseException
 import io.ktor.client.HttpClient
 import io.ktor.http.ContentType
 import io.ktor.http.content.TextContent
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.sync.Semaphore
 import java.io.Reader
 import java.io.StringReader
 import java.io.StringWriter
@@ -100,10 +96,8 @@ class ContactsSyncManager @AssistedInject constructor(
     @Assisted val syncFrameworkUpload: Boolean,
     @Assisted settings: SyncSettings,
     val dirtyVerifier: Optional<ContactDirtyVerifier>,
-    @IoDispatcher ioDispatcher: CoroutineDispatcher,
     private val productIds: ProductIds,
-    private val resourceRetrieverFactory: ResourceRetriever.Factory,
-    @SyncTransferSemaphore syncTransferSemaphore: Semaphore
+    private val resourceRetrieverFactory: ResourceRetriever.Factory
 ) : SyncManager<LocalAddress>(
     accountId,
     httpClient,
@@ -111,8 +105,6 @@ class ContactsSyncManager @AssistedInject constructor(
     syncResult,
     collectionInfo,
     resync,
-    ioDispatcher,
-    syncTransferSemaphore,
     settings
 ) {
 

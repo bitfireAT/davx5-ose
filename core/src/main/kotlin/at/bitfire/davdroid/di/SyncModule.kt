@@ -4,7 +4,7 @@
 
 package at.bitfire.davdroid.di
 
-import at.bitfire.davdroid.di.qualifier.SyncTransferSemaphore
+import at.bitfire.davdroid.di.qualifier.SyncMultigetSemaphore
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -16,17 +16,11 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 class SyncModule {
 
-    /**
-     * Semaphore to limit concurrent sync downloads/uploads, app-wide. (Currently only used for downloads.)
-     *
-     * Sized to the number of available processors, clamped to
-     * - 2 (some overlap even on single-core devices) to
-     * - 8 (avoid too many concurrent requests/local writes on high-core-count devices).
-     */
+    /** Semaphore limiting concurrent multiget downloads, app-wide (sized to CPU cores, clamped 2–8). */
     @Provides
-    @SyncTransferSemaphore
+    @SyncMultigetSemaphore
     @Singleton
-    fun syncTransferSemaphore(): Semaphore =
+    fun syncMultigetSemaphore(): Semaphore =
         Semaphore(Runtime.getRuntime().availableProcessors().coerceIn(2, 8))
 
 }
