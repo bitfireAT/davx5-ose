@@ -30,24 +30,32 @@ class MultiStatusItemExtensionsTest {
     )
 
     @Test
-    fun `filterSuccessfulMembers() keeps a successful MEMBER response`() = runTest {
+    fun `filterMembers() keeps a MEMBER response`() = runTest {
         val kept = item(null, Response.HrefRelation.MEMBER)
-        val result = flowOf(kept).filterSuccessfulMembers().toList()
+        val result = flowOf(kept).filterMembers().toList()
 
         assertEquals(listOf(kept), result)
     }
 
     @Test
-    fun `filterSuccessfulMembers() filters out a SELF response`() = runTest {
-        val result = flowOf(item(null, Response.HrefRelation.SELF)).filterSuccessfulMembers().toList()
+    fun `filterMembers() filters out a SELF response`() = runTest {
+        val result = flowOf(item(null, Response.HrefRelation.SELF)).filterMembers().toList()
 
         assertEquals(emptyList<MultiStatusItem.Response>(), result)
     }
 
     @Test
-    fun `filterSuccessfulMembers() filters out an unsuccessful MEMBER response`() = runTest {
+    fun `filterSuccessful() keeps a successful response`() = runTest {
+        val kept = item(null, Response.HrefRelation.MEMBER)
+        val result = flowOf(kept).filterSuccessful().toList()
+
+        assertEquals(listOf(kept), result)
+    }
+
+    @Test
+    fun `filterSuccessful() filters out an unsuccessful response`() = runTest {
         val result =
-            flowOf(item(HttpStatusCode.NotFound, Response.HrefRelation.MEMBER)).filterSuccessfulMembers().toList()
+            flowOf(item(HttpStatusCode.NotFound, Response.HrefRelation.MEMBER)).filterSuccessful().toList()
 
         assertEquals(emptyList<MultiStatusItem.Response>(), result)
     }
