@@ -34,7 +34,8 @@ class CardDavCollection(httpClient: HttpClient, url: Url) : BaseWebDavCollection
         }
 
         return davCollection.multiget(urls, contentType, vCardVersion).responsesWithRelation()
-            .filterSuccessfulMembers()
+            .filterMembers()
+            .filterSuccessful()
             .map {
                 it.response.asMultiGetItem { r -> r[AddressData::class.java]?.card }
             }

@@ -4,9 +4,12 @@
 
 package at.bitfire.davdroid.resource.remote
 
+import at.bitfire.dav4jvm.Property
 import at.bitfire.dav4jvm.ktor.MultiStatusItem
 import at.bitfire.dav4jvm.ktor.PropStat
 import at.bitfire.dav4jvm.ktor.Response
+import at.bitfire.dav4jvm.property.webdav.ResourceType
+import at.bitfire.dav4jvm.property.webdav.WebDAV
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.Url
 import kotlinx.coroutines.flow.flowOf
@@ -19,35 +22,67 @@ class MultiStatusItemExtensionsTest {
 
     private val url = Url("https://example.com/dav/")
 
-    private fun item(status: HttpStatusCode?, relation: Response.HrefRelation) = MultiStatusItem.Response(
+    private fun item(
+        status: HttpStatusCode?,
+        relation: Response.HrefRelation,
+        properties: List<Property> = emptyList()
+    ) = MultiStatusItem.Response(
         Response(
             url,
             Url("https://example.com/dav/some-file.ics"),
             status,
-            listOf(PropStat(emptyList(), HttpStatusCode.OK))
+            listOf(PropStat(properties, HttpStatusCode.OK))
         ),
         relation
     )
 
     @Test
-    fun `filterSuccessfulMembers() keeps a successful MEMBER response`() = runTest {
+    fun `filterMembers() keeps a MEMBER response`() = runTest {
         val kept = item(null, Response.HrefRelation.MEMBER)
-        val result = flowOf(kept).filterSuccessfulMembers().toList()
+        val result = flowOf(kept).filterMembers().toList()
 
         assertEquals(listOf(kept), result)
     }
 
     @Test
-    fun `filterSuccessfulMembers() filters out a SELF response`() = runTest {
-        val result = flowOf(item(null, Response.HrefRelation.SELF)).filterSuccessfulMembers().toList()
+    fun `filterMembers() filters out a SELF response`() = runTest {
+        val result = flowOf(item(null, Response.HrefRelation.SELF)).filterMembers().toList()
 
         assertEquals(emptyList<MultiStatusItem.Response>(), result)
     }
 
     @Test
-    fun `filterSuccessfulMembers() filters out an unsuccessful MEMBER response`() = runTest {
+    fun `filterNotCollections() keeps a non-collection response`() = runTest {
+        val kept = item(null, Response.HrefRelation.MEMBER)
+        val result = flowOf(kept).filterNotCollections().toList()
+
+        assertEquals(listOf(kept), result)
+    }
+
+    @Test
+    fun `filterNotCollections() filters out a collection response`() = runTest {
+        val collection = item(
+            null,
+            Response.HrefRelation.MEMBER,
+            properties = listOf(ResourceType(setOf(WebDAV.Collection)))
+        )
+        val result = flowOf(collection).filterNotCollections().toList()
+
+        assertEquals(emptyList<MultiStatusItem.Response>(), result)
+    }
+
+    @Test
+    fun `filterSuccessful() keeps a successful response`() = runTest {
+        val kept = item(null, Response.HrefRelation.MEMBER)
+        val result = flowOf(kept).filterSuccessful().toList()
+
+        assertEquals(listOf(kept), result)
+    }
+
+    @Test
+    fun `filterSuccessful() filters out an unsuccessful response`() = runTest {
         val result =
-            flowOf(item(HttpStatusCode.NotFound, Response.HrefRelation.MEMBER)).filterSuccessfulMembers().toList()
+            flowOf(item(HttpStatusCode.NotFound, Response.HrefRelation.MEMBER)).filterSuccessful().toList()
 
         assertEquals(emptyList<MultiStatusItem.Response>(), result)
     }

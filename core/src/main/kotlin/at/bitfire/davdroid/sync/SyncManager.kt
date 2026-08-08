@@ -23,7 +23,6 @@ import at.bitfire.dav4jvm.ktor.exception.ServiceUnavailableException
 import at.bitfire.dav4jvm.ktor.exception.UnauthorizedException
 import at.bitfire.dav4jvm.ktor.responsesWithRelation
 import at.bitfire.dav4jvm.property.webdav.GetETag
-import at.bitfire.dav4jvm.property.webdav.ResourceType
 import at.bitfire.dav4jvm.property.webdav.SyncToken
 import at.bitfire.dav4jvm.property.webdav.WebDAV
 import at.bitfire.davdroid.R
@@ -39,6 +38,9 @@ import at.bitfire.davdroid.resource.LocalCollection
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.resource.SyncState
 import at.bitfire.davdroid.resource.remote.WebDavCollection
+import at.bitfire.davdroid.resource.remote.filterMembers
+import at.bitfire.davdroid.resource.remote.filterNotCollections
+import at.bitfire.davdroid.resource.remote.filterSuccessful
 import at.bitfire.davdroid.resource.remote.member
 import at.bitfire.davdroid.sync.account.InvalidAccountException
 import at.bitfire.davdroid.util.batchMap
@@ -50,7 +52,6 @@ import io.ktor.http.Url
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.transform
@@ -527,108 +528,6 @@ abstract class SyncManager<LocalType : LocalResource>(
     }
 
     /**
-     * Calls a function to list remote resources. All resources from the returned
-     * list are downloaded and processed.
-     *
-     * Batches download concurrently, but local storage access stays sequential, since thread-safety
-     * of [LocalCollection] is not explicitly guaranteed.
-     *
-     * @param remoteItems   Multi-Status items to process
-     * @param capabilities  current capabilities of the remote collection (passed on to [WebDavCollection.multiget])
-     */
-    protected suspend fun syncRemote(remoteItems: Flow<MultiStatusItem>, capabilities: WebDavCollection.Capabilities) {
-        remoteItems.responsesWithRelation()
-            // we only want members and no known collections
-            .filter { (response, relation) ->
-                relation == Response.HrefRelation.MEMBER &&
-                        response[ResourceType::class.java]?.types?.contains(WebDAV.Collection) != true
-            }
-            // filter the items we want to download – delete remotely removed members as side effect
-            .mapNotNull { (response, _) -> processMember(response) }
-            // download items in batches concurrently
-            .batchMap(MULTIGET_BATCH_SIZE) { batch -> downloadMembers(batch, capabilities) }
-            // process downloaded items
-            .collect { result -> processDownload(result) }
-    }
-
-    /**
-     * Decides what to do with one remote member response:
-     *
-     * 1. marks it as remotely present and queues it for download (by returning
-     * its URL), or
-     * 2. deletes it locally if it has vanished on the server.
-     *
-     * **Attention:** This method is a basically a mapping filter (filters
-     * member [Response]s that need to be downloaded) with side effects
-     * (marks as locally present or deletes locally).
-     *
-     * @return the member's URL if it needs to be (re)downloaded, `null` otherwise
-     */
-    private suspend fun processMember(response: Response): Url? {
-        val name = response.hrefName()
-        return when {
-            response.isSuccess() -> {
-                logger.fine("Found remote resource: $name")
-
-                val local = localCollection.findByName(name)
-                local.withExceptionContext {
-                    if (local == null) {
-                        logger.info("$name has been added remotely, queueing download")
-                        response.href   // return URL to download
-                    } else {
-                        val localETag = local.eTag
-                        val remoteETag = response[GetETag::class.java]?.eTag
-                            ?: throw DavException("Server didn't provide ETag")
-
-                        // mark as remotely present, so that this resource won't be deleted at the end
-                        local.updateFlags(LocalResource.FLAG_REMOTELY_PRESENT)
-
-                        if (localETag == remoteETag) {
-                            logger.info("$name has not been changed on server (ETag still $remoteETag)")
-                            null    // return null → "don't download"
-                        } else {
-                            logger.info("$name has been changed on server (current ETag=$remoteETag, last known ETag=$localETag)")
-                            response.href   // return URL to download
-                        }
-                    }
-                }
-            }
-
-            response.status == HttpStatusCode.NotFound -> {
-                // collection sync: resource has been deleted on remote server
-                localCollection.findByName(name)?.let { local ->
-                    local.withExceptionContext {
-                        logger.info("$name has been deleted on server, deleting locally")
-                        local.deleteLocal()
-                    }
-                }
-                null    // return null → "don't download"
-            }
-
-            else -> {
-                logger.warning("Ignoring member status: ${response.href} (${response.status})")
-                null    // return null → "don't download"
-            }
-        }
-    }
-
-    /**
-     * Downloads one batch of members via [WebDavCollection.multiget], bounded by
-     * [syncMultigetSemaphore] and tagged with [collectionInfo]'s URL for error context.
-     */
-    private fun downloadMembers(
-        batch: List<Url>,
-        capabilities: WebDavCollection.Capabilities
-    ): Flow<WebDavCollection.MultiGetItem> = flow {
-        syncMultigetSemaphore.withPermit {
-            logger.info("Downloading ${batch.size} resources: $batch")
-            collectionInfo.url.withExceptionContext {
-                emitAll(remoteCollection.multiget(batch, capabilities))
-            }
-        }
-    }
-
-    /**
      * Processes a downloaded resource (retrieved via [WebDavCollection.multiget]): maps it to a
      * local format and stores it into local storage.
      */
@@ -670,7 +569,7 @@ abstract class SyncManager<LocalType : LocalResource>(
 
         // list and process all entries at current sync state (which may be the same as or newer than remoteSyncState)
         logger.info("Processing remote entries")
-        syncRemote(listAllRemote(), capabilities)
+        processListing(listAllRemote(), capabilities)
 
         logger.info("Deleting entries which are not present remotely anymore")
         deleteNotPresentRemotely()
@@ -680,6 +579,38 @@ abstract class SyncManager<LocalType : LocalResource>(
 
         logger.info("Saving sync state: $currentSyncState")
         localCollection.lastSyncState = currentSyncState
+    }
+
+    /**
+     * Processes a full listing of remote members (PROPFIND/REPORT sync algorithm) with
+     * `Depth: 1`.
+     *
+     * Only new or changed members are queued for download. (Members that have vanished
+     * are cleaned up separately by [deleteNotPresentRemotely] once the whole listing has
+     * been processed).
+     *
+     * @param remoteItems   Multi-Status items to process
+     * @param capabilities  current capabilities of the remote collection
+     */
+    private suspend fun processListing(
+        remoteItems: Flow<MultiStatusItem>,
+        capabilities: WebDavCollection.Capabilities
+    ) {
+        remoteItems.responsesWithRelation()
+            // filter successful member responses
+            .filterMembers()
+            // we requested Depth: 1, but may still receive collections which are direct members
+            .filterNotCollections()
+            .filterSuccessful()
+            // filter the items we want to download
+            .mapNotNull { item ->
+                // marks remotely present members as side effect
+                decideDownload(item.response)
+            }
+            // download items in batches concurrently
+            .batchMap(MULTIGET_BATCH_SIZE) { batch -> downloadMembers(batch, capabilities) }
+            // process and store downloaded items
+            .collect { item -> processDownload(item) }
     }
 
     protected abstract fun listAllRemote(): Flow<MultiStatusItem>
@@ -704,9 +635,9 @@ abstract class SyncManager<LocalType : LocalResource>(
 
         do {
             logger.info("Listing changes since $syncState")
-            var (listingFlow, changesResult) = listRemoteChanges(syncState)
+            var (changesFlow, changesResult) = listRemoteChanges(syncState)
             try {
-                syncRemote(listingFlow, capabilities)
+                processChanges(changesFlow, capabilities)
             } catch (e: HttpException) {
                 if (e.errors.contains(Error(WebDAV.ValidSyncToken))) {
                     logger.info("Sync token invalid, performing initial sync")
@@ -714,9 +645,9 @@ abstract class SyncManager<LocalType : LocalResource>(
                     resetPresentRemotely()
 
                     val (retryFlow, retryResult) = listRemoteChanges(null)
-                    listingFlow = retryFlow
+                    changesFlow = retryFlow
                     changesResult = retryResult
-                    syncRemote(listingFlow, capabilities)
+                    processChanges(changesFlow, capabilities)
                 } else
                     throw e
             }
@@ -760,13 +691,14 @@ abstract class SyncManager<LocalType : LocalResource>(
      *
      * @param since sync state to list the changes since; `null` for an initial sync
      */
-    protected fun listRemoteChanges(since: SyncState?): Pair<Flow<MultiStatusItem>, SyncCollectionResult> {
+    private fun listRemoteChanges(since: SyncState?): Pair<Flow<MultiStatusItem>, SyncCollectionResult> {
         val result = SyncCollectionResult()
         val flow = remoteCollection.davCollection.reportChanges(
             syncToken = since?.takeIf { since.type == SyncState.Type.SYNC_TOKEN }?.value,
             infiniteDepth = false,
             limit = null,
-            WebDAV.GetETag
+            WebDAV.GetETag,     // we need the ETag for every item
+            WebDAV.ResourceType // we want to ignore sub-collections, so we need to know which items are collections
         ).transform { item ->
             when (item) {
                 is MultiStatusItem.Response -> when (item.relation) {
@@ -791,6 +723,121 @@ abstract class SyncManager<LocalType : LocalResource>(
             }
         }
         return flow to result
+    }
+
+    /**
+     * Processes changes reported by a `sync-collection` REPORT (collection-sync algorithm)
+     * with `Depth: 1`. Each member response either represents
+     *
+     * - a new/changed member → queue for download, or
+     * - a 404 response signaling that the member has been deleted on the server → delete locally.
+     *
+     * @param remoteItems   Multi-Status items to process
+     * @param capabilities  current capabilities of the remote collection
+     */
+    private suspend fun processChanges(
+        remoteItems: Flow<MultiStatusItem>,
+        capabilities: WebDavCollection.Capabilities
+    ) {
+        remoteItems.responsesWithRelation()
+            // filter member resources
+            .filterMembers()
+            // we requested Depth: 1, but may still receive collections which are direct members
+            .filterNotCollections()
+            // filter the items we want to download
+            .mapNotNull { item ->
+                val response = item.response
+                when {
+                    // 2xx means "new/changed member"
+                    response.isSuccess() -> {
+                        // marks remotely present members as side effect
+                        decideDownload(response)
+                    }
+
+                    // 404 means "removed member"
+                    response.status == HttpStatusCode.NotFound -> {
+                        // locally deletes remotely removed members as side effect
+                        deleteRemovedMember(response.hrefName())
+                        null
+                    }
+
+                    else -> {
+                        logger.warning("Ignoring response for ${response.href} (${response.status})")
+                        null
+                    }
+                }
+            }
+            // download items in batches concurrently
+            .batchMap(MULTIGET_BATCH_SIZE) { batch -> downloadMembers(batch, capabilities) }
+            // process and store downloaded items
+            .collect { item -> processDownload(item) }
+    }
+
+    /**
+     * Locally deletes a member after the server reported it as deleted remotely.
+     */
+    private suspend fun deleteRemovedMember(name: String) {
+        localCollection.findByName(name)?.let { local ->
+            local.withExceptionContext {
+                logger.info("$name has been deleted on server, deleting locally")
+                local.deleteLocal()
+            }
+        }
+    }
+
+    //endregion
+
+
+    //region Processing shared by sync algorithms
+
+    /**
+     * Decides whether a member response represents a new or changed resource that needs to be
+     * (re)downloaded, and marks it as remotely present so it won't be deleted by
+     * [deleteNotPresentRemotely].
+     *
+     * @return the member's URL if it needs to be (re)downloaded, `null` otherwise
+     */
+    private suspend fun decideDownload(response: Response): Url? {
+        val name = response.hrefName()
+        logger.fine("Found remote resource: $name")
+
+        val local = localCollection.findByName(name)
+        return local.withExceptionContext {
+            if (local == null) {
+                logger.info("$name has been added remotely, queueing download")
+                response.href
+            } else {
+                val remoteETag = response[GetETag::class.java]?.eTag
+                    ?: throw DavException("Server didn't provide ETag")
+
+                // mark as remotely present, so that this resource won't be deleted at the end
+                local.updateFlags(LocalResource.FLAG_REMOTELY_PRESENT)
+
+                if (local.eTag == remoteETag) {
+                    logger.info("$name has not been changed on server (ETag still $remoteETag)")
+                    null
+                } else {
+                    logger.info("$name has been changed on server (current ETag=$remoteETag, last known ETag=${local.eTag})")
+                    response.href
+                }
+            }
+        }
+    }
+
+    /**
+     * Downloads one batch of members via [WebDavCollection.multiget], bounded by
+     * [syncMultigetSemaphore] and tagged with [collectionInfo]'s URL for error context.
+     */
+    private fun downloadMembers(
+        batch: List<Url>,
+        capabilities: WebDavCollection.Capabilities
+    ): Flow<WebDavCollection.MultiGetItem> = flow {
+        syncMultigetSemaphore.withPermit {
+            logger.info("Downloading ${batch.size} resources: $batch")
+            collectionInfo.url.withExceptionContext {
+                emitAll(remoteCollection.multiget(batch, capabilities))
+            }
+        }
     }
 
     //endregion
