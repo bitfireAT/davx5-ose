@@ -45,6 +45,7 @@ class SyncNotificationManager @AssistedInject constructor(
 
     /**
      * Tries to inform the user that the content provider is missing or disabled.
+     *
      * Use [dismissProviderError] to dismiss the notification.
      *
      * @param authority The authority of the content provider.
@@ -94,8 +95,10 @@ class SyncNotificationManager @AssistedInject constructor(
         dismissNotification(authority)
 
     /**
-     * Tries to inform the user that an exception occurred during synchronization. Includes the affected
+     * Notifies the user that an exception occurred during synchronization. Includes the affected
      * local resource, its collection, the URL, the exception and a user message.
+     *
+     * Use [dismissCollectionError] to dismiss the notification.
      *
      * @param syncDataType      The type of data which was synced.
      * @param collectionId      ID of the affected collection, used to derive the notification tag.
@@ -156,12 +159,12 @@ class SyncNotificationManager @AssistedInject constructor(
     }
 
     /**
-     * Sends a notification to inform the user that a push notification has been received, the
-     * sync has been scheduled, but it still has not run.
-     * Use [dismissCollectionError] to dismiss the notification.
+     * Sends a notification to inform the user that a resource couldn't be processed during sync
+     * and was ignored.
      *
      * @param dataType          The type of data which was synced.
      * @param collectionId      ID of the affected collection, used to derive the notification tag.
+     * @param e                 The exception that occurred while processing the resource.
      * @param remote            URL of the resource that couldn't be processed, if it could be resolved.
      * @param title             The title of the notification.
      */
