@@ -39,12 +39,6 @@ class LocalCalendar @AssistedInject constructor(
     override val dbCollectionId: Long?
         get() = androidCalendar.syncId?.toLongOrNull()
 
-    override val tag: String
-        get() = "events-${androidCalendar.account.name}-${androidCalendar.id}"
-
-    override val title: String
-        get() = androidCalendar.displayName ?: androidCalendar.id.toString()
-
     override val readOnly
         get() = androidCalendar.accessLevel <= Calendars.CAL_ACCESS_READ
 

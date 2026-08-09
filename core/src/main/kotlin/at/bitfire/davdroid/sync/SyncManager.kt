@@ -19,6 +19,7 @@ import at.bitfire.dav4jvm.ktor.exception.NotFoundException
 import at.bitfire.dav4jvm.ktor.exception.PreconditionFailedException
 import at.bitfire.dav4jvm.ktor.exception.ServiceUnavailableException
 import at.bitfire.dav4jvm.ktor.exception.UnauthorizedException
+import at.bitfire.dav4jvm.ktor.resolve
 import at.bitfire.dav4jvm.property.webdav.SyncToken
 import at.bitfire.dav4jvm.property.webdav.WebDAV
 import at.bitfire.davdroid.R
@@ -148,7 +149,7 @@ abstract class SyncManager<LocalType : LocalResource>(
         // keep generic ioDispatcher until all LocalStorage calls are suspending or wrapped in withContext(ioDispatcher)
 
         // dismiss previous error notifications
-        syncNotificationManager.dismissCollectionError(localCollectionTag = localCollection.tag)
+        syncNotificationManager.dismissCollectionError(collectionId = collectionInfo.id)
 
         try {
             logger.info("Preparing synchronization")
@@ -827,24 +828,23 @@ abstract class SyncManager<LocalType : LocalResource>(
         }
 
         syncNotificationManager.notifyException(
-            dataType,
-            localCollection.tag,
-            message,
-            localCollection,
-            e,
-            local,
-            remote
+            syncDataType = dataType,
+            collectionId = collectionInfo.id,
+            message = message,
+            title = collectionInfo.title(),
+            e = e,
+            local = local,
+            remote = remote
         )
     }
 
     protected suspend fun notifyInvalidResource(e: Throwable, fileName: String) =
         syncNotificationManager.notifyInvalidResource(
-            dataType,
-            localCollection.tag,
-            collectionInfo,
-            e,
-            fileName,
-            notifyInvalidResourceTitle()
+            dataType = dataType,
+            collectionId = collectionInfo.id,
+            e = e,
+            remote = collectionInfo.url.resolve(fileName),
+            title = notifyInvalidResourceTitle()
         )
 
     protected abstract fun notifyInvalidResourceTitle(): String

@@ -15,12 +15,9 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.net.toUri
 import at.bitfire.dav4jvm.ktor.exception.UnauthorizedException
-import at.bitfire.dav4jvm.ktor.resolve
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
-import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.repository.AccountRepository
-import at.bitfire.davdroid.resource.LocalCollection
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.ui.DebugInfoActivity
 import at.bitfire.davdroid.ui.NotificationRegistry
@@ -101,24 +98,24 @@ class SyncNotificationManager @AssistedInject constructor(
      * local resource, its collection, the URL, the exception and a user message.
      *
      * @param syncDataType      The type of data which was synced.
-     * @param notificationTag   The tag to use for the notification.
+     * @param collectionId      ID of the affected collection, used to derive the notification tag.
      * @param message           The message to show to the user.
-     * @param localCollection   The affected local collection.
+     * @param title             The title of the notification (usually the affected collection's title).
      * @param e                 The exception that occurred.
      * @param local             The affected local resource.
      * @param remote            The remote URL that caused the exception.
      */
     suspend fun notifyException(
         syncDataType: SyncDataType,
-        notificationTag: String,
+        collectionId: Long,
         message: String,
-        localCollection: LocalCollection<*>,
+        title: String,
         e: Throwable,
         local: LocalResource?,
         remote: Url?
     ) {
         val accountName = accountRepository.getAccountName(accountId)
-        notificationRegistry.notifyIfPossible(NotificationRegistry.NOTIFY_SYNC_ERROR, tag = notificationTag) {
+        notificationRegistry.notifyIfPossible(NotificationRegistry.NOTIFY_SYNC_ERROR, tag = buildTag(collectionId)) {
             val contentIntent: Intent
             if (e is UnauthorizedException) {
                 contentIntent = AccountSettingsActivity.createIntent(context, accountId)
@@ -141,7 +138,7 @@ class SyncNotificationManager @AssistedInject constructor(
 
             val builder = NotificationCompat.Builder(context, channel)
             builder.setSmallIcon(R.drawable.ic_sync_problem_notify)
-                .setContentTitle(localCollection.title)
+                .setContentTitle(title)
                 .setContentText(message)
                 .setStyle(NotificationCompat.BigTextStyle(builder).bigText(message))
                 .setSubText(accountName)
@@ -164,22 +161,23 @@ class SyncNotificationManager @AssistedInject constructor(
      * Use [dismissCollectionError] to dismiss the notification.
      *
      * @param dataType          The type of data which was synced.
-     * @param notificationTag   The tag to use for the notification.
-     * @param collection        The affected collection.
-     * @param fileName          The name of the file containing the invalid resource.
+     * @param collectionId      ID of the affected collection, used to derive the notification tag.
+     * @param remote            URL of the resource that couldn't be processed, if it could be resolved.
      * @param title             The title of the notification.
      */
     suspend fun notifyInvalidResource(
         dataType: SyncDataType,
-        notificationTag: String,
-        collection: Collection,
+        collectionId: Long,
         e: Throwable,
-        fileName: String,
+        remote: Url?,
         title: String
     ) {
         val accountName = accountRepository.getAccountName(accountId)
-        notificationRegistry.notifyIfPossible(NotificationRegistry.NOTIFY_INVALID_RESOURCE, tag = notificationTag) {
-            val intent = buildDebugInfoIntent(dataType, e, null, collection.url.resolve(fileName))
+        notificationRegistry.notifyIfPossible(
+            NotificationRegistry.NOTIFY_INVALID_RESOURCE,
+            tag = buildTag(collectionId)
+        ) {
+            val intent = buildDebugInfoIntent(dataType, e, null, remote)
 
             val builder = NotificationCompat.Builder(context, notificationRegistry.CHANNEL_SYNC_WARNINGS)
             builder.setSmallIcon(R.drawable.ic_warning_notify)
@@ -201,13 +199,19 @@ class SyncNotificationManager @AssistedInject constructor(
     /**
      * Dismisses the (error) notification for a specific collection.
      *
-     * @param localCollectionTag The tag of the local collection which is used as notification tag also.
+     * @param collectionId ID of the collection whose notification should be dismissed.
      */
-    fun dismissCollectionError(localCollectionTag: String) =
-        dismissNotification(localCollectionTag)
+    fun dismissCollectionError(collectionId: Long) =
+        dismissNotification(buildTag(collectionId))
 
 
     // helpers
+
+    /**
+     * Builds the notification tag for a given collection. Used to uniquely identify (and dismiss)
+     * sync error/warning notifications for that collection.
+     */
+    private fun buildTag(collectionId: Long) = "collection-$collectionId"
 
     /**
      * Dismisses the sync error notification for a specific tag.
