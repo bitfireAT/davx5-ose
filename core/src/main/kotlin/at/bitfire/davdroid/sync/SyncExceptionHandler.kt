@@ -7,6 +7,7 @@ package at.bitfire.davdroid.sync
 import android.content.Context
 import android.os.DeadObjectException
 import android.os.RemoteException
+import androidx.annotation.VisibleForTesting
 import at.bitfire.dav4jvm.ktor.exception.DavException
 import at.bitfire.dav4jvm.ktor.exception.HttpException
 import at.bitfire.dav4jvm.ktor.exception.ServiceUnavailableException
@@ -123,7 +124,8 @@ class SyncExceptionHandler @AssistedInject constructor(
     /**
      * What [SyncExceptionHandler] internally decides to do about an exception.
      */
-    private sealed interface SyncErrorAction {
+    @VisibleForTesting
+    internal sealed interface SyncErrorAction {
         /** Nothing to report: log a warning and continue, no [SyncResult] flag, no notification. */
         data class LogWarning(val logMessage: String) : SyncErrorAction
 
@@ -144,7 +146,8 @@ class SyncExceptionHandler @AssistedInject constructor(
     /**
      * Classifies a sync exception into a [SyncErrorAction].
      */
-    private fun classifySyncException(exception: Throwable): SyncErrorAction = when (exception) {
+    @VisibleForTesting
+    internal fun classifySyncException(exception: Throwable): SyncErrorAction = when (exception) {
         /* LocalStorageException with cause DeadObjectException may occur when syncing takes too long
         and process is demoted to "cached". In this case, we re-throw to the base Syncer which will
         treat it as a soft error and re-schedule the sync process. */
