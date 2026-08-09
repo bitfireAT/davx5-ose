@@ -6,7 +6,6 @@ package at.bitfire.davdroid.sync
 
 import android.content.ContentProviderClient
 import at.bitfire.dav4jvm.ktor.DavAddressBook
-import at.bitfire.dav4jvm.ktor.exception.DavException
 import at.bitfire.davdroid.ProductIds
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.db.Collection
@@ -229,9 +228,11 @@ class ContactsSyncManager @AssistedInject constructor(
         logger.info("Processing CardDAV resource $fileName")
 
         // parse vCard
-        // RFC 6352 5.1: "Address object resources contained in address book collections MUST contain a single vCard component only"
         val vCard = VCardParser().parse(reader)
-            ?: throw DavException("Received CardDAV resource without vCard data")
+        if (vCard == null) {
+            logger.warning("Received vCard without data, ignoring")
+            return
+        }
 
         // map to Contact
         val newData = ContactReader.fromVCard(vCard, downloader)
