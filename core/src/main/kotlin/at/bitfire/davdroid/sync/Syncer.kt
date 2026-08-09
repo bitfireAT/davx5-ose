@@ -19,7 +19,6 @@ import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.resource.LocalCollection
 import at.bitfire.davdroid.resource.LocalDataStore
 import at.bitfire.davdroid.sync.account.InvalidAccountException
-import at.bitfire.synctools.storage.LocalStorageException
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.Closeable
 import java.util.Optional
@@ -306,9 +305,8 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
                 - have occurred during Syncer operation (for instance when creating/deleting local collections),
                 - or have been re-thrown from SyncManager (like the wrapped DeadObjectException). */
                 when (e) {
-                    /* May happen when the remote process dies or (since Android 14) when IPC (for instance with the calendar provider)
-                    is suddenly forbidden because our sync process was demoted from a "service process" to a "cached process". */
-                    is LocalStorageException if e.cause is DeadObjectException -> {
+                    // content provider process died, or (Android 14+) was killed for being frozen/cached; see SyncExceptionHandler
+                    is DeadObjectException -> {
                         logger.log(Level.WARNING, "Received DeadObjectException, treating as soft error", e)
                         syncResult.softError = true
                     }

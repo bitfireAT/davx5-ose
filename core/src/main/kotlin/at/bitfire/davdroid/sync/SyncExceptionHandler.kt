@@ -18,6 +18,7 @@ import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.sync.account.InvalidAccountException
 import at.bitfire.synctools.storage.LocalStorageException
+import com.google.common.base.Throwables
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -118,8 +119,8 @@ class SyncExceptionHandler @AssistedInject constructor(
                 SyncErrorResult.HardError
             }
 
-            SyncErrorAction.Rethrow ->
-                throw exception
+            is SyncErrorAction.Rethrow ->
+                throw action.throwable
         }
 
 
@@ -141,8 +142,8 @@ class SyncExceptionHandler @AssistedInject constructor(
         /** Non-recoverable error requiring the user's attention. */
         data class HardError(val logMessage: String, val notifyMessage: String) : SyncErrorAction
 
-        /** Sync must be aborted/rescheduled: the original exception is rethrown by the caller. */
-        data object Rethrow : SyncErrorAction
+        /** Sync must be aborted/rescheduled: [throwable] is rethrown by the caller. */
+        data class Rethrow(val throwable: Throwable) : SyncErrorAction
     }
 
     /**
@@ -151,65 +152,63 @@ class SyncExceptionHandler @AssistedInject constructor(
      * @param exception     exception thrown during sync
      */
     @VisibleForTesting
-    internal fun classifySyncException(exception: Throwable): SyncErrorAction = when (exception) {
-        /* LocalStorageException with cause DeadObjectException may occur when syncing takes too long
-        and process is demoted to "cached". In this case, we re-throw to the base Syncer which will
-        treat it as a soft error and re-schedule the sync process. */
-        is LocalStorageException if exception.cause is DeadObjectException ->
-            SyncErrorAction.Rethrow
+    internal fun classifySyncException(exception: Throwable): SyncErrorAction {
+        // A DeadObjectException anywhere in the cause chain means the content provider process died —
+        // crashed outright, or (Android 14+) was killed after receiving a binder call while frozen/cached.
+        // Either way, retrying later should work, so rethrow the unwrapped exception as a soft error.
+        // (See AOSP: android.os.BinderProxy, android.content.ContentProviderClient, CachedAppOptimizer.)
+        exception.causedBy<DeadObjectException>()?.let { return SyncErrorAction.Rethrow(it) }
 
-        // Not all RemoteExceptions are wrapped into LocalStorageException yet, see https://github.com/bitfireAT/davx5-ose/issues/2784
-        is RemoteException if exception is DeadObjectException ->
-            SyncErrorAction.Rethrow
+        return when (exception) {
+            // Sync was canceled or account has been removed: re-throw to Syncer
+            is CancellationException,
+            is InvalidAccountException ->
+                SyncErrorAction.Rethrow(exception)
 
-        // Sync was canceled or account has been removed: re-throw to Syncer
-        is CancellationException,
-        is InvalidAccountException ->
-            SyncErrorAction.Rethrow
+            // Special IOException (check before generic IOException)
+            is SSLHandshakeException ->
+                // when a certificate is rejected by cert4android, the cause will be a CertificateException
+                if (exception.cause is CertificateException)
+                    SyncErrorAction.LogWarning("SSL handshake failed (certificate rejected)")
+                else
+                    SyncErrorAction.SoftError(
+                        logMessage = "SSL handshake failed",
+                        notifyMessage = context.getString(R.string.sync_error_io, exception.localizedMessage)
+                    )
 
-        // Special IOException (check before generic IOException)
-        is SSLHandshakeException ->
-            // when a certificate is rejected by cert4android, the cause will be a CertificateException
-            if (exception.cause is CertificateException)
-                SyncErrorAction.LogWarning("SSL handshake failed (certificate rejected)")
-            else
-                SyncErrorAction.SoftError(
-                    logMessage = "SSL handshake failed",
-                    notifyMessage = context.getString(R.string.sync_error_io, exception.localizedMessage)
-                )
+            is IOException -> SyncErrorAction.SoftError(
+                logMessage = "I/O error",
+                notifyMessage = context.getString(R.string.sync_error_io, exception.localizedMessage)
+            )
 
-        is IOException -> SyncErrorAction.SoftError(
-            logMessage = "I/O error",
-            notifyMessage = context.getString(R.string.sync_error_io, exception.localizedMessage)
-        )
+            // HTTP/DAV exceptions (again, check specialized classes before generic)
+            is UnauthorizedException -> SyncErrorAction.HardError(
+                logMessage = "Not authorized anymore",
+                notifyMessage = context.getString(R.string.sync_error_authentication_failed)
+            )
 
-        // HTTP/DAV exceptions (again, check specialized classes before generic)
-        is UnauthorizedException -> SyncErrorAction.HardError(
-            logMessage = "Not authorized anymore",
-            notifyMessage = context.getString(R.string.sync_error_authentication_failed)
-        )
+            is ServiceUnavailableException -> SyncErrorAction.SoftError(
+                logMessage = "Got 503 Service unavailable, trying again later",
+                delayUntil = exception.getDelayUntil()
+            )
 
-        is ServiceUnavailableException -> SyncErrorAction.SoftError(
-            logMessage = "Got 503 Service unavailable, trying again later",
-            delayUntil = exception.getDelayUntil()
-        )
+            is HttpException, is DavException -> SyncErrorAction.HardError(
+                logMessage = "HTTP/DAV exception",
+                notifyMessage = context.getString(R.string.sync_error_http_dav, exception.localizedMessage)
+            )
 
-        is HttpException, is DavException -> SyncErrorAction.HardError(
-            logMessage = "HTTP/DAV exception",
-            notifyMessage = context.getString(R.string.sync_error_http_dav, exception.localizedMessage)
-        )
+            // Local storage exception
+            is LocalStorageException, is RemoteException -> SyncErrorAction.HardError(
+                logMessage = "Couldn't access local storage",
+                notifyMessage = context.getString(R.string.sync_error_local_storage, exception.localizedMessage)
+            )
 
-        // Local storage exception
-        is LocalStorageException, is RemoteException -> SyncErrorAction.HardError(
-            logMessage = "Couldn't access local storage",
-            notifyMessage = context.getString(R.string.sync_error_local_storage, exception.localizedMessage)
-        )
-
-        // Unknown/unclassified exception
-        else -> SyncErrorAction.HardError(
-            logMessage = "Unclassified sync error",
-            notifyMessage = exception.localizedMessage ?: exception::class.java.simpleName
-        )
+            // Unknown/unclassified exception
+            else -> SyncErrorAction.HardError(
+                logMessage = "Unclassified sync error",
+                notifyMessage = exception.localizedMessage ?: exception::class.java.simpleName
+            )
+        }
     }
 
 
@@ -240,5 +239,17 @@ class SyncExceptionHandler @AssistedInject constructor(
             )
         )
     }
+
+
+    // helpers
+
+    /**
+     * Searches this [Throwable] and its whole cause chain (redundantly, i.e. checking every level,
+     * not just the immediate cause) for the first [Throwable] of type [T].
+     *
+     * @return the first matching [Throwable] in the chain (which may be this [Throwable] itself), or `null` if none matches
+     */
+    private inline fun <reified T : Throwable> Throwable.causedBy(): T? =
+        Throwables.getCausalChain(this).filterIsInstance<T>().firstOrNull()
 
 }

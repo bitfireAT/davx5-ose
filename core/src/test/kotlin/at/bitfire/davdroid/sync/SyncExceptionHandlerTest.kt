@@ -72,16 +72,90 @@ class SyncExceptionHandlerTest {
     }
 
 
-    // classifySyncException()
+    // handleException()
 
     @Test
-    fun `classifySyncException() rethrows DeadObjectException wrapped in LocalStorageException`() {
-        val exception = LocalStorageException("provider error", DeadObjectException())
+    fun `handleException() rethrows`() = runTest {
+        val exception = CancellationException()
 
-        val action = handler().classifySyncException(exception)
-
-        assertEquals(SyncExceptionHandler.SyncErrorAction.Rethrow, action)
+        assertThrows<CancellationException> {
+            handler().handleException(exception, collection, null, null)
+        }
+        coVerify(exactly = 0) {
+            syncNotificationManager.notifyException(
+                syncDataType = any(),
+                collectionId = any(),
+                message = any(),
+                title = any(),
+                e = any(),
+                local = any(),
+                remote = any()
+            )
+        }
     }
+
+    @Test
+    fun `handleException() logs without notifying`() = runTest {
+        val exception = SSLHandshakeException("rejected").apply { initCause(CertificateException()) }
+
+        val result = handler().handleException(exception, collection, null, null)
+
+        assertEquals(SyncExceptionHandler.SyncErrorResult.NoError, result)
+        coVerify(exactly = 0) {
+            syncNotificationManager.notifyException(
+                syncDataType = any(),
+                collectionId = any(),
+                message = any(),
+                title = any(),
+                e = any(),
+                local = any(),
+                remote = any()
+            )
+        }
+    }
+
+    @Test
+    fun `handleException() notifies and returns a soft error`() = runTest {
+        val exception = IOException("network down")
+
+        val result = handler().handleException(exception, collection, null, null)
+
+        assertEquals(SyncExceptionHandler.SyncErrorResult.SoftError(delayUntil = null), result)
+        coVerify(exactly = 1) {
+            syncNotificationManager.notifyException(
+                syncDataType = SyncDataType.EVENTS,
+                collectionId = 1L,
+                message = any(),
+                title = "title",
+                e = exception,
+                local = null,
+                remote = null
+            )
+        }
+    }
+
+    @Test
+    fun `handleException() notifies and returns a hard error`() = runTest {
+        val exception = RuntimeException("boom")
+
+        val result = handler().handleException(exception, collection, null, null)
+
+        assertEquals(SyncExceptionHandler.SyncErrorResult.HardError, result)
+        coVerify(exactly = 1) {
+            syncNotificationManager.notifyException(
+                syncDataType = SyncDataType.EVENTS,
+                collectionId = 1L,
+                message = "boom",
+                title = "title",
+                e = exception,
+                local = null,
+                remote = null
+            )
+        }
+    }
+
+
+    // classifySyncException()
 
     @Test
     fun `classifySyncException() rethrows unwrapped DeadObjectException`() {
@@ -89,7 +163,27 @@ class SyncExceptionHandlerTest {
 
         val action = handler().classifySyncException(exception)
 
-        assertEquals(SyncExceptionHandler.SyncErrorAction.Rethrow, action)
+        assertEquals(SyncExceptionHandler.SyncErrorAction.Rethrow(exception), action)
+    }
+
+    @Test
+    fun `classifySyncException() rethrows DeadObjectException wrapped in LocalStorageException`() {
+        val deadObjectException = DeadObjectException()
+        val exception = LocalStorageException("provider error", deadObjectException)
+
+        val action = handler().classifySyncException(exception)
+
+        assertEquals(SyncExceptionHandler.SyncErrorAction.Rethrow(deadObjectException), action)
+    }
+
+    @Test
+    fun `classifySyncException() rethrows DeadObjectException wrapped several levels deep`() {
+        val deadObjectException = DeadObjectException()
+        val exception = LocalStorageException("provider error", RuntimeException("wrapper", deadObjectException))
+
+        val action = handler().classifySyncException(exception)
+
+        assertEquals(SyncExceptionHandler.SyncErrorAction.Rethrow(deadObjectException), action)
     }
 
     @Test
@@ -98,7 +192,7 @@ class SyncExceptionHandlerTest {
 
         val action = handler().classifySyncException(exception)
 
-        assertEquals(SyncExceptionHandler.SyncErrorAction.Rethrow, action)
+        assertEquals(SyncExceptionHandler.SyncErrorAction.Rethrow(exception), action)
     }
 
     @Test
@@ -107,7 +201,7 @@ class SyncExceptionHandlerTest {
 
         val action = handler().classifySyncException(exception)
 
-        assertEquals(SyncExceptionHandler.SyncErrorAction.Rethrow, action)
+        assertEquals(SyncExceptionHandler.SyncErrorAction.Rethrow(exception), action)
     }
 
     @Test
@@ -201,89 +295,6 @@ class SyncExceptionHandlerTest {
         val action = handler().classifySyncException(exception)
 
         assertEquals(SyncExceptionHandler.SyncErrorAction.HardError("Unclassified sync error", "boom"), action)
-    }
-
-
-    // handleException()
-
-    @Test
-    fun `handleException() rethrows`() = runTest {
-        val exception = CancellationException()
-
-        assertThrows<CancellationException> {
-            handler().handleException(exception, collection, null, null)
-        }
-        coVerify(exactly = 0) {
-            syncNotificationManager.notifyException(
-                syncDataType = any(),
-                collectionId = any(),
-                message = any(),
-                title = any(),
-                e = any(),
-                local = any(),
-                remote = any()
-            )
-        }
-    }
-
-    @Test
-    fun `handleException() logs without notifying`() = runTest {
-        val exception = SSLHandshakeException("rejected").apply { initCause(CertificateException()) }
-
-        val result = handler().handleException(exception, collection, null, null)
-
-        assertEquals(SyncExceptionHandler.SyncErrorResult.NoError, result)
-        coVerify(exactly = 0) {
-            syncNotificationManager.notifyException(
-                syncDataType = any(),
-                collectionId = any(),
-                message = any(),
-                title = any(),
-                e = any(),
-                local = any(),
-                remote = any()
-            )
-        }
-    }
-
-    @Test
-    fun `handleException() notifies and returns a soft error`() = runTest {
-        val exception = IOException("network down")
-
-        val result = handler().handleException(exception, collection, null, null)
-
-        assertEquals(SyncExceptionHandler.SyncErrorResult.SoftError(delayUntil = null), result)
-        coVerify(exactly = 1) {
-            syncNotificationManager.notifyException(
-                syncDataType = SyncDataType.EVENTS,
-                collectionId = 1L,
-                message = any(),
-                title = "title",
-                e = exception,
-                local = null,
-                remote = null
-            )
-        }
-    }
-
-    @Test
-    fun `handleException() notifies and returns a hard error`() = runTest {
-        val exception = RuntimeException("boom")
-
-        val result = handler().handleException(exception, collection, null, null)
-
-        assertEquals(SyncExceptionHandler.SyncErrorResult.HardError, result)
-        coVerify(exactly = 1) {
-            syncNotificationManager.notifyException(
-                syncDataType = SyncDataType.EVENTS,
-                collectionId = 1L,
-                message = "boom",
-                title = "title",
-                e = exception,
-                local = null,
-                remote = null
-            )
-        }
     }
 
 
