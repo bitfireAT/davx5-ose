@@ -120,9 +120,7 @@ abstract class SyncManager<LocalType : LocalResource>(
 
     protected abstract val remoteCollection: WebDavCollection
 
-    private val syncExceptionHandler by lazy {
-        syncExceptionHandlerFactory.create(accountId, dataType, syncResult)
-    }
+    private val syncExceptionHandler = syncExceptionHandlerFactory.create(accountId, dataType, syncResult)
 
     /**
      * Push-Dont-Notify header, added to PUT and DELETE requests if subscription exists.
@@ -137,7 +135,7 @@ abstract class SyncManager<LocalType : LocalResource>(
         // keep generic ioDispatcher until all LocalStorage calls are suspending or wrapped in withContext(ioDispatcher)
 
         // dismiss previous error notifications
-        syncExceptionHandler.dismissPreviousErrors(localCollectionTag = localCollection.tag)
+        syncExceptionHandler.dismissPreviousErrors(localCollection.tag)
 
         try {
             logger.info("Preparing synchronization")
@@ -184,11 +182,11 @@ abstract class SyncManager<LocalType : LocalResource>(
         } catch (potentiallyWrappedException: Throwable) {
             val ctx = potentiallyWrappedException.unwrapContext()
             syncExceptionHandler.handleException(
-                ctx.cause,
-                localCollection.tag,
-                localCollection.title,
-                ctx.localResource,
-                ctx.remoteResource
+                exception = ctx.cause,
+                localCollectionTag = localCollection.tag,
+                localCollectionTitle = localCollection.title,
+                local = ctx.localResource,
+                remote = ctx.remoteResource
             )
         }
     }
@@ -751,8 +749,13 @@ abstract class SyncManager<LocalType : LocalResource>(
 
     // sync helpers
 
-    protected suspend fun notifyInvalidResource(e: Throwable, fileName: String) =
-        syncExceptionHandler.handleInvalidResourceException(e, localCollection.tag, collectionInfo, fileName)
+    protected suspend fun notifyInvalidResource(exception: Throwable, fileName: String) =
+        syncExceptionHandler.handleInvalidResourceException(
+            exception = exception,
+            localCollectionTag = localCollection.tag,
+            collectionInfo = collectionInfo,
+            fileName = fileName
+        )
 
 
     companion object {

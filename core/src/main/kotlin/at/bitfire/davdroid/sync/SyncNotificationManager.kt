@@ -103,7 +103,7 @@ class SyncNotificationManager @AssistedInject constructor(
      * @param notificationTag   The tag to use for the notification.
      * @param message           The message to show to the user.
      * @param title             The title of the notification (usually the affected collection's title).
-     * @param e                 The exception that occurred.
+     * @param exception         The exception that occurred.
      * @param local             The affected local resource.
      * @param remote            The remote URL that caused the exception.
      */
@@ -112,25 +112,25 @@ class SyncNotificationManager @AssistedInject constructor(
         notificationTag: String,
         message: String,
         title: String,
-        e: Throwable,
+        exception: Throwable,
         local: LocalResource?,
         remote: Url?
     ) {
         val accountName = accountRepository.getAccountName(accountId)
         notificationRegistry.notifyIfPossible(NotificationRegistry.NOTIFY_SYNC_ERROR, tag = notificationTag) {
             val contentIntent: Intent
-            if (e is UnauthorizedException) {
+            if (exception is UnauthorizedException) {
                 contentIntent = AccountSettingsActivity.createIntent(context, accountId)
             } else {
-                contentIntent = buildDebugInfoIntent(syncDataType, e, local, remote)
+                contentIntent = buildDebugInfoIntent(syncDataType, exception, local, remote)
             }
 
             // to make the PendingIntent unique
-            contentIntent.data = "davdroid:exception/${e.hashCode()}".toUri()
+            contentIntent.data = "davdroid:exception/${exception.hashCode()}".toUri()
 
             val channel: String
             val priority: Int
-            if (e is IOException) {
+            if (exception is IOException) {
                 channel = notificationRegistry.CHANNEL_SYNC_IO_ERRORS
                 priority = NotificationCompat.PRIORITY_MIN
             } else {
@@ -165,6 +165,7 @@ class SyncNotificationManager @AssistedInject constructor(
      * @param dataType          The type of data which was synced.
      * @param notificationTag   The tag to use for the notification.
      * @param collection        The affected collection.
+     * @param exception         The exception that occurred.
      * @param fileName          The name of the file containing the invalid resource.
      * @param title             The title of the notification.
      */
@@ -172,13 +173,13 @@ class SyncNotificationManager @AssistedInject constructor(
         dataType: SyncDataType,
         notificationTag: String,
         collection: Collection,
-        e: Throwable,
+        exception: Throwable,
         fileName: String,
         title: String
     ) {
         val accountName = accountRepository.getAccountName(accountId)
         notificationRegistry.notifyIfPossible(NotificationRegistry.NOTIFY_INVALID_RESOURCE, tag = notificationTag) {
-            val intent = buildDebugInfoIntent(dataType, e, null, collection.url.resolve(fileName))
+            val intent = buildDebugInfoIntent(dataType, exception, null, collection.url.resolve(fileName))
 
             val builder = NotificationCompat.Builder(context, notificationRegistry.CHANNEL_SYNC_WARNINGS)
             builder.setSmallIcon(R.drawable.ic_warning_notify)
