@@ -20,7 +20,6 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.repository.AccountRepository
-import at.bitfire.davdroid.resource.LocalCollection
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.ui.DebugInfoActivity
 import at.bitfire.davdroid.ui.NotificationRegistry
@@ -103,7 +102,7 @@ class SyncNotificationManager @AssistedInject constructor(
      * @param syncDataType      The type of data which was synced.
      * @param notificationTag   The tag to use for the notification.
      * @param message           The message to show to the user.
-     * @param localCollection   The affected local collection.
+     * @param title             The title of the notification (usually the affected collection's title).
      * @param e                 The exception that occurred.
      * @param local             The affected local resource.
      * @param remote            The remote URL that caused the exception.
@@ -112,7 +111,7 @@ class SyncNotificationManager @AssistedInject constructor(
         syncDataType: SyncDataType,
         notificationTag: String,
         message: String,
-        localCollection: LocalCollection<*>,
+        title: String,
         e: Throwable,
         local: LocalResource?,
         remote: Url?
@@ -141,7 +140,7 @@ class SyncNotificationManager @AssistedInject constructor(
 
             val builder = NotificationCompat.Builder(context, channel)
             builder.setSmallIcon(R.drawable.ic_sync_problem_notify)
-                .setContentTitle(localCollection.title)
+                .setContentTitle(title)
                 .setContentText(message)
                 .setStyle(NotificationCompat.BigTextStyle(builder).bigText(message))
                 .setSubText(accountName)

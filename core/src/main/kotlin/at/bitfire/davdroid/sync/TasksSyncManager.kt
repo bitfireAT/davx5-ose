@@ -6,7 +6,6 @@ package at.bitfire.davdroid.sync
 
 import at.bitfire.dav4jvm.ktor.DavCalendar
 import at.bitfire.davdroid.ProductIds
-import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.resource.LocalResource
@@ -164,8 +163,5 @@ class TasksSyncManager @AssistedInject constructor(
             localCollection.add(dmfsTask)
         }
     }
-
-    override fun notifyInvalidResourceTitle(): String =
-            context.getString(R.string.sync_invalid_task)
 
 }

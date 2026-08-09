@@ -6,8 +6,8 @@ package at.bitfire.davdroid.sync
 
 import android.content.ContentProviderClient
 import at.bitfire.dav4jvm.ktor.DavAddressBook
+import at.bitfire.dav4jvm.ktor.exception.DavException
 import at.bitfire.davdroid.ProductIds
-import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.resource.LocalAddress
@@ -31,7 +31,6 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import ezvcard.VCardVersion
-import ezvcard.io.CannotParseException
 import io.ktor.client.HttpClient
 import io.ktor.http.ContentType
 import io.ktor.http.content.TextContent
@@ -229,21 +228,13 @@ class ContactsSyncManager @AssistedInject constructor(
     private suspend fun processCard(fileName: String, eTag: String, reader: Reader, downloader: Contact.Downloader) {
         logger.info("Processing CardDAV resource $fileName")
 
-        val newData = try {
-            // parse vCard
-            val vCard = VCardParser().parse(reader).firstOrNull()
-            if (vCard == null) {
-                logger.warning("Received vCard without data, ignoring")
-                return
-            }
+        // parse vCard
+        // RFC 6352 5.1: "Address object resources contained in address book collections MUST contain a single vCard component only"
+        val vCard = VCardParser().parse(reader)
+            ?: throw DavException("Received CardDAV resource without vCard data")
 
-            // map to Contact
-            ContactReader.fromVCard(vCard, downloader)
-        } catch (e: CannotParseException) {
-            logger.log(Level.SEVERE, "Received invalid vCard, ignoring", e)
-            notifyInvalidResource(e, fileName)
-            return
-        }
+        // map to Contact
+        val newData = ContactReader.fromVCard(vCard, downloader)
 
         groupStrategy.verifyContactBeforeSaving(newData)
 
@@ -312,9 +303,5 @@ class ContactsSyncManager @AssistedInject constructor(
             dirtyVerifier.getOrNull()?.updateHashCode(localCollection, updatedContact)
         }
     }
-
-
-    override fun notifyInvalidResourceTitle(): String =
-            context.getString(R.string.sync_invalid_contact)
 
 }
