@@ -120,8 +120,6 @@ abstract class SyncManager<LocalType : LocalResource>(
 
     protected abstract val remoteCollection: WebDavCollection
 
-    private val syncExceptionHandler = syncExceptionHandlerFactory.create(accountId, dataType)
-
     /**
      * Push-Dont-Notify header, added to PUT and DELETE requests if subscription exists.
      */
@@ -130,6 +128,11 @@ abstract class SyncManager<LocalType : LocalResource>(
             mapOf("Push-Dont-Notify" to QuotedStringUtils.asQuotedString(pushSubscription))
         } ?: emptyMap()
     }
+
+    private val syncExceptionHandler by lazy {  // depends on injected lateinit field
+        syncExceptionHandlerFactory.create(accountId, dataType)
+    }
+
 
     suspend fun performSync() = withContext(ioDispatcher) {
         // keep generic ioDispatcher until all LocalStorage calls are suspending or wrapped in withContext(ioDispatcher)
