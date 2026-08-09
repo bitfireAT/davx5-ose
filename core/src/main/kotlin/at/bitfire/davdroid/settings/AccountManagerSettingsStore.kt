@@ -20,6 +20,7 @@ import at.bitfire.synctools.util.setAndVerifyUserData
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import dagger.hilt.android.qualifiers.ApplicationContext
 import java.util.Collections
 import java.util.logging.Level
 import java.util.logging.Logger
@@ -31,7 +32,7 @@ import javax.inject.Provider
 class AccountManagerSettingsStore @AssistedInject constructor(
     @Assisted val account: Account,
     @Assisted val abortOnMissingMigration: Boolean,
-    context: Context,
+    @ApplicationContext context: Context,
     private val logger: Logger,
     private val migrations: Map<Int, @JvmSuppressWildcards Provider<AccountSettingsMigration>>,
 ) : AccountSettingsStore {
