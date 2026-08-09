@@ -34,9 +34,6 @@ class LocalTaskList (
     override val dbCollectionId: Long?
         get() = dmfsTaskList.syncId?.toLongOrNull()
 
-    override val title: String
-        get() = dmfsTaskList.name ?: dmfsTaskList.id.toString()
-
     /** The task list's [SyncState] is stored in serialized JSON format in the [COLUMN_TASKLIST_SYNC_STATE] column. */
     override var lastSyncState: SyncState?
         get() {

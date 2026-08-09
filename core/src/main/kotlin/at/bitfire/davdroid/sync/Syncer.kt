@@ -159,7 +159,7 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
                 logger.log(
                     Level.INFO,
                     "Deleting local collection {0} without matching remote collection",
-                    arrayOf(localCollection.title)
+                    arrayOf(localCollection.dbCollectionId)
                 )
                 dataStore.delete(localCollection)
                 updatedLocalCollections -= localCollection
@@ -168,7 +168,7 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
                 logger.log(
                     Level.FINE,
                     "Updating local collection {0} with {1}",
-                    arrayOf(localCollection.title, dbCollection)
+                    arrayOf(dbCollection.title(), dbCollection)
                 )
                 dataStore.update(provider, localCollection, dbCollection)
                 newDbCollections -= dbCollection.id

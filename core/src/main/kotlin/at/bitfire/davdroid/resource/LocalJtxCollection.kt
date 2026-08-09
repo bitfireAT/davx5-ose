@@ -28,9 +28,6 @@ class LocalJtxCollection(internal val jtxCollection: JtxCollection) :
     override val dbCollectionId: Long?
         get() = jtxCollection.syncId
 
-    override val title: String
-        get() = jtxCollection.displayName ?: jtxCollection.id.toString()
-
     override var lastSyncState: SyncState?
         get() = SyncState.fromString(jtxCollection.provider.readCollectionSyncState(jtxCollection.id))
         set(value) {

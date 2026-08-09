@@ -187,7 +187,7 @@ abstract class SyncManager<LocalType : LocalResource>(
             when (val result = syncExceptionHandler.handleException(
                 exception = ctx.cause,
                 collectionId = collectionInfo.id,
-                localCollectionTitle = localCollection.title,
+                localCollectionTitle = collectionInfo.title(),
                 local = ctx.localResource,
                 remote = ctx.remoteResource
             )) {

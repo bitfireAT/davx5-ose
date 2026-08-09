@@ -39,9 +39,6 @@ class LocalCalendar @AssistedInject constructor(
     override val dbCollectionId: Long?
         get() = androidCalendar.syncId?.toLongOrNull()
 
-    override val title: String
-        get() = androidCalendar.displayName ?: androidCalendar.id.toString()
-
     override val readOnly
         get() = androidCalendar.accessLevel <= Calendars.CAL_ACCESS_READ
 
