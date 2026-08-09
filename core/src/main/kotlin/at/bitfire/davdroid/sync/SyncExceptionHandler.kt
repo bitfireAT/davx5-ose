@@ -24,6 +24,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import io.ktor.http.Url
 import java.io.IOException
 import java.security.cert.CertificateException
+import java.time.Instant
 import java.util.concurrent.CancellationException
 import java.util.logging.Level
 import java.util.logging.Logger
@@ -37,7 +38,6 @@ import javax.net.ssl.SSLHandshakeException
 class SyncExceptionHandler @AssistedInject constructor(
     @Assisted accountId: AccountId,
     @Assisted private val dataType: SyncDataType,
-    @Assisted private val syncResult: SyncResult,
     @ApplicationContext private val context: Context,
     private val logger: Logger,
     syncNotificationManagerFactory: SyncNotificationManager.Factory
@@ -45,10 +45,11 @@ class SyncExceptionHandler @AssistedInject constructor(
 
     @AssistedFactory
     interface Factory {
-        fun create(accountId: AccountId, dataType: SyncDataType, syncResult: SyncResult): SyncExceptionHandler
+        fun create(accountId: AccountId, dataType: SyncDataType): SyncExceptionHandler
     }
 
     private val syncNotificationManager = syncNotificationManagerFactory.create(accountId)
+
 
     /**
      * Dismisses a previously shown sync error notification for the given local collection.
@@ -56,9 +57,20 @@ class SyncExceptionHandler @AssistedInject constructor(
     fun dismissPreviousErrors(localCollectionTag: String) =
         syncNotificationManager.dismissCollectionError(localCollectionTag)
 
+
+    /** Outcome of [SyncExceptionHandler.handleException], returned to [SyncManager]. */
+    sealed interface SyncErrorResult {
+        data object HardError : SyncErrorResult
+        data class SoftError(val delayUntil: Instant? = null) : SyncErrorResult
+        data object NoError : SyncErrorResult
+    }
+
     /**
-     * Handles an exception that terminated a sync run: rethrows exceptions that must abort/reschedule
-     * the sync, otherwise updates [syncResult] and notifies the user.
+     * Handles an exception that terminated a sync run by doing an appropriate action.
+     *
+     * @param exception     exception thrown during sync
+     *
+     * @return whether [exception] represents a hard error, soft error or no error
      */
     suspend fun handleException(
         exception: Throwable,
@@ -66,95 +78,140 @@ class SyncExceptionHandler @AssistedInject constructor(
         localCollectionTitle: String,
         local: LocalResource?,
         remote: Url?
-    ) {
-        when (exception) {
-            /* LocalStorageException with cause DeadObjectException may occur when syncing takes too long
-            and process is demoted to "cached". In this case, we re-throw to the base Syncer which will
-            treat it as a soft error and re-schedule the sync process. */
-            is LocalStorageException if exception.cause is DeadObjectException ->
-                throw exception
-
-            // sync was cancelled or account has been removed: re-throw to Syncer
-            is CancellationException,
-            is InvalidAccountException ->
-                throw exception
-
-            // specific I/O errors
-            is SSLHandshakeException -> {
-                logger.log(Level.WARNING, "SSL handshake failed", exception)
-
-                // when a certificate is rejected by cert4android, the cause will be a CertificateException
-                if (exception.cause !is CertificateException)
-                    notifyException(exception, localCollectionTag, localCollectionTitle, local, remote)
+    ): SyncErrorResult =
+        when (val action = classifySyncException(exception)) {
+            is SyncErrorAction.LogWarning -> {
+                logger.log(Level.WARNING, action.logMessage, exception)
+                SyncErrorResult.NoError
             }
 
-            // specific HTTP errors
-            is ServiceUnavailableException -> {
-                logger.log(Level.WARNING, "Got 503 Service unavailable, trying again later", exception)
-                // determine when to retry
-                syncResult.delayUntil = exception.getDelayUntil().epochSecond
-                syncResult.softError = true
+            is SyncErrorAction.SoftError -> {
+                logger.log(Level.WARNING, action.logMessage, exception)
+                action.notifyMessage?.let {
+                    notify(
+                        it,
+                        exception,
+                        localCollectionTag,
+                        localCollectionTitle,
+                        local,
+                        remote
+                    )
+                }
+                SyncErrorResult.SoftError(action.delayUntil)
             }
 
-            // all others
-            else ->
-                notifyException(exception, localCollectionTag, localCollectionTitle, local, remote)
+            is SyncErrorAction.HardError -> {
+                logger.log(Level.SEVERE, action.logMessage, exception)
+                notify(action.notifyMessage, exception, localCollectionTag, localCollectionTitle, local, remote)
+                SyncErrorResult.HardError
+            }
+
+            SyncErrorAction.Rethrow ->
+                throw exception
         }
+
+
+    /**
+     * What [SyncExceptionHandler] internally decides to do about an exception.
+     */
+    private sealed interface SyncErrorAction {
+        /** Nothing to report: log a warning and continue, no [SyncResult] flag, no notification. */
+        data class LogWarning(val logMessage: String) : SyncErrorAction
+
+        /** Temporary/recoverable error. */
+        data class SoftError(
+            val logMessage: String,
+            val delayUntil: Instant? = null,
+            val notifyMessage: String? = null
+        ) : SyncErrorAction
+
+        /** Non-recoverable error requiring the user's attention. */
+        data class HardError(val logMessage: String, val notifyMessage: String) : SyncErrorAction
+
+        /** Sync must be aborted/rescheduled: the original exception is rethrown by the caller. */
+        data object Rethrow : SyncErrorAction
     }
 
     /**
-     * Logs the exception, updates [syncResult] and shows a notification to the user.
+     * Classifies a sync exception into a [SyncErrorAction].
      */
-    private suspend fun notifyException(
+    private fun classifySyncException(exception: Throwable): SyncErrorAction = when (exception) {
+        /* LocalStorageException with cause DeadObjectException may occur when syncing takes too long
+        and process is demoted to "cached". In this case, we re-throw to the base Syncer which will
+        treat it as a soft error and re-schedule the sync process. */
+        is LocalStorageException if exception.cause is DeadObjectException ->
+            SyncErrorAction.Rethrow
+
+        // sync was canceled or account has been removed: re-throw to Syncer
+        is CancellationException,
+        is InvalidAccountException ->
+            SyncErrorAction.Rethrow
+
+        // special IOException (check before generic IOException)
+        is SSLHandshakeException ->
+            // when a certificate is rejected by cert4android, the cause will be a CertificateException
+            if (exception.cause is CertificateException)
+                SyncErrorAction.LogWarning("SSL handshake failed (certificate rejected)")
+            else
+                SyncErrorAction.SoftError(
+                    logMessage = "SSL handshake failed",
+                    notifyMessage = context.getString(R.string.sync_error_io, exception.localizedMessage)
+                )
+
+        is IOException -> SyncErrorAction.SoftError(
+            logMessage = "I/O error",
+            notifyMessage = context.getString(R.string.sync_error_io, exception.localizedMessage)
+        )
+
+        // HTTP/DAV exceptions (again, check specialized classes before generic)
+        is UnauthorizedException -> SyncErrorAction.HardError(
+            logMessage = "Not authorized anymore",
+            notifyMessage = context.getString(R.string.sync_error_authentication_failed)
+        )
+
+        is ServiceUnavailableException -> SyncErrorAction.SoftError(
+            logMessage = "Got 503 Service unavailable, trying again later",
+            // determine when to retry
+            delayUntil = exception.getDelayUntil()
+        )
+
+        is HttpException, is DavException -> SyncErrorAction.HardError(
+            logMessage = "HTTP/DAV exception",
+            notifyMessage = context.getString(R.string.sync_error_http_dav, exception.localizedMessage)
+        )
+
+        // local storage exception
+        is LocalStorageException, is RemoteException -> SyncErrorAction.HardError(
+            logMessage = "Couldn't access local storage",
+            notifyMessage = context.getString(R.string.sync_error_local_storage, exception.localizedMessage)
+        )
+
+        // unknown/unclassified exception
+        else -> SyncErrorAction.HardError(
+            logMessage = "Unclassified sync error",
+            notifyMessage = exception.localizedMessage ?: exception::class.java.simpleName
+        )
+    }
+
+
+    // helpers
+
+    private suspend fun notify(
+        message: String,
         exception: Throwable,
         localCollectionTag: String,
         localCollectionTitle: String,
         local: LocalResource?,
         remote: Url?
-    ) {
-        val message: String
-        when (exception) {
-            is IOException -> {
-                logger.log(Level.WARNING, "I/O error", exception)
-                syncResult.softError = true
-                message = context.getString(R.string.sync_error_io, exception.localizedMessage)
-            }
-
-            is UnauthorizedException -> {
-                logger.log(Level.SEVERE, "Not authorized anymore", exception)
-                syncResult.hardError = true
-                message = context.getString(R.string.sync_error_authentication_failed)
-            }
-
-            is HttpException, is DavException -> {
-                logger.log(Level.SEVERE, "HTTP/DAV exception", exception)
-                syncResult.hardError = true
-                message = context.getString(R.string.sync_error_http_dav, exception.localizedMessage)
-            }
-
-            is LocalStorageException, is RemoteException -> {
-                logger.log(Level.SEVERE, "Couldn't access local storage", exception)
-                syncResult.hardError = true
-                message = context.getString(R.string.sync_error_local_storage, exception.localizedMessage)
-            }
-
-            else -> {
-                logger.log(Level.SEVERE, "Unclassified sync error", exception)
-                syncResult.hardError = true
-                message = exception.localizedMessage ?: exception::class.java.simpleName
-            }
-        }
-
-        syncNotificationManager.notifyException(
-            syncDataType = dataType,
-            notificationTag = localCollectionTag,
-            message = message,
-            title = localCollectionTitle,
-            exception = exception,
-            local = local,
-            remote = remote
-        )
-    }
+    ) = syncNotificationManager.notifyException(
+        syncDataType = dataType,
+        notificationTag = localCollectionTag,
+        message = message,
+        title = localCollectionTitle,
+        exception = exception,
+        local = local,
+        remote = remote
+    )
 
     /**
      * Logs the exception and notifies the user that a resource couldn't be processed and was ignored.

@@ -120,7 +120,7 @@ abstract class SyncManager<LocalType : LocalResource>(
 
     protected abstract val remoteCollection: WebDavCollection
 
-    private val syncExceptionHandler = syncExceptionHandlerFactory.create(accountId, dataType, syncResult)
+    private val syncExceptionHandler = syncExceptionHandlerFactory.create(accountId, dataType)
 
     /**
      * Push-Dont-Notify header, added to PUT and DELETE requests if subscription exists.
@@ -181,13 +181,20 @@ abstract class SyncManager<LocalType : LocalResource>(
 
         } catch (potentiallyWrappedException: Throwable) {
             val ctx = potentiallyWrappedException.unwrapContext()
-            syncExceptionHandler.handleException(
+            when (val result = syncExceptionHandler.handleException(
                 exception = ctx.cause,
                 localCollectionTag = localCollection.tag,
                 localCollectionTitle = localCollection.title,
                 local = ctx.localResource,
                 remote = ctx.remoteResource
-            )
+            )) {
+                is SyncErrorResult.SoftError -> {
+                    syncResult.softError = true
+                    result.delayUntil?.let { syncResult.delayUntil = it.epochSecond }
+                }
+                SyncErrorResult.HardError -> syncResult.hardError = true
+                SyncErrorResult.NoError -> {}
+            }
         }
     }
 
