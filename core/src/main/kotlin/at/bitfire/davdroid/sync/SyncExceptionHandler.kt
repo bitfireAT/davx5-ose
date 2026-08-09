@@ -70,8 +70,7 @@ class SyncExceptionHandler @AssistedInject constructor(
      * Handles an exception that terminated a sync run by doing an appropriate action.
      *
      * @param exception             exception thrown during sync
-     * @param collectionId          ID of the affected local collection, used to derive the notification tag
-     * @param localCollectionTitle  title of the affected local collection, shown in the notification
+     * @param collectionInfo        affected collection, used to derive the notification tag and title
      * @param local                 local resource that was being processed when the exception occurred, if any
      * @param remote                remote URL that was being processed when the exception occurred, if any
      *
@@ -79,8 +78,7 @@ class SyncExceptionHandler @AssistedInject constructor(
      */
     suspend fun handleException(
         exception: Throwable,
-        collectionId: Long,
-        localCollectionTitle: String,
+        collectionInfo: Collection,
         local: LocalResource?,
         remote: Url?
     ): SyncErrorResult =
@@ -95,9 +93,9 @@ class SyncExceptionHandler @AssistedInject constructor(
                 action.notifyMessage?.let { message ->
                     syncNotificationManager.notifyException(
                         syncDataType = dataType,
-                        collectionId = collectionId,
+                        collectionId = collectionInfo.id,
                         message = message,
-                        title = localCollectionTitle,
+                        title = collectionInfo.title(),
                         exception = exception,
                         local = local,
                         remote = remote
@@ -110,9 +108,9 @@ class SyncExceptionHandler @AssistedInject constructor(
                 logger.log(Level.SEVERE, action.logMessage, exception)
                 syncNotificationManager.notifyException(
                     syncDataType = dataType,
-                    collectionId = collectionId,
+                    collectionId = collectionInfo.id,
                     message = action.notifyMessage,
-                    title = localCollectionTitle,
+                    title = collectionInfo.title(),
                     exception = exception,
                     local = local,
                     remote = remote
@@ -219,20 +217,20 @@ class SyncExceptionHandler @AssistedInject constructor(
      * Logs the exception and notifies the user that a resource couldn't be processed and was ignored.
      *
      * @param exception             exception thrown while processing the resource
-     * @param collectionInfo        affected collection, shown in the notification and used to derive the notification tag
-     * @param fileName              name of the resource that couldn't be processed
+     * @param collectionId          ID of the affected collection, used to derive the notification tag
+     * @param remote                URL of the resource that couldn't be processed, if it could be resolved
      */
     suspend fun handleInvalidResourceException(
         exception: Throwable,
-        collectionInfo: Collection,
-        fileName: String
+        collectionId: Long,
+        remote: Url?
     ) {
-        logger.log(Level.WARNING, "Ignoring invalid resource $fileName", exception)
+        logger.log(Level.WARNING, "Ignoring invalid resource $remote", exception)
         syncNotificationManager.notifyInvalidResource(
             dataType = dataType,
-            collection = collectionInfo,
+            collectionId = collectionId,
             exception = exception,
-            fileName = fileName
+            remote = remote
         )
     }
 

@@ -15,10 +15,8 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.net.toUri
 import at.bitfire.dav4jvm.ktor.exception.UnauthorizedException
-import at.bitfire.dav4jvm.ktor.resolve
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
-import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.ui.DebugInfoActivity
@@ -166,20 +164,20 @@ class SyncNotificationManager @AssistedInject constructor(
      * Use [dismissCollectionError] to dismiss the notification.
      *
      * @param dataType          The type of data which was synced.
-     * @param collection        The affected collection, used to derive the notification tag.
+     * @param collectionId      ID of the affected collection, used to derive the notification tag.
      * @param exception         The exception that occurred.
-     * @param fileName          The name of the file containing the invalid resource.
+     * @param remote            URL of the resource that couldn't be processed, if it could be resolved.
      */
     suspend fun notifyInvalidResource(
         dataType: SyncDataType,
-        collection: Collection,
+        collectionId: Long,
         exception: Throwable,
-        fileName: String
+        remote: Url?
     ) {
         val accountName = accountRepository.getAccountName(accountId)
         notificationRegistry.notifyIfPossible(
             NotificationRegistry.NOTIFY_INVALID_RESOURCE,
-            tag = collectionNotificationTag(collection.id)
+            tag = collectionNotificationTag(collectionId)
         ) {
             val title = context.getString(
                 when (dataType) {
@@ -188,7 +186,12 @@ class SyncNotificationManager @AssistedInject constructor(
                     SyncDataType.TASKS -> R.string.sync_invalid_task
                 }
             )
-            val intent = buildDebugInfoIntent(dataType, exception, null, collection.url.resolve(fileName))
+            val intent = buildDebugInfoIntent(
+                dataType = dataType,
+                e = exception,
+                local = null,
+                remote = remote
+            )
 
             val builder = NotificationCompat.Builder(context, notificationRegistry.CHANNEL_SYNC_WARNINGS)
             builder.setSmallIcon(R.drawable.ic_warning_notify)

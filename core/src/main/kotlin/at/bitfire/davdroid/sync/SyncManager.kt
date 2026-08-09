@@ -15,6 +15,7 @@ import at.bitfire.dav4jvm.ktor.exception.GoneException
 import at.bitfire.dav4jvm.ktor.exception.HttpException
 import at.bitfire.dav4jvm.ktor.exception.NotFoundException
 import at.bitfire.dav4jvm.ktor.exception.PreconditionFailedException
+import at.bitfire.dav4jvm.ktor.resolve
 import at.bitfire.dav4jvm.property.webdav.SyncToken
 import at.bitfire.dav4jvm.property.webdav.WebDAV
 import at.bitfire.davdroid.accounts.AccountId
@@ -186,8 +187,7 @@ abstract class SyncManager<LocalType : LocalResource>(
             val ctx = potentiallyWrappedException.unwrapContext()
             when (val result = syncExceptionHandler.handleException(
                 exception = ctx.cause,
-                collectionId = collectionInfo.id,
-                localCollectionTitle = collectionInfo.title(),
+                collectionInfo = collectionInfo,
                 local = ctx.localResource,
                 remote = ctx.remoteResource
             )) {
@@ -767,8 +767,8 @@ abstract class SyncManager<LocalType : LocalResource>(
     protected suspend fun notifyInvalidResource(exception: Throwable, fileName: String) =
         syncExceptionHandler.handleInvalidResourceException(
             exception = exception,
-            collectionInfo = collectionInfo,
-            fileName = fileName
+            collectionId = collectionInfo.id,
+            remote = collectionInfo.url.resolve(fileName)
         )
 
 

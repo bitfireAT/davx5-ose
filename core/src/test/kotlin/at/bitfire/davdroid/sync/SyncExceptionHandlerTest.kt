@@ -10,6 +10,7 @@ import android.os.RemoteException
 import at.bitfire.dav4jvm.ktor.exception.DavException
 import at.bitfire.dav4jvm.ktor.exception.HttpException
 import at.bitfire.davdroid.accounts.LegacyAccount
+import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.sync.account.InvalidAccountException
 import at.bitfire.synctools.storage.LocalStorageException
 import at.bitfire.synctools.test.assertThrows
@@ -19,6 +20,7 @@ import io.ktor.client.engine.mock.respond
 import io.ktor.client.request.get
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
+import io.ktor.http.Url
 import io.ktor.http.headersOf
 import io.mockk.coVerify
 import io.mockk.every
@@ -57,6 +59,13 @@ class SyncExceptionHandlerTest {
 
     private val context = RuntimeEnvironment.getApplication()
 
+    private val collection = Collection(
+        id = 1,
+        type = Collection.TYPE_CALENDAR,
+        url = Url("https://example.com/"),
+        displayName = "title"
+    )
+
     @Before
     fun setUp() {
         every { syncNotificationManagerFactory.create(any()) } returns syncNotificationManager
@@ -66,7 +75,7 @@ class SyncExceptionHandlerTest {
     // classifySyncException()
 
     @Test
-    fun `classifySyncException() rethrows LocalStorageException with DeadObjectException cause`() {
+    fun `classifySyncException() rethrows DeadObjectException wrapped in LocalStorageException`() {
         val exception = LocalStorageException("provider error", DeadObjectException())
 
         val action = handler().classifySyncException(exception)
@@ -202,7 +211,7 @@ class SyncExceptionHandlerTest {
         val exception = CancellationException()
 
         assertThrows<CancellationException> {
-            handler().handleException(exception, 1L, "title", null, null)
+            handler().handleException(exception, collection, null, null)
         }
         coVerify(exactly = 0) {
             syncNotificationManager.notifyException(
@@ -221,7 +230,7 @@ class SyncExceptionHandlerTest {
     fun `handleException() logs without notifying`() = runTest {
         val exception = SSLHandshakeException("rejected").apply { initCause(CertificateException()) }
 
-        val result = handler().handleException(exception, 1L, "title", null, null)
+        val result = handler().handleException(exception, collection, null, null)
 
         assertEquals(SyncExceptionHandler.SyncErrorResult.NoError, result)
         coVerify(exactly = 0) {
@@ -241,7 +250,7 @@ class SyncExceptionHandlerTest {
     fun `handleException() notifies and returns a soft error`() = runTest {
         val exception = IOException("network down")
 
-        val result = handler().handleException(exception, 1L, "title", null, null)
+        val result = handler().handleException(exception, collection, null, null)
 
         assertEquals(SyncExceptionHandler.SyncErrorResult.SoftError(delayUntil = null), result)
         coVerify(exactly = 1) {
@@ -261,7 +270,7 @@ class SyncExceptionHandlerTest {
     fun `handleException() notifies and returns a hard error`() = runTest {
         val exception = RuntimeException("boom")
 
-        val result = handler().handleException(exception, 1L, "title", null, null)
+        val result = handler().handleException(exception, collection, null, null)
 
         assertEquals(SyncExceptionHandler.SyncErrorResult.HardError, result)
         coVerify(exactly = 1) {
