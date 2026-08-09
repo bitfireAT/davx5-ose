@@ -6,9 +6,8 @@ package at.bitfire.davdroid.sync
 
 import at.bitfire.davdroid.MockEngineUtils.basic
 import at.bitfire.davdroid.accounts.LegacyAccount
-import at.bitfire.davdroid.accounts.toAndroidAccount
 import at.bitfire.davdroid.network.HttpClientBuilder
-import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.settings.AccountSettingsFactory
 import at.bitfire.davdroid.settings.Credentials
 import at.bitfire.davdroid.sync.account.TestAccount
 import at.bitfire.synctools.util.SensitiveString.Companion.toSensitiveString
@@ -33,7 +32,7 @@ class ResourceRetrieverTest {
     val hiltRule = HiltAndroidRule(this)
 
     @Inject
-    lateinit var accountSettingsFactory: AccountSettings.Factory
+    lateinit var accountSettingsFactory: AccountSettingsFactory
 
     @Inject
     lateinit var resourceRetrieverFactory: ResourceRetriever.Factory
@@ -49,7 +48,7 @@ class ResourceRetrieverTest {
         accountId = LegacyAccount(TestAccount.create())
 
         // add credentials to test account so that we can check whether they have been sent
-        val settings = accountSettingsFactory.create(accountId.toAndroidAccount())
+        val settings = accountSettingsFactory.create(accountId)
         settings.credentials(Credentials("test", "test".toSensitiveString()))
     }
 

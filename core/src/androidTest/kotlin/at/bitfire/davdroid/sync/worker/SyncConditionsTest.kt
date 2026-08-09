@@ -16,6 +16,7 @@ import android.net.NetworkCapabilities.TRANSPORT_WIFI
 import android.net.wifi.WifiInfo
 import android.net.wifi.WifiManager
 import androidx.core.content.getSystemService
+import at.bitfire.davdroid.accounts.toAccountId
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.SyncConditions
 import at.bitfire.davdroid.util.PermissionUtils
@@ -73,7 +74,7 @@ class SyncConditionsTest {
 
         // prepare accountSettings with some necessary data
         accountSettings = mockk<AccountSettings> {
-            every { account } returns Account("test", "test")
+            every { accountId } returns Account("test", "test").toAccountId()
             every { getIgnoreVpns() } returns false     // default value
         }
 
