@@ -131,7 +131,7 @@ class SyncExceptionHandler @AssistedInject constructor(
      */
     @VisibleForTesting
     internal sealed interface SyncErrorAction {
-        /** Nothing to report: log a warning and continue, no [SyncResult] flag, no notification. */
+        /** Just log a warning – no error that must be reported. */
         data class LogWarning(val logMessage: String) : SyncErrorAction
 
         /** Temporary/recoverable error. */
@@ -144,7 +144,7 @@ class SyncExceptionHandler @AssistedInject constructor(
         /** Non-recoverable error requiring the user's attention. */
         data class HardError(val logMessage: String, val notifyMessage: String) : SyncErrorAction
 
-        /** Sync must be aborted/rescheduled: [throwable] is rethrown by the caller. */
+        /** Sync must be aborted/rescheduled: re-throw to [Syncer]. */
         data class Rethrow(val throwable: Throwable) : SyncErrorAction
     }
 
@@ -155,11 +155,14 @@ class SyncExceptionHandler @AssistedInject constructor(
      */
     @VisibleForTesting
     internal fun classifySyncException(exception: Throwable): SyncErrorAction {
-        // A DeadObjectException anywhere in the cause chain means the content provider process died —
-        // crashed outright, or (Android 14+) was killed after receiving a binder call while frozen/cached.
-        // Either way, retrying later should work, so rethrow the unwrapped exception as a soft error.
-        // (See AOSP: android.os.BinderProxy, android.content.ContentProviderClient, CachedAppOptimizer.)
-        exception.causedBy<DeadObjectException>()?.let { return SyncErrorAction.Rethrow(it) }
+        /* A DeadObjectException anywhere in the cause chain means the content provider process died —
+        crashed outright, or (Android 14+) was killed after receiving a binder call while frozen/cached.
+        Either way, retrying later should work, so rethrow the unwrapped exception as a soft error.
+        (See AOSP: android.os.BinderProxy, android.content.ContentProviderClient, CachedAppOptimizer.) */
+        exception.causedBy<DeadObjectException>()?.let {
+            // return unwrapped for explicitness
+            return SyncErrorAction.Rethrow(it)
+        }
 
         return when (exception) {
             // Sync was canceled: re-throw to Syncer
