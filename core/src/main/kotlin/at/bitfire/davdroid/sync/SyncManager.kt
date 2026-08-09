@@ -188,12 +188,12 @@ abstract class SyncManager<LocalType : LocalResource>(
                 local = ctx.localResource,
                 remote = ctx.remoteResource
             )) {
-                is SyncErrorResult.SoftError -> {
+                is SyncExceptionHandler.SyncErrorResult.SoftError -> {
                     syncResult.softError = true
                     result.delayUntil?.let { syncResult.delayUntil = it.epochSecond }
                 }
-                SyncErrorResult.HardError -> syncResult.hardError = true
-                SyncErrorResult.NoError -> {}
+                SyncExceptionHandler.SyncErrorResult.HardError -> syncResult.hardError = true
+                SyncExceptionHandler.SyncErrorResult.NoError -> {}
             }
         }
     }

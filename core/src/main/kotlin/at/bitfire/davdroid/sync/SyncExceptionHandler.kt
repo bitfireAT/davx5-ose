@@ -87,14 +87,15 @@ class SyncExceptionHandler @AssistedInject constructor(
 
             is SyncErrorAction.SoftError -> {
                 logger.log(Level.WARNING, action.logMessage, exception)
-                action.notifyMessage?.let {
-                    notify(
-                        it,
-                        exception,
-                        localCollectionTag,
-                        localCollectionTitle,
-                        local,
-                        remote
+                action.notifyMessage?.let { message ->
+                    syncNotificationManager.notifyException(
+                        syncDataType = dataType,
+                        notificationTag = localCollectionTag,
+                        message = message,
+                        title = localCollectionTitle,
+                        exception = exception,
+                        local = local,
+                        remote = remote
                     )
                 }
                 SyncErrorResult.SoftError(action.delayUntil)
@@ -102,7 +103,15 @@ class SyncExceptionHandler @AssistedInject constructor(
 
             is SyncErrorAction.HardError -> {
                 logger.log(Level.SEVERE, action.logMessage, exception)
-                notify(action.notifyMessage, exception, localCollectionTag, localCollectionTitle, local, remote)
+                syncNotificationManager.notifyException(
+                    syncDataType = dataType,
+                    notificationTag = localCollectionTag,
+                    message = action.notifyMessage,
+                    title = localCollectionTitle,
+                    exception = exception,
+                    local = local,
+                    remote = remote
+                )
                 SyncErrorResult.HardError
             }
 
@@ -142,12 +151,16 @@ class SyncExceptionHandler @AssistedInject constructor(
         is LocalStorageException if exception.cause is DeadObjectException ->
             SyncErrorAction.Rethrow
 
-        // sync was canceled or account has been removed: re-throw to Syncer
+        // Not all RemoteExceptions are wrapped into LocalStorageException yet, see https://github.com/bitfireAT/davx5-ose/issues/2784
+        is RemoteException if exception is DeadObjectException ->
+            SyncErrorAction.Rethrow
+
+        // Sync was canceled or account has been removed: re-throw to Syncer
         is CancellationException,
         is InvalidAccountException ->
             SyncErrorAction.Rethrow
 
-        // special IOException (check before generic IOException)
+        // Special IOException (check before generic IOException)
         is SSLHandshakeException ->
             // when a certificate is rejected by cert4android, the cause will be a CertificateException
             if (exception.cause is CertificateException)
@@ -171,7 +184,6 @@ class SyncExceptionHandler @AssistedInject constructor(
 
         is ServiceUnavailableException -> SyncErrorAction.SoftError(
             logMessage = "Got 503 Service unavailable, trying again later",
-            // determine when to retry
             delayUntil = exception.getDelayUntil()
         )
 
@@ -180,38 +192,19 @@ class SyncExceptionHandler @AssistedInject constructor(
             notifyMessage = context.getString(R.string.sync_error_http_dav, exception.localizedMessage)
         )
 
-        // local storage exception
+        // Local storage exception
         is LocalStorageException, is RemoteException -> SyncErrorAction.HardError(
             logMessage = "Couldn't access local storage",
             notifyMessage = context.getString(R.string.sync_error_local_storage, exception.localizedMessage)
         )
 
-        // unknown/unclassified exception
+        // Unknown/unclassified exception
         else -> SyncErrorAction.HardError(
             logMessage = "Unclassified sync error",
             notifyMessage = exception.localizedMessage ?: exception::class.java.simpleName
         )
     }
 
-
-    // helpers
-
-    private suspend fun notify(
-        message: String,
-        exception: Throwable,
-        localCollectionTag: String,
-        localCollectionTitle: String,
-        local: LocalResource?,
-        remote: Url?
-    ) = syncNotificationManager.notifyException(
-        syncDataType = dataType,
-        notificationTag = localCollectionTag,
-        message = message,
-        title = localCollectionTitle,
-        exception = exception,
-        local = local,
-        remote = remote
-    )
 
     /**
      * Logs the exception and notifies the user that a resource couldn't be processed and was ignored.
