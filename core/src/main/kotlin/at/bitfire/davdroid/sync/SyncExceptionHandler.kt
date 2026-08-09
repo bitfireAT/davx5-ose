@@ -69,7 +69,11 @@ class SyncExceptionHandler @AssistedInject constructor(
     /**
      * Handles an exception that terminated a sync run by doing an appropriate action.
      *
-     * @param exception     exception thrown during sync
+     * @param exception             exception thrown during sync
+     * @param localCollectionTag    notification tag of the affected local collection
+     * @param localCollectionTitle  title of the affected local collection, shown in the notification
+     * @param local                 local resource that was being processed when the exception occurred, if any
+     * @param remote                remote URL that was being processed when the exception occurred, if any
      *
      * @return whether [exception] represents a hard error, soft error or no error
      */
@@ -145,6 +149,8 @@ class SyncExceptionHandler @AssistedInject constructor(
 
     /**
      * Classifies a sync exception into a [SyncErrorAction].
+     *
+     * @param exception     exception thrown during sync
      */
     @VisibleForTesting
     internal fun classifySyncException(exception: Throwable): SyncErrorAction = when (exception) {
@@ -211,6 +217,11 @@ class SyncExceptionHandler @AssistedInject constructor(
 
     /**
      * Logs the exception and notifies the user that a resource couldn't be processed and was ignored.
+     *
+     * @param exception             exception thrown while processing the resource
+     * @param localCollectionTag    notification tag of the affected local collection
+     * @param collectionInfo        affected collection, shown in the notification
+     * @param fileName              name of the resource that couldn't be processed
      */
     suspend fun handleInvalidResourceException(
         exception: Throwable,
