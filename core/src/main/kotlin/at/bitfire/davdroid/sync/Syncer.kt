@@ -19,6 +19,7 @@ import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.resource.LocalCollection
 import at.bitfire.davdroid.resource.LocalDataStore
 import at.bitfire.davdroid.sync.account.InvalidAccountException
+import at.bitfire.davdroid.util.causedBy
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.Closeable
 import java.util.Optional
@@ -299,15 +300,14 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
             } catch (e: Exception) {
                 /* Handle sync exceptions. Note that most exceptions that occur during synchronization of a specific
                 collection are already handled in SyncManager. The exceptions here usually
-                - have occurred during Syncer operation (for instance when creating/deleting local collections),
-                - or have been re-thrown from SyncManager (like the wrapped DeadObjectException). */
-                when (e) {
+                - have occurred during Syncer operation (for instance when creating/deleting local collections) —
+                  content provider access here can also throw a DeadObjectException wrapped by the storage layer,
+                - or have been re-thrown from SyncManager (like the unwrapped DeadObjectException). */
+                if (e.causedBy<DeadObjectException>() != null) {
                     // content provider process died, or (Android 14+) was killed for being frozen/cached; see SyncExceptionHandler
-                    is DeadObjectException -> {
-                        logger.log(Level.WARNING, "Received DeadObjectException, treating as soft error", e)
-                        syncResult.softError = true
-                    }
-
+                    logger.log(Level.WARNING, "Received DeadObjectException, treating as soft error", e)
+                    syncResult.softError = true
+                } else when (e) {
                     is InvalidAccountException ->
                         logger.log(Level.WARNING, "Account was removed during synchronization", e)
 

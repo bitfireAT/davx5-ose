@@ -16,8 +16,8 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.resource.LocalResource
+import at.bitfire.davdroid.util.causedBy
 import at.bitfire.synctools.storage.LocalStorageException
-import com.google.common.base.Throwables
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -240,17 +240,5 @@ class SyncExceptionHandler @AssistedInject constructor(
             )
         )
     }
-
-
-    // helpers
-
-    /**
-     * Searches this [Throwable] and its whole cause chain (redundantly, i.e. checking every level,
-     * not just the immediate cause) for the first [Throwable] of type [T].
-     *
-     * @return the first matching [Throwable] in the chain (which may be this [Throwable] itself), or `null` if none matches
-     */
-    private inline fun <reified T : Throwable> Throwable.causedBy(): T? =
-        Throwables.getCausalChain(this).filterIsInstance<T>().firstOrNull()
 
 }
