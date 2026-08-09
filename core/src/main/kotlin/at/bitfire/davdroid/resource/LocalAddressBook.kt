@@ -85,9 +85,6 @@ open class LocalAddressBook @AssistedInject constructor(
 
     var addressBookAccount: Account by ab::addressBookAccount
 
-    override val tag: String
-        get() = "contacts-${addressBookAccount.name}"
-
     override val title
         get() = addressBookAccount.name
 

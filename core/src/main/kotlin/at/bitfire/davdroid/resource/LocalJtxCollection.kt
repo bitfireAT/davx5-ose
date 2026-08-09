@@ -25,9 +25,6 @@ class LocalJtxCollection(internal val jtxCollection: JtxCollection) :
     override val readOnly: Boolean
         get() = jtxCollection.readonly
 
-    override val tag: String
-        get() = "jtx-${jtxCollection.account.name}-${jtxCollection.id}"
-
     override val dbCollectionId: Long?
         get() = jtxCollection.syncId
 

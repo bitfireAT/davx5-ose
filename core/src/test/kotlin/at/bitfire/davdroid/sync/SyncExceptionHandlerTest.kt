@@ -202,12 +202,12 @@ class SyncExceptionHandlerTest {
         val exception = CancellationException()
 
         assertThrows<CancellationException> {
-            handler().handleException(exception, "tag", "title", null, null)
+            handler().handleException(exception, 1L, "title", null, null)
         }
         coVerify(exactly = 0) {
             syncNotificationManager.notifyException(
                 syncDataType = any(),
-                notificationTag = any(),
+                collectionId = any(),
                 message = any(),
                 title = any(),
                 exception = any(),
@@ -221,13 +221,13 @@ class SyncExceptionHandlerTest {
     fun `handleException() logs without notifying`() = runTest {
         val exception = SSLHandshakeException("rejected").apply { initCause(CertificateException()) }
 
-        val result = handler().handleException(exception, "tag", "title", null, null)
+        val result = handler().handleException(exception, 1L, "title", null, null)
 
         assertEquals(SyncExceptionHandler.SyncErrorResult.NoError, result)
         coVerify(exactly = 0) {
             syncNotificationManager.notifyException(
                 syncDataType = any(),
-                notificationTag = any(),
+                collectionId = any(),
                 message = any(),
                 title = any(),
                 exception = any(),
@@ -241,13 +241,13 @@ class SyncExceptionHandlerTest {
     fun `handleException() notifies and returns a soft error`() = runTest {
         val exception = IOException("network down")
 
-        val result = handler().handleException(exception, "tag", "title", null, null)
+        val result = handler().handleException(exception, 1L, "title", null, null)
 
         assertEquals(SyncExceptionHandler.SyncErrorResult.SoftError(delayUntil = null), result)
         coVerify(exactly = 1) {
             syncNotificationManager.notifyException(
                 syncDataType = SyncDataType.EVENTS,
-                notificationTag = "tag",
+                collectionId = 1L,
                 message = any(),
                 title = "title",
                 exception = exception,
@@ -261,13 +261,13 @@ class SyncExceptionHandlerTest {
     fun `handleException() notifies and returns a hard error`() = runTest {
         val exception = RuntimeException("boom")
 
-        val result = handler().handleException(exception, "tag", "title", null, null)
+        val result = handler().handleException(exception, 1L, "title", null, null)
 
         assertEquals(SyncExceptionHandler.SyncErrorResult.HardError, result)
         coVerify(exactly = 1) {
             syncNotificationManager.notifyException(
                 syncDataType = SyncDataType.EVENTS,
-                notificationTag = "tag",
+                collectionId = 1L,
                 message = "boom",
                 title = "title",
                 exception = exception,

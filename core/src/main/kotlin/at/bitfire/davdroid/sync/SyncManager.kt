@@ -138,7 +138,7 @@ abstract class SyncManager<LocalType : LocalResource>(
         // keep generic ioDispatcher until all LocalStorage calls are suspending or wrapped in withContext(ioDispatcher)
 
         // dismiss previous error notifications
-        syncExceptionHandler.dismissPreviousErrors(localCollection.tag)
+        syncExceptionHandler.dismissPreviousErrors(collectionInfo.id)
 
         try {
             logger.info("Preparing synchronization")
@@ -186,7 +186,7 @@ abstract class SyncManager<LocalType : LocalResource>(
             val ctx = potentiallyWrappedException.unwrapContext()
             when (val result = syncExceptionHandler.handleException(
                 exception = ctx.cause,
-                localCollectionTag = localCollection.tag,
+                collectionId = collectionInfo.id,
                 localCollectionTitle = localCollection.title,
                 local = ctx.localResource,
                 remote = ctx.remoteResource
@@ -767,7 +767,6 @@ abstract class SyncManager<LocalType : LocalResource>(
     protected suspend fun notifyInvalidResource(exception: Throwable, fileName: String) =
         syncExceptionHandler.handleInvalidResourceException(
             exception = exception,
-            localCollectionTag = localCollection.tag,
             collectionInfo = collectionInfo,
             fileName = fileName
         )

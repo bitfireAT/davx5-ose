@@ -100,7 +100,7 @@ class SyncNotificationManager @AssistedInject constructor(
      * local resource, its collection, the URL, the exception and a user message.
      *
      * @param syncDataType      The type of data which was synced.
-     * @param notificationTag   The tag to use for the notification.
+     * @param collectionId      ID of the affected collection, used to derive the notification tag.
      * @param message           The message to show to the user.
      * @param title             The title of the notification (usually the affected collection's title).
      * @param exception         The exception that occurred.
@@ -109,7 +109,7 @@ class SyncNotificationManager @AssistedInject constructor(
      */
     suspend fun notifyException(
         syncDataType: SyncDataType,
-        notificationTag: String,
+        collectionId: Long,
         message: String,
         title: String,
         exception: Throwable,
@@ -117,7 +117,10 @@ class SyncNotificationManager @AssistedInject constructor(
         remote: Url?
     ) {
         val accountName = accountRepository.getAccountName(accountId)
-        notificationRegistry.notifyIfPossible(NotificationRegistry.NOTIFY_SYNC_ERROR, tag = notificationTag) {
+        notificationRegistry.notifyIfPossible(
+            NotificationRegistry.NOTIFY_SYNC_ERROR,
+            tag = collectionNotificationTag(collectionId)
+        ) {
             val contentIntent: Intent
             if (exception is UnauthorizedException) {
                 contentIntent = AccountSettingsActivity.createIntent(context, accountId)
@@ -163,22 +166,28 @@ class SyncNotificationManager @AssistedInject constructor(
      * Use [dismissCollectionError] to dismiss the notification.
      *
      * @param dataType          The type of data which was synced.
-     * @param notificationTag   The tag to use for the notification.
-     * @param collection        The affected collection.
+     * @param collection        The affected collection, used to derive the notification tag.
      * @param exception         The exception that occurred.
      * @param fileName          The name of the file containing the invalid resource.
-     * @param title             The title of the notification.
      */
     suspend fun notifyInvalidResource(
         dataType: SyncDataType,
-        notificationTag: String,
         collection: Collection,
         exception: Throwable,
-        fileName: String,
-        title: String
+        fileName: String
     ) {
         val accountName = accountRepository.getAccountName(accountId)
-        notificationRegistry.notifyIfPossible(NotificationRegistry.NOTIFY_INVALID_RESOURCE, tag = notificationTag) {
+        notificationRegistry.notifyIfPossible(
+            NotificationRegistry.NOTIFY_INVALID_RESOURCE,
+            tag = collectionNotificationTag(collection.id)
+        ) {
+            val title = context.getString(
+                when (dataType) {
+                    SyncDataType.CONTACTS -> R.string.sync_invalid_contact
+                    SyncDataType.EVENTS -> R.string.sync_invalid_event
+                    SyncDataType.TASKS -> R.string.sync_invalid_task
+                }
+            )
             val intent = buildDebugInfoIntent(dataType, exception, null, collection.url.resolve(fileName))
 
             val builder = NotificationCompat.Builder(context, notificationRegistry.CHANNEL_SYNC_WARNINGS)
@@ -201,13 +210,19 @@ class SyncNotificationManager @AssistedInject constructor(
     /**
      * Dismisses the (error) notification for a specific collection.
      *
-     * @param localCollectionTag The tag of the local collection which is used as notification tag also.
+     * @param collectionId ID of the collection whose notification should be dismissed.
      */
-    fun dismissCollectionError(localCollectionTag: String) =
-        dismissNotification(localCollectionTag)
+    fun dismissCollectionError(collectionId: Long) =
+        dismissNotification(collectionNotificationTag(collectionId))
 
 
     // helpers
+
+    /**
+     * Builds the notification tag for a given collection. Used to uniquely identify (and dismiss)
+     * sync error/warning notifications for that collection.
+     */
+    private fun collectionNotificationTag(collectionId: Long) = "collection-$collectionId"
 
     /**
      * Dismisses the sync error notification for a specific tag.

@@ -55,8 +55,8 @@ class SyncExceptionHandler @AssistedInject constructor(
     /**
      * Dismisses a previously shown sync error notification for the given local collection.
      */
-    fun dismissPreviousErrors(localCollectionTag: String) =
-        syncNotificationManager.dismissCollectionError(localCollectionTag)
+    fun dismissPreviousErrors(collectionId: Long) =
+        syncNotificationManager.dismissCollectionError(collectionId)
 
 
     /** Outcome of [SyncExceptionHandler.handleException], returned to [SyncManager]. */
@@ -70,7 +70,7 @@ class SyncExceptionHandler @AssistedInject constructor(
      * Handles an exception that terminated a sync run by doing an appropriate action.
      *
      * @param exception             exception thrown during sync
-     * @param localCollectionTag    notification tag of the affected local collection
+     * @param collectionId          ID of the affected local collection, used to derive the notification tag
      * @param localCollectionTitle  title of the affected local collection, shown in the notification
      * @param local                 local resource that was being processed when the exception occurred, if any
      * @param remote                remote URL that was being processed when the exception occurred, if any
@@ -79,7 +79,7 @@ class SyncExceptionHandler @AssistedInject constructor(
      */
     suspend fun handleException(
         exception: Throwable,
-        localCollectionTag: String,
+        collectionId: Long,
         localCollectionTitle: String,
         local: LocalResource?,
         remote: Url?
@@ -95,7 +95,7 @@ class SyncExceptionHandler @AssistedInject constructor(
                 action.notifyMessage?.let { message ->
                     syncNotificationManager.notifyException(
                         syncDataType = dataType,
-                        notificationTag = localCollectionTag,
+                        collectionId = collectionId,
                         message = message,
                         title = localCollectionTitle,
                         exception = exception,
@@ -110,7 +110,7 @@ class SyncExceptionHandler @AssistedInject constructor(
                 logger.log(Level.SEVERE, action.logMessage, exception)
                 syncNotificationManager.notifyException(
                     syncDataType = dataType,
-                    notificationTag = localCollectionTag,
+                    collectionId = collectionId,
                     message = action.notifyMessage,
                     title = localCollectionTitle,
                     exception = exception,
@@ -219,30 +219,20 @@ class SyncExceptionHandler @AssistedInject constructor(
      * Logs the exception and notifies the user that a resource couldn't be processed and was ignored.
      *
      * @param exception             exception thrown while processing the resource
-     * @param localCollectionTag    notification tag of the affected local collection
-     * @param collectionInfo        affected collection, shown in the notification
+     * @param collectionInfo        affected collection, shown in the notification and used to derive the notification tag
      * @param fileName              name of the resource that couldn't be processed
      */
     suspend fun handleInvalidResourceException(
         exception: Throwable,
-        localCollectionTag: String,
         collectionInfo: Collection,
         fileName: String
     ) {
         logger.log(Level.WARNING, "Ignoring invalid resource $fileName", exception)
         syncNotificationManager.notifyInvalidResource(
             dataType = dataType,
-            notificationTag = localCollectionTag,
             collection = collectionInfo,
             exception = exception,
-            fileName = fileName,
-            title = context.getString(
-                when (dataType) {
-                    SyncDataType.CONTACTS -> R.string.sync_invalid_contact
-                    SyncDataType.EVENTS -> R.string.sync_invalid_event
-                    SyncDataType.TASKS -> R.string.sync_invalid_task
-                }
-            )
+            fileName = fileName
         )
     }
 

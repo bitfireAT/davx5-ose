@@ -34,9 +34,6 @@ class LocalTaskList (
     override val dbCollectionId: Long?
         get() = dmfsTaskList.syncId?.toLongOrNull()
 
-    override val tag: String
-        get() = "tasks-${dmfsTaskList.account.name}-${dmfsTaskList.id}"
-
     override val title: String
         get() = dmfsTaskList.name ?: dmfsTaskList.id.toString()
 
