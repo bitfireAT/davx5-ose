@@ -4,8 +4,6 @@
 
 package at.bitfire.davdroid.sync
 
-import at.bitfire.dav4jvm.ktor.MultiStatusItem
-import at.bitfire.dav4jvm.ktor.Response
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.resource.LocalResource
@@ -16,9 +14,6 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import io.ktor.client.HttpClient
 import io.ktor.http.content.ByteArrayContent
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.map
 
 class TestSyncManager @AssistedInject constructor(
     @Assisted accountId: AccountId,
@@ -67,15 +62,6 @@ class TestSyncManager @AssistedInject constructor(
     }
 
     override fun syncAlgorithm(capabilities: WebDavCollection.Capabilities) = SyncAlgorithm.PROPFIND_REPORT
-
-    var listAllRemoteResult = emptyList<Pair<Response, Response.HrefRelation>>()
-    var didListAllRemote = false
-    override fun listAllRemote(): Flow<MultiStatusItem> {
-        if (didListAllRemote)
-            throw IllegalStateException("listAllRemote() must not be called twice")
-        didListAllRemote = true
-        return listAllRemoteResult.asFlow().map { MultiStatusItem.Response(it.first, it.second) }
-    }
 
     var processedDownloads = emptyList<WebDavCollection.MultiGetItem>()
     override suspend fun processDownload(result: WebDavCollection.MultiGetItem) {

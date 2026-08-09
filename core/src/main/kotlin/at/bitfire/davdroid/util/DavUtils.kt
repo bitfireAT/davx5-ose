@@ -118,7 +118,10 @@ object DavUtils {
     // extension methods
 
     /**
-     * Safely gets the last segment of the URL, or returns `"/"` if none could be obtained.
+     * Safely gets the last (decoded) segment of the URL, or returns `"/"` if none could be obtained.
+     *
+     * **Attention:** Because it's decoded, it may contain characters like `/` that would
+     * otherwise be path separators. See https://github.com/bitfireAT/davx5-ose/issues/2782.
      */
     val Url.lastSegment: String
         get() = this.segments.lastOrNull { it.isNotEmpty() } ?: "/"

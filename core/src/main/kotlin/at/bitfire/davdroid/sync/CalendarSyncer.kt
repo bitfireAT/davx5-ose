@@ -11,10 +11,13 @@ import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.resource.LocalCalendar
 import at.bitfire.davdroid.resource.LocalCalendarStore
 import at.bitfire.davdroid.resource.remote.CalDavCollection
+import at.bitfire.davdroid.resource.remote.CalendarQueryFilter
 import at.bitfire.synctools.storage.calendar.AndroidCalendarProvider
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import net.fortuna.ical4j.model.Component
+import java.time.ZonedDateTime
 import java.util.logging.Level
 
 /**
@@ -74,13 +77,22 @@ class CalendarSyncer @AssistedInject constructor(
             )
         )
 
+        // calculate time range limit
+        val limitStart = settings.timeRangePastDays?.let { pastDays ->
+            ZonedDateTime.now().minusDays(pastDays.toLong()).toInstant()
+        }
+
         val syncManager = calendarSyncManagerFactory.calendarSyncManager(
             accountId = accountId,
             httpClient = httpClient,
             syncResult = syncResult,
             localCalendar = localCollection,
             collectionInfo = remoteCollectionInfo,
-            remoteCollection = CalDavCollection(httpClient, remoteCollectionInfo.url),
+            remoteCollection = CalDavCollection(
+                httpClient = httpClient,
+                url = remoteCollectionInfo.url,
+                filter = CalendarQueryFilter(components = listOf(Component.VEVENT), timeRangeStart = limitStart)
+            ),
             resync = resync,
             settings = settings
         )

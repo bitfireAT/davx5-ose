@@ -11,6 +11,7 @@ import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.resource.LocalTaskList
 import at.bitfire.davdroid.resource.LocalTaskListStore
 import at.bitfire.davdroid.resource.remote.CalDavCollection
+import at.bitfire.davdroid.resource.remote.CalendarQueryFilter
 import at.bitfire.synctools.storage.TaskProvider
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -84,7 +85,11 @@ class TaskSyncer @AssistedInject constructor(
             syncResult = syncResult,
             localCollection = localCollection,
             collectionInfo = remoteCollectionInfo,
-            remoteCollection = CalDavCollection(httpClient, remoteCollectionInfo.url),
+            remoteCollection = CalDavCollection(
+                httpClient = httpClient,
+                url = remoteCollectionInfo.url,
+                filter = CalendarQueryFilter(components = listOf("VTODO"))
+            ),
             resync = resync,
             settings = settings
         )
