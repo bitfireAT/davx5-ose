@@ -168,7 +168,7 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
                 logger.log(
                     Level.FINE,
                     "Updating local collection {0} with {1}",
-                    arrayOf(dbCollection.title(), dbCollection)
+                    arrayOf(localCollection.dbCollectionId, dbCollection)
                 )
                 dataStore.update(provider, localCollection, dbCollection)
                 newDbCollections -= dbCollection.id
