@@ -174,6 +174,11 @@ class SyncExceptionHandler @AssistedInject constructor(
         - com.android.server.am.CachedAppOptimizer - implements freezer and kill-on-sync-call-while-frozen policy.
         - android.os.BinderProxy - where DeadObjectException is actually thrown once the process is dead.
 
+        See also:
+        - https://developer.android.com/about/versions/14/behavior-changes-all#cached-apps
+        - https://developer.android.com/develop/background-work/services/bound-services#Additional_Notes
+          "Always trap DeadObjectException exceptions, which are thrown when the connection has broken."
+
         Either way, retrying later should work, so rethrow the unwrapped exception as a soft error. */
         exception.causedBy<DeadObjectException>()?.let {
             // return unwrapped for explicitness
