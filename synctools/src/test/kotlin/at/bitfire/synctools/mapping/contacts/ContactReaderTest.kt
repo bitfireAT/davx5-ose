@@ -132,10 +132,9 @@ class ContactReaderTest {
             "FN:John Doe\n\n" +
             "BDAY:20010415T000000+0200\n\n" +
             "END:VCARD\n\n"
-        val contacts = VCardParser().parse(StringReader(vCard)).map { ContactReader.fromVCard(it) }
+        val contact = ContactReader.fromVCard(VCardParser().parse(StringReader(vCard))!!)
 
-        assertEquals(1, contacts.size)
-        contacts.first().birthDay.let { birthday ->
+        contact.birthDay.let { birthday ->
             assertNotNull(birthday)
 
             val date = birthday?.date
@@ -327,7 +326,7 @@ class ContactReaderTest {
             values.add("Dept")
         }
         val c = ContactReader.fromVCard(VCard().apply {
-            setOrganization(org)
+            organization = org
         })
         assertEquals(org, c.organization)
     }

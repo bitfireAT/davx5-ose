@@ -21,7 +21,6 @@ import at.bitfire.synctools.vcard.property.XAbDate
 import ezvcard.property.Birthday
 import ezvcard.property.Email
 import ezvcard.util.PartialDate
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.junit.AfterClass
 import org.junit.Assert.assertArrayEquals
@@ -111,9 +110,9 @@ class AndroidContactTest {
                 "TEL;CELL=;PREF=:+12345\r\n" +
                 "EMAIL;PREF=invalid:test@example.com\r\n" +
                 "END:VCARD\r\n"
-        val contacts = parseVCards(vCard)
+        val contact = parseVCard(vCard)
 
-        val dbContact = AndroidContact(addressBook, contacts.first(), null, null)
+        val dbContact = AndroidContact(addressBook, contact, null, null)
         dbContact.add()
 
         val dbContact2 = addressBook.findContactById(dbContact.id!!)
@@ -170,11 +169,7 @@ class AndroidContactTest {
     }
 
 
-    private fun parseVCards(vCardStr: String): List<Contact> =
-        VCardParser().parse(StringReader(vCardStr)).map { vCard ->
-            runBlocking {
-                ContactReader(vCard).toContact()
-            }
-        }
+    private suspend fun parseVCard(vCardStr: String): Contact =
+        ContactReader(VCardParser().parse(StringReader(vCardStr))!!).toContact()
 
 }
