@@ -22,13 +22,14 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.http.headersOf
 import io.mockk.coVerify
 import io.mockk.every
+import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit4.MockKRule
-import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -51,31 +52,18 @@ class SyncExceptionHandlerTest {
     @RelaxedMockK
     lateinit var syncNotificationManager: SyncNotificationManager
 
+    @MockK
+    lateinit var syncNotificationManagerFactory: SyncNotificationManager.Factory
+
     private val context = RuntimeEnvironment.getApplication()
 
-    private fun handler(dataType: SyncDataType = SyncDataType.EVENTS) = SyncExceptionHandler(
-        accountId = LegacyAccount(Account("test@example.com", "test")),
-        dataType = dataType,
-        context = context,
-        logger = Logger.getLogger(javaClass.name),
-        syncNotificationManagerFactory = mockk {
-            every { create(any()) } returns syncNotificationManager
-        }
-    )
-
-    private suspend fun httpException(status: HttpStatusCode, vararg headers: Pair<String, String>): HttpException {
-        val client = HttpClient(MockEngine {
-            respond(
-                "",
-                status,
-                headersOf(*headers.map { it.first to listOf(it.second) }.toTypedArray())
-            )
-        })
-        return HttpException.fromResponse(client.get("http://example.com"))
+    @Before
+    fun setUp() {
+        every { syncNotificationManagerFactory.create(any()) } returns syncNotificationManager
     }
 
 
-    // classifySyncException() — one test per `when` branch, in source order
+    // classifySyncException()
 
     @Test
     fun `classifySyncException() rethrows LocalStorageException with DeadObjectException cause`() {
@@ -207,7 +195,7 @@ class SyncExceptionHandlerTest {
     }
 
 
-    // handleException() — one test per SyncErrorAction, verifying the generic act-on-it mechanism
+    // handleException()
 
     @Test
     fun `handleException() rethrows`() = runTest {
@@ -218,13 +206,13 @@ class SyncExceptionHandlerTest {
         }
         coVerify(exactly = 0) {
             syncNotificationManager.notifyException(
-                any(),
-                any(),
-                any(),
-                any(),
-                any(),
-                any(),
-                any()
+                syncDataType = any(),
+                notificationTag = any(),
+                message = any(),
+                title = any(),
+                exception = any(),
+                local = any(),
+                remote = any()
             )
         }
     }
@@ -238,13 +226,13 @@ class SyncExceptionHandlerTest {
         assertEquals(SyncExceptionHandler.SyncErrorResult.NoError, result)
         coVerify(exactly = 0) {
             syncNotificationManager.notifyException(
-                any(),
-                any(),
-                any(),
-                any(),
-                any(),
-                any(),
-                any()
+                syncDataType = any(),
+                notificationTag = any(),
+                message = any(),
+                title = any(),
+                exception = any(),
+                local = any(),
+                remote = any()
             )
         }
     }
@@ -258,13 +246,13 @@ class SyncExceptionHandlerTest {
         assertEquals(SyncExceptionHandler.SyncErrorResult.SoftError(delayUntil = null), result)
         coVerify(exactly = 1) {
             syncNotificationManager.notifyException(
-                SyncDataType.EVENTS,
-                "tag",
-                any(),
-                "title",
-                exception,
-                null,
-                null
+                syncDataType = SyncDataType.EVENTS,
+                notificationTag = "tag",
+                message = any(),
+                title = "title",
+                exception = exception,
+                local = null,
+                remote = null
             )
         }
     }
@@ -278,15 +266,35 @@ class SyncExceptionHandlerTest {
         assertEquals(SyncExceptionHandler.SyncErrorResult.HardError, result)
         coVerify(exactly = 1) {
             syncNotificationManager.notifyException(
-                SyncDataType.EVENTS,
-                "tag",
-                "boom",
-                "title",
-                exception,
-                null,
-                null
+                syncDataType = SyncDataType.EVENTS,
+                notificationTag = "tag",
+                message = "boom",
+                title = "title",
+                exception = exception,
+                local = null,
+                remote = null
             )
         }
+    }
+
+
+    private fun handler(dataType: SyncDataType = SyncDataType.EVENTS) = SyncExceptionHandler(
+        accountId = LegacyAccount(Account("test@example.com", "test")),
+        dataType = dataType,
+        context = context,
+        logger = Logger.getLogger(javaClass.name),
+        syncNotificationManagerFactory = syncNotificationManagerFactory
+    )
+
+    private suspend fun httpException(status: HttpStatusCode, vararg headers: Pair<String, String>): HttpException {
+        val client = HttpClient(MockEngine {
+            respond(
+                "",
+                status,
+                headersOf(*headers.map { it.first to listOf(it.second) }.toTypedArray())
+            )
+        })
+        return HttpException.fromResponse(client.get("http://example.com"))
     }
 
 }

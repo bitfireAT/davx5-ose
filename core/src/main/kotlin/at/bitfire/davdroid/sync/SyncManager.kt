@@ -192,8 +192,13 @@ abstract class SyncManager<LocalType : LocalResource>(
                     syncResult.softError = true
                     result.delayUntil?.let { syncResult.delayUntil = it.epochSecond }
                 }
-                SyncExceptionHandler.SyncErrorResult.HardError -> syncResult.hardError = true
-                SyncExceptionHandler.SyncErrorResult.NoError -> {}
+
+                SyncExceptionHandler.SyncErrorResult.HardError ->
+                    syncResult.hardError = true
+
+                SyncExceptionHandler.SyncErrorResult.NoError -> {
+                    // leave syncResult empty (success state)
+                }
             }
         }
     }
