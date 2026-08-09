@@ -12,9 +12,6 @@ class LocalTestCollection(
     override val dbCollectionId: Long = 0L
 ): LocalCollection<LocalTestResource> {
 
-    override val tag = "LocalTestCollection"
-    override val title = "Local Test Collection"
-
     override var lastSyncState: SyncState? = null
 
     val entries = mutableListOf<LocalTestResource>()

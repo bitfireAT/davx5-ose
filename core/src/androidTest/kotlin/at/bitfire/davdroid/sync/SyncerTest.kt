@@ -81,7 +81,6 @@ class SyncerTest {
     fun testUpdateCollections_deletesCollection() = runTest {
         val localCollection = mockk<LocalTestCollection> {
             every { dbCollectionId } returns 0L
-            every { title } returns "Collection to be deleted locally"
         }
 
         // Should delete the localCollection if dbCollection (remote) does not exist
@@ -97,7 +96,6 @@ class SyncerTest {
     fun testUpdateCollections_updatesCollection() = runTest {
         val localCollection = mockk<LocalTestCollection> {
             every { dbCollectionId } returns 0L
-            every { title } returns "The Local Collection"
         }
         val dbCollection = mockk<Collection> {
             every { id } returns 0L
