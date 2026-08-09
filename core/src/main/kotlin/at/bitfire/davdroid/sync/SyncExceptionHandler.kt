@@ -155,10 +155,26 @@ class SyncExceptionHandler @AssistedInject constructor(
      */
     @VisibleForTesting
     internal fun classifySyncException(exception: Throwable): SyncErrorAction {
-        /* A DeadObjectException anywhere in the cause chain means the content provider process died —
-        crashed outright, or (Android 14+) was killed after receiving a binder call while frozen/cached.
-        Either way, retrying later should work, so rethrow the unwrapped exception as a soft error.
-        (See AOSP: android.os.BinderProxy, android.content.ContentProviderClient, CachedAppOptimizer.) */
+        /* A DeadObjectException anywhere in the cause chain means the content provider process died:
+        either because it crashed, or because of this Android 14+ behavior:
+
+        1. Holding a ContentProviderClient doesn't keep the provider process "important" - its priority
+           is derived from whatever's currently bound to it, recomputed continuously.
+        2. Since we're just a background sync worker (not a foreground service), our own importance is
+           low, so the provider's derived importance can drop into the "cached" range even while we're
+           still connected to it.
+        3. Android's app freezer suspends cached processes to save battery/CPU.
+        4. If we then make a synchronous call into it while frozen, Android treats this as a bug on our
+           side and kills the frozen process.
+        5. That kill is what surfaces here as DeadObjectException.
+
+        See AOSP frameworks/base:
+        - OomAdjuster.computeProviderHostOomAdjLSP() - derives a provider's importance (adj) from its client,
+          showing why holding a connection doesn't pin its priority.
+        - com.android.server.am.CachedAppOptimizer - implements freezer and kill-on-sync-call-while-frozen policy.
+        - android.os.BinderProxy - where DeadObjectException is actually thrown once the process is dead.
+
+        Either way, retrying later should work, so rethrow the unwrapped exception as a soft error. */
         exception.causedBy<DeadObjectException>()?.let {
             // return unwrapped for explicitness
             return SyncErrorAction.Rethrow(it)
