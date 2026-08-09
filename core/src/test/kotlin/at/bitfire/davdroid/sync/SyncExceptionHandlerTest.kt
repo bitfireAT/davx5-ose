@@ -219,7 +219,7 @@ class SyncExceptionHandlerTest {
                 collectionId = any(),
                 message = any(),
                 title = any(),
-                exception = any(),
+                e = any(),
                 local = any(),
                 remote = any()
             )
@@ -239,7 +239,7 @@ class SyncExceptionHandlerTest {
                 collectionId = any(),
                 message = any(),
                 title = any(),
-                exception = any(),
+                e = any(),
                 local = any(),
                 remote = any()
             )
@@ -259,7 +259,7 @@ class SyncExceptionHandlerTest {
                 collectionId = 1L,
                 message = any(),
                 title = "title",
-                exception = exception,
+                e = exception,
                 local = null,
                 remote = null
             )
@@ -279,7 +279,7 @@ class SyncExceptionHandlerTest {
                 collectionId = 1L,
                 message = "boom",
                 title = "title",
-                exception = exception,
+                e = exception,
                 local = null,
                 remote = null
             )

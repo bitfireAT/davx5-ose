@@ -45,6 +45,7 @@ class SyncNotificationManager @AssistedInject constructor(
 
     /**
      * Tries to inform the user that the content provider is missing or disabled.
+     *
      * Use [dismissProviderError] to dismiss the notification.
      *
      * @param authority The authority of the content provider.
@@ -94,14 +95,16 @@ class SyncNotificationManager @AssistedInject constructor(
         dismissNotification(authority)
 
     /**
-     * Tries to inform the user that an exception occurred during synchronization. Includes the affected
+     * Notifies the user that an exception occurred during synchronization. Includes the affected
      * local resource, its collection, the URL, the exception and a user message.
+     *
+     * Use [dismissCollectionError] to dismiss the notification.
      *
      * @param syncDataType      The type of data which was synced.
      * @param collectionId      ID of the affected collection, used to derive the notification tag.
      * @param message           The message to show to the user.
      * @param title             The title of the notification (usually the affected collection's title).
-     * @param exception         The exception that occurred.
+     * @param e                 The exception that occurred.
      * @param local             The affected local resource.
      * @param remote            The remote URL that caused the exception.
      */
@@ -110,28 +113,25 @@ class SyncNotificationManager @AssistedInject constructor(
         collectionId: Long,
         message: String,
         title: String,
-        exception: Throwable,
+        e: Throwable,
         local: LocalResource?,
         remote: Url?
     ) {
         val accountName = accountRepository.getAccountName(accountId)
-        notificationRegistry.notifyIfPossible(
-            NotificationRegistry.NOTIFY_SYNC_ERROR,
-            tag = collectionNotificationTag(collectionId)
-        ) {
+        notificationRegistry.notifyIfPossible(NotificationRegistry.NOTIFY_SYNC_ERROR, tag = buildTag(collectionId)) {
             val contentIntent: Intent
-            if (exception is UnauthorizedException) {
+            if (e is UnauthorizedException) {
                 contentIntent = AccountSettingsActivity.createIntent(context, accountId)
             } else {
-                contentIntent = buildDebugInfoIntent(syncDataType, exception, local, remote)
+                contentIntent = buildDebugInfoIntent(syncDataType, e, local, remote)
             }
 
             // to make the PendingIntent unique
-            contentIntent.data = "davdroid:exception/${exception.hashCode()}".toUri()
+            contentIntent.data = "davdroid:exception/${e.hashCode()}".toUri()
 
             val channel: String
             val priority: Int
-            if (exception is IOException) {
+            if (e is IOException) {
                 channel = notificationRegistry.CHANNEL_SYNC_IO_ERRORS
                 priority = NotificationCompat.PRIORITY_MIN
             } else {
@@ -159,39 +159,28 @@ class SyncNotificationManager @AssistedInject constructor(
     }
 
     /**
-     * Sends a notification to inform the user that a push notification has been received, the
-     * sync has been scheduled, but it still has not run.
-     * Use [dismissCollectionError] to dismiss the notification.
+     * Sends a notification to inform the user that a resource couldn't be processed during sync
+     * and was ignored.
      *
      * @param dataType          The type of data which was synced.
      * @param collectionId      ID of the affected collection, used to derive the notification tag.
-     * @param exception         The exception that occurred.
+     * @param e                 The exception that occurred while processing the resource.
      * @param remote            URL of the resource that couldn't be processed, if it could be resolved.
+     * @param title             The title of the notification.
      */
     suspend fun notifyInvalidResource(
         dataType: SyncDataType,
         collectionId: Long,
-        exception: Throwable,
-        remote: Url?
+        e: Throwable,
+        remote: Url?,
+        title: String
     ) {
         val accountName = accountRepository.getAccountName(accountId)
         notificationRegistry.notifyIfPossible(
             NotificationRegistry.NOTIFY_INVALID_RESOURCE,
-            tag = collectionNotificationTag(collectionId)
+            tag = buildTag(collectionId)
         ) {
-            val title = context.getString(
-                when (dataType) {
-                    SyncDataType.CONTACTS -> R.string.sync_invalid_contact
-                    SyncDataType.EVENTS -> R.string.sync_invalid_event
-                    SyncDataType.TASKS -> R.string.sync_invalid_task
-                }
-            )
-            val intent = buildDebugInfoIntent(
-                dataType = dataType,
-                e = exception,
-                local = null,
-                remote = remote
-            )
+            val intent = buildDebugInfoIntent(dataType, e, null, remote)
 
             val builder = NotificationCompat.Builder(context, notificationRegistry.CHANNEL_SYNC_WARNINGS)
             builder.setSmallIcon(R.drawable.ic_warning_notify)
@@ -216,7 +205,7 @@ class SyncNotificationManager @AssistedInject constructor(
      * @param collectionId ID of the collection whose notification should be dismissed.
      */
     fun dismissCollectionError(collectionId: Long) =
-        dismissNotification(collectionNotificationTag(collectionId))
+        dismissNotification(buildTag(collectionId))
 
 
     // helpers
@@ -225,7 +214,7 @@ class SyncNotificationManager @AssistedInject constructor(
      * Builds the notification tag for a given collection. Used to uniquely identify (and dismiss)
      * sync error/warning notifications for that collection.
      */
-    private fun collectionNotificationTag(collectionId: Long) = "collection-$collectionId"
+    private fun buildTag(collectionId: Long) = "collection-$collectionId"
 
     /**
      * Dismisses the sync error notification for a specific tag.

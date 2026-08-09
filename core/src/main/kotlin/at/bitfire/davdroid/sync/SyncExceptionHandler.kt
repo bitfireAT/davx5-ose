@@ -96,7 +96,7 @@ class SyncExceptionHandler @AssistedInject constructor(
                         collectionId = collectionInfo.id,
                         message = message,
                         title = collectionInfo.title(),
-                        exception = exception,
+                        e = exception,
                         local = local,
                         remote = remote
                     )
@@ -111,7 +111,7 @@ class SyncExceptionHandler @AssistedInject constructor(
                     collectionId = collectionInfo.id,
                     message = action.notifyMessage,
                     title = collectionInfo.title(),
-                    exception = exception,
+                    e = exception,
                     local = local,
                     remote = remote
                 )
@@ -229,8 +229,15 @@ class SyncExceptionHandler @AssistedInject constructor(
         syncNotificationManager.notifyInvalidResource(
             dataType = dataType,
             collectionId = collectionId,
-            exception = exception,
-            remote = remote
+            e = exception,
+            remote = remote,
+            title = context.getString(
+                when (dataType) {
+                    SyncDataType.CONTACTS -> R.string.sync_invalid_contact
+                    SyncDataType.EVENTS -> R.string.sync_invalid_event
+                    SyncDataType.TASKS -> R.string.sync_invalid_task
+                }
+            )
         )
     }
 
