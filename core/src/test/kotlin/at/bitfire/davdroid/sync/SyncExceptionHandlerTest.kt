@@ -11,7 +11,6 @@ import at.bitfire.dav4jvm.ktor.exception.DavException
 import at.bitfire.dav4jvm.ktor.exception.HttpException
 import at.bitfire.davdroid.accounts.LegacyAccount
 import at.bitfire.davdroid.db.Collection
-import at.bitfire.davdroid.sync.account.InvalidAccountException
 import at.bitfire.synctools.storage.LocalStorageException
 import at.bitfire.synctools.test.assertThrows
 import io.ktor.client.HttpClient
@@ -196,15 +195,6 @@ class SyncExceptionHandlerTest {
     }
 
     @Test
-    fun `classifySyncException() rethrows InvalidAccountException`() {
-        val exception = InvalidAccountException(Account("test@example.com", "test"))
-
-        val action = handler().classifySyncException(exception)
-
-        assertEquals(SyncExceptionHandler.SyncErrorAction.Rethrow(exception), action)
-    }
-
-    @Test
     fun `classifySyncException() logs a warning for SSLHandshakeException caused by a rejected certificate`() {
         val exception = SSLHandshakeException("rejected").apply { initCause(CertificateException()) }
 
@@ -306,15 +296,15 @@ class SyncExceptionHandlerTest {
         syncNotificationManagerFactory = syncNotificationManagerFactory
     )
 
-    private suspend fun httpException(status: HttpStatusCode, vararg headers: Pair<String, String>): HttpException {
-        val client = HttpClient(MockEngine {
+    private suspend fun httpException(status: HttpStatusCode, vararg headers: Pair<String, String>): HttpException =
+        HttpClient(MockEngine {
             respond(
                 "",
                 status,
                 headersOf(*headers.map { it.first to listOf(it.second) }.toTypedArray())
             )
-        })
-        return HttpException.fromResponse(client.get("http://example.com"))
-    }
+        }).use { client ->
+            HttpException.fromResponse(client.get("http://example.com"))
+        }
 
 }

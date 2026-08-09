@@ -135,6 +135,15 @@ abstract class SyncManager<LocalType : LocalResource>(
     }
 
 
+    /**
+     * Synchronizes [localCollection] with [remoteCollection], using [collectionInfo] as the cached
+     * information about the remote collection.
+     *
+     * Exceptions are handled internally where possible (for instance by showing a notification), but some are rethrown.
+     *
+     * @throws java.util.concurrent.CancellationException if the sync was canceled
+     * @throws android.os.DeadObjectException if the content provider process died
+     */
     suspend fun performSync() = withContext(ioDispatcher) {
         // keep generic ioDispatcher until all LocalStorage calls are suspending or wrapped in withContext(ioDispatcher)
 

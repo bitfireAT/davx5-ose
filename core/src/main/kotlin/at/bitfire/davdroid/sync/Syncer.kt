@@ -261,10 +261,7 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
     )
 
     /**
-     * Prepares the sync:
-     *
-     * - acquire content provider
-     * - handle occurring sync errors
+     * Acquires the content provider, runs the sync, and handles exceptions that are not handled by the SyncManager itself.
      */
     suspend operator fun invoke() {
         logger.info("${dataStore.authority} sync of $accountId initiated (resync=$resync)")

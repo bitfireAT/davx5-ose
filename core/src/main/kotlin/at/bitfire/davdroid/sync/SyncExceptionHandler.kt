@@ -16,7 +16,6 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.resource.LocalResource
-import at.bitfire.davdroid.sync.account.InvalidAccountException
 import at.bitfire.synctools.storage.LocalStorageException
 import com.google.common.base.Throwables
 import dagger.assisted.Assisted
@@ -76,6 +75,9 @@ class SyncExceptionHandler @AssistedInject constructor(
      * @param remote                remote URL that was being processed when the exception occurred, if any
      *
      * @return whether [exception] represents a hard error, soft error or no error
+     *
+     * @throws CancellationException if the sync was canceled
+     * @throws DeadObjectException if the content provider process died (found anywhere in [exception]'s cause chain)
      */
     suspend fun handleException(
         exception: Throwable,
@@ -160,9 +162,8 @@ class SyncExceptionHandler @AssistedInject constructor(
         exception.causedBy<DeadObjectException>()?.let { return SyncErrorAction.Rethrow(it) }
 
         return when (exception) {
-            // Sync was canceled or account has been removed: re-throw to Syncer
-            is CancellationException,
-            is InvalidAccountException ->
+            // Sync was canceled: re-throw to Syncer
+            is CancellationException ->
                 SyncErrorAction.Rethrow(exception)
 
             // Special IOException (check before generic IOException)
