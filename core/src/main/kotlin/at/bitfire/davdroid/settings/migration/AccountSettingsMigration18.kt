@@ -32,12 +32,12 @@ import javax.inject.Inject
  * So this migration again assigns address book accounts to accounts.
  */
 class AccountSettingsMigration18 @Inject constructor(
+    private val accountManager: AccountManager,
     @ApplicationContext private val context: Context,
     private val db: AppDatabase
 ): AccountSettingsMigration {
 
     override fun migrate(account: Account) {
-        val accountManager = AccountManager.get(context)
         db.serviceDao().getByAccountAndTypeBlocking(account.name, Service.TYPE_CARDDAV)?.let { service ->
             db.collectionDao().getByServiceBlocking(service.id).forEach { collection ->
                 // Find associated address book account by collection ID (if it exists)

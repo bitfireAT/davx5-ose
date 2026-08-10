@@ -75,6 +75,7 @@ abstract class AppDatabase: RoomDatabase() {
         @Provides
         @Singleton
         fun appDatabase(
+            accountManager: AccountManager,
             autoMigrations: Set<@JvmSuppressWildcards AutoMigrationSpec>,
             @ApplicationContext context: Context,
             manualMigrations: Set<@JvmSuppressWildcards Migration>,
@@ -106,9 +107,8 @@ abstract class AppDatabase: RoomDatabase() {
                     }
 
                     // remove all accounts because they're unfortunately useless without database
-                    val am = AccountManager.get(context)
-                    for (account in am.getAccountsByType(context.getString(R.string.account_type)))
-                        am.removeAccountExplicitly(account)
+                    for (account in accountManager.getAccountsByType(context.getString(R.string.account_type)))
+                        accountManager.removeAccountExplicitly(account)
                 }
             })
             .build()

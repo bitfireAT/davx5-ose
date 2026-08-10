@@ -22,6 +22,9 @@ import javax.inject.Inject
 @HiltAndroidTest
 class AccountSettingsTest {
 
+    @Inject
+    lateinit var accountManager: AccountManager
+
     @Inject @ApplicationContext
     lateinit var context: Context
 
@@ -53,7 +56,6 @@ class AccountSettingsTest {
             // will run AccountSettings.update
             accountSettingsFactory.create(account, abortOnMissingMigration = true)
 
-            val accountManager = AccountManager.get(context)
             val version = accountManager.getUserData(account, AccountSettings.KEY_SETTINGS_VERSION).toInt()
             assertEquals(AccountSettings.CURRENT_VERSION, version)
         }

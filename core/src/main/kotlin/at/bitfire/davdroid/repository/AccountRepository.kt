@@ -51,6 +51,7 @@ import javax.inject.Inject
  * [at.bitfire.davdroid.resource.LocalAddressBook].
  */
 class AccountRepository @Inject constructor(
+    private val accountManager: AccountManager,
     private val accountSettingsFactory: AccountSettings.Factory,
     private val automaticSyncManager: Lazy<AutomaticSyncManager>,
     @ApplicationContext private val context: Context,
@@ -66,7 +67,6 @@ class AccountRepository @Inject constructor(
 ) {
 
     private val accountType = context.getString(R.string.account_type)
-    private val accountManager = AccountManager.get(context)
 
     private val accountRenameFlow = MutableSharedFlow<AccountRename>()
     
