@@ -11,6 +11,8 @@ import android.content.Context
 import androidx.core.content.contentValuesOf
 import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.accounts.AccountId
+import at.bitfire.davdroid.accounts.AndroidAccountManager
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.settings.AccountSettings
@@ -32,6 +34,7 @@ import javax.annotation.WillNotClose
 class LocalTaskListStore @AssistedInject constructor(
     @Assisted private val providerName: TaskProvider.ProviderName,
     val accountSettingsFactory: AccountSettings.Factory,
+    val androidAccountManager: AndroidAccountManager,
     @ApplicationContext val context: Context,
     val db: AppDatabase,
     val logger: Logger
@@ -102,14 +105,22 @@ class LocalTaskListStore @AssistedInject constructor(
         return values
     }
 
-    override fun getAll(account: Account, client: ContentProviderClient) =
-        DmfsTaskListProvider(account, client, providerName).findTaskLists()
+    override fun getAll(accountId: AccountId, client: ContentProviderClient): List<LocalTaskList> {
+        val account = androidAccountManager.getAndroidAccount(accountId)
+        return DmfsTaskListProvider(account, client, providerName).findTaskLists()
             .map { LocalTaskList(it) }
+    }
 
-    override fun getByDbCollectionId(account: Account, client: ContentProviderClient, dbCollectionId: Long): LocalTaskList? =
-        DmfsTaskListProvider(account, client, providerName)
+    override fun getByDbCollectionId(
+        accountId: AccountId,
+        client: ContentProviderClient,
+        dbCollectionId: Long
+    ): LocalTaskList? {
+        val account = androidAccountManager.getAndroidAccount(accountId)
+        return DmfsTaskListProvider(account, client, providerName)
             .findFirstTaskList("${TaskLists._SYNC_ID}=?", arrayOf(dbCollectionId.toString()))
             ?.let { LocalTaskList(it) }
+    }
 
     override fun update(client: ContentProviderClient, localCollection: LocalTaskList, fromCollection: Collection) {
         logger.log(Level.FINE, "Updating local task list {0}: {1}", arrayOf(fromCollection.url, fromCollection))

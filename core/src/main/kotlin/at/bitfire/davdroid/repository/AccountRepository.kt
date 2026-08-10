@@ -242,11 +242,13 @@ class AccountRepository @Inject constructor(
      * @param oldName current name of the account
      * @param newName new name the account shall be re named to
      *
+     * @return [LegacyAccount] wrapping the new Android account.
+     *
      * @throws InvalidAccountException if the account does not exist
      * @throws IllegalArgumentException if the new account name already exists
      * @throws Exception (or sub-classes) on other errors
      */
-    suspend fun rename(oldName: String, newName: String): Unit = withContext(ioDispatcher) {
+    suspend fun rename(oldName: String, newName: String): LegacyAccount = withContext(ioDispatcher) {
         val oldAccount = fromName(oldName)
         val oldAccountId = LegacyAccount(oldAccount)
         val newAccount = fromName(newName)
@@ -320,10 +322,12 @@ class AccountRepository @Inject constructor(
             // release AccountsCleanupWorker mutex at the end of this async coroutine
             AccountsCleanupWorker.unlockAccountsCleanup()
         }
+
+        newAccountId
     }
 
-    suspend fun rename(accountId: AccountId, newName: String) {
-        when (accountId) {
+    suspend fun rename(accountId: AccountId, newName: String): AccountId {
+        return when (accountId) {
             is LegacyAccount -> rename(accountId.androidAccount.name, newName)
         }
     }
