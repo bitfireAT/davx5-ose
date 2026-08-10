@@ -33,8 +33,10 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import java.util.logging.Logger
 import javax.inject.Inject
+import javax.inject.Provider
 
 class LocalAddressBookStore @Inject constructor(
+    private val accountManager: Provider<AccountManager>,
     private val accountRepository: AccountRepository,
     private val accountSettingsFactory: AccountSettings.Factory,
     private val addressBookAccountProperties: AddressBookAccountProperties,
@@ -190,7 +192,7 @@ class LocalAddressBookStore @Inject constructor(
         val oldAccountId = oldAccount.toAccountId()
         val newAccountId = newAccount.toAccountId()
 
-        val accountManager = AccountManager.get(context)
+        val accountManager = accountManager.get()
         accountManager.getAccountsByType(context.getString(R.string.account_type_address_book))
             .filter { addressBookAccount ->
                 addressBookAccountProperties.getAppAccount(addressBookAccount) == oldAccountId
@@ -201,7 +203,7 @@ class LocalAddressBookStore @Inject constructor(
     }
 
     override fun delete(localCollection: LocalAddressBook) {
-        val accountManager = AccountManager.get(context)
+        val accountManager = accountManager.get()
         accountManager.removeAccountExplicitly(localCollection.addressBookAccount)
     }
 
@@ -211,7 +213,7 @@ class LocalAddressBookStore @Inject constructor(
      * @param id    [Collection.id] to look for
      */
     fun deleteByCollectionId(id: Long) {
-        val accountManager = AccountManager.get(context)
+        val accountManager = accountManager.get()
         val addressBookAccount = accountManager.getAccountsByType(context.getString(R.string.account_type_address_book)).firstOrNull { account ->
             addressBookAccountProperties.getCollectionId(account) == id
         }
@@ -226,7 +228,7 @@ class LocalAddressBookStore @Inject constructor(
      * @return List of address book accounts.
      */
     fun getAddressBookAccounts(accountId: AccountId): List<Account> {
-        val accountManager = AccountManager.get(context)
+        val accountManager = accountManager.get()
         return accountManager.getAccountsByType(context.getString(R.string.account_type_address_book))
             .filter { addressBookAccount ->
                 addressBookAccountProperties.getAppAccount(addressBookAccount) == accountId
@@ -240,7 +242,7 @@ class LocalAddressBookStore @Inject constructor(
      * @return List of address book accounts as flow.
      */
     fun getAddressBookAccountsFlow(accountId: AccountId): Flow<List<Account>> = callbackFlow {
-        val accountManager = AccountManager.get(context)
+        val accountManager = accountManager.get()
         val listener = OnAccountsUpdateListener { _ ->
             trySend(getAddressBookAccounts(accountId))
         }
