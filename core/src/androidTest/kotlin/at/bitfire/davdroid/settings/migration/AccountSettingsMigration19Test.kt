@@ -5,21 +5,17 @@
 package at.bitfire.davdroid.settings.migration
 
 import android.accounts.Account
-import android.content.Context
-import android.util.Log
-import androidx.hilt.work.HiltWorkerFactory
-import androidx.work.Configuration
 import androidx.work.WorkManager
-import androidx.work.testing.WorkManagerTestInitHelper
 import at.bitfire.davdroid.accounts.toAccountId
+import at.bitfire.davdroid.di.SupportLibsModule
 import at.bitfire.davdroid.sync.AutomaticSyncManager
-import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import dagger.hilt.android.testing.UninstallModules
+import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit4.MockKRule
-import io.mockk.mockkObject
 import io.mockk.verify
 import org.junit.Before
 import org.junit.Rule
@@ -27,10 +23,8 @@ import org.junit.Test
 import javax.inject.Inject
 
 @HiltAndroidTest
+@UninstallModules(SupportLibsModule::class)
 class AccountSettingsMigration19Test {
-
-    @Inject @ApplicationContext
-    lateinit var context: Context
 
     @BindValue
     @RelaxedMockK
@@ -39,8 +33,8 @@ class AccountSettingsMigration19Test {
     @Inject
     lateinit var migration: AccountSettingsMigration19
 
-    @Inject
-    lateinit var workerFactory: HiltWorkerFactory
+    @BindValue @MockK(relaxed = true)
+    lateinit var workManager: WorkManager
 
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
@@ -52,21 +46,11 @@ class AccountSettingsMigration19Test {
     @Before
     fun setUp() {
         hiltRule.inject()
-
-        // Initialize WorkManager for instrumentation tests.
-        val config = Configuration.Builder()
-            .setMinimumLoggingLevel(Log.DEBUG)
-            .setWorkerFactory(workerFactory)
-            .build()
-        WorkManagerTestInitHelper.initializeTestWorkManager(context, config)
     }
 
 
     @Test
     fun testMigrate_CancelsOldWorkersAndUpdatesAutomaticSync() {
-        val workManager = WorkManager.getInstance(context)
-        mockkObject(workManager)
-
         val account = Account("Some", "Test")
         migration.migrate(account)
 

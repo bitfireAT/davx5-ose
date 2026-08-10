@@ -13,15 +13,17 @@ import androidx.work.WorkerFactory
 import androidx.work.WorkerParameters
 import androidx.work.testing.TestListenableWorkerBuilder
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.TestUtils
 import at.bitfire.davdroid.accounts.LegacyAccount
+import at.bitfire.davdroid.di.SupportLibsModule
 import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.account.TestAccount
 import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import dagger.hilt.android.testing.UninstallModules
+import io.mockk.impl.annotations.MockK
 import io.mockk.junit4.MockKRule
-import io.mockk.mockkObject
 import io.mockk.verify
 import kotlinx.coroutines.test.runTest
 import org.junit.After
@@ -32,6 +34,7 @@ import org.junit.Test
 import javax.inject.Inject
 
 @HiltAndroidTest
+@UninstallModules(SupportLibsModule::class)
 class PeriodicSyncWorkerTest {
 
     @Inject @ApplicationContext
@@ -39,6 +42,9 @@ class PeriodicSyncWorkerTest {
 
     @Inject
     lateinit var syncWorkerFactory: PeriodicSyncWorker.Factory
+
+    @BindValue @MockK(relaxed = true)
+    lateinit var workManager: WorkManager
 
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
@@ -51,7 +57,6 @@ class PeriodicSyncWorkerTest {
     @Before
     fun setUp() {
         hiltRule.inject()
-        TestUtils.setUpWorkManager(context)
 
         account = TestAccount.create()
     }
@@ -71,10 +76,6 @@ class PeriodicSyncWorkerTest {
             .putString(BaseSyncWorker.INPUT_DATA_TYPE, SyncDataType.EVENTS.toString())
             .putAccountId(LegacyAccount(invalidAccount))
             .build()
-
-        // observe WorkManager cancellation call
-        val workManager = WorkManager.getInstance(context)
-        mockkObject(workManager)
 
         // run test worker, expect failure
         val testWorker = TestListenableWorkerBuilder<PeriodicSyncWorker>(context, inputData)
