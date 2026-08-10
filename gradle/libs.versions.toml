@@ -33,7 +33,7 @@ hilt = "2.60.1"
 # keep in sync with ksp version
 kotlin = "2.4.10"
 kotlinx-coroutines = "1.11.0"
-ksp = "2.3.9"
+ksp = "2.3.11"
 ktor = "3.5.2"
 mikepenz-aboutLibraries = "15.0.4"
 mockk = "1.14.11"
