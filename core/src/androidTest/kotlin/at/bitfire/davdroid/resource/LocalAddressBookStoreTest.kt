@@ -97,7 +97,7 @@ class LocalAddressBookStoreTest {
         every { accountManager.getUserData(any(), any()) } returns null
         every {
             accountManager.getUserData(
-                account,
+                any(),
                 AccountSettings.KEY_SETTINGS_VERSION
             )
         } returns AccountSettings.CURRENT_VERSION.toString()
