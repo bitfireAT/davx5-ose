@@ -242,7 +242,7 @@ class AccountRepository @Inject constructor(
      * @param oldName current name of the account
      * @param newName new name the account shall be re named to
      *
-     * @returns [LegacyAccount] wrapping the new Android account.
+     * @return [LegacyAccount] wrapping the new Android account.
      *
      * @throws InvalidAccountException if the account does not exist
      * @throws IllegalArgumentException if the new account name already exists
