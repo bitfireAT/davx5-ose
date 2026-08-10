@@ -26,7 +26,7 @@ jobs:
           java-version: 21   # keep in sync with gradle/gradle-daemon-jvm.properties
 
       # See https://community.gradle.org/github-actions/docs/setup-gradle/ for more information
-      - uses: gradle/actions/setup-gradle@v6.2.0            # creates build cache when on main branch
+      - uses: gradle/actions/setup-gradle@v6.3.0            # creates build cache when on main branch
         with:
           cache-encryption-key: ${{ secrets.gradle_encryption_key }}
 
@@ -43,7 +43,7 @@ jobs:
         with:
           distribution: temurin
           java-version: 21   # keep in sync with gradle/gradle-daemon-jvm.properties
-      - uses: gradle/actions/setup-gradle@v6.2.0
+      - uses: gradle/actions/setup-gradle@v6.3.0
         with:
           cache-encryption-key: ${{ secrets.gradle_encryption_key }}
           cache-read-only: true
@@ -71,7 +71,7 @@ jobs:
       fdroid-packages: "at.techbee.jtx org.dmfs.tasks org.tasks"
       API_LEVEL: ${{ matrix.api-level }}
     steps:
-      - uses: gradle/actions/setup-gradle@v6.2.0
+      - uses: gradle/actions/setup-gradle@v6.3.0
         with:
           cache-encryption-key: ${{ secrets.gradle_encryption_key }}
           cache-read-only: true
