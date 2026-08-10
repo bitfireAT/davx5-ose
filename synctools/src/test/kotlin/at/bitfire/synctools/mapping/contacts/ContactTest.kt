@@ -34,7 +34,7 @@ import java.util.LinkedList
 class ContactTest {
 
     private suspend fun parseVCard(reader: Reader): Contact {
-        val vCard = VCardParser().parse(reader).first()
+        val vCard = VCardParser().parse(reader)!!
         return ContactReader.fromVCard(vCard)
     }
 

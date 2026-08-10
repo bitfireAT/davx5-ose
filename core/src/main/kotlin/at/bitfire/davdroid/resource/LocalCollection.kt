@@ -13,14 +13,8 @@ import kotlinx.coroutines.flow.Flow
  */
 interface LocalCollection<out T: LocalResource> {
 
-    /** a tag that uniquely identifies the collection (DAVx5-wide) */
-    val tag: String
-
     /** ID of the collection in the database (corresponds to [at.bitfire.davdroid.db.Collection.id]) */
     val dbCollectionId: Long?
-
-    /** collection title (used for user notifications etc.) **/
-    val title: String
 
     var lastSyncState: SyncState?
 

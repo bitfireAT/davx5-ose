@@ -31,7 +31,6 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import ezvcard.VCardVersion
-import ezvcard.io.CannotParseException
 import io.ktor.client.HttpClient
 import io.ktor.http.ContentType
 import io.ktor.http.content.TextContent
@@ -229,21 +228,15 @@ class ContactsSyncManager @AssistedInject constructor(
     private suspend fun processCard(fileName: String, eTag: String, reader: Reader, downloader: Contact.Downloader) {
         logger.info("Processing CardDAV resource $fileName")
 
-        val newData = try {
-            // parse vCard
-            val vCard = VCardParser().parse(reader).firstOrNull()
-            if (vCard == null) {
-                logger.warning("Received vCard without data, ignoring")
-                return
-            }
-
-            // map to Contact
-            ContactReader.fromVCard(vCard, downloader)
-        } catch (e: CannotParseException) {
-            logger.log(Level.SEVERE, "Received invalid vCard, ignoring", e)
-            notifyInvalidResource(e, fileName)
+        // parse vCard
+        val vCard = VCardParser().parse(reader)
+        if (vCard == null) {
+            logger.warning("Received vCard without data, ignoring")
             return
         }
+
+        // map to Contact
+        val newData = ContactReader.fromVCard(vCard, downloader)
 
         groupStrategy.verifyContactBeforeSaving(newData)
 
