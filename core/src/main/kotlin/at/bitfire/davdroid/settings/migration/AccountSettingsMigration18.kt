@@ -19,7 +19,6 @@ import dagger.hilt.components.SingletonComponent
 import dagger.multibindings.IntKey
 import dagger.multibindings.IntoMap
 import javax.inject.Inject
-import javax.inject.Provider
 
 /**
  * v17 had removed the binding between address book accounts and accounts and introduced
@@ -33,13 +32,12 @@ import javax.inject.Provider
  * So this migration again assigns address book accounts to accounts.
  */
 class AccountSettingsMigration18 @Inject constructor(
-    private val accountManager: Provider<AccountManager>,
+    private val accountManager: AccountManager,
     @ApplicationContext private val context: Context,
     private val db: AppDatabase
 ): AccountSettingsMigration {
 
     override fun migrate(account: Account) {
-        val accountManager = accountManager.get()
         db.serviceDao().getByAccountAndTypeBlocking(account.name, Service.TYPE_CARDDAV)?.let { service ->
             db.collectionDao().getByServiceBlocking(service.id).forEach { collection ->
                 // Find associated address book account by collection ID (if it exists)

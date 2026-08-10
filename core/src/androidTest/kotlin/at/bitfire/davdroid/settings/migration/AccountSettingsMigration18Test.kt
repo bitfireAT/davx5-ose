@@ -34,7 +34,7 @@ import javax.inject.Inject
 @UninstallModules(AndroidServicesModule::class)
 class AccountSettingsMigration18Test {
 
-    @BindValue @MockK
+    @BindValue @MockK(relaxed = true)
     lateinit var accountManager: AccountManager
 
     @Inject @ApplicationContext

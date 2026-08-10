@@ -19,10 +19,9 @@ import dagger.hilt.components.SingletonComponent
 import dagger.multibindings.IntKey
 import dagger.multibindings.IntoMap
 import javax.inject.Inject
-import javax.inject.Provider
 
 class AccountSettingsMigration7 @Inject constructor(
-    private val accountManager: Provider<AccountManager>,
+    private val accountManager: AccountManager,
     @ApplicationContext private val context: Context
 ): AccountSettingsMigration {
 
@@ -34,7 +33,6 @@ class AccountSettingsMigration7 @Inject constructor(
         }
 
         // update allowed WiFi settings key
-        val accountManager = accountManager.get()
         val onlySSID = accountManager.getUserData(account, "wifi_only_ssid")
         accountManager.setAndVerifyUserData(account, AccountSettings.KEY_WIFI_ONLY_SSIDS, onlySSID)
         accountManager.setAndVerifyUserData(account, "wifi_only_ssid", null)

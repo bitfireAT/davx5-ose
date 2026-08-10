@@ -33,7 +33,6 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import java.io.Writer
-import javax.inject.Provider
 import javax.inject.Singleton
 
 /**
@@ -76,7 +75,7 @@ abstract class AppDatabase: RoomDatabase() {
         @Provides
         @Singleton
         fun appDatabase(
-            accountManager: Provider<AccountManager>,
+            accountManager: AccountManager,
             autoMigrations: Set<@JvmSuppressWildcards AutoMigrationSpec>,
             @ApplicationContext context: Context,
             manualMigrations: Set<@JvmSuppressWildcards Migration>,
@@ -108,9 +107,8 @@ abstract class AppDatabase: RoomDatabase() {
                     }
 
                     // remove all accounts because they're unfortunately useless without database
-                    val am = accountManager.get()
-                    for (account in am.getAccountsByType(context.getString(R.string.account_type)))
-                        am.removeAccountExplicitly(account)
+                    for (account in accountManager.getAccountsByType(context.getString(R.string.account_type)))
+                        accountManager.removeAccountExplicitly(account)
                 }
             })
             .build()

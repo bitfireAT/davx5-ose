@@ -54,7 +54,7 @@ class LocalAddressBookStoreTest {
     @RelaxedMockK
     lateinit var provider: ContentProviderClient
 
-    @BindValue @MockK
+    @BindValue @MockK(relaxed = true)
     lateinit var accountManager: AccountManager
 
     @BindValue @MockK(relaxed = true)
@@ -91,7 +91,10 @@ class LocalAddressBookStoreTest {
             addressBookAccountType
         )
 
-        // AccountSettings (created internally by LocalAddressBookStore) also uses the shared accountManager mock
+        // AccountSettings (created internally by LocalAddressBookStore) also uses the shared accountManager mock.
+        // Relaxed mocks default String? results to "" instead of null, so stub null explicitly before overriding
+        // the one key (settings version) that must have a real value to avoid running migrations.
+        every { accountManager.getUserData(any(), any()) } returns null
         every {
             accountManager.getUserData(
                 account,

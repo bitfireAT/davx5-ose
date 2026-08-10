@@ -192,8 +192,7 @@ class LocalAddressBookStore @Inject constructor(
         val oldAccountId = oldAccount.toAccountId()
         val newAccountId = newAccount.toAccountId()
 
-        val accountManager = accountManager.get()
-        accountManager.getAccountsByType(context.getString(R.string.account_type_address_book))
+        accountManager.get().getAccountsByType(context.getString(R.string.account_type_address_book))
             .filter { addressBookAccount ->
                 addressBookAccountProperties.getAppAccount(addressBookAccount) == oldAccountId
             }
@@ -203,8 +202,7 @@ class LocalAddressBookStore @Inject constructor(
     }
 
     override fun delete(localCollection: LocalAddressBook) {
-        val accountManager = accountManager.get()
-        accountManager.removeAccountExplicitly(localCollection.addressBookAccount)
+        accountManager.get().removeAccountExplicitly(localCollection.addressBookAccount)
     }
 
     /**
@@ -227,13 +225,11 @@ class LocalAddressBookStore @Inject constructor(
      * @param accountId [AccountId] of the app account that owns the address books.
      * @return List of address book accounts.
      */
-    fun getAddressBookAccounts(accountId: AccountId): List<Account> {
-        val accountManager = accountManager.get()
-        return accountManager.getAccountsByType(context.getString(R.string.account_type_address_book))
+    fun getAddressBookAccounts(accountId: AccountId): List<Account> =
+        accountManager.get().getAccountsByType(context.getString(R.string.account_type_address_book))
             .filter { addressBookAccount ->
                 addressBookAccountProperties.getAppAccount(addressBookAccount) == accountId
             }
-    }
 
     /**
      * Returns all address book accounts that belong to the given account in a flow.

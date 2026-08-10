@@ -27,7 +27,6 @@ import dagger.multibindings.IntKey
 import dagger.multibindings.IntoMap
 import org.dmfs.tasks.contract.TaskContract.TaskLists
 import javax.inject.Inject
-import javax.inject.Provider
 
 /**
  * [at.bitfire.davdroid.sync.Syncer] now users collection IDs instead of URLs to match
@@ -38,7 +37,7 @@ import javax.inject.Provider
  * all local collections would be deleted and re-created.
  */
 class AccountSettingsMigration20 @Inject constructor(
-    private val accountManager: Provider<AccountManager>,
+    private val accountManager: AccountManager,
     private val addressBookStore: LocalAddressBookStore,
     private val calendarStore: LocalCalendarStore,
     private val collectionRepository: DavCollectionRepository,
@@ -61,7 +60,7 @@ class AccountSettingsMigration20 @Inject constructor(
     internal fun migrateAddressBooks(account: Account, cardDavServiceId: Long) {
         addressBookStore.acquireContentProvider()?.use { provider ->
             for (addressBook in addressBookStore.getAll(account, provider)) {
-                val url = accountManager.get().getUserData(addressBook.addressBookAccount, ADDRESS_BOOK_USER_DATA_URL)
+                val url = accountManager.getUserData(addressBook.addressBookAccount, ADDRESS_BOOK_USER_DATA_URL)
                     ?: continue
                 val collection = collectionRepository.getByServiceAndUrl(cardDavServiceId, url) ?: continue
                 addressBook.dbCollectionId = collection.id

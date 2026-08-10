@@ -18,14 +18,13 @@ import dagger.hilt.components.SingletonComponent
 import dagger.multibindings.IntKey
 import dagger.multibindings.IntoMap
 import javax.inject.Inject
-import javax.inject.Provider
 
 /**
  * The tasks sync interval should be stored in account settings. It's used to set the sync interval
  * again when the tasks provider is switched.
  */
 class AccountSettingsMigration11 @Inject constructor(
-    private val accountManager: Provider<AccountManager>,
+    private val accountManager: AccountManager,
     private val tasksAppManager: TasksAppManager
 ): AccountSettingsMigration {
 
@@ -33,8 +32,11 @@ class AccountSettingsMigration11 @Inject constructor(
         tasksAppManager.currentProvider()?.let { provider ->
             val interval = getSyncFrameworkInterval(account, provider.authority)
             if (interval != null)
-                accountManager.get()
-                    .setAndVerifyUserData(account, AccountSettings.KEY_SYNC_INTERVAL_TASKS, interval.toString())
+                accountManager.setAndVerifyUserData(
+                    account,
+                    AccountSettings.KEY_SYNC_INTERVAL_TASKS,
+                    interval.toString()
+                )
         }
     }
 
