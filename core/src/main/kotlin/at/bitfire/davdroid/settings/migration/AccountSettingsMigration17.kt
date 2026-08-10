@@ -27,12 +27,14 @@ import dagger.multibindings.IntoMap
 import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
+import javax.inject.Provider
 
 /**
  * With DAVx5 4.4.3 address book account names now contain the collection ID as a unique
  * identifier. We need to update the address book account names.
  */
 class AccountSettingsMigration17 @Inject constructor(
+    private val accountManager: Provider<AccountManager>,
     private val accountSettingsFactory: AccountSettings.Factory,
     private val collectionRepository: DavCollectionRepository,
     @ApplicationContext private val context: Context,
@@ -53,7 +55,7 @@ class AccountSettingsMigration17 @Inject constructor(
         }?.use { provider ->
             val service = serviceRepository.getByAccountAndTypeBlocking(account.name, Service.TYPE_CARDDAV) ?: return@use
 
-            val accountManager = AccountManager.get(context)
+            val accountManager = accountManager.get()
             // Get all old address books of this account, i.e. the ones which have a "real_account_name" of this account.
             // After this migration is run, address books won't be associated to accounts anymore but only to their respective collection/URL.
             val oldAddressBookAccounts = accountManager.getAccountsByType(addressBookAccountType)

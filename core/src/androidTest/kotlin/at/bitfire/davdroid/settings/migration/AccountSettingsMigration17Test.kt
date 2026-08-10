@@ -12,7 +12,6 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
-import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.sync.account.TestAccount
 import at.bitfire.davdroid.util.DavUtils.toUrl
 import at.bitfire.synctools.util.setAndVerifyUserData
@@ -28,6 +27,9 @@ import javax.inject.Inject
 
 @HiltAndroidTest
 class AccountSettingsMigration17Test {
+
+    @Inject
+    lateinit var accountManager: AccountManager
 
     @Inject @ApplicationContext
     lateinit var context: Context
@@ -55,7 +57,6 @@ class AccountSettingsMigration17Test {
     fun testMigrate_OldAddressBook_CollectionInDB() {
         val localAddressBookUserDataUrl = "url"
         TestAccount.provide(version = 16) { account ->
-            val accountManager = AccountManager.get(context)
             val addressBookAccountType = context.getString(R.string.account_type_address_book)
             var addressBookAccount = Account("Address Book", addressBookAccountType)
             assertTrue(accountManager.addAccountExplicitly(addressBookAccount, null, null))

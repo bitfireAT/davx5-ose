@@ -14,6 +14,7 @@ import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.di.AndroidServicesModule
+import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.account.TestAccount
 import at.bitfire.davdroid.util.DavUtils.toUrl
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -89,6 +90,14 @@ class LocalAddressBookStoreTest {
             "MrRobert@example.com",
             addressBookAccountType
         )
+
+        // AccountSettings (created internally by LocalAddressBookStore) also uses the shared accountManager mock
+        every {
+            accountManager.getUserData(
+                account,
+                AccountSettings.KEY_SETTINGS_VERSION
+            )
+        } returns AccountSettings.CURRENT_VERSION.toString()
     }
 
     @After

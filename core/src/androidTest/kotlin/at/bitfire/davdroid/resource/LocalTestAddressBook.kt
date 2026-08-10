@@ -16,11 +16,10 @@ import java.util.UUID
 import javax.inject.Inject
 
 class LocalTestAddressBook @Inject constructor(
+    private val accountManager: AccountManager,
     @ApplicationContext private val context: Context,
     private val factory: LocalAddressBook.Factory
 ) {
-
-    private val accountManager = AccountManager.get(context)
 
     fun provide(
         accountId: AccountId,

@@ -23,6 +23,7 @@ import io.ktor.client.HttpClient
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import java.util.logging.Level
+import javax.inject.Provider
 
 /**
  * Sync logic for address books
@@ -33,6 +34,7 @@ class AddressBookSyncer @AssistedInject constructor(
     @Assisted val syncFrameworkUpload: Boolean,
     @Assisted syncResult: SyncResult,
     @Assisted settings: SyncSettings,
+    private val accountManager: Provider<AccountManager>,
     addressBookStore: LocalAddressBookStore,
     private val contactsSyncManagerFactory: ContactsSyncManager.Factory,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher
@@ -130,7 +132,7 @@ class AddressBookSyncer @AssistedInject constructor(
     ) {
         val groupMethod = settings.groupMethod.name
 
-        val accountManager = AccountManager.get(context)
+        val accountManager = accountManager.get()
         accountManager.getUserData(addressBook.addressBookAccount, PREVIOUS_GROUP_METHOD)?.let { previousGroupMethod ->
             if (previousGroupMethod != groupMethod) {
                 logger.info("Group method changed, deleting all local contacts/groups")

@@ -45,6 +45,7 @@ import javax.inject.Provider
 class AccountSettings @AssistedInject constructor(
     @Assisted val account: Account,
     @Assisted val abortOnMissingMigration: Boolean,
+    private val accountManager: AccountManager,
     private val automaticSyncManager: AutomaticSyncManager,
     @ApplicationContext private val context: Context,
     private val logger: Logger,
@@ -66,7 +67,6 @@ class AccountSettings @AssistedInject constructor(
             throw IllegalThreadStateException("AccountSettings may not be used on main thread")
     }
 
-    val accountManager: AccountManager = AccountManager.get(context)
     init {
         if (account.type != context.getString(R.string.account_type))
             throw IllegalArgumentException("Invalid account type for AccountSettings(): ${account.type}")
@@ -153,8 +153,7 @@ class AccountSettings @AssistedInject constructor(
             SyncDataType.EVENTS -> KEY_SYNC_INTERVAL_CALENDARS
             SyncDataType.TASKS -> KEY_SYNC_INTERVAL_TASKS
         }
-        val seconds = accountManager.getUserData(account, key)?.toLong()
-        return when (seconds) {
+        return when (val seconds = accountManager.getUserData(account, key)?.toLong()) {
             null -> settingsManager.getLongOrNull(Settings.DEFAULT_SYNC_INTERVAL)   // no setting → default value
             SYNC_INTERVAL_MANUALLY -> null      // manual sync
             else -> seconds

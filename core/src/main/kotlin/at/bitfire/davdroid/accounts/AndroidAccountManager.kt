@@ -6,16 +6,15 @@ package at.bitfire.davdroid.accounts
 
 import android.accounts.Account
 import android.accounts.AccountManager
-import android.content.Context
 import android.os.Build
-import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
+import javax.inject.Provider
 
 /**
  * A class to manage Android [Account]s.
  */
 class AndroidAccountManager @Inject constructor(
-    @ApplicationContext private val context: Context
+    private val accountManager: Provider<AccountManager>
 ) {
     fun getAndroidAccount(accountId: AccountId): Account {
         return when (accountId) {
@@ -35,7 +34,7 @@ class AndroidAccountManager @Inject constructor(
             // Warning: If setAccountVisibility is called, Android 12 broadcasts the
             // AccountManager.LOGIN_ACCOUNTS_CHANGED_ACTION Intent. This cancels running syncs and starts them again!
             // So make sure setAccountVisibility is only called when necessary.
-            val accountManager = AccountManager.get(context)
+            val accountManager = accountManager.get()
             val account = getAndroidAccount(accountId)
 
             if (accountManager.getAccountVisibility(account, packageName) != AccountManager.VISIBILITY_VISIBLE) {

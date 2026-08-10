@@ -28,6 +28,12 @@ Android library. The sync engine, database layer, and Jetpack Compose UI for DAV
 - Add new Hilt bindings and qualifiers in `di/` (same style as the existing ones).
 - ViewModels use `@HiltViewModel`.
 - WorkManager workers integrate via the Hilt worker factory — do not construct workers manually.
+- Android system services that have no `@Inject` constructor (e.g. `AccountManager`) are bound via `@Provides` in a
+  `di/` module (e.g. `AndroidServicesModule`) — never call their static `.get(context)`/similar factory method directly
+  in a Hilt-managed class.
+- For such bindings, pick the injection shape by how often it's actually *called at runtime* (not how many call sites
+  reference it): inject the type directly when it's on the hot path; inject `dagger.Lazy<T>` when a given instance has a
+  good chance of never needing it; inject `javax.inject.Provider<T>` when it's only invoked rarely.
 
 #### Patterns
 

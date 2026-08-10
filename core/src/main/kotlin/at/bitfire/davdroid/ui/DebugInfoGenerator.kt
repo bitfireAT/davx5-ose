@@ -64,6 +64,7 @@ import java.util.TimeZone
 import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
+import javax.inject.Provider
 import kotlin.use
 import at.bitfire.synctools.storage.calendar.EventsContract.asSyncAdapter as asCalendarSyncAdapter
 import at.bitfire.synctools.storage.contacts.AddressContract.asSyncAdapter as asContactsSyncAdapter
@@ -71,6 +72,7 @@ import at.techbee.jtx.JtxContract.asSyncAdapter as asJtxSyncAdapter
 
 @WorkerThread
 class DebugInfoGenerator @Inject constructor(
+    private val accountManager: Provider<AccountManager>,
     private val accountRepository: AccountRepository,
     private val accountSettingsFactory: AccountSettings.Factory,
     private val addressBookAccountProperties: AddressBookAccountProperties,
@@ -319,7 +321,7 @@ class DebugInfoGenerator @Inject constructor(
 
         // accounts
         writer.append("\nACCOUNTS")
-        val accountManager = AccountManager.get(context)
+        val accountManager = accountManager.get()
         val accountIds = accountRepository.getAllBlocking()
         for (accountId in accountIds)
             dumpAccount(accountId, writer)
