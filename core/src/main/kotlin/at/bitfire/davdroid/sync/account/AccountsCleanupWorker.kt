@@ -105,10 +105,10 @@ class AccountsCleanupWorker @AssistedInject constructor(
         /**
          * Enqueues [AccountsCleanupWorker] to be run once as soon as possible.
          */
-        fun enqueue(context: Context) {
+        fun enqueue(workManager: WorkManager) {
             // run once
             val rq = OneTimeWorkRequestBuilder<AccountsCleanupWorker>()
-            WorkManager.getInstance(context).enqueue(rq.build())
+            workManager.enqueue(rq.build())
         }
 
         /**
@@ -116,10 +116,10 @@ class AccountsCleanupWorker @AssistedInject constructor(
          *
          * Non-blocking ([WorkManager.enqueueUniquePeriodicWork]).
          */
-        fun enable(context: Context) {
+        fun enable(workManager: WorkManager) {
             // run every day
             val rq = PeriodicWorkRequestBuilder<AccountsCleanupWorker>(Duration.ofDays(1))
-            WorkManager.getInstance(context).enqueueUniquePeriodicWork(NAME, ExistingPeriodicWorkPolicy.UPDATE, rq.build())
+            workManager.enqueueUniquePeriodicWork(NAME, ExistingPeriodicWorkPolicy.UPDATE, rq.build())
         }
 
     }

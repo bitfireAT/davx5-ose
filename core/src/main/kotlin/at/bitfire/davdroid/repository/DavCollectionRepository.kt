@@ -4,7 +4,7 @@
 
 package at.bitfire.davdroid.repository
 
-import android.content.Context
+import androidx.work.WorkManager
 import at.bitfire.dav4jvm.XmlUtils
 import at.bitfire.dav4jvm.XmlUtils.insertTag
 import at.bitfire.dav4jvm.ktor.DavResource
@@ -27,7 +27,6 @@ import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.synctools.icalendar.componentListOf
 import at.bitfire.synctools.icalendar.propertyListOf
 import dagger.Lazy
-import dagger.hilt.android.qualifiers.ApplicationContext
 import io.ktor.http.URLBuilder
 import io.ktor.http.Url
 import io.ktor.http.appendPathSegments
@@ -48,12 +47,12 @@ import javax.inject.Inject
  */
 class DavCollectionRepository @Inject constructor(
     private val accountRepository: AccountRepository,
-    @ApplicationContext private val context: Context,
     private val db: AppDatabase,
     private val logger: Logger,
     private val httpClientBuilder: HttpClientBuilder,
     private val productIds: Lazy<ProductIds>,
-    private val serviceRepository: DavServiceRepository
+    private val serviceRepository: DavServiceRepository,
+    private val workManager: WorkManager
 ) {
 
     private val dao = db.collectionDao()
@@ -185,7 +184,7 @@ class DavCollectionRepository @Inject constructor(
 
         // Trigger service detection (because the collection may actually have other properties than the ones we have inserted).
         // Some servers are known to change the supported components (VEVENT, …) after creation.
-        RefreshCollectionsWorker.enqueue(context, homeSet.serviceId)
+        RefreshCollectionsWorker.enqueue(workManager, homeSet.serviceId)
     }
 
     /** Deletes the given collection from the server and the database. */

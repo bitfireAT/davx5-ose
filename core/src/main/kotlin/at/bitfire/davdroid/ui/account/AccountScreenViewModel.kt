@@ -11,6 +11,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.work.WorkManager
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.accounts.toAccountId
@@ -59,7 +60,8 @@ class AccountScreenViewModel @AssistedInject constructor(
     private val logger: Logger,
     serviceRepository: DavServiceRepository,
     private val syncWorkerManager: SyncWorkerManager,
-    tasksAppManager: TasksAppManager
+    tasksAppManager: TasksAppManager,
+    private val workManager: WorkManager
 ): ViewModel() {
 
     @AssistedFactory
@@ -190,10 +192,10 @@ class AccountScreenViewModel @AssistedInject constructor(
 
     fun refreshCollections() {
         cardDavSvc.value?.let { svc ->
-            RefreshCollectionsWorker.enqueue(context, svc.id)
+            RefreshCollectionsWorker.enqueue(workManager, svc.id)
         }
         calDavSvc.value?.let { svc ->
-            RefreshCollectionsWorker.enqueue(context, svc.id)
+            RefreshCollectionsWorker.enqueue(workManager, svc.id)
         }
     }
 

@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.sync.worker
 
-import android.content.Context
 import androidx.work.BackoffPolicy
 import androidx.work.Constraints
 import androidx.work.Data
@@ -23,7 +22,6 @@ import androidx.work.WorkQuery
 import androidx.work.WorkRequest
 import androidx.work.await
 import at.bitfire.davdroid.accounts.AccountId
-import at.bitfire.davdroid.accounts.toAndroidAccount
 import at.bitfire.davdroid.push.PushNotificationManager
 import at.bitfire.davdroid.sync.ResyncType
 import at.bitfire.davdroid.sync.SyncDataType
@@ -36,7 +34,6 @@ import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.RESYNC_ENTRIES
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.RESYNC_LIST
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.commonTag
 import dagger.Lazy
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.guava.await
@@ -52,10 +49,10 @@ import javax.inject.Inject
  * One-time sync workers can be enqueued. Periodic sync workers can be enabled and disabled.
  */
 class SyncWorkerManager @Inject constructor(
-    @ApplicationContext val context: Context,
     val logger: Logger,
     val pushNotificationManager: Lazy<PushNotificationManager>,
-    val tasksAppManager: Lazy<TasksAppManager>
+    val tasksAppManager: Lazy<TasksAppManager>,
+    val workManager: WorkManager
 ) {
 
     private companion object {
@@ -166,7 +163,6 @@ class SyncWorkerManager @Inject constructor(
         So we have to append the work one time, and as soon as there is already a pending
         appended work, stop adding more work. */
 
-        val workManager = WorkManager.getInstance(context)
         enqueueMutex.withLock {
             val currentWork = workManager.getWorkInfosForUniqueWork(name).await()
             val alreadyAppended = currentWork.any {
@@ -253,7 +249,7 @@ class SyncWorkerManager @Inject constructor(
     fun enablePeriodic(accountId: AccountId, dataType: SyncDataType, interval: Long, syncWifiOnly: Boolean): Operation {
         logger.fine("Updating periodic worker for account=$accountId, dataType=$dataType, interval=$interval, syncWifiOnly=$syncWifiOnly")
         val workRequest = buildPeriodic(accountId, dataType, interval, syncWifiOnly)
-        return WorkManager.getInstance(context).enqueueUniquePeriodicWork(
+        return workManager.enqueueUniquePeriodicWork(
             PeriodicSyncWorker.workerName(accountId, dataType),
             // if a periodic sync exists already, we want to update it with the new interval
             // and/or new required network type (applies on next iteration of periodic worker)
@@ -271,7 +267,7 @@ class SyncWorkerManager @Inject constructor(
      */
     fun disablePeriodic(accountId: AccountId, dataType: SyncDataType): Operation {
         logger.fine("Disabling periodic worker for account=$accountId, dataType=$dataType")
-        return WorkManager.getInstance(context)
+        return workManager
             .cancelUniqueWork(PeriodicSyncWorker.workerName(accountId, dataType))
     }
 
@@ -282,7 +278,6 @@ class SyncWorkerManager @Inject constructor(
      * Stops running sync workers and removes pending sync workers from queue, for all authorities.
      */
     fun cancelAllWork(accountId: AccountId) {
-        val workManager = WorkManager.getInstance(context)
         for (dataType in SyncDataType.entries) {
             workManager.cancelUniqueWork(OneTimeSyncWorker.workerName(accountId, dataType))
             workManager.cancelUniqueWork(PeriodicSyncWorker.workerName(accountId, dataType))
@@ -313,7 +308,7 @@ class SyncWorkerManager @Inject constructor(
             workQuery.addTags(
                 dataTypes.map { dataType -> whichTag(accountId, dataType) }
             )
-        return WorkManager.getInstance(context)
+        return workManager
             .getWorkInfosFlow(workQuery.build())
             .map { workInfoList ->
                 workInfoList.isNotEmpty()

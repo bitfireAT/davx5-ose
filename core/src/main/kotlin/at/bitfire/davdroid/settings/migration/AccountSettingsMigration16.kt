@@ -5,7 +5,6 @@
 package at.bitfire.davdroid.settings.migration
 
 import android.accounts.Account
-import android.content.Context
 import androidx.work.WorkManager
 import at.bitfire.davdroid.accounts.toAccountId
 import at.bitfire.davdroid.settings.AccountSettings
@@ -14,7 +13,6 @@ import at.bitfire.davdroid.sync.worker.SyncWorkerManager
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import dagger.multibindings.IntKey
 import dagger.multibindings.IntoMap
@@ -28,9 +26,9 @@ import javax.inject.Inject
  */
 class AccountSettingsMigration16 @Inject constructor(
     private val accountSettingsFactory: AccountSettings.Factory,
-    @ApplicationContext private val context: Context,
     private val logger: Logger,
-    private val syncWorkerManager: SyncWorkerManager
+    private val syncWorkerManager: SyncWorkerManager,
+    private val workManager: WorkManager
 ): AccountSettingsMigration {
 
     override fun migrate(account: Account) {
@@ -43,7 +41,7 @@ class AccountSettingsMigration16 @Inject constructor(
             val disableOp = syncWorkerManager.disablePeriodic(account.toAccountId(), dataType)
             disableOp.result.get()  // block until worker with old name is disabled
 
-            val pruneOp = WorkManager.getInstance(context).pruneWork()
+            val pruneOp = workManager.pruneWork()
             pruneOp.result.get()    // block until worker with old name is removed from DB
 
             val accountSettings = accountSettingsFactory.create(account)

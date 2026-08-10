@@ -80,7 +80,8 @@ class DebugInfoGenerator @Inject constructor(
     private val db: AppDatabase,
     private val logger: Logger,
     private val settings: SettingsManager,
-    private val syncFramework: SyncFrameworkIntegration
+    private val syncFramework: SyncFrameworkIntegration,
+    private val workManager: WorkManager
 ) {
 
     operator fun invoke(
@@ -545,8 +546,7 @@ class DebugInfoGenerator @Inject constructor(
         }
 
         val table = TextTable(columnNames)
-        val wm = WorkManager.getInstance(context)
-        val workInfos = wm.getWorkInfos(query).get().filter(filter)
+        val workInfos = workManager.getWorkInfos(query).get().filter(filter)
         for (workInfo in workInfos) {
             val line = mutableListOf(
                 workInfo.tags.map { it.replace("\\bat\\.bitfire\\.davdroid\\.".toRegex(), ".") },

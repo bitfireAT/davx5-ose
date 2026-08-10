@@ -97,7 +97,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
          *
          * @throws IllegalArgumentException when there's no service with this ID
          */
-        fun enqueue(context: Context, serviceId: Long): Pair<String, Operation> {
+        fun enqueue(workManager: WorkManager, serviceId: Long): Pair<String, Operation> {
             val name = workerName(serviceId)
             val arguments = Data.Builder()
                 .putLong(ARG_SERVICE_ID, serviceId)
@@ -110,7 +110,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
 
             return Pair(
                 name,
-                WorkManager.getInstance(context).enqueueUniqueWork(
+                workManager.enqueueUniqueWork(
                     name,
                     ExistingWorkPolicy.KEEP,    // if refresh is already running, just continue that one
                     workRequest
@@ -126,8 +126,12 @@ class RefreshCollectionsWorker @AssistedInject constructor(
          *
          * @return flow that emits `true` if worker with matching state was found (otherwise `false`)
          */
-        fun existsFlow(context: Context, workerName: String, workState: WorkInfo.State = WorkInfo.State.RUNNING) =
-            WorkManager.getInstance(context).getWorkInfosForUniqueWorkFlow(workerName).map { workInfoList ->
+        fun existsFlow(
+            workManager: WorkManager,
+            workerName: String,
+            workState: WorkInfo.State = WorkInfo.State.RUNNING
+        ) =
+            workManager.getWorkInfosForUniqueWorkFlow(workerName).map { workInfoList ->
                 workInfoList.any { workInfo -> workInfo.state == workState }
             }
 

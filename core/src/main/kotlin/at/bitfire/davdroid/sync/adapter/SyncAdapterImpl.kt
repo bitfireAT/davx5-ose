@@ -5,7 +5,6 @@
 package at.bitfire.davdroid.sync.adapter
 
 import android.accounts.Account
-import android.accounts.AccountManager
 import android.content.AbstractThreadedSyncAdapter
 import android.content.ContentProviderClient
 import android.content.ContentResolver
@@ -24,7 +23,6 @@ import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.resource.AddressBookAccountProperties
-import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.SyncConditions
 import at.bitfire.davdroid.sync.SyncDataType
@@ -65,7 +63,8 @@ class SyncAdapterImpl @Inject constructor(
     private val logger: Logger,
     private val syncConditionsFactory: SyncConditions.Factory,
     private val syncFrameworkIntegration: Lazy<SyncFrameworkIntegration>,
-    private val syncWorkerManager: SyncWorkerManager
+    private val syncWorkerManager: SyncWorkerManager,
+    private val workManager: WorkManager
 ) : AbstractThreadedSyncAdapter(
     /* context = */ context,
     /* autoInitialize = */ true     // Sets isSyncable=1 when isSyncable=-1 and SYNC_EXTRAS_INITIALIZE is set.
@@ -192,7 +191,6 @@ class SyncAdapterImpl @Inject constructor(
      */
     private suspend fun waitForWorker(workerName: String) {
         logger.fine("Waiting for worker: $workerName to finish")
-        val workManager = WorkManager.getInstance(context)
 
         // look up whether there's an unfinished worker with the given name
         val unfinishedWorker = workManager.getWorkInfosForUniqueWork(workerName).await().firstOrNull {

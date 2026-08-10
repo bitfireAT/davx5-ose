@@ -83,6 +83,9 @@ abstract class BaseSyncWorker(
     @Inject
     lateinit var taskSyncer: TaskSyncer.Factory
 
+    @Inject
+    lateinit var workManager: WorkManager
+
     override suspend fun doIoWork(): Result {
         val accountId = requireNotNull(inputData.getAccountId()) { "AccountId required" }
 
@@ -107,7 +110,6 @@ abstract class BaseSyncWorker(
                 logger.warning("No valid account settings for account $accountId, cancelling worker $workId")
 
                 // make sure no more workers are run for the invalid account
-                val workManager = WorkManager.getInstance(applicationContext)
                 workManager.cancelWorkById(workId)
 
                 return Result.failure()

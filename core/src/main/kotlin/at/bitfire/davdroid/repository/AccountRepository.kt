@@ -9,6 +9,7 @@ import android.accounts.AccountManager
 import android.accounts.OnAccountsUpdateListener
 import android.content.Context
 import androidx.annotation.WorkerThread
+import androidx.work.WorkManager
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.accounts.LegacyAccount
@@ -63,7 +64,8 @@ class AccountRepository @Inject constructor(
     private val logger: Logger,
     private val serviceRepository: DavServiceRepository,
     private val syncWorkerManager: Lazy<SyncWorkerManager>,
-    private val tasksAppManager: Lazy<TasksAppManager>
+    private val tasksAppManager: Lazy<TasksAppManager>,
+    private val workManager: WorkManager
 ) {
 
     private val accountType = context.getString(R.string.account_type)
@@ -137,7 +139,7 @@ class AccountRepository @Inject constructor(
                 accountSettings.setGroupMethod(groupMethod)
 
                 // start CardDAV service detection (refresh collections)
-                RefreshCollectionsWorker.enqueue(context, id)
+                RefreshCollectionsWorker.enqueue(workManager, id)
             }
 
             if (config.calDAV != null) {
@@ -145,7 +147,7 @@ class AccountRepository @Inject constructor(
                 val id = insertService(accountName, Service.TYPE_CALDAV, config.calDAV)
 
                 // start CalDAV service detection (refresh collections)
-                RefreshCollectionsWorker.enqueue(context, id)
+                RefreshCollectionsWorker.enqueue(workManager, id)
             }
 
             // set up automatic sync (processes inserted services)

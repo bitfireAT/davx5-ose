@@ -70,7 +70,8 @@ class AccountsViewModel @AssistedInject constructor(
     private val logger: Logger,
     private val settings: SettingsManager,
     private val syncWorkerManager: SyncWorkerManager,
-    private val syncPendingProvider: SyncPendingProvider
+    private val syncPendingProvider: SyncPendingProvider,
+    private val workManager: WorkManager
 ): ViewModel() {
 
     @AssistedFactory
@@ -105,7 +106,6 @@ class AccountsViewModel @AssistedInject constructor(
     }
     val showSyncAll: Flow<Boolean> = accountIds.map { it.isNotEmpty() }
 
-    private val workManager = WorkManager.getInstance(context)
     private val runningWorkers = workManager.getWorkInfosFlow(WorkQuery.fromStates(WorkInfo.State.ENQUEUED, WorkInfo.State.RUNNING))
 
     @OptIn(ExperimentalCoroutinesApi::class)

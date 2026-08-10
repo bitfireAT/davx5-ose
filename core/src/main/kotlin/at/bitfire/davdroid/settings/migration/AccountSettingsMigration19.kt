@@ -5,7 +5,6 @@
 package at.bitfire.davdroid.settings.migration
 
 import android.accounts.Account
-import android.content.Context
 import android.provider.CalendarContract
 import androidx.work.WorkManager
 import at.bitfire.davdroid.accounts.toAccountId
@@ -14,7 +13,6 @@ import at.bitfire.synctools.storage.TaskProvider
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import dagger.multibindings.IntKey
 import dagger.multibindings.IntoMap
@@ -27,13 +25,12 @@ import javax.inject.Inject
  * 2. re-enqueue periodic sync workers (now with "data type" input data), if applicable.
  */
 class AccountSettingsMigration19 @Inject constructor(
-    @ApplicationContext private val context: Context,
-    private val automaticSyncManager: AutomaticSyncManager
+    private val automaticSyncManager: AutomaticSyncManager,
+    private val workManager: WorkManager
 ): AccountSettingsMigration {
 
     override fun migrate(account: Account) {
         // cancel old workers
-        val workManager = WorkManager.getInstance(context)
         val authorities = listOf(
             "at.bitfire.davdroid.addressbooks",
             CalendarContract.AUTHORITY,

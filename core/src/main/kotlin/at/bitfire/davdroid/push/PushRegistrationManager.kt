@@ -70,7 +70,8 @@ class PushRegistrationManager @Inject constructor(
     private val notificationRegistry: NotificationRegistry,
     private val httpClientBuilder: HttpClientBuilder,
     private val logger: Logger,
-    private val serviceRepository: DavServiceRepository
+    private val serviceRepository: DavServiceRepository,
+    private val workManager: WorkManager
 ) {
 
     /**
@@ -368,7 +369,6 @@ class PushRegistrationManager @Inject constructor(
     private suspend fun updatePeriodicWorker() {
         val workerNeeded = collectionRepository.anyPushCapable()
 
-        val workManager = WorkManager.getInstance(context)
         if (workerNeeded) {
             logger.info("Enqueuing periodic PushRegistrationWorker")
             workManager.enqueueUniquePeriodicWork(
