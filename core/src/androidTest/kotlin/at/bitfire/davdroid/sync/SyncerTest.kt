@@ -7,7 +7,6 @@ package at.bitfire.davdroid.sync
 import android.accounts.Account
 import android.content.ContentProviderClient
 import at.bitfire.davdroid.accounts.AccountId
-import at.bitfire.davdroid.accounts.AndroidAccountManager
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.resource.LocalDataStore
 import io.mockk.coEvery
@@ -25,7 +24,6 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import java.util.logging.Logger
@@ -45,14 +43,6 @@ class SyncerTest {
     @InjectMockKs
     var syncer = TestSyncer(mockk(relaxed = true), null, SyncResult(), SyncSettingsFixtures.default(), dataStore)
 
-    @Before
-    fun setUp() {
-        // Manually initialize Syncer.androidAccountManager because Dagger/Hilt is not involved in the construction of
-        // the TestSyncer instance.
-        val androidAccountManager = mockk<AndroidAccountManager>()
-        every { androidAccountManager.getAndroidAccount(any()) } returns mockk<Account>(relaxed = true)
-        syncer.androidAccountManager = androidAccountManager
-    }
 
     @Test
     fun testSync_prepare_fails() = runTest {
@@ -214,14 +204,14 @@ class SyncerTest {
         }
 
         override fun getAll(
-            account: Account,
+            accountId: AccountId,
             client: ContentProviderClient
         ): List<LocalTestCollection> {
             throw NotImplementedError()
         }
 
         override fun getByDbCollectionId(
-            account: Account,
+            accountId: AccountId,
             client: ContentProviderClient,
             dbCollectionId: Long
         ): LocalTestCollection? {

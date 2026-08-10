@@ -102,8 +102,7 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
 
         // Find collections in database and provider which should be synced (are sync-enabled)
         val dbCollections = getSyncEnabledCollections()
-        val account = androidAccountManager.getAndroidAccount(accountId)
-        val localCollections = dataStore.getAll(account, provider)
+        val localCollections = dataStore.getAll(accountId, provider)
 
         // Create/update/delete local collections according to DB
         val updatedLocalCollections = updateCollections(provider, localCollections, dbCollections)

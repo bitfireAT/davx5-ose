@@ -199,9 +199,8 @@ class AccountRepositoryTest {
 
     @Test
     fun testRename_updatesAutomaticSync() = runTest {
-        accountRepository.rename(accountId, newName)
+        val newAccountId = accountRepository.rename(accountId, newName)
 
-        val newAccountId = LegacyAccount(accountRepository.fromName(newName))
         coVerify { automaticSyncManager.updateAutomaticSync(newAccountId) }
     }
 

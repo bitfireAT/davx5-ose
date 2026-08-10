@@ -69,7 +69,7 @@ class LocalAddressBookStoreTest {
     lateinit var addressBookAccountType: String
 
     lateinit var addressBookAccount: Account
-    lateinit var account: Account
+    lateinit var accountId: LegacyAccount
     lateinit var service: Service
 
     @Before
@@ -78,10 +78,10 @@ class LocalAddressBookStoreTest {
 
         addressBookAccountType = context.getString(R.string.account_type_address_book)
 
-        account = TestAccount.create()
+        accountId = LegacyAccount(TestAccount.create())
         service = Service(
             id = 200,
-            accountName = account.name,
+            accountName = accountId.androidAccount.name,
             type = Service.TYPE_CARDDAV,
             principal = null
         )
@@ -105,7 +105,7 @@ class LocalAddressBookStoreTest {
 
     @After
     fun tearDown() {
-        TestAccount.remove(account)
+        TestAccount.remove(accountId.androidAccount)
         removeAddressBooks()
     }
 
@@ -142,7 +142,7 @@ class LocalAddressBookStoreTest {
             every { serviceId } returns service.id
         }
         val accountName = localAddressBookStore.accountName(collection)
-        assertEquals("funnyfriends (${account.name}) #42", accountName)
+        assertEquals("funnyfriends (${accountId.androidAccount.name}) #42", accountName)
     }
 
     @Test
@@ -202,17 +202,17 @@ class LocalAddressBookStoreTest {
     @Test
     fun test_getAll_differentAccount() {
         every { accountManager.getAccountsByType(any()) } returns arrayOf(addressBookAccount)
-        val unrelatedAccount = Account("Another Unrelated Account", account.type)
+        val unrelatedAccount = Account("Another Unrelated Account", accountId.androidAccount.type)
         every { addressBookAccountProperties.getAppAccount(addressBookAccount) } returns LegacyAccount(unrelatedAccount)
-        val result = localAddressBookStore.getAll(account, provider)
+        val result = localAddressBookStore.getAll(accountId, provider)
         assertTrue(result.isEmpty())
     }
 
     @Test
     fun test_getAll_sameAccount() {
         every { accountManager.getAccountsByType(any()) } returns arrayOf(addressBookAccount)
-        every { addressBookAccountProperties.getAppAccount(addressBookAccount) } returns LegacyAccount(account)
-        val result = localAddressBookStore.getAll(account, provider)
+        every { addressBookAccountProperties.getAppAccount(addressBookAccount) } returns accountId
+        val result = localAddressBookStore.getAll(accountId, provider)
         assertEquals(1, result.size)
         assertEquals(addressBookAccount, result.first().addressBookAccount)
     }
