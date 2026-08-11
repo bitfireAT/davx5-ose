@@ -11,6 +11,8 @@ import android.content.Context
 import androidx.core.content.contentValuesOf
 import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.accounts.AccountId
+import at.bitfire.davdroid.accounts.AndroidAccountManager
 import at.bitfire.davdroid.accounts.toAccountId
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
@@ -28,6 +30,7 @@ import javax.inject.Inject
 class LocalJtxCollectionStore @Inject constructor(
     @ApplicationContext val context: Context,
     val accountSettingsFactory: AccountSettingsFactory,
+    val androidAccountManager: AndroidAccountManager,
     db: AppDatabase,
     val principalRepository: PrincipalRepository
 ): LocalDataStore<LocalJtxCollection> {
@@ -94,13 +97,21 @@ class LocalJtxCollectionStore @Inject constructor(
         }
     }
 
-    override fun getAll(account: Account, client: ContentProviderClient): List<LocalJtxCollection> =
-        JtxCollectionProvider(account, client).findCollections().map { LocalJtxCollection(it) }
+    override fun getAll(accountId: AccountId, client: ContentProviderClient): List<LocalJtxCollection> {
+        val account = androidAccountManager.getAndroidAccount(accountId)
+        return JtxCollectionProvider(account, client).findCollections().map { LocalJtxCollection(it) }
+    }
 
-    override fun getByDbCollectionId(account: Account, client: ContentProviderClient, dbCollectionId: Long): LocalJtxCollection? =
-        JtxCollectionProvider(account, client).findFirstCollection(
+    override fun getByDbCollectionId(
+        accountId: AccountId,
+        client: ContentProviderClient,
+        dbCollectionId: Long
+    ): LocalJtxCollection? {
+        val account = androidAccountManager.getAndroidAccount(accountId)
+        return JtxCollectionProvider(account, client).findFirstCollection(
             "${JtxContract.JtxCollection.SYNC_ID}=?", arrayOf(dbCollectionId.toString())
         )?.let { LocalJtxCollection(it) }
+    }
 
     override fun update(client: ContentProviderClient, localCollection: LocalJtxCollection, fromCollection: Collection) {
         val accountSettings = accountSettingsFactory.create(localCollection.jtxCollection.account.toAccountId())

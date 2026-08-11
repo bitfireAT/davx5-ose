@@ -59,6 +59,9 @@ class AccountRepositoryTest {
     // Real injections
 
     @Inject
+    lateinit var accountManager: AccountManager
+
+    @Inject
     @ApplicationContext
     lateinit var context: Context
 
@@ -91,7 +94,6 @@ class AccountRepositoryTest {
 
     // Account setup
     private val newName = "Renamed Account"
-    lateinit var am: AccountManager
     lateinit var accountType: String
     lateinit var accountId: LegacyAccount
 
@@ -101,7 +103,6 @@ class AccountRepositoryTest {
         TestUtils.setUpWorkManager(context, workerFactory)
 
         // Account setup
-        am = AccountManager.get(context)
         accountType = context.getString(R.string.account_type)
         accountId = LegacyAccount(TestAccount.create())
 
@@ -112,8 +113,8 @@ class AccountRepositoryTest {
 
     @After
     fun tearDown() {
-        am.getAccountsByType(accountType).forEach { account ->
-            am.removeAccountExplicitly(account)
+        accountManager.getAccountsByType(accountType).forEach { account ->
+            accountManager.removeAccountExplicitly(account)
         }
 
         unmockkObject(AccountsCleanupWorker)
@@ -126,7 +127,7 @@ class AccountRepositoryTest {
     @Test(expected = IllegalArgumentException::class)
     fun testRename_checksForAlreadyExisting() = runTest {
         val existing = Account("Existing Account", accountType)
-        am.addAccountExplicitly(existing, null, null)
+        accountManager.addAccountExplicitly(existing, null, null)
 
         accountRepository.rename(accountId, existing.name)
     }
@@ -142,7 +143,7 @@ class AccountRepositoryTest {
     fun testRename_renamesAccountInAndroid() = runTest {
         accountRepository.rename(accountId, newName)
 
-        val accountsAfter = am.getAccountsByType(accountType)
+        val accountsAfter = accountManager.getAccountsByType(accountType)
         assertTrue(accountsAfter.any { it.name == newName })
     }
 
@@ -198,9 +199,8 @@ class AccountRepositoryTest {
 
     @Test
     fun testRename_updatesAutomaticSync() = runTest {
-        accountRepository.rename(accountId, newName)
+        val newAccountId = accountRepository.rename(accountId, newName)
 
-        val newAccountId = LegacyAccount(accountRepository.fromName(newName))
         coVerify { automaticSyncManager.updateAutomaticSync(newAccountId) }
     }
 

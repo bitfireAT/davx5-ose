@@ -282,7 +282,7 @@ class CollectionScreenViewModel @AssistedInject constructor(
         }
 
         fun queryAndSend() {
-            val count = localDataStore.getByDbCollectionId(account, client, collectionId)?.let { store ->
+            val count = localDataStore.getByDbCollectionId(account.toAccountId(), client, collectionId)?.let { store ->
                 LocalItemsCount(
                     contentProviderName = getProviderAppName(localDataStore.authority),
                     total = store.countAll(),

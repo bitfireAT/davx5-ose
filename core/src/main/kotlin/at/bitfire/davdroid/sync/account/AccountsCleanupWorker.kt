@@ -29,6 +29,7 @@ import java.util.logging.Logger
 class AccountsCleanupWorker @AssistedInject constructor(
     @Assisted val context: Context,
     @Assisted workerParameters: WorkerParameters,
+    private val accountManager: AccountManager,
     private val accountRepository: AccountRepository,
     private val addressBookAccountProperties: AddressBookAccountProperties,
     private val db: AppDatabase,
@@ -40,8 +41,6 @@ class AccountsCleanupWorker @AssistedInject constructor(
     interface Factory {
         fun create(appContext: Context, workerParams: WorkerParameters): AccountsCleanupWorker
     }
-
-    private val accountManager = AccountManager.get(context)
 
     override fun doWork(): Result {
         lockAccountsCleanup()

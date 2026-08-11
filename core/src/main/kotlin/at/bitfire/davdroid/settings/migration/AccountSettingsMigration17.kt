@@ -33,6 +33,7 @@ import javax.inject.Inject
  * identifier. We need to update the address book account names.
  */
 class AccountSettingsMigration17 @Inject constructor(
+    private val accountManager: AccountManager,
     private val accountSettingsFactory: AccountSettingsFactory,
     private val collectionRepository: DavCollectionRepository,
     @ApplicationContext private val context: Context,
@@ -53,7 +54,6 @@ class AccountSettingsMigration17 @Inject constructor(
         }?.use { provider ->
             val service = serviceRepository.getByAccountAndTypeBlocking(account.name, Service.TYPE_CARDDAV) ?: return@use
 
-            val accountManager = AccountManager.get(context)
             // Get all old address books of this account, i.e. the ones which have a "real_account_name" of this account.
             // After this migration is run, address books won't be associated to accounts anymore but only to their respective collection/URL.
             val oldAddressBookAccounts = accountManager.getAccountsByType(addressBookAccountType)

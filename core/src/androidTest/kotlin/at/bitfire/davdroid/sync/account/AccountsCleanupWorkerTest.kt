@@ -13,7 +13,6 @@ import androidx.work.testing.TestListenableWorkerBuilder
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.TestUtils
 import at.bitfire.davdroid.accounts.LegacyAccount
-import at.bitfire.davdroid.accounts.toAccountId
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.resource.AddressBookAccountProperties
@@ -38,6 +37,9 @@ class AccountsCleanupWorkerTest {
     val hiltRule = HiltAndroidRule(this)
 
     @Inject
+    lateinit var accountManager: AccountManager
+
+    @Inject
     lateinit var accountsCleanupWorkerFactory: AccountsCleanupWorker.Factory
 
     @Inject
@@ -55,7 +57,6 @@ class AccountsCleanupWorkerTest {
     @Inject
     lateinit var workerFactory: HiltWorkerFactory
 
-    lateinit var accountManager: AccountManager
     lateinit var addressBookAccountType: String
     lateinit var addressBookAccount: Account
     lateinit var service: Service
@@ -65,7 +66,6 @@ class AccountsCleanupWorkerTest {
         hiltRule.inject()
         TestUtils.setUpWorkManager(context, workerFactory)
 
-        accountManager = AccountManager.get(context)
         service = createTestService()
 
         addressBookAccountType = context.getString(R.string.account_type_address_book)

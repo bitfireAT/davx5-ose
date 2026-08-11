@@ -18,10 +18,9 @@ import javax.inject.Inject
  * Deals with reading and writing user data of an address book account.
  */
 class AddressBookAccountProperties @Inject constructor(
+    private val accountManager: AccountManager,
     @ApplicationContext private val context: Context
 ) {
-    private val accountManager by lazy { AccountManager.get(context) }
-
     private val mainAccountType = context.getString(R.string.account_type)
     private val addressBookAccountType = context.getString(R.string.account_type_address_book)
 

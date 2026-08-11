@@ -26,6 +26,7 @@ import net.openid.appauth.AuthState
 class AccountSettings @AssistedInject constructor(
     @Assisted val accountId: AccountId,
     @Assisted private val store: AccountSettingsStore,
+    private val accountManager: AccountManager,
     private val automaticSyncManager: AutomaticSyncManager,
     private val settingsManager: SettingsManager
 ) {
@@ -93,8 +94,7 @@ class AccountSettings @AssistedInject constructor(
             SyncDataType.EVENTS -> KEY_SYNC_INTERVAL_CALENDARS
             SyncDataType.TASKS -> KEY_SYNC_INTERVAL_TASKS
         }
-        val seconds = store.getValue(key)?.toLong()
-        return when (seconds) {
+        return when (val seconds = store.getValue(key)?.toLong()) {
             null -> settingsManager.getLongOrNull(Settings.DEFAULT_SYNC_INTERVAL)   // no setting → default value
             SYNC_INTERVAL_MANUALLY -> null      // manual sync
             else -> seconds

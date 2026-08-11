@@ -44,6 +44,9 @@ import javax.inject.Inject
 class AccountSettingsMigration20Test {
 
     @Inject
+    lateinit var accountManager: AccountManager
+
+    @Inject
     lateinit var calendarStore: LocalCalendarStore
 
     @Inject @ApplicationContext
@@ -70,7 +73,6 @@ class AccountSettingsMigration20Test {
         Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR
     )
 
-    private val accountManager by lazy { AccountManager.get(context) }
     private lateinit var account: Account
 
     @Before

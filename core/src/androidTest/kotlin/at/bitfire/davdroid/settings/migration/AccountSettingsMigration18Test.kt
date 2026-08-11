@@ -11,16 +11,19 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
+import at.bitfire.davdroid.di.AndroidServicesModule
 import at.bitfire.davdroid.settings.migration.AccountSettingsMigration18.Companion.USER_DATA_ACCOUNT_NAME
 import at.bitfire.davdroid.settings.migration.AccountSettingsMigration18.Companion.USER_DATA_ACCOUNT_TYPE
 import at.bitfire.davdroid.settings.migration.AccountSettingsMigration18.Companion.USER_DATA_COLLECTION_ID
 import at.bitfire.davdroid.util.DavUtils.toUrl
 import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import dagger.hilt.android.testing.UninstallModules
 import io.mockk.every
+import io.mockk.impl.annotations.MockK
 import io.mockk.junit4.MockKRule
-import io.mockk.mockkObject
 import io.mockk.verify
 import org.junit.Before
 import org.junit.Rule
@@ -28,7 +31,11 @@ import org.junit.Test
 import javax.inject.Inject
 
 @HiltAndroidTest
+@UninstallModules(AndroidServicesModule::class)
 class AccountSettingsMigration18Test {
+
+    @BindValue @MockK(relaxed = true)
+    lateinit var accountManager: AccountManager
 
     @Inject @ApplicationContext
     lateinit var context: Context
@@ -57,8 +64,6 @@ class AccountSettingsMigration18Test {
         val addressBookAccountType = context.getString(R.string.account_type_address_book)
         var addressBookAccount = Account("Address Book", addressBookAccountType)
 
-        val accountManager = AccountManager.get(context)
-        mockkObject(accountManager)
         every { accountManager.getAccountsByType(addressBookAccountType) } returns arrayOf(addressBookAccount)
         every { accountManager.getUserData(addressBookAccount, USER_DATA_COLLECTION_ID) } returns "123"
 
@@ -75,8 +80,6 @@ class AccountSettingsMigration18Test {
         val addressBookAccountType = context.getString(R.string.account_type_address_book)
         var addressBookAccount = Account("Address Book", addressBookAccountType)
 
-        val accountManager = AccountManager.get(context)
-        mockkObject(accountManager)
         every { accountManager.getAccountsByType(addressBookAccountType) } returns arrayOf(addressBookAccount)
         every { accountManager.getUserData(addressBookAccount, USER_DATA_COLLECTION_ID) } returns "123"
 
@@ -110,8 +113,6 @@ class AccountSettingsMigration18Test {
         val addressBookAccountType = context.getString(R.string.account_type_address_book)
         var addressBookAccount = Account("Address Book", addressBookAccountType)
 
-        val accountManager = AccountManager.get(context)
-        mockkObject(accountManager)
         every { accountManager.getAccountsByType(addressBookAccountType) } returns arrayOf(addressBookAccount)
         every { accountManager.getUserData(addressBookAccount, USER_DATA_COLLECTION_ID) } returns "100"
 

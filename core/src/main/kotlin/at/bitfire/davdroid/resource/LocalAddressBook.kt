@@ -43,6 +43,7 @@ import kotlinx.coroutines.flow.merge
 import java.io.FileNotFoundException
 import java.util.Optional
 import java.util.logging.Logger
+import javax.inject.Provider
 import kotlin.jvm.optionals.getOrNull
 
 /**
@@ -62,6 +63,7 @@ open class LocalAddressBook @AssistedInject constructor(
     @Assisted _addressBookAccount: Account,
     @Assisted provider: ContentProviderClient,
     @Assisted val groupMethod: GroupMethod,
+    private val accountManager: Provider<AccountManager>,
     private val accountSettingsFactory: AccountSettingsFactory,
     private val addressBookAccountProperties: AddressBookAccountProperties,
     @ApplicationContext private val context: Context,
@@ -79,8 +81,6 @@ open class LocalAddressBook @AssistedInject constructor(
             groupMethod: GroupMethod
         ): LocalAddressBook
     }
-
-    private val accountManager by lazy { AccountManager.get(context) }
 
     internal val ab = AndroidAddressBook(context, _addressBookAccount, provider, groupMethod)
 
@@ -172,7 +172,7 @@ open class LocalAddressBook @AssistedInject constructor(
         addressBookAccount = newAccount
 
         // delete old account
-        accountManager.removeAccountExplicitly(oldAccount)
+        accountManager.get().removeAccountExplicitly(oldAccount)
 
         return true
     }

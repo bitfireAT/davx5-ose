@@ -4,16 +4,15 @@
 
 package at.bitfire.davdroid.ui.account
 
-import android.accounts.Account
 import android.content.Context
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.accounts.toAccountId
+import at.bitfire.davdroid.accounts.toAndroidAccount
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.repository.AccountRepository
@@ -205,11 +204,10 @@ class AccountScreenViewModel @AssistedInject constructor(
     fun renameAccount(newName: String) {
         viewModelScope.launch {
             try {
-                accountRepository.rename(accountId, newName)
+                val newAccountId = accountRepository.rename(accountId, newName)
 
                 // synchronize again
-                val newAccount = Account(newName, context.getString(R.string.account_type))
-                syncWorkerManager.enqueueOneTimeAllAuthorities(newAccount.toAccountId(), manual = true)
+                syncWorkerManager.enqueueOneTimeAllAuthorities(newAccountId, manual = true)
             } catch (e: Exception) {
                 logger.log(Level.SEVERE, "Couldn't rename account", e)
                 error = e.localizedMessage
