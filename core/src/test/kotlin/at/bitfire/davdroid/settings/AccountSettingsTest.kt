@@ -21,7 +21,6 @@ import at.bitfire.davdroid.settings.AccountSettings.Companion.KEY_WIFI_ONLY
 import at.bitfire.davdroid.settings.AccountSettings.Companion.KEY_WIFI_ONLY_SSIDS
 import at.bitfire.davdroid.sync.AutomaticSyncManager
 import at.bitfire.davdroid.sync.SyncDataType
-import at.bitfire.synctools.util.SensitiveString
 import at.bitfire.synctools.util.SensitiveString.Companion.toSensitiveString
 import at.bitfire.synctools.vcard.GroupMethod
 import io.mockk.every
@@ -35,44 +34,25 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class AccountSettingsTest {
-    private class TestContext(
-        val accountSettings: AccountSettings,
-        val store: AccountSettingsStore,
-        val settingsManager: SettingsManager,
-        val automaticSyncManager: AutomaticSyncManager
+
+    private val store = InMemorySettingsStore()
+    private val settingsManager = mockk<SettingsManager>(relaxed = true)
+    private val automaticSyncManager = mockk<AutomaticSyncManager>(relaxed = true)
+    private val accountSettings = AccountSettings(
+        accountId = LegacyAccount(Account("test", "test")),
+        store = store,
+        automaticSyncManager = automaticSyncManager,
+        settingsManager = settingsManager
     )
 
-    private fun withTestEnvironment(
-        storage: Map<String, String> = emptyMap(),
-        sensitiveStorage: Map<String, SensitiveString> = emptyMap(),
-        block: TestContext.() -> Unit
-    ) {
-        val store = InMemorySettingsStore(storage, sensitiveStorage)
-        val automaticSyncManager: AutomaticSyncManager = mockk(relaxed = true)
-        val settingsManager: SettingsManager = mockk(relaxed = true)
-        val accountSettings = AccountSettings(
-            accountId = LegacyAccount(Account("test", "test")),
-            store = store,
-            automaticSyncManager = automaticSyncManager,
-            settingsManager = settingsManager
-        )
-        block(
-            TestContext(accountSettings, store, settingsManager, automaticSyncManager)
-        )
-    }
-
     @Test
-    fun test_credentials_get() = withTestEnvironment(
-        storage = mapOf(
-            AccountSettings.KEY_USERNAME to "username",
-            AccountSettings.KEY_CERTIFICATE_ALIAS to "certificateAlias",
-        ),
-        sensitiveStorage = mapOf(
-            AccountSettings.KEY_PASSWORD to "password".toSensitiveString()
-        )
-    ) {
-        // Validate it fetches the stored values
+    fun test_credentials_get() {
+        store.putValue(AccountSettings.KEY_USERNAME, "username")
+        store.putValue(AccountSettings.KEY_CERTIFICATE_ALIAS, "certificateAlias")
+        store.putSensitiveValue(AccountSettings.KEY_PASSWORD, "password".toSensitiveString())
+
         val credentials = accountSettings.credentials()
+
         assertEquals(credentials.username, "username")
         assertEquals(credentials.password, "password".toSensitiveString())
         assertEquals(credentials.certificateAlias, "certificateAlias")
@@ -80,7 +60,7 @@ class AccountSettingsTest {
     }
 
     @Test
-    fun test_credentials_set() = withTestEnvironment {
+    fun test_credentials_set() {
         // Validate it stores the given values
         accountSettings.credentials(
             Credentials(
@@ -96,7 +76,7 @@ class AccountSettingsTest {
     }
 
     @Test
-    fun test_updateAuthState() = withTestEnvironment {
+    fun test_updateAuthState() {
         // Validate it stores the serialized auth state
         val authState = mockk<AuthState> {
             every { jsonSerializeString() } returns "serialized-auth-state"
@@ -106,7 +86,7 @@ class AccountSettingsTest {
     }
 
     @Test
-    fun test_changingCredentialsAllowed() = withTestEnvironment {
+    fun test_changingCredentialsAllowed() {
         // Mock the value, verify it works correctly
         every { settingsManager.getIntOrNull(CREDENTIALS_LOCK) } returns 0
         assertTrue(accountSettings.changingCredentialsAllowed())
@@ -114,13 +94,11 @@ class AccountSettingsTest {
     }
 
     @Test
-    fun test_getSyncInterval() = withTestEnvironment(
-        storage = mapOf(
-            KEY_SYNC_INTERVAL_ADDRESSBOOKS to "1",
-            KEY_SYNC_INTERVAL_CALENDARS to "2",
-            KEY_SYNC_INTERVAL_TASKS to "3"
-        )
-    ) {
+    fun test_getSyncInterval() {
+        store.putValue(KEY_SYNC_INTERVAL_ADDRESSBOOKS, "1")
+        store.putValue(KEY_SYNC_INTERVAL_CALENDARS, "2")
+        store.putValue(KEY_SYNC_INTERVAL_TASKS, "3")
+
         assertEquals(1L, accountSettings.getSyncInterval(SyncDataType.CONTACTS))
         assertEquals(2L, accountSettings.getSyncInterval(SyncDataType.EVENTS))
         assertEquals(3L, accountSettings.getSyncInterval(SyncDataType.TASKS))
@@ -136,7 +114,7 @@ class AccountSettingsTest {
     }
 
     @Test
-    fun test_setSyncInterval() = withTestEnvironment {
+    fun test_setSyncInterval() {
         // Set sync intervals for all data types
         accountSettings.setSyncInterval(SyncDataType.CONTACTS, 1)
         accountSettings.setSyncInterval(SyncDataType.EVENTS, 2)
@@ -155,7 +133,7 @@ class AccountSettingsTest {
     }
 
     @Test
-    fun test_getSyncWifiOnly() = withTestEnvironment {
+    fun test_getSyncWifiOnly() {
         every { settingsManager.containsKey(KEY_WIFI_ONLY) } returns true
         every { settingsManager.getBoolean(KEY_WIFI_ONLY) } returns true
         assertTrue(accountSettings.getSyncWifiOnly())
@@ -175,7 +153,7 @@ class AccountSettingsTest {
     }
 
     @Test
-    fun test_setSyncWiFiOnly() = withTestEnvironment {
+    fun test_setSyncWiFiOnly() {
         accountSettings.setSyncWiFiOnly(true)
         assertEquals("1", store.getValue(KEY_WIFI_ONLY))
         verify { automaticSyncManager.updateAutomaticSync(any()) }
@@ -185,7 +163,7 @@ class AccountSettingsTest {
     }
 
     @Test
-    fun test_getSyncWifiOnlySSIDs() = withTestEnvironment {
+    fun test_getSyncWifiOnlySSIDs() {
         // WiFi-only sync disabled -> no SSID restriction
         every { settingsManager.containsKey(KEY_WIFI_ONLY) } returns false
         assertNull(accountSettings.getSyncWifiOnlySSIDs())
@@ -206,7 +184,7 @@ class AccountSettingsTest {
     }
 
     @Test
-    fun test_setSyncWifiOnlySSIDs() = withTestEnvironment {
+    fun test_setSyncWifiOnlySSIDs() {
         accountSettings.setSyncWifiOnlySSIDs(listOf("ssid1", "ssid2"))
         assertEquals("ssid1,ssid2", store.getValue(KEY_WIFI_ONLY_SSIDS))
 
@@ -219,7 +197,7 @@ class AccountSettingsTest {
     }
 
     @Test
-    fun test_getIgnoreVpns() = withTestEnvironment {
+    fun test_getIgnoreVpns() {
         // no local setting -> fall back to settings provider
         every { settingsManager.getBoolean(KEY_IGNORE_VPNS) } returns true
         assertTrue(accountSettings.getIgnoreVpns())
@@ -237,7 +215,7 @@ class AccountSettingsTest {
     }
 
     @Test
-    fun test_setIgnoreVpns() = withTestEnvironment {
+    fun test_setIgnoreVpns() {
         accountSettings.setIgnoreVpns(true)
         assertEquals("1", store.getValue(KEY_IGNORE_VPNS))
 
@@ -246,7 +224,7 @@ class AccountSettingsTest {
     }
 
     @Test
-    fun test_getTimeRangePastDays() = withTestEnvironment {
+    fun test_getTimeRangePastDays() {
         // no value stored -> default
         assertEquals(AccountSettings.DEFAULT_TIME_RANGE_PAST_DAYS, accountSettings.getTimeRangePastDays())
 
@@ -260,7 +238,7 @@ class AccountSettingsTest {
     }
 
     @Test
-    fun test_setTimeRangePastDays() = withTestEnvironment {
+    fun test_setTimeRangePastDays() {
         accountSettings.setTimeRangePastDays(30)
         assertEquals("30", store.getValue(KEY_TIME_RANGE_PAST_DAYS))
 
@@ -269,7 +247,7 @@ class AccountSettingsTest {
     }
 
     @Test
-    fun test_getDefaultAlarm() = withTestEnvironment {
+    fun test_getDefaultAlarm() {
         // no local setting -> fall back to settings provider
         every { settingsManager.getIntOrNull(KEY_DEFAULT_ALARM) } returns 15
         assertEquals(15, accountSettings.getDefaultAlarm())
@@ -284,7 +262,7 @@ class AccountSettingsTest {
     }
 
     @Test
-    fun test_setDefaultAlarm() = withTestEnvironment {
+    fun test_setDefaultAlarm() {
         every { settingsManager.getIntOrNull(KEY_DEFAULT_ALARM) } returns 15
 
         // new value differs from settings provider value -> store locally
@@ -297,7 +275,7 @@ class AccountSettingsTest {
     }
 
     @Test
-    fun test_getManageCalendarColors() = withTestEnvironment {
+    fun test_getManageCalendarColors() {
         every { settingsManager.containsKey(KEY_MANAGE_CALENDAR_COLORS) } returns true
         every { settingsManager.getBoolean(KEY_MANAGE_CALENDAR_COLORS) } returns true
         assertTrue(accountSettings.getManageCalendarColors())
@@ -314,7 +292,7 @@ class AccountSettingsTest {
     }
 
     @Test
-    fun test_setManageCalendarColors() = withTestEnvironment {
+    fun test_setManageCalendarColors() {
         accountSettings.setManageCalendarColors(true)
         assertNull(store.getValue(KEY_MANAGE_CALENDAR_COLORS))
 
@@ -323,7 +301,7 @@ class AccountSettingsTest {
     }
 
     @Test
-    fun test_getEventColors() = withTestEnvironment {
+    fun test_getEventColors() {
         every { settingsManager.containsKey(KEY_EVENT_COLORS) } returns true
         every { settingsManager.getBoolean(KEY_EVENT_COLORS) } returns true
         assertTrue(accountSettings.getEventColors())
@@ -340,7 +318,7 @@ class AccountSettingsTest {
     }
 
     @Test
-    fun test_setEventColors() = withTestEnvironment {
+    fun test_setEventColors() {
         accountSettings.setEventColors(true)
         assertEquals("1", store.getValue(KEY_EVENT_COLORS))
 
@@ -349,7 +327,7 @@ class AccountSettingsTest {
     }
 
     @Test
-    fun test_getGroupMethod() = withTestEnvironment {
+    fun test_getGroupMethod() {
         // no value at all -> default
         every { settingsManager.getString(KEY_CONTACT_GROUP_METHOD) } returns null
         assertEquals(GroupMethod.GROUP_VCARDS, accountSettings.getGroupMethod())
@@ -368,13 +346,13 @@ class AccountSettingsTest {
     }
 
     @Test
-    fun test_setGroupMethod() = withTestEnvironment {
+    fun test_setGroupMethod() {
         accountSettings.setGroupMethod(GroupMethod.CATEGORIES)
         assertEquals("CATEGORIES", store.getValue(KEY_CONTACT_GROUP_METHOD))
     }
 
     @Test
-    fun test_getShowOnlyPersonal() = withTestEnvironment {
+    fun test_getShowOnlyPersonal() {
         // settings provider value 0 -> false, regardless of local setting
         every { settingsManager.getIntOrNull(KEY_SHOW_ONLY_PERSONAL) } returns 0
         store.putValue(KEY_SHOW_ONLY_PERSONAL, "1")
@@ -393,7 +371,7 @@ class AccountSettingsTest {
     }
 
     @Test
-    fun test_getShowOnlyPersonalLocked() = withTestEnvironment {
+    fun test_getShowOnlyPersonalLocked() {
         every { settingsManager.getIntOrNull(KEY_SHOW_ONLY_PERSONAL) } returns 0
         assertTrue(accountSettings.getShowOnlyPersonalLocked())
 
@@ -405,7 +383,7 @@ class AccountSettingsTest {
     }
 
     @Test
-    fun test_setShowOnlyPersonal() = withTestEnvironment {
+    fun test_setShowOnlyPersonal() {
         accountSettings.setShowOnlyPersonal(true)
         assertEquals("1", store.getValue(KEY_SHOW_ONLY_PERSONAL))
 
