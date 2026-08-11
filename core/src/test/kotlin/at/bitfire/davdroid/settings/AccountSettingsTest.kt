@@ -42,7 +42,7 @@ class AccountSettingsTest {
         val automaticSyncManager: AutomaticSyncManager
     )
 
-    private fun runTest(
+    private fun withTestEnvironment(
         storage: Map<String, String> = emptyMap(),
         sensitiveStorage: Map<String, SensitiveString> = emptyMap(),
         block: TestContext.() -> Unit
@@ -62,7 +62,7 @@ class AccountSettingsTest {
     }
 
     @Test
-    fun test_credentials_get() = runTest(
+    fun test_credentials_get() = withTestEnvironment(
         storage = mapOf(
             AccountSettings.KEY_USERNAME to "username",
             AccountSettings.KEY_CERTIFICATE_ALIAS to "certificateAlias",
@@ -80,7 +80,7 @@ class AccountSettingsTest {
     }
 
     @Test
-    fun test_credentials_set() = runTest {
+    fun test_credentials_set() = withTestEnvironment {
         // Validate it stores the given values
         accountSettings.credentials(
             Credentials(
@@ -96,7 +96,7 @@ class AccountSettingsTest {
     }
 
     @Test
-    fun test_updateAuthState() = runTest {
+    fun test_updateAuthState() = withTestEnvironment {
         // Validate it stores the serialized auth state
         val authState = mockk<AuthState> {
             every { jsonSerializeString() } returns "serialized-auth-state"
@@ -106,7 +106,7 @@ class AccountSettingsTest {
     }
 
     @Test
-    fun test_changingCredentialsAllowed() = runTest {
+    fun test_changingCredentialsAllowed() = withTestEnvironment {
         // Mock the value, verify it works correctly
         every { settingsManager.getIntOrNull(CREDENTIALS_LOCK) } returns 0
         assertTrue(accountSettings.changingCredentialsAllowed())
@@ -114,7 +114,7 @@ class AccountSettingsTest {
     }
 
     @Test
-    fun test_getSyncInterval() = runTest(
+    fun test_getSyncInterval() = withTestEnvironment(
         storage = mapOf(
             KEY_SYNC_INTERVAL_ADDRESSBOOKS to "1",
             KEY_SYNC_INTERVAL_CALENDARS to "2",
@@ -136,7 +136,7 @@ class AccountSettingsTest {
     }
 
     @Test
-    fun test_setSyncInterval() = runTest {
+    fun test_setSyncInterval() = withTestEnvironment {
         // Set sync intervals for all data types
         accountSettings.setSyncInterval(SyncDataType.CONTACTS, 1)
         accountSettings.setSyncInterval(SyncDataType.EVENTS, 2)
@@ -155,7 +155,7 @@ class AccountSettingsTest {
     }
 
     @Test
-    fun test_getSyncWifiOnly() = runTest {
+    fun test_getSyncWifiOnly() = withTestEnvironment {
         every { settingsManager.containsKey(KEY_WIFI_ONLY) } returns true
         every { settingsManager.getBoolean(KEY_WIFI_ONLY) } returns true
         assertTrue(accountSettings.getSyncWifiOnly())
@@ -175,7 +175,7 @@ class AccountSettingsTest {
     }
 
     @Test
-    fun test_setSyncWiFiOnly() = runTest {
+    fun test_setSyncWiFiOnly() = withTestEnvironment {
         accountSettings.setSyncWiFiOnly(true)
         assertEquals("1", store.getValue(KEY_WIFI_ONLY))
         verify { automaticSyncManager.updateAutomaticSync(any()) }
@@ -185,7 +185,7 @@ class AccountSettingsTest {
     }
 
     @Test
-    fun test_getSyncWifiOnlySSIDs() = runTest {
+    fun test_getSyncWifiOnlySSIDs() = withTestEnvironment {
         // WiFi-only sync disabled -> no SSID restriction
         every { settingsManager.containsKey(KEY_WIFI_ONLY) } returns false
         assertNull(accountSettings.getSyncWifiOnlySSIDs())
@@ -206,7 +206,7 @@ class AccountSettingsTest {
     }
 
     @Test
-    fun test_setSyncWifiOnlySSIDs() = runTest {
+    fun test_setSyncWifiOnlySSIDs() = withTestEnvironment {
         accountSettings.setSyncWifiOnlySSIDs(listOf("ssid1", "ssid2"))
         assertEquals("ssid1,ssid2", store.getValue(KEY_WIFI_ONLY_SSIDS))
 
@@ -219,7 +219,7 @@ class AccountSettingsTest {
     }
 
     @Test
-    fun test_getIgnoreVpns() = runTest {
+    fun test_getIgnoreVpns() = withTestEnvironment {
         // no local setting -> fall back to settings provider
         every { settingsManager.getBoolean(KEY_IGNORE_VPNS) } returns true
         assertTrue(accountSettings.getIgnoreVpns())
@@ -237,7 +237,7 @@ class AccountSettingsTest {
     }
 
     @Test
-    fun test_setIgnoreVpns() = runTest {
+    fun test_setIgnoreVpns() = withTestEnvironment {
         accountSettings.setIgnoreVpns(true)
         assertEquals("1", store.getValue(KEY_IGNORE_VPNS))
 
@@ -246,7 +246,7 @@ class AccountSettingsTest {
     }
 
     @Test
-    fun test_getTimeRangePastDays() = runTest {
+    fun test_getTimeRangePastDays() = withTestEnvironment {
         // no value stored -> default
         assertEquals(AccountSettings.DEFAULT_TIME_RANGE_PAST_DAYS, accountSettings.getTimeRangePastDays())
 
@@ -260,7 +260,7 @@ class AccountSettingsTest {
     }
 
     @Test
-    fun test_setTimeRangePastDays() = runTest {
+    fun test_setTimeRangePastDays() = withTestEnvironment {
         accountSettings.setTimeRangePastDays(30)
         assertEquals("30", store.getValue(KEY_TIME_RANGE_PAST_DAYS))
 
@@ -269,7 +269,7 @@ class AccountSettingsTest {
     }
 
     @Test
-    fun test_getDefaultAlarm() = runTest {
+    fun test_getDefaultAlarm() = withTestEnvironment {
         // no local setting -> fall back to settings provider
         every { settingsManager.getIntOrNull(KEY_DEFAULT_ALARM) } returns 15
         assertEquals(15, accountSettings.getDefaultAlarm())
@@ -284,7 +284,7 @@ class AccountSettingsTest {
     }
 
     @Test
-    fun test_setDefaultAlarm() = runTest {
+    fun test_setDefaultAlarm() = withTestEnvironment {
         every { settingsManager.getIntOrNull(KEY_DEFAULT_ALARM) } returns 15
 
         // new value differs from settings provider value -> store locally
@@ -297,7 +297,7 @@ class AccountSettingsTest {
     }
 
     @Test
-    fun test_getManageCalendarColors() = runTest {
+    fun test_getManageCalendarColors() = withTestEnvironment {
         every { settingsManager.containsKey(KEY_MANAGE_CALENDAR_COLORS) } returns true
         every { settingsManager.getBoolean(KEY_MANAGE_CALENDAR_COLORS) } returns true
         assertTrue(accountSettings.getManageCalendarColors())
@@ -314,7 +314,7 @@ class AccountSettingsTest {
     }
 
     @Test
-    fun test_setManageCalendarColors() = runTest {
+    fun test_setManageCalendarColors() = withTestEnvironment {
         accountSettings.setManageCalendarColors(true)
         assertNull(store.getValue(KEY_MANAGE_CALENDAR_COLORS))
 
@@ -323,7 +323,7 @@ class AccountSettingsTest {
     }
 
     @Test
-    fun test_getEventColors() = runTest {
+    fun test_getEventColors() = withTestEnvironment {
         every { settingsManager.containsKey(KEY_EVENT_COLORS) } returns true
         every { settingsManager.getBoolean(KEY_EVENT_COLORS) } returns true
         assertTrue(accountSettings.getEventColors())
@@ -340,7 +340,7 @@ class AccountSettingsTest {
     }
 
     @Test
-    fun test_setEventColors() = runTest {
+    fun test_setEventColors() = withTestEnvironment {
         accountSettings.setEventColors(true)
         assertEquals("1", store.getValue(KEY_EVENT_COLORS))
 
@@ -349,7 +349,7 @@ class AccountSettingsTest {
     }
 
     @Test
-    fun test_getGroupMethod() = runTest {
+    fun test_getGroupMethod() = withTestEnvironment {
         // no value at all -> default
         every { settingsManager.getString(KEY_CONTACT_GROUP_METHOD) } returns null
         assertEquals(GroupMethod.GROUP_VCARDS, accountSettings.getGroupMethod())
@@ -368,13 +368,13 @@ class AccountSettingsTest {
     }
 
     @Test
-    fun test_setGroupMethod() = runTest {
+    fun test_setGroupMethod() = withTestEnvironment {
         accountSettings.setGroupMethod(GroupMethod.CATEGORIES)
         assertEquals("CATEGORIES", store.getValue(KEY_CONTACT_GROUP_METHOD))
     }
 
     @Test
-    fun test_getShowOnlyPersonal() = runTest {
+    fun test_getShowOnlyPersonal() = withTestEnvironment {
         // settings provider value 0 -> false, regardless of local setting
         every { settingsManager.getIntOrNull(KEY_SHOW_ONLY_PERSONAL) } returns 0
         store.putValue(KEY_SHOW_ONLY_PERSONAL, "1")
@@ -393,7 +393,7 @@ class AccountSettingsTest {
     }
 
     @Test
-    fun test_getShowOnlyPersonalLocked() = runTest {
+    fun test_getShowOnlyPersonalLocked() = withTestEnvironment {
         every { settingsManager.getIntOrNull(KEY_SHOW_ONLY_PERSONAL) } returns 0
         assertTrue(accountSettings.getShowOnlyPersonalLocked())
 
@@ -405,7 +405,7 @@ class AccountSettingsTest {
     }
 
     @Test
-    fun test_setShowOnlyPersonal() = runTest {
+    fun test_setShowOnlyPersonal() = withTestEnvironment {
         accountSettings.setShowOnlyPersonal(true)
         assertEquals("1", store.getValue(KEY_SHOW_ONLY_PERSONAL))
 
