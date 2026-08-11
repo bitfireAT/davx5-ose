@@ -26,7 +26,6 @@ import net.openid.appauth.AuthState
 class AccountSettings @AssistedInject constructor(
     @Assisted val accountId: AccountId,
     @Assisted private val store: AccountSettingsStore,
-    private val accountManager: AccountManager,
     private val automaticSyncManager: AutomaticSyncManager,
     private val settingsManager: SettingsManager
 ) {
