@@ -7,6 +7,7 @@ package at.bitfire.davdroid.settings
 import android.accounts.Account
 import at.bitfire.davdroid.accounts.LegacyAccount
 import at.bitfire.davdroid.settings.AccountSettings.Companion.CREDENTIALS_LOCK
+import at.bitfire.davdroid.settings.AccountSettings.Companion.CREDENTIALS_LOCK_AT_LOGIN_AND_SETTINGS
 import at.bitfire.davdroid.settings.AccountSettings.Companion.KEY_CONTACT_GROUP_METHOD
 import at.bitfire.davdroid.settings.AccountSettings.Companion.KEY_DEFAULT_ALARM
 import at.bitfire.davdroid.settings.AccountSettings.Companion.KEY_EVENT_COLORS
@@ -90,6 +91,14 @@ class AccountSettingsTest {
         // Mock the value, verify it works correctly
         every { settingsManager.getIntOrNull(CREDENTIALS_LOCK) } returns 0
         assertTrue(accountSettings.changingCredentialsAllowed())
+        verify { settingsManager.getIntOrNull(CREDENTIALS_LOCK) }
+    }
+
+    @Test
+    fun test_changingCredentialsAllowed_not() {
+        // Mock the value, verify it works correctly
+        every { settingsManager.getIntOrNull(CREDENTIALS_LOCK) } returns CREDENTIALS_LOCK_AT_LOGIN_AND_SETTINGS
+        assertFalse(accountSettings.changingCredentialsAllowed())
         verify { settingsManager.getIntOrNull(CREDENTIALS_LOCK) }
     }
 
