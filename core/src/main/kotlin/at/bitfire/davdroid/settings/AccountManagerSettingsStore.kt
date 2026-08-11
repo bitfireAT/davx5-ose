@@ -100,7 +100,11 @@ class AccountManagerSettingsStore @AssistedInject constructor(
      * Otherwise, does the same as [getValue].
      */
     override fun getSensitiveValue(key: String): SensitiveString? {
-        return accountManager.getPassword(account)?.toSensitiveString()
+        val value = if (key == AccountSettings.KEY_PASSWORD)
+            accountManager.getPassword(account)
+        else
+            getValue(key)
+        return value?.toSensitiveString()
     }
 
     /**
@@ -108,7 +112,10 @@ class AccountManagerSettingsStore @AssistedInject constructor(
      * as plain text at [key] in user data (same as [putValue]).
      */
     override fun putSensitiveValue(key: String, value: SensitiveString?) {
-        accountManager.setPassword(account, value?.asString())
+        if (key == AccountSettings.KEY_PASSWORD)
+            accountManager.setPassword(account, value?.asString())
+        else
+            putValue(key, value?.asString())
     }
 
     // update from previous account settings
