@@ -33,6 +33,7 @@ class AccountManagerSettingsStore @AssistedInject constructor(
     @Assisted val account: Account,
     @Assisted val abortOnMissingMigration: Boolean,
     @ApplicationContext context: Context,
+    private val accountManager: AccountManager,
     private val logger: Logger,
     private val migrations: Map<Int, @JvmSuppressWildcards Provider<AccountSettingsMigration>>,
 ) : AccountSettingsStore {
@@ -45,8 +46,6 @@ class AccountManagerSettingsStore @AssistedInject constructor(
         @WorkerThread
         fun create(account: Account, abortOnMissingMigration: Boolean = false): AccountManagerSettingsStore
     }
-
-    private val accountManager = AccountManager.get(context)
 
     init {
         if (Looper.getMainLooper() == Looper.myLooper())
