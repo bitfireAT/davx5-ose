@@ -408,11 +408,28 @@ abstract class SyncManager<LocalType : LocalResource>(
                 is ConflictException -> {
                     // HTTP 409 Conflict
                     // We can't interact with the user to resolve the conflict, so we treat 409 like 412.
+                    if (!forceAsNew && uploadTargetIsGone(remote)) {
+                        logger.info("Upload target is not there (anymore), trying as fresh upload")
+                        uploadDirty(local, forceAsNew = true)
+                        return
+                    }
                     logger.info("Edit conflict, ignoring")
                 }
                 is PreconditionFailedException -> {
-                    // HTTP 412 Precondition failed: Resource has been modified on the server in the meanwhile.
-                    // Ignore this condition so that the resource can be downloaded and reset again.
+                    // HTTP 412 Precondition failed: usually the resource has been modified on the server in the
+                    // meanwhile, so our If-Match/If-Schedule-Tag-Match didn't match. Ignore this condition so that
+                    // the resource can be downloaded and reset again.
+                    //
+                    // However some servers also answer 412 when the resource doesn't exist anymore at all, because
+                    // a conditional request with If-Match must fail on a non-existing resource (RFC 9110 13.1.1),
+                    // while others answer 404 in that case. So we have to ask the server whether the resource is
+                    // still there; otherwise the local resource would stay dirty and would be uploaded again in
+                    // every sync (endless loop).
+                    if (!forceAsNew && uploadTargetIsGone(remote)) {
+                        logger.info("Upload target is not there (anymore), trying as fresh upload")
+                        uploadDirty(local, forceAsNew = true)
+                        return
+                    }
                     logger.info("Resource has been modified on the server before upload, ignoring")
                 }
                 else -> throw e
@@ -789,6 +806,32 @@ abstract class SyncManager<LocalType : LocalResource>(
 
 
     // sync helpers
+
+    /**
+     * Determines whether the target of a conditional upload is not there (anymore).
+     *
+     * Some servers (like DAViCal) answer 412 Precondition Failed when a request with `If-Match` is sent for a
+     * resource which doesn't exist anymore, as required by RFC 9110 13.1.1. Others answer 404 Not Found in that
+     * case. So when a conditional upload fails, we have to ask the server whether the resource is still there.
+     *
+     * @param remote  resource which was the target of the upload
+     *
+     * @return  *true* if the server says that the resource is not there (anymore); *false* if it's still there
+     *          or if it couldn't be determined (in this case, callers should keep the safe behavior)
+     */
+    private suspend fun uploadTargetIsGone(remote: DavResource): Boolean =
+        try {
+            val eTag = remote.propfind(0, WebDAV.GetETag).selfResponse()?.get(GetETag::class.java)?.eTag
+            logger.fine("Upload target ${remote.location} is still there (ETag $eTag)")
+            false
+        } catch (_: NotFoundException) {
+            true
+        } catch (_: GoneException) {
+            true
+        } catch (e: DavException) {
+            logger.log(Level.WARNING, "Couldn't determine whether ${remote.location} is still there", e)
+            false
+        }
 
     /**
      * Logs the exception, updates sync result and shows a notification to the user.

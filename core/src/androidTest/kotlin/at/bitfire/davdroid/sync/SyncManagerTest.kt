@@ -25,6 +25,7 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.ktor.client.HttpClient
 import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.Url
 import io.ktor.http.headersOf
@@ -40,6 +41,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
@@ -105,6 +107,37 @@ class SyncManagerTest {
             headersOf(HttpHeaders.ContentType, "text/xml")
         )
     }
+
+    /**
+     * Enqueues a Multi-Status response for a PROPFIND on a single resource, as sent when DAVx5 checks
+     * whether the target of a failed conditional upload is still there.
+     */
+    private fun enqueuePropfindETag(href: String, eTag: String) {
+        mockEngineQueue.enqueue(
+            HttpStatusCode.MultiStatus,
+            "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n" +
+                    "<multistatus xmlns=\"DAV:\">\n" +
+                    "  <response>\n" +
+                    "    <href>$href</href>\n" +
+                    "    <propstat>\n" +
+                    "      <prop>\n" +
+                    "        <getetag>$eTag</getetag>\n" +
+                    "      </prop>\n" +
+                    "      <status>HTTP/1.1 200 OK</status>\n" +
+                    "    </propstat>\n" +
+                    "  </response>\n" +
+                    "</multistatus>",
+            headersOf(HttpHeaders.ContentType, "text/xml")
+        )
+    }
+
+    /** All PUT requests the mock engine has received, in order. */
+    private fun putRequests() =
+        mockEngineQueue.engine.requestHistory.filter { it.method == HttpMethod.Put }
+
+    /** All requests the mock engine has received for the given path (i.e. not the collection itself). */
+    private fun requestsFor(encodedPath: String) =
+        mockEngineQueue.engine.requestHistory.filter { it.url.encodedPath == encodedPath }
 
     @Before
     fun setUp() {
@@ -271,7 +304,7 @@ class SyncManagerTest {
     }
 
     @Test
-    fun testPerformSync_UploadModifiedMember_412PreconditionFailed() = runTest {
+    fun testPerformSync_UploadModifiedMember_412PreconditionFailed_ResourceStillThere() = runTest {
         val collection = LocalTestCollection().apply {
             lastSyncState = SyncState(SyncState.Type.CTAG, "old-ctag")
             entries += LocalTestResource().apply {
@@ -284,6 +317,9 @@ class SyncManagerTest {
 
         // PUT -> 412 Precondition Failed
         mockEngineQueue.enqueue(HttpStatusCode.PreconditionFailed)
+
+        // PROPFIND -> resource is still there, so it's a real edit conflict
+        enqueuePropfindETag("/existing-file.txt", "changed-etag-from-server")
 
         // modifications sent, so DAVx5 will query CTag again
         enqueueQueryCapabilities("ctag1")
@@ -317,6 +353,289 @@ class SyncManagerTest {
         assertFalse(syncManager.syncResult.hasError)
         assertEquals(1, collection.entries.size)
         assertEquals("changed-etag-from-server", collection.entries.first().eTag)
+
+        // real edit conflict: must not be uploaded a second time (would overwrite the server version)
+        assertEquals(1, putRequests().size)
+    }
+
+    @Test
+    fun testPerformSync_UploadModifiedMember_412PreconditionFailed_ResourceGone() = runTest {
+        // Some servers (like DAViCal) answer 412 instead of 404 when the resource is not there anymore,
+        // because a conditional request with If-Match must fail on a non-existing resource.
+        val collection = LocalTestCollection().apply {
+            lastSyncState = SyncState(SyncState.Type.CTAG, "old-ctag")
+            entries += LocalTestResource().apply {
+                fileName = "existing-file.txt"
+                eTag = "etag-of-the-resource-that-has-been-deleted-on-the-server"
+                dirty = true
+            }
+        }
+        enqueueQueryCapabilities("ctag1")
+
+        // PUT -> 412 Precondition Failed
+        mockEngineQueue.enqueue(HttpStatusCode.PreconditionFailed)
+
+        // PROPFIND -> 404 Not Found, so the resource is really gone
+        mockEngineQueue.enqueue(HttpStatusCode.NotFound)
+
+        // PUT (as new resource) -> 201 Created
+        mockEngineQueue.enqueue(HttpStatusCode.Created, headers = headersOf(HttpHeaders.ETag, "etag-from-put"))
+
+        // modifications sent, so DAVx5 will query CTag again
+        enqueueQueryCapabilities("ctag2")
+
+        val syncManager = syncManager(collection).apply {
+            listAllRemoteResult = listOf(
+                Pair(
+                    Response(
+                        Url("$BASE_URL/"),
+                        Url("$BASE_URL/existing-file.txt"),
+                        null,
+                        listOf(
+                            PropStat(
+                                listOf(
+                                    GetETag("etag-from-put")
+                                ),
+                                HttpStatusCode.OK
+                            )
+                        )
+                    ), HrefRelation.MEMBER
+                )
+            )
+        }
+        syncManager.performSync()
+
+        assertTrue(syncManager.didGenerateUpload)
+        assertTrue(syncManager.didListAllRemote)
+        assertFalse(syncManager.didDownloadRemote)
+        assertFalse(syncManager.syncResult.hasError())
+        assertEquals(1, collection.entries.size)
+        assertFalse(collection.entries.first().dirty)
+        assertEquals("etag-from-put", collection.entries.first().eTag)
+
+        // first PUT is conditional, second one creates the resource again
+        val puts = putRequests()
+        assertEquals(2, puts.size)
+        assertEquals(
+            "\"etag-of-the-resource-that-has-been-deleted-on-the-server\"",
+            puts[0].headers[HttpHeaders.IfMatch]
+        )
+        assertNull(puts[1].headers[HttpHeaders.IfMatch])
+        assertEquals("*", puts[1].headers[HttpHeaders.IfNoneMatch])
+    }
+
+    @Test
+    fun testPerformSync_UploadModifiedMember_409Conflict_ResourceGone() = runTest {
+        val collection = LocalTestCollection().apply {
+            lastSyncState = SyncState(SyncState.Type.CTAG, "old-ctag")
+            entries += LocalTestResource().apply {
+                fileName = "existing-file.txt"
+                eTag = "etag-of-the-resource-that-has-been-deleted-on-the-server"
+                dirty = true
+            }
+        }
+        enqueueQueryCapabilities("ctag1")
+
+        // PUT -> 409 Conflict
+        mockEngineQueue.enqueue(HttpStatusCode.Conflict)
+
+        // PROPFIND -> 404 Not Found, so the resource is really gone
+        mockEngineQueue.enqueue(HttpStatusCode.NotFound)
+
+        // PUT (as new resource) -> 201 Created
+        mockEngineQueue.enqueue(HttpStatusCode.Created, headers = headersOf(HttpHeaders.ETag, "etag-from-put"))
+
+        // modifications sent, so DAVx5 will query CTag again
+        enqueueQueryCapabilities("ctag2")
+
+        val syncManager = syncManager(collection).apply {
+            listAllRemoteResult = listOf(
+                Pair(
+                    Response(
+                        Url("$BASE_URL/"),
+                        Url("$BASE_URL/existing-file.txt"),
+                        null,
+                        listOf(
+                            PropStat(
+                                listOf(
+                                    GetETag("etag-from-put")
+                                ),
+                                HttpStatusCode.OK
+                            )
+                        )
+                    ), HrefRelation.MEMBER
+                )
+            )
+        }
+        syncManager.performSync()
+
+        assertFalse(syncManager.syncResult.hasError())
+        assertEquals(1, collection.entries.size)
+        assertFalse(collection.entries.first().dirty)
+        assertEquals("etag-from-put", collection.entries.first().eTag)
+        assertEquals(2, putRequests().size)
+    }
+
+    @Test
+    fun testPerformSync_UploadModifiedMember_412PreconditionFailed_ResourceStateUnknown() = runTest {
+        // When we can't determine whether the resource is still there, the safe behavior is kept:
+        // ignore the failed upload and let the resource be downloaded again.
+        val collection = LocalTestCollection().apply {
+            lastSyncState = SyncState(SyncState.Type.CTAG, "old-ctag")
+            entries += LocalTestResource().apply {
+                fileName = "existing-file.txt"
+                eTag = "etag-that-has-been-changed-on-server-in-the-meanwhile"
+                dirty = true
+            }
+        }
+        enqueueQueryCapabilities("ctag1")
+
+        // PUT -> 412 Precondition Failed
+        mockEngineQueue.enqueue(HttpStatusCode.PreconditionFailed)
+
+        // PROPFIND -> 500 Internal Server Error, so we don't know whether the resource is still there
+        mockEngineQueue.enqueue(HttpStatusCode.InternalServerError)
+
+        // modifications sent, so DAVx5 will query CTag again
+        enqueueQueryCapabilities("ctag1")
+
+        val syncManager = syncManager(collection).apply {
+            listAllRemoteResult = listOf(
+                Pair(
+                    Response(
+                        Url("$BASE_URL/"),
+                        Url("$BASE_URL/existing-file.txt"),
+                        null,
+                        listOf(
+                            PropStat(
+                                listOf(
+                                    GetETag("changed-etag-from-server")
+                                ),
+                                HttpStatusCode.OK
+                            )
+                        )
+                    ), HrefRelation.MEMBER
+                )
+            )
+
+            assertDownloadRemote = mapOf(Pair(Url("$BASE_URL/existing-file.txt"), "changed-etag-from-server"))
+        }
+        syncManager.performSync()
+
+        assertTrue(syncManager.didDownloadRemote)
+        assertFalse(syncManager.syncResult.hasError())
+        assertEquals(1, collection.entries.size)
+        assertEquals("changed-etag-from-server", collection.entries.first().eTag)
+        assertEquals(1, putRequests().size)
+    }
+
+    @Test
+    fun testPerformSync_UploadModifiedMember_412PreconditionFailed_ResourceReappeared() = runTest {
+        // The resource is gone when we ask, but back again when we upload it as a new resource.
+        val collection = LocalTestCollection().apply {
+            lastSyncState = SyncState(SyncState.Type.CTAG, "old-ctag")
+            entries += LocalTestResource().apply {
+                fileName = "existing-file.txt"
+                eTag = "etag-that-has-been-changed-on-server-in-the-meanwhile"
+                dirty = true
+            }
+        }
+        enqueueQueryCapabilities("ctag1")
+
+        // PUT -> 412 Precondition Failed
+        mockEngineQueue.enqueue(HttpStatusCode.PreconditionFailed)
+
+        // PROPFIND -> 404 Not Found
+        mockEngineQueue.enqueue(HttpStatusCode.NotFound)
+
+        // PUT (as new resource) -> 412 Precondition Failed, too (If-None-Match didn't match)
+        mockEngineQueue.enqueue(HttpStatusCode.PreconditionFailed)
+
+        // modifications sent, so DAVx5 will query CTag again
+        enqueueQueryCapabilities("ctag1")
+
+        val syncManager = syncManager(collection).apply {
+            listAllRemoteResult = listOf(
+                Pair(
+                    Response(
+                        Url("$BASE_URL/"),
+                        Url("$BASE_URL/existing-file.txt"),
+                        null,
+                        listOf(
+                            PropStat(
+                                listOf(
+                                    GetETag("changed-etag-from-server")
+                                ),
+                                HttpStatusCode.OK
+                            )
+                        )
+                    ), HrefRelation.MEMBER
+                )
+            )
+
+            assertDownloadRemote = mapOf(Pair(Url("$BASE_URL/existing-file.txt"), "changed-etag-from-server"))
+        }
+        syncManager.performSync()
+
+        assertTrue(syncManager.didDownloadRemote)
+        assertFalse(syncManager.syncResult.hasError())
+        assertEquals("changed-etag-from-server", collection.entries.first().eTag)
+
+        // the server is only asked once; the retry must not ask again (no endless recursion)
+        assertEquals(2, putRequests().size)
+        assertEquals(3, requestsFor("/existing-file.txt").size)
+    }
+
+    @Test
+    fun testPerformSync_UploadModifiedMember_404NotFound_UploadsAsNew() = runTest {
+        // Servers which answer 404 (instead of 412) don't have to be asked whether the resource is there.
+        val collection = LocalTestCollection().apply {
+            lastSyncState = SyncState(SyncState.Type.CTAG, "old-ctag")
+            entries += LocalTestResource().apply {
+                fileName = "existing-file.txt"
+                eTag = "etag-of-the-resource-that-has-been-deleted-on-the-server"
+                dirty = true
+            }
+        }
+        enqueueQueryCapabilities("ctag1")
+
+        // PUT -> 404 Not Found
+        mockEngineQueue.enqueue(HttpStatusCode.NotFound)
+
+        // PUT (as new resource) -> 201 Created
+        mockEngineQueue.enqueue(HttpStatusCode.Created, headers = headersOf(HttpHeaders.ETag, "etag-from-put"))
+
+        // modifications sent, so DAVx5 will query CTag again
+        enqueueQueryCapabilities("ctag2")
+
+        val syncManager = syncManager(collection).apply {
+            listAllRemoteResult = listOf(
+                Pair(
+                    Response(
+                        Url("$BASE_URL/"),
+                        Url("$BASE_URL/existing-file.txt"),
+                        null,
+                        listOf(
+                            PropStat(
+                                listOf(
+                                    GetETag("etag-from-put")
+                                ),
+                                HttpStatusCode.OK
+                            )
+                        )
+                    ), HrefRelation.MEMBER
+                )
+            )
+        }
+        syncManager.performSync()
+
+        assertFalse(syncManager.syncResult.hasError())
+        assertFalse(collection.entries.first().dirty)
+        assertEquals("etag-from-put", collection.entries.first().eTag)
+
+        // two PUTs and nothing else: no PROPFIND needed to find out that the resource is gone
+        assertEquals(2, putRequests().size)
+        assertEquals(2, requestsFor("/existing-file.txt").size)
     }
 
     @Test
