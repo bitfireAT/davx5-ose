@@ -115,7 +115,8 @@ class TasksSyncManager @AssistedInject constructor(
 
     override suspend fun processDownload(result: WebDavCollection.MultiGetItem) {
         result.url.withExceptionContext {
-            val fileName = requireNotNull(result.url.lastSegment) { "Task URL has no path segment: ${result.url}" }
+            val fileName = result.url.lastSegment
+            require(fileName.isNotEmpty()) { "Task URL has no path segment: ${result.url}" }
             try {
                 processVTodo(fileName, result.eTag, StringReader(result.content))
             } catch (e: InvalidResourceException) {

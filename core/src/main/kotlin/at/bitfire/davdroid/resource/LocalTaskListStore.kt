@@ -92,7 +92,7 @@ class LocalTaskListStore @AssistedInject constructor(
         val values = ContentValues(3)
         values.put(TaskLists._SYNC_ID, info.id.toString())
         values.put(TaskLists.LIST_NAME,
-            if (info.displayName.isNullOrBlank()) (info.url.lastSegment ?: "/") else info.displayName)
+            if (info.displayName.isNullOrBlank()) info.url.lastSegment.ifEmpty { "/" } else info.displayName)
 
         if (withColor && info.color != null)
             values.put(TaskLists.LIST_COLOR, info.color)

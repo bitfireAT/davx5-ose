@@ -118,7 +118,7 @@ class LocalCalendarStore @Inject constructor(
         val values = contentValuesOf(
             Calendars._SYNC_ID to info.id,
             Calendars.CALENDAR_DISPLAY_NAME to
-                    if (info.displayName.isNullOrBlank()) info.url.lastSegment ?: "/" else info.displayName,
+                    if (info.displayName.isNullOrBlank()) info.url.lastSegment.ifEmpty { "/" } else info.displayName,
 
             Calendars.ALLOWED_AVAILABILITY to arrayOf(
                 Events.AVAILABILITY_BUSY,

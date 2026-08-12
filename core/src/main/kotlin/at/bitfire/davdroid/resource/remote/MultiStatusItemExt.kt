@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid.resource.remote
 
+import at.bitfire.dav4jvm.ktor.HttpUtils
 import at.bitfire.dav4jvm.ktor.MultiStatusItem
 import at.bitfire.dav4jvm.ktor.Response
 import at.bitfire.dav4jvm.ktor.exception.DavException
@@ -14,6 +15,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNot
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
 import java.util.logging.Logger
 
 private val logger = Logger.getLogger("at.bitfire.davdroid.resource.remote.MultiStatusItemExt")
@@ -65,9 +67,14 @@ fun Flow<MultiStatusItem>.toInternalMemberStates(): Flow<InternalMemberState> =
         .filterMembers()
         .filterNotCollections()
         .filterSuccessful()
-        .map { item ->
-            InternalMemberState(
-                href = item.response.href,
-                eTag = item.response.requireETag()
-            )
+        .mapNotNull { item ->
+            val href = item.response.href
+            if (HttpUtils.fileName(href).isEmpty()) {
+                null
+            } else {
+                InternalMemberState(
+                    href = href,
+                    eTag = item.response.requireETag()
+                )
+            }
         }

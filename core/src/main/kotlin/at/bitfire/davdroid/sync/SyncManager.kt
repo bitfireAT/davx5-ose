@@ -701,7 +701,10 @@ abstract class SyncManager<LocalType : LocalResource>(
                     }
                     is CollectionSyncItem.RemovedMember -> {
                         // deletes local entry as side effect
-                        item.href.lastSegment?.let { deleteRemovedMember(it) }
+                        val fileName = item.href.lastSegment
+                        if (fileName.isNotEmpty()) {
+                            deleteRemovedMember(fileName)
+                        }
                         false
                     }
                     is CollectionSyncItem.ChangedMember -> {
@@ -749,10 +752,6 @@ abstract class SyncManager<LocalType : LocalResource>(
      */
     private suspend fun decideDownload(member: InternalMemberState): Boolean {
         val fileName = member.fileName
-        if (fileName == null) {
-            logger.warning("Listed member has no path segment, skipping: ${member.href}")
-            return false
-        }
         logger.fine("Found remote resource: $fileName")
 
         val local = localCollection.findByName(fileName)

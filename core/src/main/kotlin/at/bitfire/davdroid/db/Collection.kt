@@ -266,7 +266,7 @@ data class Collection(
 
     // calculated properties
 
-    fun title() = displayName ?: url.lastSegment ?: "/"
+    fun title() = displayName ?: url.lastSegment.ifEmpty { "/" }
     fun readOnly() = forceReadOnly || !privWriteContent
 
 }

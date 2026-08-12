@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid.util
 
+import at.bitfire.dav4jvm.ktor.HttpUtils
 import at.bitfire.dav4jvm.ktor.toUrlOrNull
 import at.bitfire.davdroid.util.DavUtils.generateUidIfNecessary
 import at.bitfire.davdroid.util.DavUtils.toUrlOrNull
@@ -118,14 +119,16 @@ object DavUtils {
     // extension methods
 
     /**
-     * Last non-empty (decoded) path segment, or `null` if the URL has no path segments.
+     * Last path segment of this URL (resource / file name).
      *
-     * A literal `/` segment (e.g. from `%2F`) is returned as `"/"` and is distinguishable
-     * from a missing path (`null`). Display call sites that want a fallback should use
-     * `lastSegment ?: "/"`. See https://github.com/bitfireAT/davx5-ose/issues/2782.
+     * Delegates to [HttpUtils.fileName] / the same helper used by
+     * `Response.hrefName()`, so empty paths yield `""` while a literal
+     * `/` segment (e.g. from `%2F`) remains `"/"`. Display call sites that
+     * want a fallback should use `lastSegment.ifEmpty { "/" }`.
+     * See https://github.com/bitfireAT/davx5-ose/issues/2782.
      */
-    val Url.lastSegment: String?
-        get() = this.segments.lastOrNull { it.isNotEmpty() }
+    val Url.lastSegment: String
+        get() = HttpUtils.fileName(this)
 
     fun String.toURIorNull(): URI? = try {
         URI(this)

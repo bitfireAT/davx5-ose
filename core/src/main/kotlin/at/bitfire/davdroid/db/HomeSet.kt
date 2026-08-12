@@ -38,6 +38,6 @@ data class HomeSet(
     val displayName: String? = null
 ) {
 
-    fun title() = displayName ?: url.lastSegment ?: "/"
+    fun title() = displayName ?: url.lastSegment.ifEmpty { "/" }
 
 }

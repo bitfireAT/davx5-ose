@@ -112,7 +112,8 @@ class JtxSyncManager @AssistedInject constructor(
 
     override suspend fun processDownload(result: WebDavCollection.MultiGetItem) {
         result.url.withExceptionContext {
-            val fileName = requireNotNull(result.url.lastSegment) { "Jtx URL has no path segment: ${result.url}" }
+            val fileName = result.url.lastSegment
+            require(fileName.isNotEmpty()) { "Jtx URL has no path segment: ${result.url}" }
             try {
                 processICalObject(fileName, result.eTag, result.scheduleTag, StringReader(result.content))
             } catch (e: InvalidResourceException) {
