@@ -8,6 +8,15 @@ is shared and the core development always takes place in davx5-ose.
 
 > **Maintenance note for agents:** Keep this file up to date. When making changes that affect the structure described here — such as adding/removing Gradle modules, renaming packages, changing the DI framework, or replacing major dependencies — update the relevant sections of this file as part of the same change. Only reflect genuinely significant structural changes; don't update for routine additions like new classes or minor refactors.
 
+## Committing and pull requests
+
+- When committing, always add a `Co-Authored-By` line to identify yourself as AI agent.
+- When creating or editing a PR:
+  - Take `.github/pull_request_template.md` into account and always check the "This PR and its concept was mainly driven
+    by AI" checkbox.
+  - Before creating a PR, make sure that the PR is properly reviewed by a `code-review` skill and all issues are
+    addressed.
+
 ## Gradle modules
 
 Dependency direction: `:app-ose` uses `:core` uses `:synctools`
