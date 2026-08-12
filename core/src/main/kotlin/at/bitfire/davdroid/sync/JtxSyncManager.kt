@@ -13,6 +13,7 @@ import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.resource.remote.CalDavCollection
 import at.bitfire.davdroid.resource.remote.WebDavCollection
 import at.bitfire.davdroid.sync.mapping.JtxMapper
+import at.bitfire.davdroid.sync.mapping.ResourceMapper
 import at.bitfire.davdroid.util.DavUtils.lastSegment
 import at.bitfire.synctools.exception.InvalidResourceException
 import at.bitfire.synctools.icalendar.CalendarUidSplitter
@@ -37,7 +38,7 @@ class JtxSyncManager @AssistedInject constructor(
     @Assisted override val remoteCollection: CalDavCollection,
     @Assisted resync: ResyncType?,
     @Assisted settings: SyncSettings,
-    private val jtxMapper: JtxMapper
+    jtxMapper: JtxMapper
 ) : SyncManager<LocalJtxObject>(
     accountId,
     httpClient,

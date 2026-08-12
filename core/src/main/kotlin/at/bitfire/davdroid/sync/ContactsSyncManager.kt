@@ -18,6 +18,7 @@ import at.bitfire.davdroid.resource.workaround.ContactDirtyVerifier
 import at.bitfire.davdroid.sync.groups.CategoriesStrategy
 import at.bitfire.davdroid.sync.groups.VCard4Strategy
 import at.bitfire.davdroid.sync.mapping.ContactMapper
+import at.bitfire.davdroid.sync.mapping.ResourceMapper
 import at.bitfire.davdroid.util.DavUtils.lastSegment
 import at.bitfire.synctools.mapping.contacts.Contact
 import at.bitfire.synctools.mapping.contacts.ContactReader
@@ -80,7 +81,7 @@ class ContactsSyncManager @AssistedInject constructor(
     @Assisted resync: ResyncType?,
     @Assisted val syncFrameworkUpload: Boolean,
     @Assisted settings: SyncSettings,
-    private val contactMapper: ContactMapper,
+    contactMapper: ContactMapper,
     val dirtyVerifier: Optional<ContactDirtyVerifier>,
     private val resourceRetrieverFactory: ResourceRetriever.Factory
 ) : SyncManager<LocalAddress>(

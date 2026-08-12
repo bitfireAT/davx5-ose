@@ -2,17 +2,18 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  */
 
-package at.bitfire.davdroid.sync
+package at.bitfire.davdroid.sync.mapping
 
 import androidx.annotation.VisibleForTesting
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.resource.remote.WebDavCollection
+import at.bitfire.davdroid.sync.GeneratedResource
 
 /**
  * Maps a local resource to the request body used to upload it.
  *
  * Currently covers only the upload direction; intended to grow to include download/store and
- * post-processing as those responsibilities move out of [SyncManager] subclasses, too.
+ * post-processing as those responsibilities move out of [at.bitfire.davdroid.sync.SyncManager] subclasses, too.
  */
 interface ResourceMapper<LocalType : LocalResource> {
 

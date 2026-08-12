@@ -32,6 +32,7 @@ import at.bitfire.davdroid.resource.remote.CollectionSyncItem
 import at.bitfire.davdroid.resource.remote.InternalMemberState
 import at.bitfire.davdroid.resource.remote.WebDavCollection
 import at.bitfire.davdroid.resource.remote.member
+import at.bitfire.davdroid.sync.mapping.ResourceMapper
 import at.bitfire.davdroid.util.DavUtils.lastSegment
 import at.bitfire.davdroid.util.batchMap
 import dagger.hilt.android.qualifiers.ApplicationContext

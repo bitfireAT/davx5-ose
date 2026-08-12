@@ -11,6 +11,7 @@ import at.bitfire.davdroid.resource.LocalTask
 import at.bitfire.davdroid.resource.LocalTaskList
 import at.bitfire.davdroid.resource.remote.CalDavCollection
 import at.bitfire.davdroid.resource.remote.WebDavCollection
+import at.bitfire.davdroid.sync.mapping.ResourceMapper
 import at.bitfire.davdroid.sync.mapping.TaskMapper
 import at.bitfire.davdroid.util.DavUtils.lastSegment
 import at.bitfire.synctools.exception.InvalidResourceException
@@ -40,7 +41,7 @@ class TasksSyncManager @AssistedInject constructor(
     @Assisted override val remoteCollection: CalDavCollection,
     @Assisted resync: ResyncType?,
     @Assisted settings: SyncSettings,
-    private val taskMapperFactory: TaskMapper.Factory
+    taskMapperFactory: TaskMapper.Factory
 ) : SyncManager<LocalTask>(
     accountId,
     httpClient,
