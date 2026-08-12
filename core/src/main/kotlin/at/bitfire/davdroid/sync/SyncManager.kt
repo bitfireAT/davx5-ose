@@ -32,6 +32,7 @@ import at.bitfire.davdroid.resource.remote.CollectionSyncItem
 import at.bitfire.davdroid.resource.remote.InternalMemberState
 import at.bitfire.davdroid.resource.remote.WebDavCollection
 import at.bitfire.davdroid.resource.remote.member
+import at.bitfire.davdroid.sync.mapping.GeneratedResource
 import at.bitfire.davdroid.sync.mapping.ResourceMapper
 import at.bitfire.davdroid.util.DavUtils.lastSegment
 import at.bitfire.davdroid.util.batchMap
@@ -119,8 +120,10 @@ abstract class SyncManager<LocalType : LocalResource>(
     /** local collection to synchronize (interface to content provider) */
     protected abstract val localCollection: LocalCollection<LocalType>
 
+    /** remote collection to synchronize */
     protected abstract val remoteCollection: WebDavCollection
 
+    /** mapper to convert between remote and local representation/storage */
     protected abstract val resourceMapper: ResourceMapper<LocalType>
 
     /**

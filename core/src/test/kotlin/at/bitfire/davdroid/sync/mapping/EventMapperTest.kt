@@ -92,7 +92,7 @@ class EventMapperTest {
         }
     }
 
-    private suspend fun iCal(result: at.bitfire.davdroid.sync.GeneratedResource) =
+    private suspend fun iCal(result: GeneratedResource) =
         Buffer().also { it.write(result.content.toByteArray()) }.readString(Charsets.UTF_8)
 
 

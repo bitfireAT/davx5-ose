@@ -10,7 +10,6 @@ import at.bitfire.davdroid.resource.LocalAddress
 import at.bitfire.davdroid.resource.LocalContact
 import at.bitfire.davdroid.resource.LocalGroup
 import at.bitfire.davdroid.resource.remote.WebDavCollection
-import at.bitfire.davdroid.sync.GeneratedResource
 import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.synctools.mapping.contacts.Contact
 import at.bitfire.synctools.mapping.contacts.ContactWriter

@@ -8,6 +8,8 @@ import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.resource.remote.WebDavCollection
+import at.bitfire.davdroid.sync.mapping.GeneratedResource
+import at.bitfire.davdroid.sync.mapping.ResourceMapper
 import at.bitfire.davdroid.util.DavUtils.lastSegment
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -47,18 +49,20 @@ class TestSyncManager @AssistedInject constructor(
     }
 
     var didGenerateUpload = false
-    override fun generateUpload(
-        resource: LocalTestResource,
-        capabilities: WebDavCollection.Capabilities
-    ): GeneratedResource {
-        didGenerateUpload = true
-        return GeneratedResource(
-            suggestedFileName = resource.fileName ?: "generated-file.txt",
-            content = ByteArrayContent(
-                bytes = resource.toString().encodeToByteArray()
-            ),
-            onSuccessContext = GeneratedResource.OnSuccessContext()
-        )
+    override val resourceMapper = object : ResourceMapper<LocalTestResource> {
+        override fun generateUpload(
+            resource: LocalTestResource,
+            capabilities: WebDavCollection.Capabilities
+        ): GeneratedResource {
+            didGenerateUpload = true
+            return GeneratedResource(
+                suggestedFileName = resource.fileName ?: "generated-file.txt",
+                content = ByteArrayContent(
+                    bytes = resource.toString().encodeToByteArray()
+                ),
+                onSuccessContext = GeneratedResource.OnSuccessContext()
+            )
+        }
     }
 
     override fun syncAlgorithm(capabilities: WebDavCollection.Capabilities) = SyncAlgorithm.PROPFIND_REPORT

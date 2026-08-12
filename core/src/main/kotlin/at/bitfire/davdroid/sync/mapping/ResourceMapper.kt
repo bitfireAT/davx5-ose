@@ -7,7 +7,6 @@ package at.bitfire.davdroid.sync.mapping
 import androidx.annotation.VisibleForTesting
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.resource.remote.WebDavCollection
-import at.bitfire.davdroid.sync.GeneratedResource
 
 /**
  * Maps a local resource to the request body used to upload it.

@@ -9,7 +9,6 @@ import at.bitfire.davdroid.ProductIds
 import at.bitfire.davdroid.resource.LocalTask
 import at.bitfire.davdroid.resource.LocalTaskList
 import at.bitfire.davdroid.resource.remote.WebDavCollection
-import at.bitfire.davdroid.sync.GeneratedResource
 import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.synctools.icalendar.ICalendarGenerator
 import at.bitfire.synctools.mapping.tasks.DmfsTaskHandler

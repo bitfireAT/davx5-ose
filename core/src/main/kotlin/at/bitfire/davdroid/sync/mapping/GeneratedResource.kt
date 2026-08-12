@@ -2,7 +2,7 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  */
 
-package at.bitfire.davdroid.sync
+package at.bitfire.davdroid.sync.mapping
 
 import io.ktor.http.content.OutgoingContent
 
@@ -11,7 +11,7 @@ import io.ktor.http.content.OutgoingContent
  *
  * @param suggestedFileName     file name that can be used for uploading if there's no existing name
  * @param content               resource content (including MIME type)
- * @param onSuccessContext      context that must be passed to [SyncManager.onSuccessfulUpload]
+ * @param onSuccessContext      context that must be passed to [at.bitfire.davdroid.sync.SyncManager.onSuccessfulUpload]
  * on successful upload in order to persist the changes made during mapping
  */
 class GeneratedResource(
