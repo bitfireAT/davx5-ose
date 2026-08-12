@@ -13,9 +13,10 @@ import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.accounts.AndroidAccountManager
+import at.bitfire.davdroid.accounts.toAccountId
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
-import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.settings.AccountSettingsFactory
 import at.bitfire.davdroid.util.DavUtils.lastSegment
 import at.bitfire.synctools.storage.TaskProvider
 import at.bitfire.synctools.storage.tasks.DmfsTaskList
@@ -33,7 +34,7 @@ import javax.annotation.WillNotClose
 
 class LocalTaskListStore @AssistedInject constructor(
     @Assisted private val providerName: TaskProvider.ProviderName,
-    val accountSettingsFactory: AccountSettings.Factory,
+    val accountSettingsFactory: AccountSettingsFactory,
     val androidAccountManager: AndroidAccountManager,
     @ApplicationContext val context: Context,
     val db: AppDatabase,
@@ -124,7 +125,7 @@ class LocalTaskListStore @AssistedInject constructor(
 
     override fun update(client: ContentProviderClient, localCollection: LocalTaskList, fromCollection: Collection) {
         logger.log(Level.FINE, "Updating local task list {0}: {1}", arrayOf(fromCollection.url, fromCollection))
-        val accountSettings = accountSettingsFactory.create(localCollection.dmfsTaskList.account)
+        val accountSettings = accountSettingsFactory.create(localCollection.dmfsTaskList.account.toAccountId())
         localCollection.dmfsTaskList.update(valuesFromCollectionInfo(fromCollection, withColor = accountSettings.getManageCalendarColors()))
     }
 

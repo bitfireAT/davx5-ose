@@ -9,11 +9,11 @@ import android.provider.ContactsContract
 import androidx.annotation.WorkerThread
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.accounts.AndroidAccountManager
-import at.bitfire.davdroid.accounts.toAndroidAccount
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.resource.LocalAddressBookStore
 import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.settings.AccountSettingsFactory
 import at.bitfire.davdroid.sync.adapter.SyncFrameworkIntegration
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
 import javax.inject.Inject
@@ -31,7 +31,7 @@ import javax.inject.Provider
  * Automatic synchronization stands in contrast to manual synchronization, which is only triggered by the user.
  */
 class AutomaticSyncManager @Inject constructor(
-    private val accountSettingsFactory: AccountSettings.Factory,
+    private val accountSettingsFactory: AccountSettingsFactory,
     private val androidAccountManager: AndroidAccountManager,
     private val localAddressBookStore: LocalAddressBookStore,
     private val serviceRepository: DavServiceRepository,
@@ -68,7 +68,7 @@ class AutomaticSyncManager @Inject constructor(
         accountId: AccountId,
         dataType: SyncDataType
     ) {
-        val accountSettings = accountSettingsFactory.create(accountId.toAndroidAccount())
+        val accountSettings = accountSettingsFactory.create(accountId)
         val syncInterval = accountSettings.getSyncInterval(dataType)
 
         // 1. Update sync workers (needs already updated sync interval in AccountSettings).

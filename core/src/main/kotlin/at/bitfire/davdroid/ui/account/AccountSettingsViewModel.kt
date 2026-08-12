@@ -9,14 +9,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
-import at.bitfire.davdroid.accounts.toAndroidAccount
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.di.qualifier.ApplicationScope
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.network.OAuthIntegration
 import at.bitfire.davdroid.repository.AccountRepository
-import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.settings.AccountSettingsFactory
 import at.bitfire.davdroid.settings.Credentials
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.sync.SyncDataType
@@ -47,7 +46,7 @@ import java.util.logging.Logger
 class AccountSettingsViewModel @AssistedInject constructor(
     @Assisted val accountId: AccountId,
     private val accountRepository: AccountRepository,
-    private val accountSettingsFactory: AccountSettings.Factory,
+    private val accountSettingsFactory: AccountSettingsFactory,
     @ApplicationScope private val applicationScope: CoroutineScope,
     private val authService: AuthorizationService,
     @ApplicationContext val context: Context,
@@ -102,7 +101,7 @@ class AccountSettingsViewModel @AssistedInject constructor(
     /**
      * Only acquire account settings on a worker thread!
      */
-    private val accountSettings by lazy { accountSettingsFactory.create(accountId.toAndroidAccount()) }
+    private val accountSettings by lazy { accountSettingsFactory.create(accountId) }
 
     private val setAccountSettingsUseCase = setAccountSettingsUseCaseFactory.create(accountId)
 

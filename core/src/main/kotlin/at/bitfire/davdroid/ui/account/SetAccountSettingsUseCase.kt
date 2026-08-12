@@ -5,10 +5,9 @@
 package at.bitfire.davdroid.ui.account
 
 import at.bitfire.davdroid.accounts.AccountId
-import at.bitfire.davdroid.accounts.toAndroidAccount
 import at.bitfire.davdroid.di.qualifier.ApplicationScope
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
-import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.settings.AccountSettingsFactory
 import at.bitfire.davdroid.settings.Credentials
 import at.bitfire.davdroid.sync.ResyncType
 import at.bitfire.davdroid.sync.SyncDataType
@@ -24,7 +23,7 @@ import net.openid.appauth.AuthState
 
 class SetAccountSettingsUseCase @AssistedInject constructor(
     @Assisted private val accountId: AccountId,
-    private val accountSettingsFactory: AccountSettings.Factory,
+    private val accountSettingsFactory: AccountSettingsFactory,
     @ApplicationScope private val appScope: CoroutineScope,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val syncWorkerManager: SyncWorkerManager
@@ -34,7 +33,7 @@ class SetAccountSettingsUseCase @AssistedInject constructor(
         fun create(accountId: AccountId): SetAccountSettingsUseCase
     }
 
-    private val accountSettings by lazy { accountSettingsFactory.create(accountId.toAndroidAccount()) }
+    private val accountSettings by lazy { accountSettingsFactory.create(accountId) }
 
 
     suspend fun setCredentials(credentials: Credentials) = runInAppScope {

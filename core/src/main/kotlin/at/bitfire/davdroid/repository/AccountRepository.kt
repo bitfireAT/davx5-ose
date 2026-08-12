@@ -12,6 +12,7 @@ import androidx.annotation.WorkerThread
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.accounts.LegacyAccount
+import at.bitfire.davdroid.accounts.toAccountId
 import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.db.ServiceType
@@ -21,6 +22,7 @@ import at.bitfire.davdroid.resource.LocalCalendarStore
 import at.bitfire.davdroid.servicedetection.DavResourceFinder
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.settings.AccountSettingsFactory
 import at.bitfire.davdroid.settings.Credentials
 import at.bitfire.davdroid.sync.AutomaticSyncManager
 import at.bitfire.davdroid.sync.SyncDataType
@@ -52,7 +54,7 @@ import javax.inject.Inject
  */
 class AccountRepository @Inject constructor(
     private val accountManager: AccountManager,
-    private val accountSettingsFactory: AccountSettings.Factory,
+    private val accountSettingsFactory: AccountSettingsFactory,
     private val automaticSyncManager: Lazy<AutomaticSyncManager>,
     @ApplicationContext private val context: Context,
     private val collectionRepository: Lazy<DavCollectionRepository>,
@@ -133,7 +135,7 @@ class AccountRepository @Inject constructor(
                 val id = insertService(accountName, Service.TYPE_CARDDAV, config.cardDAV)
 
                 // set initial CardDAV account settings and set sync intervals (enables automatic sync)
-                val accountSettings = accountSettingsFactory.create(account)
+                val accountSettings = accountSettingsFactory.create(account.toAccountId())
                 accountSettings.setGroupMethod(groupMethod)
 
                 // start CardDAV service detection (refresh collections)

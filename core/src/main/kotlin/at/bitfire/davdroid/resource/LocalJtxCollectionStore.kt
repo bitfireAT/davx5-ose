@@ -13,10 +13,11 @@ import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.accounts.AndroidAccountManager
+import at.bitfire.davdroid.accounts.toAccountId
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.repository.PrincipalRepository
-import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.settings.AccountSettingsFactory
 import at.bitfire.davdroid.util.DavUtils.lastSegment
 import at.bitfire.synctools.storage.jtx.JtxCollectionProvider
 import at.techbee.jtx.JtxContract
@@ -28,7 +29,7 @@ import javax.inject.Inject
 
 class LocalJtxCollectionStore @Inject constructor(
     @ApplicationContext val context: Context,
-    val accountSettingsFactory: AccountSettings.Factory,
+    val accountSettingsFactory: AccountSettingsFactory,
     val androidAccountManager: AndroidAccountManager,
     db: AppDatabase,
     val principalRepository: PrincipalRepository
@@ -113,7 +114,7 @@ class LocalJtxCollectionStore @Inject constructor(
     }
 
     override fun update(client: ContentProviderClient, localCollection: LocalJtxCollection, fromCollection: Collection) {
-        val accountSettings = accountSettingsFactory.create(localCollection.jtxCollection.account)
+        val accountSettings = accountSettingsFactory.create(localCollection.jtxCollection.account.toAccountId())
         val values = valuesFromCollection(fromCollection, account = localCollection.jtxCollection.account, withColor = accountSettings.getManageCalendarColors())
         localCollection.jtxCollection.update(values)
     }

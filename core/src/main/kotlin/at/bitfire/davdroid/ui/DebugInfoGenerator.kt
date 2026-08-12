@@ -37,9 +37,10 @@ import at.bitfire.dav4jvm.ktor.exception.DavException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.accounts.AndroidAccountManager
-import at.bitfire.davdroid.accounts.toAndroidAccount
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.repository.AccountRepository
+import at.bitfire.davdroid.resource.LocalAddressBook
+import at.bitfire.davdroid.settings.AccountSettingsFactory
 import at.bitfire.davdroid.resource.AddressBookAccountProperties
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.SettingsManager
@@ -73,7 +74,7 @@ import at.techbee.jtx.JtxContract.asSyncAdapter as asJtxSyncAdapter
 class DebugInfoGenerator @Inject constructor(
     private val accountManager: AccountManager,
     private val accountRepository: AccountRepository,
-    private val accountSettingsFactory: AccountSettings.Factory,
+    private val accountSettingsFactory: AccountSettingsFactory,
     private val addressBookAccountProperties: AddressBookAccountProperties,
     private val androidAccountManager: AndroidAccountManager,
     @ApplicationContext private val context: Context,
@@ -432,7 +433,7 @@ class DebugInfoGenerator @Inject constructor(
     private fun dumpAccount(accountId: AccountId, writer: Writer) {
         val accountName = accountRepository.getAccountNameBlocking(accountId)
         writer.append("\n\n - Account: ${accountName}\n")
-        val accountSettings = accountSettingsFactory.create(accountId.toAndroidAccount())
+        val accountSettings = accountSettingsFactory.create(accountId)
         val account = androidAccountManager.getAndroidAccount(accountId)
 
         writer.append(dumpAndroidAccount(account, AccountDumpInfo.caldavAccount(account)))
