@@ -5,7 +5,34 @@
 package at.bitfire.davdroid.db
 
 import androidx.room.Dao
+import androidx.room.Delete
+import androidx.room.Insert
+import androidx.room.Query
 
-// will be used by AccountSettings
 @Dao
-interface AccountSettingDao
+interface AccountSettingDao {
+    @Insert
+    fun insertBlocking(setting: AccountSetting)
+
+    @Insert
+    fun updateBlocking(setting: AccountSetting)
+
+    @Query("SELECT * FROM account_setting WHERE `key`=:key")
+    fun getBlocking(key: String): AccountSetting?
+
+    @Delete
+    fun deleteBlocking(setting: AccountSetting)
+
+    /**
+     * If an entry already exists with [setting]'s [AccountSetting.key], updates it with [updateBlocking], otherwise,
+     * inserts it as a new entry using [insertBlocking].
+     */
+    fun insertOrUpdateBlocking(setting: AccountSetting) {
+        val existing = getBlocking(setting.key)
+        if (existing == null)
+            insertBlocking(setting)
+        else
+            // We update the id of the given setting to the existing one, to make sure it's correctly set
+            updateBlocking(setting.copy(id = existing.id))
+    }
+}

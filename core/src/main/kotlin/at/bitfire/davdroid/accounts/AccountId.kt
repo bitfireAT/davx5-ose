@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid.accounts
 
+import at.bitfire.davdroid.db.DbAccount
 import android.accounts.Account as AndroidAccount
 
 /**
@@ -19,3 +20,9 @@ data class LegacyAccount(val androidAccount: AndroidAccount) : AccountId {
         return "${androidAccount.type}/${androidAccount.name}"
     }
 }
+
+/**
+ * An account that identifies an entry in the accounts' database.
+ * @see [at.bitfire.davdroid.db.DbAccount]
+ */
+data class DbAccount(val account: DbAccount) : AccountId

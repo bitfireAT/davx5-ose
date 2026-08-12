@@ -4,34 +4,47 @@
 
 package at.bitfire.davdroid.settings
 
-import at.bitfire.davdroid.accounts.AccountId
+import at.bitfire.davdroid.accounts.DbAccount
+import at.bitfire.davdroid.db.AccountSetting
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.synctools.util.SensitiveString
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 
-class DbAccountSettingsStore @AssistedInject constructor(@Assisted private val account: AccountId, db: AppDatabase) : AccountSettingsStore {
-    private val dao = db.dbAccountDao()
+class DbAccountSettingsStore @AssistedInject constructor(@Assisted private val account: DbAccount, db: AppDatabase) : AccountSettingsStore {
+    private val dao = db.accountSettingDao()
 
     @AssistedFactory
     interface Factory {
-        fun create(account: AccountId): DbAccountSettingsStore
+        fun create(account: DbAccount): DbAccountSettingsStore
     }
 
     override fun getValue(key: String): String? {
-        throw NotImplementedError("The database DAO has not been implemented yet.")
+        val entry = dao.getBlocking(key)
+        return entry?.value
     }
 
     override fun putValue(key: String, value: String?) {
-        throw NotImplementedError("The database DAO has not been implemented yet.")
+        val entry = AccountSetting(
+            accountId = account.account.id,
+            key = key,
+            value = value
+        )
+        dao.insertOrUpdateBlocking(entry)
     }
 
     override fun getSensitiveValue(key: String): SensitiveString? {
-        throw NotImplementedError("The database DAO has not been implemented yet.")
+        val entry = dao.getBlocking(key)
+        return entry?.sensitiveValue
     }
 
     override fun putSensitiveValue(key: String, value: SensitiveString?) {
-        throw NotImplementedError("The database DAO has not been implemented yet.")
+        val entry = AccountSetting(
+            accountId = account.account.id,
+            key = key,
+            sensitiveValue = value
+        )
+        dao.insertOrUpdateBlocking(entry)
     }
 }
