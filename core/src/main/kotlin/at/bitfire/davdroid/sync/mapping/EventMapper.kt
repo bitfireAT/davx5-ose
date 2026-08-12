@@ -8,6 +8,7 @@ import at.bitfire.dav4jvm.ktor.DavCalendar
 import at.bitfire.davdroid.ProductIds
 import at.bitfire.davdroid.resource.LocalEvent
 import at.bitfire.davdroid.resource.remote.WebDavCollection
+import at.bitfire.davdroid.sync.PendingLocalUpdate
 import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.synctools.icalendar.ICalendarGenerator
 import at.bitfire.synctools.mapping.calendar.AndroidEventHandler
@@ -32,7 +33,7 @@ class EventMapper @Inject constructor(
         logger.log(Level.FINE, "Preparing upload of event #{0}: {1}", arrayOf(resource.id, localEvent))
 
         /* Increase SEQUENCE of main event in memory and remember new value.
-        Will be written to provider later over onSuccessContext. */
+        Will be written to provider later via pendingLocalUpdate. */
         val updatedSequence = SequenceUpdater().increaseSequence(localEvent.main)
 
         // map Android event to iCalendar (also generates UID, if necessary)
@@ -57,7 +58,7 @@ class EventMapper @Inject constructor(
         return GeneratedResource(
             suggestedFileName = DavUtils.fileNameFromUid(mappedEvents.uid, "ics"),
             content = outgoingContent,
-            onSuccessContext = GeneratedResource.OnSuccessContext(
+            pendingLocalUpdate = PendingLocalUpdate(
                 sequence = updatedSequence
             )
         )

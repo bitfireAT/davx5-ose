@@ -9,6 +9,7 @@ import at.bitfire.davdroid.ProductIds
 import at.bitfire.davdroid.resource.LocalTask
 import at.bitfire.davdroid.resource.LocalTaskList
 import at.bitfire.davdroid.resource.remote.WebDavCollection
+import at.bitfire.davdroid.sync.PendingLocalUpdate
 import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.synctools.icalendar.ICalendarGenerator
 import at.bitfire.synctools.mapping.tasks.DmfsTaskHandler
@@ -41,7 +42,7 @@ class TaskMapper @AssistedInject constructor(
         logger.log(Level.FINE, "Preparing upload of task #{0}: {1}", arrayOf(resource.id, localTask))
 
         /* Increase SEQUENCE of main task in memory and remember new value.
-        Will be written to provider later over onSuccessContext. */
+        Will be written to provider later via pendingLocalUpdate. */
         val updatedSequence = SequenceUpdater().increaseSequence(localTask.main)
 
         // map Android event to iCalendar (also generates UID, if necessary)
@@ -66,7 +67,7 @@ class TaskMapper @AssistedInject constructor(
         return GeneratedResource(
             suggestedFileName = DavUtils.fileNameFromUid(mappedVToDos.uid, "ics"),
             content = outgoingContent,
-            onSuccessContext = GeneratedResource.OnSuccessContext(
+            pendingLocalUpdate = PendingLocalUpdate(
                 sequence = updatedSequence
             )
         )

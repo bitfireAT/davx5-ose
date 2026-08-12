@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid.sync.mapping
 
+import at.bitfire.davdroid.sync.PendingLocalUpdate
 import io.ktor.http.content.OutgoingContent
 
 /**
@@ -11,22 +12,11 @@ import io.ktor.http.content.OutgoingContent
  *
  * @param suggestedFileName     file name that can be used for uploading if there's no existing name
  * @param content               resource content (including MIME type)
- * @param onSuccessContext      context that must be passed to [at.bitfire.davdroid.sync.SyncManager.onSuccessfulUpload]
- * on successful upload in order to persist the changes made during mapping
+ * @param pendingLocalUpdate    local resource properties that must be persisted by
+ * [at.bitfire.davdroid.sync.SyncManager] once the upload has succeeded
  */
 class GeneratedResource(
     val suggestedFileName: String,
     val content: OutgoingContent,
-    val onSuccessContext: OnSuccessContext? = null
-) {
-
-    /**
-     * Contains information that has been created for a [GeneratedResource], but has not been saved yet.
-     *
-     * @param sequence  new SEQUENCE to persist on successful upload (*null*: SEQUENCE not modified)
-     */
-    data class OnSuccessContext(
-        val sequence: Int? = null
-    )
-
-}
+    val pendingLocalUpdate: PendingLocalUpdate? = null
+)

@@ -32,7 +32,6 @@ import at.bitfire.davdroid.resource.remote.CollectionSyncItem
 import at.bitfire.davdroid.resource.remote.InternalMemberState
 import at.bitfire.davdroid.resource.remote.WebDavCollection
 import at.bitfire.davdroid.resource.remote.member
-import at.bitfire.davdroid.sync.mapping.GeneratedResource
 import at.bitfire.davdroid.sync.mapping.ResourceMapper
 import at.bitfire.davdroid.util.DavUtils.lastSegment
 import at.bitfire.davdroid.util.batchMap
@@ -349,7 +348,7 @@ abstract class SyncManager<LocalType : LocalResource>(
                         newFileName = fileName,
                         eTag = result.eTag,
                         scheduleTag = result.scheduleTag,
-                        context = upload.onSuccessContext
+                        pendingLocalUpdate = upload.pendingLocalUpdate
                     )
 
                 } else {
@@ -377,7 +376,7 @@ abstract class SyncManager<LocalType : LocalResource>(
                         newFileName = fileName,
                         eTag = result.eTag,
                         scheduleTag = result.scheduleTag,
-                        context = upload.onSuccessContext
+                        pendingLocalUpdate = upload.pendingLocalUpdate
                     )
                 }
             }
@@ -426,20 +425,20 @@ abstract class SyncManager<LocalType : LocalResource>(
      * @param newFileName   file name that has been used for uploading
      * @param eTag          resulting `ETag` of the upload (from the server)
      * @param scheduleTag   resulting `Schedule-Tag` of the upload (from the server)
-     * @param context       properties that have been generated before the upload and that shall be persisted by this method
+     * @param pendingLocalUpdate    properties that have been generated before the upload and that shall be persisted by this method
      */
     private fun onSuccessfulUpload(
         local: LocalType,
         newFileName: String,
         eTag: String?,
         scheduleTag: String?,
-        context: GeneratedResource.OnSuccessContext?
+        pendingLocalUpdate: PendingLocalUpdate?
     ) {
-        logger.fine("Upload successful: file=$newFileName, ETag=$eTag, Schedule-Tag=$scheduleTag, context=$context")
+        logger.fine("Upload successful: file=$newFileName, ETag=$eTag, Schedule-Tag=$scheduleTag, pendingLocalUpdate=$pendingLocalUpdate")
 
         // update SEQUENCE, if necessary
-        if (context?.sequence != null)
-            local.updateSequence(context.sequence)
+        if (pendingLocalUpdate?.sequence != null)
+            local.updateSequence(pendingLocalUpdate.sequence)
 
         // clear dirty flag and update ETag/Schedule-Tag
         local.clearDirty(Optional.of(newFileName), eTag, scheduleTag)

@@ -60,7 +60,7 @@ class TestSyncManager @AssistedInject constructor(
                 content = ByteArrayContent(
                     bytes = resource.toString().encodeToByteArray()
                 ),
-                onSuccessContext = GeneratedResource.OnSuccessContext()
+                pendingLocalUpdate = PendingLocalUpdate()
             )
         }
     }
