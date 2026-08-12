@@ -17,8 +17,8 @@ interface AccountSettingDao {
     @Insert
     fun updateBlocking(setting: AccountSetting)
 
-    @Query("SELECT * FROM account_setting WHERE `key`=:key")
-    fun getBlocking(key: String): AccountSetting?
+    @Query("SELECT * FROM account_setting WHERE accountId=:accountId AND `key`=:key")
+    fun getBlocking(accountId: Long, key: String): AccountSetting?
 
     @Delete
     fun deleteBlocking(setting: AccountSetting)
@@ -28,7 +28,7 @@ interface AccountSettingDao {
      * inserts it as a new entry using [insertBlocking].
      */
     fun insertOrUpdateBlocking(setting: AccountSetting) {
-        val existing = getBlocking(setting.key)
+        val existing = getBlocking(setting.accountId, setting.key)
         if (existing == null)
             insertBlocking(setting)
         else
