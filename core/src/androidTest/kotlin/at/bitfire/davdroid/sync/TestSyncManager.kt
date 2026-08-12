@@ -67,7 +67,7 @@ class TestSyncManager @AssistedInject constructor(
     override suspend fun processDownload(result: WebDavCollection.MultiGetItem) {
         processedDownloads += result
 
-        val fileName = result.url.lastSegment
+        val fileName = requireNotNull(result.url.lastSegment) { "Test URL has no path segment: ${result.url}" }
         var localEntry = localCollection.entries.firstOrNull { it.fileName == fileName }
         if (localEntry == null) {
             val newEntry = LocalTestResource().also {

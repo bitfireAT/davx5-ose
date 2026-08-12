@@ -130,7 +130,7 @@ class CalendarSyncManager @AssistedInject constructor(
 
     override suspend fun processDownload(result: WebDavCollection.MultiGetItem) {
         result.url.withExceptionContext {
-            val fileName = result.url.lastSegment
+            val fileName = requireNotNull(result.url.lastSegment) { "Event URL has no path segment: ${result.url}" }
             try {
                 processICalendar(
                     fileName = fileName,

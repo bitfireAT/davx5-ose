@@ -701,7 +701,7 @@ abstract class SyncManager<LocalType : LocalResource>(
                     }
                     is CollectionSyncItem.RemovedMember -> {
                         // deletes local entry as side effect
-                        deleteRemovedMember(item.href.lastSegment)
+                        item.href.lastSegment?.let { deleteRemovedMember(it) }
                         false
                     }
                     is CollectionSyncItem.ChangedMember -> {
@@ -748,22 +748,27 @@ abstract class SyncManager<LocalType : LocalResource>(
      * @return whether [member] needs to be (re)downloaded
      */
     private suspend fun decideDownload(member: InternalMemberState): Boolean {
-        logger.fine("Found remote resource: ${member.fileName}")
+        val fileName = member.fileName
+        if (fileName == null) {
+            logger.warning("Listed member has no path segment, skipping: ${member.href}")
+            return false
+        }
+        logger.fine("Found remote resource: $fileName")
 
-        val local = localCollection.findByName(member.fileName)
+        val local = localCollection.findByName(fileName)
         return local.withExceptionContext {
             if (local == null) {
-                logger.info("${member.fileName} has been added remotely, queueing download")
+                logger.info("$fileName has been added remotely, queueing download")
                 true
             } else {
                 // mark as remotely present, so that this resource won't be deleted at the end
                 local.updateFlags(LocalResource.FLAG_REMOTELY_PRESENT)
 
                 if (local.eTag == member.eTag) {
-                    logger.info("${member.fileName} has not been changed on server (ETag still ${member.eTag})")
+                    logger.info("$fileName has not been changed on server (ETag still ${member.eTag})")
                     false
                 } else {
-                    logger.info("${member.fileName} has been changed on server (current ETag=${member.eTag}, last known ETag=${local.eTag})")
+                    logger.info("$fileName has been changed on server (current ETag=${member.eTag}, last known ETag=${local.eTag})")
                     true
                 }
             }

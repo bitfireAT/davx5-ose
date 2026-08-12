@@ -55,10 +55,11 @@ class DavUtilsTest {
     @Test
     fun testUrl_LastSegment() {
         val exampleURL = "http://example.com/"
-        assertEquals("/", exampleURL.toUrl().lastSegment)
+        assertEquals(null, exampleURL.toUrl().lastSegment)
         assertEquals("dir", (exampleURL + "dir").toUrl().lastSegment)
         assertEquals("dir", (exampleURL + "dir/").toUrl().lastSegment)
         assertEquals("file.html", (exampleURL + "dir/file.html").toUrl().lastSegment)
+        assertEquals("/", (exampleURL + "%2F").toUrl().lastSegment)
     }
 
 }

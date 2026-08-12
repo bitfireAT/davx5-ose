@@ -25,7 +25,7 @@ data class InternalMemberState(
      * **Attention:** Because it's decoded, it may contain characters like `/`  that would
      * otherwise be path separators.
      */
-    val fileName: String
+    val fileName: String?
         get() = href.lastSegment
 
 }
