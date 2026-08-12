@@ -99,7 +99,7 @@ class ContactsSyncManager @AssistedInject constructor(
     collectionInfo,
     resync,
     settings
-) {
+), ResourceMapper<LocalAddress> {
 
     @AssistedFactory
     interface Factory {
@@ -116,6 +116,8 @@ class ContactsSyncManager @AssistedInject constructor(
             settings: SyncSettings
         ): ContactsSyncManager
     }
+
+    override val resourceMapper: ResourceMapper<LocalAddress> = this
 
     companion object {
         infix fun <T> Set<T>.disjunct(other: Set<T>) = (this - other) union (other - this)

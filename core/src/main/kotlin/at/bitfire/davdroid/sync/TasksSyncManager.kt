@@ -57,7 +57,7 @@ class TasksSyncManager @AssistedInject constructor(
     collectionInfo,
     resync,
     settings
-) {
+), ResourceMapper<LocalTask> {
 
     @AssistedFactory
     interface Factory {
@@ -72,6 +72,8 @@ class TasksSyncManager @AssistedInject constructor(
             settings: SyncSettings
         ): TasksSyncManager
     }
+
+    override val resourceMapper: ResourceMapper<LocalTask> = this
 
 
     override fun syncAlgorithm(capabilities: WebDavCollection.Capabilities) = SyncAlgorithm.PROPFIND_REPORT

@@ -54,7 +54,7 @@ class JtxSyncManager @AssistedInject constructor(
     collectionInfo,
     resync,
     settings
-) {
+), ResourceMapper<LocalJtxObject> {
 
     @AssistedFactory
     interface Factory {
@@ -69,6 +69,8 @@ class JtxSyncManager @AssistedInject constructor(
             settings: SyncSettings
         ): JtxSyncManager
     }
+
+    override val resourceMapper: ResourceMapper<LocalJtxObject> = this
 
 
     override fun generateUpload(

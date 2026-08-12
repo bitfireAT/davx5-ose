@@ -5,7 +5,6 @@
 package at.bitfire.davdroid.sync
 
 import android.content.Context
-import androidx.annotation.VisibleForTesting
 import at.bitfire.dav4jvm.Error
 import at.bitfire.dav4jvm.QuotedStringUtils
 import at.bitfire.dav4jvm.ktor.exception.ConflictException
@@ -120,6 +119,8 @@ abstract class SyncManager<LocalType : LocalResource>(
     protected abstract val localCollection: LocalCollection<LocalType>
 
     protected abstract val remoteCollection: WebDavCollection
+
+    protected abstract val resourceMapper: ResourceMapper<LocalType>
 
     /**
      * Push-Dont-Notify header, added to PUT and DELETE requests if subscription exists.
@@ -321,7 +322,7 @@ abstract class SyncManager<LocalType : LocalResource>(
     ) {
         val existingFileName = local.fileName
 
-        val upload = generateUpload(local, capabilities)
+        val upload = resourceMapper.generateUpload(local, capabilities)
 
         val fileName = existingFileName ?: upload.suggestedFileName
         val uploadUrl = collectionInfo.url.member(fileName)
@@ -412,20 +413,6 @@ abstract class SyncManager<LocalType : LocalResource>(
             }
         }
     }
-
-    /**
-     * Generates the request body (iCalendar or vCard) from a local resource.
-     *
-     * @param resource      local resource to generate the body from
-     * @param capabilities  current capabilities of the remote collection
-     *
-     * @return iCalendar or vCard (content + Content-Type) that can be uploaded to the server
-     */
-    @VisibleForTesting
-    internal abstract fun generateUpload(
-        resource: LocalType,
-        capabilities: WebDavCollection.Capabilities
-    ): GeneratedResource
 
     /**
      * Called after a successful upload (either of a new or an updated resource) so that the local

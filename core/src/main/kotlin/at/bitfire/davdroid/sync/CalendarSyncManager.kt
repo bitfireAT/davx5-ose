@@ -56,7 +56,7 @@ class CalendarSyncManager @AssistedInject constructor(
     collectionInfo,
     resync,
     settings
-) {
+), ResourceMapper<LocalEvent> {
 
     @AssistedFactory
     interface Factory {
@@ -71,6 +71,8 @@ class CalendarSyncManager @AssistedInject constructor(
             settings: SyncSettings
         ): CalendarSyncManager
     }
+
+    override val resourceMapper: ResourceMapper<LocalEvent> = this
 
 
     override suspend fun prepare(): Boolean {
