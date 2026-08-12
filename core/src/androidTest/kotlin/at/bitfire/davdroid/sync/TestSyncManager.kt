@@ -83,7 +83,4 @@ class TestSyncManager @AssistedInject constructor(
     override suspend fun postProcess() {
     }
 
-    override fun notifyInvalidResourceTitle() =
-        throw NotImplementedError()
-
 }
