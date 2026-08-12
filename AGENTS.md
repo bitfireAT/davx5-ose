@@ -12,10 +12,8 @@ is shared and the core development always takes place in davx5-ose.
 
 - When committing, always add a `Co-Authored-By` line to identify yourself as AI agent.
 - When creating or editing a PR:
-  - Take `.github/pull_request_template.md` into account and always check the "This PR and its concept was mainly driven
-    by AI" checkbox.
-  - Before creating a PR, make sure that the PR is properly reviewed by a `code-review` skill and all issues are
-    addressed.
+  - Format the PR description as in `.github/pull_request_template.md` and never check the "This PR was mainly driven by a human" checkbox.
+  - Before creating a PR, make sure that the PR is properly reviewed by a `code-review` skill and all issues are addressed.
 
 ## Gradle modules
 
