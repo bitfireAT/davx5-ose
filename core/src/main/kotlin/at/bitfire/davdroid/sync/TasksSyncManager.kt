@@ -4,8 +4,6 @@
 
 package at.bitfire.davdroid.sync
 
-import at.bitfire.dav4jvm.ktor.DavCalendar
-import at.bitfire.davdroid.ProductIds
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.resource.LocalResource
@@ -13,27 +11,21 @@ import at.bitfire.davdroid.resource.LocalTask
 import at.bitfire.davdroid.resource.LocalTaskList
 import at.bitfire.davdroid.resource.remote.CalDavCollection
 import at.bitfire.davdroid.resource.remote.WebDavCollection
-import at.bitfire.davdroid.util.DavUtils
+import at.bitfire.davdroid.sync.mapping.TaskMapper
 import at.bitfire.davdroid.util.DavUtils.lastSegment
 import at.bitfire.synctools.exception.InvalidResourceException
 import at.bitfire.synctools.icalendar.AssociatedTasks
 import at.bitfire.synctools.icalendar.CalendarUidSplitter
-import at.bitfire.synctools.icalendar.ICalendarGenerator
 import at.bitfire.synctools.icalendar.ICalendarParser
 import at.bitfire.synctools.mapping.tasks.DmfsTaskBuilder
-import at.bitfire.synctools.mapping.tasks.DmfsTaskHandler
-import at.bitfire.synctools.mapping.tasks.SequenceUpdater
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import io.ktor.client.HttpClient
-import io.ktor.http.content.TextContent
 import net.fortuna.ical4j.model.Component
 import net.fortuna.ical4j.model.component.VToDo
-import net.fortuna.ical4j.model.property.ProdId
 import java.io.Reader
 import java.io.StringReader
-import java.io.StringWriter
 import java.util.logging.Level
 
 /**
@@ -48,7 +40,7 @@ class TasksSyncManager @AssistedInject constructor(
     @Assisted override val remoteCollection: CalDavCollection,
     @Assisted resync: ResyncType?,
     @Assisted settings: SyncSettings,
-    private val productIds: ProductIds
+    private val taskMapperFactory: TaskMapper.Factory
 ) : SyncManager<LocalTask>(
     accountId,
     httpClient,
@@ -57,7 +49,7 @@ class TasksSyncManager @AssistedInject constructor(
     collectionInfo,
     resync,
     settings
-), ResourceMapper<LocalTask> {
+) {
 
     @AssistedFactory
     interface Factory {
@@ -73,46 +65,10 @@ class TasksSyncManager @AssistedInject constructor(
         ): TasksSyncManager
     }
 
-    override val resourceMapper: ResourceMapper<LocalTask> = this
+    override val resourceMapper: ResourceMapper<LocalTask> = taskMapperFactory.create(localCollection)
 
 
     override fun syncAlgorithm(capabilities: WebDavCollection.Capabilities) = SyncAlgorithm.PROPFIND_REPORT
-
-    override fun generateUpload(resource: LocalTask, capabilities: WebDavCollection.Capabilities): GeneratedResource {
-        val localTask = resource.taskAndExceptions
-        logger.log(Level.FINE, "Preparing upload of task #{0}: {1}", arrayOf(resource.id, localTask))
-
-        /* Increase SEQUENCE of main task in memory and remember new value.
-        Will be written to provider later over onSuccessContext. */
-        val updatedSequence = SequenceUpdater().increaseSequence(localTask.main)
-
-        // map Android event to iCalendar (also generates UID, if necessary)
-        val handler = DmfsTaskHandler(
-            prodId = ProdId(productIds.iCalProdId),
-            providerName = localCollection.dmfsTaskList.providerName
-        )
-        val mappedVToDos = handler.mapToVToDos(localTask)
-
-        // persist UID if it was generated
-        if (mappedVToDos.generatedUid)
-            resource.updateUid(mappedVToDos.uid)
-
-        // generate iCalendar and convert to request body
-        val iCalWriter = StringWriter()
-        ICalendarGenerator().write(mappedVToDos.associatedTasks, iCalWriter)
-        val outgoingContent = TextContent(
-            text = iCalWriter.toString(),
-            contentType = DavCalendar.MIME_ICALENDAR_UTF8
-        )
-
-        return GeneratedResource(
-            suggestedFileName = DavUtils.fileNameFromUid(mappedVToDos.uid, "ics"),
-            content = outgoingContent,
-            onSuccessContext = GeneratedResource.OnSuccessContext(
-                sequence = updatedSequence
-            )
-        )
-    }
 
     override suspend fun processDownload(result: WebDavCollection.MultiGetItem) {
         result.url.withExceptionContext {
