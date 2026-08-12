@@ -12,8 +12,8 @@ import at.bitfire.davdroid.sync.GeneratedResource
 /**
  * Maps a local resource to the request body used to upload it.
  *
- * Currently covers only the upload direction; intended to grow to include download/store and
- * post-processing as those responsibilities move out of [at.bitfire.davdroid.sync.SyncManager] subclasses, too.
+ * Currently covers only the upload direction; intended to grow to include download/store
+ * as those responsibilities move out of [at.bitfire.davdroid.sync.SyncManager] subclasses, too.
  */
 interface ResourceMapper<LocalType : LocalResource> {
 
