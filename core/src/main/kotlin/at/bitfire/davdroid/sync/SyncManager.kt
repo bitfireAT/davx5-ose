@@ -5,8 +5,6 @@
 package at.bitfire.davdroid.sync
 
 import android.content.Context
-import android.os.DeadObjectException
-import android.os.RemoteException
 import androidx.annotation.VisibleForTesting
 import at.bitfire.dav4jvm.Error
 import at.bitfire.dav4jvm.QuotedStringUtils
@@ -17,12 +15,9 @@ import at.bitfire.dav4jvm.ktor.exception.GoneException
 import at.bitfire.dav4jvm.ktor.exception.HttpException
 import at.bitfire.dav4jvm.ktor.exception.NotFoundException
 import at.bitfire.dav4jvm.ktor.exception.PreconditionFailedException
-import at.bitfire.dav4jvm.ktor.exception.ServiceUnavailableException
-import at.bitfire.dav4jvm.ktor.exception.UnauthorizedException
 import at.bitfire.dav4jvm.ktor.resolve
 import at.bitfire.dav4jvm.property.webdav.SyncToken
 import at.bitfire.dav4jvm.property.webdav.WebDAV
-import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
@@ -38,10 +33,8 @@ import at.bitfire.davdroid.resource.remote.CollectionSyncItem
 import at.bitfire.davdroid.resource.remote.InternalMemberState
 import at.bitfire.davdroid.resource.remote.WebDavCollection
 import at.bitfire.davdroid.resource.remote.member
-import at.bitfire.davdroid.sync.account.InvalidAccountException
 import at.bitfire.davdroid.util.DavUtils.lastSegment
 import at.bitfire.davdroid.util.batchMap
-import at.bitfire.synctools.storage.LocalStorageException
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.ktor.client.HttpClient
 import io.ktor.http.Url
@@ -55,14 +48,10 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
 import kotlinx.coroutines.withContext
-import java.io.IOException
-import java.security.cert.CertificateException
 import java.util.Optional
-import java.util.concurrent.CancellationException
 import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
-import javax.net.ssl.SSLHandshakeException
 
 /**
  * Synchronizes a local collection with a remote collection.
@@ -114,27 +103,23 @@ abstract class SyncManager<LocalType : LocalResource>(
     lateinit var readOnlyPolicy: ReadOnlyPolicy
 
     @Inject
-    lateinit var syncStatsRepository: DavSyncStatsRepository
+    lateinit var serviceRepository: DavServiceRepository
 
     @Inject
-    lateinit var serviceRepository: DavServiceRepository
+    lateinit var syncExceptionHandlerFactory: SyncExceptionHandler.Factory
 
     @Inject
     @SyncMultigetSemaphore
     lateinit var syncMultigetSemaphore: Semaphore
 
     @Inject
-    lateinit var syncNotificationManagerFactory: SyncNotificationManager.Factory
+    lateinit var syncStatsRepository: DavSyncStatsRepository
 
 
     /** local collection to synchronize (interface to content provider) */
     protected abstract val localCollection: LocalCollection<LocalType>
 
     protected abstract val remoteCollection: WebDavCollection
-
-    private val syncNotificationManager by lazy {
-        syncNotificationManagerFactory.create(accountId)
-    }
 
     /**
      * Push-Dont-Notify header, added to PUT and DELETE requests if subscription exists.
@@ -145,11 +130,25 @@ abstract class SyncManager<LocalType : LocalResource>(
         } ?: emptyMap()
     }
 
+    private val syncExceptionHandler by lazy {  // depends on injected lateinit field
+        syncExceptionHandlerFactory.create(accountId, dataType)
+    }
+
+
+    /**
+     * Synchronizes [localCollection] with [remoteCollection], using [collectionInfo] as the cached
+     * information about the remote collection.
+     *
+     * Exceptions are handled internally where possible (for instance by showing a notification), but some are rethrown.
+     *
+     * @throws java.util.concurrent.CancellationException if the sync was canceled
+     * @throws android.os.DeadObjectException if the content provider process died
+     */
     suspend fun performSync() = withContext(ioDispatcher) {
         // keep generic ioDispatcher until all LocalStorage calls are suspending or wrapped in withContext(ioDispatcher)
 
         // dismiss previous error notifications
-        syncNotificationManager.dismissCollectionError(collectionId = collectionInfo.id)
+        syncExceptionHandler.dismissPreviousErrors(collectionInfo.id)
 
         try {
             logger.info("Preparing synchronization")
@@ -195,39 +194,23 @@ abstract class SyncManager<LocalType : LocalResource>(
 
         } catch (potentiallyWrappedException: Throwable) {
             val ctx = potentiallyWrappedException.unwrapContext()
-
-            when (val e = ctx.cause) {
-                /* LocalStorageException with cause DeadObjectException may occur when syncing takes too long
-                and process is demoted to cached. In this case, we re-throw to the base Syncer which will
-                treat it as a soft error and re-schedule the sync process. */
-                is LocalStorageException if e.cause is DeadObjectException ->
-                    throw e
-
-                // sync was cancelled or account has been removed: re-throw to Syncer
-                is CancellationException,
-                is InvalidAccountException ->
-                    throw e
-
-                // specific I/O errors
-                is SSLHandshakeException -> {
-                    logger.log(Level.WARNING, "SSL handshake failed", e)
-
-                    // when a certificate is rejected by cert4android, the cause will be a CertificateException
-                    if (e.cause !is CertificateException)
-                        handleException(e, ctx.localResource, ctx.remoteResource)
-                }
-
-                // specific HTTP errors
-                is ServiceUnavailableException -> {
-                    logger.log(Level.WARNING, "Got 503 Service unavailable, trying again later", e)
-                    // determine when to retry
-                    syncResult.delayUntil = e.getDelayUntil().epochSecond
+            when (val result = syncExceptionHandler.handleException(
+                exception = ctx.cause,
+                collectionInfo = collectionInfo,
+                local = ctx.localResource,
+                remote = ctx.remoteResource
+            )) {
+                is SyncExceptionHandler.SyncErrorResult.SoftError -> {
                     syncResult.softError = true
+                    result.delayUntil?.let { syncResult.delayUntil = it.epochSecond }
                 }
 
-                // all others
-                else ->
-                    handleException(e, ctx.localResource, ctx.remoteResource)
+                SyncExceptionHandler.SyncErrorResult.HardError ->
+                    syncResult.hardError = true
+
+                SyncExceptionHandler.SyncErrorResult.NoError -> {
+                    // leave syncResult empty (success state)
+                }
             }
         }
     }
@@ -790,64 +773,12 @@ abstract class SyncManager<LocalType : LocalResource>(
 
     // sync helpers
 
-    /**
-     * Logs the exception, updates sync result and shows a notification to the user.
-     */
-    private suspend fun handleException(e: Throwable, local: LocalResource?, remote: Url?) {
-        var message: String
-        when (e) {
-            is IOException -> {
-                logger.log(Level.WARNING, "I/O error", e)
-                syncResult.softError = true
-                message = context.getString(R.string.sync_error_io, e.localizedMessage)
-            }
-
-            is UnauthorizedException -> {
-                logger.log(Level.SEVERE, "Not authorized anymore", e)
-                syncResult.hardError = true
-                message = context.getString(R.string.sync_error_authentication_failed)
-            }
-
-            is HttpException, is DavException -> {
-                logger.log(Level.SEVERE, "HTTP/DAV exception", e)
-                syncResult.hardError = true
-                message = context.getString(R.string.sync_error_http_dav, e.localizedMessage)
-            }
-
-            is LocalStorageException, is RemoteException -> {
-                logger.log(Level.SEVERE, "Couldn't access local storage", e)
-                syncResult.hardError = true
-                message = context.getString(R.string.sync_error_local_storage, e.localizedMessage)
-            }
-
-            else -> {
-                logger.log(Level.SEVERE, "Unclassified sync error", e)
-                syncResult.hardError = true
-                message = e.localizedMessage ?: e::class.java.simpleName
-            }
-        }
-
-        syncNotificationManager.notifyException(
-            syncDataType = dataType,
+    protected suspend fun notifyInvalidResource(exception: Throwable, fileName: String) =
+        syncExceptionHandler.handleInvalidResourceException(
+            exception = exception,
             collectionId = collectionInfo.id,
-            message = message,
-            title = collectionInfo.title(),
-            e = e,
-            local = local,
-            remote = remote
+            remote = collectionInfo.url.resolve(fileName)
         )
-    }
-
-    protected suspend fun notifyInvalidResource(e: Throwable, fileName: String) =
-        syncNotificationManager.notifyInvalidResource(
-            dataType = dataType,
-            collectionId = collectionInfo.id,
-            e = e,
-            remote = collectionInfo.url.resolve(fileName),
-            title = notifyInvalidResourceTitle()
-        )
-
-    protected abstract fun notifyInvalidResourceTitle(): String
 
 
     companion object {

@@ -7,7 +7,6 @@ package at.bitfire.davdroid.sync
 import android.content.ContentProviderClient
 import at.bitfire.dav4jvm.ktor.DavAddressBook
 import at.bitfire.davdroid.ProductIds
-import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.resource.LocalAddress
@@ -305,9 +304,5 @@ class ContactsSyncManager @AssistedInject constructor(
             dirtyVerifier.getOrNull()?.updateHashCode(localCollection, updatedContact)
         }
     }
-
-
-    override fun notifyInvalidResourceTitle(): String =
-            context.getString(R.string.sync_invalid_contact)
 
 }

@@ -7,7 +7,6 @@ package at.bitfire.davdroid.sync
 import androidx.annotation.OpenForTesting
 import at.bitfire.dav4jvm.ktor.DavCalendar
 import at.bitfire.davdroid.ProductIds
-import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.resource.LocalJtxCollection
@@ -125,10 +124,6 @@ class JtxSyncManager @AssistedInject constructor(
     override suspend fun postProcess() {
         localCollection.updateLastSync()
     }
-
-    override fun notifyInvalidResourceTitle(): String =
-        context.getString(R.string.sync_invalid_event)
-
 
     @OpenForTesting
     internal suspend fun processICalObject(fileName: String, eTag: String, scheduleTag: String?, reader: Reader) {
