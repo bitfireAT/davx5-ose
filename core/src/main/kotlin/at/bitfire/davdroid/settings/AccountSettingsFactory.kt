@@ -15,7 +15,7 @@ class AccountSettingsFactory @Inject constructor(
     private val dbAccountSettingsStoreFactory: DbAccountSettingsStore.Factory,
 ) {
     @WorkerThread
-    fun create(accountId: AccountId, abortOnMissingMigration: Boolean = true): AccountSettings {
+    fun create(accountId: AccountId, abortOnMissingMigration: Boolean = false): AccountSettings {
         val store = when(accountId) {
             is LegacyAccount -> accountManagerSettingsStoreFactory.create(accountId.androidAccount, abortOnMissingMigration)
         }
