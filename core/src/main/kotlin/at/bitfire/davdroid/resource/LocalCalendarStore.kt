@@ -15,11 +15,10 @@ import android.provider.CalendarContract.Events
 import android.provider.CalendarContract.Reminders
 import androidx.core.content.contentValuesOf
 import at.bitfire.davdroid.Constants
-import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.accounts.AndroidAccountManager
-import at.bitfire.davdroid.accounts.toAccountId
 import at.bitfire.davdroid.db.Collection
+import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.settings.AccountSettingsFactory
 import at.bitfire.davdroid.util.DavUtils.lastSegment
@@ -34,9 +33,9 @@ import javax.inject.Inject
 
 class LocalCalendarStore @Inject constructor(
     @ApplicationContext private val context: Context,
+    private val accountRepository: AccountRepository,
     private val accountSettingsFactory: AccountSettingsFactory,
     private val androidAccountManager: AndroidAccountManager,
-    private val localCalendarFactory: LocalCalendar.Factory,
     private val logger: Logger,
     private val serviceRepository: DavServiceRepository
 ): LocalDataStore<LocalCalendar> {
@@ -56,7 +55,8 @@ class LocalCalendarStore @Inject constructor(
     override suspend fun create(client: ContentProviderClient, fromCollection: Collection): LocalCalendar {
         val service = serviceRepository.get(fromCollection.serviceId)
             ?: throw IllegalArgumentException("Couldn't fetch DB service from collection")
-        val account = Account(service.accountName, context.getString(R.string.account_type))
+        val accountId = accountRepository.getAccountIdFromName(service.accountName)
+        val account = androidAccountManager.getAndroidAccount(accountId)
 
         // If the collection doesn't have a color, use a default color.
         val collectionWithColor =
@@ -84,14 +84,14 @@ class LocalCalendarStore @Inject constructor(
 
         logger.info("Adding local calendar: $values")
         val provider = AndroidCalendarProvider(account, client)
-        return localCalendarFactory.create(provider.createAndGetCalendar(values))
+        return LocalCalendar(accountId, provider.createAndGetCalendar(values))
     }
 
     override fun getAll(accountId: AccountId, client: ContentProviderClient): List<LocalCalendar> {
         val account = androidAccountManager.getAndroidAccount(accountId)
         return AndroidCalendarProvider(account, client)
             .findCalendars("${Calendars.SYNC_EVENTS}!=0", null)
-            .map { localCalendarFactory.create(it) }
+            .map { androidCalendar -> LocalCalendar(accountId, androidCalendar) }
     }
 
     override fun getByDbCollectionId(
@@ -102,17 +102,24 @@ class LocalCalendarStore @Inject constructor(
         val account = androidAccountManager.getAndroidAccount(accountId)
         return AndroidCalendarProvider(account, client)
             .findFirstCalendar("${Calendars._SYNC_ID}=?", arrayOf(dbCollectionId.toString()))
-            ?.let { localCalendarFactory.create(it) }
+            ?.let { androidCalendar -> LocalCalendar(accountId, androidCalendar) }
     }
 
     override fun update(client: ContentProviderClient, localCollection: LocalCalendar, fromCollection: Collection) {
-        val accountSettings = accountSettingsFactory.create(localCollection.androidCalendar.account.toAccountId())
-        val values = valuesFromCollectionInfo(fromCollection, withColor = accountSettings.getManageCalendarColors())
+        val values = valuesFromCollectionInfo(
+            info = fromCollection,
+            withColor = useManagedCalendarColors(localCollection.accountId)
+        )
 
         logger.log(Level.FINE, "Updating local calendar {0}: {1}", arrayOf(fromCollection.url, values))
         val androidCalendar = localCollection.androidCalendar
         val provider = AndroidCalendarProvider(androidCalendar.account, client)
         provider.updateCalendar(androidCalendar.id, values)
+    }
+
+    private fun useManagedCalendarColors(accountId: AccountId): Boolean {
+        val accountSettings = accountSettingsFactory.create(accountId)
+        return accountSettings.getManageCalendarColors()
     }
 
     private fun valuesFromCollectionInfo(info: Collection, withColor: Boolean): ContentValues {

@@ -54,9 +54,6 @@ class CalendarSyncManagerTest {
     lateinit var context: Context
 
     @Inject
-    lateinit var localCalendarFactory: LocalCalendar.Factory
-
-    @Inject
     lateinit var syncManagerFactory: CalendarSyncManager.Factory
 
     lateinit var accountId: LegacyAccount
@@ -76,7 +73,7 @@ class CalendarSyncManagerTest {
         androidCalendar = androidCalendarProvider.createAndGetCalendar(contentValuesOf(
             Calendars.NAME to "Sample Calendar"
         ))
-        localCalendar = localCalendarFactory.create(androidCalendar)
+        localCalendar = LocalCalendar(accountId, androidCalendar)
     }
 
     @After

@@ -7,15 +7,13 @@ package at.bitfire.davdroid.resource
 import android.provider.CalendarContract.Calendars
 import android.provider.CalendarContract.Events
 import androidx.core.content.contentValuesOf
+import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.synctools.storage.BatchOperation
 import at.bitfire.synctools.storage.calendar.AndroidCalendar
 import at.bitfire.synctools.storage.calendar.AndroidRecurringCalendar
 import at.bitfire.synctools.storage.calendar.CalendarBatchOperation
 import at.bitfire.synctools.storage.calendar.EventAndExceptions
 import at.bitfire.synctools.storage.calendar.EventsContract
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -24,17 +22,10 @@ import kotlinx.coroutines.flow.map
  *
  * [Calendars._SYNC_ID] corresponds to the database collection ID ([at.bitfire.davdroid.db.Collection.id]).
  */
-class LocalCalendar @AssistedInject constructor(
-    @Assisted internal val androidCalendar: AndroidCalendar
+class LocalCalendar(
+    internal val accountId: AccountId,
+    internal val androidCalendar: AndroidCalendar
 ) : LocalCollection<LocalEvent> {
-
-    @AssistedFactory
-    interface Factory {
-        fun create(calendar: AndroidCalendar): LocalCalendar
-    }
-
-
-    // properties
 
     override val dbCollectionId: Long?
         get() = androidCalendar.syncId?.toLongOrNull()

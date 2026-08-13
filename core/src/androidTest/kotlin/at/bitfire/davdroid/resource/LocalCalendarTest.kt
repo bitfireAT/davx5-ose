@@ -15,6 +15,7 @@ import android.provider.CalendarContract.Events
 import androidx.core.content.contentValuesOf
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
+import at.bitfire.davdroid.accounts.LegacyAccount
 import at.bitfire.synctools.storage.calendar.AndroidCalendar
 import at.bitfire.synctools.storage.calendar.AndroidCalendarProvider
 import at.bitfire.synctools.storage.calendar.EventsContract
@@ -27,7 +28,6 @@ import org.junit.Assert.assertNull
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import javax.inject.Inject
 
 @HiltAndroidTest
 class LocalCalendarTest {
@@ -38,10 +38,7 @@ class LocalCalendarTest {
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
 
-    @Inject
-    lateinit var localCalendarFactory: LocalCalendar.Factory
-
-    private val account = Account("LocalCalendarTest", ACCOUNT_TYPE_LOCAL)
+    private val accountId = LegacyAccount(Account("LocalCalendarTest", ACCOUNT_TYPE_LOCAL))
     private lateinit var androidCalendar: AndroidCalendar
     private lateinit var client: ContentProviderClient
     private lateinit var calendar: LocalCalendar
@@ -53,9 +50,9 @@ class LocalCalendarTest {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
         client = context.contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)!!
 
-        val provider = AndroidCalendarProvider(account, client)
+        val provider = AndroidCalendarProvider(accountId.androidAccount, client)
         androidCalendar = provider.createAndGetCalendar(ContentValues())
-        calendar = localCalendarFactory.create(androidCalendar)
+        calendar = LocalCalendar(accountId, androidCalendar)
     }
 
     @After
