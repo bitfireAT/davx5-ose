@@ -15,8 +15,6 @@ import android.provider.ContactsContract.RawContacts
 import androidx.annotation.OpenForTesting
 import androidx.core.content.contentValuesOf
 import at.bitfire.davdroid.accounts.AccountId
-import at.bitfire.davdroid.accounts.toAccountId
-import at.bitfire.davdroid.accounts.toAndroidAccount
 import at.bitfire.davdroid.resource.workaround.ContactDirtyVerifier
 import at.bitfire.davdroid.settings.AccountSettingsFactory
 import at.bitfire.davdroid.sync.SyncDataType

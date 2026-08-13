@@ -10,7 +10,6 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.accounts.AccountId
-import at.bitfire.davdroid.accounts.toAndroidAccount
 import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.di.qualifier.ApplicationScope
 import at.bitfire.davdroid.repository.DavCollectionRepository
