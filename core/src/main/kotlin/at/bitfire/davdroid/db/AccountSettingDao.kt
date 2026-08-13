@@ -11,8 +11,13 @@ import androidx.room.Query
 
 @Dao
 interface AccountSettingDao {
+    /**
+     * Inserts a new instance of [setting].
+     * [AccountSetting.id] may be generated automatically.
+     * @return The generated ID.
+     */
     @Insert
-    fun insertBlocking(setting: AccountSetting)
+    fun insertBlocking(setting: AccountSetting): Long
 
     @Insert
     fun updateBlocking(setting: AccountSetting)
@@ -27,12 +32,16 @@ interface AccountSettingDao {
      * If an entry already exists with [setting]'s [AccountSetting.key], updates it with [updateBlocking], otherwise,
      * inserts it as a new entry using [insertBlocking].
      */
-    fun insertOrUpdateBlocking(setting: AccountSetting) {
+    fun insertOrUpdateBlocking(setting: AccountSetting): AccountSetting {
         val existing = getBlocking(setting.accountId, setting.key)
-        if (existing == null)
-            insertBlocking(setting)
-        else
+        if (existing == null) {
+            val id = insertBlocking(setting)
+            return setting.copy(id = id)
+        } else {
             // We update the id of the given setting to the existing one, to make sure it's correctly set
-            updateBlocking(setting.copy(id = existing.id))
+            val copy = setting.copy(id = existing.id)
+            updateBlocking(copy)
+            return copy
+        }
     }
 }

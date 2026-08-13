@@ -8,6 +8,7 @@ import at.bitfire.davdroid.db.AccountSetting
 import at.bitfire.davdroid.db.AccountSettingDao
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.DbAccount
+import at.bitfire.davdroid.db.DbAccountDao
 import at.bitfire.synctools.util.SensitiveString.Companion.toSensitiveString
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -28,7 +29,11 @@ class DbAccountSettingsStoreTest {
 
     @Inject
     lateinit var db: AppDatabase
+    @Inject
+    lateinit var storeFactory: DbAccountSettingsStore.Factory
+
     lateinit var dao: AccountSettingDao
+    lateinit var accountDao: DbAccountDao
     lateinit var dbAccount: DbAccount
     lateinit var store: DbAccountSettingsStore
 
@@ -36,16 +41,19 @@ class DbAccountSettingsStoreTest {
     fun setUp() {
         hiltRule.inject()
         dao = db.accountSettingDao()
+        accountDao = db.dbAccountDao()
 
-        dbAccount = DbAccount(name = "test").also {
-            db.dbAccountDao().insert(it)
+        dbAccount = DbAccount(name = "test").let {
+            val id = db.dbAccountDao().insert(it)
+            // Make sure the id of the returned account is correctly set
+            it.copy(id = id)
         }
-        store = DbAccountSettingsStore(at.bitfire.davdroid.accounts.DbAccount(dbAccount), db)
+        store = storeFactory.create(at.bitfire.davdroid.accounts.DbAccount(dbAccount))
     }
 
     @After
     fun tearDown() {
-        db.dbAccountDao().deleteAllBlocking()
+        accountDao.deleteAllBlocking()
     }
 
     @Test
@@ -95,11 +103,11 @@ class DbAccountSettingsStoreTest {
 
         // Insert a value now
         dao.insertBlocking(
-            AccountSetting(accountId = dbAccount.id, key = "sensitive-test", value = "sensitive-value")
+            AccountSetting(accountId = dbAccount.id, key = "sensitive-test", sensitiveValue = "sensitive-value".toSensitiveString())
         )
 
         // And verify that it's retrieved correctly
-        assertEquals("sensitive-value", store.getSensitiveValue("sensitive-test"))
+        assertEquals("sensitive-value".toSensitiveString(), store.getSensitiveValue("sensitive-test"))
 
         // Now insert a regular value
         dao.insertBlocking(
@@ -123,7 +131,7 @@ class DbAccountSettingsStoreTest {
             assertNotNull(it)
             assertEquals(dbAccount.id, it!!.accountId)
             assertEquals("sensitive-test", it.key)
-            assertEquals("sensitive-value", it.sensitiveValue)
+            assertEquals("sensitive-value".toSensitiveString(), it.sensitiveValue)
             assertNull(it.value)
         }
     }

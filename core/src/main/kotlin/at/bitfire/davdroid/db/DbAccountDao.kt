@@ -17,7 +17,7 @@ interface DbAccountDao {
      */
     @Insert
     @TestOnly
-    fun insert(dbAccount: DbAccount)
+    fun insert(dbAccount: DbAccount): Long
 
     /**
      * Currently only intended to be used by tests. Proper implementations will be provided at some point.
