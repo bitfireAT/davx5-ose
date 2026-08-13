@@ -1,0 +1,52 @@
+name: Mirror English strings
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - core/src/main/res/values/strings.xml
+  workflow_dispatch:
+
+concurrency:
+  group: mirror-english-strings
+  cancel-in-progress: false
+
+jobs:
+  mirror-english-strings:
+    name: Mirror English strings to davx5-translations
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Create davx5-translations token
+        id: app-token
+        uses: actions/create-github-app-token@v3
+        with:
+          app-id: ${{ secrets.TRANSLATIONS_APP_ID }}
+          private-key: ${{ secrets.TRANSLATIONS_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: davx5-translations
+
+      - name: Check out davx5-translations
+        uses: actions/checkout@v7
+        with:
+          repository: ${{ github.repository_owner }}/davx5-translations
+          ref: main
+          path: davx5-translations
+          token: ${{ steps.app-token.outputs.token }}
+
+      - name: Copy English strings
+        run: cp core/src/main/res/values/strings.xml davx5-translations/sources/ose/strings.xml
+
+      - name: Commit sources/ose/strings.xml
+        uses: stefanzweifel/git-auto-commit-action@v7
+        with:
+          repository: davx5-translations
+          branch: main
+          file_pattern: sources/ose/strings.xml
+          commit_message: "Mirror English strings (ose) from davx5-ose@${{ github.sha }}"
+          commit_user_name: mirror-original-english-strings[bot]
+          commit_user_email: 316112360+mirror-original-english-strings[bot]@users.noreply.github.com
+          commit_author: mirror-original-english-strings[bot] <316112360+mirror-original-english-strings[bot]@users.noreply.github.com>
