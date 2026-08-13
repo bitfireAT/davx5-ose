@@ -10,7 +10,6 @@ import android.os.DeadObjectException
 import androidx.annotation.VisibleForTesting
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.accounts.AndroidAccountManager
-import at.bitfire.davdroid.accounts.toAndroidAccount
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.ServiceType
 import at.bitfire.davdroid.network.HttpClientBuilder
@@ -290,7 +289,7 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
             try {
                 val runSync = syncValidator.getOrNull()?.let { instance ->
                     logger.info("Registered sync validator: ${instance::class.java.name}")
-                    instance.beforeSync(accountId.toAndroidAccount())
+                    instance.beforeSync(accountId)
                 } ?: /* no sync validator, in OSE for example */ true
 
                 if (runSync)
