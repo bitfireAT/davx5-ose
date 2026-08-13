@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.resource
 
 import androidx.core.content.contentValuesOf
+import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.synctools.storage.jtx.JtxBatchOperation
 import at.bitfire.synctools.storage.jtx.JtxCollection
 import at.bitfire.synctools.storage.jtx.JtxEntityAndExceptions
@@ -19,8 +20,10 @@ import kotlinx.coroutines.flow.map
  *
  * [JtxContract.JtxCollection.SYNC_ID] corresponds to the database collection ID ([at.bitfire.davdroid.db.Collection.id]).
  */
-class LocalJtxCollection(internal val jtxCollection: JtxCollection) :
-    LocalCollection<LocalJtxObject> {
+class LocalJtxCollection(
+    internal val accountId: AccountId,
+    internal val jtxCollection: JtxCollection
+) : LocalCollection<LocalJtxObject> {
 
     override val readOnly: Boolean
         get() = jtxCollection.readonly

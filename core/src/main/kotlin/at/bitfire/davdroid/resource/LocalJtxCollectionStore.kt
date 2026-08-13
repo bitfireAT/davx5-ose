@@ -10,12 +10,11 @@ import android.content.ContentValues
 import android.content.Context
 import androidx.core.content.contentValuesOf
 import at.bitfire.davdroid.Constants
-import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.accounts.AndroidAccountManager
-import at.bitfire.davdroid.accounts.toAccountId
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
+import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.PrincipalRepository
 import at.bitfire.davdroid.settings.AccountSettingsFactory
 import at.bitfire.davdroid.util.DavUtils.lastSegment
@@ -29,6 +28,7 @@ import javax.inject.Inject
 
 class LocalJtxCollectionStore @Inject constructor(
     @ApplicationContext val context: Context,
+    val accountRepository: AccountRepository,
     val accountSettingsFactory: AccountSettingsFactory,
     val androidAccountManager: AndroidAccountManager,
     db: AppDatabase,
@@ -52,7 +52,8 @@ class LocalJtxCollectionStore @Inject constructor(
     override suspend fun create(client: ContentProviderClient, fromCollection: Collection): LocalJtxCollection {
         val service = serviceDao.get(fromCollection.serviceId)
             ?: throw IllegalArgumentException("Couldn't fetch DB service from collection")
-        val account = Account(service.accountName, context.getString(R.string.account_type))
+        val accountId = accountRepository.getAccountIdFromName(service.accountName)
+        val account = androidAccountManager.getAndroidAccount(accountId)
 
         // If the collection doesn't have a color, use a default color.
         val collectionWithColor =
@@ -67,7 +68,8 @@ class LocalJtxCollectionStore @Inject constructor(
             withColor = true
         )
 
-        return LocalJtxCollection(JtxCollectionProvider(account, client).createAndGetCollection(values))
+        val jtxCollection = JtxCollectionProvider(account, client).createAndGetCollection(values)
+        return LocalJtxCollection(accountId, jtxCollection)
     }
 
     private fun valuesFromCollection(info: Collection, account: Account, withColor: Boolean): ContentValues {
@@ -99,7 +101,9 @@ class LocalJtxCollectionStore @Inject constructor(
 
     override fun getAll(accountId: AccountId, client: ContentProviderClient): List<LocalJtxCollection> {
         val account = androidAccountManager.getAndroidAccount(accountId)
-        return JtxCollectionProvider(account, client).findCollections().map { LocalJtxCollection(it) }
+        return JtxCollectionProvider(account, client).findCollections().map { jtxCollection ->
+            LocalJtxCollection(accountId, jtxCollection)
+        }
     }
 
     override fun getByDbCollectionId(
@@ -110,13 +114,21 @@ class LocalJtxCollectionStore @Inject constructor(
         val account = androidAccountManager.getAndroidAccount(accountId)
         return JtxCollectionProvider(account, client).findFirstCollection(
             "${JtxContract.JtxCollection.SYNC_ID}=?", arrayOf(dbCollectionId.toString())
-        )?.let { LocalJtxCollection(it) }
+        )?.let { jtxCollection -> LocalJtxCollection(accountId, jtxCollection) }
     }
 
     override fun update(client: ContentProviderClient, localCollection: LocalJtxCollection, fromCollection: Collection) {
-        val accountSettings = accountSettingsFactory.create(localCollection.jtxCollection.account.toAccountId())
-        val values = valuesFromCollection(fromCollection, account = localCollection.jtxCollection.account, withColor = accountSettings.getManageCalendarColors())
+        val values = valuesFromCollection(
+            info = fromCollection,
+            account = localCollection.jtxCollection.account,
+            withColor = useManagedCalendarColors(localCollection.accountId)
+        )
         localCollection.jtxCollection.update(values)
+    }
+
+    private fun useManagedCalendarColors(accountId: AccountId): Boolean {
+        val accountSettings = accountSettingsFactory.create(accountId)
+        return accountSettings.getManageCalendarColors()
     }
 
     override fun updateAccount(oldAccount: Account, newAccount: Account, @WillNotClose client: ContentProviderClient?) {
