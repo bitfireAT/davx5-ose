@@ -8,6 +8,7 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Update
 
 @Dao
 interface AccountSettingDao {
@@ -19,7 +20,7 @@ interface AccountSettingDao {
     @Insert
     fun insertBlocking(setting: AccountSetting): Long
 
-    @Insert
+    @Update
     fun updateBlocking(setting: AccountSetting)
 
     @Query("SELECT * FROM account_setting WHERE accountId=:accountId AND `key`=:key")
