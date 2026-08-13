@@ -28,21 +28,4 @@ interface AccountSettingDao {
 
     @Delete
     fun deleteBlocking(setting: AccountSetting)
-
-    /**
-     * If an entry already exists with [setting]'s [AccountSetting.key], updates it with [updateBlocking], otherwise,
-     * inserts it as a new entry using [insertBlocking].
-     */
-    fun insertOrUpdateBlocking(setting: AccountSetting): AccountSetting {
-        val existing = getBlocking(setting.accountId, setting.key)
-        if (existing == null) {
-            val id = insertBlocking(setting)
-            return setting.copy(id = id)
-        } else {
-            // We update the id of the given setting to the existing one, to make sure it's correctly set
-            val copy = setting.copy(id = existing.id)
-            updateBlocking(copy)
-            return copy
-        }
-    }
 }

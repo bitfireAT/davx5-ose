@@ -58,12 +58,17 @@ class DbAccountSettingsStore @AssistedInject constructor(@Assisted account: DbAc
             return
         }
 
-        val entry = AccountSetting(
-            accountId = accountId,
-            key = key,
-            value = value
-        )
-        dao.insertOrUpdateBlocking(entry)
+        val existing = dao.getBlocking(accountId, key)
+        if (existing != null) {
+            dao.updateBlocking(existing.copy(value = value))
+        } else {
+            val entry = AccountSetting(
+                accountId = accountId,
+                key = key,
+                value = value
+            )
+            dao.insertBlocking(entry)
+        }
     }
 
     /**
@@ -102,11 +107,16 @@ class DbAccountSettingsStore @AssistedInject constructor(@Assisted account: DbAc
             return
         }
 
-        val entry = AccountSetting(
-            accountId = accountId,
-            key = key,
-            sensitiveValue = value
-        )
-        dao.insertOrUpdateBlocking(entry)
+        val existing = dao.getBlocking(accountId, key)
+        if (existing != null) {
+            dao.updateBlocking(existing.copy(sensitiveValue = value))
+        } else {
+            val entry = AccountSetting(
+                accountId = accountId,
+                key = key,
+                sensitiveValue = value
+            )
+            dao.insertBlocking(entry)
+        }
     }
 }
