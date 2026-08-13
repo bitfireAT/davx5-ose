@@ -14,7 +14,7 @@ import androidx.appcompat.app.AppCompatActivity
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.accounts.AccountIdIntentSerializer
-import at.bitfire.davdroid.accounts.toAccountId
+import at.bitfire.davdroid.accounts.LegacyAccount
 import at.bitfire.davdroid.ui.AccountsActivity
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.logging.Logger
@@ -30,7 +30,10 @@ class AccountActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         val accountId = AccountIdIntentSerializer.fromIntent(intent, EXTRA_ACCOUNT)
-            ?: intent.getStringExtra(EXTRA_ACCOUNT)?.let { Account(it, getString(R.string.account_type)).toAccountId() }
+            ?: intent.getStringExtra(EXTRA_ACCOUNT)?.let { accountName ->
+                val androidAccount = Account(accountName, getString(R.string.account_type))
+                LegacyAccount(androidAccount)
+            }
 
         // If account is not passed, log warning and redirect to accounts overview
         if (accountId == null) {
