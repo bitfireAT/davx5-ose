@@ -11,12 +11,17 @@ import at.bitfire.davdroid.settings.AccountSettings.Companion.CREDENTIALS_LOCK_A
 import at.bitfire.davdroid.settings.migration.AccountSettingsMigration
 import at.bitfire.davdroid.sync.AutomaticSyncManager
 import at.bitfire.davdroid.sync.SyncDataType
+import at.bitfire.davdroid.sync.account.InvalidAccountException
 import at.bitfire.synctools.util.trimToNull
 import at.bitfire.synctools.vcard.GroupMethod
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import net.openid.appauth.AuthState
+import java.util.Collections
+import java.util.logging.Level
+import java.util.logging.Logger
+import javax.inject.Provider
 
 /**
  * Manages settings of an account.
@@ -25,17 +30,50 @@ import net.openid.appauth.AuthState
 @WorkerThread   
 class AccountSettings @AssistedInject constructor(
     @Assisted val accountId: AccountId,
+    @Assisted val abortOnMissingMigration: Boolean,
     @Assisted private val store: AccountSettingsStore,
     private val automaticSyncManager: AutomaticSyncManager,
+    private val logger: Logger,
+    private val migrations: Map<Int, @JvmSuppressWildcards Provider<AccountSettingsMigration>>,
     private val settingsManager: SettingsManager
 ) {
 
     @AssistedFactory
     interface Factory {
         @WorkerThread
-        fun create(account: AccountId, store: AccountSettingsStore): AccountSettings
+        fun create(
+            account: AccountId,
+            abortOnMissingMigration: Boolean,
+            store: AccountSettingsStore
+        ): AccountSettings
     }
 
+    init {
+        // synchronize because account migration must only be run one time
+        synchronized(currentlyUpdating) {
+            if (currentlyUpdating.contains(accountId))
+                logger.warning("AccountSettings created during migration of $accountId – not running update()")
+            else {
+                val versionStr = store.getValue(KEY_SETTINGS_VERSION) ?: throw InvalidAccountException(accountId)
+                var version = 0
+                try {
+                    version = Integer.parseInt(versionStr)
+                } catch (e: NumberFormatException) {
+                    logger.log(Level.SEVERE, "Invalid account version: $versionStr", e)
+                }
+                logger.fine("Account $accountId has version $version, current version: $CURRENT_VERSION")
+
+                if (version < CURRENT_VERSION) {
+                    currentlyUpdating += accountId
+                    try {
+                        update(accountId, version, abortOnMissingMigration)
+                    } finally {
+                        currentlyUpdating -= accountId
+                    }
+                }
+            }
+        }
+    }
 
 
     // authentication settings
@@ -261,6 +299,31 @@ class AccountSettings @AssistedInject constructor(
     }
 
 
+    // update from previous account settings
+    private fun update(accountId: AccountId, baseVersion: Int, abortOnMissingMigration: Boolean) {
+        for (toVersion in baseVersion+1 ..CURRENT_VERSION) {
+            val fromVersion = toVersion - 1
+            logger.info("Updating account $accountId settings version $fromVersion → $toVersion")
+
+            val migration = migrations[toVersion]
+            if (migration == null) {
+                logger.severe("No AccountSettings migration $fromVersion → $toVersion")
+                if (abortOnMissingMigration)
+                    throw IllegalArgumentException("Missing AccountSettings migration $fromVersion → $toVersion")
+            } else {
+                try {
+                    migration.get().migrate(accountId, store)
+
+                    logger.info("Account settings version update to $toVersion successful")
+                    store.putValue(KEY_SETTINGS_VERSION, toVersion.toString())
+                } catch (e: Exception) {
+                    logger.log(Level.SEVERE, "Couldn't run AccountSettings migration $fromVersion → $toVersion", e)
+                }
+            }
+        }
+    }
+
+
     companion object {
 
         /**
@@ -333,6 +396,9 @@ class AccountSettings @AssistedInject constructor(
         const val KEY_SHOW_ONLY_PERSONAL = "show_only_personal"
 
         internal const val SYNC_INTERVAL_MANUALLY = -1L
+
+        /** Static property to remember which AccountSettings updates/migrations are currently running */
+        private val currentlyUpdating = Collections.synchronizedSet(mutableSetOf<AccountId>())
 
         /**
          * Returns the initial user data (as in [AccountManager.setUserData]) for creating a new account.

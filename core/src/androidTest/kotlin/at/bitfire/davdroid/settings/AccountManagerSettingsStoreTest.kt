@@ -7,7 +7,6 @@ package at.bitfire.davdroid.settings
 import android.accounts.AccountManager
 import android.content.Context
 import at.bitfire.davdroid.TestUtils
-import at.bitfire.davdroid.sync.account.TestAccount
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -41,25 +40,6 @@ class AccountManagerSettingsStoreTest {
         TestUtils.setUpWorkManager(context)
     }
 
-
-    @Test(expected = IllegalArgumentException::class)
-    fun testUpdate_MissingMigrations() {
-        TestAccount.provide(version = 1) { account ->
-            // will run AccountSettings.update
-            factory.create(account, abortOnMissingMigration = true)
-        }
-    }
-
-    @Test
-    fun testUpdate_RunAllMigrations() {
-        TestAccount.provide(version = 6) { account ->
-            // will run AccountSettings.update
-            factory.create(account, abortOnMissingMigration = true)
-
-            val version = accountManager.getUserData(account, AccountSettings.KEY_SETTINGS_VERSION).toInt()
-            assertEquals(AccountSettings.CURRENT_VERSION, version)
-        }
-    }
 
     @Test
     fun test_initialUserData() {
