@@ -4,7 +4,7 @@
 
 package at.bitfire.davdroid.settings
 
-import at.bitfire.davdroid.accounts.DbAccount
+import at.bitfire.davdroid.accounts.DbAccountId
 import at.bitfire.davdroid.db.AccountSetting
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.synctools.util.SensitiveString
@@ -12,14 +12,14 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 
-class DbAccountSettingsStore @AssistedInject constructor(@Assisted account: DbAccount, db: AppDatabase) : AccountSettingsStore {
+class DbAccountSettingsStore @AssistedInject constructor(@Assisted account: DbAccountId, db: AppDatabase) : AccountSettingsStore {
     private val accountId = account.account.id
 
     private val dao = db.accountSettingDao()
 
     @AssistedFactory
     interface Factory {
-        fun create(account: DbAccount): DbAccountSettingsStore
+        fun create(account: DbAccountId): DbAccountSettingsStore
     }
 
     /**
@@ -48,8 +48,12 @@ class DbAccountSettingsStore @AssistedInject constructor(@Assisted account: DbAc
             dao.getBlocking(accountId, key)
                 // only allow to delete values set by putValue
                 ?.takeIf { it.value != null }
-                ?.let {
-                    dao.deleteBlocking(it)
+                ?.let { setting ->
+                    if (setting.sensitiveValue != null)
+                        // If there's a sensitive value on that key, just remove the regular value
+                        dao.updateBlocking(setting.copy(value = null))
+                    else
+                        dao.deleteBlocking(setting)
                 }
             return
         }
@@ -88,8 +92,12 @@ class DbAccountSettingsStore @AssistedInject constructor(@Assisted account: DbAc
             dao.getBlocking(accountId, key)
                 // only allow to delete values set by putSensitiveValue
                 ?.takeIf { it.sensitiveValue != null }
-                ?.let {
-                    dao.deleteBlocking(it)
+                ?.let { setting ->
+                    if (setting.value != null)
+                        // If there's a value on that key, just remove the sensitive value
+                        dao.updateBlocking(setting.copy(sensitiveValue = null))
+                    else
+                        dao.deleteBlocking(setting)
                 }
             return
         }
