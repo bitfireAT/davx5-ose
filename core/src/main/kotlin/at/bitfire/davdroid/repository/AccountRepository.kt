@@ -11,7 +11,7 @@ import android.content.Context
 import androidx.annotation.WorkerThread
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
-import at.bitfire.davdroid.accounts.DbAccount
+import at.bitfire.davdroid.accounts.DbAccountId
 import at.bitfire.davdroid.accounts.LegacyAccount
 import at.bitfire.davdroid.accounts.toAccountId
 import at.bitfire.davdroid.db.HomeSet
@@ -96,7 +96,7 @@ class AccountRepository @Inject constructor(
     fun getAccountNameBlocking(accountId: AccountId): String {
         return when (accountId) {
             is LegacyAccount -> accountId.androidAccount.name
-            is DbAccount -> accountId.account.name
+            is DbAccountId -> accountId.account.name
         }
     }
     
@@ -333,7 +333,7 @@ class AccountRepository @Inject constructor(
     suspend fun rename(accountId: AccountId, newName: String): AccountId {
         return when (accountId) {
             is LegacyAccount -> rename(accountId.androidAccount.name, newName)
-            is DbAccount -> TODO("It's not possible yet to rename DbAccounts")
+            is DbAccountId -> TODO("It's not possible yet to rename DbAccounts")
         }
     }
 

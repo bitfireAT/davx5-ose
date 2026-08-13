@@ -16,7 +16,7 @@ import androidx.work.WorkerParameters
 import at.bitfire.davdroid.IoCoroutineWorker
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
-import at.bitfire.davdroid.accounts.DbAccount
+import at.bitfire.davdroid.accounts.DbAccountId
 import at.bitfire.davdroid.accounts.LegacyAccount
 import at.bitfire.davdroid.accounts.toAndroidAccount
 import at.bitfire.davdroid.push.PushNotificationManager
@@ -286,7 +286,7 @@ abstract class BaseSyncWorker(
                     val account = accountId.androidAccount
                     "sync-$dataType ${account.type}/${account.name}"
                 }
-                is DbAccount -> TODO("Operation not yet implemented")
+                is DbAccountId -> TODO("Operation not yet implemented")
             }
         }
 

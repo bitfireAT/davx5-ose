@@ -12,13 +12,13 @@ object AccountIdIntentSerializer {
     fun addExtra(intent: Intent, key: String, accountId: AccountId) {
         when (accountId) {
             is LegacyAccount -> intent.putExtra(key, accountId.androidAccount)
-            is DbAccount -> intent.putExtras(accountId.toBundle(key))
+            is DbAccountId -> intent.putExtras(accountId.toBundle(key))
         }
     }
 
     fun fromIntent(intent: Intent, key: String): AccountId? {
         return IntentCompat.getParcelableExtra(intent, key, AndroidAccount::class.java)?.let { androidAccount ->
             LegacyAccount(androidAccount)
-        } ?: intent.extras?.let { DbAccount.fromBundle(it, key) }
+        } ?: intent.extras?.let { DbAccountId.fromBundle(it, key) }
     }
 }

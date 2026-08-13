@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid.settings
 
+import at.bitfire.davdroid.accounts.DbAccountId
 import at.bitfire.davdroid.db.AccountSetting
 import at.bitfire.davdroid.db.AccountSettingDao
 import at.bitfire.davdroid.db.AppDatabase
@@ -48,7 +49,7 @@ class DbAccountSettingsStoreTest {
             // Make sure the id of the returned account is correctly set
             it.copy(id = id)
         }
-        store = storeFactory.create(at.bitfire.davdroid.accounts.DbAccount(dbAccount))
+        store = storeFactory.create(DbAccountId(dbAccount))
     }
 
     @After
