@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.resource
 
 import androidx.core.content.contentValuesOf
+import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.resource.LocalTaskList.Companion.COLUMN_TASKLIST_SYNC_STATE
 import at.bitfire.synctools.storage.tasks.DmfsRecurringTaskList
 import at.bitfire.synctools.storage.tasks.DmfsTaskList
@@ -23,6 +24,7 @@ import org.dmfs.tasks.contract.TaskContract.Tasks
  * collection ID ([at.bitfire.davdroid.db.Collection.id]).
  */
 class LocalTaskList (
+    internal val accountId: AccountId,
     internal val dmfsTaskList: DmfsTaskList
 ): LocalCollection<LocalTask> {
 

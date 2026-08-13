@@ -10,12 +10,11 @@ import android.content.ContentValues
 import android.content.Context
 import androidx.core.content.contentValuesOf
 import at.bitfire.davdroid.Constants
-import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.accounts.AndroidAccountManager
-import at.bitfire.davdroid.accounts.toAccountId
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
+import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.settings.AccountSettingsFactory
 import at.bitfire.davdroid.util.DavUtils.lastSegment
 import at.bitfire.synctools.storage.TaskProvider
@@ -34,6 +33,7 @@ import javax.annotation.WillNotClose
 
 class LocalTaskListStore @AssistedInject constructor(
     @Assisted private val providerName: TaskProvider.ProviderName,
+    val accountRepository: AccountRepository,
     val accountSettingsFactory: AccountSettingsFactory,
     val androidAccountManager: AndroidAccountManager,
     @ApplicationContext val context: Context,
@@ -63,11 +63,12 @@ class LocalTaskListStore @AssistedInject constructor(
     override suspend fun create(client: ContentProviderClient, fromCollection: Collection): LocalTaskList {
         val service = serviceDao.get(fromCollection.serviceId)
             ?: throw IllegalArgumentException("Couldn't fetch DB service from collection")
-        val account = Account(service.accountName, context.getString(R.string.account_type))
+        val accountId = accountRepository.getAccountIdFromName(service.accountName)
+        val account = androidAccountManager.getAndroidAccount(accountId)
 
         logger.info("Adding local task list: $fromCollection")
         val dmfsTaskList = create(account, client, providerName, fromCollection)
-        return LocalTaskList(dmfsTaskList)
+        return LocalTaskList(accountId, dmfsTaskList)
     }
 
     private fun create(account: Account, client: ContentProviderClient, providerName: TaskProvider.ProviderName, fromCollection: Collection): DmfsTaskList {
@@ -109,7 +110,7 @@ class LocalTaskListStore @AssistedInject constructor(
     override fun getAll(accountId: AccountId, client: ContentProviderClient): List<LocalTaskList> {
         val account = androidAccountManager.getAndroidAccount(accountId)
         return DmfsTaskListProvider(account, client, providerName).findTaskLists()
-            .map { LocalTaskList(it) }
+            .map { taskList -> LocalTaskList(accountId, taskList) }
     }
 
     override fun getByDbCollectionId(
@@ -120,13 +121,21 @@ class LocalTaskListStore @AssistedInject constructor(
         val account = androidAccountManager.getAndroidAccount(accountId)
         return DmfsTaskListProvider(account, client, providerName)
             .findFirstTaskList("${TaskLists._SYNC_ID}=?", arrayOf(dbCollectionId.toString()))
-            ?.let { LocalTaskList(it) }
+            ?.let { taskList -> LocalTaskList(accountId, taskList) }
     }
 
     override fun update(client: ContentProviderClient, localCollection: LocalTaskList, fromCollection: Collection) {
         logger.log(Level.FINE, "Updating local task list {0}: {1}", arrayOf(fromCollection.url, fromCollection))
-        val accountSettings = accountSettingsFactory.create(localCollection.dmfsTaskList.account.toAccountId())
-        localCollection.dmfsTaskList.update(valuesFromCollectionInfo(fromCollection, withColor = accountSettings.getManageCalendarColors()))
+        val values = valuesFromCollectionInfo(
+            info = fromCollection,
+            withColor = useManagedCalendarColors(localCollection.accountId)
+        )
+        localCollection.dmfsTaskList.update(values)
+    }
+
+    private fun useManagedCalendarColors(accountId: AccountId): Boolean {
+        val accountSettings = accountSettingsFactory.create(accountId)
+        return accountSettings.getManageCalendarColors()
     }
 
     override fun updateAccount(oldAccount: Account, newAccount: Account, @WillNotClose client: ContentProviderClient?) {
