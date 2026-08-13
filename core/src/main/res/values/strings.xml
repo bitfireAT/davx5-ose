@@ -6,7 +6,6 @@
 
     <!-- common strings -->
     <string name="app_name" translatable="false">DAVx⁵</string>
-    <string name="test_string" translatable="false">Test string</string>
 
     <string name="account_invalid">Account does not exist (anymore)</string>
     <string name="account_type" translatable="false">bitfire.at.davdroid</string>
