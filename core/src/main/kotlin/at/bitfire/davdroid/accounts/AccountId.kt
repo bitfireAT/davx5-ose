@@ -27,6 +27,12 @@ data class LegacyAccount(val androidAccount: AndroidAccount) : AccountId {
  * @see [at.bitfire.davdroid.db.DbAccount]
  */
 data class DbAccount(val account: DbAccount) : AccountId {
+    /**
+     * Converts this class into a [Bundle], by adding the properties of [account] to a new [Bundle], with each key prefixed with [keyPrefix]:
+     * - [DbAccount.id] -> `${keyPrefix}_id`
+     * - [DbAccount.name] -> `${keyPrefix}_name`
+     * This can then be added to an [android.content.Intent] for example with [android.content.Intent.putExtras].
+     */
     fun toBundle(keyPrefix: String): Bundle = Bundle().apply {
         putLong("${keyPrefix}_id", account.id)
         putString("${keyPrefix}_name", account.name)
