@@ -9,6 +9,7 @@ import android.accounts.AccountManager
 import android.content.Context
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
+import at.bitfire.davdroid.accounts.DbAccount
 import at.bitfire.davdroid.accounts.LegacyAccount
 import at.bitfire.synctools.util.setAndVerifyUserData
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -52,6 +53,7 @@ class AddressBookAccountProperties @Inject constructor(
                 accountManager.setAndVerifyUserData(account, USER_DATA_ACCOUNT_NAME, owner.androidAccount.name)
                 accountManager.setAndVerifyUserData(account, USER_DATA_ACCOUNT_TYPE, owner.androidAccount.type)
             }
+            is DbAccount -> TODO("Operation not implemented")
         }
     }
 

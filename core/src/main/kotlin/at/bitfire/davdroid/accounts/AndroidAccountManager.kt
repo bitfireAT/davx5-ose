@@ -19,6 +19,7 @@ class AndroidAccountManager @Inject constructor(
     fun getAndroidAccount(accountId: AccountId): Account {
         return when (accountId) {
             is LegacyAccount -> accountId.androidAccount
+            else -> throw IllegalArgumentException("accountId must be an instance of LegacyAccount")
         }
     }
 

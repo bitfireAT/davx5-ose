@@ -43,6 +43,7 @@ interface HomeSetDao {
             is LegacyAccount -> {
                 getBindableByAccountAndServiceTypeFlow(accountId.androidAccount.name, serviceType)
             }
+            else -> TODO("Operation not yet implemented")
         }
     }
 
