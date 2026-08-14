@@ -69,7 +69,7 @@ class LocalJtxCollectionStore @Inject constructor(
         )
 
         val jtxCollection = JtxCollectionProvider(account, client).createAndGetCollection(values)
-        return LocalJtxCollection(accountId, jtxCollection)
+        return LocalJtxCollection(jtxCollection)
     }
 
     private fun valuesFromCollection(info: Collection, account: Account, withColor: Boolean): ContentValues {
@@ -102,7 +102,7 @@ class LocalJtxCollectionStore @Inject constructor(
     override fun getAll(accountId: AccountId, client: ContentProviderClient): List<LocalJtxCollection> {
         val account = androidAccountManager.getAndroidAccount(accountId)
         return JtxCollectionProvider(account, client).findCollections().map { jtxCollection ->
-            LocalJtxCollection(accountId, jtxCollection)
+            LocalJtxCollection(jtxCollection)
         }
     }
 
@@ -114,7 +114,7 @@ class LocalJtxCollectionStore @Inject constructor(
         val account = androidAccountManager.getAndroidAccount(accountId)
         return JtxCollectionProvider(account, client).findFirstCollection(
             "${JtxContract.JtxCollection.SYNC_ID}=?", arrayOf(dbCollectionId.toString())
-        )?.let { jtxCollection -> LocalJtxCollection(accountId, jtxCollection) }
+        )?.let { jtxCollection -> LocalJtxCollection(jtxCollection) }
     }
 
     override fun update(

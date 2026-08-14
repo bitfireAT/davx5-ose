@@ -46,6 +46,7 @@ class SyncerTest {
     @InjectMockKs
     var syncer = TestSyncer(accountId, null, SyncResult(), SyncSettingsFixtures.default(), dataStore)
 
+
     @Test
     fun testSync_prepare_fails() = runTest {
         every { syncer.prepare(provider) } returns false

@@ -68,7 +68,7 @@ class LocalTaskListStore @AssistedInject constructor(
 
         logger.info("Adding local task list: $fromCollection")
         val dmfsTaskList = create(account, client, providerName, fromCollection)
-        return LocalTaskList(accountId, dmfsTaskList)
+        return LocalTaskList(dmfsTaskList)
     }
 
     private fun create(account: Account, client: ContentProviderClient, providerName: TaskProvider.ProviderName, fromCollection: Collection): DmfsTaskList {
@@ -110,7 +110,7 @@ class LocalTaskListStore @AssistedInject constructor(
     override fun getAll(accountId: AccountId, client: ContentProviderClient): List<LocalTaskList> {
         val account = androidAccountManager.getAndroidAccount(accountId)
         return DmfsTaskListProvider(account, client, providerName).findTaskLists()
-            .map { taskList -> LocalTaskList(accountId, taskList) }
+            .map { taskList -> LocalTaskList(taskList) }
     }
 
     override fun getByDbCollectionId(
@@ -121,7 +121,7 @@ class LocalTaskListStore @AssistedInject constructor(
         val account = androidAccountManager.getAndroidAccount(accountId)
         return DmfsTaskListProvider(account, client, providerName)
             .findFirstTaskList("${TaskLists._SYNC_ID}=?", arrayOf(dbCollectionId.toString()))
-            ?.let { taskList -> LocalTaskList(accountId, taskList) }
+            ?.let { taskList -> LocalTaskList(taskList) }
     }
 
     override fun update(

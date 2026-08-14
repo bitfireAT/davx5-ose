@@ -84,14 +84,14 @@ class LocalCalendarStore @Inject constructor(
 
         logger.info("Adding local calendar: $values")
         val provider = AndroidCalendarProvider(account, client)
-        return LocalCalendar(accountId, provider.createAndGetCalendar(values))
+        return LocalCalendar(provider.createAndGetCalendar(values))
     }
 
     override fun getAll(accountId: AccountId, client: ContentProviderClient): List<LocalCalendar> {
         val account = androidAccountManager.getAndroidAccount(accountId)
         return AndroidCalendarProvider(account, client)
             .findCalendars("${Calendars.SYNC_EVENTS}!=0", null)
-            .map { androidCalendar -> LocalCalendar(accountId, androidCalendar) }
+            .map { androidCalendar -> LocalCalendar(androidCalendar) }
     }
 
     override fun getByDbCollectionId(
@@ -102,7 +102,7 @@ class LocalCalendarStore @Inject constructor(
         val account = androidAccountManager.getAndroidAccount(accountId)
         return AndroidCalendarProvider(account, client)
             .findFirstCalendar("${Calendars._SYNC_ID}=?", arrayOf(dbCollectionId.toString()))
-            ?.let { androidCalendar -> LocalCalendar(accountId, androidCalendar) }
+            ?.let { androidCalendar -> LocalCalendar(androidCalendar) }
     }
 
     override fun update(

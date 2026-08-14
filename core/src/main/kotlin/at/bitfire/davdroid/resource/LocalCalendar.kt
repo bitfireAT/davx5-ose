@@ -7,7 +7,6 @@ package at.bitfire.davdroid.resource
 import android.provider.CalendarContract.Calendars
 import android.provider.CalendarContract.Events
 import androidx.core.content.contentValuesOf
-import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.synctools.storage.BatchOperation
 import at.bitfire.synctools.storage.calendar.AndroidCalendar
 import at.bitfire.synctools.storage.calendar.AndroidRecurringCalendar
@@ -23,7 +22,6 @@ import kotlinx.coroutines.flow.map
  * [Calendars._SYNC_ID] corresponds to the database collection ID ([at.bitfire.davdroid.db.Collection.id]).
  */
 class LocalCalendar(
-    internal val accountId: AccountId,
     internal val androidCalendar: AndroidCalendar
 ) : LocalCollection<LocalEvent> {
 

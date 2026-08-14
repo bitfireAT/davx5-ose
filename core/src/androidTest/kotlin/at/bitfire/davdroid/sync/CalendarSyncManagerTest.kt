@@ -73,7 +73,7 @@ class CalendarSyncManagerTest {
         androidCalendar = androidCalendarProvider.createAndGetCalendar(contentValuesOf(
             Calendars.NAME to "Sample Calendar"
         ))
-        localCalendar = LocalCalendar(accountId, androidCalendar)
+        localCalendar = LocalCalendar(androidCalendar)
     }
 
     @After

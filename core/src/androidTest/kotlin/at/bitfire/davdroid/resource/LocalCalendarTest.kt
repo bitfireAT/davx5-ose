@@ -52,7 +52,7 @@ class LocalCalendarTest {
 
         val provider = AndroidCalendarProvider(accountId.androidAccount, client)
         androidCalendar = provider.createAndGetCalendar(ContentValues())
-        calendar = LocalCalendar(accountId, androidCalendar)
+        calendar = LocalCalendar(androidCalendar)
     }
 
     @After
