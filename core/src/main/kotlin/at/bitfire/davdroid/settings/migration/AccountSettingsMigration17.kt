@@ -77,7 +77,7 @@ class AccountSettingsMigration17 @Inject constructor(
 
                 collectionRepository.getByServiceAndUrl(service.id, url)?.let { collection ->
                     // Set collection ID and rename the account
-                    localAddressBookStore.update(provider, oldAddressBook, collection)
+                    localAddressBookStore.update(account.toAccountId(), provider, oldAddressBook, collection)
                     // The user-data-url is not being set in localAddressBookStore.update() anymore,
                     // but we need to keep it for the migration
                     accountManager.setAndVerifyUserData(

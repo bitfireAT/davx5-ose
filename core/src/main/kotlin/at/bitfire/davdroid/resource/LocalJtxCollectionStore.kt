@@ -117,11 +117,16 @@ class LocalJtxCollectionStore @Inject constructor(
         )?.let { jtxCollection -> LocalJtxCollection(accountId, jtxCollection) }
     }
 
-    override fun update(client: ContentProviderClient, localCollection: LocalJtxCollection, fromCollection: Collection) {
+    override fun update(
+        accountId: AccountId,
+        client: ContentProviderClient,
+        localCollection: LocalJtxCollection,
+        fromCollection: Collection
+    ) {
         val values = valuesFromCollection(
             info = fromCollection,
             account = localCollection.jtxCollection.account,
-            withColor = useManagedCalendarColors(localCollection.accountId)
+            withColor = useManagedCalendarColors(accountId)
         )
         localCollection.jtxCollection.update(values)
     }

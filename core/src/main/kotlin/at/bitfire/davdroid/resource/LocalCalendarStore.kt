@@ -105,10 +105,15 @@ class LocalCalendarStore @Inject constructor(
             ?.let { androidCalendar -> LocalCalendar(accountId, androidCalendar) }
     }
 
-    override fun update(client: ContentProviderClient, localCollection: LocalCalendar, fromCollection: Collection) {
+    override fun update(
+        accountId: AccountId,
+        client: ContentProviderClient,
+        localCollection: LocalCalendar,
+        fromCollection: Collection
+    ) {
         val values = valuesFromCollectionInfo(
             info = fromCollection,
-            withColor = useManagedCalendarColors(localCollection.accountId)
+            withColor = useManagedCalendarColors(accountId)
         )
 
         logger.log(Level.FINE, "Updating local calendar {0}: {1}", arrayOf(fromCollection.url, values))

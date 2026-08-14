@@ -124,11 +124,16 @@ class LocalTaskListStore @AssistedInject constructor(
             ?.let { taskList -> LocalTaskList(accountId, taskList) }
     }
 
-    override fun update(client: ContentProviderClient, localCollection: LocalTaskList, fromCollection: Collection) {
+    override fun update(
+        accountId: AccountId,
+        client: ContentProviderClient,
+        localCollection: LocalTaskList,
+        fromCollection: Collection
+    ) {
         logger.log(Level.FINE, "Updating local task list {0}: {1}", arrayOf(fromCollection.url, fromCollection))
         val values = valuesFromCollectionInfo(
             info = fromCollection,
-            withColor = useManagedCalendarColors(localCollection.accountId)
+            withColor = useManagedCalendarColors(accountId)
         )
         localCollection.dmfsTaskList.update(values)
     }
