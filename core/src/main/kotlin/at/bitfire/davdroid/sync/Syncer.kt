@@ -20,6 +20,7 @@ import at.bitfire.davdroid.resource.LocalDataStore
 import at.bitfire.davdroid.sync.account.InvalidAccountException
 import at.bitfire.davdroid.util.causedBy
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CancellationException
 import java.io.Closeable
 import java.util.Optional
 import java.util.logging.Level
@@ -261,6 +262,11 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
 
     /**
      * Acquires the content provider, runs the sync, and handles exceptions that are not handled by the SyncManager itself.
+     *
+     * Handled exceptions are recorded in [syncResult] as soft or hard error.
+     *
+     * @throws CancellationException if the sync has been canceled – not recorded in [syncResult], but passed
+     * on to the caller (see [at.bitfire.davdroid.sync.worker.BaseSyncWorker])
      */
     suspend operator fun invoke() {
         logger.info("${dataStore.authority} sync of $accountId initiated (resync=$resync)")
@@ -301,12 +307,20 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
                 - have occurred during Syncer operation (for instance when creating/deleting local collections) —
                   content provider access here can also throw a DeadObjectException wrapped by the storage layer,
                 - or have been re-thrown from SyncManager (like the unwrapped DeadObjectException). */
-                if (e.causedBy<DeadObjectException>() != null) {
+                when {
+                    /* The sync has been canceled (usually because WorkManager stopped our worker). Cancellation is
+                    not a sync error and must never be swallowed: the coroutine has to stop here, and the worker has
+                    to pass the cancellation on to WorkManager. See BaseSyncWorker. */
+                    e is CancellationException ->
+                        throw e
+
                     // content provider process died, or (Android 14+) was killed for being frozen/cached; see SyncExceptionHandler
-                    logger.log(Level.WARNING, "Received DeadObjectException, treating as soft error", e)
-                    syncResult.softError = true
-                } else when (e) {
-                    is InvalidAccountException ->
+                    e.causedBy<DeadObjectException>() != null -> {
+                        logger.log(Level.WARNING, "Received DeadObjectException, treating as soft error", e)
+                        syncResult.softError = true
+                    }
+
+                    e is InvalidAccountException ->
                         logger.log(Level.WARNING, "Account was removed during synchronization", e)
 
                     else -> {

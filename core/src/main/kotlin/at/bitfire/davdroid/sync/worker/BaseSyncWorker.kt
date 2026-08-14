@@ -32,6 +32,7 @@ import at.bitfire.davdroid.sync.SyncSettingsProvider
 import at.bitfire.davdroid.sync.TaskSyncer
 import at.bitfire.davdroid.sync.TasksAppManager
 import at.bitfire.davdroid.sync.account.InvalidAccountException
+import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.MAX_RUN_ATTEMPTS
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.NO_RESYNC
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.RESYNC_ENTRIES
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.RESYNC_LIST
@@ -39,12 +40,52 @@ import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.commonTag
 import at.bitfire.davdroid.ui.NotificationRegistry
 import at.bitfire.synctools.storage.TaskProvider
 import dagger.Lazy
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.delay
 import java.util.Collections
+import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.seconds
 
+/**
+ * Base class of the sync workers: takes the account and the data type to be synchronized from the input
+ * data, selects the matching [at.bitfire.davdroid.sync.Syncer] and runs it.
+ *
+ * ## Results reported to WorkManager
+ *
+ * WorkManager derives the state it records for a work from the [Result] we return, so we map the outcome
+ * of a sync run like this:
+ *
+ * - Sync ran without errors: [Result.success]
+ * - Sync was skipped, because another worker is already syncing the same data or because the sync
+ *   conditions are not met (anymore): [Result.success], too – skipping is not an error, the next sync run
+ *   will do the work.
+ * - Soft error (temporary problem, like a network error) with attempts left: [Result.retry], so that
+ *   WorkManager runs the work again later (at most [MAX_RUN_ATTEMPTS] attempts).
+ * - Soft error without attempts left: [Result.failure] and a notification, because we're giving up.
+ * - Hard error (the user has to take action, for instance fix their credentials): [Result.failure].
+ *   [at.bitfire.davdroid.sync.SyncManager] has already notified the user about the details.
+ * - The account doesn't exist (anymore), or there's no usable tasks provider: [Result.failure].
+ *
+ * Note that [Result.failure] also fails work that has been appended to this work – one-time syncs are
+ * enqueued with [androidx.work.ExistingWorkPolicy.APPEND_OR_REPLACE] – so a sync request that came in while
+ * this sync was running is dropped and has to be requested again.
+ *
+ * ## Cancellation
+ *
+ * A canceled sync is not mapped to a [Result] at all: the [CancellationException] is passed on to
+ * WorkManager, which then:
+ *
+ * - runs the work again if it has stopped the worker itself (constraints not met anymore, execution
+ *   timeout, quota, …),
+ * - leaves the work `CANCELLED` if the work has been canceled explicitly (like by
+ *   [SyncWorkerManager.cancelAllWork]), or
+ * - records the run as failed if something within the app has canceled the sync coroutine (periodic work
+ *   is simply run again in the next interval).
+ *
+ * That's why no sync code may swallow a [CancellationException].
+ */
 abstract class BaseSyncWorker(
     context: Context,
     private val workerParams: WorkerParameters
@@ -136,6 +177,12 @@ abstract class BaseSyncWorker(
 
             val settings = syncSettingsProvider.create(accountSettings)
             return doSyncWork(accountId, dataType, settings)
+
+        } catch (e: CancellationException) {
+            // Not an error: log it (so that it can be told apart from a failed sync) and pass it on to WorkManager.
+            logger.log(Level.INFO, "Sync was cancelled", e)
+            throw e
+
         } finally {
             logger.info("${javaClass.simpleName} finished for $syncTag")
             runningSyncs -= syncTag

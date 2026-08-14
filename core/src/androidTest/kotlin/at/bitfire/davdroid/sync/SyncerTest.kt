@@ -6,10 +6,13 @@ package at.bitfire.davdroid.sync
 
 import android.accounts.Account
 import android.content.ContentProviderClient
+import android.os.DeadObjectException
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.accounts.LegacyAccount
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.resource.LocalDataStore
+import at.bitfire.synctools.storage.LocalStorageException
+import at.bitfire.synctools.test.assertThrows
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
@@ -21,12 +24,15 @@ import io.mockk.just
 import io.mockk.mockk
 import io.mockk.runs
 import io.mockk.verify
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
+import java.util.Optional
 import java.util.logging.Logger
 
 class SyncerTest {
@@ -39,12 +45,19 @@ class SyncerTest {
 
     val dataStore: LocalTestStore = mockk(relaxed = true)
     val provider: ContentProviderClient = mockk(relaxed = true)
+    val syncResult = SyncResult()
 
     private val accountId = LegacyAccount(Account("test", "test"))
 
     @SpyK
     @InjectMockKs
-    var syncer = TestSyncer(accountId, null, SyncResult(), SyncSettingsFixtures.default(), dataStore)
+    var syncer = TestSyncer(accountId, null, syncResult, SyncSettingsFixtures.default(), dataStore).apply {
+        /* Dependencies that are only used by invoke(). They have to be set before the spy is created, because
+        the spy only gets a copy of the fields, while the lazy syncNotificationManager still resolves them
+        on the original object. */
+        syncNotificationManagerFactory = mockk(relaxed = true)
+        syncValidator = Optional.empty()
+    }
 
 
     @Test
@@ -155,6 +168,40 @@ class SyncerTest {
         syncer.syncCollectionContents(provider, localCollections, dbCollections)
         coVerify(exactly = 1) { syncer.syncCollection(provider, localCollection1, dbCollection1) }
         coVerify(exactly = 1) { syncer.syncCollection(provider, localCollection2, dbCollection2) }
+    }
+
+
+    @Test
+    fun testInvoke_cancellation_isRethrown() = runTest {
+        every { dataStore.acquireContentProvider(any()) } returns provider
+        coEvery { syncer.sync(provider) } throws CancellationException()
+
+        // Cancellation is not a sync error, but has to be passed on to the worker
+        assertThrows<CancellationException> {
+            syncer()
+        }
+        assertFalse(syncResult.hasError)
+    }
+
+    @Test
+    fun testInvoke_deadObjectException_isSoftError() = runTest {
+        every { dataStore.acquireContentProvider(any()) } returns provider
+        coEvery { syncer.sync(provider) } throws
+                LocalStorageException("Couldn't access local storage", DeadObjectException())
+
+        syncer()
+        assertTrue(syncResult.softError)
+        assertFalse(syncResult.hardError)
+    }
+
+    @Test
+    fun testInvoke_unclassifiedException_isHardError() = runTest {
+        every { dataStore.acquireContentProvider(any()) } returns provider
+        coEvery { syncer.sync(provider) } throws Exception("Some unexpected problem")
+
+        syncer()
+        assertTrue(syncResult.hardError)
+        assertFalse(syncResult.softError)
     }
 
 
