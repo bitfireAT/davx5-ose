@@ -15,12 +15,9 @@ import android.provider.CalendarContract.Events
 import androidx.core.content.contentValuesOf
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
-import at.bitfire.davdroid.accounts.LegacyAccount
 import at.bitfire.synctools.storage.calendar.AndroidCalendar
 import at.bitfire.synctools.storage.calendar.AndroidCalendarProvider
 import at.bitfire.synctools.storage.calendar.EventsContract
-import dagger.hilt.android.testing.HiltAndroidRule
-import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -29,28 +26,22 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
-@HiltAndroidTest
 class LocalCalendarTest {
 
     @get:Rule
     val permissionRule: GrantPermissionRule = GrantPermissionRule.grant(Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR)
 
-    @get:Rule
-    val hiltRule = HiltAndroidRule(this)
-
-    private val accountId = LegacyAccount(Account("LocalCalendarTest", ACCOUNT_TYPE_LOCAL))
+    private val account = Account("LocalCalendarTest", ACCOUNT_TYPE_LOCAL)
     private lateinit var androidCalendar: AndroidCalendar
     private lateinit var client: ContentProviderClient
     private lateinit var calendar: LocalCalendar
 
     @Before
     fun setUp() {
-        hiltRule.inject()
-
         val context = InstrumentationRegistry.getInstrumentation().targetContext
         client = context.contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)!!
 
-        val provider = AndroidCalendarProvider(accountId.androidAccount, client)
+        val provider = AndroidCalendarProvider(account, client)
         androidCalendar = provider.createAndGetCalendar(ContentValues())
         calendar = LocalCalendar(androidCalendar)
     }
