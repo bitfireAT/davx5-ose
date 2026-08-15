@@ -17,8 +17,8 @@ class AccountIdIntentSerializerTest {
         val intent = Intent().apply {
             AccountIdIntentSerializer.addExtra(this, "account", account)
         }
-        val restoredAccount = IntentCompat.getParcelableExtra(intent, "account", LegacyAccount::class.java)
-        assertEquals(account, restoredAccount)
+        val restoredAccount = IntentCompat.getParcelableExtra(intent, "account", Account::class.java)
+        assertEquals(account.androidAccount, restoredAccount)
     }
 
     @Test
