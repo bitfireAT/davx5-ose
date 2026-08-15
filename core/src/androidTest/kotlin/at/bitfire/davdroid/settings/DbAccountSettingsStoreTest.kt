@@ -35,7 +35,7 @@ class DbAccountSettingsStoreTest {
 
     lateinit var dao: AccountSettingDao
     lateinit var accountDao: DbAccountDao
-    lateinit var dbAccount: DbAccount
+    var dbAccountId: Long = 0L
     lateinit var store: DbAccountSettingsStore
 
     @Before
@@ -44,12 +44,11 @@ class DbAccountSettingsStoreTest {
         dao = db.accountSettingDao()
         accountDao = db.dbAccountDao()
 
-        dbAccount = DbAccount(name = "test").let {
-            val id = db.dbAccountDao().insert(it)
-            // Make sure the id of the returned account is correctly set
-            it.copy(id = id)
+        dbAccountId = DbAccount(name = "test").let {
+            // insert returns the id of the inserted account, which is what we want
+            db.dbAccountDao().insert(it)
         }
-        store = storeFactory.create(DbAccountId(dbAccount))
+        store = storeFactory.create(DbAccountId(dbAccountId))
     }
 
     @After
@@ -64,7 +63,7 @@ class DbAccountSettingsStoreTest {
 
         // Insert a value now
         dao.insertBlocking(
-            AccountSetting(accountId = dbAccount.id, key = "test", value = "value")
+            AccountSetting(accountId = dbAccountId, key = "test", value = "value")
         )
 
         // And verify that it's retrieved correctly
@@ -72,7 +71,7 @@ class DbAccountSettingsStoreTest {
 
         // Now insert a sensitive value
         dao.insertBlocking(
-            AccountSetting(accountId = dbAccount.id, key = "sensitive-test", sensitiveValue = "sensitive-value".toSensitiveString())
+            AccountSetting(accountId = dbAccountId, key = "sensitive-test", sensitiveValue = "sensitive-value".toSensitiveString())
         )
 
         // And verify it cannot be fetched
@@ -82,15 +81,15 @@ class DbAccountSettingsStoreTest {
     @Test
     fun test_putValue() {
         // Verify that initially there's no value
-        assertNull(dao.getBlocking(accountId = dbAccount.id, key = "test"))
+        assertNull(dao.getBlocking(accountId = dbAccountId, key = "test"))
 
         // Put a value
         store.putValue(key = "test", value = "value")
 
         // And verify it has been set correctly
-        dao.getBlocking(accountId = dbAccount.id, key = "test").let {
+        dao.getBlocking(accountId = dbAccountId, key = "test").let {
             assertNotNull(it)
-            assertEquals(dbAccount.id, it!!.accountId)
+            assertEquals(dbAccountId, it!!.accountId)
             assertEquals("test", it.key)
             assertEquals("value", it.value)
             assertNull(it.sensitiveValue)
@@ -100,7 +99,7 @@ class DbAccountSettingsStoreTest {
         store.putValue(key = "test", value = null)
 
         // And make sure it doesn't exist
-        assertNull(dao.getBlocking(accountId = dbAccount.id, key = "test"))
+        assertNull(dao.getBlocking(accountId = dbAccountId, key = "test"))
     }
 
     @Test
@@ -110,7 +109,7 @@ class DbAccountSettingsStoreTest {
 
         // Insert a value now
         dao.insertBlocking(
-            AccountSetting(accountId = dbAccount.id, key = "sensitive-test", sensitiveValue = "sensitive-value".toSensitiveString())
+            AccountSetting(accountId = dbAccountId, key = "sensitive-test", sensitiveValue = "sensitive-value".toSensitiveString())
         )
 
         // And verify that it's retrieved correctly
@@ -118,7 +117,7 @@ class DbAccountSettingsStoreTest {
 
         // Now insert a regular value
         dao.insertBlocking(
-            AccountSetting(accountId = dbAccount.id, key = "test", value = "value")
+            AccountSetting(accountId = dbAccountId, key = "test", value = "value")
         )
 
         // And verify it cannot be fetched
@@ -128,15 +127,15 @@ class DbAccountSettingsStoreTest {
     @Test
     fun test_putSensitiveValue() {
         // Verify that initially there's no value
-        assertNull(dao.getBlocking(accountId = dbAccount.id, key = "sensitive-test"))
+        assertNull(dao.getBlocking(accountId = dbAccountId, key = "sensitive-test"))
 
         // Put a value
         store.putSensitiveValue(key = "sensitive-test", value = "sensitive-value".toSensitiveString())
 
         // And verify it has been set correctly
-        dao.getBlocking(accountId = dbAccount.id, key = "sensitive-test").let {
+        dao.getBlocking(accountId = dbAccountId, key = "sensitive-test").let {
             assertNotNull(it)
-            assertEquals(dbAccount.id, it!!.accountId)
+            assertEquals(dbAccountId, it!!.accountId)
             assertEquals("sensitive-test", it.key)
             assertEquals("sensitive-value".toSensitiveString(), it.sensitiveValue)
             assertNull(it.value)
@@ -146,7 +145,7 @@ class DbAccountSettingsStoreTest {
         store.putSensitiveValue(key = "sensitive-test", value = null)
 
         // And make sure it doesn't exist
-        assertNull(dao.getBlocking(accountId = dbAccount.id, key = "sensitive-test"))
+        assertNull(dao.getBlocking(accountId = dbAccountId, key = "sensitive-test"))
     }
 
     /**
@@ -157,16 +156,16 @@ class DbAccountSettingsStoreTest {
      */
     private fun prepareDeleteMixed() {
         // Verify that initially there's no value
-        assertNull(dao.getBlocking(accountId = dbAccount.id, key = "mixed-test"))
+        assertNull(dao.getBlocking(accountId = dbAccountId, key = "mixed-test"))
 
         // Put a value as regular and sensitive
         store.putValue(key = "mixed-test", value = "value")
         store.putSensitiveValue(key = "mixed-test", value = "sensitive-value".toSensitiveString())
 
         // Verify they have been set correctly
-        dao.getBlocking(accountId = dbAccount.id, key = "mixed-test").let {
+        dao.getBlocking(accountId = dbAccountId, key = "mixed-test").let {
             assertNotNull(it)
-            assertEquals(dbAccount.id, it!!.accountId)
+            assertEquals(dbAccountId, it!!.accountId)
             assertEquals("mixed-test", it.key)
             assertEquals("value", it.value)
             assertEquals("sensitive-value".toSensitiveString(), it.sensitiveValue)
@@ -181,9 +180,9 @@ class DbAccountSettingsStoreTest {
         store.putValue(key = "mixed-test", value = null)
 
         // It should be removed from value, but not sensitiveValue
-        dao.getBlocking(accountId = dbAccount.id, key = "mixed-test").let {
+        dao.getBlocking(accountId = dbAccountId, key = "mixed-test").let {
             assertNotNull(it)
-            assertEquals(dbAccount.id, it!!.accountId)
+            assertEquals(dbAccountId, it!!.accountId)
             assertEquals("mixed-test", it.key)
             assertNull(it.value)
             assertEquals("sensitive-value".toSensitiveString(), it.sensitiveValue)
@@ -198,9 +197,9 @@ class DbAccountSettingsStoreTest {
         store.putSensitiveValue(key = "mixed-test", value = null)
 
         // It should be removed from sensitiveValue, but not value
-        dao.getBlocking(accountId = dbAccount.id, key = "mixed-test").let {
+        dao.getBlocking(accountId = dbAccountId, key = "mixed-test").let {
             assertNotNull(it)
-            assertEquals(dbAccount.id, it!!.accountId)
+            assertEquals(dbAccountId, it!!.accountId)
             assertEquals("mixed-test", it.key)
             assertEquals("value", it.value)
             assertNull(it.sensitiveValue)

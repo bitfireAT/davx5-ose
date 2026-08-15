@@ -22,9 +22,7 @@ fun Data.Builder.putAccountId(accountId: AccountId): Data.Builder {
             putString(INPUT_ACCOUNT_TYPE, account.type)
         }
         is DbAccountId -> {
-            val account = accountId.account
-            putLong(INPUT_ACCOUNT_ID, account.id)
-            putString(INPUT_ACCOUNT_NAME, account.name)
+            putLong(INPUT_ACCOUNT_ID, accountId.id)
         }
     }
 
@@ -39,9 +37,8 @@ fun Data.getAccountId(): AccountId? {
     if (accountName != null && accountType != null) {
         val account = Account(accountName, accountType)
         return LegacyAccount(account)
-    } else if (accountId > 0 && accountName != null) {
-        val account = at.bitfire.davdroid.db.DbAccount(accountId, accountName)
-        return DbAccountId(account)
+    } else if (accountId > 0) {
+        return DbAccountId(accountId)
     }
 
     return null

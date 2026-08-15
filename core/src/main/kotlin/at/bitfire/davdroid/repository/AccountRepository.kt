@@ -14,6 +14,7 @@ import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.accounts.DbAccountId
 import at.bitfire.davdroid.accounts.LegacyAccount
 import at.bitfire.davdroid.accounts.toAccountId
+import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.db.ServiceType
@@ -66,7 +67,8 @@ class AccountRepository @Inject constructor(
     private val logger: Logger,
     private val serviceRepository: DavServiceRepository,
     private val syncWorkerManager: Lazy<SyncWorkerManager>,
-    private val tasksAppManager: Lazy<TasksAppManager>
+    private val tasksAppManager: Lazy<TasksAppManager>,
+    private val db: AppDatabase
 ) {
 
     private val accountType = context.getString(R.string.account_type)
@@ -96,7 +98,7 @@ class AccountRepository @Inject constructor(
     fun getAccountNameBlocking(accountId: AccountId): String {
         return when (accountId) {
             is LegacyAccount -> accountId.androidAccount.name
-            is DbAccountId -> accountId.account.name
+            is DbAccountId -> TODO("It's not possible yet to get the name of DbAccounts")
         }
     }
     

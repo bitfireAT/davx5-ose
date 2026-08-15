@@ -13,7 +13,7 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 
 class DbAccountSettingsStore @AssistedInject constructor(@Assisted account: DbAccountId, db: AppDatabase) : AccountSettingsStore {
-    private val accountId = account.account.id
+    private val accountId = account.id
 
     private val dao = db.accountSettingDao()
 
