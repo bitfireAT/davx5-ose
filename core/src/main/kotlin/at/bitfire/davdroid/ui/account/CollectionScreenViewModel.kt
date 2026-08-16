@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.ui.account
 
-import android.accounts.Account
 import android.content.ContentProviderClient
 import android.content.Context
 import android.database.ContentObserver
@@ -16,7 +15,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import at.bitfire.davdroid.accounts.toAccountId
+import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.di.qualifier.ApplicationScope
@@ -103,9 +102,10 @@ class CollectionScreenViewModel @AssistedInject constructor(
         .stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
     /** Flow that provides the account associated with the current collection */
-    val account: Flow<Account?> = collection.filterNotNull().map { collection ->
-        val service = serviceRepository.get(collection.serviceId)
-        service?.let { accountRepository.fromName(it.accountName) }
+    val accountId: Flow<AccountId?> = collection.filterNotNull().map { collection ->
+        serviceRepository.get(collection.serviceId)?.let { service ->
+            accountRepository.getAccountIdFromName(service.accountName)
+        }
     }
 
 
@@ -148,18 +148,18 @@ class CollectionScreenViewModel @AssistedInject constructor(
     val lastSynced = syncStatsRepository.getLastSyncedFlow(collectionId)
 
     /** The account's "past event time limit", or null if not set or not relevant for the collection. */
-    val pastEventTimeLimit = combine(collection.filterNotNull(), account.filterNotNull()) { collection, account ->
+    val pastEventTimeLimit = combine(collection.filterNotNull(), accountId.filterNotNull()) { collection, accountId ->
         if (collection.type == Collection.TYPE_CALENDAR) {
-            getTimeRangePastDays(account)
+            getTimeRangePastDays(accountId)
         } else  {
             // doesn't apply to address books
             null
         }
     }
 
-    private suspend fun getTimeRangePastDays(account: Account): Int? {
+    private suspend fun getTimeRangePastDays(accountId: AccountId): Int? {
         return withContext(ioDispatcher) {
-            val accountSettings = accountSettingsFactory.create(account.toAccountId())
+            val accountSettings = accountSettingsFactory.create(accountId)
             accountSettings.getTimeRangePastDays()
         }
     }
@@ -167,9 +167,9 @@ class CollectionScreenViewModel @AssistedInject constructor(
     @OptIn(ExperimentalCoroutinesApi::class)
     val localItemCounts: Flow<List<LocalItemsCount>> = combine(
         collection.filterNotNull(),
-        account.filterNotNull()
-    ) { collection, account ->
-        countLocalItemsFlow(collection, account)
+        accountId.filterNotNull()
+    ) { collection, accountId ->
+        countLocalItemsFlow(collection, accountId)
     }.flatMapLatest { it }
 
 
@@ -224,19 +224,19 @@ class CollectionScreenViewModel @AssistedInject constructor(
         val deleted: Int
     )
 
-    private fun countLocalItemsFlow(collection: Collection, account: Account): Flow<List<LocalItemsCount>> {
+    private fun countLocalItemsFlow(collection: Collection, accountId: AccountId): Flow<List<LocalItemsCount>> {
         // Build one flow per local data store relevant to this collection type (will later be combined).
         val storeFlows: List<Flow<LocalItemsCount?>> = when (collection.type) {
             Collection.TYPE_ADDRESSBOOK -> listOf(
                 observeLocalDataStore(
-                    account = account,
+                    accountId = accountId,
                     localDataStore = localAddressBookStore.get(),
                     watchUris = listOf(ContactsContract.RawContacts.CONTENT_URI)
                 )
             )
             Collection.TYPE_CALENDAR -> buildList {
                 add(observeLocalDataStore(
-                    account = account,
+                    accountId = accountId,
                     localDataStore = localCalendarStore.get(),
                     watchUris = listOf(
                         CalendarContract.Calendars.CONTENT_URI,
@@ -246,7 +246,7 @@ class CollectionScreenViewModel @AssistedInject constructor(
 
                 tasksAppManager.get().getDataStore()?.let { taskListStore ->
                     add(observeLocalDataStore(
-                        account = account,
+                        accountId = accountId,
                         localDataStore = taskListStore,
                         watchUris = listOf(TaskContract.getContentUri(taskListStore.authority))
                     ))
@@ -262,7 +262,7 @@ class CollectionScreenViewModel @AssistedInject constructor(
     }
 
     private fun observeLocalDataStore(
-        account: Account,
+        accountId: AccountId,
         localDataStore: LocalDataStore<*>,
         watchUris: List<Uri>
     ): Flow<LocalItemsCount?> = callbackFlow {
@@ -282,7 +282,7 @@ class CollectionScreenViewModel @AssistedInject constructor(
         }
 
         fun queryAndSend() {
-            val count = localDataStore.getByDbCollectionId(account.toAccountId(), client, collectionId)?.let { store ->
+            val count = localDataStore.getByDbCollectionId(accountId, client, collectionId)?.let { store ->
                 LocalItemsCount(
                     contentProviderName = getProviderAppName(localDataStore.authority),
                     total = store.countAll(),
