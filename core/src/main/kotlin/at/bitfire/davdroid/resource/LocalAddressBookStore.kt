@@ -154,7 +154,12 @@ class LocalAddressBookStore @Inject constructor(
         return getAll(accountId, client).firstOrNull { it.dbCollectionId == dbCollectionId }
     }
 
-    override fun update(client: ContentProviderClient, localCollection: LocalAddressBook, fromCollection: Collection) {
+    override fun update(
+        accountId: AccountId,
+        client: ContentProviderClient,
+        localCollection: LocalAddressBook,
+        fromCollection: Collection
+    ) {
         var currentAccount = localCollection.addressBookAccount
         logger.info("Updating local address book $currentAccount from collection $fromCollection")
 
@@ -167,7 +172,7 @@ class LocalAddressBookStore @Inject constructor(
         }
 
         // Update the account user data
-        addressBookAccountProperties.setAppAccount(currentAccount, localCollection.accountId)
+        addressBookAccountProperties.setAppAccount(currentAccount, accountId)
         addressBookAccountProperties.setCollectionId(currentAccount, fromCollection.id)
 
         // Set contacts provider settings

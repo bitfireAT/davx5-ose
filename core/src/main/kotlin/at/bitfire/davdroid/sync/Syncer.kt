@@ -168,7 +168,7 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
                     "Updating local collection {0} with {1}",
                     arrayOf(localCollection.dbCollectionId, dbCollection)
                 )
-                dataStore.update(provider, localCollection, dbCollection)
+                dataStore.update(accountId, provider, localCollection, dbCollection)
                 newDbCollections -= dbCollection.id
             }
         }
