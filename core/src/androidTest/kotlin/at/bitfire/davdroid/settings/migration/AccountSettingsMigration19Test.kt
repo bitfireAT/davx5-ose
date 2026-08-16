@@ -11,12 +11,14 @@ import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
 import androidx.work.WorkManager
 import androidx.work.testing.WorkManagerTestInitHelper
-import at.bitfire.davdroid.accounts.toAccountId
+import at.bitfire.davdroid.accounts.LegacyAccount
+import at.bitfire.davdroid.settings.AccountSettingsStore
 import at.bitfire.davdroid.sync.AutomaticSyncManager
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit4.MockKRule
 import io.mockk.mockkObject
@@ -38,6 +40,9 @@ class AccountSettingsMigration19Test {
 
     @Inject
     lateinit var migration: AccountSettingsMigration19
+
+    @MockK
+    lateinit var store: AccountSettingsStore
 
     @Inject
     lateinit var workerFactory: HiltWorkerFactory
@@ -67,8 +72,8 @@ class AccountSettingsMigration19Test {
         val workManager = WorkManager.getInstance(context)
         mockkObject(workManager)
 
-        val account = Account("Some", "Test")
-        migration.migrate(account)
+        val accountId = LegacyAccount(Account("Some", "Test"))
+        migration.migrate(accountId, store)
 
         verify {
             workManager.cancelUniqueWork("periodic-sync at.bitfire.davdroid.addressbooks Test/Some")
@@ -77,7 +82,7 @@ class AccountSettingsMigration19Test {
             workManager.cancelUniqueWork("periodic-sync org.dmfs.tasks Test/Some")
             workManager.cancelUniqueWork("periodic-sync org.tasks.opentasks Test/Some")
 
-            automaticSyncManager.updateAutomaticSync(account.toAccountId())
+            automaticSyncManager.updateAutomaticSync(accountId)
         }
     }
 

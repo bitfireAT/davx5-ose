@@ -4,10 +4,11 @@
 
 package at.bitfire.davdroid.settings.migration
 
-import android.accounts.Account
 import android.content.Context
 import androidx.core.content.edit
 import androidx.preference.PreferenceManager
+import at.bitfire.davdroid.accounts.AccountId
+import at.bitfire.davdroid.settings.AccountSettingsStore
 import at.bitfire.davdroid.settings.Settings
 import dagger.Binds
 import dagger.Module
@@ -28,7 +29,7 @@ class AccountSettingsMigration13 @Inject constructor(
     @ApplicationContext private val context: Context
 ): AccountSettingsMigration {
 
-    override fun migrate(account: Account) {
+    override fun migrate(accountId: AccountId, store: AccountSettingsStore) {
         // proxy settings are managed by SharedPreferencesProvider
         val preferences = PreferenceManager.getDefaultSharedPreferences(context)
 

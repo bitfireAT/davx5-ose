@@ -13,7 +13,8 @@ import android.provider.CalendarContract.Calendars
 import androidx.core.content.contentValuesOf
 import androidx.core.database.getLongOrNull
 import androidx.test.rule.GrantPermissionRule
-import at.bitfire.davdroid.accounts.toAccountId
+import at.bitfire.davdroid.accounts.AccountId
+import at.bitfire.davdroid.accounts.LegacyAccount
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
@@ -74,12 +75,14 @@ class AccountSettingsMigration20Test {
     )
 
     private lateinit var account: Account
+    private lateinit var accountId: AccountId
 
     @Before
     fun setUp() {
         hiltRule.inject()
 
         account = TestAccount.create(version = 19)
+        accountId = LegacyAccount(account)
     }
 
     @After
@@ -109,14 +112,14 @@ class AccountSettingsMigration20Test {
             url = url.toUrl()
         ))
 
-        localTestAddressBook.provide(account.toAccountId(), mockk(relaxed = true), GroupMethod.GROUP_VCARDS) { addressBook ->
+        localTestAddressBook.provide(accountId, mockk(relaxed = true), GroupMethod.GROUP_VCARDS) { addressBook ->
 
             accountManager.setAndVerifyUserData(addressBook.addressBookAccount, USER_DATA_ACCOUNT_NAME, account.name)
             accountManager.setAndVerifyUserData(addressBook.addressBookAccount, USER_DATA_ACCOUNT_TYPE, account.type)
             accountManager.setAndVerifyUserData(addressBook.addressBookAccount, ADDRESS_BOOK_USER_DATA_URL, url)
             accountManager.setAndVerifyUserData(addressBook.addressBookAccount, USER_DATA_COLLECTION_ID, null)
 
-            migration.migrateAddressBooks(account, cardDavServiceId = 1)
+            migration.migrateAddressBooks(accountId, cardDavServiceId = 1)
 
             assertEquals(
                 collectionId,

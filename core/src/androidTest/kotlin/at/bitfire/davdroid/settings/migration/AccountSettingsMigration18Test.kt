@@ -8,10 +8,12 @@ import android.accounts.Account
 import android.accounts.AccountManager
 import android.content.Context
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.accounts.LegacyAccount
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.di.AndroidServicesModule
+import at.bitfire.davdroid.settings.AccountSettingsStore
 import at.bitfire.davdroid.settings.migration.AccountSettingsMigration18.Companion.USER_DATA_ACCOUNT_NAME
 import at.bitfire.davdroid.settings.migration.AccountSettingsMigration18.Companion.USER_DATA_ACCOUNT_TYPE
 import at.bitfire.davdroid.settings.migration.AccountSettingsMigration18.Companion.USER_DATA_COLLECTION_ID
@@ -34,6 +36,8 @@ import javax.inject.Inject
 @UninstallModules(AndroidServicesModule::class)
 class AccountSettingsMigration18Test {
 
+    private val accountId = LegacyAccount(Account("test", "test"))
+
     @BindValue @MockK(relaxed = true)
     lateinit var accountManager: AccountManager
 
@@ -46,12 +50,14 @@ class AccountSettingsMigration18Test {
     @Inject
     lateinit var migration: AccountSettingsMigration18
 
+    @MockK
+    lateinit var store: AccountSettingsStore
+
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
 
     @get:Rule
     val mockkRule = MockKRule(this)
-
 
     @Before
     fun setUp() {
@@ -67,8 +73,7 @@ class AccountSettingsMigration18Test {
         every { accountManager.getAccountsByType(addressBookAccountType) } returns arrayOf(addressBookAccount)
         every { accountManager.getUserData(addressBookAccount, USER_DATA_COLLECTION_ID) } returns "123"
 
-        val account = Account("test", "test")
-        migration.migrate(account)
+        migration.migrate(accountId, store)
 
         verify(exactly = 0) {
             accountManager.setUserData(addressBookAccount, any(), any())
@@ -83,8 +88,7 @@ class AccountSettingsMigration18Test {
         every { accountManager.getAccountsByType(addressBookAccountType) } returns arrayOf(addressBookAccount)
         every { accountManager.getUserData(addressBookAccount, USER_DATA_COLLECTION_ID) } returns "123"
 
-        val account = Account("test", "test")
-        migration.migrate(account)
+        migration.migrate(accountId, store)
 
         verify(exactly = 0) {
             accountManager.setUserData(addressBookAccount, any(), any())
@@ -93,12 +97,10 @@ class AccountSettingsMigration18Test {
 
     @Test
     fun testMigrate_AddressBook_ValidCollection() {
-        val account = Account("test", "test")
-
         db.serviceDao().insertOrReplaceBlocking(
             Service(
             id = 10,
-            accountName = account.name,
+            accountName = accountId.androidAccount.name,
             type = Service.TYPE_CARDDAV,
             principal = null
         ))
@@ -116,11 +118,11 @@ class AccountSettingsMigration18Test {
         every { accountManager.getAccountsByType(addressBookAccountType) } returns arrayOf(addressBookAccount)
         every { accountManager.getUserData(addressBookAccount, USER_DATA_COLLECTION_ID) } returns "100"
 
-        migration.migrate(account)
+        migration.migrate(accountId, store)
 
         verify {
-            accountManager.setUserData(addressBookAccount, USER_DATA_ACCOUNT_NAME, account.name)
-            accountManager.setUserData(addressBookAccount, USER_DATA_ACCOUNT_TYPE, account.type)
+            accountManager.setUserData(addressBookAccount, USER_DATA_ACCOUNT_NAME, accountId.androidAccount.name)
+            accountManager.setUserData(addressBookAccount, USER_DATA_ACCOUNT_TYPE, accountId.androidAccount.type)
         }
     }
 

@@ -9,15 +9,18 @@ import android.accounts.AccountManager
 import android.content.Context
 import androidx.test.rule.GrantPermissionRule
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.accounts.LegacyAccount
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
+import at.bitfire.davdroid.settings.AccountSettingsStore
 import at.bitfire.davdroid.sync.account.TestAccount
 import at.bitfire.davdroid.util.DavUtils.toUrl
 import at.bitfire.synctools.util.setAndVerifyUserData
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import io.mockk.mockk
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -82,9 +85,10 @@ class AccountSettingsMigration17Test {
                         displayName = "Some Address Book"
                     )
                 )
+                val store = mockk<AccountSettingsStore>()
 
                 // run migration
-                migration.migrate(account)
+                migration.migrate(LegacyAccount(account), store)
 
                 // migration renames address book, update account
                 addressBookAccount = accountManager.getAccountsByType(addressBookAccountType).filter {
