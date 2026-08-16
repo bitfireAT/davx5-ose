@@ -12,7 +12,6 @@ import androidx.annotation.WorkerThread
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.accounts.LegacyAccount
-import at.bitfire.davdroid.accounts.toAccountId
 import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.db.ServiceType
@@ -135,7 +134,7 @@ class AccountRepository @Inject constructor(
                 val id = insertService(accountName, Service.TYPE_CARDDAV, config.cardDAV)
 
                 // set initial CardDAV account settings and set sync intervals (enables automatic sync)
-                val accountSettings = accountSettingsFactory.create(account.toAccountId())
+                val accountSettings = accountSettingsFactory.create(accountId)
                 accountSettings.setGroupMethod(groupMethod)
 
                 // start CardDAV service detection (refresh collections)
