@@ -263,7 +263,7 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
     /**
      * Acquires the content provider, runs the sync, and handles exceptions that are not handled by the SyncManager itself.
      *
-     * Handled exceptions are recorded in [syncResult] as soft or hard error.
+     * Handled exceptions are logged; most are also recorded in [syncResult] as soft or hard errors.
      *
      * @throws CancellationException if the sync has been canceled – not recorded in [syncResult], but passed
      * on to the caller (see [at.bitfire.davdroid.sync.worker.BaseSyncWorker])

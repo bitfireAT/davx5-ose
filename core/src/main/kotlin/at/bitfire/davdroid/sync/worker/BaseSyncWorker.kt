@@ -62,7 +62,7 @@ import kotlin.time.Duration.Companion.seconds
  *   conditions are not met (anymore): [Result.success], too – skipping is not an error, the next sync run
  *   will do the work.
  * - Soft error (temporary problem, like a network error) with attempts left: [Result.retry], so that
- *   WorkManager runs the work again later (at most [MAX_RUN_ATTEMPTS] attempts).
+ *   WorkManager runs the work again later (at most [MAX_RUN_ATTEMPTS] retries after the initial run).
  * - Soft error without attempts left: [Result.failure] and a notification, because we're giving up.
  * - Hard error (the user has to take action, for instance fix their credentials): [Result.failure].
  *   [at.bitfire.davdroid.sync.SyncManager] has already notified the user about the details.
