@@ -46,7 +46,7 @@ class DbAccountSettingsStoreTest {
 
         dbAccountId = DbAccount(name = "test").let {
             // insert returns the id of the inserted account, which is what we want
-            db.dbAccountDao().insert(it)
+            db.dbAccountDao().insertBlocking(it)
         }
         store = storeFactory.create(DbAccountId(dbAccountId))
     }
