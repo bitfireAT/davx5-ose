@@ -97,7 +97,7 @@ class AccountRepository @Inject constructor(
     fun getAccountNameBlocking(accountId: AccountId): String {
         return when (accountId) {
             is LegacyAccount -> accountId.androidAccount.name
-            is DbAccountId -> TODO("It's not possible yet to get the name of DbAccounts")
+            is DbAccountId -> TODO("It's not possible yet to get the name of DbAccountIds")
         }
     }
     
@@ -334,7 +334,7 @@ class AccountRepository @Inject constructor(
     suspend fun rename(accountId: AccountId, newName: String): AccountId {
         return when (accountId) {
             is LegacyAccount -> rename(accountId.androidAccount.name, newName)
-            is DbAccountId -> TODO("It's not possible yet to rename DbAccounts")
+            is DbAccountId -> TODO("It's not possible yet to rename DbAccountIds")
         }
     }
 
