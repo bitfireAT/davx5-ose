@@ -169,6 +169,8 @@ dependencies {
     implementation(libs.commons.lang)
 
     // for tests
+    kspAndroidTest(libs.androidx.hilt.compiler)
+    kspAndroidTest(libs.hilt.android.compiler)
     androidTestImplementation(libs.androidx.arch.core.testing)
     androidTestImplementation(libs.androidx.room.testing)
     androidTestImplementation(libs.androidx.test.core)
