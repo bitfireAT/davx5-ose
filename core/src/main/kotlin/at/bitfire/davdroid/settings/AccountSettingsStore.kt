@@ -8,6 +8,11 @@ import at.bitfire.synctools.util.SensitiveString
 
 interface AccountSettingsStore {
     /**
+     * Gets all key-value pairs stored in this store.
+     */
+    fun getAllValues(): Map<String, String>
+
+    /**
      * Gets the value stored at [key].
      */
     fun getValue(key: String): String?
