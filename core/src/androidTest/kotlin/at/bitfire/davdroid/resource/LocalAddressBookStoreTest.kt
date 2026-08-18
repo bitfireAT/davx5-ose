@@ -1,0 +1,245 @@
+/*
+ * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
+ */
+
+package at.bitfire.davdroid.resource
+
+import android.accounts.Account
+import android.accounts.AccountManager
+import android.content.ContentProviderClient
+import android.content.Context
+import at.bitfire.davdroid.R
+import at.bitfire.davdroid.accounts.LegacyAccount
+import at.bitfire.davdroid.db.AppDatabase
+import at.bitfire.davdroid.db.Collection
+import at.bitfire.davdroid.db.Service
+import at.bitfire.davdroid.di.AndroidServicesModule
+import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.sync.account.TestAccount
+import at.bitfire.davdroid.util.DavUtils.toUrl
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.android.testing.BindValue
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
+import dagger.hilt.android.testing.UninstallModules
+import io.mockk.every
+import io.mockk.impl.annotations.MockK
+import io.mockk.impl.annotations.RelaxedMockK
+import io.mockk.junit4.MockKRule
+import io.mockk.mockk
+import io.mockk.mockkObject
+import kotlinx.coroutines.test.runTest
+import org.junit.After
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
+import org.junit.Before
+import org.junit.Rule
+import org.junit.Test
+import javax.inject.Inject
+
+@HiltAndroidTest
+@UninstallModules(AndroidServicesModule::class)
+class LocalAddressBookStoreTest {
+
+    @Inject @ApplicationContext
+    lateinit var context: Context
+
+    @Inject
+    lateinit var db: AppDatabase
+
+    @Inject
+    lateinit var localAddressBookStore: LocalAddressBookStore
+
+    @RelaxedMockK
+    lateinit var provider: ContentProviderClient
+
+    @BindValue @MockK(relaxed = true)
+    lateinit var accountManager: AccountManager
+
+    @BindValue @MockK(relaxed = true)
+    lateinit var addressBookAccountProperties: AddressBookAccountProperties
+
+    @get:Rule
+    val hiltRule = HiltAndroidRule(this)
+
+    @get:Rule
+    val mockkRule = MockKRule(this)
+
+    lateinit var addressBookAccountType: String
+
+    lateinit var addressBookAccount: Account
+    lateinit var accountId: LegacyAccount
+    lateinit var service: Service
+
+    @Before
+    fun setUp() {
+        hiltRule.inject()
+
+        addressBookAccountType = context.getString(R.string.account_type_address_book)
+
+        accountId = LegacyAccount(TestAccount.create())
+        service = Service(
+            id = 200,
+            accountName = accountId.androidAccount.name,
+            type = Service.TYPE_CARDDAV,
+            principal = null
+        )
+        db.serviceDao().insertOrReplaceBlocking(service)
+        addressBookAccount = Account(
+            "MrRobert@example.com",
+            addressBookAccountType
+        )
+
+        // AccountSettings (created internally by LocalAddressBookStore) also uses the shared accountManager mock.
+        // Relaxed mocks default String? results to "" instead of null, so stub null explicitly before overriding
+        // the one key (settings version) that must have a real value to avoid running migrations.
+        every { accountManager.getUserData(any(), any()) } returns null
+        every {
+            accountManager.getUserData(
+                any(),
+                AccountSettings.KEY_SETTINGS_VERSION
+            )
+        } returns AccountSettings.CURRENT_VERSION.toString()
+    }
+
+    @After
+    fun tearDown() {
+        TestAccount.remove(accountId.androidAccount)
+        removeAddressBooks()
+    }
+
+
+    @Test
+    fun test_accountName_removesSpecialChars() {
+        // Should remove iso control characters and `, ", ',
+        val collection = mockk<Collection> {
+            every { id } returns 1
+            every { url } returns "https://example.com/addressbook/funnyfriends".toUrl()
+            every { displayName } returns "手 M's_\"F-e\"\\(´д`)/;æøå% äöü #42"
+            every { serviceId } returns service.id
+        }
+        assertEquals("手 Ms_F-e\\(´д)/;æøå% äöü #42 (Test Account) #1", localAddressBookStore.accountName(collection))
+    }
+
+    @Test
+    fun test_accountName_missingService() {
+        val collection = mockk<Collection> {
+            every { id } returns 42
+            every { url } returns "https://example.com/addressbook/funnyfriends".toUrl()
+            every { displayName } returns null
+            every { serviceId } returns 404     // missing service
+        }
+        assertEquals("funnyfriends #42", localAddressBookStore.accountName(collection))
+    }
+
+    @Test
+    fun test_accountName_missingDisplayName() {
+        val collection = mockk<Collection> {
+            every { id } returns 42
+            every { url } returns "https://example.com/addressbook/funnyfriends".toUrl()
+            every { displayName } returns null
+            every { serviceId } returns service.id
+        }
+        val accountName = localAddressBookStore.accountName(collection)
+        assertEquals("funnyfriends (${accountId.androidAccount.name}) #42", accountName)
+    }
+
+    @Test
+    fun test_accountName_missingDisplayNameAndService() {
+        val collection = mockk<Collection> {
+            every { id } returns 1
+            every { url } returns "https://example.com/addressbook/funnyfriends".toUrl()
+            every { displayName } returns null
+            every { serviceId } returns 404     // missing service
+        }
+        assertEquals("funnyfriends #1", localAddressBookStore.accountName(collection))
+    }
+
+
+    @Test
+    fun test_create_createAccountReturnsNull() = runTest {
+        val collection = mockk<Collection>(relaxed = true) {
+            every { serviceId } returns service.id
+            every { id } returns 1
+            every { url } returns "https://example.com/addressbook/funnyfriends".toUrl()
+        }
+
+        mockkObject(localAddressBookStore)
+        every { localAddressBookStore.createAddressBookAccount(any(), any(), any()) } returns null
+
+        assertEquals(null, localAddressBookStore.create(provider, collection))
+    }
+
+    @Test
+    fun test_create_ReadOnly() = runTest {
+        val collection = mockk<Collection>(relaxed = true) {
+            every { serviceId } returns service.id
+            every { id } returns 1
+            every { url } returns "https://example.com/addressbook/funnyfriends".toUrl()
+            every { readOnly() } returns true
+        }
+        val addrBook = localAddressBookStore.create(provider, collection)!!
+        assertEquals(Account("funnyfriends (Test Account) #1", addressBookAccountType), addrBook.addressBookAccount)
+        assertTrue(addrBook.readOnly)
+    }
+
+    @Test
+    fun test_create_ReadWrite() = runTest {
+        val collection = mockk<Collection>(relaxed = true) {
+            every { serviceId } returns service.id
+            every { id } returns 1
+            every { url } returns "https://example.com/addressbook/funnyfriends".toUrl()
+            every { readOnly() } returns false
+        }
+
+        val addrBook = localAddressBookStore.create(provider, collection)!!
+        assertEquals(Account("funnyfriends (Test Account) #1", addressBookAccountType), addrBook.addressBookAccount)
+        assertFalse(addrBook.readOnly)
+    }
+
+
+    @Test
+    fun test_getAll_differentAccount() {
+        every { accountManager.getAccountsByType(any()) } returns arrayOf(addressBookAccount)
+        val unrelatedAccount = Account("Another Unrelated Account", accountId.androidAccount.type)
+        every { addressBookAccountProperties.getAppAccount(addressBookAccount) } returns LegacyAccount(unrelatedAccount)
+        val result = localAddressBookStore.getAll(accountId, provider)
+        assertTrue(result.isEmpty())
+    }
+
+    @Test
+    fun test_getAll_sameAccount() {
+        every { accountManager.getAccountsByType(any()) } returns arrayOf(addressBookAccount)
+        every { addressBookAccountProperties.getAppAccount(addressBookAccount) } returns accountId
+        val result = localAddressBookStore.getAll(accountId, provider)
+        assertEquals(1, result.size)
+        assertEquals(addressBookAccount, result.first().addressBookAccount)
+    }
+
+
+    /**
+     * Tests the calculation of read only state is correct
+     */
+    @Test
+    fun test_shouldBeReadOnly() {
+        val collectionReadOnly = mockk<Collection> { every { readOnly() } returns true }
+        assertTrue(LocalAddressBookStore.shouldBeReadOnly(collectionReadOnly, false))
+        assertTrue(LocalAddressBookStore.shouldBeReadOnly(collectionReadOnly, true))
+
+        val collectionNotReadOnly = mockk<Collection> { every { readOnly() } returns false }
+        assertFalse(LocalAddressBookStore.shouldBeReadOnly(collectionNotReadOnly, false))
+        assertTrue(LocalAddressBookStore.shouldBeReadOnly(collectionNotReadOnly, true))
+    }
+
+
+    // helpers
+
+    private fun removeAddressBooks() {
+        val accountManager = AccountManager.get(context)
+        accountManager.getAccountsByType(addressBookAccountType).forEach {
+            accountManager.removeAccountExplicitly(it)
+        }
+    }
+
+}

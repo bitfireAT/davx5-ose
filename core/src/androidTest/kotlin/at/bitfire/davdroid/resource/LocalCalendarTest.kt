@@ -1,0 +1,130 @@
+/*
+ * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
+ */
+
+package at.bitfire.davdroid.resource
+
+import android.Manifest
+import android.accounts.Account
+import android.content.ContentProviderClient
+import android.content.ContentValues
+import android.content.Entity
+import android.provider.CalendarContract
+import android.provider.CalendarContract.ACCOUNT_TYPE_LOCAL
+import android.provider.CalendarContract.Events
+import androidx.core.content.contentValuesOf
+import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.rule.GrantPermissionRule
+import at.bitfire.synctools.storage.calendar.AndroidCalendar
+import at.bitfire.synctools.storage.calendar.AndroidCalendarProvider
+import at.bitfire.synctools.storage.calendar.EventsContract
+import kotlinx.coroutines.test.runTest
+import org.junit.After
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
+import org.junit.Before
+import org.junit.Rule
+import org.junit.Test
+
+class LocalCalendarTest {
+
+    @get:Rule
+    val permissionRule: GrantPermissionRule = GrantPermissionRule.grant(Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR)
+
+    private val account = Account("LocalCalendarTest", ACCOUNT_TYPE_LOCAL)
+    private lateinit var androidCalendar: AndroidCalendar
+    private lateinit var client: ContentProviderClient
+    private lateinit var calendar: LocalCalendar
+
+    @Before
+    fun setUp() {
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        client = context.contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)!!
+
+        val provider = AndroidCalendarProvider(account, client)
+        androidCalendar = provider.createAndGetCalendar(ContentValues())
+        calendar = LocalCalendar(androidCalendar)
+    }
+
+    @After
+    fun tearDown() {
+        androidCalendar.delete()
+        client.close()
+    }
+
+
+    /**
+     * Verifies that [LocalCalendar.removeNotDirtyMarked] works as expected.
+     * @param contentValues values to set on the event. Required:
+     * - [Events._ID]
+     * - [Events.DIRTY]
+     */
+    private fun testRemoveNotDirtyMarked(contentValues: ContentValues) = runTest {
+        val entity = Entity(
+            contentValuesOf(
+                Events.CALENDAR_ID to androidCalendar.id,
+                Events.DTSTART to System.currentTimeMillis(),
+                Events.DTEND to System.currentTimeMillis(),
+                Events.TITLE to "Some Event",
+                EventsContract.COLUMN_FLAGS to 123
+            ).apply { putAll(contentValues) }
+        )
+        val id = androidCalendar.addEvent(entity)
+
+        calendar.removeNotDirtyMarked(123)
+
+        assertNull(androidCalendar.getEvent(id))
+    }
+
+    @Test
+    fun testRemoveNotDirtyMarked_IdLargerThanIntMaxValue() = testRemoveNotDirtyMarked(
+        contentValuesOf(Events._ID to Int.MAX_VALUE.toLong() + 10, Events.DIRTY to 0)
+    )
+
+    @Test
+    fun testRemoveNotDirtyMarked_DirtyIs0() = testRemoveNotDirtyMarked(
+        contentValuesOf(Events._ID to 1, Events.DIRTY to 0)
+    )
+
+    @Test
+    fun testRemoveNotDirtyMarked_DirtyNull() = testRemoveNotDirtyMarked(
+        contentValuesOf(Events._ID to 1, Events.DIRTY to null)
+    )
+
+    /**
+     * Verifies that [LocalCalendar.markNotDirty] works as expected.
+     * @param contentValues values to set on the event. Required:
+     * - [Events.DIRTY]
+     */
+    private fun testMarkNotDirty(contentValues: ContentValues) {
+        val id = androidCalendar.addEvent(Entity(
+            contentValuesOf(
+                Events.CALENDAR_ID to androidCalendar.id,
+                Events._ID to 1,
+                Events.DTSTART to System.currentTimeMillis(),
+                Events.DTEND to System.currentTimeMillis(),
+                Events.TITLE to "Some Event",
+                EventsContract.COLUMN_FLAGS to 123
+            ).apply { putAll(contentValues) }
+        ))
+
+        val updated = calendar.markNotDirty(321)
+        assertEquals(1, updated)
+        assertEquals(321, androidCalendar.getEvent(id)?.entityValues?.getAsInteger(EventsContract.COLUMN_FLAGS))
+    }
+
+    @Test
+    fun test_markNotDirty_DirtyIs0() = testMarkNotDirty(
+        contentValuesOf(
+            Events.DIRTY to 0
+        )
+    )
+
+    @Test
+    fun test_markNotDirty_DirtyIsNull() = testMarkNotDirty(
+        contentValuesOf(
+            Events.DIRTY to null
+        )
+    )
+
+}

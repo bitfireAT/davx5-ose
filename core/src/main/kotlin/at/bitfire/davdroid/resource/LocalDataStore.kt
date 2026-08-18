@@ -1,0 +1,99 @@
+/*
+ * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
+ */
+
+package at.bitfire.davdroid.resource
+
+import android.accounts.Account
+import android.content.ContentProviderClient
+import androidx.annotation.WorkerThread
+import at.bitfire.davdroid.accounts.AccountId
+import at.bitfire.davdroid.db.Collection
+import javax.annotation.WillNotClose
+
+/**
+ * Represents a local data store for a specific collection type.
+ * Manages creation, update, and deletion of collections of the given type.
+ */
+interface LocalDataStore<T: LocalCollection<*>> {
+
+    /**
+     * Content provider authority for the data store.
+     */
+    val authority: String
+
+    /**
+     * Acquires a content provider client for the data store. The result of this call
+     * should be passed to all other methods of this class.
+     *
+     * **The caller is responsible for closing the content provider client!**
+     *
+     * @param throwOnMissingPermissions If `true`, the function will throw [SecurityException] if permissions are not granted.
+     *
+     * @return the content provider client, or `null` if the content provider could not be acquired (or permissions are not
+     * granted and [throwOnMissingPermissions] is `false`)
+     *
+     * @throws SecurityException on missing permissions
+     */
+    fun acquireContentProvider(throwOnMissingPermissions: Boolean = false): ContentProviderClient?
+
+    /**
+     * Creates a new local collection from the given (remote) collection info.
+     *
+     * @param client        the content provider client
+     * @param fromCollection collection info
+     *
+     * @return the new local collection, or `null` if creation failed
+     */
+    suspend fun create(client: ContentProviderClient, fromCollection: Collection): T?
+
+    /**
+     * Returns all local collections of the data store, including those which don't have a corresponding remote
+     * [Collection] entry.
+     *
+     * @param accountId [AccountId] of the account that the data store is associated with
+     * @param client the content provider client
+     *
+     * @return a list of all local collections
+     */
+    fun getAll(accountId: AccountId, client: ContentProviderClient): List<T>
+
+    /**
+     * Retrieves a local collection by its database collection ID.
+     *
+     * @param accountId [AccountId] of the account associated with the collection.
+     * @param client The content provider client used to access the data store.
+     * @param dbCollectionId The database collection ID which the requested local collection corresponds to.
+     *
+     * @return The local collection with the specified DB collection ID, or `null` if not found.
+     */
+    @WorkerThread
+    fun getByDbCollectionId(accountId: AccountId, client: ContentProviderClient, dbCollectionId: Long): T?
+
+    /**
+     * Updates the local collection with the data from the given (remote) collection info.
+     *
+     * @param accountId       [AccountId] of the account the collection belongs to
+     * @param client          the content provider client
+     * @param localCollection the local collection to update
+     * @param fromCollection  collection info
+     */
+    fun update(accountId: AccountId, client: ContentProviderClient, localCollection: T, fromCollection: Collection)
+
+    /**
+     * Deletes the local collection.
+     *
+     * @param localCollection the local collection to delete
+     */
+    fun delete(localCollection: T)
+
+    /**
+     * Changes the account assigned to the containing data to another one.
+     *
+     * @param oldAccount The old account.
+     * @param newAccount The new account.
+     * @param client Content provider client for the local data store type or *null* when not needed for that data type.
+     */
+    fun updateAccount(oldAccount: Account, newAccount: Account, @WillNotClose client: ContentProviderClient?)
+
+}
