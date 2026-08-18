@@ -14,18 +14,22 @@ import at.bitfire.davdroid.accounts.LegacyAccount
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface ServiceDao {
+abstract class ServiceDao(
+    // Room injects this automatically
+    database: AppDatabase
+) {
+    private val dbAccountDao = database.dbAccountDao()
 
     @Deprecated("Use getByAccountAndType(accountId: AccountId, type: String) instead")
     @Query("SELECT * FROM service WHERE accountName=:accountName AND type=:type")
-    suspend fun getByAccountAndType(accountName: String, @ServiceType type: String): Service?
+    abstract suspend fun getByAccountAndType(accountName: String, @ServiceType type: String): Service?
 
     @Query("SELECT * FROM service WHERE accountId=:accountId AND type=:type")
     suspend fun getByAccountAndType(accountId: Long, @ServiceType type: String): Service?
 
     @Deprecated("Use getByAccountAndTypeFlow(accountId: AccountId, type: String) instead")
     @Query("SELECT * FROM service WHERE accountName=:accountName AND type=:type")
-    fun getByAccountAndTypeBlocking(accountName: String, @ServiceType type: String): Service?
+    abstract fun getByAccountAndTypeBlocking(accountName: String, @ServiceType type: String): Service?
 
     @Query("SELECT * FROM service WHERE accountId=:accountId AND type=:type")
     fun getByAccountAndTypeBlocking(accountId: Long, @ServiceType type: String): Service?
@@ -46,7 +50,7 @@ interface ServiceDao {
 
     @Deprecated("Use getByAccountAndTypeFlow(accountId: AccountId, type: String) instead")
     @Query("SELECT * FROM service WHERE accountName=:accountName AND type=:type")
-    fun getByAccountAndTypeFlow(accountName: String, @ServiceType type: String): Flow<Service?>
+    abstract fun getByAccountAndTypeFlow(accountName: String, @ServiceType type: String): Flow<Service?>
 
     @Query("SELECT * FROM service WHERE accountId=:accountId AND type=:type")
     fun getByAccountAndTypeFlow(accountId: Long, @ServiceType type: String): Flow<Service?>
@@ -59,26 +63,26 @@ interface ServiceDao {
     }
 
     @Query("SELECT id FROM service WHERE accountName=:accountName")
-    suspend fun getIdsByAccount(accountName: String): List<Long>
+    abstract suspend fun getIdsByAccount(accountName: String): List<Long>
 
     @Query("SELECT * FROM service WHERE id=:id")
-    suspend fun get(id: Long): Service?
+    abstract suspend fun get(id: Long): Service?
 
     @Query("SELECT * FROM service WHERE id=:id")
-    fun getBlocking(id: Long): Service?
+    abstract fun getBlocking(id: Long): Service?
 
     @Query("SELECT * FROM service")
-    suspend fun getAll(): List<Service>
+    abstract suspend fun getAll(): List<Service>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertOrReplaceBlocking(service: Service): Long
+    abstract fun insertOrReplaceBlocking(service: Service): Long
 
     @Query("DELETE FROM service")
-    fun deleteAllBlocking()
+    abstract fun deleteAllBlocking()
 
     @Deprecated("Use deleteByAccount(accountId: AccountId) instead")
     @Query("DELETE FROM service WHERE accountName=:accountName")
-    suspend fun deleteByAccount(accountName: String)
+    abstract suspend fun deleteByAccount(accountName: String)
 
     @Query("DELETE FROM service WHERE accountId=:accountId")
     suspend fun deleteByAccount(accountId: Long)
@@ -91,9 +95,9 @@ interface ServiceDao {
     }
 
     @Query("DELETE FROM service WHERE accountName NOT IN (:accountNames)")
-    fun deleteExceptAccountsBlocking(accountNames: List<String>)
+    abstract fun deleteExceptAccountsBlocking(accountNames: List<String>)
 
     @Query("UPDATE service SET accountName=:newName WHERE accountName=:oldName")
-    suspend fun renameAccount(oldName: String, newName: String)
+    abstract suspend fun renameAccount(oldName: String, newName: String)
 
 }

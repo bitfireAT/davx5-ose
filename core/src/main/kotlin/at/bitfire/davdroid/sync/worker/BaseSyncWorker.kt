@@ -336,7 +336,7 @@ abstract class BaseSyncWorker(
                     val account = accountId.androidAccount
                     "sync-$dataType ${account.type}/${account.name}"
                 }
-                is DbAccountId -> TODO("Operation not yet implemented")
+                is DbAccountId -> "sync-$dataType ${accountId.id}"
             }
         }
 

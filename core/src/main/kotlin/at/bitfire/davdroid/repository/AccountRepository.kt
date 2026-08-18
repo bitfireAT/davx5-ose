@@ -14,6 +14,7 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.accounts.DbAccountId
 import at.bitfire.davdroid.accounts.LegacyAccount
+import at.bitfire.davdroid.db.AccountSetting
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.DbAccount
 import at.bitfire.davdroid.db.HomeSet
@@ -25,6 +26,7 @@ import at.bitfire.davdroid.resource.local.LocalCalendarStore
 import at.bitfire.davdroid.servicedetection.DavResourceFinder
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.settings.AccountSettings.Companion.KEY_SETTINGS_VERSION
 import at.bitfire.davdroid.settings.AccountSettingsFactory
 import at.bitfire.davdroid.settings.Credentials
 import at.bitfire.davdroid.sync.AutomaticSyncManager
@@ -77,6 +79,8 @@ class AccountRepository @Inject constructor(
     private val accountRenameFlow = MutableSharedFlow<AccountRename>()
 
     private val dbAccountDao = db.dbAccountDao()
+
+    private val accountSettingDao = db.accountSettingDao()
     
     fun getAccountNameFlow(accountId: AccountId): Flow<String> {
         return flow {
@@ -209,6 +213,12 @@ class AccountRepository @Inject constructor(
             }
         }
         val accountId = DbAccountId(accountIdNumber)
+
+        // Insert the account settings version into the database.
+        // Migration runs when initializing the account settings, so it's required to determine that no migration is required to proceed.
+        accountSettingDao.insertBlocking(
+            AccountSetting(accountId = accountIdNumber, key = KEY_SETTINGS_VERSION, value = AccountSettings.CURRENT_VERSION.toString())
+        )
 
         // insert the initial account settings into the database
         val accountSettings = accountSettingsFactory.create(accountId)
