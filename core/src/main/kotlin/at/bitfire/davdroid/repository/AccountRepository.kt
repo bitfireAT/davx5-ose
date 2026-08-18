@@ -8,12 +8,14 @@ import android.accounts.Account
 import android.accounts.AccountManager
 import android.accounts.OnAccountsUpdateListener
 import android.content.Context
+import android.database.sqlite.SQLiteConstraintException
 import androidx.annotation.WorkerThread
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.accounts.DbAccountId
 import at.bitfire.davdroid.accounts.LegacyAccount
 import at.bitfire.davdroid.db.AppDatabase
+import at.bitfire.davdroid.db.DbAccount
 import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.db.ServiceType
@@ -67,12 +69,14 @@ class AccountRepository @Inject constructor(
     private val serviceRepository: DavServiceRepository,
     private val syncWorkerManager: Lazy<SyncWorkerManager>,
     private val tasksAppManager: Lazy<TasksAppManager>,
-    private val db: AppDatabase
+    db: AppDatabase
 ) {
 
     private val accountType = context.getString(R.string.account_type)
 
     private val accountRenameFlow = MutableSharedFlow<AccountRename>()
+
+    private val dbAccountDao = db.dbAccountDao()
     
     fun getAccountNameFlow(accountId: AccountId): Flow<String> {
         return flow {
@@ -88,16 +92,26 @@ class AccountRepository @Inject constructor(
         }
     }
 
+    /**
+     * Returns the account name for a given [AccountId].
+     * @throws NoSuchElementException if the account does not exist (only for [DbAccountId])
+     */
     suspend fun getAccountName(accountId: AccountId): String {
-        // For now getAccountNameBlocking() isn't really blocking, so simply call through to it.
-        return getAccountNameBlocking(accountId)
+        return when (accountId) {
+            is LegacyAccount -> accountId.androidAccount.name
+            is DbAccountId -> dbAccountDao.get(accountId.id)?.name ?: throw NoSuchElementException("No account found with id ${accountId.id}")
+        }
     }
 
+    /**
+     * Returns the account name for a given [AccountId].
+     * @throws NoSuchElementException if the account does not exist (only for [DbAccountId])
+     */
     @WorkerThread
     fun getAccountNameBlocking(accountId: AccountId): String {
         return when (accountId) {
             is LegacyAccount -> accountId.androidAccount.name
-            is DbAccountId -> TODO("It's not possible yet to get the name of DbAccountIds")
+            is DbAccountId -> dbAccountDao.getBlocking(accountId.id)?.name ?: throw NoSuchElementException("No account found with id ${accountId.id}")
         }
     }
     
@@ -163,9 +177,93 @@ class AccountRepository @Inject constructor(
         return LegacyAccount(account)
     }
 
+    /**
+     * Creates a new account with discovered services and enables periodic syncs with
+     * default sync interval times.
+     *
+     * @param accountName   name of the account
+     * @param credentials   server credentials
+     * @param config        discovered server capabilities for syncable authorities
+     * @param groupMethod   whether CardDAV contact groups are separate VCards or as contact categories
+     *
+     * @return account if account creation was successful; null otherwise (for instance because an account with this name already exists)
+     */
+    @WorkerThread
+    suspend fun createDbAccount(
+        accountName: String,
+        credentials: Credentials?,
+        config: DavResourceFinder.Configuration,
+        groupMethod: GroupMethod,
+        preconfigurationUrl: String?,
+    ): AccountId? {
+        // create the account into the database
+        val accountIdNumber = try {
+            dbAccountDao.insert(DbAccount(name = accountName))
+        } catch (e: SQLiteConstraintException) {
+            if (e.message?.contains("SQLITE_CONSTRAINT_UNIQUE") == true) {
+                // account with this name already exists, show a warning and return null
+                logger.log(Level.WARNING, "Account with name $accountName already exists", e)
+                return null
+            } else {
+                throw e
+            }
+        }
+        val accountId = DbAccountId(accountIdNumber)
+
+        // insert the initial account settings into the database
+        val accountSettings = accountSettingsFactory.create(accountId)
+        accountSettings.putInitialSettings(credentials, preconfigurationUrl)
+
+        val account = fromName(accountName)
+
+        // create Android account - extract the initial settings from the database and pass them to the Android account creation API
+        val userData = accountSettings.extractAll()
+        logger.log(Level.INFO, "Creating Android account {0} with initial config {1}", arrayOf(account, userData))
+
+        if (!AndroidAccountUtils.createAccount(context, account, userData, credentials?.password))
+            return null
+
+        // add entries for account to database
+        logger.log(Level.INFO, "Writing account configuration to database: {0}", arrayOf(config))
+        try {
+            if (config.cardDAV != null) {
+                // insert CardDAV service
+                val id = insertService(accountName, Service.TYPE_CARDDAV, config.cardDAV)
+
+                // set initial CardDAV account settings and set sync intervals (enables automatic sync)
+                val accountSettings = accountSettingsFactory.create(accountId)
+                accountSettings.setGroupMethod(groupMethod)
+
+                // start CardDAV service detection (refresh collections)
+                RefreshCollectionsWorker.enqueue(context, id)
+            }
+
+            if (config.calDAV != null) {
+                // insert CalDAV service
+                val id = insertService(accountName, Service.TYPE_CALDAV, config.calDAV)
+
+                // start CalDAV service detection (refresh collections)
+                RefreshCollectionsWorker.enqueue(context, id)
+            }
+
+            // set up automatic sync (processes inserted services)
+            automaticSyncManager.get().updateAutomaticSync(accountId)
+
+        } catch (e: InvalidAccountException) {
+            logger.log(Level.SEVERE, "Couldn't access account settings", e)
+            return null
+        }
+        return accountId
+    }
+
     suspend fun delete(accountId: AccountId): Boolean {
-        require(accountId is LegacyAccount) { "Only LegacyAccount is supported right now" }
-        val account = accountId.androidAccount
+        val account = when(accountId) {
+            is LegacyAccount -> accountId.androidAccount
+            is DbAccountId -> {
+                val dbAccount = dbAccountDao.get(accountId.id) ?: return false
+                fromName(dbAccount.name)
+            }
+        }
         // remove account directly (bypassing the authenticator, which is our own)
         return try {
             accountManager.removeAccountExplicitly(account)
@@ -177,8 +275,13 @@ class AccountRepository @Inject constructor(
                 }
             }
 
-            // delete from database
+            // delete service from database
             serviceRepository.deleteByAccount(accountId)
+
+            if (accountId is DbAccountId) {
+                // delete account from database if it is a DbAccountId
+                dbAccountDao.deleteBlocking(DbAccount(id = accountId.id, name = account.name))
+            }
 
             true
         } catch (e: Exception) {
