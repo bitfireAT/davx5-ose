@@ -14,7 +14,7 @@
     <string name="account_prefs_use_app">Don\'t change the account here! Directly use the app to manage accounts instead.</string>
     <string name="dialog_delete">Delete</string>
     <string name="dialog_remove">Remove</string>
-    <string name="dialog_deny">Deny</string>
+    <string name="dialog_deny">Cancel</string>
     <string name="dialog_enable">Enable</string>
     <string name="field_required">This field is required</string>
     <string name="help">Help</string>
