@@ -4,8 +4,6 @@
 
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <string name="adding_demo_string">adding demo test string</string>
-
     <!-- common strings -->
     <string name="app_name" translatable="false">DAVx⁵</string>
 
