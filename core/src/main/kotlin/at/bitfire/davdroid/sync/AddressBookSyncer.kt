@@ -77,7 +77,11 @@ class AddressBookSyncer @AssistedInject constructor(
     }
 
     /**
-     * Synchronizes an address book
+     * Synchronizes an address book.
+     *
+     * Sync errors of the address book contents are handled (logged, notified, recorded in [syncResult])
+     * by [SyncManager] itself. Everything it re-throws – as well as exceptions of
+     * [handleGroupMethodChange] – is passed on to [invoke], which classifies it.
      *
      * @param addressBook       local address book
      * @param httpClient        HTTP client to use for network requests
@@ -93,26 +97,21 @@ class AddressBookSyncer @AssistedInject constructor(
         syncResult: SyncResult,
         collection: Collection
     ) {
-        try {
-            handleGroupMethodChange(addressBook, provider)
+        handleGroupMethodChange(addressBook, provider)
 
-            val syncManager = contactsSyncManagerFactory.contactsSyncManager(
-                accountId = accountId,
-                httpClient = httpClient,
-                syncResult = syncResult,
-                provider = provider,
-                localAddressBook = addressBook,
-                collectionInfo = collection,
-                remoteCollection = CardDavCollection(httpClient, collection.url),
-                resync = resync,
-                syncFrameworkUpload = syncFrameworkUpload,
-                settings = settings
-            )
-            syncManager.performSync()
-
-        } catch(e: Exception) {
-            logger.log(Level.SEVERE, "Couldn't sync contacts", e)
-        }
+        val syncManager = contactsSyncManagerFactory.contactsSyncManager(
+            accountId = accountId,
+            httpClient = httpClient,
+            syncResult = syncResult,
+            provider = provider,
+            localAddressBook = addressBook,
+            collectionInfo = collection,
+            remoteCollection = CardDavCollection(httpClient, collection.url),
+            resync = resync,
+            syncFrameworkUpload = syncFrameworkUpload,
+            settings = settings
+        )
+        syncManager.performSync()
 
         logger.info("Contacts sync complete")
     }
