@@ -66,25 +66,6 @@ class ICalendarGeneratorTest {
         assertEquals("BEGIN:VCALENDAR\r\n" +
                 "VERSION:2.0\r\n" +
                 "PRODID:TestUA/1.0\r\n" +
-                // main event
-                "BEGIN:VEVENT\r\n" +
-                "UID:SAMPLEUID\r\n" +
-                "DTSTART;TZID=Europe/Berlin:20190101T100000\r\n" +
-                "DTEND:20190101T160000Z\r\n" +
-                "DTSTAMP:20251028T185101Z\r\n" +
-                "RRULE:FREQ=DAILY;COUNT=5\r\n" +
-                "BEGIN:VALARM\r\n" +
-                "TRIGGER:-PT1H\r\n" +
-                "END:VALARM\r\n" +
-                "END:VEVENT\r\n" +
-                // exception
-                "BEGIN:VEVENT\r\n" +
-                "UID:SAMPLEUID\r\n" +
-                "RECURRENCE-ID;TZID=Europe/Berlin:20190102T100000\r\n" +
-                "DTSTART;TZID=Europe/London:20190101T110000\r\n" +
-                "DTEND:20190101T170000Z\r\n" +
-                "DTSTAMP:20251028T185101Z\r\n" +
-                "END:VEVENT\r\n" +
                 // time zone: Europe/Berlin
                 "BEGIN:VTIMEZONE\r\n" +
                 "TZID:Europe/Berlin\r\n" +
@@ -121,6 +102,25 @@ class ICalendarGeneratorTest {
                 "RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=-1SU\r\n" +
                 "END:DAYLIGHT\r\n" +
                 "END:VTIMEZONE\r\n" +
+                // main event
+                "BEGIN:VEVENT\r\n" +
+                "UID:SAMPLEUID\r\n" +
+                "DTSTART;TZID=Europe/Berlin:20190101T100000\r\n" +
+                "DTEND:20190101T160000Z\r\n" +
+                "DTSTAMP:20251028T185101Z\r\n" +
+                "RRULE:FREQ=DAILY;COUNT=5\r\n" +
+                "BEGIN:VALARM\r\n" +
+                "TRIGGER:-PT1H\r\n" +
+                "END:VALARM\r\n" +
+                "END:VEVENT\r\n" +
+                // exception
+                "BEGIN:VEVENT\r\n" +
+                "UID:SAMPLEUID\r\n" +
+                "RECURRENCE-ID;TZID=Europe/Berlin:20190102T100000\r\n" +
+                "DTSTART;TZID=Europe/London:20190101T110000\r\n" +
+                "DTEND:20190101T170000Z\r\n" +
+                "DTSTAMP:20251028T185101Z\r\n" +
+                "END:VEVENT\r\n" +
                 "END:VCALENDAR\r\n", iCal.toString())
     }
 
@@ -156,15 +156,15 @@ class ICalendarGeneratorTest {
             "BEGIN:VCALENDAR\r\n" +
                     "VERSION:2.0\r\n" +
                     "PRODID:TestUA/1.0\r\n" +
+                    "BEGIN:VTIMEZONE\r\n" +
+                    ".*TZID:Europe/Kiev\r\n" +
+                    ".*END:VTIMEZONE\r\n" +
                     "BEGIN:VEVENT\r\n" +
                     "UID:KIEVTEST\r\n" +
                     "DTSTART;TZID=Europe/Kiev:20230101T120000\r\n" +
                     "DTEND;TZID=Europe/Kiev:20230101T140000\r\n" +
                     "DTSTAMP:20230101T120000Z\r\n" +
-                    "END:VEVENT\r\n" +
-                    "BEGIN:VTIMEZONE\r\n" +
-                    ".*TZID:Europe/Kiev\r\n" +
-                    ".*END:VTIMEZONE",
+                    "END:VEVENT",
             setOf(RegexOption.MULTILINE, RegexOption.DOT_MATCHES_ALL)
         )
         assertTrue(iCal.toString().contains(pattern))
