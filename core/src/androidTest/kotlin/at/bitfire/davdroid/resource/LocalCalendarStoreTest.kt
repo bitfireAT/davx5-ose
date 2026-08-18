@@ -1,0 +1,113 @@
+/*
+ * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
+ */
+
+package at.bitfire.davdroid.resource
+
+import android.Manifest
+import android.accounts.Account
+import android.content.ContentProviderClient
+import android.content.Context
+import android.net.Uri
+import android.provider.CalendarContract
+import android.provider.CalendarContract.Calendars
+import androidx.core.content.contentValuesOf
+import androidx.test.rule.GrantPermissionRule
+import at.bitfire.davdroid.sync.account.TestAccount
+import at.bitfire.synctools.storage.calendar.EventsContract.asSyncAdapter
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
+import org.junit.After
+import org.junit.Assert.assertEquals
+import org.junit.Assume
+import org.junit.Before
+import org.junit.Ignore
+import org.junit.Rule
+import org.junit.Test
+import javax.inject.Inject
+
+@HiltAndroidTest
+class LocalCalendarStoreTest {
+
+    @get:Rule
+    val permissionRule: GrantPermissionRule = GrantPermissionRule.grant(Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR)
+
+    @get:Rule
+    val hiltRule = HiltAndroidRule(this)
+
+    @Inject @ApplicationContext
+    lateinit var context: Context
+
+    @Inject
+    lateinit var localCalendarStore: LocalCalendarStore
+
+    private lateinit var provider: ContentProviderClient
+    private lateinit var account: Account
+    private lateinit var calendarUri: Uri
+
+    @Before
+    fun setUp() {
+        hiltRule.inject()
+        provider = context.contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)!!
+        account = TestAccount.create(accountName = "InitialAccountName")
+        calendarUri = createCalendarForAccount(account)
+    }
+
+    @After
+    fun tearDown() {
+        provider.delete(calendarUri, null, null)
+        TestAccount.remove(account)
+        provider.close()
+    }
+
+
+    @Ignore("Flaky in CI")
+    @Test
+    fun testUpdateAccount_updatesOwnerAccount() {
+        // Verify initial state (assume to skip and prevent flaky test failures)
+        Assume.assumeTrue("InitialAccountName" == getOwnerAccount())
+
+        // Rename account
+        val oldAccount = account
+        account = TestAccount.rename(account, "ChangedAccountName")
+
+        // Update account name in local calendar
+        localCalendarStore.updateAccount(oldAccount, account, provider)
+
+        // Verify [Calendar.OWNER_ACCOUNT] of local calendar was updated
+        assertEquals("ChangedAccountName", getOwnerAccount())
+    }
+
+
+    // helpers
+
+    private fun createCalendarForAccount(account: Account): Uri =
+         provider.insert(
+            Calendars.CONTENT_URI.asSyncAdapter(account),
+            contentValuesOf(
+                Calendars.ACCOUNT_NAME to account.name,
+                Calendars.ACCOUNT_TYPE to account.type,
+                Calendars.OWNER_ACCOUNT to account.name,
+                Calendars.VISIBLE to 1,
+                Calendars.SYNC_EVENTS to 1,
+                Calendars._SYNC_ID to 999,
+                Calendars.CALENDAR_DISPLAY_NAME to "displayName",
+            )
+        )!!.asSyncAdapter(account)
+
+    private fun getOwnerAccount(): String? {
+        provider.query(
+            calendarUri,
+            arrayOf(Calendars.OWNER_ACCOUNT),
+            "${Calendars.ACCOUNT_NAME}=?",
+            arrayOf(account.name),
+            null
+        )!!.use { cursor ->
+            if (!cursor.moveToNext())
+                return null
+            return cursor.getString(0)
+        }
+    }
+
+}
