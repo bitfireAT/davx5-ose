@@ -200,7 +200,9 @@ class ContactsSyncManager @AssistedInject constructor(
     override suspend fun processDownload(result: WebDavCollection.MultiGetItem) {
         result.url.withExceptionContext {
             processCard(
-                fileName = result.url.lastSegment,
+                fileName = result.url.lastSegment.also {
+                    require(it.isNotEmpty()) { "Contact URL has no path segment: ${result.url}" }
+                },
                 eTag = result.eTag,
                 reader = StringReader(result.content),
                 downloader = object : Contact.Downloader {

@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.resource.remote
 
 import at.bitfire.dav4jvm.QuotedStringUtils
+import at.bitfire.dav4jvm.ktor.HttpUtils
 import at.bitfire.dav4jvm.ktor.DavResource
 import at.bitfire.dav4jvm.ktor.MultiStatusItem
 import at.bitfire.dav4jvm.ktor.Response
@@ -117,9 +118,14 @@ abstract class BaseWebDavCollection(
                         // we requested Depth: 1, but may still receive collections which are direct members
                         response[ResourceType::class.java]?.types?.contains(WebDAV.Collection) == true -> null
 
-                        response.isSuccess() ->
-                            CollectionSyncItem.ChangedMember(InternalMemberState(response.href, response.requireETag()))
-
+                        response.isSuccess() -> {
+                            if (HttpUtils.fileName(response.href).isEmpty()) {
+                                logger.warning("Ignoring member without file name: ${response.href}")
+                                null
+                            } else {
+                                CollectionSyncItem.ChangedMember(InternalMemberState(response.href, response.requireETag()))
+                            }
+                        }
                         response.status == HttpStatusCode.NotFound ->
                             CollectionSyncItem.RemovedMember(response.href)
 

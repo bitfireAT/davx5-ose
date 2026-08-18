@@ -68,6 +68,7 @@ class TestSyncManager @AssistedInject constructor(
         processedDownloads += result
 
         val fileName = result.url.lastSegment
+        require(fileName.isNotEmpty()) { "Test URL has no path segment: ${result.url}" }
         var localEntry = localCollection.entries.firstOrNull { it.fileName == fileName }
         if (localEntry == null) {
             val newEntry = LocalTestResource().also {

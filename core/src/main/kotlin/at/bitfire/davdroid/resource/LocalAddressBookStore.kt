@@ -69,7 +69,7 @@ class LocalAddressBookStore @Inject constructor(
     @WorkerThread
     fun accountName(info: Collection): String {
         // Name of address book is given collection display name, otherwise the last URL path segment
-        var name = info.displayName.takeIf { !it.isNullOrEmpty() } ?: info.url.lastSegment
+        var name = info.displayName.takeIf { !it.isNullOrEmpty() } ?: info.url.lastSegment.ifEmpty { "/" }
 
         // Remove ISO control characters + SQL problematic characters
         name = CharMatcher
