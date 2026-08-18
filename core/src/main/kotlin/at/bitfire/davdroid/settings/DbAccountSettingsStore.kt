@@ -25,9 +25,10 @@ class DbAccountSettingsStore @AssistedInject constructor(@Assisted account: DbAc
     /**
      * Fetches an entry from the database with [key] and for the specified account.
      *
-     * Note: May return `null` if not stored the value with [putValue].
+     * Note: Values written with [putSensitiveValue] are not visible here — they can only be retrieved with
+     * [getSensitiveValue], and are overridden if [putValue] is called with the same [key].
      *
-     * @return The value stored, or `null` otherwise.
+     * @return The value stored, or `null` if not set.
      */
     override fun getValue(key: String): String? {
         val entry = dao.getBlocking(accountId, key)
@@ -35,32 +36,25 @@ class DbAccountSettingsStore @AssistedInject constructor(@Assisted account: DbAc
     }
 
     /**
-     * Stores the given [value] at [key] for the specified value.
+     * Stores the given [value] at [key] for the specified account.
      *
-     * Note: The data may only be retrieved with [getValue].
-     * Note 2: Only deletes entries stored by [putValue]. Otherwise, doesn't do anything.
+     * Note: Overrides any value previously stored at [key] with [putSensitiveValue].
      *
      * @param key The key to store the value at.
      * @param value The value to store. If `null`, deletes the entry at [key].
      */
     override fun putValue(key: String, value: String?) {
         if (value == null) {
-            dao.getBlocking(accountId, key)
-                // only allow to delete values set by putValue
-                ?.takeIf { it.value != null }
-                ?.let { setting ->
-                    if (setting.sensitiveValue != null)
-                        // If there's a sensitive value on that key, just remove the regular value
-                        dao.updateBlocking(setting.copy(value = null))
-                    else
-                        dao.deleteBlocking(setting)
-                }
+            dao.getBlocking(accountId, key)?.let { setting ->
+                dao.deleteBlocking(setting)
+            }
             return
         }
 
         val existing = dao.getBlocking(accountId, key)
         if (existing != null) {
-            dao.updateBlocking(existing.copy(value = value))
+            // overwrite value and clear any sensitive value that may have been stored at this key
+            dao.updateBlocking(existing.copy(value = value, sensitiveValue = null))
         } else {
             val entry = AccountSetting(
                 accountId = accountId,
@@ -74,9 +68,10 @@ class DbAccountSettingsStore @AssistedInject constructor(@Assisted account: DbAc
     /**
      * Fetches a sensitive entry from the database with [key] and for the specified account.
      *
-     * Note: May return `null` if not stored the value with [putSensitiveValue].
+     * Note: Values written with [putValue] are not visible here — they can only be retrieved with [getValue],
+     * and are overridden if [putSensitiveValue] is called with the same [key].
      *
-     * @return The value stored, or `null` otherwise.
+     * @return The value stored, or `null` if not set.
      */
     override fun getSensitiveValue(key: String): SensitiveString? {
         val entry = dao.getBlocking(accountId, key)
@@ -84,32 +79,25 @@ class DbAccountSettingsStore @AssistedInject constructor(@Assisted account: DbAc
     }
 
     /**
-     * Stores the given [value] at [key] for the specified **safe** value.
+     * Stores the given [value] at [key] for the specified account.
      *
-     * Note: The data may only be retrieved with [getSensitiveValue].
-     * Note 2: Only deletes entries stored by [putSensitiveValue]. Otherwise, doesn't do anything.
+     * Note: Overrides any value previously stored at [key] with [putValue].
      *
      * @param key The key to store the value at.
      * @param value The value to store. If `null`, deletes the entry at [key].
      */
     override fun putSensitiveValue(key: String, value: SensitiveString?) {
         if (value == null) {
-            dao.getBlocking(accountId, key)
-                // only allow to delete values set by putSensitiveValue
-                ?.takeIf { it.sensitiveValue != null }
-                ?.let { setting ->
-                    if (setting.value != null)
-                        // If there's a value on that key, just remove the sensitive value
-                        dao.updateBlocking(setting.copy(sensitiveValue = null))
-                    else
-                        dao.deleteBlocking(setting)
-                }
+            dao.getBlocking(accountId, key)?.let { setting ->
+                dao.deleteBlocking(setting)
+            }
             return
         }
 
         val existing = dao.getBlocking(accountId, key)
         if (existing != null) {
-            dao.updateBlocking(existing.copy(sensitiveValue = value))
+            // overwrite sensitive value and clear any regular value that may have been stored at this key
+            dao.updateBlocking(existing.copy(sensitiveValue = value, value = null))
         } else {
             val entry = AccountSetting(
                 accountId = accountId,

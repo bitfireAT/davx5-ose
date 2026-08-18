@@ -148,55 +148,16 @@ class DbAccountSettingsStoreTest {
         assertNull(dao.getBlocking(accountId = dbAccountId, key = "sensitive-test"))
     }
 
-    /**
-     * Utility for [test_deleteMixed_putValue] and [test_deleteMixed_putSensitiveValue]:
-     * - Makes sure initially there's no value in `mixed-test`
-     * - Inserts `value` and `sensitive-value` for regular and sensitive values respectively.
-     * - Verifies both of them have been set correctly.
-     */
-    private fun prepareDeleteMixed() {
-        // Verify that initially there's no value
-        assertNull(dao.getBlocking(accountId = dbAccountId, key = "mixed-test"))
-
-        // Put a value as regular and sensitive
-        store.putValue(key = "mixed-test", value = "value")
+    @Test
+    fun test_putValue_overridesSensitiveValue() {
+        // Put a sensitive value first
         store.putSensitiveValue(key = "mixed-test", value = "sensitive-value".toSensitiveString())
 
-        // Verify they have been set correctly
-        dao.getBlocking(accountId = dbAccountId, key = "mixed-test").let {
-            assertNotNull(it)
-            assertEquals(dbAccountId, it!!.accountId)
-            assertEquals("mixed-test", it.key)
-            assertEquals("value", it.value)
-            assertEquals("sensitive-value".toSensitiveString(), it.sensitiveValue)
-        }
-    }
+        // Now put a regular value at the same key
+        store.putValue(key = "mixed-test", value = "value")
 
-    @Test
-    fun test_deleteMixed_putValue() {
-        prepareDeleteMixed()
-
-        // Now try deleting it from putValue
-        store.putValue(key = "mixed-test", value = null)
-
-        // It should be removed from value, but not sensitiveValue
-        dao.getBlocking(accountId = dbAccountId, key = "mixed-test").let {
-            assertNotNull(it)
-            assertEquals(dbAccountId, it!!.accountId)
-            assertEquals("mixed-test", it.key)
-            assertNull(it.value)
-            assertEquals("sensitive-value".toSensitiveString(), it.sensitiveValue)
-        }
-    }
-
-    @Test
-    fun test_deleteMixed_putSensitiveValue() {
-        prepareDeleteMixed()
-
-        // Now try deleting it from putSensitiveValue
-        store.putSensitiveValue(key = "mixed-test", value = null)
-
-        // It should be removed from sensitiveValue, but not value
+        // It should have replaced the sensitive value, matching AccountManagerSettingsStore's behaviour
+        // of a key only ever holding one kind of value at a time
         dao.getBlocking(accountId = dbAccountId, key = "mixed-test").let {
             assertNotNull(it)
             assertEquals(dbAccountId, it!!.accountId)
@@ -204,5 +165,26 @@ class DbAccountSettingsStoreTest {
             assertEquals("value", it.value)
             assertNull(it.sensitiveValue)
         }
+        assertNull(store.getSensitiveValue("mixed-test"))
+    }
+
+    @Test
+    fun test_putSensitiveValue_overridesValue() {
+        // Put a regular value first
+        store.putValue(key = "mixed-test", value = "value")
+
+        // Now put a sensitive value at the same key
+        store.putSensitiveValue(key = "mixed-test", value = "sensitive-value".toSensitiveString())
+
+        // It should have replaced the regular value, matching AccountManagerSettingsStore's behaviour
+        // of a key only ever holding one kind of value at a time
+        dao.getBlocking(accountId = dbAccountId, key = "mixed-test").let {
+            assertNotNull(it)
+            assertEquals(dbAccountId, it!!.accountId)
+            assertEquals("mixed-test", it.key)
+            assertEquals("sensitive-value".toSensitiveString(), it.sensitiveValue)
+            assertNull(it.value)
+        }
+        assertNull(store.getValue("mixed-test"))
     }
 }
