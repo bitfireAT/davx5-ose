@@ -6,6 +6,7 @@ package at.bitfire.davdroid.settings
 
 import androidx.annotation.WorkerThread
 import at.bitfire.davdroid.accounts.AccountId
+import at.bitfire.davdroid.accounts.DbAccountId
 import at.bitfire.davdroid.accounts.LegacyAccount
 import javax.inject.Inject
 
@@ -18,6 +19,7 @@ class AccountSettingsFactory @Inject constructor(
     fun create(accountId: AccountId, abortOnMissingMigration: Boolean = false): AccountSettings {
         val store = when(accountId) {
             is LegacyAccount -> accountManagerSettingsStoreFactory.create(accountId.androidAccount)
+            is DbAccountId -> dbAccountSettingsStoreFactory.create(accountId)
         }
         return accountSettingsFactory.create(accountId, abortOnMissingMigration, store)
     }

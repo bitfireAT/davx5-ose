@@ -9,6 +9,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import at.bitfire.davdroid.accounts.AccountId
+import at.bitfire.davdroid.accounts.DbAccountId
 import at.bitfire.davdroid.accounts.LegacyAccount
 import kotlinx.coroutines.flow.Flow
 
@@ -24,12 +25,14 @@ interface ServiceDao {
     suspend fun getByAccountIdAndType(accountId: AccountId, @ServiceType type: String): Service? {
         return when (accountId) {
             is LegacyAccount -> getByAccountAndType(accountId.androidAccount.name, type)
+            is DbAccountId -> TODO("Currently not possible to get services by DbAccountId")
         }
     }
 
     fun getByAccountIdAndTypeBlocking(accountId: AccountId, @ServiceType type: String): Service? {
         return when (accountId) {
             is LegacyAccount -> getByAccountAndTypeBlocking(accountId.androidAccount.name, type)
+            is DbAccountId -> TODO("Currently not possible to get services by DbAccountId")
         }
     }
 
@@ -39,6 +42,7 @@ interface ServiceDao {
     fun getByAccountAndTypeFlow(accountId: AccountId, @ServiceType type: String): Flow<Service?> {
         return when (accountId) {
             is LegacyAccount -> getByAccountAndTypeFlow(accountId.androidAccount.name, type)
+            is DbAccountId -> TODO("Currently not possible to get services by DbAccountId")
         }
     }
 
@@ -66,6 +70,7 @@ interface ServiceDao {
     suspend fun deleteByAccount(accountId: AccountId) {
         when (accountId) {
             is LegacyAccount -> deleteByAccount(accountId.androidAccount.name)
+            is DbAccountId -> TODO("Currently not possible to delete services by DbAccountId")
         }
     }
 

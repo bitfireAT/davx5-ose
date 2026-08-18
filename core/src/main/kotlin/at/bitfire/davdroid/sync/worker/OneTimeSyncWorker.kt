@@ -12,6 +12,7 @@ import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
+import at.bitfire.davdroid.accounts.DbAccountId
 import at.bitfire.davdroid.accounts.LegacyAccount
 import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.ui.NotificationRegistry
@@ -67,6 +68,7 @@ class OneTimeSyncWorker @AssistedInject constructor(
                     val account = accountId.androidAccount
                     "onetime-sync $dataType ${account.type}/${account.name}"
                 }
+                is DbAccountId -> TODO("Operation not yet implemented")
             }
         }
 

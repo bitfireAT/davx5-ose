@@ -19,6 +19,7 @@ class AndroidAccountManager @Inject constructor(
     fun getAndroidAccount(accountId: AccountId): Account {
         return when (accountId) {
             is LegacyAccount -> accountId.androidAccount
+            is DbAccountId -> TODO("It's still not possible to generate an Android account from a database account ID.")
         }
     }
 

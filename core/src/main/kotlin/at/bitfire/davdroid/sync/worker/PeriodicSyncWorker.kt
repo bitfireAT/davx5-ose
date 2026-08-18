@@ -10,6 +10,7 @@ import androidx.hilt.work.HiltWorker
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import at.bitfire.davdroid.accounts.AccountId
+import at.bitfire.davdroid.accounts.DbAccountId
 import at.bitfire.davdroid.accounts.LegacyAccount
 import at.bitfire.davdroid.sync.SyncDataType
 import dagger.assisted.Assisted
@@ -62,6 +63,7 @@ class PeriodicSyncWorker @AssistedInject constructor(
                     val account = accountId.androidAccount
                     "periodic-sync $dataType ${account.type}/${account.name}"
                 }
+                is DbAccountId -> TODO("Operation not yet implemented")
             }
         }
 
