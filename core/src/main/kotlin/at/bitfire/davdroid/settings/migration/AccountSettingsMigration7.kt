@@ -4,13 +4,12 @@
 
 package at.bitfire.davdroid.settings.migration
 
-import android.accounts.Account
-import android.accounts.AccountManager
 import android.content.Context
 import android.provider.CalendarContract
-import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.accounts.AccountId
+import at.bitfire.davdroid.accounts.AndroidAccountManager
+import at.bitfire.davdroid.settings.AccountSettingsStore
 import at.bitfire.synctools.storage.calendar.AndroidCalendarProvider
-import at.bitfire.synctools.util.setAndVerifyUserData
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -21,21 +20,27 @@ import dagger.multibindings.IntoMap
 import javax.inject.Inject
 
 class AccountSettingsMigration7 @Inject constructor(
-    private val accountManager: AccountManager,
+    private val accountAccountManager: AndroidAccountManager,
     @ApplicationContext private val context: Context
 ): AccountSettingsMigration {
 
-    override fun migrate(account: Account) {
-        // add calendar colors
+    override fun migrate(accountId: AccountId, store: AccountSettingsStore) {
+        addCalendarColors(accountId)
+        updateWifiOnlySsids(store)
+    }
+
+    private fun addCalendarColors(accountId: AccountId) {
+        val account = accountAccountManager.getAndroidAccount(accountId)
         context.contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)?.use { client ->
             val provider = AndroidCalendarProvider(account, client)
             provider.provideCss3ColorIndices()
         }
+    }
 
-        // update allowed WiFi settings key
-        val onlySSID = accountManager.getUserData(account, "wifi_only_ssid")
-        accountManager.setAndVerifyUserData(account, AccountSettings.KEY_WIFI_ONLY_SSIDS, onlySSID)
-        accountManager.setAndVerifyUserData(account, "wifi_only_ssid", null)
+    private fun updateWifiOnlySsids(store: AccountSettingsStore) {
+        val onlySSID = store.getValue(KEY_WIFI_ONLY_SSID_OLD)
+        store.putValue(KEY_WIFI_ONLY_SSIDS_NEW, onlySSID)
+        store.putValue(KEY_WIFI_ONLY_SSID_OLD, null)
     }
 
 
@@ -47,4 +52,8 @@ class AccountSettingsMigration7 @Inject constructor(
         abstract fun provide(impl: AccountSettingsMigration7): AccountSettingsMigration
     }
 
+    companion object {
+        private const val KEY_WIFI_ONLY_SSID_OLD = "wifi_only_ssid"
+        private const val KEY_WIFI_ONLY_SSIDS_NEW = "wifi_only_ssids"
+    }
 }

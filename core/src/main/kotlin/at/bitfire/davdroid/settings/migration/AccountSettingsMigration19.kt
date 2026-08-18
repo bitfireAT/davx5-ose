@@ -4,11 +4,12 @@
 
 package at.bitfire.davdroid.settings.migration
 
-import android.accounts.Account
 import android.content.Context
 import android.provider.CalendarContract
 import androidx.work.WorkManager
-import at.bitfire.davdroid.accounts.toAccountId
+import at.bitfire.davdroid.accounts.AccountId
+import at.bitfire.davdroid.accounts.AndroidAccountManager
+import at.bitfire.davdroid.settings.AccountSettingsStore
 import at.bitfire.davdroid.sync.AutomaticSyncManager
 import at.bitfire.synctools.storage.TaskProvider
 import dagger.Binds
@@ -28,10 +29,12 @@ import javax.inject.Inject
  */
 class AccountSettingsMigration19 @Inject constructor(
     @ApplicationContext private val context: Context,
+    private val androidAccountManager: AndroidAccountManager,
     private val automaticSyncManager: AutomaticSyncManager
 ): AccountSettingsMigration {
 
-    override fun migrate(account: Account) {
+    override fun migrate(accountId: AccountId, store: AccountSettingsStore) {
+        val account = androidAccountManager.getAndroidAccount(accountId)
         // cancel old workers
         val workManager = WorkManager.getInstance(context)
         val authorities = listOf(
@@ -44,7 +47,7 @@ class AccountSettingsMigration19 @Inject constructor(
         }
 
         // enqueue new workers
-        automaticSyncManager.updateAutomaticSync(account.toAccountId())
+        automaticSyncManager.updateAutomaticSync(accountId)
     }
 
 

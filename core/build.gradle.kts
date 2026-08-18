@@ -51,7 +51,11 @@ android {
 
     sourceSets {
         getByName("androidTest") {
+            kotlin.directories +=  "$projectDir/src/sharedTest/kotlin"
             assets.srcDir("$projectDir/schemas")
+        }
+        getByName("test") {
+            kotlin.directories +=  "$projectDir/src/sharedTest/kotlin"
         }
     }
 

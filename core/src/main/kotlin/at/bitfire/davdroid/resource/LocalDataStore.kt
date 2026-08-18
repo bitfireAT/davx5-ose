@@ -73,11 +73,12 @@ interface LocalDataStore<T: LocalCollection<*>> {
     /**
      * Updates the local collection with the data from the given (remote) collection info.
      *
+     * @param accountId       [AccountId] of the account the collection belongs to
      * @param client          the content provider client
      * @param localCollection the local collection to update
      * @param fromCollection  collection info
      */
-    fun update(client: ContentProviderClient, localCollection: T, fromCollection: Collection)
+    fun update(accountId: AccountId, client: ContentProviderClient, localCollection: T, fromCollection: Collection)
 
     /**
      * Deletes the local collection.

@@ -8,11 +8,13 @@ import android.accounts.Account
 import at.bitfire.davdroid.accounts.LegacyAccount
 import at.bitfire.davdroid.settings.AccountSettings.Companion.CREDENTIALS_LOCK
 import at.bitfire.davdroid.settings.AccountSettings.Companion.CREDENTIALS_LOCK_AT_LOGIN_AND_SETTINGS
+import at.bitfire.davdroid.settings.AccountSettings.Companion.CURRENT_VERSION
 import at.bitfire.davdroid.settings.AccountSettings.Companion.KEY_CONTACT_GROUP_METHOD
 import at.bitfire.davdroid.settings.AccountSettings.Companion.KEY_DEFAULT_ALARM
 import at.bitfire.davdroid.settings.AccountSettings.Companion.KEY_EVENT_COLORS
 import at.bitfire.davdroid.settings.AccountSettings.Companion.KEY_IGNORE_VPNS
 import at.bitfire.davdroid.settings.AccountSettings.Companion.KEY_MANAGE_CALENDAR_COLORS
+import at.bitfire.davdroid.settings.AccountSettings.Companion.KEY_SETTINGS_VERSION
 import at.bitfire.davdroid.settings.AccountSettings.Companion.KEY_SHOW_ONLY_PERSONAL
 import at.bitfire.davdroid.settings.AccountSettings.Companion.KEY_SYNC_INTERVAL_ADDRESSBOOKS
 import at.bitfire.davdroid.settings.AccountSettings.Companion.KEY_SYNC_INTERVAL_CALENDARS
@@ -33,16 +35,20 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import java.util.logging.Logger
 
 class AccountSettingsTest {
 
-    private val store = InMemorySettingsStore()
+    private val store = InMemorySettingsStore(storage = mapOf(KEY_SETTINGS_VERSION to CURRENT_VERSION.toString()))
     private val settingsManager = mockk<SettingsManager>(relaxed = true)
     private val automaticSyncManager = mockk<AutomaticSyncManager>(relaxed = true)
     private val accountSettings = AccountSettings(
         accountId = LegacyAccount(Account("test", "test")),
+        abortOnMissingMigration = false,
         store = store,
         automaticSyncManager = automaticSyncManager,
+        logger = mockk<Logger>(relaxed = true),
+        migrations = emptyMap(),
         settingsManager = settingsManager
     )
 

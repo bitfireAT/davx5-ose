@@ -166,9 +166,7 @@ abstract class SyncManager<LocalType : LocalResource>(
             var remoteSyncState = initialSyncState
 
             logger.info("Processing local deletes/updates")
-            val modificationsPresent =
-                // bitwise OR guarantees that both expressions are evaluated
-                processLocallyDeleted() or uploadDirty(capabilities)
+            val modificationsPresent = processLocalChanges(capabilities)
 
             if (resync == ResyncType.RESYNC_ENTRIES) {
                 logger.info("Forcing re-synchronization of all entries")
@@ -223,7 +221,19 @@ abstract class SyncManager<LocalType : LocalResource>(
      */
     protected open suspend fun prepare(): Boolean = true
 
-    //region Processing of locally dirty/deleted items
+    //region Processing of local dirty/deleted items
+
+    /**
+     * Processes locally deleted and locally modified (dirty) resources by forwarding them to
+     * the server.
+     *
+     * @param capabilities  current capabilities of the remote collection
+     *
+     * @return whether local resources have been uploaded so that a synchronization is always necessary
+     */
+    private suspend fun processLocalChanges(capabilities: WebDavCollection.Capabilities): Boolean =
+        // bitwise OR guarantees that both expressions are evaluated
+        processLocallyDeleted() or uploadDirty(capabilities)
 
     /**
      * Processes locally deleted entries. This can mean:

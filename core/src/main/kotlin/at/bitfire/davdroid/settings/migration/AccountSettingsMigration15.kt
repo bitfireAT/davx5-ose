@@ -4,8 +4,8 @@
 
 package at.bitfire.davdroid.settings.migration
 
-import android.accounts.Account
-import at.bitfire.davdroid.accounts.toAccountId
+import at.bitfire.davdroid.accounts.AccountId
+import at.bitfire.davdroid.settings.AccountSettingsStore
 import at.bitfire.davdroid.sync.AutomaticSyncManager
 import dagger.Binds
 import dagger.Module
@@ -25,8 +25,8 @@ class AccountSettingsMigration15 @Inject constructor(
     private val automaticSyncManager: AutomaticSyncManager
 ): AccountSettingsMigration {
 
-    override fun migrate(account: Account) {
-        automaticSyncManager.updateAutomaticSync(account.toAccountId())
+    override fun migrate(accountId: AccountId, store: AccountSettingsStore) {
+        automaticSyncManager.updateAutomaticSync(accountId)
     }
 
 

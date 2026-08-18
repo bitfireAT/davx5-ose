@@ -14,7 +14,6 @@ import android.provider.CalendarContract.Events
 import androidx.core.content.contentValuesOf
 import androidx.test.rule.GrantPermissionRule
 import at.bitfire.davdroid.accounts.LegacyAccount
-import at.bitfire.davdroid.accounts.toAndroidAccount
 import at.bitfire.davdroid.resource.LocalCalendar
 import at.bitfire.davdroid.resource.LocalEvent
 import at.bitfire.davdroid.resource.remote.CalDavCollection
@@ -55,9 +54,6 @@ class CalendarSyncManagerTest {
     lateinit var context: Context
 
     @Inject
-    lateinit var localCalendarFactory: LocalCalendar.Factory
-
-    @Inject
     lateinit var syncManagerFactory: CalendarSyncManager.Factory
 
     lateinit var accountId: LegacyAccount
@@ -73,11 +69,11 @@ class CalendarSyncManagerTest {
         providerClient = context.contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)!!
 
         // create LocalCalendar
-        val androidCalendarProvider = AndroidCalendarProvider(accountId.toAndroidAccount(), providerClient)
+        val androidCalendarProvider = AndroidCalendarProvider(accountId.androidAccount, providerClient)
         androidCalendar = androidCalendarProvider.createAndGetCalendar(contentValuesOf(
             Calendars.NAME to "Sample Calendar"
         ))
-        localCalendar = localCalendarFactory.create(androidCalendar)
+        localCalendar = LocalCalendar(androidCalendar)
     }
 
     @After

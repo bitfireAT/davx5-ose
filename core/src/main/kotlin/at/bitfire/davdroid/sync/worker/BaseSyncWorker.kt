@@ -18,8 +18,8 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.accounts.DbAccountId
 import at.bitfire.davdroid.accounts.LegacyAccount
-import at.bitfire.davdroid.accounts.toAndroidAccount
 import at.bitfire.davdroid.push.PushNotificationManager
+import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.settings.AccountSettingsFactory
 import at.bitfire.davdroid.sync.AddressBookSyncer
 import at.bitfire.davdroid.sync.CalendarSyncer
@@ -50,6 +50,9 @@ abstract class BaseSyncWorker(
     context: Context,
     private val workerParams: WorkerParameters
 ) : IoCoroutineWorker(context, workerParams) {
+
+    @Inject
+    lateinit var accountRepository: AccountRepository
 
     @Inject
     lateinit var accountSettingsFactory: AccountSettingsFactory
@@ -188,8 +191,7 @@ abstract class BaseSyncWorker(
 
         // Check for errors
         if (syncResult.hasError) {
-            val account = accountId.toAndroidAccount()
-            val softErrorNotificationTag = "${account.type}-${account.name}-$dataType"
+            val softErrorNotificationTag = "$accountId-$dataType"
 
             // On soft errors the sync is retried a few times before considered failed
             if (syncResult.softError) {
@@ -208,12 +210,13 @@ abstract class BaseSyncWorker(
                 }
 
                 logger.warning("Max retries on soft errors reached ($runAttemptCount of $MAX_RUN_ATTEMPTS). Treating as failed")
+                val accountName = accountRepository.getAccountName(accountId)
                 notificationRegistry.notifyIfPossible(NotificationRegistry.NOTIFY_SYNC_ERROR, tag = softErrorNotificationTag) {
                     NotificationCompat.Builder(applicationContext, notificationRegistry.CHANNEL_SYNC_IO_ERRORS)
                         .setSmallIcon(R.drawable.ic_sync_problem_notify)
-                        .setContentTitle(account.name)
+                        .setContentTitle(accountName)
                         .setContentText(applicationContext.getString(R.string.sync_error_retry_limit_reached))
-                        .setSubText(account.name)
+                        .setSubText(accountName)
                         .setOnlyAlertOnce(true)
                         .setPriority(NotificationCompat.PRIORITY_MIN)
                         .setCategory(NotificationCompat.CATEGORY_ERROR)

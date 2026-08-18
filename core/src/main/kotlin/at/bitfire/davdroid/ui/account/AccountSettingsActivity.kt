@@ -12,7 +12,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.TaskStackBuilder
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.accounts.AccountIdIntentSerializer
-import at.bitfire.davdroid.accounts.toAndroidAccount
 import at.bitfire.davdroid.ui.account.AccountActivity.Companion.editAccountActivityIntent
 import dagger.hilt.android.AndroidEntryPoint
 

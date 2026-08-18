@@ -7,6 +7,7 @@ package at.bitfire.davdroid.sync
 import android.accounts.Account
 import android.content.ContentProviderClient
 import at.bitfire.davdroid.accounts.AccountId
+import at.bitfire.davdroid.accounts.LegacyAccount
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.resource.LocalDataStore
 import io.mockk.coEvery
@@ -39,9 +40,11 @@ class SyncerTest {
     val dataStore: LocalTestStore = mockk(relaxed = true)
     val provider: ContentProviderClient = mockk(relaxed = true)
 
+    private val accountId = LegacyAccount(Account("test", "test"))
+
     @SpyK
     @InjectMockKs
-    var syncer = TestSyncer(mockk(relaxed = true), null, SyncResult(), SyncSettingsFixtures.default(), dataStore)
+    var syncer = TestSyncer(accountId, null, SyncResult(), SyncSettingsFixtures.default(), dataStore)
 
 
     @Test
@@ -94,7 +97,7 @@ class SyncerTest {
 
         // Should update the localCollection if it exists
         val result = syncer.updateCollections(provider, listOf(localCollection), dbCollections)
-        verify(exactly = 1) { dataStore.update(provider, localCollection, dbCollection) }
+        verify(exactly = 1) { dataStore.update(accountId, provider, localCollection, dbCollection) }
 
         // Updated local collection list should be same as input
         assertArrayEquals(arrayOf(localCollection), result.toTypedArray())
@@ -219,6 +222,7 @@ class SyncerTest {
         }
 
         override fun update(
+            accountId: AccountId,
             client: ContentProviderClient,
             localCollection: LocalTestCollection,
             fromCollection: Collection

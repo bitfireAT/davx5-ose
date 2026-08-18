@@ -16,8 +16,7 @@ import androidx.annotation.WorkerThread
 import androidx.core.content.contentValuesOf
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
-import at.bitfire.davdroid.accounts.toAccountId
-import at.bitfire.davdroid.accounts.toAndroidAccount
+import at.bitfire.davdroid.accounts.AndroidAccountManager
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
@@ -40,6 +39,7 @@ class LocalAddressBookStore @Inject constructor(
     private val accountRepository: AccountRepository,
     private val accountSettingsFactory: AccountSettingsFactory,
     private val addressBookAccountProperties: AddressBookAccountProperties,
+    private val androidAccountManager: AndroidAccountManager,
     @ApplicationContext private val context: Context,
     private val localAddressBookFactory: LocalAddressBook.Factory,
     private val logger: Logger,
@@ -155,7 +155,12 @@ class LocalAddressBookStore @Inject constructor(
         return getAll(accountId, client).firstOrNull { it.dbCollectionId == dbCollectionId }
     }
 
-    override fun update(client: ContentProviderClient, localCollection: LocalAddressBook, fromCollection: Collection) {
+    override fun update(
+        accountId: AccountId,
+        client: ContentProviderClient,
+        localCollection: LocalAddressBook,
+        fromCollection: Collection
+    ) {
         var currentAccount = localCollection.addressBookAccount
         logger.info("Updating local address book $currentAccount from collection $fromCollection")
 
@@ -168,7 +173,7 @@ class LocalAddressBookStore @Inject constructor(
         }
 
         // Update the account user data
-        addressBookAccountProperties.setAppAccount(currentAccount, localCollection.accountId)
+        addressBookAccountProperties.setAppAccount(currentAccount, accountId)
         addressBookAccountProperties.setCollectionId(currentAccount, fromCollection.id)
 
         // Set contacts provider settings
@@ -193,8 +198,8 @@ class LocalAddressBookStore @Inject constructor(
      * @param client        content provider client (not needed/does not exist for address books)
      */
     override fun updateAccount(oldAccount: Account, newAccount: Account, client: ContentProviderClient?) {
-        val oldAccountId = oldAccount.toAccountId()
-        val newAccountId = newAccount.toAccountId()
+        val oldAccountId = androidAccountManager.getAccountId(oldAccount)
+        val newAccountId = androidAccountManager.getAccountId(newAccount)
 
         accountManager.get().getAccountsByType(context.getString(R.string.account_type_address_book))
             .filter { addressBookAccount ->
