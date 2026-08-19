@@ -47,9 +47,6 @@ interface DbAccountDao {
     @Query("UPDATE account SET name = :newName WHERE id = :id")
     suspend fun rename(id: Long, newName: String)
 
-    @Query("UPDATE account SET name = :newName WHERE id = :id")
-    suspend fun rename(id: Long, newName: String)
-
     @TestOnly
     @Query("DELETE FROM account")
     fun deleteAllBlocking()
