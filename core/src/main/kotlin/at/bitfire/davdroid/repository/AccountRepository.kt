@@ -118,68 +118,6 @@ class AccountRepository @Inject constructor(
             is DbAccountId -> dbAccountDao.getBlocking(accountId.id)?.name ?: throw NoSuchElementException("No account found with id ${accountId.id}")
         }
     }
-    
-    /**
-     * Creates a new account with discovered services and enables periodic syncs with
-     * default sync interval times.
-     *
-     * @param accountName   name of the account
-     * @param credentials   server credentials
-     * @param config        discovered server capabilities for syncable authorities
-     * @param groupMethod   whether CardDAV contact groups are separate VCards or as contact categories
-     *
-     * @return account if account creation was successful; null otherwise (for instance because an account with this name already exists)
-     */
-    @WorkerThread
-    fun createBlocking(
-        accountName: String,
-        credentials: Credentials?,
-        config: DavResourceFinder.Configuration,
-        groupMethod: GroupMethod,
-        preconfigurationUrl: String?,
-    ): AccountId? {
-        val account = fromName(accountName)
-        val accountId = LegacyAccount(account)
-
-        // create Android account
-        val userData = AccountSettings.initialUserData(credentials, preconfigurationUrl)
-        logger.log(Level.INFO, "Creating Android account {0} with initial config {1}", arrayOf(account, userData))
-
-        if (!AndroidAccountUtils.createAccount(context, account, userData, credentials?.password))
-            return null
-
-        // add entries for account to database
-        logger.log(Level.INFO, "Writing account configuration to database: {0}", arrayOf(config))
-        try {
-            if (config.cardDAV != null) {
-                // insert CardDAV service
-                val id = insertService(accountId, accountName, Service.TYPE_CARDDAV, config.cardDAV)
-
-                // set initial CardDAV account settings and set sync intervals (enables automatic sync)
-                val accountSettings = accountSettingsFactory.create(accountId)
-                accountSettings.setGroupMethod(groupMethod)
-
-                // start CardDAV service detection (refresh collections)
-                RefreshCollectionsWorker.enqueue(context, id)
-            }
-
-            if (config.calDAV != null) {
-                // insert CalDAV service
-                val id = insertService(accountId, accountName, Service.TYPE_CALDAV, config.calDAV)
-
-                // start CalDAV service detection (refresh collections)
-                RefreshCollectionsWorker.enqueue(context, id)
-            }
-
-            // set up automatic sync (processes inserted services)
-            automaticSyncManager.get().updateAutomaticSync(accountId)
-
-        } catch (e: InvalidAccountException) {
-            logger.log(Level.SEVERE, "Couldn't access account settings", e)
-            return null
-        }
-        return LegacyAccount(account)
-    }
 
     /**
      * Creates a new account with discovered services and enables periodic syncs with
@@ -238,7 +176,7 @@ class AccountRepository @Inject constructor(
         try {
             if (config.cardDAV != null) {
                 // insert CardDAV service
-                val id = insertService(accountName, Service.TYPE_CARDDAV, config.cardDAV)
+                val id = insertService(accountId, accountName, Service.TYPE_CARDDAV, config.cardDAV)
 
                 // set initial CardDAV account settings and set sync intervals (enables automatic sync)
                 val accountSettings = accountSettingsFactory.create(accountId)
@@ -250,7 +188,7 @@ class AccountRepository @Inject constructor(
 
             if (config.calDAV != null) {
                 // insert CalDAV service
-                val id = insertService(accountName, Service.TYPE_CALDAV, config.calDAV)
+                val id = insertService(accountId, accountName, Service.TYPE_CALDAV, config.calDAV)
 
                 // start CalDAV service detection (refresh collections)
                 RefreshCollectionsWorker.enqueue(context, id)
@@ -290,7 +228,7 @@ class AccountRepository @Inject constructor(
 
             if (accountId is DbAccountId) {
                 // delete account from database if it is a DbAccountId
-                dbAccountDao.deleteBlocking(DbAccount(id = accountId.id, name = account.name))
+                dbAccountDao.delete(accountId.id)
             }
 
             true
@@ -366,11 +304,14 @@ class AccountRepository @Inject constructor(
      * @throws IllegalArgumentException if the new account name already exists
      * @throws Exception (or sub-classes) on other errors
      */
-    suspend fun rename(oldName: String, newName: String): LegacyAccount = withContext(ioDispatcher) {
+    suspend fun rename(oldName: String, oldAccountId: AccountId, newName: String): AccountId = withContext(ioDispatcher) {
         val oldAccount = fromName(oldName)
-        val oldAccountId = LegacyAccount(oldAccount)
         val newAccount = fromName(newName)
-        val newAccountId = LegacyAccount(newAccount)
+        val newAccountId: AccountId = when (oldAccountId) {
+            is LegacyAccount -> LegacyAccount(newAccount)
+            // DbAccountId only contains an id and not the name, so we can just return the oldAccountId since the id does not change
+            is DbAccountId -> oldAccountId
+        }
 
         // check whether new account name already exists
         if (accountManager.getAccountsByType(context.getString(R.string.account_type)).contains(newAccount))
@@ -387,7 +328,12 @@ class AccountRepository @Inject constructor(
             3. Now the services would be renamed, but they're not here anymore. */
             AccountsCleanupWorker.lockAccountsCleanup()
 
-            // rename account (also moves AccountSettings)
+            if (oldAccountId is DbAccountId) {
+                // update account name in database
+                dbAccountDao.rename(oldAccountId.id, newName)
+            }
+
+            // rename account (also moves AccountSettings if the account is a LegacyAccount)
             val future = accountManager.renameAccount(oldAccount, newName, null, null)
 
             // wait for operation to complete (blocks calling thread)
@@ -446,8 +392,11 @@ class AccountRepository @Inject constructor(
 
     suspend fun rename(accountId: AccountId, newName: String): AccountId {
         return when (accountId) {
-            is LegacyAccount -> rename(accountId.androidAccount.name, newName)
-            is DbAccountId -> TODO("It's not possible yet to rename DbAccountIds")
+            is LegacyAccount -> rename(accountId.androidAccount.name, accountId, newName)
+            is DbAccountId -> {
+                val dbAccount = dbAccountDao.get(accountId.id) ?: throw NoSuchElementException("No account found with id ${accountId.id}")
+                rename(dbAccount.name, accountId, newName)
+            }
         }
     }
 
