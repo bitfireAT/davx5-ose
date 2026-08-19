@@ -143,13 +143,9 @@ class AccountRepository @Inject constructor(
         val accountIdNumber = try {
             dbAccountDao.insert(DbAccount(name = accountName))
         } catch (e: SQLiteConstraintException) {
-            if (e.message?.contains("SQLITE_CONSTRAINT_UNIQUE") == true) {
-                // account with this name already exists, show a warning and return null
-                logger.log(Level.WARNING, "Account with name $accountName already exists", e)
-                return null
-            } else {
-                throw e
-            }
+            // account with this name already exists, show a warning and return null
+            logger.log(Level.WARNING, "Account with name $accountName already exists", e)
+            return null
         }
         val accountId = DbAccountId(accountIdNumber)
 
