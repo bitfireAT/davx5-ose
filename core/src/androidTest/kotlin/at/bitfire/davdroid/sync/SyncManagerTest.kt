@@ -13,7 +13,7 @@ import at.bitfire.davdroid.TestUtils.assertWithin
 import at.bitfire.davdroid.accounts.LegacyAccount
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.repository.DavSyncStatsRepository
-import at.bitfire.davdroid.resource.SyncState
+import at.bitfire.davdroid.resource.local.SyncState
 import at.bitfire.davdroid.resource.remote.InternalMemberState
 import at.bitfire.davdroid.resource.remote.TestWebDavCollection
 import at.bitfire.davdroid.resource.remote.WebDavCollection

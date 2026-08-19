@@ -10,7 +10,7 @@ import android.os.Bundle
 import android.provider.ContactsContract
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.accounts.AndroidAccountManager
-import at.bitfire.davdroid.resource.LocalAddressBookStore
+import at.bitfire.davdroid.resource.local.LocalAddressBookStore
 import at.bitfire.davdroid.settings.AccountSettingsStore
 import at.bitfire.davdroid.sync.SyncDataType
 import dagger.Binds

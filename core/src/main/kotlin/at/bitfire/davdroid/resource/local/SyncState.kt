@@ -2,7 +2,7 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  */
 
-package at.bitfire.davdroid.resource
+package at.bitfire.davdroid.resource.local
 
 import at.bitfire.dav4jvm.property.webdav.SyncToken
 import org.json.JSONException

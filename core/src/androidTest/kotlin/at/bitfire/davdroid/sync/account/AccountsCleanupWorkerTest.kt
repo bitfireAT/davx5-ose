@@ -15,7 +15,7 @@ import at.bitfire.davdroid.TestUtils
 import at.bitfire.davdroid.accounts.LegacyAccount
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Service
-import at.bitfire.davdroid.resource.AddressBookAccountProperties
+import at.bitfire.davdroid.resource.local.AddressBookAccountProperties
 import at.bitfire.davdroid.settings.SettingsManager
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule

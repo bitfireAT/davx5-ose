@@ -11,8 +11,8 @@ import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.network.HttpClientBuilder
 import at.bitfire.davdroid.repository.DavServiceRepository
-import at.bitfire.davdroid.resource.LocalJtxCollection
-import at.bitfire.davdroid.resource.LocalJtxCollectionStore
+import at.bitfire.davdroid.resource.local.LocalJtxCollection
+import at.bitfire.davdroid.resource.local.LocalJtxCollectionStore
 import at.bitfire.davdroid.resource.remote.CalDavCollection
 import at.bitfire.davdroid.resource.remote.CalendarQueryFilter
 import at.bitfire.davdroid.sync.account.TestAccount

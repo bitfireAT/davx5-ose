@@ -5,7 +5,7 @@
 package at.bitfire.davdroid.resource.remote
 
 import at.bitfire.dav4jvm.ktor.DavCollection
-import at.bitfire.davdroid.resource.SyncState
+import at.bitfire.davdroid.resource.local.SyncState
 import io.ktor.http.Url
 import io.ktor.http.content.OutgoingContent
 import kotlinx.coroutines.flow.Flow

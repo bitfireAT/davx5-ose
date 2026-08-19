@@ -4,8 +4,8 @@
 
 package at.bitfire.davdroid.sync
 
-import at.bitfire.davdroid.resource.LocalCollection
-import at.bitfire.davdroid.resource.SyncState
+import at.bitfire.davdroid.resource.local.LocalCollection
+import at.bitfire.davdroid.resource.local.SyncState
 import kotlinx.coroutines.flow.asFlow
 
 class LocalTestCollection(

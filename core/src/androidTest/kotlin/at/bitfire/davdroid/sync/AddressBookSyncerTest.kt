@@ -8,7 +8,7 @@ import android.accounts.AccountManager
 import android.content.ContentProviderClient
 import android.os.DeadObjectException
 import at.bitfire.davdroid.db.Collection
-import at.bitfire.davdroid.resource.LocalAddressBook
+import at.bitfire.davdroid.resource.local.LocalAddressBook
 import at.bitfire.synctools.storage.LocalStorageException
 import at.bitfire.synctools.test.assertThrows
 import io.ktor.http.Url

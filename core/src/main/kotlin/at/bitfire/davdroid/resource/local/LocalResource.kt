@@ -2,12 +2,12 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  */
 
-package at.bitfire.davdroid.resource
+package at.bitfire.davdroid.resource.local
 
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import at.bitfire.davdroid.resource.LocalResource.Companion.FLAG_REMOTELY_PRESENT
+import at.bitfire.davdroid.resource.local.LocalResource.Companion.FLAG_REMOTELY_PRESENT
 import java.util.Optional
 
 /**

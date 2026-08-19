@@ -26,9 +26,9 @@ import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.repository.DavSyncStatsRepository
-import at.bitfire.davdroid.resource.LocalCollection
-import at.bitfire.davdroid.resource.LocalResource
-import at.bitfire.davdroid.resource.SyncState
+import at.bitfire.davdroid.resource.local.LocalCollection
+import at.bitfire.davdroid.resource.local.LocalResource
+import at.bitfire.davdroid.resource.local.SyncState
 import at.bitfire.davdroid.resource.remote.CollectionSyncItem
 import at.bitfire.davdroid.resource.remote.InternalMemberState
 import at.bitfire.davdroid.resource.remote.WebDavCollection

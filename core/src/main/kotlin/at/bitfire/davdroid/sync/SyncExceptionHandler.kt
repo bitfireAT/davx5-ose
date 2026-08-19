@@ -15,7 +15,7 @@ import at.bitfire.dav4jvm.ktor.exception.UnauthorizedException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.db.Collection
-import at.bitfire.davdroid.resource.LocalResource
+import at.bitfire.davdroid.resource.local.LocalResource
 import at.bitfire.davdroid.util.causedBy
 import at.bitfire.synctools.storage.LocalStorageException
 import dagger.assisted.Assisted

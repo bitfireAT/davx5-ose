@@ -5,7 +5,7 @@
 package at.bitfire.davdroid.sync
 
 import android.content.Context
-import at.bitfire.davdroid.resource.LocalResource
+import at.bitfire.davdroid.resource.local.LocalResource
 import java.util.Optional
 
 class LocalTestResource: LocalResource {

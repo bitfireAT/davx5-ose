@@ -39,9 +39,9 @@ import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.accounts.AndroidAccountManager
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.repository.AccountRepository
-import at.bitfire.davdroid.resource.LocalAddressBook
+import at.bitfire.davdroid.resource.local.LocalAddressBook
 import at.bitfire.davdroid.settings.AccountSettingsFactory
-import at.bitfire.davdroid.resource.AddressBookAccountProperties
+import at.bitfire.davdroid.resource.local.AddressBookAccountProperties
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.sync.SyncDataType

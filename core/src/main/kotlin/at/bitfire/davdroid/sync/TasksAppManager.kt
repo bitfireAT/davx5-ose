@@ -15,9 +15,9 @@ import androidx.core.app.TaskStackBuilder
 import androidx.core.net.toUri
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.repository.AccountRepository
-import at.bitfire.davdroid.resource.LocalDataStore
-import at.bitfire.davdroid.resource.LocalJtxCollectionStore
-import at.bitfire.davdroid.resource.LocalTaskListStore
+import at.bitfire.davdroid.resource.local.LocalDataStore
+import at.bitfire.davdroid.resource.local.LocalJtxCollectionStore
+import at.bitfire.davdroid.resource.local.LocalTaskListStore
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.NotificationRegistry

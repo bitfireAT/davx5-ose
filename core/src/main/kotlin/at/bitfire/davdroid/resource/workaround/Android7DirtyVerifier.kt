@@ -7,8 +7,8 @@ package at.bitfire.davdroid.resource.workaround
 import android.content.ContentValues
 import android.os.Build
 import android.provider.ContactsContract.Groups
-import at.bitfire.davdroid.resource.LocalAddressBook
-import at.bitfire.davdroid.resource.LocalContact
+import at.bitfire.davdroid.resource.local.LocalAddressBook
+import at.bitfire.davdroid.resource.local.LocalContact
 import at.bitfire.synctools.storage.BatchOperation
 import at.bitfire.synctools.storage.contacts.AddressContract.RawContactColumns
 import at.bitfire.synctools.storage.contacts.ContactsBatchOperation
