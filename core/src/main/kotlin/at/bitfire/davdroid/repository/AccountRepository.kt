@@ -253,8 +253,10 @@ class AccountRepository @Inject constructor(
      */
     @Deprecated("Only use this method when resolving which account a `at.bitfire.davdroid.db.Service` instance belongs to.")
     suspend fun getAccountIdFromName(accountName: String): AccountId {
-        // Note: In the future this will have to perform a database lookup
-        return LegacyAccount(fromName(accountName))
+        // Try to find the account in the database first, if it's not there, we assume it was created before the change
+        // to database account creation
+        val dbAccount = dbAccountDao.getFromName(accountName)?.let { DbAccountId(it.id) }
+        return dbAccount ?: LegacyAccount(fromName(accountName))
     }
 
     suspend fun getAll(): List<AccountId> {
