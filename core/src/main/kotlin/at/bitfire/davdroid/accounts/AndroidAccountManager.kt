@@ -11,6 +11,7 @@ import android.os.Build
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
+import at.bitfire.davdroid.sync.account.InvalidAccountException
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.runBlocking
@@ -33,7 +34,7 @@ class AndroidAccountManager @Inject constructor(
     /**
      * Returns the Android [Account] for a given [AccountId].
      * @return the Android account for the given [accountId]
-     * @throws NoSuchElementException if the account does not exist
+     * @throws InvalidAccountException if the account does not exist
      */
     fun getAndroidAccount(accountId: AccountId): Account {
         return when (accountId) {
@@ -45,7 +46,7 @@ class AndroidAccountManager @Inject constructor(
                 // note: currently, this is using runBlocking. ideally we should make the function suspending
                 runBlocking(ioDispatcher) { dbAccountDao.get(accountId.id) }
                     ?.let { Account(it.name, accountType) }
-                    ?: throw NoSuchElementException("No account found for id $accountId")
+                    ?: throw InvalidAccountException(accountId)
             }
         }
     }
