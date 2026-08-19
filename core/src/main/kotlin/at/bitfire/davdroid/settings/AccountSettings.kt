@@ -76,6 +76,20 @@ class AccountSettings @AssistedInject constructor(
     }
 
 
+    /**
+     * Stores the initial account settings into the database. This is used when creating a new account.
+     * @param credentials         initial credentials to store (may be null)
+     * @param preconfigurationUrl initial preconfiguration URL to store (may be null)
+     * @see initialUserData
+     */
+    fun putInitialSettings(credentials: Credentials?, preconfigurationUrl: String?) {
+        val all = initialUserData(credentials, preconfigurationUrl)
+
+        for ((key, value) in all) {
+            store.putValue(key, value)
+        }
+    }
+
     // authentication settings
 
     fun credentials() = Credentials(
