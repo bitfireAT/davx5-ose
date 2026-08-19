@@ -35,8 +35,13 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.ConscryptMode
 import java.util.logging.Logger
 
+@RunWith(RobolectricTestRunner::class)
+@ConscryptMode(ConscryptMode.Mode.OFF)      // required because main project uses Conscrypt, but unit tests do not
 class AccountSettingsTest {
 
     private val store = InMemorySettingsStore(storage = mapOf(KEY_SETTINGS_VERSION to CURRENT_VERSION.toString()))
@@ -404,5 +409,51 @@ class AccountSettingsTest {
 
         accountSettings.setShowOnlyPersonal(false)
         assertNull(store.getValue(KEY_SHOW_ONLY_PERSONAL))
+    }
+
+    @Test
+    fun test_initialUserData() {
+        AccountSettings.initialUserData(null, null).let { userData ->
+            assertEquals(CURRENT_VERSION.toString(), userData[KEY_SETTINGS_VERSION])
+
+            // Credentials
+            assertNull(userData[AccountSettings.KEY_USERNAME])
+            assertNull(userData[AccountSettings.KEY_CERTIFICATE_ALIAS])
+            assertNull(userData[AccountSettings.KEY_AUTH_STATE])
+
+            // Preconfiguration URL
+            assertNull(userData[AccountSettings.KEY_PRECONFIGURATION_URL])
+        }
+    }
+
+    @Test
+    fun test_initialUserData_credentials() {
+        val credentials = Credentials("username", null, "alias", AuthState())
+        AccountSettings.initialUserData(credentials, null).let { userData ->
+            assertEquals(CURRENT_VERSION.toString(), userData[KEY_SETTINGS_VERSION])
+
+            // Credentials
+            assertEquals("username", userData[AccountSettings.KEY_USERNAME])
+            assertEquals("alias", userData[AccountSettings.KEY_CERTIFICATE_ALIAS])
+            assertEquals("{}", userData[AccountSettings.KEY_AUTH_STATE])
+
+            // Preconfiguration URL
+            assertNull(userData[AccountSettings.KEY_PRECONFIGURATION_URL])
+        }
+    }
+
+    @Test
+    fun test_initialUserData_preconfigurationUrl() {
+        AccountSettings.initialUserData(null, "https://example.com").let { userData ->
+            assertEquals(CURRENT_VERSION.toString(), userData[KEY_SETTINGS_VERSION])
+
+            // Credentials
+            assertNull(userData[AccountSettings.KEY_USERNAME])
+            assertNull(userData[AccountSettings.KEY_CERTIFICATE_ALIAS])
+            assertNull(userData[AccountSettings.KEY_AUTH_STATE])
+
+            // Preconfiguration URL
+            assertEquals("https://example.com", userData[AccountSettings.KEY_PRECONFIGURATION_URL])
+        }
     }
 }
