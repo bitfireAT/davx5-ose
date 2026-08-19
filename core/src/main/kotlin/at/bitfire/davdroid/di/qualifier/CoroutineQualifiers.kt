@@ -43,3 +43,19 @@ annotation class DefaultDispatcher
 @Retention(AnnotationRetention.RUNTIME)
 @Qualifier
 annotation class IoDispatcher
+
+/**
+ * Alternative for [DefaultDispatcher] for sync operations, typically:
+ *
+ * - sync workers
+ * - refresh collection workers
+ *
+ * Mainly exists because using [DefaultDispatcher] for multiple concurrent syncs (or other workers that
+ * use [at.bitfire.davdroid.network.HttpClientBuilder]) causes a deadlock, see:
+ *
+ * - https://github.com/bitfireAT/davx5/issues/937 – actually caused by
+ * - https://youtrack.jetbrains.com/issue/KTOR-9722
+ */
+@Retention(AnnotationRetention.RUNTIME)
+@Qualifier
+annotation class SyncDispatcher
