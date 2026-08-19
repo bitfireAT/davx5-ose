@@ -44,6 +44,7 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
@@ -271,7 +272,7 @@ class AccountRepository @Inject constructor(
             .map { account -> LegacyAccount(account) }
     }
 
-    fun getAllFlow() = callbackFlow<Set<AccountId>> {
+    fun getAllLegacyAccountFlow() = callbackFlow {
         val listener = OnAccountsUpdateListener { accounts ->
             val accountIds = accounts
                 .filter { it.type == accountType }
@@ -288,6 +289,16 @@ class AccountRepository @Inject constructor(
             accountManager.removeOnAccountsUpdatedListener(listener)
         }
     }.distinctUntilChanged()
+
+    fun getAllDbAccountFlow() = dbAccountDao.getAllFlow()
+
+    /**
+     * Returns a flow of all accounts, both legacy and database accounts.
+     */
+    fun getAllFlow() = combine(getAllLegacyAccountFlow(), getAllDbAccountFlow()) { legacyAccounts, dbAccounts ->
+        val dbAccountsNames = dbAccounts.map { it.name }.toSet()
+        legacyAccounts.filter { it.androidAccount.name !in dbAccountsNames } + dbAccounts.map { DbAccountId(it.id) }
+    }
 
     /**
      * Renames an account.
