@@ -13,10 +13,6 @@ class InMemorySettingsStore(
     private val storage: MutableMap<String, String> = storage.toMutableMap()
     private val sensitiveStorage: MutableMap<String, SensitiveString> = sensitiveStorage.toMutableMap()
 
-    override fun getAllValues(): Map<String, String> {
-        return storage.toMap()
-    }
-
     override fun getValue(key: String): String? {
         return storage[key]
     }

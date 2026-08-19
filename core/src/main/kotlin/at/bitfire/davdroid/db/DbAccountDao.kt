@@ -32,6 +32,12 @@ interface DbAccountDao {
     @Update
     fun updateBlocking(dbAccount: DbAccount)
 
+    @Query("DELETE FROM account WHERE id = :id")
+    suspend fun delete(id: Long)
+
+    @Query("UPDATE account SET name = :newName WHERE id = :id")
+    suspend fun rename(id: Long, newName: String)
+
     @Delete
     fun deleteBlocking(dbAccount: DbAccount)
 
