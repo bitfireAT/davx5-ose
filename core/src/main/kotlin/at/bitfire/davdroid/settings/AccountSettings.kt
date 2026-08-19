@@ -8,7 +8,6 @@ import androidx.annotation.WorkerThread
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.settings.AccountSettings.Companion.CREDENTIALS_LOCK
 import at.bitfire.davdroid.settings.AccountSettings.Companion.CREDENTIALS_LOCK_AT_LOGIN_AND_SETTINGS
-import at.bitfire.davdroid.settings.AccountSettings.Companion.initialUserData
 import at.bitfire.davdroid.settings.migration.AccountSettingsMigration
 import at.bitfire.davdroid.sync.AutomaticSyncManager
 import at.bitfire.davdroid.sync.SyncDataType
@@ -76,30 +75,6 @@ class AccountSettings @AssistedInject constructor(
         }
     }
 
-
-    /**
-     * Stores the initial account settings into the database. This is used when creating a new account.
-     * @param credentials         initial credentials to store (may be null)
-     * @param preconfigurationUrl initial preconfiguration URL to store (may be null)
-     * @see initialUserData
-     */
-    fun putInitialSettings(credentials: Credentials?, preconfigurationUrl: String?) {
-        val all = initialUserData(credentials, preconfigurationUrl)
-
-        for ((key, value) in all) {
-            store.putValue(key, value)
-        }
-    }
-
-    /**
-     * Gets a list of all account settings as key-value pairs.
-     * @throws UnsupportedOperationException If [store] is [AccountManagerSettingsStore] because the Android AccountManager doesn't support listing all keys.
-     */
-    fun extractAll(): Map<String, String> = buildMap {
-        store.getAllValues().forEach { (key, value) ->
-            put(key, value)
-        }
-    }
 
     // authentication settings
 
