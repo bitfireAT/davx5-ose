@@ -10,7 +10,10 @@ import android.content.Context
 import android.os.Build
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
+import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 import javax.inject.Provider
 
@@ -20,7 +23,8 @@ import javax.inject.Provider
 class AndroidAccountManager @Inject constructor(
     private val accountManager: Provider<AccountManager>,
     @ApplicationContext context: Context,
-    database: AppDatabase
+    database: AppDatabase,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) {
     private val accountType = context.getString(R.string.account_type)
 
@@ -38,7 +42,9 @@ class AndroidAccountManager @Inject constructor(
                 // note: this currently depends on the account being created before. at some point, the system accounts
                 //       should be dynamically created, and this method should be able to create the account if it
                 //       doesn't exist yet. for now, we just throw an exception.
-                dbAccountDao.getBlocking(accountId.id)?.let { Account(it.name, accountType) }
+                // note: currently, this is using runBlocking. ideally we should make the function suspending
+                runBlocking(ioDispatcher) { dbAccountDao.get(accountId.id) }
+                    ?.let { Account(it.name, accountType) }
                     ?: throw NoSuchElementException("No account found for id $accountId")
             }
         }
