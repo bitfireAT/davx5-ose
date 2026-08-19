@@ -182,7 +182,6 @@ class AccountRepository @Inject constructor(
                 val id = insertService(accountId, accountName, Service.TYPE_CARDDAV, config.cardDAV)
 
                 // set initial CardDAV account settings and set sync intervals (enables automatic sync)
-                val accountSettings = accountSettingsFactory.create(accountId)
                 accountSettings.setGroupMethod(groupMethod)
 
                 // start CardDAV service detection (refresh collections)
