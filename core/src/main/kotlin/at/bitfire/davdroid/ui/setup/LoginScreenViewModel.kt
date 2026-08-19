@@ -366,15 +366,13 @@ class LoginScreenViewModel @AssistedInject constructor(
         }
 
         viewModelScope.launch {
-            val accountId = withContext(ioDispatcher) {
-                accountRepository.create(
-                    accountDetailsUiState.value.accountName,
-                    loginInfo.credentials,
-                    foundConfig!!,
-                    accountDetailsUiState.value.groupMethod,
-                    loginInfo.preconfigurationUrl
-                )
-            }
+            val accountId = accountRepository.create(
+                accountDetailsUiState.value.accountName,
+                loginInfo.credentials,
+                foundConfig!!,
+                accountDetailsUiState.value.groupMethod,
+                loginInfo.preconfigurationUrl
+            )
 
             _accountDetailsUiState.update { currentState ->
                 if (accountId != null)
