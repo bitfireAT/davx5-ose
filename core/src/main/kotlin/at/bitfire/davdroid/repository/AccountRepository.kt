@@ -343,6 +343,8 @@ class AccountRepository @Inject constructor(
         }
 
         // check whether new account name already exists
+        // Note: right now this check is enough, because we create a system account for each database account. But we should
+        //       extend this check in the future to also check the database for existing accounts.
         if (accountManager.getAccountsByType(context.getString(R.string.account_type)).contains(newAccount))
             throw IllegalArgumentException("Account with name \"$newName\" already exists")
 
