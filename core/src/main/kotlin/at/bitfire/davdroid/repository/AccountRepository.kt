@@ -227,7 +227,7 @@ class AccountRepository @Inject constructor(
         val account = fromName(accountName)
 
         // create Android account - extract the initial settings from the database and pass them to the Android account creation API
-        val userData = accountSettings.extractAll()
+        val userData = AccountSettings.initialUserData(credentials, preconfigurationUrl)
         logger.log(Level.INFO, "Creating Android account {0} with initial config {1}", arrayOf(account, userData))
 
         if (!AndroidAccountUtils.createAccount(context, account, userData, credentials?.password))
