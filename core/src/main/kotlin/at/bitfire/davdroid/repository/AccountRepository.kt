@@ -131,7 +131,6 @@ class AccountRepository @Inject constructor(
      *
      * @return account if account creation was successful; null otherwise (for instance because an account with this name already exists)
      */
-    @WorkerThread
     suspend fun create(
         accountName: String,
         credentials: Credentials?,
