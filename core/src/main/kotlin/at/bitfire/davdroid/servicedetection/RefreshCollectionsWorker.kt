@@ -11,6 +11,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.TaskStackBuilder
 import androidx.hilt.work.HiltWorker
+import androidx.work.CoroutineWorker
 import androidx.work.Data
 import androidx.work.ExistingWorkPolicy
 import androidx.work.ForegroundInfo
@@ -21,8 +22,8 @@ import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import at.bitfire.dav4jvm.ktor.exception.UnauthorizedException
-import at.bitfire.davdroid.IoCoroutineWorker
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.di.qualifier.SyncDispatcher
 import at.bitfire.davdroid.network.HttpClientBuilder
 import at.bitfire.davdroid.push.PushRegistrationManager
 import at.bitfire.davdroid.repository.AccountRepository
@@ -34,7 +35,9 @@ import at.bitfire.davdroid.ui.NotificationRegistry
 import at.bitfire.davdroid.ui.account.AccountSettingsActivity
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
 import java.util.logging.Level
 import java.util.logging.Logger
 
@@ -70,8 +73,9 @@ class RefreshCollectionsWorker @AssistedInject constructor(
     private val principalsRefresherFactory: PrincipalsRefresher.Factory,
     private val pushRegistrationManager: PushRegistrationManager,
     private val serviceRefresherFactory: ServiceRefresher.Factory,
-    private val serviceRepository: DavServiceRepository
-) : IoCoroutineWorker(appContext, workerParams) {
+    private val serviceRepository: DavServiceRepository,
+    @SyncDispatcher private val syncDispatcher: CoroutineDispatcher
+) : CoroutineWorker(appContext, workerParams) {
 
     companion object {
 
@@ -135,7 +139,12 @@ class RefreshCollectionsWorker @AssistedInject constructor(
 
     private val serviceId: Long = inputData.getLong(ARG_SERVICE_ID, -1)
 
-    override suspend fun doIoWork(): Result {
+    override suspend fun doWork(): Result =
+        withContext(syncDispatcher) {   // required because of Ktor issue; see SyncDispatcher KDoc
+            refreshCollections()
+        }
+
+    suspend fun refreshCollections(): Result {
         val service = serviceRepository.get(serviceId)
         if (service == null) {
             logger.warning("Missing service with service ID: $serviceId")
