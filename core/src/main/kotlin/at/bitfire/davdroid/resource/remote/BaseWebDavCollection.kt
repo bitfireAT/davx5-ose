@@ -18,7 +18,7 @@ import at.bitfire.dav4jvm.property.webdav.ResourceType
 import at.bitfire.dav4jvm.property.webdav.SupportedReportSet
 import at.bitfire.dav4jvm.property.webdav.SyncToken
 import at.bitfire.dav4jvm.property.webdav.WebDAV
-import at.bitfire.davdroid.resource.SyncState
+import at.bitfire.davdroid.resource.local.SyncState
 import io.ktor.client.HttpClient
 import io.ktor.http.Headers
 import io.ktor.http.HttpHeaders

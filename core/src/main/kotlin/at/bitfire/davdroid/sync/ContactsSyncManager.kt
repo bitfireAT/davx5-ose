@@ -9,11 +9,11 @@ import at.bitfire.dav4jvm.ktor.DavAddressBook
 import at.bitfire.davdroid.ProductIds
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.db.Collection
-import at.bitfire.davdroid.resource.LocalAddress
-import at.bitfire.davdroid.resource.LocalAddressBook
-import at.bitfire.davdroid.resource.LocalContact
-import at.bitfire.davdroid.resource.LocalGroup
-import at.bitfire.davdroid.resource.LocalResource
+import at.bitfire.davdroid.resource.local.LocalAddress
+import at.bitfire.davdroid.resource.local.LocalAddressBook
+import at.bitfire.davdroid.resource.local.LocalContact
+import at.bitfire.davdroid.resource.local.LocalGroup
+import at.bitfire.davdroid.resource.local.LocalResource
 import at.bitfire.davdroid.resource.remote.CardDavCollection
 import at.bitfire.davdroid.resource.remote.WebDavCollection
 import at.bitfire.davdroid.resource.workaround.ContactDirtyVerifier

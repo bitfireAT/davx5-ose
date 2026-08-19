@@ -9,9 +9,9 @@ import at.bitfire.dav4jvm.ktor.DavCalendar
 import at.bitfire.davdroid.ProductIds
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.db.Collection
-import at.bitfire.davdroid.resource.LocalJtxCollection
-import at.bitfire.davdroid.resource.LocalJtxObject
-import at.bitfire.davdroid.resource.LocalResource
+import at.bitfire.davdroid.resource.local.LocalJtxCollection
+import at.bitfire.davdroid.resource.local.LocalJtxObject
+import at.bitfire.davdroid.resource.local.LocalResource
 import at.bitfire.davdroid.resource.remote.CalDavCollection
 import at.bitfire.davdroid.resource.remote.WebDavCollection
 import at.bitfire.davdroid.util.DavUtils

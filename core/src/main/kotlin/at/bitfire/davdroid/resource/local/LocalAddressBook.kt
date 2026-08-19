@@ -1,7 +1,7 @@
 /*
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  */
-package at.bitfire.davdroid.resource
+package at.bitfire.davdroid.resource.local
 
 import android.accounts.Account
 import android.accounts.AccountManager

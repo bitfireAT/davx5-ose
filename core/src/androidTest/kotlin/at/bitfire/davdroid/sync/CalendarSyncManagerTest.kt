@@ -14,8 +14,8 @@ import android.provider.CalendarContract.Events
 import androidx.core.content.contentValuesOf
 import androidx.test.rule.GrantPermissionRule
 import at.bitfire.davdroid.accounts.LegacyAccount
-import at.bitfire.davdroid.resource.LocalCalendar
-import at.bitfire.davdroid.resource.LocalEvent
+import at.bitfire.davdroid.resource.local.LocalCalendar
+import at.bitfire.davdroid.resource.local.LocalEvent
 import at.bitfire.davdroid.resource.remote.CalDavCollection
 import at.bitfire.davdroid.resource.remote.CalendarQueryFilter
 import at.bitfire.davdroid.resource.remote.WebDavCollection

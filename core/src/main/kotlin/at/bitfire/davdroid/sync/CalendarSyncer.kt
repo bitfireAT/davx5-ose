@@ -8,8 +8,8 @@ import android.content.ContentProviderClient
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
-import at.bitfire.davdroid.resource.LocalCalendar
-import at.bitfire.davdroid.resource.LocalCalendarStore
+import at.bitfire.davdroid.resource.local.LocalCalendar
+import at.bitfire.davdroid.resource.local.LocalCalendarStore
 import at.bitfire.davdroid.resource.remote.CalDavCollection
 import at.bitfire.davdroid.resource.remote.CalendarQueryFilter
 import at.bitfire.synctools.storage.calendar.AndroidCalendarProvider

@@ -18,8 +18,8 @@ import at.bitfire.davdroid.accounts.LegacyAccount
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
-import at.bitfire.davdroid.resource.LocalCalendarStore
-import at.bitfire.davdroid.resource.LocalTestAddressBook
+import at.bitfire.davdroid.resource.local.LocalCalendarStore
+import at.bitfire.davdroid.resource.local.LocalTestAddressBook
 import at.bitfire.davdroid.settings.migration.AccountSettingsMigration18.Companion.USER_DATA_ACCOUNT_NAME
 import at.bitfire.davdroid.settings.migration.AccountSettingsMigration18.Companion.USER_DATA_ACCOUNT_TYPE
 import at.bitfire.davdroid.settings.migration.AccountSettingsMigration18.Companion.USER_DATA_COLLECTION_ID

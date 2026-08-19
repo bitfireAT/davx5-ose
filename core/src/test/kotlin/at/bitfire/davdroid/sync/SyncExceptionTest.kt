@@ -4,7 +4,7 @@
 
 package at.bitfire.davdroid.sync
 
-import at.bitfire.davdroid.resource.LocalResource
+import at.bitfire.davdroid.resource.local.LocalResource
 import io.ktor.http.Url
 import io.mockk.mockk
 import kotlinx.coroutines.CancellationException

@@ -6,7 +6,7 @@ package at.bitfire.davdroid.sync
 
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.db.Collection
-import at.bitfire.davdroid.resource.LocalResource
+import at.bitfire.davdroid.resource.local.LocalResource
 import at.bitfire.davdroid.resource.remote.WebDavCollection
 import at.bitfire.davdroid.util.DavUtils.lastSegment
 import dagger.assisted.Assisted

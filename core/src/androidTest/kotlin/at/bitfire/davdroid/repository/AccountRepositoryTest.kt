@@ -11,9 +11,9 @@ import androidx.hilt.work.HiltWorkerFactory
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.TestUtils
 import at.bitfire.davdroid.accounts.LegacyAccount
-import at.bitfire.davdroid.resource.LocalAddressBookStore
-import at.bitfire.davdroid.resource.LocalCalendarStore
-import at.bitfire.davdroid.resource.LocalDataStore
+import at.bitfire.davdroid.resource.local.LocalAddressBookStore
+import at.bitfire.davdroid.resource.local.LocalCalendarStore
+import at.bitfire.davdroid.resource.local.LocalDataStore
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.AutomaticSyncManager
 import at.bitfire.davdroid.sync.SyncDataType

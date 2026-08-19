@@ -13,8 +13,8 @@ import at.bitfire.davdroid.accounts.AndroidAccountManager
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
-import at.bitfire.davdroid.resource.LocalAddressBook
-import at.bitfire.davdroid.resource.LocalAddressBookStore
+import at.bitfire.davdroid.resource.local.LocalAddressBook
+import at.bitfire.davdroid.resource.local.LocalAddressBookStore
 import at.bitfire.davdroid.settings.AccountSettingsFactory
 import at.bitfire.davdroid.settings.AccountSettingsStore
 import at.bitfire.synctools.util.setAndVerifyUserData

@@ -15,8 +15,8 @@ import at.bitfire.davdroid.db.ServiceType
 import at.bitfire.davdroid.network.HttpClientBuilder
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
-import at.bitfire.davdroid.resource.LocalCollection
-import at.bitfire.davdroid.resource.LocalDataStore
+import at.bitfire.davdroid.resource.local.LocalCollection
+import at.bitfire.davdroid.resource.local.LocalDataStore
 import at.bitfire.davdroid.sync.account.InvalidAccountException
 import at.bitfire.davdroid.util.causedBy
 import dagger.hilt.android.qualifiers.ApplicationContext

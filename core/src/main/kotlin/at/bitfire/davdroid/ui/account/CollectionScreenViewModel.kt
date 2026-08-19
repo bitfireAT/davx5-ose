@@ -24,9 +24,9 @@ import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.repository.DavSyncStatsRepository
-import at.bitfire.davdroid.resource.LocalAddressBookStore
-import at.bitfire.davdroid.resource.LocalCalendarStore
-import at.bitfire.davdroid.resource.LocalDataStore
+import at.bitfire.davdroid.resource.local.LocalAddressBookStore
+import at.bitfire.davdroid.resource.local.LocalCalendarStore
+import at.bitfire.davdroid.resource.local.LocalDataStore
 import at.bitfire.davdroid.settings.AccountSettingsFactory
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager

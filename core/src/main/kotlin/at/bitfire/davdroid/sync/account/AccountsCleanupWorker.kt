@@ -17,7 +17,7 @@ import androidx.work.WorkerParameters
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.repository.AccountRepository
-import at.bitfire.davdroid.resource.AddressBookAccountProperties
+import at.bitfire.davdroid.resource.local.AddressBookAccountProperties
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject

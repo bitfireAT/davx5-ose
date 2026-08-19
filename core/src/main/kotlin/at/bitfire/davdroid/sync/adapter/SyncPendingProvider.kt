@@ -8,7 +8,7 @@ import android.accounts.Account
 import android.content.Context
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.accounts.AndroidAccountManager
-import at.bitfire.davdroid.resource.LocalAddressBookStore
+import at.bitfire.davdroid.resource.local.LocalAddressBookStore
 import at.bitfire.davdroid.sync.SyncDataType
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.ExperimentalCoroutinesApi

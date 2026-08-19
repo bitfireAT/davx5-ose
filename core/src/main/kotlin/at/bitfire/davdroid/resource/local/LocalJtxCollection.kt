@@ -2,7 +2,7 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  */
 
-package at.bitfire.davdroid.resource
+package at.bitfire.davdroid.resource.local
 
 import androidx.core.content.contentValuesOf
 import at.bitfire.synctools.storage.jtx.JtxBatchOperation

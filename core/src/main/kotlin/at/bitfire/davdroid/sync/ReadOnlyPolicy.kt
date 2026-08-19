@@ -4,7 +4,7 @@
 
 package at.bitfire.davdroid.sync
 
-import at.bitfire.davdroid.resource.LocalCollection
+import at.bitfire.davdroid.resource.local.LocalCollection
 import java.util.Optional
 import java.util.logging.Logger
 import javax.inject.Inject

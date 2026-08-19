@@ -2,10 +2,10 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  */
 
-package at.bitfire.davdroid.resource
+package at.bitfire.davdroid.resource.local
 
 import androidx.core.content.contentValuesOf
-import at.bitfire.davdroid.resource.LocalTaskList.Companion.COLUMN_TASKLIST_SYNC_STATE
+import at.bitfire.davdroid.resource.local.LocalTaskList.Companion.COLUMN_TASKLIST_SYNC_STATE
 import at.bitfire.synctools.storage.tasks.DmfsRecurringTaskList
 import at.bitfire.synctools.storage.tasks.DmfsTaskList
 import at.bitfire.synctools.storage.tasks.DmfsTasksContract

@@ -7,7 +7,7 @@ package at.bitfire.davdroid.resource.remote
 import at.bitfire.dav4jvm.ktor.DavCollection
 import at.bitfire.dav4jvm.ktor.exception.DavException
 import at.bitfire.dav4jvm.property.webdav.SyncToken
-import at.bitfire.davdroid.resource.SyncState
+import at.bitfire.davdroid.resource.local.SyncState
 import at.bitfire.synctools.test.assertThrows
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine

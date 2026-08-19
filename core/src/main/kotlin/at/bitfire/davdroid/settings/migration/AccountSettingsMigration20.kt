@@ -14,10 +14,10 @@ import at.bitfire.davdroid.accounts.AndroidAccountManager
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
-import at.bitfire.davdroid.resource.LocalAddressBookStore
-import at.bitfire.davdroid.resource.LocalCalendarStore
-import at.bitfire.davdroid.resource.LocalJtxCollection
-import at.bitfire.davdroid.resource.LocalTaskList
+import at.bitfire.davdroid.resource.local.LocalAddressBookStore
+import at.bitfire.davdroid.resource.local.LocalCalendarStore
+import at.bitfire.davdroid.resource.local.LocalJtxCollection
+import at.bitfire.davdroid.resource.local.LocalTaskList
 import at.bitfire.davdroid.settings.AccountSettingsStore
 import at.bitfire.davdroid.sync.TasksAppManager
 import at.bitfire.synctools.storage.calendar.AndroidCalendarProvider

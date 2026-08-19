@@ -10,7 +10,7 @@ import android.os.DeadObjectException
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.accounts.LegacyAccount
 import at.bitfire.davdroid.db.Collection
-import at.bitfire.davdroid.resource.LocalDataStore
+import at.bitfire.davdroid.resource.local.LocalDataStore
 import at.bitfire.synctools.storage.LocalStorageException
 import at.bitfire.synctools.test.assertThrows
 import io.mockk.coEvery
