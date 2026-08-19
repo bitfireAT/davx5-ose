@@ -21,6 +21,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+        with:
+          submodules: recursive   # translations live in the l10n submodule
       - uses: actions/setup-java@v5
         with:
           distribution: temurin

@@ -16,6 +16,10 @@ ksp {
     arg("room.schemaLocation", "$projectDir/schemas")
 }
 
+// Translations are maintained in davx5-translations and pulled in as the l10n submodule.
+// The English original strings stay in core/src/main/res/values/strings.xml.
+val translationsDir = file("$rootDir/l10n/translations/ose")
+
 android {
     defaultConfig {
         testInstrumentationRunner = "at.bitfire.davdroid.HiltTestRunner"
@@ -50,6 +54,9 @@ android {
     }
 
     sourceSets {
+        getByName("main") {
+            res.directories += translationsDir.path
+        }
         getByName("androidTest") {
             kotlin.directories +=  "$projectDir/src/sharedTest/kotlin"
             assets.srcDir("$projectDir/schemas")
@@ -192,6 +199,22 @@ dependencies {
     testImplementation(libs.mockk)
     testImplementation(libs.robolectric)
     testImplementation(testFixtures(project(":synctools")))
+}
+
+// AGP silently ignores a resource directory that doesn't exist, so a clone without submodules
+// would build a perfectly fine English-only app. Fail such builds instead.
+val verifyTranslations by tasks.registering {
+    val dir = translationsDir   // local copy: the check below must not capture the build script
+
+    doLast {
+        require(!dir.list().isNullOrEmpty()) {
+            "l10n/translations/ose is missing or empty.\nRun: git submodule update --init"
+        }
+    }
+}
+
+tasks.named("preBuild") {
+    dependsOn(verifyTranslations)
 }
 
 tasks.withType<Test>().configureEach {

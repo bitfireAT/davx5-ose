@@ -28,3 +28,15 @@ updates:
     ignore:
       # dependencies without semantic versioning
       - dependency-name: "com.github.bitfireat:cert4android"
+
+  # Bump the l10n submodule pointer, so new translations arrive as a reviewable PR
+  - package-ecosystem: "gitsubmodule"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "[l10n] "
+    labels:
+      - "ci-cd"
+      - "dependencies"
+      - "chore"
