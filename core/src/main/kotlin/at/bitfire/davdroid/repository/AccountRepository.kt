@@ -268,8 +268,10 @@ class AccountRepository @Inject constructor(
     }
 
     fun getAllBlocking(): List<AccountId> {
-        return accountManager.getAccountsByType(accountType)
-            .map { account -> LegacyAccount(account) }
+        val dbAccounts = dbAccountDao.getAllBlocking()
+        val systemAccounts = accountManager.getAccountsByType(accountType).map { LegacyAccount(it) }
+        val dbAccountNames = dbAccounts.map { it.name }.toSet()
+        return systemAccounts.filter { it.androidAccount.name !in dbAccountNames } + dbAccounts.map { DbAccountId(it.id) }
     }
 
     fun getAllLegacyAccountFlow() = callbackFlow {
