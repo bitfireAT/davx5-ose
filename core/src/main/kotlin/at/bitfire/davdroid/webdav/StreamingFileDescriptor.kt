@@ -119,6 +119,13 @@ class StreamingFileDescriptor @AssistedInject constructor(
     private suspend fun uploadNow(readFd: ParcelFileDescriptor) {
         val body = ChannelWriterContent(
             body = {
+                if (!readFd.fileDescriptor.valid()) {
+                    // AutoCloseInputStream will close the file descriptor after the first time the stream has been
+                    // read. We'll throw here if a failed request is being retried, because we can't read from the
+                    // source file descriptor a second time.
+                    throw IOException("Source file descriptor is no longer valid. " +
+                            "Possibly caused by a failed upload request being retried.")
+                }
                 ParcelFileDescriptor.AutoCloseInputStream(readFd).use { input ->
                     transferred = input.toByteReadChannel().copyTo(this)
                 }
