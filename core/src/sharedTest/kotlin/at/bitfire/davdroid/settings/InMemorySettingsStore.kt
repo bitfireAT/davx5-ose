@@ -18,6 +18,8 @@ class InMemorySettingsStore(
     }
 
     override fun putValue(key: String, value: String?) {
+        check(key !in sensitiveStorage) { """Key "$key" is already used for a sensitive value""" }
+
         if (value == null)
             storage.remove(key)
         else
@@ -29,6 +31,8 @@ class InMemorySettingsStore(
     }
 
     override fun putSensitiveValue(key: String, value: SensitiveString?) {
+        check(key !in storage) { """Key "$key" is already used for a non-sensitive value""" }
+
         if (value == null)
             sensitiveStorage.remove(key)
         else
