@@ -9,15 +9,16 @@ import android.os.Build
 import androidx.annotation.IntDef
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.work.CoroutineWorker
 import androidx.work.Data
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
-import at.bitfire.davdroid.IoCoroutineWorker
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.accounts.DbAccountId
 import at.bitfire.davdroid.accounts.LegacyAccount
+import at.bitfire.davdroid.di.qualifier.SyncDispatcher
 import at.bitfire.davdroid.push.PushNotificationManager
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.settings.AccountSettingsFactory
@@ -42,7 +43,9 @@ import at.bitfire.davdroid.ui.NotificationRegistry
 import at.bitfire.synctools.storage.TaskProvider
 import dagger.Lazy
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 import java.util.Collections
 import java.util.logging.Level
 import java.util.logging.Logger
@@ -90,7 +93,7 @@ import kotlin.time.Duration.Companion.seconds
 abstract class BaseSyncWorker(
     context: Context,
     private val workerParams: WorkerParameters
-) : IoCoroutineWorker(context, workerParams) {
+) : CoroutineWorker(context, workerParams) {
 
     @Inject
     lateinit var accountRepository: AccountRepository
@@ -119,6 +122,9 @@ abstract class BaseSyncWorker(
     @Inject
     lateinit var syncConditionsFactory: SyncConditions.Factory
 
+    @Inject @SyncDispatcher
+    lateinit var syncDispatcher: CoroutineDispatcher
+
     @Inject
     lateinit var syncSettingsProvider: SyncSettingsProvider
 
@@ -128,7 +134,12 @@ abstract class BaseSyncWorker(
     @Inject
     lateinit var taskSyncer: TaskSyncer.Factory
 
-    override suspend fun doIoWork(): Result {
+    override suspend fun doWork(): Result =
+        withContext(syncDispatcher) {   // required because of Ktor issue; see SyncDispatcher KDoc
+            runSync()
+        }
+
+    suspend fun runSync(): Result {
         val accountId = requireNotNull(inputData.getAccountId()) { "AccountId required" }
 
         val dataType = SyncDataType.valueOf(inputData.getString(INPUT_DATA_TYPE) ?: throw IllegalArgumentException("INPUT_SYNC_DATA_TYPE required"))
