@@ -337,11 +337,6 @@ class AccountRepository @Inject constructor(
             3. Now the services would be renamed, but they're not here anymore. */
             AccountsCleanupWorker.lockAccountsCleanup()
 
-            if (oldAccountId is DbAccountId) {
-                // update account name in database
-                dbAccountDao.rename(oldAccountId.id, newName)
-            }
-
             // rename account (also moves AccountSettings if the account is a LegacyAccount)
             val future = accountManager.renameAccount(oldAccount, newName, null, null)
 
@@ -349,6 +344,11 @@ class AccountRepository @Inject constructor(
             val newNameFromApi: Account = future.result
             if (newNameFromApi.name != newName)
                 throw IllegalStateException("renameAccount returned ${newNameFromApi.name} instead of $newName")
+
+            if (oldAccountId is DbAccountId) {
+                // update account name in database after renaming the Android account
+                dbAccountDao.rename(oldAccountId.id, newName)
+            }
 
             accountRenameFlow.emit(AccountRename(oldAccount.name, newName))
             
