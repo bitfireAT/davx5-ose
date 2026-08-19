@@ -22,12 +22,6 @@ class DbAccountSettingsStore @AssistedInject constructor(@Assisted account: DbAc
         fun create(account: DbAccountId): DbAccountSettingsStore
     }
 
-    override fun getAllValues(): Map<String, String> {
-        dao.getAllBlocking(accountId).let { settings ->
-            return settings.filter { it.value != null }.associate { it.key to (it.value ?: "") }
-        }
-    }
-
     /**
      * Fetches an entry from the database with [key] and for the specified account.
      *

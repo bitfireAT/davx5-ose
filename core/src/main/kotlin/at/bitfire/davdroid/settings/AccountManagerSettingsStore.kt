@@ -31,10 +31,6 @@ class AccountManagerSettingsStore @AssistedInject constructor(
         fun create(account: Account): AccountManagerSettingsStore
     }
 
-    override fun getAllValues(): Map<String, String> {
-        throw UnsupportedOperationException("AccountManager does not support retrieving all user data at once")
-    }
-
     /**
      * Retrieves the value stored in user data of [account] at [key]. May be `null` if not set.
      */
