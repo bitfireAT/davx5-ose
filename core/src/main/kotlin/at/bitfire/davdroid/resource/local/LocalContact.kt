@@ -96,7 +96,7 @@ class LocalContact(
         androidContact.flags = flags
     }
 
-    override fun updateSequence(sequence: Int) = throw NotImplementedError()
+    override suspend fun updateSequence(sequence: Int) = throw NotImplementedError()
 
     override suspend fun updateUid(uid: String) {
         val values = contentValuesOf(RawContactColumns.UID to uid)
@@ -105,13 +105,16 @@ class LocalContact(
         }
     }
 
-    override fun deleteLocal() {
-        androidContact.delete()
+    override suspend fun deleteLocal() {
+        withContext(Dispatchers.IO) {
+            androidContact.delete()
+        }
     }
 
-    override fun resetDeleted() {
-        val values = contentValuesOf(ContactsContract.Groups.DELETED to 0)
-        provider.update(androidContact.rawContactSyncURI(), values, null, null)
+    override suspend fun resetDeleted() {
+        withContext(Dispatchers.IO) {
+            androidContact.update(contentValuesOf(ContactsContract.Groups.DELETED to 0))
+        }
     }
 
     override fun getDebugSummary() =

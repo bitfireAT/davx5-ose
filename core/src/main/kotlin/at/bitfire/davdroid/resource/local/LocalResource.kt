@@ -84,18 +84,23 @@ interface LocalResource {
      * Updates the local SEQUENCE of the resource in the content provider.
      *
      * @throws NotImplementedError  if SEQUENCE update is not supported
+     * @throws at.bitfire.synctools.storage.LocalStorageException on content provider errors
      */
-    fun updateSequence(sequence: Int)
+    suspend fun updateSequence(sequence: Int)
 
     /**
      * Deletes the data object from the content provider.
+     *
+     * @throws at.bitfire.synctools.storage.LocalStorageException on content provider errors
      */
-    fun deleteLocal()
+    suspend fun deleteLocal()
 
     /**
      * Undoes deletion of the data object from the content provider.
+     *
+     * @throws at.bitfire.synctools.storage.LocalStorageException on content provider errors
      */
-    fun resetDeleted()
+    suspend fun resetDeleted()
 
     /**
      * User-readable debug summary of this local resource (used in debug info)

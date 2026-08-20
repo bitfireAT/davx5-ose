@@ -191,11 +191,15 @@ class AndroidContact(
     /**
      * Deletes an existing contact from the contacts provider.
      *
-     * @return number of affected rows
-     *
-     * @throws RemoteException on contacts provider errors
+     * @throws LocalStorageException on contacts provider errors
      */
-    fun delete() = addressBook.provider.delete(rawContactSyncURI(), null, null)
+    fun delete() {
+        try {
+            addressBook.provider.delete(rawContactSyncURI(), null, null)
+        } catch (e: RemoteException) {
+            throw LocalStorageException("Couldn't delete raw contact $id", e)
+        }
+    }
 
     /**
      * Updates this raw contact's main row with the given values.
