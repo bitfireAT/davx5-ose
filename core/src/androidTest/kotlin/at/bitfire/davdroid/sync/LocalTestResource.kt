@@ -31,7 +31,7 @@ class LocalTestResource: LocalResource {
         this.flags = flags
     }
 
-    override fun updateUid(uid: String) { /* no-op */ }
+    override suspend fun updateUid(uid: String) { /* no-op */ }
     override fun updateSequence(sequence: Int) = throw NotImplementedError()
 
     override fun deleteLocal() {}  // no-op: test callers handle deletion via the collection

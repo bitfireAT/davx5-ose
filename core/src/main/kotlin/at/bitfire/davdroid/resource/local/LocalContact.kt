@@ -96,9 +96,11 @@ class LocalContact(
 
     override fun updateSequence(sequence: Int) = throw NotImplementedError()
 
-    override fun updateUid(uid: String) {
+    override suspend fun updateUid(uid: String) {
         val values = contentValuesOf(RawContactColumns.UID to uid)
-        provider.update(androidContact.rawContactSyncURI(), values, null, null)
+        withContext(Dispatchers.IO) {
+            androidContact.update(values)
+        }
     }
 
     override fun deleteLocal() {

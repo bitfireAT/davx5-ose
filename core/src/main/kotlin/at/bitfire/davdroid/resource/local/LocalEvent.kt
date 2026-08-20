@@ -79,10 +79,12 @@ class LocalEvent(
         ))
     }
 
-    override fun updateUid(uid: String) {
-        calendar.updateEventRow(id, contentValuesOf(
-            Events.UID_2445 to uid
-        ))
+    override suspend fun updateUid(uid: String) {
+        withContext(Dispatchers.IO) {
+            calendar.updateEventRow(id, contentValuesOf(
+                Events.UID_2445 to uid
+            ))
+        }
     }
 
     override fun deleteLocal() {

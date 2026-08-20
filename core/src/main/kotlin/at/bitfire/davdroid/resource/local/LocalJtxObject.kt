@@ -71,12 +71,14 @@ class LocalJtxObject(
         collection.updateJtxObjectRow(id, values)
     }
 
-    override fun updateUid(uid: String) {
+    override suspend fun updateUid(uid: String) {
         val values = contentValuesOf(
             JtxContract.JtxICalObject.UID to uid,
         )
 
-        collection.updateJtxObjectRow(id, values)
+        withContext(Dispatchers.IO) {
+            collection.updateJtxObjectRow(id, values)
+        }
     }
 
     override fun updateSequence(sequence: Int) {

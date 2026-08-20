@@ -76,7 +76,7 @@ class TasksSyncManager @AssistedInject constructor(
 
     override fun syncAlgorithm(capabilities: WebDavCollection.Capabilities) = SyncAlgorithm.PROPFIND_REPORT
 
-    override fun generateUpload(resource: LocalTask, capabilities: WebDavCollection.Capabilities): GeneratedResource {
+    override suspend fun generateUpload(resource: LocalTask, capabilities: WebDavCollection.Capabilities): GeneratedResource {
         val localTask = resource.taskAndExceptions
         logger.log(Level.FINE, "Preparing upload of task #{0}: {1}", arrayOf(resource.id, localTask))
 

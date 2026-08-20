@@ -91,7 +91,7 @@ class CalendarSyncManager @AssistedInject constructor(
         else
             SyncAlgorithm.COLLECTION_SYNC
 
-    override fun generateUpload(resource: LocalEvent, capabilities: WebDavCollection.Capabilities): GeneratedResource {
+    override suspend fun generateUpload(resource: LocalEvent, capabilities: WebDavCollection.Capabilities): GeneratedResource {
         val localEvent = resource.androidEvent
         logger.log(Level.FINE, "Preparing upload of event #{0}: {1}", arrayOf(resource.id, localEvent))
 

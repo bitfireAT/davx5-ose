@@ -156,7 +156,7 @@ class ContactsSyncManager @AssistedInject constructor(
         return super.uploadDirty(capabilities)
     }
 
-    override fun generateUpload(
+    override suspend fun generateUpload(
         resource: LocalAddress,
         capabilities: WebDavCollection.Capabilities
     ): GeneratedResource {
