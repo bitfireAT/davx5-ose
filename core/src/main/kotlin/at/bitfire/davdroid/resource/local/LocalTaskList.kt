@@ -10,8 +10,10 @@ import at.bitfire.synctools.storage.tasks.DmfsRecurringTaskList
 import at.bitfire.synctools.storage.tasks.DmfsTaskList
 import at.bitfire.synctools.storage.tasks.DmfsTasksContract
 import at.bitfire.synctools.storage.tasks.TaskAndExceptions
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
 import org.dmfs.tasks.contract.TaskContract
 import org.dmfs.tasks.contract.TaskContract.TaskListColumns
 import org.dmfs.tasks.contract.TaskContract.Tasks
@@ -88,12 +90,14 @@ class LocalTaskList (
         }
     }
 
-    override fun markNotDirty(flags: Int): Int =
-        dmfsTaskList.updateTasks(
-            contentValuesOf(DmfsTasksContract.COLUMN_FLAGS to flags),
-            "${Tasks.LIST_ID}=? AND ${Tasks._DIRTY}=0",
-            arrayOf(dmfsTaskList.id.toString())
-        )
+    override suspend fun markNotDirty(flags: Int): Int =
+        withContext(Dispatchers.IO) {
+            dmfsTaskList.updateTasks(
+                contentValuesOf(DmfsTasksContract.COLUMN_FLAGS to flags),
+                "${Tasks.LIST_ID}=? AND ${Tasks._DIRTY}=0",
+                arrayOf(dmfsTaskList.id.toString())
+            )
+        }
 
     override suspend fun removeNotDirtyMarked(flags: Int) =
         dmfsTaskList.deleteTasks(
@@ -101,12 +105,14 @@ class LocalTaskList (
             arrayOf(dmfsTaskList.id.toString(), flags.toString())
         )
 
-    override fun forgetETags() {
-        dmfsTaskList.updateTasks(
-            contentValuesOf(DmfsTasksContract.COLUMN_ETAG to null),
-            "${Tasks.LIST_ID}=?",
-            arrayOf(dmfsTaskList.id.toString())
-        )
+    override suspend fun forgetETags() {
+        withContext(Dispatchers.IO) {
+            dmfsTaskList.updateTasks(
+                contentValuesOf(DmfsTasksContract.COLUMN_ETAG to null),
+                "${Tasks.LIST_ID}=?",
+                arrayOf(dmfsTaskList.id.toString())
+            )
+        }
     }
 
 

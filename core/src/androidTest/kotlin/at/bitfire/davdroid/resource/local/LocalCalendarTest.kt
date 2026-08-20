@@ -96,7 +96,7 @@ class LocalCalendarTest {
      * @param contentValues values to set on the event. Required:
      * - [Events.DIRTY]
      */
-    private fun testMarkNotDirty(contentValues: ContentValues) {
+    private fun testMarkNotDirty(contentValues: ContentValues) = runTest {
         val id = androidCalendar.addEvent(Entity(
             contentValuesOf(
                 Events.CALENDAR_ID to androidCalendar.id,

@@ -24,7 +24,7 @@ class LocalTestCollection(
 
     override suspend fun findByName(name: String) = entries.firstOrNull { it.fileName == name }
 
-    override fun markNotDirty(flags: Int): Int {
+    override suspend fun markNotDirty(flags: Int): Int {
         var updated = 0
         for (dirty in entries.filter { it.dirty }) {
             dirty.flags = flags
@@ -39,7 +39,7 @@ class LocalTestCollection(
         return numBefore - entries.size
     }
 
-    override fun forgetETags() {
+    override suspend fun forgetETags() {
     }
 
     override fun countAll() = entries.size
