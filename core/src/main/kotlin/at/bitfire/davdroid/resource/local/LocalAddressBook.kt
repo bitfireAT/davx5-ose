@@ -123,16 +123,17 @@ open class LocalAddressBook @AssistedInject constructor(
             batch.commit()
         }
 
-    override suspend fun removeNotDirtyMarked(flags: Int): Int {
-        val batch = ContactsBatchOperation(ab.provider)
-        ab.deleteRawContacts(
-            "NOT ${RawContacts.DIRTY} AND ${RawContactColumns.FLAGS}=?", arrayOf(flags.toString()),
-            batch
-        )
-        if (includeGroups)
-            ab.deleteGroups("NOT ${Groups.DIRTY} AND ${GroupColumns.FLAGS}=?", arrayOf(flags.toString()), batch)
-        return batch.commit()
-    }
+    override suspend fun removeNotDirtyMarked(flags: Int): Int =
+        withContext(Dispatchers.IO) {
+            val batch = ContactsBatchOperation(ab.provider)
+            ab.deleteRawContacts(
+                "NOT ${RawContacts.DIRTY} AND ${RawContactColumns.FLAGS}=?", arrayOf(flags.toString()),
+                batch
+            )
+            if (includeGroups)
+                ab.deleteGroups("NOT ${Groups.DIRTY} AND ${GroupColumns.FLAGS}=?", arrayOf(flags.toString()), batch)
+            batch.commit()
+        }
 
     /**
      * Renames an address book account and moves the contacts and groups (without making them dirty).

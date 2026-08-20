@@ -63,12 +63,14 @@ class LocalJtxObject(
         }
     }
 
-    override fun updateFlags(flags: Int) {
+    override suspend fun updateFlags(flags: Int) {
         val values = contentValuesOf(
             JtxContract.JtxICalObject.FLAGS to flags,
         )
 
-        collection.updateJtxObjectRow(id, values)
+        withContext(Dispatchers.IO) {
+            collection.updateJtxObjectRow(id, values)
+        }
     }
 
     override suspend fun updateUid(uid: String) {

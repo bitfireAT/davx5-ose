@@ -88,9 +88,11 @@ class LocalContact(
         androidContact.update(data)
     }
 
-    override fun updateFlags(flags: Int) {
+    override suspend fun updateFlags(flags: Int) {
         val values = contentValuesOf(RawContactColumns.FLAGS to flags)
-        provider.update(androidContact.rawContactSyncURI(), values, null, null)
+        withContext(Dispatchers.IO) {
+            androidContact.update(values)
+        }
         androidContact.flags = flags
     }
 

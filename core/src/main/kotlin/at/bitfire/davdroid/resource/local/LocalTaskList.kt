@@ -100,10 +100,12 @@ class LocalTaskList (
         }
 
     override suspend fun removeNotDirtyMarked(flags: Int) =
-        dmfsTaskList.deleteTasks(
-            "${Tasks.LIST_ID}=? AND NOT ${Tasks._DIRTY} AND ${DmfsTasksContract.COLUMN_FLAGS}=?",
-            arrayOf(dmfsTaskList.id.toString(), flags.toString())
-        )
+        withContext(Dispatchers.IO) {
+            dmfsTaskList.deleteTasks(
+                "${Tasks.LIST_ID}=? AND NOT ${Tasks._DIRTY} AND ${DmfsTasksContract.COLUMN_FLAGS}=?",
+                arrayOf(dmfsTaskList.id.toString(), flags.toString())
+            )
+        }
 
     override suspend fun forgetETags() {
         withContext(Dispatchers.IO) {

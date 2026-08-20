@@ -85,17 +85,18 @@ class LocalJtxCollection(internal val jtxCollection: JtxCollection) :
             )
         }
 
-    override suspend fun removeNotDirtyMarked(flags: Int): Int {
-        val batch = JtxBatchOperation(jtxCollection.client)
-        recurringCollection.queryJtxObjectsAndExceptions(
-            "NOT ${JtxICalObject.DIRTY} AND ${JtxICalObject.FLAGS}=?",
-            arrayOf(flags.toString())
-        ).collect { objectAndExceptions ->
-            val id = objectAndExceptions.main.entityValues.getAsLong(JtxICalObject.ID)!!
-            recurringCollection.deleteJtxObjectAndExceptions(id, batch)
+    override suspend fun removeNotDirtyMarked(flags: Int): Int =
+        withContext(Dispatchers.IO) {
+            val batch = JtxBatchOperation(jtxCollection.client)
+            recurringCollection.queryJtxObjectsAndExceptions(
+                "NOT ${JtxICalObject.DIRTY} AND ${JtxICalObject.FLAGS}=?",
+                arrayOf(flags.toString())
+            ).collect { objectAndExceptions ->
+                val id = objectAndExceptions.main.entityValues.getAsLong(JtxICalObject.ID)!!
+                recurringCollection.deleteJtxObjectAndExceptions(id, batch)
+            }
+            batch.commit()
         }
-        return batch.commit()
-    }
 
     override suspend fun forgetETags() {
         withContext(Dispatchers.IO) {

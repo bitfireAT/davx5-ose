@@ -85,29 +85,30 @@ class LocalCalendar(
             )
         }
 
-    override suspend fun removeNotDirtyMarked(flags: Int): Int {
-        // list all non-dirty events with the given flags and delete every row + its exceptions
-        val batch = CalendarBatchOperation(androidCalendar.client)
-        androidCalendar.iterateEventRows(
-            arrayOf(Events._ID),
-            // `dirty` can be 0, 1, or null. "NOT dirty" is not enough.
-            """
-                ${Events.CALENDAR_ID}=?
-                AND (${Events.DIRTY} IS NULL OR ${Events.DIRTY}=0)
-                AND ${Events.ORIGINAL_ID} IS NULL
-                AND ${EventsContract.COLUMN_FLAGS}=?
-            """.trimIndent(),
-            arrayOf(androidCalendar.id.toString(), flags.toString())
-        ) { values ->
-            val id = values.getAsLong(Events._ID)
+    override suspend fun removeNotDirtyMarked(flags: Int): Int =
+        withContext(Dispatchers.IO) {
+            // list all non-dirty events with the given flags and delete every row + its exceptions
+            val batch = CalendarBatchOperation(androidCalendar.client)
+            androidCalendar.iterateEventRows(
+                arrayOf(Events._ID),
+                // `dirty` can be 0, 1, or null. "NOT dirty" is not enough.
+                """
+                    ${Events.CALENDAR_ID}=?
+                    AND (${Events.DIRTY} IS NULL OR ${Events.DIRTY}=0)
+                    AND ${Events.ORIGINAL_ID} IS NULL
+                    AND ${EventsContract.COLUMN_FLAGS}=?
+                """.trimIndent(),
+                arrayOf(androidCalendar.id.toString(), flags.toString())
+            ) { values ->
+                val id = values.getAsLong(Events._ID)
 
-            // delete event and possible exceptions (content provider doesn't delete exceptions itself)
-            batch += BatchOperation.CpoBuilder
-                .newDelete(androidCalendar.eventsUri)
-                .withSelection("${Events._ID}=? OR ${Events.ORIGINAL_ID}=?", arrayOf(id.toString(), id.toString()))
+                // delete event and possible exceptions (content provider doesn't delete exceptions itself)
+                batch += BatchOperation.CpoBuilder
+                    .newDelete(androidCalendar.eventsUri)
+                    .withSelection("${Events._ID}=? OR ${Events.ORIGINAL_ID}=?", arrayOf(id.toString(), id.toString()))
+            }
+            batch.commit()
         }
-        return batch.commit()
-    }
 
     override suspend fun forgetETags() {
         withContext(Dispatchers.IO) {

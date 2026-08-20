@@ -67,10 +67,12 @@ class LocalEvent(
         }
     }
 
-    override fun updateFlags(flags: Int) {
-        calendar.updateEventRow(id, contentValuesOf(
-            EventsContract.COLUMN_FLAGS to flags
-        ))
+    override suspend fun updateFlags(flags: Int) {
+        withContext(Dispatchers.IO) {
+            calendar.updateEventRow(id, contentValuesOf(
+                EventsContract.COLUMN_FLAGS to flags
+            ))
+        }
     }
 
     override fun updateSequence(sequence: Int) {
