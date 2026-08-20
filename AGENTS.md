@@ -6,7 +6,7 @@ This repository contains the open-source code of DAVx⁵. There's another closed
 some extension code for variants like Managed DAVx⁵ and DAVx⁵ Select, but the main code with all functionality
 is shared and the core development always takes place in davx5-ose.
 
-> **Maintenance note for agents:** Keep this file up to date. When making changes that affect the structure described here — such as adding/removing Gradle modules, renaming packages, changing the DI framework, or replacing major dependencies — update the relevant sections of this file as part of the same change. Only reflect genuinely significant structural changes; don't update for routine additions like new classes or minor refactors.
+> **Maintenance note for agents:** Keep this file (and `core/AGENTS.md`, `synctools/AGENTS.md`) up to date. When making changes that affect the structure described here — such as adding/removing Gradle modules, renaming packages, changing the DI framework, or replacing major dependencies — update the relevant file(s) as part of the same change. Only reflect genuinely significant structural changes; don't update for routine additions like new classes or minor refactors.
 
 ## Committing and pull requests
 
@@ -25,105 +25,11 @@ The Android application. Contains the product flavor `ose`, signing config, and 
 
 ### `:core` (`core/`)
 
-Android library. The sync engine, database layer, and Jetpack Compose UI for DAVx⁵. It orchestrates CalDAV/CardDAV synchronization via dav4jvm and delegates content-provider access and format mapping to `:synctools`.
-
-#### Dependency injection — Hilt
-
-**Hilt is the DI framework for this module.** Follow these conventions:
-
-- Use `@Inject` constructors everywhere; avoid manual instantiation.
-- Add new Hilt bindings and qualifiers in `di/` (same style as the existing ones).
-- ViewModels use `@HiltViewModel`.
-- WorkManager workers integrate via the Hilt worker factory — do not construct workers manually.
-- Android system services that have no `@Inject` constructor (e.g. `AccountManager`) are bound via `@Provides` in a
-  `di/` module (e.g. `AndroidServicesModule`) — never call their static `.get(context)`/similar factory method directly
-  in a Hilt-managed class.
-- For such bindings, pick the injection shape by how often it's actually *called at runtime* (not how many call sites
-  reference it): inject the type directly when it's on the hot path; inject `dagger.Lazy<T>` when a given instance has a
-  good chance of never needing it; inject `javax.inject.Provider<T>` when it's only invoked rarely.
-
-#### Patterns
-
-**Repository pattern** — DAOs (in `db/`) are always wrapped by a repository in `repository/`. UI code and sync managers talk to repositories, never to DAOs directly.
-
-**DAO/repository naming convention** — applies to both DAO methods (`db/`) and their repository wrappers (
-`repository/`):
-
-- Suspending functions have **no suffix** (e.g. `get`, `insert`) — never `...Async`.
-- Non-suspending (blocking) functions have a **`Blocking`** suffix (e.g. `getBlocking`, `insertBlocking`).
-- Functions returning `Flow` have a **`Flow`** suffix (e.g. `getAllFlow`).
-- Functions returning `PagingSource` use a **`page`/`pageXxx`** prefix instead of a suffix (e.g.
-  `pageByServiceAndType`), mirroring how `Flow`-returning functions are marked.
-
-**ViewModel pattern** — Each Compose screen has a `@HiltViewModel` in `ui/`. Keep business logic out of Composables; Composables observe state from the ViewModel.
-
-**Startup actions** — App-initialization hooks implement the `StartupAction` interface and are registered via set-based
-Hilt injection. Do not add init logic directly to `CoreApp`.
-
-**Background sync** — Sync runs in WorkManager workers (`sync/worker/`). The Hilt worker factory wires DI into workers.
-
-#### Package map
-
-```
-db/           Room database — AppDatabase, DAOs, entities, migrations
-di/           Hilt modules and qualifiers
-repository/   Business-logic wrappers around DAOs
-sync/         Sync managers (Calendar, Contacts, Tasks, Jtx) and workers, Android Account logic
-network/      HTTP/WebDAV layer (Ktor + OkHttp + dav4jvm)
-webdav/       WebDAV file operations
-ui/           Compose screens, ViewModels, Activities
-startup/      StartupAction interface and built-in actions
-settings/     Preference management and migrations
-push/         UnifiedPush / FCM integration
-log/          Logging infrastructure
-```
-
-#### Key dependencies
-
-- `:synctools` — content-provider access and format mapping
-- `cert4android` — custom certificate management
-- `dav4jvm` — WebDAV/CalDAV/CardDAV client
+Android library. The sync engine, database layer, and Jetpack Compose UI for DAVx⁵. See `core/AGENTS.md` for DI conventions, patterns, and package map.
 
 ### `:synctools` (`synctools/`)
 
-Technically a standalone Android library for bidirectional conversion between iCalendar/vCard data and Android content
-providers (Calendar, Contacts, Tasks, Jtx). It is only consumed by `:core`.
-
-**No Hilt or Dagger.** This is a pure library — no DI framework, no Android application components. Dependencies are passed via constructors or obtained directly (e.g. `ContentResolver`). Keep it that way. For logging, use `val logger\nget() = java.util.Logger.getLogger(javaClass.name)`.
-
-#### Public API
-
-- **`storage/`** — wraps Android content providers with typed domain objects (`AndroidCalendar`, `AndroidAddressBook`, `DmfsTaskList`, `JtxCollection`, `BatchOperation`, …). Changes here are breaking changes for `:core`.
-- **`mapping/`** — bidirectional builder/handler pairs that convert between ical4j/ezvcard objects and Android provider rows. Each data type (calendar event, contact, DMFS task, Jtx object) has a `*Builder` (Android → iCal/vCard) and a `*Handler` (iCal/vCard → Android).
-
-Internal utilities (`icalendar/`, `vcard/`, `log/`, `util/`) are not part of the public contract.
-
-#### Architecture
-
-```
-storage/
-  calendar/   AndroidCalendar, AndroidEvent, CalendarBatchOperation
-  contacts/   AndroidAddressBook, AndroidContact, AndroidGroup
-  tasks/      DmfsTaskList, DmfsTask (DMFS/OpenTasks provider)
-  jtx/        JtxCollection, JtxObject (jtx Board provider)
-
-mapping/
-  calendar/
-    builder/  ~30 builders composing AndroidEventBuilder
-    handler/  ~30 handlers composing AndroidEventHandler
-  contacts/
-    builder/  DataRowBuilder hierarchy
-    handler/  per-property handlers
-  tasks/      DmfsTaskBuilder / DmfsTaskHandler
-  jtx/        JtxObjectBuilder / JtxObjectHandler
-
-icalendar/    ICalendarGenerator, ICalPreprocessor, Ical4jHelpers
-vcard/        VCardParser, VCardGenerator
-```
-
-#### Testing
-
-Instrumented tests run against real Android content providers — do not mock the provider layer. Test fixtures are published so `:core` can reuse them.
+Standalone Android library for bidirectional conversion between iCalendar/vCard data and Android content providers (Calendar, Contacts, Tasks, Jtx). Only consumed by `:core`. See `synctools/AGENTS.md` for its API, architecture, and conventions.
 
 ## Build infrastructure
 
