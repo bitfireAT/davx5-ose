@@ -208,7 +208,7 @@ val verifyTranslations by tasks.registering {
 
     doLast {
         require(!dir.list().isNullOrEmpty()) {
-            "l10n/translations/ose is missing or empty.\nRun: git submodule update --init"
+            "l10n/translations/ose is missing or empty.\nRun: git submodule update --init --recursive"
         }
     }
 }
