@@ -18,7 +18,7 @@ interface AccountSettingDao {
      * @return The generated ID.
      */
     @Insert
-    fun insertBlocking(setting: AccountSetting): Long
+    suspend fun insert(setting: AccountSetting): Long
 
     @Update
     fun updateBlocking(setting: AccountSetting)

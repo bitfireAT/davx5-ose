@@ -150,7 +150,7 @@ class AccountRepository @Inject constructor(
 
         // Insert the account settings version into the database.
         // Migration runs when initializing the account settings, so it's required to determine that no migration is required to proceed.
-        accountSettingDao.insertBlocking(
+        accountSettingDao.insert(
             AccountSetting(accountId = accountIdNumber, key = KEY_SETTINGS_VERSION, value = AccountSettings.CURRENT_VERSION.toString())
         )
 
