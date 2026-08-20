@@ -13,6 +13,8 @@ import at.bitfire.synctools.storage.tasks.DmfsRecurringTaskList
 import at.bitfire.synctools.storage.tasks.DmfsTasksContract
 import at.bitfire.synctools.storage.tasks.TaskAndExceptions
 import com.google.common.base.MoreObjects
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.apache.commons.lang3.StringUtils
 import org.dmfs.tasks.contract.TaskContract.Tasks
 import java.util.Optional
@@ -60,7 +62,7 @@ class LocalTask(
 
     // LocalResource implementation
 
-    override fun clearDirty(fileName: Optional<String>, eTag: String?, scheduleTag: String?) {
+    override suspend fun clearDirty(fileName: Optional<String>, eTag: String?, scheduleTag: String?) {
         if (scheduleTag != null)
             logger.fine("Schedule-Tag for tasks not supported, won't save")
 
@@ -70,7 +72,9 @@ class LocalTask(
         )
         if (fileName.isPresent)
             values.put(Tasks._SYNC_ID, fileName.get())
-        taskList.updateTaskRow(id, values)
+        withContext(Dispatchers.IO) {
+            taskList.updateTaskRow(id, values)
+        }
     }
 
     override fun updateFlags(flags: Int) {

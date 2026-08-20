@@ -57,8 +57,10 @@ interface LocalResource {
      * @param eTag          ETag of the uploaded resource as returned by the server (null if the server didn't return one)
      * @param scheduleTag   CalDAV only: `Schedule-Tag` of the uploaded resource as returned by the server
      *                      (null if not applicable or if the server didn't return one)
+     *
+     * @throws at.bitfire.synctools.storage.LocalStorageException on content provider errors
      */
-    fun clearDirty(fileName: Optional<String>, eTag: String?, scheduleTag: String? = null)
+    suspend fun clearDirty(fileName: Optional<String>, eTag: String?, scheduleTag: String? = null)
 
     /**
      * Sets (local) flags of the resource in the content provider.

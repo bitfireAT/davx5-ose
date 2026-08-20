@@ -20,6 +20,8 @@ import at.bitfire.synctools.storage.contacts.AddressContract.asSyncAdapter
 import at.bitfire.synctools.storage.contacts.AndroidGroup
 import at.bitfire.synctools.storage.contacts.ContactsBatchOperation
 import com.google.common.base.MoreObjects
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.util.Optional
 
 class LocalGroup(
@@ -45,42 +47,48 @@ class LocalGroup(
         set(_) = throw NotImplementedError()
 
 
-    override fun clearDirty(fileName: Optional<String>, eTag: String?, scheduleTag: String?) {
+    override suspend fun clearDirty(fileName: Optional<String>, eTag: String?, scheduleTag: String?) {
         if (scheduleTag != null)
             throw IllegalArgumentException("Contact groups must not have a Schedule-Tag")
         val id = requireNotNull(id)
 
+        // update in content provider
         val values = ContentValues(3)
         if (fileName.isPresent)
             values.put(GroupColumns.FILENAME, fileName.get())
         values.putNull(GroupColumns.ETAG)     // don't save changed ETag but null, so that the group is downloaded again, so that pendingMembers is updated
         values.put(Groups.DIRTY, 0)
-        androidGroup.update(values)
+        withContext(Dispatchers.IO) {
+            androidGroup.update(values)
+        }
 
+        // update in-memory state
         if (fileName.isPresent)
             androidGroup.fileName = fileName.get()
         androidGroup.eTag = null
 
         // update cached group memberships
-        val batch = ContactsBatchOperation(provider)
+        withContext(Dispatchers.IO) {
+            val batch = ContactsBatchOperation(provider)
 
-        // delete old cached group memberships
-        batch += BatchOperation.CpoBuilder
-            .newDelete(ContactsContract.Data.CONTENT_URI.asSyncAdapter())
-            .withSelection(
-                CachedGroupMembership.MIMETYPE + "=? AND " + CachedGroupMembership.GROUP_ID + "=?",
-                arrayOf(CachedGroupMembership.CONTENT_ITEM_TYPE, id.toString())
-            )
-
-        // insert updated cached group memberships
-        for (member in androidGroup.getMembers())
+            // delete old cached group memberships
             batch += BatchOperation.CpoBuilder
-                .newInsert(ContactsContract.Data.CONTENT_URI.asSyncAdapter())
-                .withValue(CachedGroupMembership.MIMETYPE, CachedGroupMembership.CONTENT_ITEM_TYPE)
-                .withValue(CachedGroupMembership.RAW_CONTACT_ID, member)
-                .withValue(CachedGroupMembership.GROUP_ID, id)
+                .newDelete(ContactsContract.Data.CONTENT_URI.asSyncAdapter())
+                .withSelection(
+                    CachedGroupMembership.MIMETYPE + "=? AND " + CachedGroupMembership.GROUP_ID + "=?",
+                    arrayOf(CachedGroupMembership.CONTENT_ITEM_TYPE, id.toString())
+                )
 
-        batch.commit()
+            // insert updated cached group memberships
+            for (member in androidGroup.getMembers())
+                batch += BatchOperation.CpoBuilder
+                    .newInsert(ContactsContract.Data.CONTENT_URI.asSyncAdapter())
+                    .withValue(CachedGroupMembership.MIMETYPE, CachedGroupMembership.CONTENT_ITEM_TYPE)
+                    .withValue(CachedGroupMembership.RAW_CONTACT_ID, member)
+                    .withValue(CachedGroupMembership.GROUP_ID, id)
+
+            batch.commit()
+        }
     }
 
     /**

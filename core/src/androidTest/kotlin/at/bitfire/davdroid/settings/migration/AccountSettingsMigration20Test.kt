@@ -34,6 +34,7 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.mockk.junit4.MockKRule
 import io.mockk.mockk
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -92,7 +93,7 @@ class AccountSettingsMigration20Test {
 
 
     @Test
-    fun testMigrateAddressBooks_UrlMatchesCollection() {
+    fun testMigrateAddressBooks_UrlMatchesCollection() = runTest {
         // set up legacy address-book with URL, but without collection ID
         val url = "https://example.com/"
 

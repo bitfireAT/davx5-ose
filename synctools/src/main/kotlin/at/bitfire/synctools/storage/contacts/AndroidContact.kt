@@ -197,6 +197,19 @@ class AndroidContact(
      */
     fun delete() = addressBook.provider.delete(rawContactSyncURI(), null, null)
 
+    /**
+     * Updates this raw contact's main row with the given values.
+     *
+     * @throws LocalStorageException on contact provider errors
+     */
+    fun update(values: ContentValues) {
+        try {
+            addressBook.provider.update(rawContactSyncURI(), values, null, null)
+        } catch (e: RemoteException) {
+            throw LocalStorageException("Couldn't update raw contact $id", e)
+        }
+    }
+
 
     private fun buildContact(builder: BatchOperation.CpoBuilder, update: Boolean) {
         if (!update)

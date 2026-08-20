@@ -21,11 +21,11 @@ class LocalTestAddressBook @Inject constructor(
     private val factory: LocalAddressBook.Factory
 ) {
 
-    fun provide(
+    suspend fun provide(
         accountId: AccountId,
         provider: ContentProviderClient,
         groupMethod: GroupMethod = GroupMethod.GROUP_VCARDS,
-        block: (LocalAddressBook) -> Unit
+        block: suspend (LocalAddressBook) -> Unit
     ) {
         val ab = create(accountId, provider, groupMethod)
         try {

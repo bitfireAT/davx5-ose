@@ -13,6 +13,8 @@ import at.bitfire.synctools.storage.jtx.JtxObjectAndExceptions
 import at.bitfire.synctools.storage.jtx.JtxRecurringCollection
 import at.techbee.jtx.JtxContract
 import com.google.common.base.MoreObjects
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.apache.commons.lang3.StringUtils
 import java.util.Optional
 
@@ -45,7 +47,7 @@ class LocalJtxObject(
         recurringCollection.updateJtxObjectAndExceptions(id, data)
     }
 
-    override fun clearDirty(fileName: Optional<String>, eTag: String?, scheduleTag: String?) {
+    override suspend fun clearDirty(fileName: Optional<String>, eTag: String?, scheduleTag: String?) {
         val values = contentValuesOf(
             JtxContract.JtxICalObject.DIRTY to 0,
             JtxContract.JtxICalObject.ETAG to eTag,
@@ -56,7 +58,9 @@ class LocalJtxObject(
             values.put(JtxContract.JtxICalObject.FILENAME, fileName.get())
         }
 
-        collection.updateJtxObjectRow(id, values)
+        withContext(Dispatchers.IO) {
+            collection.updateJtxObjectRow(id, values)
+        }
     }
 
     override fun updateFlags(flags: Int) {

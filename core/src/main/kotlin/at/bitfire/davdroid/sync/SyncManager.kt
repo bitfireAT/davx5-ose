@@ -437,7 +437,7 @@ abstract class SyncManager<LocalType : LocalResource>(
      * @param scheduleTag   resulting `Schedule-Tag` of the upload (from the server)
      * @param context       properties that have been generated before the upload and that shall be persisted by this method
      */
-    private fun onSuccessfulUpload(
+    private suspend fun onSuccessfulUpload(
         local: LocalType,
         newFileName: String,
         eTag: String?,
