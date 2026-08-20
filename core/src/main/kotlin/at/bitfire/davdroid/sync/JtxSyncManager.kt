@@ -71,7 +71,7 @@ class JtxSyncManager @AssistedInject constructor(
     }
 
 
-    override fun generateUpload(
+    override suspend fun generateUpload(
         resource: LocalJtxObject,
         capabilities: WebDavCollection.Capabilities
     ): GeneratedResource {

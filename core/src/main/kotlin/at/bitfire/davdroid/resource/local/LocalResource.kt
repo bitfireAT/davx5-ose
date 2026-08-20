@@ -73,8 +73,10 @@ interface LocalResource {
     /**
      * Updates the local UID of the resource in the content provider.
      * Usually used to persist a UID that has been created during an upload of a locally created resource.
+     *
+     * @throws at.bitfire.synctools.storage.LocalStorageException on content provider errors
      */
-    fun updateUid(uid: String)
+    suspend fun updateUid(uid: String)
 
     /**
      * Updates the local SEQUENCE of the resource in the content provider.

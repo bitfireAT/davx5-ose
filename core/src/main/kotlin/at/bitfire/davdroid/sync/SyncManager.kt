@@ -422,7 +422,7 @@ abstract class SyncManager<LocalType : LocalResource>(
      * @return iCalendar or vCard (content + Content-Type) that can be uploaded to the server
      */
     @VisibleForTesting
-    internal abstract fun generateUpload(
+    internal abstract suspend fun generateUpload(
         resource: LocalType,
         capabilities: WebDavCollection.Capabilities
     ): GeneratedResource

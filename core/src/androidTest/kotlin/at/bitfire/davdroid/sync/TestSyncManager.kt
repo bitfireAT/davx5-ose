@@ -47,7 +47,7 @@ class TestSyncManager @AssistedInject constructor(
     }
 
     var didGenerateUpload = false
-    override fun generateUpload(
+    override suspend fun generateUpload(
         resource: LocalTestResource,
         capabilities: WebDavCollection.Capabilities
     ): GeneratedResource {

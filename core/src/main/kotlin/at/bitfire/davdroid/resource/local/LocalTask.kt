@@ -91,10 +91,12 @@ class LocalTask(
         ))
     }
 
-    override fun updateUid(uid: String) {
-        taskList.updateTaskRow(id, contentValuesOf(
-            Tasks._UID to uid
-        ))
+    override suspend fun updateUid(uid: String) {
+        withContext(Dispatchers.IO) {
+            taskList.updateTaskRow(id, contentValuesOf(
+                Tasks._UID to uid
+            ))
+        }
     }
 
     override fun deleteLocal() {
