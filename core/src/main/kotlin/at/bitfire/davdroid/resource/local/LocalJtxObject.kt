@@ -44,7 +44,9 @@ class LocalJtxObject(
         get() = mainValues.getAsInteger(JtxContract.JtxICalObject.FLAGS) ?: 0
 
     suspend fun update(data: JtxEntityAndExceptions) {
-        recurringCollection.updateJtxObjectAndExceptions(id, data)
+        withContext(Dispatchers.IO) {
+            recurringCollection.updateJtxObjectAndExceptions(id, data)
+        }
     }
 
     override suspend fun clearDirty(fileName: Optional<String>, eTag: String?, scheduleTag: String?) {

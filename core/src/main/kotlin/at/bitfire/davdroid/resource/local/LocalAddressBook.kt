@@ -9,7 +9,6 @@ import android.content.ContentProviderClient
 import android.content.ContentValues
 import android.content.Context
 import android.provider.ContactsContract
-import android.provider.ContactsContract.CommonDataKinds.GroupMembership
 import android.provider.ContactsContract.Groups
 import android.provider.ContactsContract.RawContacts
 import androidx.annotation.OpenForTesting
@@ -23,7 +22,6 @@ import at.bitfire.synctools.mapping.contacts.Contact
 import at.bitfire.synctools.storage.LocalStorageException
 import at.bitfire.synctools.storage.contacts.AddressContract.GroupColumns
 import at.bitfire.synctools.storage.contacts.AddressContract.RawContactColumns
-import at.bitfire.synctools.storage.contacts.AddressContract.asSyncAdapter
 import at.bitfire.synctools.storage.contacts.AndroidAddressBook
 import at.bitfire.synctools.storage.contacts.AndroidContact
 import at.bitfire.synctools.storage.contacts.AndroidGroup
@@ -311,36 +309,34 @@ open class LocalAddressBook @AssistedInject constructor(
         ab.queryGroupRows(null, where, whereArgs).map { LocalGroup(AndroidGroup(ab, it)) }
 
     @Throws(FileNotFoundException::class)
-    fun findContactById(id: Long): LocalContact =
-        ab.getRawContactRowOrNull("${RawContacts._ID}=?", arrayOf(id.toString()))
-            ?.let { LocalContact(this, AndroidContact(ab, it)) }
+    suspend fun findContactById(id: Long): LocalContact =
+        withContext(Dispatchers.IO) {
+            ab.getRawContactRowOrNull("${RawContacts._ID}=?", arrayOf(id.toString()))
+        }?.let { LocalContact(this, AndroidContact(ab, it)) }
             ?: throw FileNotFoundException()
 
-    fun findContactByUid(uid: String): LocalContact? =
-        ab.getRawContactRowOrNull("${RawContactColumns.UID}=?", arrayOf(uid))
-            ?.let { LocalContact(this, AndroidContact(ab, it)) }
+    suspend fun findContactByUid(uid: String): LocalContact? =
+        withContext(Dispatchers.IO) {
+            ab.getRawContactRowOrNull("${RawContactColumns.UID}=?", arrayOf(uid))
+        }?.let { LocalContact(this, AndroidContact(ab, it)) }
 
     @Throws(FileNotFoundException::class)
-    fun findGroupById(id: Long): LocalGroup =
-        ab.getGroupOrNull("${Groups._ID}=?", arrayOf(id.toString()))
-            ?.let { LocalGroup(AndroidGroup(ab, it)) }
+    suspend fun findGroupById(id: Long): LocalGroup =
+        withContext(Dispatchers.IO) {
+            ab.getGroupOrNull("${Groups._ID}=?", arrayOf(id.toString()))
+        }?.let { LocalGroup(AndroidGroup(ab, it)) }
             ?: throw FileNotFoundException()
 
 
-    fun getContactIdsByGroupMembership(groupId: Long): List<Long> = buildList {
-        ab.provider.query(
-            ContactsContract.Data.CONTENT_URI.asSyncAdapter(), arrayOf(GroupMembership.RAW_CONTACT_ID),
-            "(${GroupMembership.MIMETYPE}=? AND ${GroupMembership.GROUP_ROW_ID}=?)",
-            arrayOf(GroupMembership.CONTENT_ITEM_TYPE, groupId.toString()), null
-        )?.use { cursor ->
-            while (cursor.moveToNext())
-                add(cursor.getLong(0))
+    suspend fun getContactIdsByGroupMembership(groupId: Long): List<Long> =
+        withContext(Dispatchers.IO) {
+            ab.getContactIdsByGroupMembership(groupId)
         }
-    }
 
-    fun getContactUidFromId(contactId: Long): String? =
-        ab.getRawContactRowOrNull("${RawContacts._ID}=?", arrayOf(contactId.toString()))
-            ?.getAsString(RawContactColumns.UID)
+    suspend fun getContactUidFromId(contactId: Long): String? =
+        withContext(Dispatchers.IO) {
+            ab.getRawContactRowOrNull("${RawContacts._ID}=?", arrayOf(contactId.toString()))
+        }?.getAsString(RawContactColumns.UID)
 
 
     /* special group operations */
@@ -394,7 +390,9 @@ open class LocalAddressBook @AssistedInject constructor(
                     .forEach { contact -> verifier.updateHashCode(contact, batch) }
             }
 
-            batch.commit()
+            withContext(Dispatchers.IO) {
+                batch.commit()
+            }
         }
     }
 

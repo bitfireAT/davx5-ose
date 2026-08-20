@@ -46,6 +46,8 @@ interface LocalCollection<out T: LocalResource> {
      *
      * @param name file name to look for
      * @return resource with the given name, or null if none
+     *
+     * @throws at.bitfire.synctools.storage.LocalStorageException on content provider errors
      */
     suspend fun findByName(name: String): T?
 
