@@ -27,7 +27,7 @@ class LocalTestResource: LocalResource {
         this.scheduleTag = scheduleTag
     }
 
-    override fun updateFlags(flags: Int) {
+    override suspend fun updateFlags(flags: Int) {
         this.flags = flags
     }
 

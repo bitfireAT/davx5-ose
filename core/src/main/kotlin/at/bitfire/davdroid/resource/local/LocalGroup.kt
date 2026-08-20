@@ -113,9 +113,11 @@ class LocalGroup(
         androidGroup.update(data)
     }
 
-    override fun updateFlags(flags: Int) {
+    override suspend fun updateFlags(flags: Int) {
         val values = contentValuesOf(GroupColumns.FLAGS to flags)
-        provider.update(androidGroup.groupSyncURI(), values, null, null)
+        withContext(Dispatchers.IO) {
+            androidGroup.update(values)
+        }
         androidGroup.flags = flags
     }
 

@@ -67,8 +67,10 @@ interface LocalResource {
      * Does not affect `this` object itself (which is immutable).
      *
      * At the moment, the only allowed values are 0 and [FLAG_REMOTELY_PRESENT].
+     *
+     * @throws at.bitfire.synctools.storage.LocalStorageException on content provider errors
      */
-    fun updateFlags(flags: Int)
+    suspend fun updateFlags(flags: Int)
 
     /**
      * Updates the local UID of the resource in the content provider.
