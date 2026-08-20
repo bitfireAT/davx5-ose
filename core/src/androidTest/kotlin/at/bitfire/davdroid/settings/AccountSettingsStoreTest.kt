@@ -159,7 +159,7 @@ class AccountSettingsStoreTest(private val parameters: TestParameters) {
             store.putValue(KEY, VALUE)
             fail("Expected exception")
         } catch (e: IllegalStateException) {
-            assertEquals("""Key "key" is already used for a sensitive value""", e.message)
+            assertEquals("""Key "$KEY" is already used for a sensitive value""", e.message)
         }
     }
 
@@ -173,11 +173,22 @@ class AccountSettingsStoreTest(private val parameters: TestParameters) {
             store.putSensitiveValue(KEY, SENSITIVE_VALUE)
             fail("Expected exception")
         } catch (e: IllegalStateException) {
-            assertEquals("""Key "key" is already used for a non-sensitive value""", e.message)
+            assertEquals("""Key "$KEY" is already used for a non-sensitive value""", e.message)
         }
     }
 }
 
+/**
+ * Test parameters for [AccountSettingsStoreTest].
+ *
+ * @property name The name of the [AccountSettingsStore] implementation.
+ * @property storeFactory A code block that is run before any of the tests to create the `AccountSettingsStore` instance
+ *   to be tested.
+ * @property throwOnValueTypeMixup If this is `true`, tests run to make sure the `AccountSettingsStore` instance under
+ *   test throws when [AccountSettingsStore.putValue] and [AccountSettingsStore.putSensitiveValue] are called with the
+ *   same key. Only the "legacy" implementation [AccountManagerSettingsStore] should use `false` here.
+ * @property cleanUp A code block that is run to clean up after a test run.
+ */
 data class TestParameters(
     val name: String,
     val storeFactory: () -> AccountSettingsStore,
