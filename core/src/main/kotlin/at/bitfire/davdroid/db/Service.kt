@@ -29,8 +29,8 @@ annotation class ServiceType
     foreignKeys = [
         ForeignKey(
             entity = DbAccount::class,
-            parentColumns = ["name"],
-            childColumns = ["accountName"],
+            parentColumns = ["id"],
+            childColumns = ["accountId"],
             onDelete = ForeignKey.CASCADE
         )
     ]
