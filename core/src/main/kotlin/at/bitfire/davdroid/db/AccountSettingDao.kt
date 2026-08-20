@@ -20,6 +20,14 @@ interface AccountSettingDao {
     @Insert
     suspend fun insert(setting: AccountSetting): Long
 
+    /**
+     * Inserts a new instance of [setting].
+     * [AccountSetting.id] may be generated automatically.
+     * @return The generated ID.
+     */
+    @Insert
+    fun insertBlocking(setting: AccountSetting): Long
+
     @Update
     fun updateBlocking(setting: AccountSetting)
 
