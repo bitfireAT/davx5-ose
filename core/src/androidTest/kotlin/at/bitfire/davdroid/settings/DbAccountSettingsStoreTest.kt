@@ -5,7 +5,6 @@
 package at.bitfire.davdroid.settings
 
 import at.bitfire.davdroid.accounts.DbAccountId
-import at.bitfire.davdroid.db.AccountSetting
 import at.bitfire.davdroid.db.AccountSettingDao
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.DbAccount
@@ -22,6 +21,7 @@ import org.junit.Rule
 import org.junit.Test
 import javax.inject.Inject
 
+// Note: General functionality is tested in AccountSettingsStoreTest. This is only testing implementation details.
 @HiltAndroidTest
 class DbAccountSettingsStoreTest {
 
@@ -57,28 +57,6 @@ class DbAccountSettingsStoreTest {
     }
 
     @Test
-    fun test_getValue() {
-        // Make sure initially it doesn't have a value
-        assertNull(store.getValue("test"))
-
-        // Insert a value now
-        dao.insertBlocking(
-            AccountSetting(accountId = dbAccountId, key = "test", value = "value")
-        )
-
-        // And verify that it's retrieved correctly
-        assertEquals("value", store.getValue("test"))
-
-        // Now insert a sensitive value
-        dao.insertBlocking(
-            AccountSetting(accountId = dbAccountId, key = "sensitive-test", sensitiveValue = "sensitive-value".toSensitiveString())
-        )
-
-        // And verify it cannot be fetched
-        assertNull(store.getValue("sensitive-test"))
-    }
-
-    @Test
     fun test_putValue() {
         // Verify that initially there's no value
         assertNull(dao.getBlocking(accountId = dbAccountId, key = "test"))
@@ -103,28 +81,6 @@ class DbAccountSettingsStoreTest {
     }
 
     @Test
-    fun test_getSensitiveValue() {
-        // Make sure initially it doesn't have a value
-        assertNull(store.getSensitiveValue("sensitive-test"))
-
-        // Insert a value now
-        dao.insertBlocking(
-            AccountSetting(accountId = dbAccountId, key = "sensitive-test", sensitiveValue = "sensitive-value".toSensitiveString())
-        )
-
-        // And verify that it's retrieved correctly
-        assertEquals("sensitive-value".toSensitiveString(), store.getSensitiveValue("sensitive-test"))
-
-        // Now insert a regular value
-        dao.insertBlocking(
-            AccountSetting(accountId = dbAccountId, key = "test", value = "value")
-        )
-
-        // And verify it cannot be fetched
-        assertNull(store.getSensitiveValue("test"))
-    }
-
-    @Test
     fun test_putSensitiveValue() {
         // Verify that initially there's no value
         assertNull(dao.getBlocking(accountId = dbAccountId, key = "sensitive-test"))
@@ -146,45 +102,5 @@ class DbAccountSettingsStoreTest {
 
         // And make sure it doesn't exist
         assertNull(dao.getBlocking(accountId = dbAccountId, key = "sensitive-test"))
-    }
-
-    @Test
-    fun test_putValue_overridesSensitiveValue() {
-        // Put a sensitive value first
-        store.putSensitiveValue(key = "mixed-test", value = "sensitive-value".toSensitiveString())
-
-        // Now put a regular value at the same key
-        store.putValue(key = "mixed-test", value = "value")
-
-        // It should have replaced the sensitive value, matching AccountManagerSettingsStore's behaviour
-        // of a key only ever holding one kind of value at a time
-        dao.getBlocking(accountId = dbAccountId, key = "mixed-test").let {
-            assertNotNull(it)
-            assertEquals(dbAccountId, it!!.accountId)
-            assertEquals("mixed-test", it.key)
-            assertEquals("value", it.value)
-            assertNull(it.sensitiveValue)
-        }
-        assertNull(store.getSensitiveValue("mixed-test"))
-    }
-
-    @Test
-    fun test_putSensitiveValue_overridesValue() {
-        // Put a regular value first
-        store.putValue(key = "mixed-test", value = "value")
-
-        // Now put a sensitive value at the same key
-        store.putSensitiveValue(key = "mixed-test", value = "sensitive-value".toSensitiveString())
-
-        // It should have replaced the regular value, matching AccountManagerSettingsStore's behaviour
-        // of a key only ever holding one kind of value at a time
-        dao.getBlocking(accountId = dbAccountId, key = "mixed-test").let {
-            assertNotNull(it)
-            assertEquals(dbAccountId, it!!.accountId)
-            assertEquals("mixed-test", it.key)
-            assertEquals("sensitive-value".toSensitiveString(), it.sensitiveValue)
-            assertNull(it.value)
-        }
-        assertNull(store.getValue("mixed-test"))
     }
 }
