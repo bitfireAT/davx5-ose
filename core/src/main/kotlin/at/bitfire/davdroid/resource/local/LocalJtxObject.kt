@@ -83,24 +83,22 @@ class LocalJtxObject(
         }
     }
 
-    override fun updateSequence(sequence: Int) {
-        val values = contentValuesOf(
-            JtxContract.JtxICalObject.SEQUENCE to sequence,
-        )
-
-        collection.updateJtxObjectRow(id, values)
+    override suspend fun updateSequence(sequence: Int) {
+        withContext(Dispatchers.IO) {
+            collection.updateJtxObjectRow(id, contentValuesOf(JtxContract.JtxICalObject.SEQUENCE to sequence))
+        }
     }
 
-    override fun deleteLocal() {
-        recurringCollection.deleteJtxObjectAndExceptions(id)
+    override suspend fun deleteLocal() {
+        withContext(Dispatchers.IO) {
+            recurringCollection.deleteJtxObjectAndExceptions(id)
+        }
     }
 
-    override fun resetDeleted() {
-        val values = contentValuesOf(
-            JtxContract.JtxICalObject.DELETED to 0,
-        )
-
-        collection.updateJtxObjectRow(id, values)
+    override suspend fun resetDeleted() {
+        withContext(Dispatchers.IO) {
+            collection.updateJtxObjectRow(id, contentValuesOf(JtxContract.JtxICalObject.DELETED to 0))
+        }
     }
 
     override fun getDebugSummary(): String {

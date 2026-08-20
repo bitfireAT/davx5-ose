@@ -87,10 +87,14 @@ class LocalTask(
         }
     }
 
-    override fun updateSequence(sequence: Int) {
-        taskList.updateTaskRow(id, contentValuesOf(
-            Tasks.SYNC_VERSION to sequence
-        ))
+    override suspend fun updateSequence(sequence: Int) {
+        withContext(Dispatchers.IO) {
+            taskList.updateTaskRow(
+                id, contentValuesOf(
+                    Tasks.SYNC_VERSION to sequence
+                )
+            )
+        }
     }
 
     override suspend fun updateUid(uid: String) {
@@ -101,11 +105,13 @@ class LocalTask(
         }
     }
 
-    override fun deleteLocal() {
-        recurringTaskList.deleteTaskAndExceptions(id)
+    override suspend fun deleteLocal() {
+        withContext(Dispatchers.IO) {
+            recurringTaskList.deleteTaskAndExceptions(id)
+        }
     }
 
-    override fun resetDeleted() {
+    override suspend fun resetDeleted() {
         throw NotImplementedError()
     }
 

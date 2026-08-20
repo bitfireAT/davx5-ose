@@ -49,8 +49,8 @@ class ReadOnlyPolicyTest {
 
         assertTrue(policy.resetDeleted(collection))
 
-        verify { resource1.resetDeleted() }
-        verify { resource2.resetDeleted() }
+        coVerify { resource1.resetDeleted() }
+        coVerify { resource2.resetDeleted() }
         verify { collection.lastSyncState = null }
     }
 
