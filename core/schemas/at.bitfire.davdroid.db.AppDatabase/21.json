@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 21,
-    "identityHash": "69265e20f36684eb436e3d2d89225f6a",
+    "identityHash": "0a0155313ac9586534ace61afe3f634f",
     "entities": [
       {
         "tableName": "account_setting",
@@ -471,7 +471,7 @@
       },
       {
         "tableName": "service",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `accountName` TEXT NOT NULL, `accountId` INTEGER, `type` TEXT NOT NULL, `principal` TEXT, FOREIGN KEY(`accountName`) REFERENCES `account`(`name`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `accountName` TEXT NOT NULL, `accountId` INTEGER, `type` TEXT NOT NULL, `principal` TEXT, FOREIGN KEY(`accountId`) REFERENCES `account`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "id",
@@ -526,10 +526,10 @@
             "onDelete": "CASCADE",
             "onUpdate": "NO ACTION",
             "columns": [
-              "accountName"
+              "accountId"
             ],
             "referencedColumns": [
-              "name"
+              "id"
             ]
           }
         ]
@@ -765,7 +765,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '69265e20f36684eb436e3d2d89225f6a')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '0a0155313ac9586534ace61afe3f634f')"
     ]
   }
 }
