@@ -11,8 +11,10 @@ import at.bitfire.synctools.storage.jtx.JtxEntityAndExceptions
 import at.bitfire.synctools.storage.jtx.JtxRecurringCollection
 import at.techbee.jtx.JtxContract
 import at.techbee.jtx.JtxContract.JtxICalObject
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
 
 /**
  * Application-specific implementation for jtx collections.
@@ -75,11 +77,13 @@ class LocalJtxCollection(internal val jtxCollection: JtxCollection) :
             }
     }
 
-    override fun markNotDirty(flags: Int): Int =
-        jtxCollection.updateJtxObjectRows(
-            contentValuesOf(JtxICalObject.FLAGS to flags),
-            "NOT ${JtxICalObject.DIRTY}", null
-        )
+    override suspend fun markNotDirty(flags: Int): Int =
+        withContext(Dispatchers.IO) {
+            jtxCollection.updateJtxObjectRows(
+                contentValuesOf(JtxICalObject.FLAGS to flags),
+                "NOT ${JtxICalObject.DIRTY}", null
+            )
+        }
 
     override suspend fun removeNotDirtyMarked(flags: Int): Int {
         val batch = JtxBatchOperation(jtxCollection.client)
@@ -93,8 +97,10 @@ class LocalJtxCollection(internal val jtxCollection: JtxCollection) :
         return batch.commit()
     }
 
-    override fun forgetETags() {
-        jtxCollection.updateJtxObjectRows(contentValuesOf(JtxICalObject.ETAG to null), null, null)
+    override suspend fun forgetETags() {
+        withContext(Dispatchers.IO) {
+            jtxCollection.updateJtxObjectRows(contentValuesOf(JtxICalObject.ETAG to null), null, null)
+        }
     }
 
     fun add(jtxEntityAndExceptions: JtxEntityAndExceptions): Long {

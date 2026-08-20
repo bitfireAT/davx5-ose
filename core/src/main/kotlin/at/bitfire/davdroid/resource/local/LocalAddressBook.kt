@@ -34,10 +34,12 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
+import kotlinx.coroutines.withContext
 import java.io.FileNotFoundException
 import java.util.Optional
 import java.util.logging.Logger
@@ -108,17 +110,18 @@ open class LocalAddressBook @AssistedInject constructor(
 
     /* operations on the collection (address book) itself */
 
-    override fun markNotDirty(flags: Int): Int {
-        val batch = ContactsBatchOperation(ab.provider)
-        ab.updateRawContactRows(
-            contentValuesOf(RawContactColumns.FLAGS to flags),
-            "${RawContacts.DIRTY}=0", null,
-            batch
-        )
-        if (includeGroups)
-            ab.updateGroups(contentValuesOf(GroupColumns.FLAGS to flags), "NOT ${Groups.DIRTY}", null, batch)
-        return batch.commit()
-    }
+    override suspend fun markNotDirty(flags: Int): Int =
+        withContext(Dispatchers.IO) {
+            val batch = ContactsBatchOperation(ab.provider)
+            ab.updateRawContactRows(
+                contentValuesOf(RawContactColumns.FLAGS to flags),
+                "${RawContacts.DIRTY}=0", null,
+                batch
+            )
+            if (includeGroups)
+                ab.updateGroups(contentValuesOf(GroupColumns.FLAGS to flags), "NOT ${Groups.DIRTY}", null, batch)
+            batch.commit()
+        }
 
     override suspend fun removeNotDirtyMarked(flags: Int): Int {
         val batch = ContactsBatchOperation(ab.provider)
@@ -275,12 +278,14 @@ open class LocalAddressBook @AssistedInject constructor(
         else
             findDirtyContacts()
 
-    override fun forgetETags() {
-        val batch = ContactsBatchOperation(ab.provider)
-        if (includeGroups)
-            ab.updateGroups(contentValuesOf(GroupColumns.ETAG to null), null, null, batch)
-        ab.updateRawContactRows(contentValuesOf(RawContactColumns.ETAG to null), null, null, batch)
-        batch.commit()
+    override suspend fun forgetETags() {
+        withContext(Dispatchers.IO) {
+            val batch = ContactsBatchOperation(ab.provider)
+            if (includeGroups)
+                ab.updateGroups(contentValuesOf(GroupColumns.ETAG to null), null, null, batch)
+            ab.updateRawContactRows(contentValuesOf(RawContactColumns.ETAG to null), null, null, batch)
+            batch.commit()
+        }
     }
 
 

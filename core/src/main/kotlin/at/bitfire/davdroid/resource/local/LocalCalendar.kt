@@ -13,8 +13,10 @@ import at.bitfire.synctools.storage.calendar.AndroidRecurringCalendar
 import at.bitfire.synctools.storage.calendar.CalendarBatchOperation
 import at.bitfire.synctools.storage.calendar.EventAndExceptions
 import at.bitfire.synctools.storage.calendar.EventsContract
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
 
 /**
  * Application-specific subclass of [AndroidCalendar] for local calendars.
@@ -69,17 +71,19 @@ class LocalCalendar(
             LocalEvent(recurringCalendar, it)
         }
 
-    override fun markNotDirty(flags: Int) =
-        androidCalendar.updateEventRows(
-            contentValuesOf(EventsContract.COLUMN_FLAGS to flags),
-            // `dirty` can be 0, 1, or null. "NOT dirty" is not enough.
-            """
-                ${Events.CALENDAR_ID}=?
-                AND (${Events.DIRTY} IS NULL OR ${Events.DIRTY}=0)
-                AND ${Events.ORIGINAL_ID} IS NULL
-            """.trimIndent(),
-            arrayOf(androidCalendar.id.toString())
-        )
+    override suspend fun markNotDirty(flags: Int) =
+        withContext(Dispatchers.IO) {
+            androidCalendar.updateEventRows(
+                contentValuesOf(EventsContract.COLUMN_FLAGS to flags),
+                // `dirty` can be 0, 1, or null. "NOT dirty" is not enough.
+                """
+                    ${Events.CALENDAR_ID}=?
+                    AND (${Events.DIRTY} IS NULL OR ${Events.DIRTY}=0)
+                    AND ${Events.ORIGINAL_ID} IS NULL
+                """.trimIndent(),
+                arrayOf(androidCalendar.id.toString())
+            )
+        }
 
     override suspend fun removeNotDirtyMarked(flags: Int): Int {
         // list all non-dirty events with the given flags and delete every row + its exceptions
@@ -105,11 +109,13 @@ class LocalCalendar(
         return batch.commit()
     }
 
-    override fun forgetETags() {
-        androidCalendar.updateEventRows(
-            contentValuesOf(EventsContract.COLUMN_ETAG to null),
-            "${Events.CALENDAR_ID}=?", arrayOf(androidCalendar.id.toString())
-        )
+    override suspend fun forgetETags() {
+        withContext(Dispatchers.IO) {
+            androidCalendar.updateEventRows(
+                contentValuesOf(EventsContract.COLUMN_ETAG to null),
+                "${Events.CALENDAR_ID}=?", arrayOf(androidCalendar.id.toString())
+            )
+        }
     }
 
 }

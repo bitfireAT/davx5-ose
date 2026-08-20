@@ -508,7 +508,7 @@ abstract class SyncManager<LocalType : LocalResource>(
      *
      * Used together with [deleteNotPresentRemotely].
      */
-    protected fun resetPresentRemotely() {
+    protected suspend fun resetPresentRemotely() {
         val number = localCollection.markNotDirty(0)
         logger.info("Number of local non-dirty entries: $number")
     }

@@ -55,8 +55,10 @@ interface LocalCollection<out T: LocalResource> {
      * @param flags    value of flags to set (for instance, [LocalResource.FLAG_REMOTELY_PRESENT]])
      *
      * @return         number of marked entries
+     *
+     * @throws at.bitfire.synctools.storage.LocalStorageException on content provider errors
      */
-    fun markNotDirty(flags: Int): Int
+    suspend fun markNotDirty(flags: Int): Int
 
     /**
      * Removes entries which are not dirty with a given flag combination.
@@ -71,8 +73,10 @@ interface LocalCollection<out T: LocalResource> {
 
     /**
      * Forgets the ETags of all members so that they will be reloaded from the server during sync.
+     *
+     * @throws at.bitfire.synctools.storage.LocalStorageException on content provider errors
      */
-    fun forgetETags()
+    suspend fun forgetETags()
 
     /**
      * Counts all resources in this collection.
