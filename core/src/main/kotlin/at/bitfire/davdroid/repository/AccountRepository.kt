@@ -82,7 +82,7 @@ class AccountRepository @Inject constructor(
     private val dbAccountDao = db.dbAccountDao()
 
     private val accountSettingDao = db.accountSettingDao()
-    
+
     fun getAccountNameFlow(accountId: AccountId): Flow<String> {
         return flow {
             var currentName = getAccountName(accountId)
