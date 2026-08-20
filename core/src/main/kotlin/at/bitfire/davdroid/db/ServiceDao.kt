@@ -25,14 +25,14 @@ abstract class ServiceDao(
     abstract suspend fun getByAccountAndType(accountName: String, @ServiceType type: String): Service?
 
     @Query("SELECT * FROM service WHERE accountId=:accountId AND type=:type")
-    suspend fun getByAccountAndType(accountId: Long, @ServiceType type: String): Service?
+    abstract suspend fun getByAccountAndType(accountId: Long, @ServiceType type: String): Service?
 
     @Deprecated("Use getByAccountAndTypeFlow(accountId: AccountId, type: String) instead")
     @Query("SELECT * FROM service WHERE accountName=:accountName AND type=:type")
     abstract fun getByAccountAndTypeBlocking(accountName: String, @ServiceType type: String): Service?
 
     @Query("SELECT * FROM service WHERE accountId=:accountId AND type=:type")
-    fun getByAccountAndTypeBlocking(accountId: Long, @ServiceType type: String): Service?
+    abstract fun getByAccountAndTypeBlocking(accountId: Long, @ServiceType type: String): Service?
 
     suspend fun getByAccountIdAndType(accountId: AccountId, @ServiceType type: String): Service? {
         return when (accountId) {
@@ -53,7 +53,7 @@ abstract class ServiceDao(
     abstract fun getByAccountAndTypeFlow(accountName: String, @ServiceType type: String): Flow<Service?>
 
     @Query("SELECT * FROM service WHERE accountId=:accountId AND type=:type")
-    fun getByAccountAndTypeFlow(accountId: Long, @ServiceType type: String): Flow<Service?>
+    abstract fun getByAccountAndTypeFlow(accountId: Long, @ServiceType type: String): Flow<Service?>
 
     fun getByAccountAndTypeFlow(accountId: AccountId, @ServiceType type: String): Flow<Service?> {
         return when (accountId) {
@@ -85,7 +85,7 @@ abstract class ServiceDao(
     abstract suspend fun deleteByAccount(accountName: String)
 
     @Query("DELETE FROM service WHERE accountId=:accountId")
-    suspend fun deleteByAccount(accountId: Long)
+    abstract suspend fun deleteByAccount(accountId: Long)
 
     suspend fun deleteByAccount(accountId: AccountId) {
         when (accountId) {
