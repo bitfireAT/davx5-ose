@@ -14,6 +14,8 @@ import at.bitfire.synctools.storage.calendar.AndroidRecurringCalendar
 import at.bitfire.synctools.storage.calendar.EventAndExceptions
 import at.bitfire.synctools.storage.calendar.EventsContract
 import com.google.common.base.MoreObjects
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.apache.commons.lang3.StringUtils
 import java.util.Optional
 
@@ -52,7 +54,7 @@ class LocalEvent(
 
     // LocalResource implementation
 
-    override fun clearDirty(fileName: Optional<String>, eTag: String?, scheduleTag: String?) {
+    override suspend fun clearDirty(fileName: Optional<String>, eTag: String?, scheduleTag: String?) {
         val values = contentValuesOf(
             Events.DIRTY to 0,
             EventsContract.COLUMN_ETAG to eTag,
@@ -60,7 +62,9 @@ class LocalEvent(
         )
         if (fileName.isPresent)
             values.put(Events._SYNC_ID, fileName.get())
-        calendar.updateEventRow(id, values)
+        withContext(Dispatchers.IO) {
+            calendar.updateEventRow(id, values)
+        }
     }
 
     override fun updateFlags(flags: Int) {

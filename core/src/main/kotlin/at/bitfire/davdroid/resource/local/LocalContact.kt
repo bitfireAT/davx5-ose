@@ -16,6 +16,8 @@ import at.bitfire.synctools.mapping.contacts.Contact
 import at.bitfire.synctools.storage.contacts.AddressContract.RawContactColumns
 import at.bitfire.synctools.storage.contacts.AndroidContact
 import com.google.common.base.MoreObjects
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
@@ -50,7 +52,7 @@ class LocalContact(
         androidContact.setContact(null)
     }
 
-    override fun clearDirty(fileName: Optional<String>, eTag: String?, scheduleTag: String?) {
+    override suspend fun clearDirty(fileName: Optional<String>, eTag: String?, scheduleTag: String?) {
         if (scheduleTag != null)
             throw IllegalArgumentException("Contacts must not have a Schedule-Tag")
 
@@ -63,7 +65,9 @@ class LocalContact(
         // Android 7 workaround
         localAddressBook.dirtyVerifier.getOrNull()?.setHashCodeColumn(this, values)
 
-        provider.update(androidContact.rawContactSyncURI(), values, null, null)
+        withContext(Dispatchers.IO) {
+            androidContact.update(values)
+        }
 
         if (fileName.isPresent)
             androidContact.fileName = fileName.get()

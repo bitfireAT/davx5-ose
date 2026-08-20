@@ -6,6 +6,7 @@ package at.bitfire.davdroid.sync
 
 import at.bitfire.davdroid.resource.local.LocalCollection
 import at.bitfire.davdroid.resource.local.LocalResource
+import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit4.MockKRule
@@ -69,7 +70,7 @@ class ReadOnlyPolicyTest {
 
         assertTrue(policy.resetDirty(collection))
 
-        verify { resource.clearDirty(Optional.empty(), null, null) }
+        coVerify { resource.clearDirty(Optional.empty(), null, null) }
         verify { collection.lastSyncState = null }
     }
 

@@ -19,7 +19,7 @@ class LocalTestResource: LocalResource {
     var deleted = false
     var dirty = false
 
-    override fun clearDirty(fileName: Optional<String>, eTag: String?, scheduleTag: String?) {
+    override suspend fun clearDirty(fileName: Optional<String>, eTag: String?, scheduleTag: String?) {
         dirty = false
         if (fileName.isPresent)
             this.fileName = fileName.get()

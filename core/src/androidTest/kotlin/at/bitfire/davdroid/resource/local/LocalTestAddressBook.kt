@@ -12,6 +12,7 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.synctools.vcard.GroupMethod
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.runBlocking
 import java.util.UUID
 import javax.inject.Inject
 
@@ -25,11 +26,11 @@ class LocalTestAddressBook @Inject constructor(
         accountId: AccountId,
         provider: ContentProviderClient,
         groupMethod: GroupMethod = GroupMethod.GROUP_VCARDS,
-        block: (LocalAddressBook) -> Unit
+        block: suspend (LocalAddressBook) -> Unit
     ) {
         val ab = create(accountId, provider, groupMethod)
         try {
-            block(ab)
+            runBlocking { block(ab) }
         } finally {
             delete(ab)
         }

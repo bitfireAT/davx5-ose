@@ -169,9 +169,18 @@ class AndroidGroup(
         return update(contentValues())
     }
 
+    /**
+     * Updates this group's main row with the given values.
+     *
+     * @throws LocalStorageException on contact provider errors
+     */
     fun update(values: ContentValues): Uri {
         val uri = groupSyncURI()
-        addressBook.provider.update(uri, values, null, null)
+        try {
+            addressBook.provider.update(uri, values, null, null)
+        } catch (e: RemoteException) {
+            throw LocalStorageException("Couldn't update group $id", e)
+        }
         return uri
     }
 

@@ -46,6 +46,8 @@ Android library. The sync engine, database layer, and Jetpack Compose UI for DAV
 
 **Repository pattern** — DAOs (in `db/`) are always wrapped by a repository in `repository/`. UI code and sync managers talk to repositories, never to DAOs directly.
 
+**Blocking/suspending boundary** — `resource/` (the `Local*` classes wrapping `:synctools`) and `repository/` must expose non-blocking, suspending APIs. Callers must not need to wrap calls into these packages in `withContext` themselves; if the underlying `:synctools` call is blocking, the `resource/`/`repository/` method wraps it in `withContext(ioDispatcher)` internally (narrowly, around the actual blocking call).
+
 **DAO/repository naming convention** — applies to both DAO methods (`db/`) and their repository wrappers (
 `repository/`):
 
@@ -90,6 +92,10 @@ Technically a standalone Android library for bidirectional conversion between iC
 providers (Calendar, Contacts, Tasks, Jtx). It is only consumed by `:core`.
 
 **No Hilt or Dagger.** This is a pure library — no DI framework, no Android application components. Dependencies are passed via constructors or obtained directly (e.g. `ContentResolver`). Keep it that way. For logging, use `val logger\nget() = java.util.Logger.getLogger(javaClass.name)`.
+
+**Blocking is fine here.** `:synctools` methods are allowed to block — they're the layer that actually talks to `ContentProviderClient`. It's `:core`'s job (see the `:core` Blocking/suspending boundary note above) to dispatch to an IO thread when calling into `:synctools`.
+
+**Wrap `RemoteException`.** Any method that calls `ContentProviderClient` must catch `android.os.RemoteException` and rethrow it wrapped in `at.bitfire.synctools.storage.LocalStorageException` (see the many existing examples, e.g. `AndroidCalendar.updateEventRow()`).
 
 #### Public API
 
