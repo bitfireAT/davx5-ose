@@ -8,7 +8,6 @@ import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Context
 import android.net.Uri
-import android.provider.ContactsContract
 import android.provider.ContactsContract.RawContacts
 import android.provider.ContactsContract.RawContacts.getContactLookupUri
 import androidx.core.content.contentValuesOf
@@ -113,7 +112,7 @@ class LocalContact(
 
     override suspend fun resetDeleted() {
         withContext(Dispatchers.IO) {
-            androidContact.update(contentValuesOf(ContactsContract.Groups.DELETED to 0))
+            androidContact.update(contentValuesOf(RawContacts.DELETED to 0))
         }
     }
 
