@@ -135,7 +135,7 @@ class AccountRepository @Inject constructor(
         try {
             if (config.cardDAV != null) {
                 // insert CardDAV service
-                val id = insertService(accountName, Service.TYPE_CARDDAV, config.cardDAV)
+                val id = insertService(accountId, accountName, Service.TYPE_CARDDAV, config.cardDAV)
 
                 // set initial CardDAV account settings and set sync intervals (enables automatic sync)
                 val accountSettings = accountSettingsFactory.create(accountId)
@@ -147,7 +147,7 @@ class AccountRepository @Inject constructor(
 
             if (config.calDAV != null) {
                 // insert CalDAV service
-                val id = insertService(accountName, Service.TYPE_CALDAV, config.calDAV)
+                val id = insertService(accountId, accountName, Service.TYPE_CALDAV, config.calDAV)
 
                 // start CalDAV service detection (refresh collections)
                 RefreshCollectionsWorker.enqueue(context, id)
@@ -342,12 +342,16 @@ class AccountRepository @Inject constructor(
     // helpers
 
     private fun insertService(
+        accountId: AccountId,
         accountName: String,
         @ServiceType type: String,
         info: DavResourceFinder.Configuration.ServiceInfo
     ): Long {
         // insert service
-        val service = Service(0, accountName, type, info.principal)
+        val service = when(accountId) {
+            is LegacyAccount -> Service(0, accountName, null, type, info.principal)
+            is DbAccountId -> Service(0, accountName, accountId.id, type, info.principal)
+        }
         val serviceId = serviceRepository.insertOrReplaceBlocking(service)
 
         // insert home sets
