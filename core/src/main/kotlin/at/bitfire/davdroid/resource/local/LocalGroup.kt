@@ -52,6 +52,7 @@ class LocalGroup(
             throw IllegalArgumentException("Contact groups must not have a Schedule-Tag")
         val id = requireNotNull(id)
 
+        // update in content provider
         val values = ContentValues(3)
         if (fileName.isPresent)
             values.put(GroupColumns.FILENAME, fileName.get())
@@ -61,6 +62,7 @@ class LocalGroup(
             androidGroup.update(values)
         }
 
+        // update in-memory state
         if (fileName.isPresent)
             androidGroup.fileName = fileName.get()
         androidGroup.eTag = null
