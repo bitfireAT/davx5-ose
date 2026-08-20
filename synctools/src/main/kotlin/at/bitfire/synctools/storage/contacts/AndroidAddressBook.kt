@@ -15,6 +15,7 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.RemoteException
 import android.provider.ContactsContract
+import android.provider.ContactsContract.CommonDataKinds.GroupMembership
 import android.provider.ContactsContract.CommonDataKinds.Photo
 import android.provider.ContactsContract.Groups
 import android.provider.ContactsContract.RawContacts
@@ -204,13 +205,42 @@ class AndroidAddressBook(
      * @param where      optional selection
      * @param whereArgs  optional arguments for [where]
      * @return the matching row, or `null` if none matches
+     *
+     * @throws LocalStorageException on content provider errors
      */
     fun getRawContactRowOrNull(where: String?, whereArgs: Array<String>?): ContentValues? {
-        provider.query(rawContactsSyncUri(), null, where, whereArgs, null)?.use { cursor ->
-            if (cursor.moveToNext())
-                return cursor.toContentValues()
+        try {
+            provider.query(rawContactsSyncUri(), null, where, whereArgs, null)?.use { cursor ->
+                if (cursor.moveToNext())
+                    return cursor.toContentValues()
+            }
+        } catch (e: RemoteException) {
+            throw LocalStorageException("Couldn't query raw contact", e)
         }
         return null
+    }
+
+    /**
+     * Finds the IDs of all raw contacts that are members of a given group.
+     *
+     * @param groupId  ID of the group
+     * @return IDs of the raw contacts that are members of the group
+     *
+     * @throws LocalStorageException on content provider errors
+     */
+    fun getContactIdsByGroupMembership(groupId: Long): List<Long> = buildList {
+        try {
+            provider.query(
+                ContactsContract.Data.CONTENT_URI.asSyncAdapter(), arrayOf(GroupMembership.RAW_CONTACT_ID),
+                "(${GroupMembership.MIMETYPE}=? AND ${GroupMembership.GROUP_ROW_ID}=?)",
+                arrayOf(GroupMembership.CONTENT_ITEM_TYPE, groupId.toString()), null
+            )?.use { cursor ->
+                while (cursor.moveToNext())
+                    add(cursor.getLong(0))
+            }
+        } catch (e: RemoteException) {
+            throw LocalStorageException("Couldn't query group memberships of group $groupId", e)
+        }
     }
 
     /**
@@ -302,11 +332,17 @@ class AndroidAddressBook(
      * @param where      optional selection
      * @param whereArgs  optional arguments for [where]
      * @return the matching row, or `null` if none matches
+     *
+     * @throws LocalStorageException on content provider errors
      */
     fun getGroupOrNull(where: String?, whereArgs: Array<String>?): ContentValues? {
-        provider.query(groupsSyncUri(), null, where, whereArgs, null)?.use { cursor ->
-            if (cursor.moveToNext())
-                return cursor.toContentValues()
+        try {
+            provider.query(groupsSyncUri(), null, where, whereArgs, null)?.use { cursor ->
+                if (cursor.moveToNext())
+                    return cursor.toContentValues()
+            }
+        } catch (e: RemoteException) {
+            throw LocalStorageException("Couldn't query group", e)
         }
         return null
     }

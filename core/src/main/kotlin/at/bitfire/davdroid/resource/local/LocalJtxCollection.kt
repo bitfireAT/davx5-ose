@@ -70,11 +70,12 @@ class LocalJtxCollection(internal val jtxCollection: JtxCollection) :
             .map { LocalJtxObject(recurringCollection, it) }
 
     override suspend fun findByName(name: String): LocalJtxObject? {
-        return recurringCollection
-            .findJtxObjectAndExceptions("${JtxICalObject.FILENAME}=?", arrayOf(name))
-            ?.let { jtxObjectAndExceptions ->
-                LocalJtxObject(recurringCollection, jtxObjectAndExceptions)
-            }
+        val result = withContext(Dispatchers.IO) {
+            recurringCollection.findJtxObjectAndExceptions("${JtxICalObject.FILENAME}=?", arrayOf(name))
+        }
+        return result?.let { jtxObjectAndExceptions ->
+            LocalJtxObject(recurringCollection, jtxObjectAndExceptions)
+        }
     }
 
     override suspend fun markNotDirty(flags: Int): Int =
