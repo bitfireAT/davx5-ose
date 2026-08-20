@@ -62,10 +62,10 @@ class LocalContact(
         values.put(RawContactColumns.ETAG, eTag)
         values.put(RawContacts.DIRTY, 0)
 
-        // Android 7 workaround
-        localAddressBook.dirtyVerifier.getOrNull()?.setHashCodeColumn(this, values)
-
         withContext(Dispatchers.IO) {
+            // Android 7 workaround
+            localAddressBook.dirtyVerifier.getOrNull()?.setHashCodeColumn(this@LocalContact, values)
+
             androidContact.update(values)
         }
 

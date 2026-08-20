@@ -30,7 +30,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import ezvcard.property.Telephone
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.AfterClass
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -66,7 +66,7 @@ class LocalAddressBookTest {
 
 
     @Test
-    fun test_readOnly() {
+    fun test_readOnly() = runTest {
         localTestAddressBook.provide(accountId, provider) { addressBook ->
             // insert contact with phone number and a group
             val localContact = addressBook.addContact(
@@ -108,7 +108,7 @@ class LocalAddressBookTest {
      * Tests whether contacts are moved (and not lost) when an address book is renamed.
      */
     @Test
-    fun test_renameAccount_retainsContacts() {
+    fun test_renameAccount_retainsContacts() = runTest {
         localTestAddressBook.provide(accountId, provider) { addressBook ->
             // insert contact with data row
             val uid = "12345"
@@ -142,7 +142,7 @@ class LocalAddressBookTest {
      * Tests whether groups are moved (and not lost) when an address book is renamed.
      */
     @Test
-    fun test_renameAccount_retainsGroups() {
+    fun test_renameAccount_retainsGroups() = runTest {
         localTestAddressBook.provide(accountId, provider) { addressBook ->
             // insert group
             val localGroup = addressBook.addGroup(Contact(displayName = "Test Group"), null, null, 0)
@@ -168,7 +168,7 @@ class LocalAddressBookTest {
 
 
     @Test
-    fun testApplyPendingMemberships_addPendingMembership() {
+    fun testApplyPendingMemberships_addPendingMembership() = runTest {
         localTestAddressBook.provide(accountId, provider, GroupMethod.GROUP_VCARDS) { localAddressBook ->
             val contact1 = localAddressBook.addContact(Contact().apply {
                 uid = "test1"
@@ -184,7 +184,7 @@ class LocalAddressBookTest {
             )
 
             // pending membership -> contact1 should be added to group
-            runBlocking { localAddressBook.applyPendingMemberships() }
+            localAddressBook.applyPendingMemberships()
 
             // check group membership
             localAddressBook.ab.provider.query(
@@ -218,7 +218,7 @@ class LocalAddressBookTest {
     }
 
     @Test
-    fun testApplyPendingMemberships_removeMembership() {
+    fun testApplyPendingMemberships_removeMembership() = runTest {
         localTestAddressBook.provide(accountId, provider, GroupMethod.GROUP_VCARDS) { localAddressBook ->
             val contact1 = localAddressBook.addContact(Contact().apply {
                 uid = "test1"
@@ -233,7 +233,7 @@ class LocalAddressBookTest {
             batch.commit()
 
             // no pending memberships -> membership should be removed
-            runBlocking { localAddressBook.applyPendingMemberships() }
+            localAddressBook.applyPendingMemberships()
 
             // check group membership
             localAddressBook.ab.provider.query(
