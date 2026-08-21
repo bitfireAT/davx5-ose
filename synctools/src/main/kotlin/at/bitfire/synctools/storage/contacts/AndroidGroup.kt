@@ -184,7 +184,18 @@ class AndroidGroup(
         return uri
     }
 
-    fun delete() = addressBook.provider.delete(groupSyncURI(), null, null)
+    /**
+     * Deletes this group from the contacts provider.
+     *
+     * @throws LocalStorageException on contact provider errors
+     */
+    fun delete() {
+        try {
+            addressBook.provider.delete(groupSyncURI(), null, null)
+        } catch (e: RemoteException) {
+            throw LocalStorageException("Couldn't delete group $id", e)
+        }
+    }
 
     /**
      * Lists all members of this group.

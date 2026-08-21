@@ -121,7 +121,7 @@ class LocalGroup(
         androidGroup.flags = flags
     }
 
-    override fun updateSequence(sequence: Int) = throw NotImplementedError()
+    override suspend fun updateSequence(sequence: Int) = throw NotImplementedError()
 
     override suspend fun updateUid(uid: String) {
         val values = contentValuesOf(GroupColumns.UID to uid)
@@ -130,13 +130,16 @@ class LocalGroup(
         }
     }
 
-    override fun deleteLocal() {
-        androidGroup.delete()
+    override suspend fun deleteLocal() {
+        withContext(Dispatchers.IO) {
+            androidGroup.delete()
+        }
     }
 
-    override fun resetDeleted() {
-        val values = contentValuesOf(Groups.DELETED to 0)
-        provider.update(androidGroup.groupSyncURI(), values, null, null)
+    override suspend fun resetDeleted() {
+        withContext(Dispatchers.IO) {
+            androidGroup.update(contentValuesOf(Groups.DELETED to 0))
+        }
     }
 
     override fun getDebugSummary() =

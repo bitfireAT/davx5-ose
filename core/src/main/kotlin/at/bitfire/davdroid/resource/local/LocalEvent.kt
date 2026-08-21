@@ -75,10 +75,14 @@ class LocalEvent(
         }
     }
 
-    override fun updateSequence(sequence: Int) {
-        calendar.updateEventRow(id, contentValuesOf(
-            EventsContract.COLUMN_SEQUENCE to sequence
-        ))
+    override suspend fun updateSequence(sequence: Int) {
+        withContext(Dispatchers.IO) {
+            calendar.updateEventRow(
+                id, contentValuesOf(
+                    EventsContract.COLUMN_SEQUENCE to sequence
+                )
+            )
+        }
     }
 
     override suspend fun updateUid(uid: String) {
@@ -89,14 +93,20 @@ class LocalEvent(
         }
     }
 
-    override fun deleteLocal() {
-        recurringCalendar.deleteEventAndExceptions(id)
+    override suspend fun deleteLocal() {
+        withContext(Dispatchers.IO) {
+            recurringCalendar.deleteEventAndExceptions(id)
+        }
     }
 
-    override fun resetDeleted() {
-        calendar.updateEventRow(id, contentValuesOf(
-            Events.DELETED to 0
-        ))
+    override suspend fun resetDeleted() {
+        withContext(Dispatchers.IO) {
+            calendar.updateEventRow(
+                id, contentValuesOf(
+                    Events.DELETED to 0
+                )
+            )
+        }
     }
 
     override fun getDebugSummary() =
