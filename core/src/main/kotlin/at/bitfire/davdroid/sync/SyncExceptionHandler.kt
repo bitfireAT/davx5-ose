@@ -8,6 +8,7 @@ import android.content.Context
 import android.os.DeadObjectException
 import android.os.RemoteException
 import androidx.annotation.VisibleForTesting
+import at.bitfire.dav4jvm.ktor.exception.BadGatewayException
 import at.bitfire.dav4jvm.ktor.exception.DavException
 import at.bitfire.dav4jvm.ktor.exception.HttpException
 import at.bitfire.dav4jvm.ktor.exception.ServiceUnavailableException
@@ -26,6 +27,7 @@ import io.ktor.http.Url
 import java.io.IOException
 import java.security.cert.CertificateException
 import java.time.Instant
+import java.time.temporal.ChronoUnit
 import java.util.concurrent.CancellationException
 import java.util.logging.Level
 import java.util.logging.Logger
@@ -215,6 +217,12 @@ class SyncExceptionHandler @AssistedInject constructor(
             is ServiceUnavailableException -> SyncErrorAction.SoftError(
                 logMessage = "Got 503 Service unavailable, trying again later",
                 delayUntil = exception.getDelayUntil()
+            )
+
+            is BadGatewayException -> SyncErrorAction.SoftError(
+                logMessage = "Got 502 Bad Gateway, trying again later",
+                // Service may be down temporarily, so retry after 15 minutes (arbitrary)
+                delayUntil = Instant.now().plus(15, ChronoUnit.MINUTES)
             )
 
             is HttpException, is DavException -> SyncErrorAction.HardError(
