@@ -243,6 +243,16 @@ class SyncExceptionHandlerTest {
     }
 
     @Test
+    fun `classifySyncException() treats BadGatewayException as soft error with a delay`() = runTest {
+        val exception = httpException(HttpStatusCode.BadGateway)
+
+        val action = handler().classifySyncException(exception)
+
+        assertTrue(action is SyncExceptionHandler.SyncErrorAction.SoftError)
+        assertNotNull((action as SyncExceptionHandler.SyncErrorAction.SoftError).delayUntil)
+    }
+
+    @Test
     fun `classifySyncException() treats HttpException as hard error`() = runTest {
         val exception = httpException(HttpStatusCode.BadRequest)
 
