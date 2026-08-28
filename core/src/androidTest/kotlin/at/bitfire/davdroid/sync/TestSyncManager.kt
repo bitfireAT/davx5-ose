@@ -8,7 +8,7 @@ import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.resource.local.LocalResource
 import at.bitfire.davdroid.resource.remote.WebDavCollection
-import at.bitfire.davdroid.util.DavUtils.lastSegment
+import at.bitfire.davdroid.util.DavUtils.extractFileName
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -67,7 +67,7 @@ class TestSyncManager @AssistedInject constructor(
     override suspend fun processDownload(result: WebDavCollection.MultiGetItem) {
         processedDownloads += result
 
-        val fileName = result.url.lastSegment
+        val fileName = extractFileName(result.url)
         var localEntry = localCollection.entries.firstOrNull { it.fileName == fileName }
         if (localEntry == null) {
             val newEntry = LocalTestResource().also {

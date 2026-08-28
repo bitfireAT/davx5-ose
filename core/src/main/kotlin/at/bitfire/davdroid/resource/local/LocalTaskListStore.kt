@@ -16,7 +16,8 @@ import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.settings.AccountSettingsFactory
-import at.bitfire.davdroid.util.DavUtils.lastSegment
+import at.bitfire.dav4jvm.ktor.withTrailingSlash
+import at.bitfire.davdroid.util.DavUtils.extractCollectionName
 import at.bitfire.synctools.storage.TaskProvider
 import at.bitfire.synctools.storage.tasks.DmfsTaskList
 import at.bitfire.synctools.storage.tasks.DmfsTaskListProvider
@@ -94,7 +95,7 @@ class LocalTaskListStore @AssistedInject constructor(
         val values = ContentValues(3)
         values.put(TaskLists._SYNC_ID, info.id.toString())
         values.put(TaskLists.LIST_NAME,
-            if (info.displayName.isNullOrBlank()) info.url.lastSegment else info.displayName)
+            if (info.displayName.isNullOrBlank()) extractCollectionName(info.url.withTrailingSlash()) else info.displayName)
 
         if (withColor && info.color != null)
             values.put(TaskLists.LIST_COLOR, info.color)

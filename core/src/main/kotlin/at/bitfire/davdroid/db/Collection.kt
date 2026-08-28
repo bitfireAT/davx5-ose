@@ -28,7 +28,7 @@ import at.bitfire.dav4jvm.property.push.WebPush
 import at.bitfire.dav4jvm.property.webdav.CurrentUserPrivilegeSet
 import at.bitfire.dav4jvm.property.webdav.DisplayName
 import at.bitfire.dav4jvm.property.webdav.ResourceType
-import at.bitfire.davdroid.util.DavUtils.lastSegment
+import at.bitfire.davdroid.util.DavUtils.extractCollectionName
 import at.bitfire.synctools.icalendar.timezoneDefToTzId
 import at.bitfire.synctools.util.trimToNull
 import io.ktor.http.Url
@@ -266,7 +266,9 @@ data class Collection(
 
     // calculated properties
 
-    fun title() = displayName ?: url.lastSegment
+    // [url] is documented as having a trailing slash, but that is not enforced for rows that
+    // are already in the database, so normalize before asking for the collection name.
+    fun title() = displayName ?: extractCollectionName(url.withTrailingSlash())
     fun readOnly() = forceReadOnly || !privWriteContent
 
 }

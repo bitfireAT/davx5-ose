@@ -115,16 +115,57 @@ object DavUtils {
         }
 
 
-    // extension methods
+    /**
+     * Extracts the name of the collection that [url] points to, for display purposes.
+     *
+     * [url] must be a collection URL, that is, its path must either be empty or end with a
+     * slash. The root collection has no name of its own and is reported as `"/"`.
+     *
+     * **Attention:** The returned name is decoded, so it may contain characters like `/` that
+     * would otherwise be path separators.
+     *
+     * @param url  collection URL
+     *
+     * @return name of the collection, or `"/"` for the root collection
+     *
+     * @throws IllegalArgumentException  if [url] is not a collection URL
+     */
+    fun extractCollectionName(url: Url): String {
+        val path = url.encodedPath
+        require(path.isEmpty() || path.endsWith('/')) {
+            "Not a collection URL (path does not end with a slash): $url"
+        }
+        // Url.segments omits the leading and trailing empty segments, so the root collection
+        // ("" or "/") has no segments at all.
+        return url.segments.lastOrNull() ?: "/"
+    }
 
     /**
-     * Safely gets the last (decoded) segment of the URL, or returns `"/"` if none could be obtained.
+     * Extracts the file name of the non-collection resource that [url] points to. The result is
+     * used as the identifier of a collection member, so [url] must not be a collection URL.
      *
-     * **Attention:** Because it's decoded, it may contain characters like `/` that would
-     * otherwise be path separators. See https://github.com/bitfireAT/davx5-ose/issues/2782.
+     * **Attention:** The returned name is decoded, so it may contain characters like `/` that
+     * would otherwise be path separators. Ideally this would return the encoded name so that no
+     * assumptions are made about how servers treat for instance `%61.txt` versus `a.txt`, but
+     * changing that would require a data migration, so the current behaviour is kept for now.
+     *
+     * @param url  member URL
+     *
+     * @return file name of the member
+     *
+     * @throws IllegalArgumentException  if [url] has an empty path, or is a collection URL
      */
-    val Url.lastSegment: String
-        get() = this.segments.lastOrNull { it.isNotEmpty() } ?: "/"
+    fun extractFileName(url: Url): String {
+        val path = url.encodedPath
+        require(path.isNotEmpty() && !path.endsWith('/')) {
+            "Not a member URL (path is empty or ends with a slash): $url"
+        }
+        // The path is not empty and does not end with a slash, so the last segment is not empty.
+        return url.segments.last()
+    }
+
+
+    // extension methods
 
     fun String.toURIorNull(): URI? = try {
         URI(this)
