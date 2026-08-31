@@ -48,7 +48,7 @@ Use tools like GitHub Copilot for additional review (if applicable).
 
 We very happily accept contributions for translations. For that purpose, we use [the platform Weblate](https://hosted.weblate.org/engage/davx5/).
 
-[![Estat de la traducció](https://hosted.weblate.org/widget/davx5/open-graph.png)](https://hosted.weblate.org/engage/davx5/)
+[![Translation status](https://hosted.weblate.org/widget/davx5/open-graph.png)](https://hosted.weblate.org/engage/davx5/)
 
 
 # License and copyright
