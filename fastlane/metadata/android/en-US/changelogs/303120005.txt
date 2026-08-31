@@ -1,4 +1,0 @@
-* login: provide auto-completion for some common base URLs
-* debug info: better zip sharing
-* minor bug fixes and improvements
-

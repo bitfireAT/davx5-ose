@@ -1,1 +1,0 @@
-CalDAV/CardDAV 同步服務和客戶端
