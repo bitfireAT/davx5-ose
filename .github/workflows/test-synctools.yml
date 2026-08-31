@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/setup-java@v5
+      - uses: actions/setup-java@v6
         with:
           distribution: temurin
           java-version: 21   # keep in sync with gradle/gradle-daemon-jvm.properties
@@ -39,7 +39,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/setup-java@v5
+      - uses: actions/setup-java@v6
         with:
           distribution: temurin
           java-version: 21   # keep in sync with gradle/gradle-daemon-jvm.properties
@@ -76,7 +76,7 @@ jobs:
           cache-encryption-key: ${{ secrets.gradle_encryption_key }}
           cache-read-only: true
       - uses: actions/checkout@v7
-      - uses: actions/setup-java@v5
+      - uses: actions/setup-java@v6
         with:
           distribution: temurin
           java-version: 21   # keep in sync with gradle/gradle-daemon-jvm.properties
