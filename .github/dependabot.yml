@@ -37,6 +37,4 @@ updates:
     commit-message:
       prefix: "[l10n] "
     labels:
-      - "ci-cd"
       - "dependencies"
-      - "chore"
