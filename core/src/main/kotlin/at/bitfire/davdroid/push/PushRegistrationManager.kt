@@ -6,7 +6,6 @@ package at.bitfire.davdroid.push
 
 import android.content.Context
 import android.content.Intent
-import androidx.annotation.VisibleForTesting
 import androidx.core.app.NotificationCompat
 import androidx.work.BackoffPolicy
 import androidx.work.Constraints
@@ -15,15 +14,10 @@ import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkManager
 import at.bitfire.dav4jvm.HttpUtils
-import at.bitfire.dav4jvm.XmlUtils
-import at.bitfire.dav4jvm.XmlUtils.insertTag
 import at.bitfire.dav4jvm.ktor.DavCollection
 import at.bitfire.dav4jvm.ktor.DavResource
 import at.bitfire.dav4jvm.ktor.exception.DavException
 import at.bitfire.dav4jvm.ktor.toUrlOrNull
-import at.bitfire.dav4jvm.property.push.ContentEncoding
-import at.bitfire.dav4jvm.property.push.WebDAVPush
-import at.bitfire.dav4jvm.property.webdav.WebDAV
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
@@ -48,7 +42,6 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import org.unifiedpush.android.connector.UnifiedPush
 import org.unifiedpush.android.connector.data.PushEndpoint
-import java.io.StringWriter
 import java.time.Duration
 import java.time.Instant
 import java.util.concurrent.TimeUnit
@@ -271,7 +264,12 @@ class PushRegistrationManager @Inject constructor(
         // requested expiration time: 3 days
         val requestedExpiration = Instant.now() + Duration.ofDays(3)
 
-        val body = buildPushRegisterBody(endpoint, requestedExpiration)
+        val body = PushMessageBuilder.buildPushRegister(
+            endpointUrl = endpoint.url,
+            pubKey = endpoint.pubKeySet?.pubKey,
+            auth = endpoint.pubKeySet?.auth,
+            requestedExpiration = requestedExpiration
+        )
 
         DavCollection(httpClient, collection.url).post(
             TextContent(body, DavResource.MIME_XML_UTF8)
@@ -292,54 +290,6 @@ class PushRegistrationManager @Inject constructor(
             } else
                 logger.log(Level.WARNING, "Couldn't register push for {0}: {1}", arrayOf(collection.url, response))
         }
-    }
-
-    /**
-     * Builds the `push-register` request body as defined by the WebDAV-Push spec.
-     *
-     * Includes a `trigger` with a `content-update` at `depth=1` (notify on changes to the
-     * resource and its direct members) and, when message encryption is used (pubKeySet is
-     * present), the `content-encoding`, `subscription-public-key` and `auth-secret` elements.
-     */
-    @VisibleForTesting
-    internal fun buildPushRegisterBody(endpoint: PushEndpoint, requestedExpiration: Instant): String {
-        val serializer = XmlUtils.newSerializer()
-        val writer = StringWriter()
-        serializer.setOutput(writer)
-        serializer.startDocument("UTF-8", true)
-        serializer.insertTag(WebDAVPush.PushRegister) {
-            serializer.insertTag(WebDAVPush.Subscription) {
-                serializer.insertTag(WebDAVPush.WebPushSubscription) {
-                    serializer.insertTag(WebDAVPush.PushResource) {
-                        text(endpoint.url)
-                    }
-                    endpoint.pubKeySet?.let { pubKeySet ->
-                        serializer.insertTag(WebDAVPush.ContentEncoding) {
-                            text(ContentEncoding.AES128GCM)
-                        }
-                        serializer.insertTag(WebDAVPush.SubscriptionPublicKey) {
-                            attribute(null, "type", "p256dh")
-                            text(pubKeySet.pubKey)
-                        }
-                        serializer.insertTag(WebDAVPush.AuthSecret) {
-                            text(pubKeySet.auth)
-                        }
-                    }
-                }
-            }
-            serializer.insertTag(WebDAVPush.Trigger) {
-                serializer.insertTag(WebDAVPush.ContentUpdate) {
-                    serializer.insertTag(WebDAV.Depth) {
-                        text("1")
-                    }
-                }
-            }
-            serializer.insertTag(WebDAVPush.Expires) {
-                text(HttpUtils.formatDate(requestedExpiration))
-            }
-        }
-        serializer.endDocument()
-        return writer.toString()
     }
 
     /**
