@@ -6,6 +6,7 @@ package at.bitfire.davdroid.push
 
 import android.content.Context
 import android.content.Intent
+import androidx.annotation.VisibleForTesting
 import androidx.core.app.NotificationCompat
 import androidx.work.BackoffPolicy
 import androidx.work.Constraints
@@ -286,7 +287,7 @@ class PushRegistrationManager @Inject constructor(
                     id = collection.id,
                     subscriptionUrl = subscriptionUrl,
                     registeredEndpoint = endpoint.url,
-                    expires = expires?.epochSecond
+                    expires = expires.epochSecond
                 )
             } else
                 logger.log(Level.WARNING, "Couldn't register push for {0}: {1}", arrayOf(collection.url, response))
@@ -300,6 +301,7 @@ class PushRegistrationManager @Inject constructor(
      * resource and its direct members) and, when message encryption is used (pubKeySet is
      * present), the `content-encoding`, `subscription-public-key` and `auth-secret` elements.
      */
+    @VisibleForTesting
     internal fun buildPushRegisterBody(endpoint: PushEndpoint, requestedExpiration: Instant): String {
         val serializer = XmlUtils.newSerializer()
         val writer = StringWriter()
