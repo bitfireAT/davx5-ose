@@ -38,3 +38,5 @@ updates:
       prefix: "[l10n] "
     labels:
       - "dependencies"
+    cooldown:
+      default-days: 0   # the l10n submodule has frequent Weblate commits; always pick the latest
