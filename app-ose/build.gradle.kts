@@ -54,6 +54,13 @@ android {
         generateLocaleConfig = true
     }
 
+    // The dependencies info block is only useful for Google Play [https://developer.android.com/build/dependencies#dependency-info-play]
+    // and encrypted with Google's public key (encryption is non-deterministic by design → breaks reproducible builds).
+    dependenciesInfo {
+        includeInApk = false
+        includeInBundle = false
+    }
+
     @Suppress("UnstableApiUsage")
     testOptions {
         managedDevices {
