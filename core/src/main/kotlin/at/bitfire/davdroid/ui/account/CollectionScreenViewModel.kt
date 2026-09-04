@@ -140,13 +140,7 @@ class CollectionScreenViewModel @AssistedInject constructor(
     val owner: Flow<String?> = collection.map { collection ->
         collection?.ownerId?.let { ownerId ->
             val principal = principalDao.get(ownerId)
-            principal.displayName ?: try {
-                extractFileName(principal.url)
-            } catch (_: IllegalArgumentException) {
-                // Principal URLs are stored without a trailing slash, but a principal at the
-                // server root has an empty path and thus no file name to show.
-                "/"
-            }
+            principal.displayName ?: extractFileName(principal.url)
         }
     }
 
