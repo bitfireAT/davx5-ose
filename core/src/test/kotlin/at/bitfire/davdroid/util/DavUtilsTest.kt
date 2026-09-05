@@ -4,10 +4,10 @@
 
 package at.bitfire.davdroid.util
 
-import at.bitfire.davdroid.util.DavUtils.lastSegment
 import at.bitfire.davdroid.util.DavUtils.toUrl
 import io.ktor.http.ContentType
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertThrows
 import org.junit.Test
 
 class DavUtilsTest {
@@ -53,12 +53,42 @@ class DavUtilsTest {
     }
 
     @Test
-    fun testUrl_LastSegment() {
-        val exampleURL = "http://example.com/"
-        assertEquals("/", exampleURL.toUrl().lastSegment)
-        assertEquals("dir", (exampleURL + "dir").toUrl().lastSegment)
-        assertEquals("dir", (exampleURL + "dir/").toUrl().lastSegment)
-        assertEquals("file.html", (exampleURL + "dir/file.html").toUrl().lastSegment)
+    fun testUrl_extractCollectionName() {
+        assertEquals("/", DavUtils.extractCollectionName("https://domain.example".toUrl()))
+        assertEquals("/", DavUtils.extractCollectionName("https://domain.example/".toUrl()))
+        assertEquals("", DavUtils.extractCollectionName("https://domain.example//".toUrl()))
+        assertEquals("collection", DavUtils.extractCollectionName("https://domain.example/collection/".toUrl()))
+        assertEquals("collection", DavUtils.extractCollectionName("https://domain.example/path/collection/".toUrl()))
+        assertEquals("decoded", DavUtils.extractCollectionName("https://domain.example/decode%64/".toUrl()))
+
+        assertThrows(IllegalArgumentException::class.java) {
+            DavUtils.extractCollectionName("https://domain.example/file".toUrl())
+        }
+        assertThrows(IllegalArgumentException::class.java) {
+            DavUtils.extractCollectionName("https://domain.example/collection/file".toUrl())
+        }
+    }
+
+    @Test
+    fun testUrl_extractFileName() {
+        assertEquals("file.ext", DavUtils.extractFileName("https://domain.example/file.ext".toUrl()))
+        assertEquals("file", DavUtils.extractFileName("https://domain.example/collection/file".toUrl()))
+        assertEquals("file", DavUtils.extractFileName("https://domain.example/path/collection/file".toUrl()))
+
+        // Note: We probably want to return the encoded name in the future.
+        assertEquals("decoded", DavUtils.extractFileName("https://domain.example/decode%64".toUrl()))
+        assertEquals("A/B", DavUtils.extractFileName("https://domain.example/A%2FB".toUrl()))
+        assertEquals("/", DavUtils.extractFileName("https://domain.example/%2F".toUrl()))
+
+        assertThrows(IllegalArgumentException::class.java) {
+            DavUtils.extractFileName("https://domain.example".toUrl())
+        }
+        assertThrows(IllegalArgumentException::class.java) {
+            DavUtils.extractFileName("https://domain.example/".toUrl())
+        }
+        assertThrows(IllegalArgumentException::class.java) {
+            DavUtils.extractFileName("https://domain.example/path/".toUrl())
+        }
     }
 
 }

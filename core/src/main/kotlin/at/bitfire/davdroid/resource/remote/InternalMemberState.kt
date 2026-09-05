@@ -4,7 +4,7 @@
 
 package at.bitfire.davdroid.resource.remote
 
-import at.bitfire.davdroid.util.DavUtils.lastSegment
+import at.bitfire.davdroid.util.DavUtils.extractFileName
 import io.ktor.http.Url
 
 /**
@@ -26,6 +26,6 @@ data class InternalMemberState(
      * otherwise be path separators.
      */
     val fileName: String
-        get() = href.lastSegment
+        get() = extractFileName(href)
 
 }

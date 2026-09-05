@@ -17,7 +17,8 @@ import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.PrincipalRepository
 import at.bitfire.davdroid.settings.AccountSettingsFactory
-import at.bitfire.davdroid.util.DavUtils.lastSegment
+import at.bitfire.dav4jvm.ktor.withTrailingSlash
+import at.bitfire.davdroid.util.DavUtils.extractCollectionName
 import at.bitfire.synctools.storage.jtx.JtxCollectionProvider
 import at.techbee.jtx.JtxContract
 import at.techbee.jtx.JtxContract.asSyncAdapter
@@ -80,7 +81,7 @@ class LocalJtxCollectionStore @Inject constructor(
             put(JtxContract.JtxCollection.URL, info.url.toString())
             put(
                 JtxContract.JtxCollection.DISPLAYNAME,
-                info.displayName ?: info.url.lastSegment
+                info.displayName ?: extractCollectionName(info.url.withTrailingSlash())
             )
             put(JtxContract.JtxCollection.DESCRIPTION, info.description)
             if (owner != null)

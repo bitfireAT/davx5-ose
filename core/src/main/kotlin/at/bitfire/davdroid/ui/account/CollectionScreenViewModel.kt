@@ -31,7 +31,7 @@ import at.bitfire.davdroid.settings.AccountSettingsFactory
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.sync.TasksAppManager
-import at.bitfire.davdroid.util.DavUtils.lastSegment
+import at.bitfire.davdroid.util.DavUtils.extractFileName
 import dagger.Lazy
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -140,7 +140,7 @@ class CollectionScreenViewModel @AssistedInject constructor(
     val owner: Flow<String?> = collection.map { collection ->
         collection?.ownerId?.let { ownerId ->
             val principal = principalDao.get(ownerId)
-            principal.displayName ?: principal.url.lastSegment
+            principal.displayName ?: extractFileName(principal.url)
         }
     }
 
