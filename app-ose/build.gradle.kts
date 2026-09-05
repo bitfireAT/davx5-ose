@@ -92,7 +92,8 @@ android {
 
             isShrinkResources = true
 
-            // must be after signingConfigs {} block
+            // Must be after signingConfigs {} block. Uncomment following line to test release build with debug signing key:
+            // signingConfig = signingConfigs.getByName("debug")
             signingConfig = signingConfigs.findByName("bitfire")
         }
     }
