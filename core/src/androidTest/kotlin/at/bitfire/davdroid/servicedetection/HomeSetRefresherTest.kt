@@ -42,9 +42,9 @@ class HomeSetRefresherTest {
         private const val PATH_CARDDAV = "/carddav"
 
         private const val SUBPATH_PRINCIPAL = "/principal"
-        private const val SUBPATH_ADDRESSBOOK_HOMESET_PERSONAL = "/addressbooks-homeset"
-        private const val SUBPATH_ADDRESSBOOK_HOMESET_EMPTY = "/addressbooks-homeset-empty"
-        private const val SUBPATH_ADDRESSBOOK = "/addressbooks/my-contacts"
+        private const val SUBPATH_ADDRESSBOOK_HOMESET_PERSONAL = "/addressbooks-homeset/"
+        private const val SUBPATH_ADDRESSBOOK_HOMESET_EMPTY = "/addressbooks-homeset-empty/"
+        private const val SUBPATH_ADDRESSBOOK = "/addressbooks/my-contacts/"
 
         val xmlHeaders = headersOf(HttpHeaders.ContentType, "application/xml; charset=UTF-8")
 
@@ -77,7 +77,7 @@ class HomeSetRefresherTest {
         if (request.method.value != "PROPFIND")
             return@MockEngine respond("", HttpStatusCode.NotFound)
 
-        val path = request.url.encodedPath.trimEnd('/')
+        val path = request.url.encodedPath
         val props = when (path) {
             PATH_CARDDAV + SUBPATH_ADDRESSBOOK_HOMESET_PERSONAL ->
                 "<resourcetype><collection/><CARD:addressbook/></resourcetype>" +
@@ -128,7 +128,7 @@ class HomeSetRefresherTest {
                 homesetId,
                 1, // will have gotten an owner too
                 Collection.TYPE_ADDRESSBOOK,
-                "$BASE_URL$PATH_CARDDAV$SUBPATH_ADDRESSBOOK/".toUrl(),
+                "$BASE_URL$PATH_CARDDAV$SUBPATH_ADDRESSBOOK".toUrl(),
                 displayName = "My Contacts",
                 description = "My Contacts Description"
             ),
@@ -145,7 +145,7 @@ class HomeSetRefresherTest {
                 null,
                 null,
                 Collection.TYPE_ADDRESSBOOK,
-                "$BASE_URL$PATH_CARDDAV$SUBPATH_ADDRESSBOOK/".toUrl(),
+                "$BASE_URL$PATH_CARDDAV$SUBPATH_ADDRESSBOOK".toUrl(),
                 displayName = "My Contacts",
                 description = "My Contacts Description"
             )
@@ -160,7 +160,7 @@ class HomeSetRefresherTest {
                 null,
                 null,
                 Collection.TYPE_ADDRESSBOOK,
-                "$BASE_URL$PATH_CARDDAV$SUBPATH_ADDRESSBOOK/".toUrl(),
+                "$BASE_URL$PATH_CARDDAV$SUBPATH_ADDRESSBOOK".toUrl(),
                 displayName = "My Contacts",
                 description = "My Contacts Description"
             ),
@@ -177,7 +177,7 @@ class HomeSetRefresherTest {
                 null,
                 null,
                 Collection.TYPE_ADDRESSBOOK,
-                "$BASE_URL$PATH_CARDDAV$SUBPATH_ADDRESSBOOK/".toUrl(),
+                "$BASE_URL$PATH_CARDDAV$SUBPATH_ADDRESSBOOK".toUrl(),
                 displayName = "My Contacts",
                 description = "My Contacts Description",
                 forceReadOnly = true,
@@ -194,7 +194,7 @@ class HomeSetRefresherTest {
                 null,
                 null,
                 Collection.TYPE_ADDRESSBOOK,
-                "$BASE_URL$PATH_CARDDAV$SUBPATH_ADDRESSBOOK/".toUrl(),
+                "$BASE_URL$PATH_CARDDAV$SUBPATH_ADDRESSBOOK".toUrl(),
                 displayName = "My Contacts",
                 description = "My Contacts Description",
                 forceReadOnly = true,
@@ -217,7 +217,7 @@ class HomeSetRefresherTest {
                 homesetId,
                 null,
                 Collection.TYPE_ADDRESSBOOK,
-                "$BASE_URL$PATH_CARDDAV$SUBPATH_ADDRESSBOOK/".toUrl()
+                "$BASE_URL$PATH_CARDDAV$SUBPATH_ADDRESSBOOK".toUrl()
             )
         )
 
@@ -239,7 +239,7 @@ class HomeSetRefresherTest {
                 homesetId,
                 null,
                 Collection.TYPE_ADDRESSBOOK,
-                "$BASE_URL$PATH_CARDDAV$SUBPATH_ADDRESSBOOK/".toUrl()
+                "$BASE_URL$PATH_CARDDAV$SUBPATH_ADDRESSBOOK".toUrl()
             )
         )
 
