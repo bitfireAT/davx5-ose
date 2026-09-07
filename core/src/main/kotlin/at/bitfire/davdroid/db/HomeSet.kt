@@ -31,12 +31,18 @@ data class HomeSet(
      */
     val personal: Boolean,
 
+    /**
+     * URL of the home set - with trailing slash
+     */
     val url: Url,
 
     val privBind: Boolean = true,
 
     val displayName: String? = null
 ) {
+    init {
+        require(url.encodedPath.endsWith('/')) { "Not a collection URL (path does not end with a slash): $url" }
+    }
 
     fun title() = displayName ?: extractCollectionName(url)
 

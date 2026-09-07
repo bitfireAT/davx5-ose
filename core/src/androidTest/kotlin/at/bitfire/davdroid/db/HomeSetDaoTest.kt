@@ -47,17 +47,17 @@ class HomeSetDaoTest {
     @Test
     fun testInsertOrUpdate() {
         // should insert new row or update (upsert) existing row - without changing its key!
-        val entry1 = HomeSet(id=0, serviceId=serviceId, personal=true, url="https://example.com/1".toUrl())
+        val entry1 = HomeSet(id=0, serviceId=serviceId, personal=true, url="https://example.com/1/".toUrl())
         val insertId1 = dao.insertOrUpdateByUrlBlocking(entry1)
         assertEquals(1L, insertId1)
         assertEquals(entry1.copy(id = 1L), dao.getByIdBlocking(1))
 
-        val updatedEntry1 = HomeSet(id=0, serviceId=serviceId, personal=true, url="https://example.com/1".toUrl(), displayName="Updated Entry")
+        val updatedEntry1 = HomeSet(id=0, serviceId=serviceId, personal=true, url="https://example.com/1/".toUrl(), displayName="Updated Entry")
         val updateId1 = dao.insertOrUpdateByUrlBlocking(updatedEntry1)
         assertEquals(1L, updateId1)
         assertEquals(updatedEntry1.copy(id = 1L), dao.getByIdBlocking(1))
 
-        val entry2 = HomeSet(id=0, serviceId=serviceId, personal=true, url= "https://example.com/2".toUrl())
+        val entry2 = HomeSet(id=0, serviceId=serviceId, personal=true, url= "https://example.com/2/".toUrl())
         val insertId2 = dao.insertOrUpdateByUrlBlocking(entry2)
         assertEquals(2L, insertId2)
         assertEquals(entry2.copy(id = 2L), dao.getByIdBlocking(2))
@@ -84,7 +84,7 @@ class HomeSetDaoTest {
     @Test
     fun testDelete() {
         // should delete row with given primary key (id)
-        val entry1 = HomeSet(id=1, serviceId=serviceId, personal=true, url= "https://example.com/1".toUrl())
+        val entry1 = HomeSet(id=1, serviceId=serviceId, personal=true, url= "https://example.com/1/".toUrl())
 
         val insertId1 = dao.insertOrUpdateByUrlBlocking(entry1)
         assertEquals(1L, insertId1)
