@@ -19,6 +19,9 @@ ksp {
 // Translations are maintained in davx5-translations and pulled in as the l10n submodule.
 // The English original strings stay in core/src/main/res/values/strings.xml.
 val translationsDir = file("$rootDir/l10n/translations/ose")
+// Credits are updated automatically in the davx5-translations workflow, and pulled in as the l10n submodule.
+// This directory should be included as "asset"
+val creditsDir = file("$rootDir/l10n/credits")
 
 android {
     defaultConfig {
@@ -56,6 +59,7 @@ android {
     sourceSets {
         getByName("main") {
             res.directories += translationsDir.path
+            assets.directories += creditsDir.path
         }
         getByName("androidTest") {
             kotlin.directories +=  "$projectDir/src/sharedTest/kotlin"

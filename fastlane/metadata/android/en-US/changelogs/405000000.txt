@@ -1,3 +1,0 @@
-* Push support (beta, server needs to support it)
-* OAuth support for Fastmail
-* many other bug fixes and improvements

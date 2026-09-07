@@ -1,6 +1,9 @@
 
-# keep all iCalendar properties/parameters (referenced over ServiceLoader)
--keep class net.fortuna.ical4j.** { *; }
+# keep all iCalendar properties/parameters – https://github.com/ical4j/ical4j/issues/717
+-keep,allowoptimization class net.fortuna.ical4j.** { *; }
+
+# ical4j: SystemAwareTimeZoneRegistry$Factory is loaded dynamically from ical4j.properties
+-keep,allowoptimization class at.bitfire.synctools.icalendar.SystemAwareTimeZoneRegistry$Factory { *; }
 
 # ical4j: don't warn when these are missing
 -dontwarn com.github.benmanes.caffeine.**
@@ -13,10 +16,10 @@
 -dontwarn org.joda.convert.ToString
 -dontwarn org.jparsec.**
 
-# keep all vCard properties/parameters (used via reflection)
--keep class ezvcard.io.scribe.** { *; }
--keep class ezvcard.property.** { *; }
--keep class ezvcard.parameter.** { *; }
+# keep all vCard properties/parameters – https://github.com/mangstadt/ez-vcard/issues/84
+-keep,allowoptimization class ezvcard.io.scribe.** { *; }
+-keep,allowoptimization class ezvcard.property.** { *; }
+-keep,allowoptimization class ezvcard.parameter.** { *; }
 
 # AGP seems to remove this class, but ezvcard.io uses it. See https://github.com/bitfireAT/davx5/issues/499
 -keep class javax.xml.namespace.QName { *; }

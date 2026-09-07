@@ -1,1 +1,0 @@
-Sincronización CalDAV/CardDAV e Cliente

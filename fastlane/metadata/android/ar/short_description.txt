@@ -1,1 +1,0 @@
-مزامنة وعميل لـ CalDAV/CardDAV

@@ -44,6 +44,13 @@ Use tools like GitHub Copilot for additional review (if applicable).
 9. If all goes well, your contribution will be shipped with the next release. 🚀
 
 
+# Translations
+
+We very happily accept contributions for translations. For that purpose, we use [the platform Weblate](https://hosted.weblate.org/engage/davx5/).
+
+[![Translation status](https://hosted.weblate.org/widget/davx5/open-graph.png)](https://hosted.weblate.org/engage/davx5/)
+
+
 # License and copyright
 
 All work in this repository is [licensed under the GPLv3](LICENSE).

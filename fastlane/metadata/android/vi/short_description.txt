@@ -1,1 +1,0 @@
-Ứng dụng khách và đồng bộ hoá CalDAV/CardDAV
