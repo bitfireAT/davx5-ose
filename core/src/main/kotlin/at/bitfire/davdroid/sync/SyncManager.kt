@@ -33,7 +33,7 @@ import at.bitfire.davdroid.resource.remote.CollectionSyncItem
 import at.bitfire.davdroid.resource.remote.InternalMemberState
 import at.bitfire.davdroid.resource.remote.WebDavCollection
 import at.bitfire.davdroid.resource.remote.member
-import at.bitfire.davdroid.util.DavUtils.lastSegment
+import at.bitfire.davdroid.util.DavUtils.extractFileName
 import at.bitfire.davdroid.util.batchMap
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.ktor.client.HttpClient
@@ -694,7 +694,7 @@ abstract class SyncManager<LocalType : LocalResource>(
                     }
                     is CollectionSyncItem.RemovedMember -> {
                         // deletes local entry as side effect
-                        deleteRemovedMember(item.href.lastSegment)
+                        deleteRemovedMember(extractFileName(item.href))
                         false
                     }
                     is CollectionSyncItem.ChangedMember -> {

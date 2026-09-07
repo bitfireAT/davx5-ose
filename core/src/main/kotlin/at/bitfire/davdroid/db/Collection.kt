@@ -28,7 +28,7 @@ import at.bitfire.dav4jvm.property.push.WebPush
 import at.bitfire.dav4jvm.property.webdav.CurrentUserPrivilegeSet
 import at.bitfire.dav4jvm.property.webdav.DisplayName
 import at.bitfire.dav4jvm.property.webdav.ResourceType
-import at.bitfire.davdroid.util.DavUtils.lastSegment
+import at.bitfire.davdroid.util.DavUtils.extractCollectionName
 import at.bitfire.synctools.icalendar.timezoneDefToTzId
 import at.bitfire.synctools.util.trimToNull
 import io.ktor.http.Url
@@ -266,7 +266,7 @@ data class Collection(
 
     // calculated properties
 
-    fun title() = displayName ?: url.lastSegment
+    fun title() = displayName ?: extractCollectionName(url)
     fun readOnly() = forceReadOnly || !privWriteContent
 
 }

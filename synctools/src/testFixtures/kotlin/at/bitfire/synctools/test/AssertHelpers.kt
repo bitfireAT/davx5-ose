@@ -69,7 +69,7 @@ fun assertExceptionsEqual(
  * @throws AssertionError if [block] doesn't throw anything
  * @throws Throwable whatever [block] throws, if it isn't a [T]
  */
-suspend inline fun <reified T : Throwable> assertThrows(block: suspend () -> Unit): T {
+inline fun <reified T : Throwable> assertThrows(block: () -> Unit): T {
     try {
         block()
     } catch (e: Throwable) {
@@ -83,7 +83,7 @@ suspend inline fun <reified T : Throwable> assertThrows(block: suspend () -> Uni
 /**
  * Like [assertThrows], but also asserts that the thrown exception's message matches [expected]'s message.
  */
-suspend inline fun <reified T : Throwable> assertThrows(expected: T, block: suspend () -> Unit): T {
+inline fun <reified T : Throwable> assertThrows(expected: T, block: () -> Unit): T {
     val actual = assertThrows<T>(block)
     assertEquals(expected.message, actual.message)
     return actual

@@ -20,7 +20,7 @@ import at.bitfire.davdroid.resource.workaround.ContactDirtyVerifier
 import at.bitfire.davdroid.sync.groups.CategoriesStrategy
 import at.bitfire.davdroid.sync.groups.VCard4Strategy
 import at.bitfire.davdroid.util.DavUtils
-import at.bitfire.davdroid.util.DavUtils.lastSegment
+import at.bitfire.davdroid.util.DavUtils.extractFileName
 import at.bitfire.synctools.mapping.contacts.Contact
 import at.bitfire.synctools.mapping.contacts.ContactReader
 import at.bitfire.synctools.mapping.contacts.ContactWriter
@@ -200,7 +200,7 @@ class ContactsSyncManager @AssistedInject constructor(
     override suspend fun processDownload(result: WebDavCollection.MultiGetItem) {
         result.url.withExceptionContext {
             processCard(
-                fileName = result.url.lastSegment,
+                fileName = extractFileName(result.url),
                 eTag = result.eTag,
                 reader = StringReader(result.content),
                 downloader = object : Contact.Downloader {

@@ -14,7 +14,7 @@ import at.bitfire.davdroid.resource.local.LocalResource
 import at.bitfire.davdroid.resource.remote.CalDavCollection
 import at.bitfire.davdroid.resource.remote.WebDavCollection
 import at.bitfire.davdroid.util.DavUtils
-import at.bitfire.davdroid.util.DavUtils.lastSegment
+import at.bitfire.davdroid.util.DavUtils.extractFileName
 import at.bitfire.synctools.exception.InvalidResourceException
 import at.bitfire.synctools.icalendar.CalendarUidSplitter
 import at.bitfire.synctools.icalendar.ICalendarGenerator
@@ -129,7 +129,7 @@ class CalendarSyncManager @AssistedInject constructor(
 
     override suspend fun processDownload(result: WebDavCollection.MultiGetItem) {
         result.url.withExceptionContext {
-            val fileName = result.url.lastSegment
+            val fileName = extractFileName(result.url)
             try {
                 processICalendar(
                     fileName = fileName,
