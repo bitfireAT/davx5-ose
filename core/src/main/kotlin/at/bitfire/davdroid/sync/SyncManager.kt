@@ -694,13 +694,7 @@ abstract class SyncManager<LocalType : LocalResource>(
                     }
                     is CollectionSyncItem.RemovedMember -> {
                         // deletes local entry as side effect
-                        // An href that is not a valid member URL would be a server bug;
-                        // skip it instead of aborting the whole sync.
-                        try {
-                            deleteRemovedMember(extractFileName(item.href))
-                        } catch (_: IllegalArgumentException) {
-                            logger.warning("Ignoring removed member with invalid URL: ${item.href}")
-                        }
+                        deleteRemovedMember(extractFileName(item.href))
                         false
                     }
                     is CollectionSyncItem.ChangedMember -> {

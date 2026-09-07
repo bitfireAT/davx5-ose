@@ -115,7 +115,7 @@ class LocalAddressBookStoreTest {
         // Should remove iso control characters and `, ", ',
         val collection = mockk<Collection> {
             every { id } returns 1
-            every { url } returns "https://example.com/addressbook/funnyfriends".toUrl()
+            every { url } returns "https://example.com/addressbook/funnyfriends/".toUrl()
             every { displayName } returns "手 M's_\"F-e\"\\(´д`)/;æøå% äöü #42"
             every { serviceId } returns service.id
         }
@@ -126,7 +126,7 @@ class LocalAddressBookStoreTest {
     fun test_accountName_missingService() {
         val collection = mockk<Collection> {
             every { id } returns 42
-            every { url } returns "https://example.com/addressbook/funnyfriends".toUrl()
+            every { url } returns "https://example.com/addressbook/funnyfriends/".toUrl()
             every { displayName } returns null
             every { serviceId } returns 404     // missing service
         }
@@ -137,7 +137,7 @@ class LocalAddressBookStoreTest {
     fun test_accountName_missingDisplayName() {
         val collection = mockk<Collection> {
             every { id } returns 42
-            every { url } returns "https://example.com/addressbook/funnyfriends".toUrl()
+            every { url } returns "https://example.com/addressbook/funnyfriends/".toUrl()
             every { displayName } returns null
             every { serviceId } returns service.id
         }
@@ -149,7 +149,7 @@ class LocalAddressBookStoreTest {
     fun test_accountName_missingDisplayNameAndService() {
         val collection = mockk<Collection> {
             every { id } returns 1
-            every { url } returns "https://example.com/addressbook/funnyfriends".toUrl()
+            every { url } returns "https://example.com/addressbook/funnyfriends/".toUrl()
             every { displayName } returns null
             every { serviceId } returns 404     // missing service
         }
@@ -162,7 +162,7 @@ class LocalAddressBookStoreTest {
         val collection = mockk<Collection>(relaxed = true) {
             every { serviceId } returns service.id
             every { id } returns 1
-            every { url } returns "https://example.com/addressbook/funnyfriends".toUrl()
+            every { url } returns "https://example.com/addressbook/funnyfriends/".toUrl()
         }
 
         mockkObject(localAddressBookStore)
@@ -176,7 +176,7 @@ class LocalAddressBookStoreTest {
         val collection = mockk<Collection>(relaxed = true) {
             every { serviceId } returns service.id
             every { id } returns 1
-            every { url } returns "https://example.com/addressbook/funnyfriends".toUrl()
+            every { url } returns "https://example.com/addressbook/funnyfriends/".toUrl()
             every { readOnly() } returns true
         }
         val addrBook = localAddressBookStore.create(provider, collection)!!
@@ -189,7 +189,7 @@ class LocalAddressBookStoreTest {
         val collection = mockk<Collection>(relaxed = true) {
             every { serviceId } returns service.id
             every { id } returns 1
-            every { url } returns "https://example.com/addressbook/funnyfriends".toUrl()
+            every { url } returns "https://example.com/addressbook/funnyfriends/".toUrl()
             every { readOnly() } returns false
         }
 

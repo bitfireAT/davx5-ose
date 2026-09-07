@@ -23,7 +23,6 @@ import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.settings.AccountSettingsFactory
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
-import at.bitfire.dav4jvm.ktor.withTrailingSlash
 import at.bitfire.davdroid.util.DavUtils.extractCollectionName
 import at.bitfire.synctools.util.AndroidAccountUtils
 import com.google.common.base.CharMatcher
@@ -70,7 +69,7 @@ class LocalAddressBookStore @Inject constructor(
     @WorkerThread
     fun accountName(info: Collection): String {
         // Name of address book is given collection display name, otherwise the last URL path segment
-        var name = info.displayName.takeIf { !it.isNullOrEmpty() } ?: extractCollectionName(info.url.withTrailingSlash())
+        var name = info.displayName.takeIf { !it.isNullOrEmpty() } ?: extractCollectionName(info.url)
 
         // Remove ISO control characters + SQL problematic characters
         name = CharMatcher

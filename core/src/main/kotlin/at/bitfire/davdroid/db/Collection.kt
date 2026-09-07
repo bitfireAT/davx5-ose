@@ -266,9 +266,7 @@ data class Collection(
 
     // calculated properties
 
-    // [url] is documented as having a trailing slash, but that is not enforced for rows that
-    // are already in the database, so normalize before asking for the collection name.
-    fun title() = displayName ?: extractCollectionName(url.withTrailingSlash())
+    fun title() = displayName ?: extractCollectionName(url)
     fun readOnly() = forceReadOnly || !privWriteContent
 
 }

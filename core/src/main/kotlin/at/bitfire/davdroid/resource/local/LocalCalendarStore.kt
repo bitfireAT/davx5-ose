@@ -21,7 +21,6 @@ import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.settings.AccountSettingsFactory
-import at.bitfire.dav4jvm.ktor.withTrailingSlash
 import at.bitfire.davdroid.util.DavUtils.extractCollectionName
 import at.bitfire.synctools.storage.calendar.AndroidCalendarProvider
 import at.bitfire.synctools.storage.calendar.EventsContract.asSyncAdapter
@@ -132,7 +131,7 @@ class LocalCalendarStore @Inject constructor(
         val values = contentValuesOf(
             Calendars._SYNC_ID to info.id,
             Calendars.CALENDAR_DISPLAY_NAME to
-                    if (info.displayName.isNullOrBlank()) extractCollectionName(info.url.withTrailingSlash()) else info.displayName,
+                    if (info.displayName.isNullOrBlank()) extractCollectionName(info.url) else info.displayName,
 
             Calendars.ALLOWED_AVAILABILITY to arrayOf(
                 Events.AVAILABILITY_BUSY,

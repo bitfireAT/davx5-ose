@@ -5,9 +5,9 @@
 package at.bitfire.davdroid.util
 
 import at.bitfire.davdroid.util.DavUtils.toUrl
+import at.bitfire.synctools.test.assertThrows
 import io.ktor.http.ContentType
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertThrows
 import org.junit.Test
 
 class DavUtilsTest {
@@ -61,10 +61,10 @@ class DavUtilsTest {
         assertEquals("collection", DavUtils.extractCollectionName("https://domain.example/path/collection/".toUrl()))
         assertEquals("decoded", DavUtils.extractCollectionName("https://domain.example/decode%64/".toUrl()))
 
-        assertThrows(IllegalArgumentException::class.java) {
+        assertThrows<IllegalArgumentException> {
             DavUtils.extractCollectionName("https://domain.example/file".toUrl())
         }
-        assertThrows(IllegalArgumentException::class.java) {
+        assertThrows<IllegalArgumentException> {
             DavUtils.extractCollectionName("https://domain.example/collection/file".toUrl())
         }
     }
@@ -80,13 +80,13 @@ class DavUtilsTest {
         assertEquals("A/B", DavUtils.extractFileName("https://domain.example/A%2FB".toUrl()))
         assertEquals("/", DavUtils.extractFileName("https://domain.example/%2F".toUrl()))
 
-        assertThrows(IllegalArgumentException::class.java) {
+        assertThrows<IllegalArgumentException> {
             DavUtils.extractFileName("https://domain.example".toUrl())
         }
-        assertThrows(IllegalArgumentException::class.java) {
+        assertThrows<IllegalArgumentException> {
             DavUtils.extractFileName("https://domain.example/".toUrl())
         }
-        assertThrows(IllegalArgumentException::class.java) {
+        assertThrows<IllegalArgumentException> {
             DavUtils.extractFileName("https://domain.example/path/".toUrl())
         }
     }

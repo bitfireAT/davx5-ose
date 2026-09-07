@@ -8,7 +8,6 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import at.bitfire.dav4jvm.ktor.withTrailingSlash
 import at.bitfire.davdroid.util.DavUtils.extractCollectionName
 import io.ktor.http.Url
 
@@ -39,6 +38,6 @@ data class HomeSet(
     val displayName: String? = null
 ) {
 
-    fun title() = displayName ?: extractCollectionName(url.withTrailingSlash())
+    fun title() = displayName ?: extractCollectionName(url)
 
 }

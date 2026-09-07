@@ -118,8 +118,9 @@ object DavUtils {
     /**
      * Extracts the name of the collection that [url] points to, for display purposes.
      *
-     * [url] must be a collection URL, that is, its path must either be empty or end with a
-     * slash. The root collection has no name of its own and is reported as `"/"`.
+     * [url] must be a collection URL, that is, its path must end with a slash. The one exception we allow is a URL with
+     * an empty path. It is treated it like a URL with a path of `/`.
+     * The root collection has no name of its own and is reported as `"/"`.
      *
      * **Attention:** The returned name is decoded, so it may contain characters like `/` that
      * would otherwise be path separators.
@@ -135,8 +136,7 @@ object DavUtils {
         require(path.isEmpty() || path.endsWith('/')) {
             "Not a collection URL (path does not end with a slash): $url"
         }
-        // Url.segments omits the leading and trailing empty segments, so the root collection
-        // ("" or "/") has no segments at all.
+
         return url.segments.lastOrNull() ?: "/"
     }
 
@@ -145,9 +145,7 @@ object DavUtils {
      * used as the identifier of a collection member, so [url] must not be a collection URL.
      *
      * **Attention:** The returned name is decoded, so it may contain characters like `/` that
-     * would otherwise be path separators. Ideally this would return the encoded name so that no
-     * assumptions are made about how servers treat for instance `%61.txt` versus `a.txt`, but
-     * changing that would require a data migration, so the current behaviour is kept for now.
+     * would otherwise be path separators.
      *
      * @param url  member URL
      *
@@ -160,7 +158,7 @@ object DavUtils {
         require(path.isNotEmpty() && !path.endsWith('/')) {
             "Not a member URL (path is empty or ends with a slash): $url"
         }
-        // The path is not empty and does not end with a slash, so the last segment is not empty.
+
         return url.segments.last()
     }
 
