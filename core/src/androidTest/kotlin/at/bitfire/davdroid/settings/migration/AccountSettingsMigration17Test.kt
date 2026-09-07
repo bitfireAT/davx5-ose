@@ -66,7 +66,7 @@ class AccountSettingsMigration17Test {
 
             try {
                 // address book has account + URL
-                val url = "https://example.com/address-book"
+                val url = "https://example.com/address-book/"
                 accountManager.setAndVerifyUserData(addressBookAccount, "real_account_name", account.name)
                 accountManager.setAndVerifyUserData(addressBookAccount, localAddressBookUserDataUrl, url)
 

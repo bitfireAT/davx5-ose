@@ -108,7 +108,7 @@ class AccountSettingsMigration18Test {
             Collection(
             id = 100,
             serviceId = 10,
-            url = "http://example.com".toUrl(),
+            url = "http://example.com/address-book/".toUrl(),
             type = Collection.TYPE_ADDRESSBOOK
         ))
 

@@ -41,7 +41,7 @@ class SyncStatsDaoTest {
             id = 0,
             serviceId = serviceId,
             type = Collection.TYPE_CALENDAR,
-            url = "https://example.com".toUrl()
+            url = "https://example.com/collection/".toUrl()
         ))
     }
 

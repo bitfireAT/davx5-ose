@@ -36,8 +36,8 @@ class CollectionsWithoutHomeSetRefresherTest {
 
         private const val PATH_CARDDAV = "/carddav"
         private const val SUBPATH_PRINCIPAL = "/principal"
-        private const val SUBPATH_ADDRESSBOOK = "/addressbooks/my-contacts"
-        private const val SUBPATH_ADDRESSBOOK_INACCESSIBLE = "/addressbooks/inaccessible-contacts"
+        private const val SUBPATH_ADDRESSBOOK = "/addressbooks/my-contacts/"
+        private const val SUBPATH_ADDRESSBOOK_INACCESSIBLE = "/addressbooks/inaccessible-contacts/"
 
         val xmlHeaders = headersOf(HttpHeaders.ContentType, "application/xml; charset=UTF-8")
 
@@ -70,7 +70,7 @@ class CollectionsWithoutHomeSetRefresherTest {
         if (request.method.value != "PROPFIND")
             return@MockEngine respond("", HttpStatusCode.NotFound)
 
-        when (val path = request.url.encodedPath.trimEnd('/')) {
+        when (val path = request.url.encodedPath) {
             PATH_CARDDAV + SUBPATH_ADDRESSBOOK ->
                 respond(
                     multistatus(
@@ -111,7 +111,7 @@ class CollectionsWithoutHomeSetRefresherTest {
             Collection(
                 0, service.id, null, null,
                 Collection.TYPE_ADDRESSBOOK,
-                "$BASE_URL$PATH_CARDDAV$SUBPATH_ADDRESSBOOK/".toUrl()
+                "$BASE_URL$PATH_CARDDAV$SUBPATH_ADDRESSBOOK".toUrl()
             )
         )
 
@@ -122,7 +122,7 @@ class CollectionsWithoutHomeSetRefresherTest {
                 collectionId, service.id, null,
                 1, // will have gotten an owner too
                 Collection.TYPE_ADDRESSBOOK,
-                "$BASE_URL$PATH_CARDDAV$SUBPATH_ADDRESSBOOK/".toUrl(),
+                "$BASE_URL$PATH_CARDDAV$SUBPATH_ADDRESSBOOK".toUrl(),
                 displayName = "My Contacts",
                 description = "My Contacts Description"
             ),
@@ -151,7 +151,7 @@ class CollectionsWithoutHomeSetRefresherTest {
             Collection(
                 0, service.id, null, null,
                 Collection.TYPE_ADDRESSBOOK,
-                "$BASE_URL$PATH_CARDDAV$SUBPATH_ADDRESSBOOK/".toUrl()
+                "$BASE_URL$PATH_CARDDAV$SUBPATH_ADDRESSBOOK".toUrl()
             )
         )
 
