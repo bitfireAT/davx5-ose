@@ -4,7 +4,9 @@
 
 package at.bitfire.davdroid.resource.local
 
+import android.os.RemoteException
 import androidx.core.content.contentValuesOf
+import at.bitfire.synctools.storage.LocalStorageException
 import at.bitfire.synctools.storage.jtx.JtxBatchOperation
 import at.bitfire.synctools.storage.jtx.JtxCollection
 import at.bitfire.synctools.storage.jtx.JtxEntityAndExceptions
@@ -87,15 +89,19 @@ class LocalJtxCollection(internal val jtxCollection: JtxCollection) :
 
     override suspend fun removeNotDirtyMarked(flags: Int): Int =
         withContext(Dispatchers.IO) {
-            val batch = JtxBatchOperation(jtxCollection.client)
-            recurringCollection.queryJtxObjectsAndExceptions(
-                "NOT ${JtxICalObject.DIRTY} AND ${JtxICalObject.FLAGS}=?",
-                arrayOf(flags.toString())
-            ).collect { objectAndExceptions ->
-                val id = objectAndExceptions.main.entityValues.getAsLong(JtxICalObject.ID)!!
-                recurringCollection.deleteJtxObjectAndExceptions(id, batch)
+            try {
+                val batch = JtxBatchOperation(jtxCollection.client)
+                recurringCollection.queryJtxObjectsAndExceptions(
+                    "NOT ${JtxICalObject.DIRTY} AND ${JtxICalObject.FLAGS}=?",
+                    arrayOf(flags.toString())
+                ).collect { objectAndExceptions ->
+                    val id = objectAndExceptions.main.entityValues.getAsLong(JtxICalObject.ID)!!
+                    recurringCollection.deleteJtxObjectAndExceptions(id, batch)
+                }
+                batch.commit()
+            } catch (e: RemoteException) {
+                throw LocalStorageException("Couldn't remove non-dirty entries with flags $flags", e)
             }
-            batch.commit()
         }
 
     override suspend fun forgetETags() {

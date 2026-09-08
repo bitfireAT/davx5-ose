@@ -604,27 +604,31 @@ class AndroidCalendar(
      * as deleted.
      */
     fun deleteDirtyEventsWithoutInstances() {
-        val batch = CalendarBatchOperation(client)
+        try {
+            val batch = CalendarBatchOperation(client)
 
-        // Iterate dirty main events without exceptions
-        iterateEventRows(
-            arrayOf(Events._ID),
-            "${Events.DIRTY} AND NOT ${Events.DELETED} AND ${Events.ORIGINAL_ID} IS NULL",
-            null
-        ) { values ->
-            val eventId = values.getAsLong(Events._ID)
+            // Iterate dirty main events without exceptions
+            iterateEventRows(
+                arrayOf(Events._ID),
+                "${Events.DIRTY} AND NOT ${Events.DELETED} AND ${Events.ORIGINAL_ID} IS NULL",
+                null
+            ) { values ->
+                val eventId = values.getAsLong(Events._ID)
 
-            // get number of instances
-            val numEventInstances = numInstances(eventId)
+                // get number of instances
+                val numEventInstances = numInstances(eventId)
 
-            // delete event if there are no instances
-            if (numEventInstances == 0) {
-                logger.warning("Marking event #$eventId without instances as deleted")
-                updateEventRow(eventId, contentValuesOf(Events.DELETED to 1), batch)
+                // delete event if there are no instances
+                if (numEventInstances == 0) {
+                    logger.warning("Marking event #$eventId without instances as deleted")
+                    updateEventRow(eventId, contentValuesOf(Events.DELETED to 1), batch)
+                }
             }
-        }
 
-        batch.commit()
+            batch.commit()
+        } catch (e: RemoteException) {
+            throw LocalStorageException("Couldn't mark dirty events without instances as deleted", e)
+        }
     }
 
 

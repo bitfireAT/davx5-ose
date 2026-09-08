@@ -328,38 +328,43 @@ class JtxRecurringCollection(
      * [JtxContract.JtxICalObject.RECURID] IS NULL.
      */
     fun processDeletedExceptions() {
-        val batch = JtxBatchOperation(collection.client)
+        try {
+            val batch = JtxBatchOperation(collection.client)
 
-        // iterate through deleted exceptions
-        collection.iterateJtxObjectRows(
-            arrayOf(JtxContract.JtxICalObject.ID, JtxContract.JtxICalObject.UID),
-            "${JtxContract.JtxICalObject.DELETED}=1 AND ${JtxContract.JtxICalObject.RECURID} IS NOT NULL", null
-        ) { values ->
-            val exceptionId = values.getAsLong(JtxContract.JtxICalObject.ID)!!
-            val uid = values.getAsString(JtxContract.JtxICalObject.UID) ?: return@iterateJtxObjectRows
-            logger.fine("Found deleted exception #$exceptionId, removing it and marking main jtx object (uid=$uid) as dirty")
+            // iterate through deleted exceptions
+            collection.iterateJtxObjectRows(
+                arrayOf(JtxContract.JtxICalObject.ID, JtxContract.JtxICalObject.UID),
+                "${JtxContract.JtxICalObject.DELETED}=1 AND ${JtxContract.JtxICalObject.RECURID} IS NOT NULL", null
+            ) { values ->
+                val exceptionId = values.getAsLong(JtxContract.JtxICalObject.ID)!!
+                val uid = values.getAsString(JtxContract.JtxICalObject.UID) ?: return@iterateJtxObjectRows
+                logger.fine("Found deleted exception #$exceptionId, removing it and marking main jtx object (uid=$uid) as dirty")
 
-            // find main object and its current SEQUENCE
-            val mainValues = collection.findJtxObjectRow(
-                arrayOf(JtxContract.JtxICalObject.ID, JtxContract.JtxICalObject.SEQUENCE),
-                "${JtxContract.JtxICalObject.UID}=? AND ${JtxContract.JtxICalObject.RECURID} IS NULL",
-                arrayOf(uid)
-            ) ?: return@iterateJtxObjectRows
+                // find main object and its current SEQUENCE
+                val mainValues = collection.findJtxObjectRow(
+                    arrayOf(JtxContract.JtxICalObject.ID, JtxContract.JtxICalObject.SEQUENCE),
+                    "${JtxContract.JtxICalObject.UID}=? AND ${JtxContract.JtxICalObject.RECURID} IS NULL",
+                    arrayOf(uid)
+                ) ?: return@iterateJtxObjectRows
 
-            val mainId = mainValues.getAsLong(JtxContract.JtxICalObject.ID)!!
-            val mainSeq = mainValues.getAsInteger(JtxContract.JtxICalObject.SEQUENCE) ?: 0
+                val mainId = mainValues.getAsLong(JtxContract.JtxICalObject.ID)!!
+                val mainSeq = mainValues.getAsInteger(JtxContract.JtxICalObject.SEQUENCE) ?: 0
 
-            // increase SEQUENCE and mark main as dirty
-            collection.updateJtxObjectRow(mainId, contentValuesOf(
-                JtxContract.JtxICalObject.SEQUENCE to mainSeq + 1,
-                JtxContract.JtxICalObject.DIRTY to 1
-            ), batch)
+                // increase SEQUENCE and mark main as dirty
+                val updatedValues = contentValuesOf(
+                    JtxContract.JtxICalObject.SEQUENCE to mainSeq + 1,
+                    JtxContract.JtxICalObject.DIRTY to 1
+                )
+                collection.updateJtxObjectRow(mainId, updatedValues, batch)
 
-            // permanently remove the deleted exception
-            collection.deleteJtxObject(exceptionId, batch)
+                // permanently remove the deleted exception
+                collection.deleteJtxObject(exceptionId, batch)
+            }
+
+            batch.commit()
+        } catch (e: RemoteException) {
+            throw LocalStorageException("Couldn't process deleted exceptions", e)
         }
-
-        batch.commit()
     }
 
     /**
@@ -374,39 +379,49 @@ class JtxRecurringCollection(
      * [JtxContract.JtxICalObject.RECURID] IS NULL.
      */
     fun processDirtyExceptions() {
-        val batch = JtxBatchOperation(collection.client)
+        try {
+            val batch = JtxBatchOperation(collection.client)
 
-        collection.iterateJtxObjectRows(
-            arrayOf(JtxContract.JtxICalObject.ID, JtxContract.JtxICalObject.UID, JtxContract.JtxICalObject.SEQUENCE),
-            "${JtxContract.JtxICalObject.DIRTY}=1 AND ${JtxContract.JtxICalObject.DELETED}=0 AND ${JtxContract.JtxICalObject.RECURID} IS NOT NULL", null
-        ) { values ->
-            val exceptionId = values.getAsLong(JtxContract.JtxICalObject.ID)!!
-            val uid = values.getAsString(JtxContract.JtxICalObject.UID) ?: return@iterateJtxObjectRows
-            val exceptionSeq = values.getAsInteger(JtxContract.JtxICalObject.SEQUENCE) ?: 0
-            logger.fine("Found dirty exception #$exceptionId, increasing SEQUENCE and marking main jtx object (uid=$uid) as dirty")
+            collection.iterateJtxObjectRows(
+                arrayOf(
+                    JtxContract.JtxICalObject.ID,
+                    JtxContract.JtxICalObject.UID,
+                    JtxContract.JtxICalObject.SEQUENCE
+                ),
+                "${JtxContract.JtxICalObject.DIRTY}=1 AND ${JtxContract.JtxICalObject.DELETED}=0 AND " +
+                        "${JtxContract.JtxICalObject.RECURID} IS NOT NULL",
+                null
+            ) { values ->
+                val exceptionId = values.getAsLong(JtxContract.JtxICalObject.ID)!!
+                val uid = values.getAsString(JtxContract.JtxICalObject.UID) ?: return@iterateJtxObjectRows
+                val exceptionSeq = values.getAsInteger(JtxContract.JtxICalObject.SEQUENCE) ?: 0
+                logger.fine("Found dirty exception #$exceptionId, increasing SEQUENCE and marking main jtx object (uid=$uid) as dirty")
 
-            // find main
-            val mainValues = collection.findJtxObjectRow(
-                arrayOf(JtxContract.JtxICalObject.ID),
-                "${JtxContract.JtxICalObject.UID}=? AND ${JtxContract.JtxICalObject.RECURID} IS NULL",
-                arrayOf(uid)
-            ) ?: return@iterateJtxObjectRows
+                // find main
+                val mainValues = collection.findJtxObjectRow(
+                    arrayOf(JtxContract.JtxICalObject.ID),
+                    "${JtxContract.JtxICalObject.UID}=? AND ${JtxContract.JtxICalObject.RECURID} IS NULL",
+                    arrayOf(uid)
+                ) ?: return@iterateJtxObjectRows
 
-            val mainId = mainValues.getAsLong(JtxContract.JtxICalObject.ID)!!
+                val mainId = mainValues.getAsLong(JtxContract.JtxICalObject.ID)!!
 
-            // mark main as dirty
-            collection.updateJtxObjectRow(mainId, contentValuesOf(
-                JtxContract.JtxICalObject.DIRTY to 1
-            ), batch)
+                // mark main as dirty
+                collection.updateJtxObjectRow(mainId, contentValuesOf(
+                    JtxContract.JtxICalObject.DIRTY to 1
+                ), batch)
 
-            // increase exception SEQUENCE and clear DIRTY
-            collection.updateJtxObjectRow(exceptionId, contentValuesOf(
-                JtxContract.JtxICalObject.SEQUENCE to exceptionSeq + 1,
-                JtxContract.JtxICalObject.DIRTY to 0
-            ), batch)
+                // increase exception SEQUENCE and clear DIRTY
+                collection.updateJtxObjectRow(exceptionId, contentValuesOf(
+                    JtxContract.JtxICalObject.SEQUENCE to exceptionSeq + 1,
+                    JtxContract.JtxICalObject.DIRTY to 0
+                ), batch)
+            }
+
+            batch.commit()
+        } catch (e: RemoteException) {
+            throw LocalStorageException("Couldn't process dirty exceptions", e)
         }
-
-        batch.commit()
     }
 
 
