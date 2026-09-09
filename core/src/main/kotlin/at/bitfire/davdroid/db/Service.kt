@@ -6,6 +6,7 @@ package at.bitfire.davdroid.db
 
 import androidx.annotation.StringDef
 import androidx.room.Entity
+import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import io.ktor.http.Url
@@ -19,17 +20,29 @@ annotation class ServiceType
  *
  * Services represent accounts and are unique. They are of type CardDAV or CalDAV and may have an associated principal.
  */
-@Entity(tableName = "service",
-        indices = [
-            // only one service per type and account
-            Index("accountName", "type", unique = true)
-        ])
+@Entity(
+    tableName = "service",
+    indices = [
+        // only one service per type and account
+        Index("accountName", "type", unique = true)
+    ],
+    foreignKeys = [
+        ForeignKey(
+            entity = DbAccount::class,
+            parentColumns = ["id"],
+            childColumns = ["accountId"],
+            onDelete = ForeignKey.CASCADE
+        )
+    ]
+)
 data class Service(
     @PrimaryKey(autoGenerate = true)
     val id: Long,
 
     // TODO: Reference accounts by their database ID once we've gotten rid of `LegacyAccount`.
+    @Deprecated("Use accountId instead")
     val accountName: String,
+    val accountId: Long? = null,
 
     @ServiceType
     val type: String,

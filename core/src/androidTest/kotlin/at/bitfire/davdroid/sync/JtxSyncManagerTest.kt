@@ -87,7 +87,7 @@ class JtxSyncManagerTest {
         accountId = LegacyAccount(TestAccount.create())
 
         // Create dummy dependencies
-        val service = Service(0, accountId.androidAccount.name, Service.TYPE_CALDAV, null)
+        val service = Service(0, accountId.androidAccount.name, null, Service.TYPE_CALDAV, null)
         val serviceId = serviceRepository.insertOrReplaceBlocking(service)
         val dbCollection = Collection(
             0,
