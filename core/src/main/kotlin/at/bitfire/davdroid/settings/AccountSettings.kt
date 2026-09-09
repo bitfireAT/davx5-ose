@@ -8,6 +8,7 @@ import androidx.annotation.WorkerThread
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.settings.AccountSettings.Companion.CREDENTIALS_LOCK
 import at.bitfire.davdroid.settings.AccountSettings.Companion.CREDENTIALS_LOCK_AT_LOGIN_AND_SETTINGS
+import at.bitfire.davdroid.settings.AccountSettings.Companion.initialUserData
 import at.bitfire.davdroid.settings.migration.AccountSettingsMigration
 import at.bitfire.davdroid.sync.AutomaticSyncManager
 import at.bitfire.davdroid.sync.SyncDataType
@@ -75,6 +76,27 @@ class AccountSettings @AssistedInject constructor(
         }
     }
 
+
+    /**
+     * Stores the initial account settings into the database. This is used when creating a new account.
+     * @param credentials         initial credentials to store (may be null)
+     * @param preconfigurationUrl initial preconfiguration URL to store (may be null)
+     * @see initialUserData
+     */
+    fun putInitialSettings(credentials: Credentials?, preconfigurationUrl: String?) {
+        val all = initialUserData(credentials, preconfigurationUrl)
+
+        for ((key, value) in all) {
+            store.putValue(key, value)
+        }
+
+        // The password is not part of `initialUserData` because for system accounts it's stored by AccountManager
+        // in a dedicated secure field instead of user data. Stores without such a field (like DbAccountSettingsStore)
+        // only persist the password when it's written through putSensitiveValue, so make sure that happens here, too.
+        credentials?.password?.let { password ->
+            store.putSensitiveValue(KEY_PASSWORD, password)
+        }
+    }
 
     // authentication settings
 
