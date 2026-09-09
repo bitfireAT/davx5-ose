@@ -461,7 +461,7 @@ class DavResourceFinder @AssistedInject constructor(
 
     // data classes
 
-    class Configuration(
+    data class Configuration(
         val cardDAV: ServiceInfo?,
         val calDAV: ServiceInfo?,
 
