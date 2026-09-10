@@ -404,8 +404,8 @@ abstract class SyncManager<LocalType : LocalResource>(
                     }
                 }
 
-                is ConflictException, is PreconditionFailedException -> {
-                    // HTTP 409 Conflict / 412 Precondition failed
+                is PreconditionFailedException -> {
+                    // HTTP 412 Precondition failed
                     //
                     // When updating, our If-Match / If-Schedule-Tag-Match didn't match, so the resource
                     // has been modified or deleted on the server in the meanwhile (RFC 9110 13.1.1).
@@ -416,8 +416,40 @@ abstract class SyncManager<LocalType : LocalResource>(
                     //
                     // In both cases we can't interact with the user to resolve the conflict, so the
                     // server's version wins and is downloaded instead.
-                    logger.info("Upload rejected because of a conflict on the server, discarding local change")
+                    logger.info("Upload rejected because of a failed precondition, discarding local change")
                     discardLocalChange(local)
+                }
+
+                is ConflictException -> {
+                    // HTTP 409 Conflict
+                    //
+                    // This can mean
+                    //   - that the server has a version which we could download instead of the local one,
+                    //   - the collection itself is not there (anymore) - RFC 4918 9.7.1 requires 409 for
+                    //     a PUT without an appropriately scoped parent collection, or
+                    //   - the server rejected our data - CalDAV/CardDAV preconditions may be reported as
+                    //     403 or 409 (RFC 4791 5.3.2.1, RFC 6352 6.3.2.1).
+                    //
+                    // Only in the first case there's a server version which could replace the local one,
+                    // and it's also the only case without a DAV:error element, because there's no error
+                    // condition for a failed If-Match. So we only discard the local change when we were
+                    // updating an existing member and the server didn't tell us any reason. Otherwise we
+                    // report an error (which notifies the user) and keep the dirty flag for the next sync.
+                    when {
+                        ex.errors.isNotEmpty() ->
+                            // server named a reason; none of the error conditions means that it has a
+                            // version for us to download
+                            throw e
+
+                        existingFileName == null ->
+                            // we wanted to create a new resource, so the collection is probably not there (anymore)
+                            throw e
+
+                        else -> {
+                            logger.info("Update rejected with 409 without further information, handling it like 412, discarding local change")
+                            discardLocalChange(local)
+                        }
+                    }
                 }
 
                 else -> throw e

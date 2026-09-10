@@ -392,6 +392,37 @@ class SyncManagerTest {
     }
 
     @Test
+    fun testPerformSync_UploadModifiedMember_409Conflict_DataRejected() = runTest {
+        // A 409 which reports a CalDAV/CardDAV precondition means that our data was rejected, so there's
+        // no server version which could replace the local one: assert sync error and that the local change is kept.
+        val collection = LocalTestCollection().apply {
+            lastSyncState = SyncState(SyncState.Type.CTAG, "old-ctag")
+            entries += LocalTestResource().apply {
+                fileName = "existing-file.txt"
+                eTag = "some-etag"
+                dirty = true
+            }
+        }
+        enqueueQueryCapabilities("ctag1")
+
+        // PUT -> 409 Conflict with CALDAV:no-uid-conflict precondition
+        mockEngineQueue.enqueue(
+            HttpStatusCode.Conflict,
+            "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n" +
+                    "<error xmlns=\"DAV:\"><no-uid-conflict xmlns=\"urn:ietf:params:xml:ns:caldav\"/></error>",
+            headersOf(HttpHeaders.ContentType, "text/xml")
+        )
+
+        val syncManager = syncManager(collection)
+        syncManager.performSync()
+
+        assertTrue(syncManager.syncResult.hasError)
+        assertEquals(1, collection.entries.size)
+        assertTrue(collection.entries.first().dirty)
+        assertEquals(SyncState(SyncState.Type.CTAG, "old-ctag"), collection.lastSyncState)
+    }
+
+    @Test
     fun testPerformSync_UploadModifiedMember_404NotFound() = runTest {
         // Servers which don't answer 412 when the resource is gone must be handled like 412,
         // especially the upload must not be retried as a new resource ("the server always wins").
