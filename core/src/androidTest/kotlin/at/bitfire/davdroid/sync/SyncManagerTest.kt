@@ -576,6 +576,32 @@ class SyncManagerTest {
     }
 
     @Test
+    fun testPerformSync_UploadNewMember_409Conflict() = runTest {
+        // 409 when creating a new resource doesn't tell us that the server has a version which we could
+        // download instead: RFC 4918 9.7.1 requires it when the collection itself is not there (anymore).
+        // So it's a sync error and the local resource must be kept (and stay dirty).
+        val collection = LocalTestCollection().apply {
+            lastSyncState = SyncState(SyncState.Type.CTAG, "old-ctag")
+            entries += LocalTestResource().apply {
+                dirty = true
+            }
+        }
+        enqueueQueryCapabilities("ctag1")
+
+        // PUT -> 409 Conflict
+        mockEngineQueue.enqueue(HttpStatusCode.Conflict)
+
+        val syncManager = syncManager(collection)
+        syncManager.performSync()
+
+        assertTrue(syncManager.syncResult.hasError)
+        assertEquals(1, collection.entries.size)
+        assertTrue(collection.entries.first().dirty)
+        assertEquals(1, numberOfPutRequests())
+        assertEquals(SyncState(SyncState.Type.CTAG, "old-ctag"), collection.lastSyncState)
+    }
+
+    @Test
     fun testPerformSync_UploadNewMember_404NotFound() = runTest {
         // 404 when creating a new resource means that the collection itself is not there (anymore),
         // which is a sync error. The local resource must be kept (and stay dirty).
