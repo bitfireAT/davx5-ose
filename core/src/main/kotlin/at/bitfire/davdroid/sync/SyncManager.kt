@@ -432,9 +432,20 @@ abstract class SyncManager<LocalType : LocalResource>(
      *
      * - downloaded again and overwritten with the server's version (if it's still on the server), or
      * - deleted locally by [deleteNotPresentRemotely] / [deleteRemovedMember] (if it's not there anymore).
+     *
+     * Also forces a full re-listing, see below.
      */
     private suspend fun discardLocalChange(local: LocalType) {
         local.clearDirty(fileName = Optional.empty(), eTag = null, scheduleTag = null)
+
+        /* Resetting the ETag is only enough for SyncAlgorithm.PROPFIND_REPORT, where the full listing is
+        compared to the local ETags. With SyncAlgorithm.COLLECTION_SYNC, the server only reports members
+        which have changed since the last sync-token – and the resource we have just reset may not be among
+        them (for instance when the upload failed because of missing privileges, or when a locally created
+        resource collided with a server resource which is older than the sync-token). So we force a full
+        re-listing to make sure that the local resource is really overwritten by (or deleted along with)
+        the server's version, like ReadOnlyPolicy.resetDirty() does. */
+        localCollection.lastSyncState = null
     }
 
     /**

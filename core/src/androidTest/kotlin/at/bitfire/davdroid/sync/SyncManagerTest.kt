@@ -7,6 +7,7 @@ package at.bitfire.davdroid.sync
 import android.content.Context
 import androidx.core.app.NotificationManagerCompat
 import androidx.hilt.work.HiltWorkerFactory
+import at.bitfire.dav4jvm.property.webdav.SyncToken
 import at.bitfire.davdroid.MockEngineQueue
 import at.bitfire.davdroid.TestUtils
 import at.bitfire.davdroid.TestUtils.assertWithin
@@ -14,6 +15,7 @@ import at.bitfire.davdroid.accounts.LegacyAccount
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.repository.DavSyncStatsRepository
 import at.bitfire.davdroid.resource.local.SyncState
+import at.bitfire.davdroid.resource.remote.CollectionSyncItem
 import at.bitfire.davdroid.resource.remote.InternalMemberState
 import at.bitfire.davdroid.resource.remote.TestWebDavCollection
 import at.bitfire.davdroid.resource.remote.WebDavCollection
@@ -563,6 +565,78 @@ class SyncManagerTest {
         assertTrue(syncManager.syncResult.hasError)
         assertEquals(1, collection.entries.size)
         assertTrue(collection.entries.first().dirty)
+        assertEquals(1, numberOfPutRequests())
+    }
+
+    @Test
+    fun testPerformSync_CollectionSync_UploadModifiedMember_403Forbidden_NeedPrivileges() = runTest {
+        // The resource itself hasn't been changed on the server, so a sync-collection REPORT wouldn't
+        // report it. Discarding the local change must force a full re-listing, otherwise the local
+        // version would never be overwritten by the server's version.
+        val collection = LocalTestCollection().apply {
+            lastSyncState = SyncState(SyncState.Type.SYNC_TOKEN, "token1")
+            entries += LocalTestResource().apply {
+                fileName = "not-writable.txt"
+                eTag = "some-etag"
+                dirty = true
+            }
+        }
+        enqueueQueryCapabilities()
+
+        // PUT -> 403 Forbidden with DAV:need-privileges precondition
+        mockEngineQueue.enqueue(
+            HttpStatusCode.Forbidden,
+            "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n" +
+                    "<error xmlns=\"DAV:\"><need-privileges/></error>",
+            headersOf(HttpHeaders.ContentType, "text/xml")
+        )
+
+        val syncManager = syncManager(collection).apply {
+            chosenSyncAlgorithm = SyncManager.SyncAlgorithm.COLLECTION_SYNC
+        }
+        // server doesn't report any changes
+        every { syncManager.remoteCollection.listChanges(any()) } returns flowOf(
+            CollectionSyncItem.SyncToken(SyncToken("token2"))
+        )
+        syncManager.performSync()
+
+        // initial sync (= full listing), because the sync state has been reset
+        verify(exactly = 1) { syncManager.remoteCollection.listChanges(null) }
+        assertFalse(syncManager.syncResult.hasError)
+        assertTrue(collection.entries.isEmpty())
+        assertEquals(1, numberOfPutRequests())
+    }
+
+    @Test
+    fun testPerformSync_CollectionSync_UploadNewMember_412PreconditionFailed() = runTest {
+        // The resource which is already on the server may be older than our sync-token, so a
+        // sync-collection REPORT wouldn't report it. Discarding the local change must force a full
+        // re-listing, otherwise the local resource would stay behind forever (it has no file name, so
+        // it's neither uploaded again nor recognized as a member of the collection).
+        val collection = LocalTestCollection().apply {
+            lastSyncState = SyncState(SyncState.Type.SYNC_TOKEN, "token1")
+            entries += LocalTestResource().apply {
+                dirty = true
+            }
+        }
+        enqueueQueryCapabilities()
+
+        // PUT -> 412 Precondition Failed
+        mockEngineQueue.enqueue(HttpStatusCode.PreconditionFailed)
+
+        val syncManager = syncManager(collection).apply {
+            chosenSyncAlgorithm = SyncManager.SyncAlgorithm.COLLECTION_SYNC
+        }
+        // server doesn't report any changes
+        every { syncManager.remoteCollection.listChanges(any()) } returns flowOf(
+            CollectionSyncItem.SyncToken(SyncToken("token2"))
+        )
+        syncManager.performSync()
+
+        // initial sync (= full listing), because the sync state has been reset
+        verify(exactly = 1) { syncManager.remoteCollection.listChanges(null) }
+        assertFalse(syncManager.syncResult.hasError)
+        assertTrue(collection.entries.isEmpty())
         assertEquals(1, numberOfPutRequests())
     }
 
