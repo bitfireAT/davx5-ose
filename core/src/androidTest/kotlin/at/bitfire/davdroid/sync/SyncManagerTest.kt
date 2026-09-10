@@ -7,6 +7,7 @@ package at.bitfire.davdroid.sync
 import android.content.Context
 import androidx.core.app.NotificationManagerCompat
 import androidx.hilt.work.HiltWorkerFactory
+import at.bitfire.dav4jvm.property.webdav.SyncToken
 import at.bitfire.davdroid.MockEngineQueue
 import at.bitfire.davdroid.TestUtils
 import at.bitfire.davdroid.TestUtils.assertWithin
@@ -14,6 +15,7 @@ import at.bitfire.davdroid.accounts.LegacyAccount
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.repository.DavSyncStatsRepository
 import at.bitfire.davdroid.resource.local.SyncState
+import at.bitfire.davdroid.resource.remote.CollectionSyncItem
 import at.bitfire.davdroid.resource.remote.InternalMemberState
 import at.bitfire.davdroid.resource.remote.TestWebDavCollection
 import at.bitfire.davdroid.resource.remote.WebDavCollection
@@ -25,6 +27,7 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.ktor.client.HttpClient
 import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.Url
 import io.ktor.http.headersOf
@@ -35,6 +38,7 @@ import io.mockk.junit4.MockKRule
 import io.mockk.mockk
 import io.mockk.spyk
 import io.mockk.verify
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.After
@@ -105,6 +109,11 @@ class SyncManagerTest {
             headersOf(HttpHeaders.ContentType, "text/xml")
         )
     }
+
+    /** Number of `PUT` requests which have been sent to the mock engine. */
+    private fun numberOfPutRequests() =
+        mockEngineQueue.engine.requestHistory.count { it.method == HttpMethod.Put }
+
 
     @Before
     fun setUp() {
@@ -271,7 +280,7 @@ class SyncManagerTest {
     }
 
     @Test
-    fun testPerformSync_UploadModifiedMember_412PreconditionFailed() = runTest {
+    fun testPerformSync_UploadModifiedMember_412PreconditionFailed_ChangedOnServer() = runTest {
         val collection = LocalTestCollection().apply {
             lastSyncState = SyncState(SyncState.Type.CTAG, "old-ctag")
             entries += LocalTestResource().apply {
@@ -317,6 +326,375 @@ class SyncManagerTest {
         assertFalse(syncManager.syncResult.hasError)
         assertEquals(1, collection.entries.size)
         assertEquals("changed-etag-from-server", collection.entries.first().eTag)
+        // local change has been discarded, so the resource is not dirty anymore
+        assertFalse(collection.entries.first().dirty)
+        // the upload must not be retried within the same sync
+        assertEquals(1, numberOfPutRequests())
+    }
+
+    @Test
+    fun testPerformSync_UploadModifiedMember_412PreconditionFailed_DeletedOnServer() = runTest {
+        // The resource has been deleted on the server, so our If-Match doesn't match anymore
+        // (RFC 9110 13.1.1). The local change is discarded and the resource is deleted locally.
+        val collection = LocalTestCollection().apply {
+            lastSyncState = SyncState(SyncState.Type.CTAG, "old-ctag")
+            entries += LocalTestResource().apply {
+                fileName = "deleted-on-server.txt"
+                eTag = "etag-of-the-resource-which-has-been-deleted-on-server"
+                dirty = true
+            }
+        }
+        enqueueQueryCapabilities("ctag1")
+
+        // PUT -> 412 Precondition Failed
+        mockEngineQueue.enqueue(HttpStatusCode.PreconditionFailed)
+
+        // modifications sent, so DAVx5 will query CTag again
+        enqueueQueryCapabilities("ctag1")
+
+        // server doesn't list the resource anymore
+        val syncManager = syncManager(collection)
+        syncManager.performSync()
+
+        verify(exactly = 1) { syncManager.remoteCollection.listFilteredMembers() }
+        assertTrue(syncManager.didGenerateUpload)
+        assertTrue(syncManager.processedDownloads.isEmpty())
+        assertFalse(syncManager.syncResult.hasError)
+        assertTrue(collection.entries.isEmpty())
+        assertEquals(1, numberOfPutRequests())
+    }
+
+    @Test
+    fun testPerformSync_UploadModifiedMember_409Conflict() = runTest {
+        // We can't resolve a conflict interactively, so 409 is treated like 412.
+        val collection = LocalTestCollection().apply {
+            lastSyncState = SyncState(SyncState.Type.CTAG, "old-ctag")
+            entries += LocalTestResource().apply {
+                fileName = "deleted-on-server.txt"
+                eTag = "some-etag"
+                dirty = true
+            }
+        }
+        enqueueQueryCapabilities("ctag1")
+
+        // PUT -> 409 Conflict
+        mockEngineQueue.enqueue(HttpStatusCode.Conflict)
+
+        // modifications sent, so DAVx5 will query CTag again
+        enqueueQueryCapabilities("ctag1")
+
+        val syncManager = syncManager(collection)
+        syncManager.performSync()
+
+        assertFalse(syncManager.syncResult.hasError)
+        assertTrue(collection.entries.isEmpty())
+        assertEquals(1, numberOfPutRequests())
+    }
+
+    @Test
+    fun testPerformSync_UploadModifiedMember_409Conflict_DataRejected() = runTest {
+        // A 409 which reports a CalDAV/CardDAV precondition means that our data was rejected, so there's
+        // no server version which could replace the local one: assert sync error and that the local change is kept.
+        val collection = LocalTestCollection().apply {
+            lastSyncState = SyncState(SyncState.Type.CTAG, "old-ctag")
+            entries += LocalTestResource().apply {
+                fileName = "existing-file.txt"
+                eTag = "some-etag"
+                dirty = true
+            }
+        }
+        enqueueQueryCapabilities("ctag1")
+
+        // PUT -> 409 Conflict with CALDAV:no-uid-conflict precondition
+        mockEngineQueue.enqueue(
+            HttpStatusCode.Conflict,
+            "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n" +
+                    "<error xmlns=\"DAV:\"><no-uid-conflict xmlns=\"urn:ietf:params:xml:ns:caldav\"/></error>",
+            headersOf(HttpHeaders.ContentType, "text/xml")
+        )
+
+        val syncManager = syncManager(collection)
+        syncManager.performSync()
+
+        assertTrue(syncManager.syncResult.hasError)
+        assertEquals(1, collection.entries.size)
+        assertTrue(collection.entries.first().dirty)
+        assertEquals(SyncState(SyncState.Type.CTAG, "old-ctag"), collection.lastSyncState)
+    }
+
+    @Test
+    fun testPerformSync_UploadModifiedMember_404NotFound() = runTest {
+        // Servers which don't answer 412 when the resource is gone must be handled like 412,
+        // especially the upload must not be retried as a new resource ("the server always wins").
+        val collection = LocalTestCollection().apply {
+            lastSyncState = SyncState(SyncState.Type.CTAG, "old-ctag")
+            entries += LocalTestResource().apply {
+                fileName = "deleted-on-server.txt"
+                eTag = "some-etag"
+                dirty = true
+            }
+        }
+        enqueueQueryCapabilities("ctag1")
+
+        // PUT -> 404 Not Found
+        mockEngineQueue.enqueue(HttpStatusCode.NotFound)
+
+        // modifications sent, so DAVx5 will query CTag again
+        enqueueQueryCapabilities("ctag1")
+
+        val syncManager = syncManager(collection)
+        syncManager.performSync()
+
+        assertFalse(syncManager.syncResult.hasError)
+        assertTrue(collection.entries.isEmpty())
+        assertEquals(1, numberOfPutRequests())
+    }
+
+    @Test
+    fun testPerformSync_UploadModifiedMember_410Gone() = runTest {
+        val collection = LocalTestCollection().apply {
+            lastSyncState = SyncState(SyncState.Type.CTAG, "old-ctag")
+            entries += LocalTestResource().apply {
+                fileName = "deleted-on-server.txt"
+                eTag = "some-etag"
+                dirty = true
+            }
+        }
+        enqueueQueryCapabilities("ctag1")
+
+        // PUT -> 410 Gone
+        mockEngineQueue.enqueue(HttpStatusCode.Gone)
+
+        // modifications sent, so DAVx5 will query CTag again
+        enqueueQueryCapabilities("ctag1")
+
+        val syncManager = syncManager(collection)
+        syncManager.performSync()
+
+        assertFalse(syncManager.syncResult.hasError)
+        assertTrue(collection.entries.isEmpty())
+        assertEquals(1, numberOfPutRequests())
+    }
+
+    @Test
+    fun testPerformSync_UploadModifiedMember_403Forbidden_NeedPrivileges() = runTest {
+        // The collection is effectively read-only for us, so the local change is discarded.
+        val collection = LocalTestCollection().apply {
+            lastSyncState = SyncState(SyncState.Type.CTAG, "old-ctag")
+            entries += LocalTestResource().apply {
+                fileName = "not-writable.txt"
+                eTag = "some-etag"
+                dirty = true
+            }
+        }
+        enqueueQueryCapabilities("ctag1")
+
+        // PUT -> 403 Forbidden with DAV:need-privileges precondition
+        mockEngineQueue.enqueue(
+            HttpStatusCode.Forbidden,
+            "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n" +
+                    "<error xmlns=\"DAV:\"><need-privileges/></error>",
+            headersOf(HttpHeaders.ContentType, "text/xml")
+        )
+
+        // modifications sent, so DAVx5 will query CTag again
+        enqueueQueryCapabilities("ctag1")
+
+        val syncManager = syncManager(collection)
+        syncManager.performSync()
+
+        assertFalse(syncManager.syncResult.hasError)
+        assertTrue(collection.entries.isEmpty())
+        assertEquals(1, numberOfPutRequests())
+    }
+
+    @Test
+    fun testPerformSync_UploadModifiedMember_403Forbidden_Other() = runTest {
+        // A 403 which is not caused by missing permissions is a sync error; the local change is kept.
+        val collection = LocalTestCollection().apply {
+            lastSyncState = SyncState(SyncState.Type.CTAG, "old-ctag")
+            entries += LocalTestResource().apply {
+                fileName = "existing-file.txt"
+                eTag = "some-etag"
+                dirty = true
+            }
+        }
+        enqueueQueryCapabilities("ctag1")
+
+        // PUT -> 403 Forbidden without further information
+        mockEngineQueue.enqueue(HttpStatusCode.Forbidden)
+
+        val syncManager = syncManager(collection)
+        syncManager.performSync()
+
+        assertTrue(syncManager.syncResult.hasError)
+        assertEquals(1, collection.entries.size)
+        assertTrue(collection.entries.first().dirty)
+    }
+
+    @Test
+    fun testPerformSync_UploadNewMember_412PreconditionFailed() = runTest {
+        // A new resource is uploaded with If-None-Match: *, so 412 means that the file name (which is
+        // derived from the UID) is already taken on the server. The local change is discarded and the
+        // server's version is downloaded instead, so that there's exactly one local resource afterwards.
+        val collection = LocalTestCollection().apply {
+            lastSyncState = SyncState(SyncState.Type.CTAG, "old-ctag")
+            entries += LocalTestResource().apply {
+                dirty = true
+            }
+        }
+        enqueueQueryCapabilities("ctag1")
+
+        // PUT -> 412 Precondition Failed
+        mockEngineQueue.enqueue(HttpStatusCode.PreconditionFailed)
+
+        // modifications sent, so DAVx5 will query CTag again
+        enqueueQueryCapabilities("ctag1")
+
+        val syncManager = syncManager(collection).apply {
+            (remoteCollection as TestWebDavCollection).listFilteredMembersResult = listOf(
+                InternalMemberState(Url("$BASE_URL/generated-file.txt"), "etag-from-server")
+            )
+        }
+        every { syncManager.remoteCollection.multiget(any(), any()) } returns flowOf(
+            WebDavCollection.MultiGetItem(
+                Url("$BASE_URL/generated-file.txt"),
+                "etag-from-server",
+                content = "ignored"
+            )
+        )
+        syncManager.performSync()
+
+        assertFalse(syncManager.syncResult.hasError)
+        assertEquals(1, collection.entries.size)
+        collection.entries.first().let { entry ->
+            assertEquals("generated-file.txt", entry.fileName)
+            assertEquals("etag-from-server", entry.eTag)
+            assertFalse(entry.dirty)
+        }
+        assertEquals(1, numberOfPutRequests())
+    }
+
+    @Test
+    fun testPerformSync_UploadNewMember_409Conflict() = runTest {
+        // 409 when creating a new resource doesn't tell us that the server has a version which we could
+        // download instead: RFC 4918 9.7.1 requires it when the collection itself is not there (anymore).
+        // So it's a sync error and the local resource must be kept (and stay dirty).
+        val collection = LocalTestCollection().apply {
+            lastSyncState = SyncState(SyncState.Type.CTAG, "old-ctag")
+            entries += LocalTestResource().apply {
+                dirty = true
+            }
+        }
+        enqueueQueryCapabilities("ctag1")
+
+        // PUT -> 409 Conflict
+        mockEngineQueue.enqueue(HttpStatusCode.Conflict)
+
+        val syncManager = syncManager(collection)
+        syncManager.performSync()
+
+        assertTrue(syncManager.syncResult.hasError)
+        assertEquals(1, collection.entries.size)
+        assertTrue(collection.entries.first().dirty)
+        assertEquals(1, numberOfPutRequests())
+        assertEquals(SyncState(SyncState.Type.CTAG, "old-ctag"), collection.lastSyncState)
+    }
+
+    @Test
+    fun testPerformSync_UploadNewMember_404NotFound() = runTest {
+        // 404 when creating a new resource means that the collection itself is not there (anymore),
+        // which is a sync error. The local resource must be kept (and stay dirty).
+        val collection = LocalTestCollection().apply {
+            lastSyncState = SyncState(SyncState.Type.CTAG, "old-ctag")
+            entries += LocalTestResource().apply {
+                dirty = true
+            }
+        }
+        enqueueQueryCapabilities("ctag1")
+
+        // PUT -> 404 Not Found
+        mockEngineQueue.enqueue(HttpStatusCode.NotFound)
+
+        val syncManager = syncManager(collection)
+        syncManager.performSync()
+
+        assertTrue(syncManager.syncResult.hasError)
+        assertEquals(1, collection.entries.size)
+        assertTrue(collection.entries.first().dirty)
+        assertEquals(1, numberOfPutRequests())
+    }
+
+    @Test
+    fun testPerformSync_CollectionSync_UploadModifiedMember_403Forbidden_NeedPrivileges() = runTest {
+        // The resource itself hasn't been changed on the server, so a sync-collection REPORT wouldn't
+        // report it. Discarding the local change must force a full re-listing, otherwise the local
+        // version would never be overwritten by the server's version.
+        val collection = LocalTestCollection().apply {
+            lastSyncState = SyncState(SyncState.Type.SYNC_TOKEN, "token1")
+            entries += LocalTestResource().apply {
+                fileName = "not-writable.txt"
+                eTag = "some-etag"
+                dirty = true
+            }
+        }
+        enqueueQueryCapabilities()
+
+        // PUT -> 403 Forbidden with DAV:need-privileges precondition
+        mockEngineQueue.enqueue(
+            HttpStatusCode.Forbidden,
+            "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n" +
+                    "<error xmlns=\"DAV:\"><need-privileges/></error>",
+            headersOf(HttpHeaders.ContentType, "text/xml")
+        )
+
+        val syncManager = syncManager(collection).apply {
+            chosenSyncAlgorithm = SyncManager.SyncAlgorithm.COLLECTION_SYNC
+        }
+        // server doesn't report any changes
+        every { syncManager.remoteCollection.listChanges(any()) } returns flowOf(
+            CollectionSyncItem.SyncToken(SyncToken("token2"))
+        )
+        syncManager.performSync()
+
+        // initial sync (= full listing), because the sync state has been reset
+        verify(exactly = 1) { syncManager.remoteCollection.listChanges(null) }
+        assertFalse(syncManager.syncResult.hasError)
+        assertTrue(collection.entries.isEmpty())
+        assertEquals(1, numberOfPutRequests())
+    }
+
+    @Test
+    fun testPerformSync_CollectionSync_UploadNewMember_412PreconditionFailed() = runTest {
+        // The resource which is already on the server may be older than our sync-token, so a
+        // sync-collection REPORT wouldn't report it. Discarding the local change must force a full
+        // re-listing, otherwise the local resource would stay behind forever (it has no file name, so
+        // it's neither uploaded again nor recognized as a member of the collection).
+        val collection = LocalTestCollection().apply {
+            lastSyncState = SyncState(SyncState.Type.SYNC_TOKEN, "token1")
+            entries += LocalTestResource().apply {
+                dirty = true
+            }
+        }
+        enqueueQueryCapabilities()
+
+        // PUT -> 412 Precondition Failed
+        mockEngineQueue.enqueue(HttpStatusCode.PreconditionFailed)
+
+        val syncManager = syncManager(collection).apply {
+            chosenSyncAlgorithm = SyncManager.SyncAlgorithm.COLLECTION_SYNC
+        }
+        // server doesn't report any changes
+        every { syncManager.remoteCollection.listChanges(any()) } returns flowOf(
+            CollectionSyncItem.SyncToken(SyncToken("token2"))
+        )
+        syncManager.performSync()
+
+        // initial sync (= full listing), because the sync state has been reset
+        verify(exactly = 1) { syncManager.remoteCollection.listChanges(null) }
+        assertFalse(syncManager.syncResult.hasError)
+        assertTrue(collection.entries.isEmpty())
+        assertEquals(1, numberOfPutRequests())
     }
 
     @Test
@@ -435,6 +813,30 @@ class SyncManagerTest {
         assertTrue(syncManager.processedDownloads.isEmpty())
         assertFalse(syncManager.syncResult.hasError)
         assertTrue(collection.entries.isEmpty())
+    }
+
+    @Test
+    fun testPerformSync_KeepVanishedMemberWhichBecameDirtyDuringSync() = runTest {
+        // A resource which is created locally *while* the sync is running has never had a chance to be
+        // uploaded, so it must not be deleted by deleteNotPresentRemotely() although the server didn't
+        // list it. This is why resetPresentRemotely()/deleteNotPresentRemotely() ignore dirty entries.
+        val collection = LocalTestCollection().apply {
+            lastSyncState = SyncState(SyncState.Type.CTAG, "old-ctag")
+        }
+        enqueueQueryCapabilities(cTag = "new-ctag")
+
+        val syncManager = syncManager(collection)
+        every { syncManager.remoteCollection.listFilteredMembers() } returns flow {
+            // user creates a local resource while the (empty) remote listing is being processed
+            collection.entries += LocalTestResource().apply {
+                dirty = true
+            }
+        }
+        syncManager.performSync()
+
+        assertFalse(syncManager.syncResult.hasError)
+        assertEquals(1, collection.entries.size)
+        assertTrue(collection.entries.first().dirty)
     }
 
     @Test
