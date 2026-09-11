@@ -83,9 +83,6 @@ class LoginScreenViewModel @AssistedInject constructor(
     var page by mutableStateOf(startPage)
         private set
 
-    var finish by mutableStateOf(false)
-        private set
-
 
     // navigation events
 
@@ -126,26 +123,35 @@ class LoginScreenViewModel @AssistedInject constructor(
         }
     }
 
-    fun navBack() {
+    /**
+     * Navigates to the previous page of the login flow.
+     *
+     * @return  *true* if there was a previous page to go to;
+     *          *false* if the flow is at its first page and the caller should leave it
+     */
+    fun navBack(): Boolean =
         when (page) {
-            Page.LoginType ->
-                finish = true
+            Page.LoginType -> false
 
             Page.LoginDetails ->
                 if (loginTypesProvider.maybeNonInteractive)
-                    finish = true
-                else
+                    false
+                else {
                     page = Page.LoginType
+                    true
+                }
 
             Page.DetectResources -> {
                 cancelResourceDetection()
                 page = Page.LoginDetails
+                true
             }
 
-            Page.AccountDetails ->
+            Page.AccountDetails -> {
                 page = Page.LoginDetails
+                true
+            }
         }
-    }
 
 
     // UI element state – first page: login type
