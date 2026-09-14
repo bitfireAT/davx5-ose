@@ -124,17 +124,24 @@ class LoginScreenViewModel @AssistedInject constructor(
     }
 
     /**
-     * Navigates to the previous page of the login flow.
+     * Handles back/up navigation within the login flow, usually by navigating to the previous page.
      *
-     * @return  *true* if there was a previous page to go to;
-     *          *false* if the flow is at its first page and the caller should leave it
+     * @return  *true* if the navigation was handled within the login flow;
+     *          *false* if there's no previous page and the caller should leave the flow
      */
-    fun navBack(): Boolean =
-        when (page) {
+    fun navBack(): Boolean {
+        // Account creation can't be canceled, so ignore back navigation while it's running – otherwise
+        // the account would be created anyway and its result would be applied when the account details
+        // page is opened again.
+        if (_accountDetailsUiState.value.creatingAccount)
+            return true
+
+        return when (page) {
             Page.LoginType -> false
 
             Page.LoginDetails ->
-                if (loginTypesProvider.maybeNonInteractive)
+                // don't go back to the login type page if it was skipped or may be non-interactive
+                if (skipLoginTypePage || loginTypesProvider.maybeNonInteractive)
                     false
                 else {
                     page = Page.LoginType
@@ -152,6 +159,7 @@ class LoginScreenViewModel @AssistedInject constructor(
                 true
             }
         }
+    }
 
 
     // UI element state – first page: login type
