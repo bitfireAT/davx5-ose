@@ -33,6 +33,7 @@ import kotlinx.coroutines.test.runTest
 import okio.Buffer
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
@@ -134,7 +135,54 @@ class CalendarSyncManagerTest {
     }
 
 
+    @Test
+    fun generateUpload_withTimeZone_serverDoesntSupportRfc7809() = runTest {
+        val iCal = generateUploadOfEventInVienna(WebDavCollection.Capabilities(
+            supportsTimeZonesByReference = false
+        ))
+
+        // TZID is used and the VTIMEZONE is sent along
+        assertTrue(iCal.contains("DTSTART;TZID=Europe/Vienna:"))
+        assertTrue(iCal.contains("BEGIN:VTIMEZONE\r\n"))
+    }
+
+    @Test
+    fun generateUpload_withTimeZone_serverSupportsRfc7809() = runTest {
+        val iCal = generateUploadOfEventInVienna(WebDavCollection.Capabilities(
+            supportsTimeZonesByReference = true
+        ))
+
+        // TZID is still used, but the server resolves it itself, so no VTIMEZONE is sent
+        assertTrue(iCal.contains("DTSTART;TZID=Europe/Vienna:"))
+        assertFalse(iCal.contains("BEGIN:VTIMEZONE"))
+    }
+
+
     // helpers
+
+    /** Generates the upload of a non-all-day event in a named time zone and returns the iCalendar. */
+    private suspend fun generateUploadOfEventInVienna(capabilities: WebDavCollection.Capabilities): String {
+        val now = System.currentTimeMillis()
+        val result = syncManager().generateUpload(LocalEvent(
+            localCalendar.recurringCalendar,
+            EventAndExceptions(
+                main = Entity(contentValuesOf(
+                    Events._ID to 3,
+                    Events.CALENDAR_ID to androidCalendar.id,
+                    Events.DTSTART to now,
+                    Events.DTEND to now + 3600000,
+                    Events.EVENT_TIMEZONE to "Europe/Vienna",
+                    Events.ALL_DAY to 0,
+                    Events.UID_2445 to "tz-test"
+                )),
+                exceptions = emptyList()
+            )
+        ), capabilities)
+
+        return Buffer().also {
+            it.write(result.content.toByteArray())
+        }.readString(Charsets.UTF_8)
+    }
 
     private fun syncManager() = syncManagerFactory.calendarSyncManager(
         accountId = accountId,

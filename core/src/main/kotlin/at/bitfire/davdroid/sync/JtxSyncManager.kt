@@ -95,7 +95,10 @@ class JtxSyncManager @AssistedInject constructor(
 
         // generate iCalendar and convert to request body
         val iCalWriter = StringWriter()
-        ICalendarGenerator().write(mappedJtxObjects.associatedComponents, iCalWriter)
+        /* Only generate VTIMEZONEs when the server needs them. Servers that support Time Zones by
+        Reference (RFC 7809) resolve the TZIDs themselves. */
+        ICalendarGenerator(withTimeZones = !capabilities.supportsTimeZonesByReference)
+            .write(mappedJtxObjects.associatedComponents, iCalWriter)
         val outgoingContent = TextContent(
             text = iCalWriter.toString(),
             contentType = DavCalendar.MIME_ICALENDAR_UTF8
