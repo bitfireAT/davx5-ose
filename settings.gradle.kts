@@ -49,8 +49,9 @@ include(":synctools")
         substitute(module("com.github.bitfireat:cert4android")).using(project(":lib"))
     }
 }*/
-/*includeBuild("../dav4jvm") {
-    dependencySubstitution {
-        substitute(module("com.github.bitfireAT:dav4jvm")).using(project(":"))
-    }
-}*/
+//includeBuild("../dav4jvm") {
+//    dependencySubstitution {
+//        substitute(module("com.github.bitfireAT:dav4jvm")).using(project(":"))
+//    }
+//}
+// Also update dav4jvm version in this commit

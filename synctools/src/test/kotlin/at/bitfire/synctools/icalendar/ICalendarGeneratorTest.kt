@@ -172,6 +172,34 @@ class ICalendarGeneratorTest {
 
 
     @Test
+    fun `Write event without VTIMEZONEs`() {
+        // withTimeZones = false: the TZID parameters stay, but no VTIMEZONE is generated (RFC 7809)
+        val iCal = StringWriter()
+        ICalendarGenerator(withTimeZones = false).write(AssociatedEvents(
+            main = VEvent(propertyListOf(
+                Uid("SAMPLEUID"),
+                DtStart(ZonedDateTime.of(LocalDateTime.parse("2019-01-01T10:00:00"), tzBerlin)),
+                DtEnd(ZonedDateTime.of(LocalDateTime.parse("2019-01-01T16:00:00"), tzLondon)),
+                DtStamp("20251028T185101Z")
+            )),
+            exceptions = emptyList(),
+            prodId = userAgent
+        ), iCal)
+
+        assertEquals("BEGIN:VCALENDAR\r\n" +
+                "VERSION:2.0\r\n" +
+                "PRODID:TestUA/1.0\r\n" +
+                "BEGIN:VEVENT\r\n" +
+                "UID:SAMPLEUID\r\n" +
+                "DTSTART;TZID=Europe/Berlin:20190101T100000\r\n" +
+                "DTEND;TZID=Europe/London:20190101T160000\r\n" +
+                "DTSTAMP:20251028T185101Z\r\n" +
+                "END:VEVENT\r\n" +
+                "END:VCALENDAR\r\n", iCal.toString())
+    }
+
+
+    @Test
     fun `copyVTimeZone result properties can be added without modifying original`() {
         // Get a timezone from the registry
         val tzReg = TimeZoneRegistryFactory.getInstance().createRegistry()

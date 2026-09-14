@@ -53,6 +53,9 @@ interface WebDavCollection {
      * Queries the collection's current capabilities. Also fetches the [SyncState]
      * in the same PROPFIND request to save a network round-trip.
      *
+     * Implementations may send further requests if a capability can't be determined by PROPFIND
+     * (see [CalDavCollection], which additionally sends OPTIONS).
+     *
      * @throws at.bitfire.dav4jvm.ktor.exception.HttpException on HTTP errors
      */
     suspend fun queryCapabilities(): QueryCapabilitiesResult
@@ -73,7 +76,16 @@ interface WebDavCollection {
         val maxCardResourceSize: Long? = null,
 
         /** whether the (CardDAV) server supports vCard/4 */
-        val supportsVCard4: Boolean = false
+        val supportsVCard4: Boolean = false,
+
+        /**
+         * Whether the (CalDAV) server supports Time Zones by Reference (RFC 7809), that is, whether
+         * it advertises `calendar-no-timezone` in the `DAV:` header of an OPTIONS response.
+         *
+         * If it does, we don't have to exchange VTIMEZONE components with the server, because both
+         * sides can look up the time zone rules by their IANA TZID (like `Europe/Vienna`).
+         */
+        val supportsTimeZonesByReference: Boolean = false
     )
 
     /**
