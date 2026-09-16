@@ -1,4 +1,4 @@
-name: tests
+name: Tests
 on:
   push:
     branches:
@@ -23,14 +23,14 @@ env:
 
 jobs:
   check_changes:
-    name: Check changes
+    name: Check module changes
     runs-on: ubuntu-latest
     outputs:
-      synctools: ${{ steps.filter.outputs.synctools }}
+      synctools: ${{ steps.filter_synctools.outputs.synctools }}
     steps:
       - uses: actions/checkout@v7
       - uses: dorny/paths-filter@v4
-        id: filter
+        id: filter_synctools
         with:
           filters: |
             synctools:
