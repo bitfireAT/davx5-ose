@@ -1,0 +1,240 @@
+name: tests
+on:
+  push:
+    branches:
+      - main
+      - release
+  pull_request:
+
+concurrency:
+  group: ${{github.workflow_ref}}-${{ github.ref }}
+  cancel-in-progress: true
+
+# We provide a remote Gradle build cache. Take the settings from the secrets and enable
+# configuration and build cache for all gradle jobs.
+#
+# Note: The secrets are not available for forks and Dependabot PRs.
+env:
+  GRADLE_BUILDCACHE_URL: ${{ secrets.gradle_buildcache_url }}
+  GRADLE_BUILDCACHE_USERNAME: ${{ secrets.gradle_buildcache_username }}
+  GRADLE_BUILDCACHE_PASSWORD: ${{ secrets.gradle_buildcache_password }}
+  GRADLE_OPTS: -Dorg.gradle.caching=true -Dorg.gradle.configuration-cache=true
+  JAVA_VERSION: 21   # keep in sync with gradle/gradle-daemon-jvm.properties
+
+jobs:
+  check_changes:
+    name: Check changes
+    runs-on: ubuntu-latest
+    outputs:
+      synctools: ${{ steps.filter.outputs.synctools }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: dorny/paths-filter@v4
+        id: filter
+        with:
+          filters: |
+            synctools:
+              - 'synctools/**'
+              - 'gradle/libs.versions.toml'
+
+  compile_core:
+    name: Compile
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          submodules: recursive   # translations live in the l10n submodule
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+
+      # See https://community.gradle.org/github-actions/docs/setup-gradle/ for more information
+      - uses: gradle/actions/setup-gradle@v6.3.0
+        with:
+          cache-encryption-key: ${{ secrets.gradle_encryption_key }}
+          cache-read-only: false                            # allow to update the cache
+          gradle-home-cache-excludes: caches/build-cache-1  # don't cache local build cache because we use a remote cache
+
+      - name: Compile
+        run: ./gradlew app-ose:assembleDebug
+
+  unit_tests_core:
+    needs: compile_core
+    name: Lint and unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          submodules: recursive   # translations live in the l10n submodule
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+      - uses: gradle/actions/setup-gradle@v6.3.0
+        with:
+          cache-encryption-key: ${{ secrets.gradle_encryption_key }}
+          cache-read-only: true
+
+      - name: Lint checks
+        run: ./gradlew core:lintDebug app:lintOseDebug
+
+      - name: Unit tests
+        # currently no unit tests for app-ose
+        run: ./gradlew core:testDebugUnitTest
+
+  instrumented_tests_core:
+    needs: compile_core
+    name: Instrumented tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          submodules: recursive   # translations live in the l10n submodule
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+      - uses: gradle/actions/setup-gradle@v6.3.0
+        with:
+          cache-encryption-key: ${{ secrets.gradle_encryption_key }}
+          cache-read-only: true
+
+      # Gradle and Android SDK often take more space than what is available on the default runner.
+      # We try to free a few GB here to make gradle-managed devices more reliable.
+      - name: Free some disk space
+        uses: jlumbroso/free-disk-space@main
+        with:
+          android: false          # we need the Android SDK
+          large-packages: false   # apt takes too long
+          swap-storage: false     # Gradle needs much memory
+
+      # Enable virtualization for Android emulator
+      - name: Enable KVM group perms
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Instrumented tests
+        # currently no instrumented tests for app-ose
+        run: ./gradlew core:virtualDebugAndroidTest
+
+  compile_synctools:
+    needs: check_changes
+    if: ${{ needs.check_changes.outputs.synctools == 'true' && github.ref == 'refs/heads/main' }}
+    name: Compile and cache (synctools)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+
+      # See https://community.gradle.org/github-actions/docs/setup-gradle/ for more information
+      - uses: gradle/actions/setup-gradle@v6.3.0            # creates build cache when on main branch
+        with:
+          cache-encryption-key: ${{ secrets.gradle_encryption_key }}
+
+      - run: ./gradlew --build-cache --configuration-cache synctools:compileDebugSources
+
+  test_synctools:
+    needs: [ check_changes, compile_synctools ]
+    if: ${{ !cancelled() && needs.check_changes.outputs.synctools == 'true' }}     # even if compile didn't run (because not on main branch)
+    name: Unit tests (synctools)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+      - uses: gradle/actions/setup-gradle@v6.3.0
+        with:
+          cache-encryption-key: ${{ secrets.gradle_encryption_key }}
+          cache-read-only: true
+
+      - name: Run lint
+        run: ./gradlew --build-cache --configuration-cache synctools:lintDebug
+      - name: Run unit tests
+        run: ./gradlew --build-cache --configuration-cache synctools:testDebugUnitTest
+
+  test_on_emulator_synctools:
+    needs: [ check_changes, compile_synctools ]
+    if: ${{ !cancelled() && needs.check_changes.outputs.synctools == 'true' }}     # even if compile didn't run (because not on main branch)
+    name: Instrumented tests (synctools, API ${{ matrix.api-level }})
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        api-level:
+          # - 24  # Android 7 (minSdk level; not supported by gradle-managed devices)
+          # - 27  # the lowest supported version by GMD; doesn't work for some reason
+          - 30  # Android 11   # Android 11 is the latest version where calendar provider doesn't match millisecond occurrences of recurring events
+          - 32  # Android 12L  # Android 12 is the first version where calendar provider matches millisecond occurrences of recurring events
+          - 35  # Android 15   # use latest SDK that has an AOSP image here
+    env:
+      apk-dir: synctools/apk
+      fdroid-packages: "at.techbee.jtx org.dmfs.tasks org.tasks"
+      API_LEVEL: ${{ matrix.api-level }}
+    steps:
+      - uses: gradle/actions/setup-gradle@v6.3.0
+        with:
+          cache-encryption-key: ${{ secrets.gradle_encryption_key }}
+          cache-read-only: true
+      - uses: actions/checkout@v7
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+
+      - name: Restore F-Droid APKs from cache
+        uses: actions/cache/restore@v6
+        with:
+          path: ${{ env.apk-dir }}
+          key: fdroid-apks
+          restore-keys: |       # restore nearest cache (regardless of the hash)
+            fdroid-apks-
+
+      - name: Download F-Droid packages
+        continue-on-error: true
+        run: |
+          mkdir -p ${{ env.apk-dir }}
+          for pkg in ${{ env.fdroid-packages }}; do
+            # Get package info from F-Droid API
+            api_url="https://f-droid.org/api/v1/packages/$pkg"
+            response=$(curl -s "$api_url")
+          
+            # Extract package name and suggested version code
+            package_name=$(echo "$response" | jq -r '.packageName')
+            suggested_version_code=$(echo "$response" | jq -r '.suggestedVersionCode')
+            if [ -z "$package_name" ] || [ "$package_name" == "null" ]; then
+              echo "Error: Could not get package info for $pkg"
+              continue
+            fi
+          
+            # Download the APK using ETag-based caching
+            apk_url="https://f-droid.org/repo/${package_name}_${suggested_version_code}.apk"
+            apk_file="${{ env.apk-dir }}/${package_name}_latest.apk"
+            etag_file="${apk_file}.etag"
+            echo "Downloading $apk_url -> $apk_file"
+            curl --etag-compare "$etag_file" --etag-save "$etag_file" -Lo "$apk_file" "$apk_url" || true
+          done
+
+      - name: Cache F-Droid APKs
+        uses: actions/cache/save@v6
+        with:
+          path: ${{ env.apk-dir }}
+          key: fdroid-apks-${{ hashFiles(format('{0}/*.apk', env.apk-dir)) }}
+
+      - name: Enable KVM group perms
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Run device tests
+        run: ./gradlew :synctools:virtualCheck
