@@ -59,7 +59,7 @@ jobs:
       - name: Compile
         run: ./gradlew app-ose:assembleDebug
 
-  unit_tests_core:
+  core_unit_tests:
     needs: compile_core
     name: Lint and unit tests
     runs-on: ubuntu-latest
@@ -83,7 +83,7 @@ jobs:
         # currently no unit tests for app-ose
         run: ./gradlew core:testDebugUnitTest
 
-  instrumented_tests_core:
+  core_instrumented_tests:
     needs: compile_core
     name: Instrumented tests
     runs-on: ubuntu-latest
@@ -139,7 +139,7 @@ jobs:
 
       - run: ./gradlew --build-cache --configuration-cache synctools:compileDebugSources
 
-  test_synctools:
+  synctools_unit_tests:
     needs: [ check_changes, compile_synctools ]
     if: ${{ !cancelled() && needs.check_changes.outputs.synctools == 'true' }}     # even if compile didn't run (because not on main branch)
     name: Unit tests (synctools)
@@ -160,7 +160,7 @@ jobs:
       - name: Run unit tests
         run: ./gradlew --build-cache --configuration-cache synctools:testDebugUnitTest
 
-  test_on_emulator_synctools:
+  synctools_instrumented_tests:
     needs: [ check_changes, compile_synctools ]
     if: ${{ !cancelled() && needs.check_changes.outputs.synctools == 'true' }}     # even if compile didn't run (because not on main branch)
     name: Instrumented tests (synctools, API ${{ matrix.api-level }})
@@ -238,3 +238,31 @@ jobs:
 
       - name: Run device tests
         run: ./gradlew :synctools:virtualCheck
+
+  tests:
+    name: Tests
+    needs: [ core_unit_tests, core_instrumented_tests, synctools_unit_tests, synctools_instrumented_tests ]
+    if: ${{ !cancelled() }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Combine test results
+        run: |
+          # Core tests must pass
+          if [ "${{ needs.core_unit_tests.result }}" != "success" ]; then
+            echo "Core unit tests did not pass (result: ${{ needs.core_unit_tests.result }})"
+            exit 1
+          fi
+          if [ "${{ needs.core_instrumented_tests.result }}" != "success" ]; then
+            echo "Core instrumented tests did not pass (result: ${{ needs.core_instrumented_tests.result }})"
+            exit 1
+          fi
+          # Synctools tests must pass if they ran; skipped is OK
+          if [ "${{ needs.synctools_unit_tests.result }}" != "success" ] && [ "${{ needs.synctools_unit_tests.result }}" != "skipped" ]; then
+            echo "Synctools unit tests failed (result: ${{ needs.synctools_unit_tests.result }})"
+            exit 1
+          fi
+          if [ "${{ needs.synctools_instrumented_tests.result }}" != "success" ] && [ "${{ needs.synctools_instrumented_tests.result }}" != "skipped" ]; then
+            echo "Synctools instrumented tests failed (result: ${{ needs.synctools_instrumented_tests.result }})"
+            exit 1
+          fi
+          echo "All required tests passed"
