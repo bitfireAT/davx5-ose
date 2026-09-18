@@ -52,7 +52,8 @@ import javax.inject.Singleton
     SyncStats::class,
     WebDavDocument::class,
     WebDavMount::class
-], exportSchema = true, version = 20, autoMigrations = [
+], exportSchema = true, version = 21, autoMigrations = [
+    AutoMigration(from = 20, to = 21),      // service: add accountId
     AutoMigration(from = 19, to = 20),      // add account, account_setting
     AutoMigration(from = 18, to = 19),      // collection: add pushRegisteredEndpoint
     AutoMigration(from = 17, to = 18, spec = AutoMigration18::class),
