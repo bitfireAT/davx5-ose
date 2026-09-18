@@ -311,13 +311,10 @@ abstract class SyncManager<LocalType : LocalResource>(
      *
      * @param local         resource to upload
      * @param capabilities  current capabilities of the remote collection
-     * @param forceAsNew    whether the ETag (and Schedule-Tag) of [local] are ignored and the resource
-     *                      is created as a new resource on the server
      */
     protected suspend fun uploadDirty(
         local: LocalType,
-        capabilities: WebDavCollection.Capabilities,
-        forceAsNew: Boolean = false
+        capabilities: WebDavCollection.Capabilities
     ) {
         val existingFileName = local.fileName
 
@@ -328,7 +325,7 @@ abstract class SyncManager<LocalType : LocalResource>(
 
         try {
             uploadUrl.withExceptionContext {
-                if (existingFileName == null || forceAsNew) {
+                if (existingFileName == null) {
                     // create new resource on server
                     logger.log(Level.INFO, "Uploading new resource {0} -> {1}", arrayOf<Any?>(local.id, fileName))
 
@@ -381,36 +378,106 @@ abstract class SyncManager<LocalType : LocalResource>(
             when (val ex = e.unwrapContext().cause) {
                 is ForbiddenException -> {
                     // HTTP 403 Forbidden
-                    // If and only if the upload failed because of missing permissions, treat it like 412.
-                    if (ex.errors.contains(Error(WebDAV.NeedPrivileges)))
-                        logger.log(Level.INFO, "Couldn't upload because of missing permissions, ignoring", ex)
-                    else
+                    // If and only if the upload failed because of missing permissions, the collection is
+                    // effectively read-only for us, so we do the same as ReadOnlyPolicy.resetDirty().
+                    if (ex.errors.contains(Error(WebDAV.NeedPrivileges))) {
+                        logger.log(
+                            Level.INFO,
+                            "Couldn't upload because of missing permissions, discarding local change",
+                            ex
+                        )
+                        discardLocalChange(local)
+                    } else
                         throw e
                 }
+
                 is NotFoundException, is GoneException -> {
-                    // HTTP 404 Not Found (i.e. either original resource or the whole collection is not there anymore)
-                    if (!forceAsNew) {      // first try; if this fails with 404, too, the collection is gone
-                        logger.info("Original version of locally modified resource is not there (anymore), trying as fresh upload")
-                        uploadDirty(local, capabilities, forceAsNew = true)
-                        return
-                    } else {
-                        // we tried with forceAsNew, collection probably gone
+                    // HTTP 404 Not Found / 410 Gone
+                    if (existingFileName == null) {
+                        // We wanted to create a new resource, so the collection itself is not there (anymore).
                         throw e
+                    } else {
+                        // The resource we wanted to update is not there (anymore). RFC 9110 13.1.1 requires
+                        // 412 in this case, but some servers answer 404/410 - handle it the same way (see below).
+                        logger.info("Resource to update is not there (anymore), discarding local change")
+                        discardLocalChange(local)
                     }
                 }
+
+                is PreconditionFailedException -> {
+                    // HTTP 412 Precondition failed
+                    //
+                    // When updating, our If-Match / If-Schedule-Tag-Match didn't match, so the resource
+                    // has been modified or deleted on the server in the meanwhile (RFC 9110 13.1.1).
+                    //
+                    // When creating, our If-None-Match: * didn't match, so the server already has a
+                    // resource with that file name. Because the file name is derived from the UID, that's
+                    // usually our own resource from a previous, partially completed sync.
+                    //
+                    // In both cases we can't interact with the user to resolve the conflict, so the
+                    // server's version wins and is downloaded instead.
+                    logger.info("Upload rejected because of a failed precondition, discarding local change")
+                    discardLocalChange(local)
+                }
+
                 is ConflictException -> {
                     // HTTP 409 Conflict
-                    // We can't interact with the user to resolve the conflict, so we treat 409 like 412.
-                    logger.info("Edit conflict, ignoring")
+                    //
+                    // This can mean
+                    //   - that the server has a version which we could download instead of the local one,
+                    //   - the collection itself is not there (anymore) - RFC 4918 9.7.1 requires 409 for
+                    //     a PUT without an appropriately scoped parent collection, or
+                    //   - the server rejected our data - CalDAV/CardDAV preconditions may be reported as
+                    //     403 or 409 (RFC 4791 5.3.2.1, RFC 6352 6.3.2.1).
+                    //
+                    // Only in the first case there's a server version which could replace the local one,
+                    // and it's also the only case without a DAV:error element, because there's no error
+                    // condition for a failed If-Match. So we only discard the local change when we were
+                    // updating an existing member and the server didn't tell us any reason. Otherwise we
+                    // report an error (which notifies the user) and keep the dirty flag for the next sync.
+                    when {
+                        ex.errors.isNotEmpty() ->
+                            // server named a reason; none of the error conditions means that it has a
+                            // version for us to download
+                            throw e
+
+                        existingFileName == null ->
+                            // we wanted to create a new resource, so the collection is probably not there (anymore)
+                            throw e
+
+                        else -> {
+                            logger.info("Update rejected with 409 without further information, handling it like 412, discarding local change")
+                            discardLocalChange(local)
+                        }
+                    }
                 }
-                is PreconditionFailedException -> {
-                    // HTTP 412 Precondition failed: Resource has been modified on the server in the meanwhile.
-                    // Ignore this condition so that the resource can be downloaded and reset again.
-                    logger.info("Resource has been modified on the server before upload, ignoring")
-                }
+
                 else -> throw e
             }
         }
+    }
+
+    /**
+     * Discards a local modification which couldn't be uploaded because of a conflict with the server
+     * ("the server always wins"): clears the dirty flag and resets the ETag/Schedule-Tag, so that the
+     * resource is either
+     *
+     * - downloaded again and overwritten with the server's version (if it's still on the server), or
+     * - deleted locally by [deleteNotPresentRemotely] / [deleteRemovedMember] (if it's not there anymore).
+     *
+     * Also forces a full re-listing, see below.
+     */
+    private suspend fun discardLocalChange(local: LocalType) {
+        local.clearDirty(fileName = Optional.empty(), eTag = null, scheduleTag = null)
+
+        /* Resetting the ETag is only enough for SyncAlgorithm.PROPFIND_REPORT, where the full listing is
+        compared to the local ETags. With SyncAlgorithm.COLLECTION_SYNC, the server only reports members
+        which have changed since the last sync-token – and the resource we have just reset may not be among
+        them (for instance when the upload failed because of missing privileges, or when a locally created
+        resource collided with a server resource which is older than the sync-token). So we force a full
+        re-listing to make sure that the local resource is really overwritten by (or deleted along with)
+        the server's version, like ReadOnlyPolicy.resetDirty() does. */
+        localCollection.lastSyncState = null
     }
 
     /**
