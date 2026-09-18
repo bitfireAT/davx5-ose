@@ -15,7 +15,6 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ServiceDao {
-
     @Deprecated("Use getByAccountAndType(accountId: AccountId, type: String) instead")
     @Query("SELECT * FROM service WHERE accountName=:accountName AND type=:type")
     suspend fun getByAccountAndType(accountName: String, @ServiceType type: String): Service?

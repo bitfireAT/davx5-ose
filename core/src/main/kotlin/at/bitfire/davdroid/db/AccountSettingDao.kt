@@ -18,6 +18,14 @@ interface AccountSettingDao {
      * @return The generated ID.
      */
     @Insert
+    suspend fun insert(setting: AccountSetting): Long
+
+    /**
+     * Inserts a new instance of [setting].
+     * [AccountSetting.id] may be generated automatically.
+     * @return The generated ID.
+     */
+    @Insert
     fun insertBlocking(setting: AccountSetting): Long
 
     @Update
@@ -25,9 +33,6 @@ interface AccountSettingDao {
 
     @Query("SELECT * FROM account_setting WHERE accountId=:accountId AND `key`=:key")
     fun getBlocking(accountId: Long, key: String): AccountSetting?
-
-    @Query("SELECT * FROM account_setting WHERE accountId=:accountId")
-    fun getAllBlocking(accountId: Long): List<AccountSetting>
 
     @Delete
     fun deleteBlocking(setting: AccountSetting)

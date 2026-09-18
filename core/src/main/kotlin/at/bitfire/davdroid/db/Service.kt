@@ -24,7 +24,9 @@ annotation class ServiceType
     tableName = "service",
     indices = [
         // only one service per type and account
-        Index("accountName", "type", unique = true)
+        Index("accountName", "type", unique = true),
+        // only one service per type and account ID
+        Index("accountId", "type", unique = true)
     ],
     foreignKeys = [
         ForeignKey(
