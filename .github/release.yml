@@ -9,6 +9,9 @@ changelog:
     - title: 🪲 Bug fixes
       labels:
         - pr-bugfix
+    - title: ⛓️ Dependencies
+      labels:
+        - dependencies
     - title: ⚙️ CI/CD
       labels:
         - ci-cd
