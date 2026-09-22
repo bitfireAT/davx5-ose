@@ -61,7 +61,7 @@ class LocalNetworkPermissionManagerTest {
     }
 
     @Test
-    fun `isAndroid17LocalNetwork returns true for standard local IP`() = runTest {
+    fun isAndroid17LocalNetwork_returns_true_for_standard_local_IP() = runTest {
         // Standard local IPs should be detected without checking routes
         assert(manager.isAndroid17LocalNetwork("192.168.1.1"))
         assert(manager.isAndroid17LocalNetwork("10.0.0.1"))
@@ -69,7 +69,7 @@ class LocalNetworkPermissionManagerTest {
     }
 
     @Test
-    fun `isAndroid17LocalNetwork returns false for public IP not in routing table`() = runTest {
+    fun isAndroid17LocalNetwork_returns_false_for_public_IP_not_in_routing_table() = runTest {
         // Mock an empty routing table
         every { mockConnectivityManager.allNetworks } returns emptyArray()
         
@@ -78,7 +78,7 @@ class LocalNetworkPermissionManagerTest {
     }
 
     @Test
-    fun `isAndroid17LocalNetwork returns true for non-standard IP in local routing table`() = runTest {
+    fun isAndroid17LocalNetwork_returns_true_for_non_standard_IP_in_local_routing_table() = runTest {
         // Create a mock network with a route to a non-standard local IP
         val mockNetwork = mockk<Network>()
         val mockCapabilities = mockk<NetworkCapabilities>(relaxed = true)
@@ -108,7 +108,7 @@ class LocalNetworkPermissionManagerTest {
     }
 
     @Test
-    fun `isAndroid17LocalNetwork ignores cellular networks`() = runTest {
+    fun isAndroid17LocalNetwork_ignores_cellular_networks() = runTest {
         // Create a mock cellular network
         val mockNetwork = mockk<Network>()
         val mockCapabilities = mockk<NetworkCapabilities>(relaxed = true)
@@ -138,7 +138,7 @@ class LocalNetworkPermissionManagerTest {
     }
 
     @Test
-    fun `isAndroid17LocalNetwork ignores VPN networks`() = runTest {
+    fun isAndroid17LocalNetwork_ignores_VPN_networks() = runTest {
         // Create a mock VPN network
         val mockNetwork = mockk<Network>()
         val mockCapabilities = mockk<NetworkCapabilities>(relaxed = true)
@@ -168,7 +168,7 @@ class LocalNetworkPermissionManagerTest {
     }
 
     @Test
-    fun `isAndroid17LocalNetwork ignores default route`() = runTest {
+    fun isAndroid17LocalNetwork_ignores_default_route() = runTest {
         // Create a mock network with a default route
         val mockNetwork = mockk<Network>()
         val mockCapabilities = mockk<NetworkCapabilities>(relaxed = true)
