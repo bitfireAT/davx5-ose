@@ -97,6 +97,12 @@ class CommonBuildConfigPlugin : Plugin<Project> {
         compileOptions.apply {
             isCoreLibraryDesugaringEnabled = true
         }
+
+        testOptions.unitTests.all { test ->
+            // Robolectric ≥ 4.17 sets up ApplicationSharedMemory on API ≥ 36, which reaches
+            // jdk.internal.access by reflection [https://robolectric.org/getting-started/#running-with-java-17-and-higher]
+            test.jvmArgs("--add-opens=java.base/jdk.internal.access=ALL-UNNAMED")
+        }
     }
 
 }
