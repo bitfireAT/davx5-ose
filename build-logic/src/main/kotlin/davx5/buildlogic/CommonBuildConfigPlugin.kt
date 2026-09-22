@@ -44,7 +44,7 @@ class CommonBuildConfigPlugin : Plugin<Project> {
                     configureCommonAndroid()
 
                     // only for Android applications
-                    defaultConfig.targetSdk = 36    // Android 16
+                    defaultConfig.targetSdk = 37    // Android 17
 
                     // take app version from dedicated object
                     defaultConfig.versionCode = AppVersion.CODE
