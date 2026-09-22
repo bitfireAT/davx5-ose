@@ -3,6 +3,9 @@
  */
 package at.bitfire.davdroid.servicedetection
 
+import android.Manifest
+import android.content.Context
+import android.os.Build
 import at.bitfire.dav4jvm.Property
 import at.bitfire.dav4jvm.ktor.DavResource
 import at.bitfire.dav4jvm.ktor.Response
@@ -23,10 +26,14 @@ import at.bitfire.dav4jvm.property.webdav.ResourceType
 import at.bitfire.dav4jvm.property.webdav.WebDAV
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.network.DnsRecordResolver
+import at.bitfire.davdroid.network.LocalNetworkPermissionManager
+import at.bitfire.davdroid.network.LocalNetworkPermissionRequiredException
 import at.bitfire.davdroid.settings.Credentials
+import at.bitfire.davdroid.util.PermissionUtils
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import dagger.hilt.android.qualifiers.ApplicationContext
 import io.ktor.client.HttpClient
 import io.ktor.http.URLBuilder
 import io.ktor.http.URLProtocol
@@ -59,7 +66,9 @@ class DavResourceFinder @AssistedInject constructor(
     @Assisted private val credentials: Credentials? = null,
     @Assisted @WillNotClose private val httpClient: HttpClient,
     @Assisted private val log: Logger,
-    private val dnsRecordResolver: DnsRecordResolver
+    @ApplicationContext private val context: Context,
+    private val dnsRecordResolver: DnsRecordResolver,
+    private val localNetworkPermissionManager: LocalNetworkPermissionManager
 ) {
 
     @AssistedFactory
@@ -75,6 +84,7 @@ class DavResourceFinder @AssistedInject constructor(
     }
 
     private var encountered401 = false
+    private var missingLocalNetworkPermission = false
 
 
     /**
@@ -113,7 +123,8 @@ class DavResourceFinder @AssistedInject constructor(
         return Configuration(
             cardDAV = cardDavConfig,
             calDAV = calDavConfig,
-            encountered401 = encountered401
+            encountered401 = encountered401,
+            missingLocalNetworkPermission = missingLocalNetworkPermission
         )
     }
 
@@ -123,6 +134,17 @@ class DavResourceFinder @AssistedInject constructor(
 
         // discovered information goes into this config
         val config = Configuration.ServiceInfo()
+
+        // If on Android 17+, make sure we have permission to access the service first
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.CINNAMON_BUN) {
+            if (localNetworkPermissionManager.isAndroid17LocalNetwork(baseURI.host)) {
+                val granted = PermissionUtils.havePermissions(context, arrayOf(Manifest.permission.ACCESS_LOCAL_NETWORK))
+                if (!granted) {
+                    log.warning("Permission to access $service service at $baseURI was denied")
+                    throw LocalNetworkPermissionRequiredException(baseURI.host)
+                }
+            }
+        }
 
         // Start discovering
         log.info("Finding initial ${service.wellKnownName} service configuration")
@@ -449,11 +471,14 @@ class DavResourceFinder @AssistedInject constructor(
      * Processes a thrown exception like this:
      *
      *   - If the Exception is an [UnauthorizedException] (HTTP 401), [encountered401] is set to *true*.
+     *   - If the Exception is a [LocalNetworkPermissionRequiredException], [missingLocalNetworkPermission] is set to *true*.
      *   - Re-throws the exception if it signals that the current thread was interrupted to stop the current operation.
      */
     private fun processException(e: Exception) {
         if (e is UnauthorizedException)
             encountered401 = true
+        else if (e is LocalNetworkPermissionRequiredException)
+            missingLocalNetworkPermission = true
         else if ((e is InterruptedIOException && e !is SocketTimeoutException) || e is InterruptedException)
             throw e
     }
@@ -465,7 +490,8 @@ class DavResourceFinder @AssistedInject constructor(
         val cardDAV: ServiceInfo?,
         val calDAV: ServiceInfo?,
 
-        val encountered401: Boolean
+        val encountered401: Boolean,
+        val missingLocalNetworkPermission: Boolean
     ) {
 
         data class ServiceInfo(

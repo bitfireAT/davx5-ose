@@ -90,6 +90,7 @@
     <string name="permissions_local_network_title">Local network permission</string>
     <string name="permissions_local_network_status_off">Local network access denied</string>
     <string name="permissions_local_network_status_on">Local network access granted</string>
+    <string name="permissions_local_network_grant">Grant access to local network</string>
     <string name="permissions_local_network_disclaimer">Android 17+ requires explicit permission to access local network resources. %1$s requires this permission to connect to your server: %2$s</string>
     <string name="permissions_local_network_intro">To be able to access the server, this condition must be met:</string>
     <string name="permissions_jtx_title">jtx Board permissions</string>
@@ -350,6 +351,7 @@
     <string name="login_no_service_info">There\'s no CalDAV or CardDAV service at the base URL you entered, and automatic detection didn\'t find one either. Usually this means that the base URL is wrong.</string>
     <string name="login_see_tested_services"><![CDATA[The correct base URL is usually documented by your service provider. You can also look it up in <a href="%s">our list of tested services</a>.]]></string>
     <string name="login_check_credentials"><![CDATA[The server rejected the login. Please double-check your username and password. Some providers require an <a href="%s">app password</a> instead of your regular password.]]></string>
+    <string name="login_local_network_permission">Additional permissions are required to access devices in the local network.</string>
     <string name="login_logs_available">Further technical information is available in the logs.</string>
     <string name="login_view_logs">View logs</string>
     <string name="login_invalid_use_case">Invalid use-case</string>

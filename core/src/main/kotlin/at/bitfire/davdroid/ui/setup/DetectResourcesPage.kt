@@ -4,7 +4,9 @@
 
 package at.bitfire.davdroid.ui.setup
 
+import android.Manifest
 import android.content.Intent
+import android.os.Build
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,10 +19,12 @@ import androidx.compose.material.icons.filled.BugReport
 import androidx.compose.material.icons.filled.CloudOff
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Key
+import androidx.compose.material.icons.filled.Security
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -44,6 +48,9 @@ import at.bitfire.davdroid.ui.composable.ActionCard
 import at.bitfire.davdroid.ui.composable.IconCard
 import at.bitfire.davdroid.ui.composable.ProgressBar
 import at.bitfire.davdroid.ui.composable.appPasswordHelpUrl
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.PermissionStatus
+import com.google.accompanist.permissions.rememberPermissionState
 
 @Composable
 fun DetectResourcesPage(
@@ -54,6 +61,7 @@ fun DetectResourcesPage(
         loading = uiState.loading,
         foundNothing = uiState.foundNothing,
         encountered401 = uiState.encountered401,
+        missingLocalNetworkPermission = uiState.missingLocalNetworkPermission,
         loginValidationFailed = uiState.loginValidationFailed,
         debugLogFileName = uiState.debugLogFileName
     )
@@ -64,6 +72,7 @@ fun DetectResourcesPageContent(
     loading: Boolean,
     foundNothing: Boolean,
     encountered401: Boolean,
+    missingLocalNetworkPermission: Boolean,
     loginValidationFailed: Boolean,
     debugLogFileName: DebugDirectory.FileName?
 ) {
@@ -78,7 +87,8 @@ fun DetectResourcesPageContent(
         else if (foundNothing)
             DetectResourcesPageContent_NothingFound(
                 encountered401 = encountered401,
-                debugLogFileName = debugLogFileName
+                debugLogFileName = debugLogFileName,
+                missingLocalNetworkPermission = missingLocalNetworkPermission
             )
     }
 }
@@ -107,10 +117,12 @@ fun DetectResourcesPageContent_InProgress() {
     }
 }
 
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun DetectResourcesPageContent_NothingFound(
     encountered401: Boolean,
-    debugLogFileName: DebugDirectory.FileName?
+    debugLogFileName: DebugDirectory.FileName?,
+    missingLocalNetworkPermission: Boolean
 ) {
     val context = LocalContext.current
 
@@ -160,6 +172,28 @@ fun DetectResourcesPageContent_NothingFound(
                     style = MaterialTheme.typography.bodyLarge
                 )
             }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.CINNAMON_BUN) {
+            val permissionRequestLauncher = rememberPermissionState(Manifest.permission.ACCESS_LOCAL_NETWORK)
+            if (missingLocalNetworkPermission && permissionRequestLauncher.status != PermissionStatus.Granted) {
+                IconCard(
+                    icon = Icons.Default.Security,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                ) {
+                    Column(Modifier.fillMaxWidth()) {
+                        Text(
+                            stringResource(R.string.login_local_network_permission),
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+
+                        OutlinedButton(
+                            modifier = Modifier.fillMaxWidth(),
+                            onClick = { permissionRequestLauncher.launchPermissionRequest() }
+                        ) { Text(stringResource(R.string.permissions_local_network_grant)) }
+                    }
+                }
+            }
+        }
 
         val urlServices = ExternalUris.Homepage.baseUrl.buildUpon()
             .appendPath(ExternalUris.Homepage.PATH_TESTED_SERVICES)
@@ -254,6 +288,7 @@ fun DetectResourcesPageContent_LoginValidationFailed() {
 fun DetectResourcesPageContent_NothingFound() {
     DetectResourcesPageContent_NothingFound(
         encountered401 = false,
+        missingLocalNetworkPermission = false,
         debugLogFileName = DebugDirectory.FileName("davdroid-detection.log")
     )
 }
@@ -263,6 +298,7 @@ fun DetectResourcesPageContent_NothingFound() {
 fun DetectResourcesPage_NothingFound_401() {
     DetectResourcesPageContent_NothingFound(
         encountered401 = true,
+        missingLocalNetworkPermission = false,
         debugLogFileName = null
     )
 }
@@ -272,7 +308,18 @@ fun DetectResourcesPage_NothingFound_401() {
 fun DetectResourcesPage_NothingFound_401_WithLogs() {
     DetectResourcesPageContent_NothingFound(
         encountered401 = true,
+        missingLocalNetworkPermission = false,
         debugLogFileName = DebugDirectory.FileName("davdroid-detection.log")
+    )
+}
+
+@Composable
+@Preview
+fun DetectResourcesPage_NothingFound_MissingLocalNetworkPermission() {
+    DetectResourcesPageContent_NothingFound(
+        encountered401 = true,
+        missingLocalNetworkPermission = true,
+        debugLogFileName = null
     )
 }
 

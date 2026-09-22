@@ -4,11 +4,14 @@
 
 package at.bitfire.davdroid.sync
 
+import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.net.wifi.WifiManager
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.core.content.getSystemService
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.network.LocalNetworkPermissionManager
@@ -174,6 +177,7 @@ class SyncConditions @AssistedInject constructor(
      * @throws java.net.UnknownHostException If the domain doesn't exist or DNS is unavailable
      * @throws java.net.SocketException If the device's routing table cannot be read
      */
+    @RequiresApi(Build.VERSION_CODES.CINNAMON_BUN)
     suspend fun localNetworkPermissionGranted() {
         // Check all the service types
         listOf(Service.TYPE_CALDAV, Service.TYPE_CARDDAV).forEach { serviceType ->
@@ -183,6 +187,13 @@ class SyncConditions @AssistedInject constructor(
             val principal = service.principal ?: return@forEach
             // Check if the principal's host is considered local by Android 17's definition
             if (localNetworkPermissionManager.isAndroid17LocalNetwork(principal.host)) {
+                PermissionUtils.havePermissions(context, arrayOf(Manifest.permission.ACCESS_LOCAL_NETWORK)).let { granted ->
+                    if (granted) {
+                        logger.fine("Local network permission granted for service $serviceType")
+                        return@forEach
+                    }
+                }
+
                 logger.info("Local network permission required for service $serviceType, showing notification and aborting sync")
 
                 val intent = LocalNetworkAccessPermissionActivity.createIntent(context, principal.host)

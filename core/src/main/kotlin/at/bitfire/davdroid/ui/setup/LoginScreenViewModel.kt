@@ -192,6 +192,7 @@ class LoginScreenViewModel @AssistedInject constructor(
         val loading: Boolean = false,
         val foundNothing: Boolean = false,
         val encountered401: Boolean = false,
+        val missingLocalNetworkPermission: Boolean = false,
         val loginValidationFailed: Boolean = false,
         val debugLogFileName: DebugDirectory.FileName? = null
     )
@@ -222,6 +223,7 @@ class LoginScreenViewModel @AssistedInject constructor(
                         loading = false,
                         foundNothing = true,
                         encountered401 = result.encountered401,
+                        missingLocalNetworkPermission = result.missingLocalNetworkPermission,
                         debugLogFileName = logFile
                     )
                 }
