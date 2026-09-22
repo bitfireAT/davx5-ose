@@ -10,8 +10,13 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.net.wifi.WifiManager
 import androidx.core.content.getSystemService
+import at.bitfire.davdroid.db.Service
+import at.bitfire.davdroid.network.LocalNetworkPermissionManager
+import at.bitfire.davdroid.network.LocalNetworkPermissionRequiredException
+import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.ui.NotificationRegistry
+import at.bitfire.davdroid.ui.account.LocalNetworkAccessPermissionActivity
 import at.bitfire.davdroid.ui.account.WifiPermissionsActivity
 import at.bitfire.davdroid.util.PermissionUtils
 import dagger.assisted.Assisted
@@ -28,7 +33,9 @@ class SyncConditions @AssistedInject constructor(
     @Assisted private val accountSettings: AccountSettings,
     @ApplicationContext private val context: Context,
     private val logger: Logger,
-    private val notificationRegistry: NotificationRegistry
+    private val notificationRegistry: NotificationRegistry,
+    private val serviceRepository: DavServiceRepository,
+    private val localNetworkPermissionManager: LocalNetworkPermissionManager
 ) {
 
     @AssistedFactory
@@ -159,6 +166,32 @@ class SyncConditions @AssistedInject constructor(
 
         // Check whether we are connected to the correct WiFi (in case SSID was provided)
         return correctWifiSsid()
+    }
+
+    /**
+     * Checks whether the user has granted the local network permission for all services of this account that require it.
+     * @throws LocalNetworkPermissionRequiredException If the permission is required but not granted
+     * @throws java.net.UnknownHostException If the domain doesn't exist or DNS is unavailable
+     * @throws java.net.SocketException If the device's routing table cannot be read
+     */
+    suspend fun localNetworkPermissionGranted() {
+        // Check all the service types
+        listOf(Service.TYPE_CALDAV, Service.TYPE_CARDDAV).forEach { serviceType ->
+            // Check if the account has a service of this type, otherwise skip
+            val service = serviceRepository.getByAccountIdAndType(accountSettings.accountId, serviceType) ?: return@forEach
+            // Check if the service has a principal, otherwise skip
+            val principal = service.principal ?: return@forEach
+            // Check if the principal's host is considered local by Android 17's definition
+            if (localNetworkPermissionManager.isAndroid17LocalNetwork(principal.host)) {
+                logger.info("Local network permission required for service $serviceType, showing notification and aborting sync")
+
+                val intent = LocalNetworkAccessPermissionActivity.createIntent(context, principal.host)
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                notificationRegistry.notifyPermissions(intent)
+
+                throw LocalNetworkPermissionRequiredException(principal.host)
+            }
+        }
     }
 
 }

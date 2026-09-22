@@ -90,6 +90,8 @@
     <string name="permissions_local_network_title">Local network permission</string>
     <string name="permissions_local_network_status_off">Local network access denied</string>
     <string name="permissions_local_network_status_on">Local network access granted</string>
+    <string name="permissions_local_network_disclaimer">Android 17+ requires explicit permission to access local network resources. %1$s requires this permission to connect to your server: %2$s</string>
+    <string name="permissions_local_network_intro">To be able to access the server, this condition must be met:</string>
     <string name="permissions_jtx_title">jtx Board permissions</string>
     <string name="permissions_opentasks_title">OpenTasks permissions</string>
     <string name="permissions_tasksorg_title">Tasks permissions</string>

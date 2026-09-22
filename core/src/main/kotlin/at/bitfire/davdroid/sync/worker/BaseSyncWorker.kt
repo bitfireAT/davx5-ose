@@ -18,6 +18,7 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.accounts.DbAccountId
 import at.bitfire.davdroid.accounts.LegacyAccount
+import at.bitfire.davdroid.network.LocalNetworkPermissionRequiredException
 import at.bitfire.davdroid.push.PushNotificationManager
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.settings.AccountSettingsFactory
@@ -173,6 +174,16 @@ abstract class BaseSyncWorker(
                 if (!syncConditions.wifiConditionsMet()) {
                     logger.info("WiFi conditions not met. Won't run periodic sync.")
                     return Result.success()
+                }
+
+                // check local network permission on Android 17+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.CINNAMON_BUN) {
+                    try {
+                        syncConditions.localNetworkPermissionGranted()
+                    } catch (e: LocalNetworkPermissionRequiredException) {
+                        logger.info("Local network permission not granted for ${e.hostname}. Aborting sync.")
+                        return Result.success()
+                    }
                 }
             }
 

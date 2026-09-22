@@ -62,6 +62,8 @@ object ExternalUris {
         const val PATH_WEBDAV_PUSH = "webdav_push.html"
         const val PATH_WEBDAV_MOUNTS = "webdav_mounts.html"
 
+        const val PATH_PERMISSIONS = "permissions.html"
+
     }
 
 

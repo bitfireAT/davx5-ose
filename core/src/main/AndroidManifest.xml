@@ -140,6 +140,9 @@
         <activity
             android:name=".ui.account.WifiPermissionsActivity"
             android:parentActivityName=".ui.account.AccountSettingsActivity" />
+        <activity
+            android:name=".ui.account.LocalNetworkAccessPermissionActivity"
+            android:parentActivityName=".ui.account.AccountSettingsActivity" />
 
         <activity
             android:name=".ui.webdav.WebdavMountsActivity"
