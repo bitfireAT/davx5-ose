@@ -11,6 +11,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.TaskStackBuilder
 import androidx.hilt.work.HiltWorker
+import androidx.work.CoroutineWorker
 import androidx.work.Data
 import androidx.work.ExistingWorkPolicy
 import androidx.work.ForegroundInfo
@@ -21,8 +22,8 @@ import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import at.bitfire.dav4jvm.ktor.exception.UnauthorizedException
-import at.bitfire.davdroid.IoCoroutineWorker
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.network.HttpClientBuilder
 import at.bitfire.davdroid.push.PushRegistrationManager
 import at.bitfire.davdroid.repository.AccountRepository
@@ -34,7 +35,9 @@ import at.bitfire.davdroid.ui.NotificationRegistry
 import at.bitfire.davdroid.ui.account.AccountSettingsActivity
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
 import java.util.logging.Level
 import java.util.logging.Logger
 
@@ -65,13 +68,14 @@ class RefreshCollectionsWorker @AssistedInject constructor(
     private val collectionsWithoutHomeSetRefresherFactory: CollectionsWithoutHomeSetRefresher.Factory,
     private val homeSetRefresherFactory: HomeSetRefresher.Factory,
     private val httpClientBuilder: HttpClientBuilder,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val logger: Logger,
     private val notificationRegistry: NotificationRegistry,
     private val principalsRefresherFactory: PrincipalsRefresher.Factory,
     private val pushRegistrationManager: PushRegistrationManager,
     private val serviceRefresherFactory: ServiceRefresher.Factory,
     private val serviceRepository: DavServiceRepository
-) : IoCoroutineWorker(appContext, workerParams) {
+) : CoroutineWorker(appContext, workerParams) {
 
     companion object {
 
@@ -135,11 +139,11 @@ class RefreshCollectionsWorker @AssistedInject constructor(
 
     private val serviceId: Long = inputData.getLong(ARG_SERVICE_ID, -1)
 
-    override suspend fun doIoWork(): Result {
+    override suspend fun doWork(): Result = withContext(ioDispatcher) {
         val service = serviceRepository.get(serviceId)
         if (service == null) {
             logger.warning("Missing service with service ID: $serviceId")
-            return Result.failure()
+            return@withContext Result.failure()
         }
 
         val accountId = accountRepository.getAccountIdFromName(service.accountName)
@@ -178,7 +182,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
 
         } catch(e: InvalidAccountException) {
             logger.log(Level.SEVERE, "Invalid account", e)
-            return Result.failure()
+            return@withContext Result.failure()
         } catch (e: UnauthorizedException) {
             logger.log(Level.SEVERE, "Not authorized (anymore)", e)
             // notify that we need to re-authenticate in the account settings
@@ -189,7 +193,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
                 contentText = applicationContext.getString(R.string.sync_error_authentication_failed),
                 contentIntent = settingsIntent
             )
-            return Result.failure()
+            return@withContext Result.failure()
         } catch(e: Exception) {
             logger.log(Level.SEVERE, "Couldn't refresh collection list", e)
 
@@ -204,14 +208,14 @@ class RefreshCollectionsWorker @AssistedInject constructor(
                 contentText = applicationContext.getString(R.string.refresh_collections_worker_refresh_couldnt_refresh),
                 contentIntent = debugIntent
             )
-            return Result.failure()
+            return@withContext Result.failure()
         }
 
         // update push registrations
         pushRegistrationManager.update(serviceId)
 
         // Success
-        return Result.success()
+        return@withContext Result.success()
     }
 
     /**
