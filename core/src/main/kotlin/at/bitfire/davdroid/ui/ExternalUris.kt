@@ -7,7 +7,6 @@ package at.bitfire.davdroid.ui
 import android.content.Context
 import android.net.Uri
 import android.os.Build
-import androidx.core.content.pm.PackageInfoCompat
 import androidx.core.net.toUri
 
 /**
@@ -100,8 +99,9 @@ object ExternalUris {
     ): Uri.Builder {
         if (context != null) {
             val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
-            appendQueryParameter("pk_campaign", "${context.packageName}/${PackageInfoCompat.getLongVersionCode(packageInfo)}")
-            appendQueryParameter("android-version", Build.VERSION.RELEASE)
+            appendQueryParameter("pk_campaign", context.packageName)
+            appendQueryParameter("app-version", packageInfo.versionName)
+            appendQueryParameter("android-version", Build.VERSION.SDK_INT.toString())
         }
 
         if (screen != null)
