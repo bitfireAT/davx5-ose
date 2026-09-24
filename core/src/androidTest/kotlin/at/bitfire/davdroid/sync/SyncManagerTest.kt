@@ -393,8 +393,8 @@ class SyncManagerTest {
 
     @Test
     fun testPerformSync_UploadModifiedMember_409Conflict_DataRejected() = runTest {
-        // A 409 which reports a CalDAV/CardDAV precondition means that our data was rejected, so there's
-        // no server version which could replace the local one: assert sync error and that the local change is kept.
+        // A 409 which reports a CalDAV/CardDAV precondition means that our data was rejected. It would be
+        // rejected on every sync, so the local change is discarded.
         val collection = LocalTestCollection().apply {
             lastSyncState = SyncState(SyncState.Type.CTAG, "old-ctag")
             entries += LocalTestResource().apply {
@@ -413,13 +413,47 @@ class SyncManagerTest {
             headersOf(HttpHeaders.ContentType, "text/xml")
         )
 
+        // modifications sent, so DAVx5 will query CTag again
+        enqueueQueryCapabilities("ctag1")
+
         val syncManager = syncManager(collection)
         syncManager.performSync()
 
-        assertTrue(syncManager.syncResult.hasError)
-        assertEquals(1, collection.entries.size)
-        assertTrue(collection.entries.first().dirty)
-        assertEquals(SyncState(SyncState.Type.CTAG, "old-ctag"), collection.lastSyncState)
+        assertFalse(syncManager.syncResult.hasError)
+        assertTrue(collection.entries.isEmpty())
+        assertEquals(1, numberOfPutRequests())
+    }
+
+    @Test
+    fun testPerformSync_UploadModifiedMember_409Conflict_QuotaNotExceeded() = runTest {
+        // Quota errors are handled like any other data rejection: the local change is discarded.
+        val collection = LocalTestCollection().apply {
+            lastSyncState = SyncState(SyncState.Type.CTAG, "old-ctag")
+            entries += LocalTestResource().apply {
+                fileName = "existing-file.txt"
+                eTag = "some-etag"
+                dirty = true
+            }
+        }
+        enqueueQueryCapabilities("ctag1")
+
+        // PUT -> 409 Conflict with DAV:quota-not-exceeded precondition
+        mockEngineQueue.enqueue(
+            HttpStatusCode.Conflict,
+            "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n" +
+                    "<error xmlns=\"DAV:\"><quota-not-exceeded/></error>",
+            headersOf(HttpHeaders.ContentType, "text/xml")
+        )
+
+        // modifications sent, so DAVx5 will query CTag again
+        enqueueQueryCapabilities("ctag1")
+
+        val syncManager = syncManager(collection)
+        syncManager.performSync()
+
+        assertFalse(syncManager.syncResult.hasError)
+        assertTrue(collection.entries.isEmpty())
+        assertEquals(1, numberOfPutRequests())
     }
 
     @Test
@@ -599,6 +633,37 @@ class SyncManagerTest {
         assertTrue(collection.entries.first().dirty)
         assertEquals(1, numberOfPutRequests())
         assertEquals(SyncState(SyncState.Type.CTAG, "old-ctag"), collection.lastSyncState)
+    }
+
+    @Test
+    fun testPerformSync_UploadNewMember_409Conflict_DataRejected() = runTest {
+        // A 409 with DAV:error when creating a new resource means that our data was rejected. It would be
+        // rejected on every sync, so the local resource is discarded (and removed, because it's not on the server).
+        val collection = LocalTestCollection().apply {
+            lastSyncState = SyncState(SyncState.Type.CTAG, "old-ctag")
+            entries += LocalTestResource().apply {
+                dirty = true
+            }
+        }
+        enqueueQueryCapabilities("ctag1")
+
+        // PUT -> 409 Conflict with CALDAV:no-uid-conflict precondition
+        mockEngineQueue.enqueue(
+            HttpStatusCode.Conflict,
+            "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n" +
+                    "<error xmlns=\"DAV:\"><no-uid-conflict xmlns=\"urn:ietf:params:xml:ns:caldav\"/></error>",
+            headersOf(HttpHeaders.ContentType, "text/xml")
+        )
+
+        // modifications sent, so DAVx5 will query CTag again
+        enqueueQueryCapabilities("ctag1")
+
+        val syncManager = syncManager(collection)
+        syncManager.performSync()
+
+        assertFalse(syncManager.syncResult.hasError)
+        assertTrue(collection.entries.isEmpty())
+        assertEquals(1, numberOfPutRequests())
     }
 
     @Test

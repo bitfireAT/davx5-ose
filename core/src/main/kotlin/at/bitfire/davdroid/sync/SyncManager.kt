@@ -430,16 +430,13 @@ abstract class SyncManager<LocalType : LocalResource>(
                     //   - the server rejected our data - CalDAV/CardDAV preconditions may be reported as
                     //     403 or 409 (RFC 4791 5.3.2.1, RFC 6352 6.3.2.1).
                     //
-                    // Only in the first case there's a server version which could replace the local one,
-                    // and it's also the only case without a DAV:error element, because there's no error
-                    // condition for a failed If-Match. So we only discard the local change when we were
-                    // updating an existing member and the server didn't tell us any reason. Otherwise we
-                    // report an error (which notifies the user) and keep the dirty flag for the next sync.
+                    // A rejected resource would be rejected on every sync, so the server wins then, too.
+                    // Only a create without DAV:error is kept, because the collection is probably gone.
                     when {
-                        ex.errors.isNotEmpty() ->
-                            // server named a reason; none of the error conditions means that it has a
-                            // version for us to download
-                            throw e
+                        ex.errors.isNotEmpty() -> {
+                            logger.log(Level.WARNING, "Upload rejected with 409 (${ex.errors}), discarding local change", ex)
+                            discardLocalChange(local)
+                        }
 
                         existingFileName == null ->
                             // we wanted to create a new resource, so the collection is probably not there (anymore)
