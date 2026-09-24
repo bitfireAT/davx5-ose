@@ -87,6 +87,9 @@
     <string name="permissions_notification_title">Notification permission</string>
     <string name="permissions_notification_status_off">Notifications disabled (not recommended)</string>
     <string name="permissions_notification_status_on">Notifications enabled</string>
+    <string name="permissions_local_network_title">Local network permission</string>
+    <string name="permissions_local_network_status_off">Local network access denied</string>
+    <string name="permissions_local_network_status_on">Local network access granted</string>
     <string name="permissions_jtx_title">jtx Board permissions</string>
     <string name="permissions_opentasks_title">OpenTasks permissions</string>
     <string name="permissions_tasksorg_title">Tasks permissions</string>
@@ -157,6 +160,7 @@
     <!-- Sync warnings -->
     <string name="sync_warning_no_notification_permission">Notifications disabled. You won\'t be notified about sync errors.</string>
     <string name="sync_warning_no_internet">Automatic synchronization not active (no verified Internet connection).</string>
+    <string name="sync_warning_no_local_network_permission">Local network access disabled. You won\'t be able to sync with devices on your local network.</string>
     <string name="sync_warning_manage_connections">Manage connections</string>
     <string name="sync_warning_datasaver_enabled">Data saver enabled. Background synchronization is restricted.</string>
     <string name="sync_warning_manage_datasaver">Manage data saver</string>
