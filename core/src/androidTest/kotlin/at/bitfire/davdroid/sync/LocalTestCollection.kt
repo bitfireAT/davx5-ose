@@ -26,8 +26,8 @@ class LocalTestCollection(
 
     override suspend fun markNotDirty(flags: Int): Int {
         var updated = 0
-        for (dirty in entries.filter { it.dirty }) {
-            dirty.flags = flags
+        for (notDirty in entries.filter { !it.dirty }) {
+            notDirty.flags = flags
             updated++
         }
         return updated

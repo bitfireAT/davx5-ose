@@ -61,7 +61,8 @@ class TestSyncManager @AssistedInject constructor(
         )
     }
 
-    override fun syncAlgorithm(capabilities: WebDavCollection.Capabilities) = SyncAlgorithm.PROPFIND_REPORT
+    var chosenSyncAlgorithm = SyncAlgorithm.PROPFIND_REPORT
+    override fun syncAlgorithm(capabilities: WebDavCollection.Capabilities) = chosenSyncAlgorithm
 
     var processedDownloads = emptyList<WebDavCollection.MultiGetItem>()
     override suspend fun processDownload(result: WebDavCollection.MultiGetItem) {
