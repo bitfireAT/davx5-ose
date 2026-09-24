@@ -378,17 +378,19 @@ abstract class SyncManager<LocalType : LocalResource>(
             when (val ex = e.unwrapContext().cause) {
                 is ForbiddenException -> {
                     // HTTP 403 Forbidden
-                    // If and only if the upload failed because of missing permissions, the collection is
-                    // effectively read-only for us, so we do the same as ReadOnlyPolicy.resetDirty().
-                    if (ex.errors.contains(Error(WebDAV.NeedPrivileges))) {
-                        logger.log(
-                            Level.INFO,
-                            "Couldn't upload because of missing permissions, discarding local change",
-                            ex
-                        )
-                        discardLocalChange(local)
-                    } else
-                        throw e
+                    // The server would reject the upload on every sync, so the server wins. With missing
+                    // permissions, this is the same as ReadOnlyPolicy.resetDirty().
+                    when {
+                        ex.errors.contains(Error(WebDAV.NeedPrivileges)) ->
+                            logger.log(Level.INFO, "Couldn't upload because of missing permissions, discarding local change", ex)
+
+                        ex.errors.isNotEmpty() ->
+                            logger.log(Level.WARNING, "Upload rejected with 403 (${ex.errors}), discarding local change", ex)
+
+                        else ->
+                            logger.log(Level.WARNING, "Upload rejected with 403 without further information, discarding local change", ex)
+                    }
+                    discardLocalChange(local)
                 }
 
                 is NotFoundException, is GoneException -> {

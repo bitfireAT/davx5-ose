@@ -543,8 +543,41 @@ class SyncManagerTest {
     }
 
     @Test
+    fun testPerformSync_UploadModifiedMember_403Forbidden_DataRejected() = runTest {
+        // A 403 which reports a CalDAV/CardDAV precondition means that our data was rejected. It would be
+        // rejected on every sync, so the local change is discarded.
+        val collection = LocalTestCollection().apply {
+            lastSyncState = SyncState(SyncState.Type.CTAG, "old-ctag")
+            entries += LocalTestResource().apply {
+                fileName = "existing-file.txt"
+                eTag = "some-etag"
+                dirty = true
+            }
+        }
+        enqueueQueryCapabilities("ctag1")
+
+        // PUT -> 403 Forbidden with CALDAV:valid-calendar-data precondition
+        mockEngineQueue.enqueue(
+            HttpStatusCode.Forbidden,
+            "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n" +
+                    "<error xmlns=\"DAV:\"><valid-calendar-data xmlns=\"urn:ietf:params:xml:ns:caldav\"/></error>",
+            headersOf(HttpHeaders.ContentType, "text/xml")
+        )
+
+        // modifications sent, so DAVx5 will query CTag again
+        enqueueQueryCapabilities("ctag1")
+
+        val syncManager = syncManager(collection)
+        syncManager.performSync()
+
+        assertFalse(syncManager.syncResult.hasError)
+        assertTrue(collection.entries.isEmpty())
+        assertEquals(1, numberOfPutRequests())
+    }
+
+    @Test
     fun testPerformSync_UploadModifiedMember_403Forbidden_Other() = runTest {
-        // A 403 which is not caused by missing permissions is a sync error; the local change is kept.
+        // A 403 without further information would be repeated on every sync, so the local change is discarded.
         val collection = LocalTestCollection().apply {
             lastSyncState = SyncState(SyncState.Type.CTAG, "old-ctag")
             entries += LocalTestResource().apply {
@@ -558,12 +591,15 @@ class SyncManagerTest {
         // PUT -> 403 Forbidden without further information
         mockEngineQueue.enqueue(HttpStatusCode.Forbidden)
 
+        // modifications sent, so DAVx5 will query CTag again
+        enqueueQueryCapabilities("ctag1")
+
         val syncManager = syncManager(collection)
         syncManager.performSync()
 
-        assertTrue(syncManager.syncResult.hasError)
-        assertEquals(1, collection.entries.size)
-        assertTrue(collection.entries.first().dirty)
+        assertFalse(syncManager.syncResult.hasError)
+        assertTrue(collection.entries.isEmpty())
+        assertEquals(1, numberOfPutRequests())
     }
 
     @Test
