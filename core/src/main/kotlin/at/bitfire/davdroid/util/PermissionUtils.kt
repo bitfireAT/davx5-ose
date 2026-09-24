@@ -44,6 +44,10 @@ object PermissionUtils {
         Manifest.permission.READ_CALENDAR,
         Manifest.permission.WRITE_CALENDAR
     )
+    val LOCAL_NETWORK_ACCESS_PERMISSIONS = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.CINNAMON_BUN)
+        arrayOf(Manifest.permission.ACCESS_LOCAL_NETWORK)
+    else
+        arrayOf()
 
     val WIFI_SSID_PERMISSIONS =
         when {

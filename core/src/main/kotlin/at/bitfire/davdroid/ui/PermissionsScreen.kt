@@ -161,6 +161,8 @@ fun PermissionsScreen(
             allPermissions.addAll(PermissionUtils.CALENDAR_PERMISSIONS)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
                 allPermissions += Manifest.permission.POST_NOTIFICATIONS
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.CINNAMON_BUN)
+                allPermissions += Manifest.permission.ACCESS_LOCAL_NETWORK
             if (openTasksAvailable == true)
                 allPermissions.addAll(TaskProvider.ProviderName.OpenTasks.permissions)
             if (tasksOrgAvailable == true)
@@ -199,6 +201,15 @@ fun PermissionsScreen(
                 permissions = PermissionUtils.CONTACT_PERMISSIONS.toList(),
                 modifier = Modifier.padding(vertical = 4.dp)
             )
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.CINNAMON_BUN)
+                PermissionSwitchRow(
+                    text = stringResource(R.string.permissions_local_network_title),
+                    summaryWhenGranted = stringResource(R.string.permissions_local_network_status_on),
+                    summaryWhenNotGranted = stringResource(R.string.permissions_local_network_status_off),
+                    permissions = listOf(Manifest.permission.ACCESS_LOCAL_NETWORK),
+                    modifier = Modifier.padding(vertical = 4.dp)
+                )
 
             if (jtxAvailable == true)
                 PermissionSwitchRow(
