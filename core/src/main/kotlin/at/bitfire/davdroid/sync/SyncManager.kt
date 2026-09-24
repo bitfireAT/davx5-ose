@@ -476,6 +476,7 @@ abstract class SyncManager<LocalType : LocalResource>(
         resource collided with a server resource which is older than the sync-token). So we force a full
         re-listing to make sure that the local resource is really overwritten by (or deleted along with)
         the server's version, like ReadOnlyPolicy.resetDirty() does. */
+        // heavy for a single resource; can likely be improved when the sync algorithm is rewritten
         localCollection.lastSyncState = null
     }
 
