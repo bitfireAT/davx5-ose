@@ -30,8 +30,14 @@ import kotlin.jvm.optionals.getOrNull
 /**
  * Writes an ical4j [net.fortuna.ical4j.model.Calendar] to a stream that contains an iCalendar
  * (VCALENDAR with respective components and optional VTIMEZONEs).
+ *
+ * @param withTimeZones whether VTIMEZONE components shall be generated for the used TZIDs; can be
+ *   set to *false* when the receiver doesn't need them (for instance a CalDAV server that supports
+ *   Time Zones by Reference, RFC 7809)
  */
-class ICalendarGenerator {
+class ICalendarGenerator(
+    private val withTimeZones: Boolean = true
+) {
 
     private val logger
         get() = Logger.getLogger(javaClass.name)
@@ -78,30 +84,36 @@ class ICalendarGenerator {
         so we have to include the VTIMEZONEs shipped with ical4j – even if those are not the same
         as the system time zones. This is a known problem, but there's currently no known solution.
         Most clients ignore the VTIMEZONE anyway if they know the TZID [RFC 7809 3.1.3 "Observation
-        and experiments"], and Android/Java/IANA timezones are usually known to all clients. */
-        val tzReg = TimeZoneRegistryFactory.getInstance().createRegistry()
-        for (tzId in usedTimezoneIds) {
-            var vTimeZone = tzReg.getTimeZone(tzId)?.vTimeZone ?: continue
+        and experiments"], and Android/Java/IANA timezones are usually known to all clients.
 
-            /* Special case: sometimes, the timezone may have been loaded by an alias.
-            For instance, old Androids may use the "Europe/Kiev" timezone (which is then in tzId),
-            but ical4j returns the new "Europe/Kyiv" timezone. In that case, we want the original
-            name used by Android because if we would use the new TZ ID, it wouldn't be understood
-            by Android (and thus downgraded to the system default timezone) if we get it back
-            again from the server. */
-            val ical4jTzId = vTimeZone.timeZoneId.value
-            if (ical4jTzId != tzId) {
-                logger.warning("Android timezone $tzId maps to ical4j $ical4jTzId. Using Android TZID.")
+        If withTimeZones is false we skip this, because the server supports RFC 7809 "Time Zones by Reference" and
+        sending our copy of the time zone rules is unnecessary. We only generate VTIMEZONEs that ical4j knows and
+        are standard IANA time zones, which are the ones RFC 7809 4.4 says we can leave out. */
+        if (withTimeZones) {
+            val tzReg = TimeZoneRegistryFactory.getInstance().createRegistry()
+            for (tzId in usedTimezoneIds) {
+                var vTimeZone = tzReg.getTimeZone(tzId)?.vTimeZone ?: continue
 
-                /* Better not modify the VTIMEZONE because it's cached by TimeZoneRegistry, and we don't
-                want to modify the cache. Create a copy instead. */
-                vTimeZone = copyVTimeZone(vTimeZone)
-                vTimeZone.replace<PropertyContainer>(net.fortuna.ical4j.model.property.TzId(tzId))
+                /* Special case: sometimes, the timezone may have been loaded by an alias.
+                For instance, old Androids may use the "Europe/Kiev" timezone (which is then in tzId),
+                but ical4j returns the new "Europe/Kyiv" timezone. In that case, we want the original
+                name used by Android because if we would use the new TZ ID, it wouldn't be understood
+                by Android (and thus downgraded to the system default timezone) if we get it back
+                again from the server. */
+                val ical4jTzId = vTimeZone.timeZoneId.value
+                if (ical4jTzId != tzId) {
+                    logger.warning("Android timezone $tzId maps to ical4j $ical4jTzId. Using Android TZID.")
+
+                    /* Better not modify the VTIMEZONE because it's cached by TimeZoneRegistry, and we don't
+                    want to modify the cache. Create a copy instead. */
+                    vTimeZone = copyVTimeZone(vTimeZone)
+                    vTimeZone.replace<PropertyContainer>(net.fortuna.ical4j.model.property.TzId(tzId))
+                }
+
+                // Minify VTIMEZONE and attach to iCalendar
+                val minifiedVTimeZone = VTimeZoneMinifier().minify(vTimeZone, earliestStart)
+                ical += minifiedVTimeZone
             }
-
-            // Minify VTIMEZONE and attach to iCalendar
-            val minifiedVTimeZone = VTimeZoneMinifier().minify(vTimeZone, earliestStart)
-            ical += minifiedVTimeZone
         }
 
         // Add all the components after the VTIMEZONEs, so that the VTIMEZONEs are always at the top of the iCalendar,
