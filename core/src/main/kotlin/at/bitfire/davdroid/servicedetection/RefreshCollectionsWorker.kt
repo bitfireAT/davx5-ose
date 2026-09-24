@@ -23,7 +23,6 @@ import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import at.bitfire.dav4jvm.ktor.exception.UnauthorizedException
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.network.HttpClientBuilder
 import at.bitfire.davdroid.push.PushRegistrationManager
 import at.bitfire.davdroid.repository.AccountRepository
@@ -35,9 +34,7 @@ import at.bitfire.davdroid.ui.NotificationRegistry
 import at.bitfire.davdroid.ui.account.AccountSettingsActivity
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.withContext
 import java.util.logging.Level
 import java.util.logging.Logger
 
@@ -68,7 +65,6 @@ class RefreshCollectionsWorker @AssistedInject constructor(
     private val collectionsWithoutHomeSetRefresherFactory: CollectionsWithoutHomeSetRefresher.Factory,
     private val homeSetRefresherFactory: HomeSetRefresher.Factory,
     private val httpClientBuilder: HttpClientBuilder,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val logger: Logger,
     private val notificationRegistry: NotificationRegistry,
     private val principalsRefresherFactory: PrincipalsRefresher.Factory,
@@ -139,11 +135,11 @@ class RefreshCollectionsWorker @AssistedInject constructor(
 
     private val serviceId: Long = inputData.getLong(ARG_SERVICE_ID, -1)
 
-    override suspend fun doWork(): Result = withContext(ioDispatcher) {
+    override suspend fun doWork(): Result {
         val service = serviceRepository.get(serviceId)
         if (service == null) {
             logger.warning("Missing service with service ID: $serviceId")
-            return@withContext Result.failure()
+            return Result.failure()
         }
 
         val accountId = accountRepository.getAccountIdFromName(service.accountName)
@@ -182,7 +178,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
 
         } catch(e: InvalidAccountException) {
             logger.log(Level.SEVERE, "Invalid account", e)
-            return@withContext Result.failure()
+            return Result.failure()
         } catch (e: UnauthorizedException) {
             logger.log(Level.SEVERE, "Not authorized (anymore)", e)
             // notify that we need to re-authenticate in the account settings
@@ -193,7 +189,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
                 contentText = applicationContext.getString(R.string.sync_error_authentication_failed),
                 contentIntent = settingsIntent
             )
-            return@withContext Result.failure()
+            return Result.failure()
         } catch(e: Exception) {
             logger.log(Level.SEVERE, "Couldn't refresh collection list", e)
 
@@ -208,14 +204,14 @@ class RefreshCollectionsWorker @AssistedInject constructor(
                 contentText = applicationContext.getString(R.string.refresh_collections_worker_refresh_couldnt_refresh),
                 contentIntent = debugIntent
             )
-            return@withContext Result.failure()
+            return Result.failure()
         }
 
         // update push registrations
         pushRegistrationManager.update(serviceId)
 
         // Success
-        return@withContext Result.success()
+        return Result.success()
     }
 
     /**

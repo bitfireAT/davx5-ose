@@ -99,9 +99,18 @@ class CommonBuildConfigPlugin : Plugin<Project> {
         }
 
         testOptions.unitTests.all { test ->
-            // Robolectric ≥ 4.17 sets up ApplicationSharedMemory on API ≥ 36, which reaches
-            // jdk.internal.access by reflection [https://robolectric.org/getting-started/#running-with-java-17-and-higher]
-            test.jvmArgs("--add-opens=java.base/jdk.internal.access=ALL-UNNAMED")
+            // Robolectric on Java 17+ needs access to JDK internals [https://robolectric.org/getting-started/#running-with-java-17-and-higher]
+            test.jvmArgs(
+                "--add-opens=java.base/java.lang=ALL-UNNAMED",
+                "--add-opens=java.base/java.util=ALL-UNNAMED",
+                "--add-opens=java.base/java.io=ALL-UNNAMED",
+                "--add-opens=java.base/java.net=ALL-UNNAMED",
+                "--add-opens=java.base/java.security=ALL-UNNAMED",
+                "--add-opens=java.base/java.text=ALL-UNNAMED",
+                "--add-opens=java.base/jdk.internal.access=ALL-UNNAMED",
+                "--add-opens=java.desktop/java.awt.font=ALL-UNNAMED",
+                "--add-opens=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED"
+            )
         }
     }
 
