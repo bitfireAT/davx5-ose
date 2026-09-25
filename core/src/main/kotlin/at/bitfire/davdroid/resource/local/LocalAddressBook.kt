@@ -7,7 +7,6 @@ import android.accounts.Account
 import android.accounts.AccountManager
 import android.content.ContentValues
 import android.content.Context
-import android.os.RemoteException
 import android.provider.ContactsContract
 import android.provider.ContactsContract.CommonDataKinds.GroupMembership
 import android.provider.ContactsContract.Groups
@@ -122,11 +121,7 @@ open class LocalAddressBook @AssistedInject constructor(
             if (includeGroups)
                 ab.updateGroups(contentValuesOf(GroupColumns.FLAGS to flags), "NOT ${Groups.DIRTY}", null, batch)
 
-            try {
-                batch.commit()
-            } catch (e: RemoteException) {
-                throw LocalStorageException("Couldn't set flags to $flags on non-dirty entries", e)
-            }
+            batch.commit()
         }
 
     override suspend fun removeNotDirtyMarked(flags: Int): Int =
@@ -139,11 +134,7 @@ open class LocalAddressBook @AssistedInject constructor(
             if (includeGroups)
                 ab.deleteGroups("NOT ${Groups.DIRTY} AND ${GroupColumns.FLAGS}=?", arrayOf(flags.toString()), batch)
 
-            try {
-                batch.commit()
-            } catch (e: RemoteException) {
-                throw LocalStorageException("Couldn't remove non-dirty entries with flags $flags", e)
-            }
+            batch.commit()
         }
 
     /**
@@ -180,11 +171,7 @@ open class LocalAddressBook @AssistedInject constructor(
             null, null, batch
         )
 
-        try {
-            batch.commit()
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't change account name to '$newName'", e)
-        }
+        batch.commit()
 
         // update addressBookAccount
         addressBookAccount = newAccount
@@ -302,11 +289,7 @@ open class LocalAddressBook @AssistedInject constructor(
                 ab.updateGroups(contentValuesOf(GroupColumns.ETAG to null), null, null, batch)
             ab.updateRawContactRows(contentValuesOf(RawContactColumns.ETAG to null), null, null, batch)
 
-            try {
-                batch.commit()
-            } catch (e: RemoteException) {
-                throw LocalStorageException("Couldn't set ETAGs to null", e)
-            }
+            batch.commit()
         }
     }
 
@@ -377,49 +360,45 @@ open class LocalAddressBook @AssistedInject constructor(
             "${Groups.ACCOUNT_TYPE}=? AND ${Groups.ACCOUNT_NAME}=?",
             arrayOf(addressBookAccount.type, addressBookAccount.name)
         ).collect { group ->
-            try {
-                val groupId = group.id!!
-                val pendingMemberUids = group.androidGroup.pendingMemberships.toMutableSet()
-                val batch = ContactsBatchOperation(ab.client)
+            val groupId = group.id!!
+            val pendingMemberUids = group.androidGroup.pendingMemberships.toMutableSet()
+            val batch = ContactsBatchOperation(ab.client)
 
-                val changeContactIDs = HashSet<Long>()
+            val changeContactIDs = HashSet<Long>()
 
-                for (currentMemberId in getContactIdsByGroupMembership(groupId)) {
-                    val uid = getContactUidFromId(currentMemberId) ?: continue
+            for (currentMemberId in getContactIdsByGroupMembership(groupId)) {
+                val uid = getContactUidFromId(currentMemberId) ?: continue
 
-                    if (!pendingMemberUids.contains(uid)) {
-                        logger.fine("$currentMemberId removed from group $groupId; removing group membership")
-                        val currentMember = findContactById(currentMemberId)
-                        currentMember.androidContact.removeGroupMemberships(batch)
-                        changeContactIDs += currentMemberId
-                    }
-
-                    pendingMemberUids -= uid
+                if (!pendingMemberUids.contains(uid)) {
+                    logger.fine("$currentMemberId removed from group $groupId; removing group membership")
+                    val currentMember = findContactById(currentMemberId)
+                    currentMember.androidContact.removeGroupMemberships(batch)
+                    changeContactIDs += currentMemberId
                 }
 
-                for (missingMemberUid in pendingMemberUids) {
-                    val missingMember = findContactByUid(missingMemberUid)
-                    if (missingMember == null) {
-                        logger.warning("Group $groupId has member $missingMemberUid which is not found in the address book; ignoring")
-                        continue
-                    }
-
-                    logger.fine("Assigning member $missingMember to group $groupId")
-                    missingMember.androidContact.addToGroup(batch, groupId)
-                    changeContactIDs += missingMember.id!!
-                }
-
-                dirtyVerifier.getOrNull()?.let { verifier ->
-                    // workaround for Android 7 which sets DIRTY flag when only meta-data is changed
-                    changeContactIDs
-                        .map { id -> findContactById(id) }
-                        .forEach { contact -> verifier.updateHashCode(contact, batch) }
-                }
-
-                batch.commit()
-            } catch (e: RemoteException) {
-                throw LocalStorageException("Couldn't apply pending group memberships", e)
+                pendingMemberUids -= uid
             }
+
+            for (missingMemberUid in pendingMemberUids) {
+                val missingMember = findContactByUid(missingMemberUid)
+                if (missingMember == null) {
+                    logger.warning("Group $groupId has member $missingMemberUid which is not found in the address book; ignoring")
+                    continue
+                }
+
+                logger.fine("Assigning member $missingMember to group $groupId")
+                missingMember.androidContact.addToGroup(batch, groupId)
+                changeContactIDs += missingMember.id!!
+            }
+
+            dirtyVerifier.getOrNull()?.let { verifier ->
+                // workaround for Android 7 which sets DIRTY flag when only meta-data is changed
+                changeContactIDs
+                    .map { id -> findContactById(id) }
+                    .forEach { contact -> verifier.updateHashCode(contact, batch) }
+            }
+
+            batch.commit()
         }
     }
 

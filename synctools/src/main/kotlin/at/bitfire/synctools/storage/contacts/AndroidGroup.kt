@@ -7,7 +7,6 @@ package at.bitfire.synctools.storage.contacts
 import android.content.ContentUris
 import android.content.ContentValues
 import android.net.Uri
-import android.os.RemoteException
 import android.provider.ContactsContract
 import android.provider.ContactsContract.CommonDataKinds.GroupMembership
 import android.provider.ContactsContract.Groups
@@ -69,7 +68,7 @@ class AndroidGroup(
      *
      * @throws IllegalArgumentException if group has not been saved yet
      * @throws FileNotFoundException when the group is not available (anymore)
-     * @throws RemoteException on contact provider errors
+     * @throws LocalStorageException on contact provider errors
      */
     fun getContact(): Contact {
         cachedContact?.let { return it }
@@ -139,7 +138,6 @@ class AndroidGroup(
     /**
      * Creates a group with data taken from the constructor.
      * @return number of affected rows
-     * @throws RemoteException on contact provider errors
      * @throws LocalStorageException when the group can't be added
      */
     fun add(): Uri {
@@ -162,7 +160,7 @@ class AndroidGroup(
      * CardDAV server.
      * @param data data object to take group title, members etc. from
      * @return number of affected rows
-     * @throws RemoteException on contact provider errors
+     * @throws LocalStorageException on contact provider errors
      */
     fun update(data: Contact): Uri {
         cachedContact = data
@@ -176,11 +174,7 @@ class AndroidGroup(
      */
     fun update(values: ContentValues): Uri {
         val uri = groupSyncURI()
-        try {
-            addressBook.client.update(uri, values, null, null)
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't update group $id", e)
-        }
+        addressBook.client.update(uri, values, null, null)
         return uri
     }
 
@@ -190,11 +184,7 @@ class AndroidGroup(
      * @throws LocalStorageException on contact provider errors
      */
     fun delete() {
-        try {
-            addressBook.client.delete(groupSyncURI(), null, null)
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't delete group $id", e)
-        }
+        addressBook.client.delete(groupSyncURI(), null, null)
     }
 
     /**
