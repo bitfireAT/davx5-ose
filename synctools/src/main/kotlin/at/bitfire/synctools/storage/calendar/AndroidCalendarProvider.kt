@@ -9,15 +9,14 @@ import android.content.ContentProviderClient
 import android.content.ContentUris
 import android.content.ContentValues
 import android.os.Build
-import android.os.RemoteException
 import android.provider.CalendarContract
 import android.provider.CalendarContract.Calendars
 import android.provider.CalendarContract.Colors
 import androidx.annotation.VisibleForTesting
 import androidx.core.content.contentValuesOf
 import at.bitfire.synctools.icalendar.Css3Color
+import at.bitfire.synctools.storage.LocalStorageClient
 import at.bitfire.synctools.storage.LocalStorageException
-import at.bitfire.synctools.storage.calendar.AndroidCalendarProvider.Companion.COLUMN_CALENDAR_SYNC_STATE
 import at.bitfire.synctools.storage.calendar.EventsContract.asSyncAdapter
 import at.bitfire.synctools.storage.toContentValues
 import java.util.LinkedList
@@ -32,8 +31,10 @@ import java.util.logging.Logger
  */
 class AndroidCalendarProvider(
     val account: Account,
-    internal val client: ContentProviderClient
+    internal val client: LocalStorageClient
 ) {
+    @Deprecated("Remove once all of at.bitfire.synctools.storage uses LocalStorageClient")
+    constructor(account: Account, provider: ContentProviderClient) : this(account, LocalStorageClient(provider))
 
     private val logger = Logger.getLogger(javaClass.name)
 
@@ -53,14 +54,8 @@ class AndroidCalendarProvider(
         values.put(Calendars.ACCOUNT_NAME, account.name)
         values.put(Calendars.ACCOUNT_TYPE, account.type)
 
-        val uri =
-            try {
-                client.insert(calendarsUri, values)
-            } catch (e: RemoteException) {
-                throw LocalStorageException("Couldn't create calendar", e)
-            }
-        if (uri == null)
-            throw LocalStorageException("Couldn't create calendar")
+        val uri = client.insert(calendarsUri, values) ?: throw LocalStorageException("Couldn't create calendar")
+
         return ContentUris.parseId(uri)
     }
 
@@ -89,13 +84,9 @@ class AndroidCalendarProvider(
      */
     fun findCalendars(where: String? = null, whereArgs: Array<String>? = null, sortOrder: String? = null): List<AndroidCalendar> {
         val result = LinkedList<AndroidCalendar>()
-        try {
-            client.query(calendarsUri, null, where, whereArgs, sortOrder)?.use { cursor ->
-                while (cursor.moveToNext())
-                    result += AndroidCalendar(this, cursor.toContentValues())
-            }
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't query calendars", e)
+        client.query(calendarsUri, null, where, whereArgs, sortOrder)?.use { cursor ->
+            while (cursor.moveToNext())
+                result += AndroidCalendar(this, cursor.toContentValues())
         }
         return result
     }
@@ -111,13 +102,9 @@ class AndroidCalendarProvider(
      * @throws LocalStorageException when the content provider returns an error
      */
     fun findFirstCalendar(where: String?, whereArgs: Array<String>?, sortOrder: String? = null): AndroidCalendar? {
-        try {
-            client.query(calendarsUri, null, where, whereArgs, sortOrder)?.use { cursor ->
-                if (cursor.moveToNext())
-                    return AndroidCalendar(this, cursor.toContentValues())
-            }
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't query calendars", e)
+        client.query(calendarsUri, null, where, whereArgs, sortOrder)?.use { cursor ->
+            if (cursor.moveToNext())
+                return AndroidCalendar(this, cursor.toContentValues())
         }
         return null
     }
@@ -131,13 +118,9 @@ class AndroidCalendarProvider(
      * @throws LocalStorageException when the content provider returns an error
      */
     fun getCalendar(id: Long): AndroidCalendar? {
-        try {
-            client.query(calendarUri(id), null, null, null, null)?.use { cursor ->
-                if (cursor.moveToNext())
-                    return AndroidCalendar(this, cursor.toContentValues())
-            }
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't query calendar", e)
+        client.query(calendarUri(id), null, null, null, null)?.use { cursor ->
+            if (cursor.moveToNext())
+                return AndroidCalendar(this, cursor.toContentValues())
         }
         return null
     }
@@ -155,11 +138,7 @@ class AndroidCalendarProvider(
      */
     fun updateCalendar(id: Long, values: ContentValues, where: String? = null, whereArgs: Array<String>? = null): Int {
         logger.fine("Updating local calendar #$id with $values")
-        try {
-            return client.update(calendarUri(id), values, where, whereArgs)
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't update calendar", e)
-        }
+        return client.update(calendarUri(id), values, where, whereArgs)
     }
 
     /**
@@ -172,11 +151,7 @@ class AndroidCalendarProvider(
      */
     fun deleteCalendar(id: Long): Int {
         logger.fine("Deleting local calendar #$id")
-        try {
-            return client.delete(calendarUri(id), null, null)
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't delete calendar", e)
-        }
+        return client.delete(calendarUri(id), null, null)
     }
 
 
@@ -193,15 +168,11 @@ class AndroidCalendarProvider(
      * @throws LocalStorageException when the content provider returns an error
      */
     fun readCalendarSyncState(id: Long): String? =
-        try {
-            client.query(calendarUri(id), arrayOf(COLUMN_CALENDAR_SYNC_STATE), null, null, null)?.use { cursor ->
-                if (cursor.moveToNext())
-                    return cursor.getString(0)
-                else
-                    null
-            }
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't query calendar sync state", e)
+        client.query(calendarUri(id), arrayOf(COLUMN_CALENDAR_SYNC_STATE), null, null, null)?.use { cursor ->
+            if (cursor.moveToNext())
+                return cursor.getString(0)
+            else
+                null
         }
 
     /**
@@ -238,22 +209,18 @@ class AndroidCalendarProvider(
         }
 
         logger.fine("Inserting CSS3 colors to account $account")
-        try {
-            client.bulkInsert(
-                colorsUri,
-                Css3Color.entries.map { color ->
-                    contentValuesOf(
-                        Colors.ACCOUNT_NAME to account.name,
-                        Colors.ACCOUNT_TYPE to account.type,
-                        Colors.COLOR_TYPE to Colors.TYPE_EVENT,
-                        Colors.COLOR_KEY to color.name,
-                        Colors.COLOR to color.argb
-                    )
-                }.toTypedArray()
-            )
-        } catch(e: RemoteException) {
-            throw LocalStorageException("Couldn't insert CSS3 colors", e)
-        }
+        client.bulkInsert(
+            colorsUri,
+            Css3Color.entries.map { color ->
+                contentValuesOf(
+                    Colors.ACCOUNT_NAME to account.name,
+                    Colors.ACCOUNT_TYPE to account.type,
+                    Colors.COLOR_TYPE to Colors.TYPE_EVENT,
+                    Colors.COLOR_KEY to color.name,
+                    Colors.COLOR to color.argb
+                )
+            }.toTypedArray()
+        )
     }
 
     /**
@@ -268,21 +235,17 @@ class AndroidCalendarProvider(
            2) account_type and account_name can't be specified in selection (causes SQLiteException)
            WORKAROUND: unassign event colors for each calendar
         */
-        try {
-            client.query(calendarsUri, arrayOf(Calendars._ID), null, null, null)?.use { cursor ->
-                while (cursor.moveToNext()) {
-                    val calendarId = cursor.getLong(0)
+        client.query(calendarsUri, arrayOf(Calendars._ID), null, null, null)?.use { cursor ->
+            while (cursor.moveToNext()) {
+                val calendarId = cursor.getLong(0)
 
-                    val values = ContentValues(1)
-                    values.putNull(CalendarContract.Events.EVENT_COLOR_KEY)
-                    client.update(
-                        CalendarContract.Events.CONTENT_URI.asSyncAdapter(account), values,
-                        "${CalendarContract.Events.EVENT_COLOR_KEY} IS NOT NULL AND ${CalendarContract.Events.CALENDAR_ID}=?", arrayOf(calendarId.toString())
-                    )
-                }
+                val values = ContentValues(1)
+                values.putNull(CalendarContract.Events.EVENT_COLOR_KEY)
+                client.update(
+                    CalendarContract.Events.CONTENT_URI.asSyncAdapter(account), values,
+                    "${CalendarContract.Events.EVENT_COLOR_KEY} IS NOT NULL AND ${CalendarContract.Events.CALENDAR_ID}=?", arrayOf(calendarId.toString())
+                )
             }
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't unassign event colors", e)
         }
 
         // remove entries from color table

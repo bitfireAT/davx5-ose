@@ -672,7 +672,7 @@ class AndroidCalendar(
         get() = provider.account
 
     val client
-        get() = provider.client
+        get() = provider.client.provider
 
     val eventsUri
         get() = Events.CONTENT_URI.asSyncAdapter(account)
