@@ -4,7 +4,6 @@
 
 package at.bitfire.synctools.storage.calendar
 
-import android.content.ContentProviderClient
 import at.bitfire.synctools.storage.BatchOperation
 import at.bitfire.synctools.storage.LocalStorageClient
 
@@ -13,7 +12,4 @@ import at.bitfire.synctools.storage.LocalStorageClient
  */
 class CalendarBatchOperation(
     client: LocalStorageClient
-): BatchOperation(client, maxOperationsPerYieldPoint = null) {
-    @Deprecated("Remove once all of at.bitfire.synctools.storage uses LocalStorageClient")
-    constructor(providerClient: ContentProviderClient) : this(LocalStorageClient(providerClient))
-}
+): BatchOperation(client, maxOperationsPerYieldPoint = null)

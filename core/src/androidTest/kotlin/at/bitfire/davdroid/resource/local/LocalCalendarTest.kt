@@ -6,7 +6,6 @@ package at.bitfire.davdroid.resource.local
 
 import android.Manifest
 import android.accounts.Account
-import android.content.ContentProviderClient
 import android.content.ContentValues
 import android.content.Entity
 import android.provider.CalendarContract
@@ -15,6 +14,7 @@ import android.provider.CalendarContract.Events
 import androidx.core.content.contentValuesOf
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
+import at.bitfire.synctools.storage.LocalStorageClient
 import at.bitfire.synctools.storage.calendar.AndroidCalendar
 import at.bitfire.synctools.storage.calendar.AndroidCalendarProvider
 import at.bitfire.synctools.storage.calendar.EventsContract
@@ -33,13 +33,14 @@ class LocalCalendarTest {
 
     private val account = Account("LocalCalendarTest", ACCOUNT_TYPE_LOCAL)
     private lateinit var androidCalendar: AndroidCalendar
-    private lateinit var client: ContentProviderClient
+    private lateinit var client: LocalStorageClient
     private lateinit var calendar: LocalCalendar
 
     @Before
     fun setUp() {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
-        client = context.contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)!!
+        val contentProviderClient = context.contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)!!
+        client = LocalStorageClient(contentProviderClient)
 
         val provider = AndroidCalendarProvider(account, client)
         androidCalendar = provider.createAndGetCalendar(ContentValues())

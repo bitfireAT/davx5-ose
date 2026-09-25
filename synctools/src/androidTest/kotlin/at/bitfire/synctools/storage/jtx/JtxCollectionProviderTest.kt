@@ -5,9 +5,9 @@
 package at.bitfire.synctools.storage.jtx
 
 import android.accounts.Account
-import android.content.ContentProviderClient
 import androidx.core.content.contentValuesOf
 import androidx.test.platform.app.InstrumentationRegistry
+import at.bitfire.synctools.storage.LocalStorageClient
 import at.bitfire.synctools.storage.TaskProvider
 import at.bitfire.synctools.test.GrantPermissionOrSkipRule
 import at.techbee.jtx.JtxContract
@@ -31,12 +31,13 @@ class JtxCollectionProviderTest {
         JtxContract.JtxCollection.TEST_ACCOUNT_TYPE
     )
 
-    private lateinit var client: ContentProviderClient
+    private lateinit var client: LocalStorageClient
     private lateinit var provider: JtxCollectionProvider
 
     @Before
     fun setUp() {
-        client = context.contentResolver.acquireContentProviderClient(JtxContract.AUTHORITY)!!
+        val contentProviderClient = context.contentResolver.acquireContentProviderClient(JtxContract.AUTHORITY)!!
+        client = LocalStorageClient(contentProviderClient)
         provider = JtxCollectionProvider(testAccount, client)
     }
 

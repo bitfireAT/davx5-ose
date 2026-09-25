@@ -6,7 +6,6 @@ package at.bitfire.davdroid.resource.local
 
 import android.Manifest
 import android.accounts.Account
-import android.content.ContentProviderClient
 import android.content.Context
 import android.net.Uri
 import android.provider.CalendarContract
@@ -14,6 +13,7 @@ import android.provider.CalendarContract.Calendars
 import androidx.core.content.contentValuesOf
 import androidx.test.rule.GrantPermissionRule
 import at.bitfire.davdroid.sync.account.TestAccount
+import at.bitfire.synctools.storage.LocalStorageClient
 import at.bitfire.synctools.storage.calendar.EventsContract.asSyncAdapter
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -42,23 +42,24 @@ class LocalCalendarStoreTest {
     @Inject
     lateinit var localCalendarStore: LocalCalendarStore
 
-    private lateinit var provider: ContentProviderClient
+    private lateinit var client: LocalStorageClient
     private lateinit var account: Account
     private lateinit var calendarUri: Uri
 
     @Before
     fun setUp() {
         hiltRule.inject()
-        provider = context.contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)!!
+        val provider = context.contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)!!
+        client = LocalStorageClient(provider)
         account = TestAccount.create(accountName = "InitialAccountName")
         calendarUri = createCalendarForAccount(account)
     }
 
     @After
     fun tearDown() {
-        provider.delete(calendarUri, null, null)
+        client.delete(calendarUri, null, null)
         TestAccount.remove(account)
-        provider.close()
+        client.close()
     }
 
 
@@ -73,7 +74,7 @@ class LocalCalendarStoreTest {
         account = TestAccount.rename(account, "ChangedAccountName")
 
         // Update account name in local calendar
-        localCalendarStore.updateAccount(oldAccount, account, provider)
+        localCalendarStore.updateAccount(oldAccount, account, client)
 
         // Verify [Calendar.OWNER_ACCOUNT] of local calendar was updated
         assertEquals("ChangedAccountName", getOwnerAccount())
@@ -83,7 +84,7 @@ class LocalCalendarStoreTest {
     // helpers
 
     private fun createCalendarForAccount(account: Account): Uri =
-         provider.insert(
+         client.insert(
             Calendars.CONTENT_URI.asSyncAdapter(account),
             contentValuesOf(
                 Calendars.ACCOUNT_NAME to account.name,
@@ -97,7 +98,7 @@ class LocalCalendarStoreTest {
         )!!.asSyncAdapter(account)
 
     private fun getOwnerAccount(): String? {
-        provider.query(
+        client.query(
             calendarUri,
             arrayOf(Calendars.OWNER_ACCOUNT),
             "${Calendars.ACCOUNT_NAME}=?",

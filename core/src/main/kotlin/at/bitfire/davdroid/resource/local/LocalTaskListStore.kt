@@ -17,6 +17,7 @@ import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.settings.AccountSettingsFactory
 import at.bitfire.davdroid.util.DavUtils.extractCollectionName
+import at.bitfire.synctools.storage.LocalStorageClient
 import at.bitfire.synctools.storage.TaskProvider
 import at.bitfire.synctools.storage.tasks.DmfsTaskList
 import at.bitfire.synctools.storage.tasks.DmfsTaskListProvider
@@ -51,16 +52,23 @@ class LocalTaskListStore @AssistedInject constructor(
     override val authority: String
         get() = providerName.authority
 
-    override fun acquireContentProvider(throwOnMissingPermissions: Boolean) = try {
-        context.contentResolver.acquireContentProviderClient(authority)
-    } catch (e: SecurityException) {
-        if (throwOnMissingPermissions)
-            throw e
-        else
-            /* return */ null
+    override fun acquireLocalStorageClient(throwOnMissingPermissions: Boolean): LocalStorageClient? {
+        return acquireContentProviderClient(throwOnMissingPermissions)?.let { LocalStorageClient(it) }
     }
 
-    override suspend fun create(client: ContentProviderClient, fromCollection: Collection): LocalTaskList {
+    private fun acquireContentProviderClient(throwOnMissingPermissions: Boolean): ContentProviderClient? {
+        return try {
+            context.contentResolver.acquireContentProviderClient(authority)
+        } catch (e: SecurityException) {
+            if (throwOnMissingPermissions) {
+                throw e
+            } else {
+                null
+            }
+        }
+    }
+
+    override suspend fun create(client: LocalStorageClient, fromCollection: Collection): LocalTaskList {
         val service = serviceDao.get(fromCollection.serviceId)
             ?: throw IllegalArgumentException("Couldn't fetch DB service from collection")
         val accountId = accountRepository.getAccountIdFromName(service.accountName)
@@ -71,7 +79,12 @@ class LocalTaskListStore @AssistedInject constructor(
         return LocalTaskList(dmfsTaskList)
     }
 
-    private fun create(account: Account, client: ContentProviderClient, providerName: TaskProvider.ProviderName, fromCollection: Collection): DmfsTaskList {
+    private fun create(
+        account: Account,
+        client: LocalStorageClient,
+        providerName: TaskProvider.ProviderName,
+        fromCollection: Collection
+    ): DmfsTaskList {
         // If the collection doesn't have a color, use a default color.
         val collectionWithColor = if (fromCollection.color != null)
             fromCollection
@@ -107,7 +120,7 @@ class LocalTaskListStore @AssistedInject constructor(
         return values
     }
 
-    override fun getAll(accountId: AccountId, client: ContentProviderClient): List<LocalTaskList> {
+    override fun getAll(accountId: AccountId, client: LocalStorageClient): List<LocalTaskList> {
         val account = androidAccountManager.getAndroidAccount(accountId)
         return DmfsTaskListProvider(account, client, providerName).findTaskLists()
             .map { taskList -> LocalTaskList(taskList) }
@@ -115,7 +128,7 @@ class LocalTaskListStore @AssistedInject constructor(
 
     override fun getByDbCollectionId(
         accountId: AccountId,
-        client: ContentProviderClient,
+        client: LocalStorageClient,
         dbCollectionId: Long
     ): LocalTaskList? {
         val account = androidAccountManager.getAndroidAccount(accountId)
@@ -126,7 +139,7 @@ class LocalTaskListStore @AssistedInject constructor(
 
     override fun update(
         accountId: AccountId,
-        client: ContentProviderClient,
+        client: LocalStorageClient,
         localCollection: LocalTaskList,
         fromCollection: Collection
     ) {
@@ -143,7 +156,7 @@ class LocalTaskListStore @AssistedInject constructor(
         return accountSettings.getManageCalendarColors()
     }
 
-    override fun updateAccount(oldAccount: Account, newAccount: Account, @WillNotClose client: ContentProviderClient?) {
+    override fun updateAccount(oldAccount: Account, newAccount: Account, @WillNotClose client: LocalStorageClient?) {
         if (client == null)
             return
         val values = contentValuesOf(Tasks.ACCOUNT_NAME to newAccount.name)

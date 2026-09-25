@@ -5,7 +5,6 @@
 package at.bitfire.synctools.storage.jtx
 
 import android.accounts.Account
-import android.content.ContentProviderClient
 import android.content.ContentUris
 import android.content.ContentValues
 import androidx.core.content.contentValuesOf
@@ -28,8 +27,6 @@ class JtxCollectionProvider(
     val account: Account,
     internal val client: LocalStorageClient
 ) {
-    @Deprecated("Remove once all of at.bitfire.synctools.storage uses LocalStorageClient")
-    constructor(account: Account, provider: ContentProviderClient) : this(account, LocalStorageClient(provider))
 
     private val logger = Logger.getLogger(javaClass.name)
 

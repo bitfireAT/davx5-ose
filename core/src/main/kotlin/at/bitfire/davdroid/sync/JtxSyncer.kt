@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.sync
 
-import android.content.ContentProviderClient
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
@@ -12,6 +11,7 @@ import at.bitfire.davdroid.resource.local.LocalJtxCollection
 import at.bitfire.davdroid.resource.local.LocalJtxCollectionStore
 import at.bitfire.davdroid.resource.remote.CalDavCollection
 import at.bitfire.davdroid.resource.remote.CalendarQueryFilter
+import at.bitfire.synctools.storage.LocalStorageClient
 import at.bitfire.synctools.storage.TaskProvider
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -46,7 +46,7 @@ class JtxSyncer @AssistedInject constructor(
         get() = Service.TYPE_CALDAV
 
 
-    override fun prepare(provider: ContentProviderClient): Boolean {
+    override fun prepare(client: LocalStorageClient): Boolean {
         // check whether jtx Board is new enough
         try {
             TaskProvider.checkVersion(context, TaskProvider.ProviderName.JtxBoard)
@@ -66,7 +66,7 @@ class JtxSyncer @AssistedInject constructor(
         collectionRepository.getSyncJtxCollections(serviceId)
 
     override suspend fun syncCollection(
-        provider: ContentProviderClient,
+        client: LocalStorageClient,
         localCollection: LocalJtxCollection,
         remoteCollectionInfo: Collection
     ) {

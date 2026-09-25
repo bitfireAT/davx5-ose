@@ -5,13 +5,11 @@
 package at.bitfire.synctools.storage.tasks
 
 import android.accounts.Account
-import android.content.ContentProviderClient
 import android.content.ContentUris
 import android.content.ContentValues
 import at.bitfire.synctools.storage.LocalStorageClient
 import at.bitfire.synctools.storage.LocalStorageException
 import at.bitfire.synctools.storage.TaskProvider
-import at.bitfire.synctools.storage.jtx.JtxCollectionProvider
 import at.bitfire.synctools.storage.tasks.DmfsTasksContract.asSyncAdapter
 import at.bitfire.synctools.storage.toContentValues
 import org.dmfs.tasks.contract.TaskContract
@@ -31,9 +29,6 @@ class DmfsTaskListProvider(
     internal val client: LocalStorageClient,
     val providerName: TaskProvider.ProviderName
 ) {
-    @Deprecated("Remove once all of at.bitfire.synctools.storage uses LocalStorageClient")
-    constructor(account: Account, provider: ContentProviderClient, providerName: TaskProvider.ProviderName)
-            : this(account, LocalStorageClient(provider), providerName)
 
     private val logger
         get() = Logger.getLogger(DmfsTaskList::class.java.name)

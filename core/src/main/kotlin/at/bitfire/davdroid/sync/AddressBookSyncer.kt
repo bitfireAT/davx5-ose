@@ -5,7 +5,6 @@
 package at.bitfire.davdroid.sync
 
 import android.accounts.AccountManager
-import android.content.ContentProviderClient
 import android.provider.ContactsContract
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.db.Collection
@@ -14,6 +13,7 @@ import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.resource.local.LocalAddressBook
 import at.bitfire.davdroid.resource.local.LocalAddressBookStore
 import at.bitfire.davdroid.resource.remote.CardDavCollection
+import at.bitfire.synctools.storage.LocalStorageClient
 import at.bitfire.synctools.storage.contacts.AddressContract.asSyncAdapter
 import at.bitfire.synctools.util.setAndVerifyUserData
 import dagger.assisted.Assisted
@@ -61,7 +61,7 @@ class AddressBookSyncer @AssistedInject constructor(
         collectionRepository.getByServiceAndSync(serviceId)
 
     override suspend fun syncCollection(
-        provider: ContentProviderClient,
+        client: LocalStorageClient,
         localCollection: LocalAddressBook,
         remoteCollectionInfo: Collection
     ) {
@@ -70,7 +70,7 @@ class AddressBookSyncer @AssistedInject constructor(
             accountId = accountId,
             addressBook = localCollection,
             httpClient = httpClient,
-            provider = provider,
+            client = client,
             syncResult = syncResult,
             collection = remoteCollectionInfo
         )
@@ -85,7 +85,7 @@ class AddressBookSyncer @AssistedInject constructor(
      *
      * @param addressBook       local address book
      * @param httpClient        HTTP client to use for network requests
-     * @param provider          content provider to access android contacts
+     * @param client            [LocalStorageClient] to access android contacts
      * @param syncResult        stores hard and soft sync errors
      * @param collection        the database collection associated with this address book
      */
@@ -93,17 +93,17 @@ class AddressBookSyncer @AssistedInject constructor(
         accountId: AccountId,
         addressBook: LocalAddressBook,
         httpClient: HttpClient,
-        provider: ContentProviderClient,
+        client: LocalStorageClient,
         syncResult: SyncResult,
         collection: Collection
     ) {
-        handleGroupMethodChange(addressBook, provider)
+        handleGroupMethodChange(addressBook, client)
 
         val syncManager = contactsSyncManagerFactory.contactsSyncManager(
             accountId = accountId,
             httpClient = httpClient,
             syncResult = syncResult,
-            provider = provider,
+            client = client,
             localAddressBook = addressBook,
             collectionInfo = collection,
             remoteCollection = CardDavCollection(httpClient, collection.url),
@@ -118,16 +118,16 @@ class AddressBookSyncer @AssistedInject constructor(
 
     private suspend fun handleGroupMethodChange(
         addressBook: LocalAddressBook,
-        provider: ContentProviderClient
+        client: LocalStorageClient
     ) {
         withContext(ioDispatcher) {
-            handleGroupMethodChangeBlocking(addressBook, provider)
+            handleGroupMethodChangeBlocking(addressBook, client)
         }
     }
 
     private fun handleGroupMethodChangeBlocking(
         addressBook: LocalAddressBook,
-        provider: ContentProviderClient
+        client: LocalStorageClient
     ) {
         val groupMethod = settings.groupMethod.name
 
@@ -137,12 +137,12 @@ class AddressBookSyncer @AssistedInject constructor(
                 logger.info("Group method changed, deleting all local contacts/groups")
 
                 // delete all local contacts and groups so that they will be downloaded again
-                provider.delete(
+                client.delete(
                     ContactsContract.RawContacts.CONTENT_URI.asSyncAdapter(addressBook.addressBookAccount),
                     null,
                     null
                 )
-                provider.delete(
+                client.delete(
                     ContactsContract.Groups.CONTENT_URI.asSyncAdapter(addressBook.addressBookAccount),
                     null,
                     null

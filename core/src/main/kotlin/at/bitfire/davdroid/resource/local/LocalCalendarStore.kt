@@ -22,6 +22,7 @@ import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.settings.AccountSettingsFactory
 import at.bitfire.davdroid.util.DavUtils.extractCollectionName
+import at.bitfire.synctools.storage.LocalStorageClient
 import at.bitfire.synctools.storage.calendar.AndroidCalendarProvider
 import at.bitfire.synctools.storage.calendar.EventsContract.asSyncAdapter
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -43,16 +44,23 @@ class LocalCalendarStore @Inject constructor(
     override val authority: String
         get() = CalendarContract.AUTHORITY
 
-    override fun acquireContentProvider(throwOnMissingPermissions: Boolean) = try {
-        context.contentResolver.acquireContentProviderClient(authority)
-    } catch (e: SecurityException) {
-        if (throwOnMissingPermissions)
-            throw e
-        else
-            /* return */ null
+    override fun acquireLocalStorageClient(throwOnMissingPermissions: Boolean): LocalStorageClient? {
+        return acquireContentProviderClient(throwOnMissingPermissions)?.let { LocalStorageClient(it) }
     }
 
-    override suspend fun create(client: ContentProviderClient, fromCollection: Collection): LocalCalendar {
+    private fun acquireContentProviderClient(throwOnMissingPermissions: Boolean): ContentProviderClient? {
+        return try {
+            context.contentResolver.acquireContentProviderClient(authority)
+        } catch (e: SecurityException) {
+            if (throwOnMissingPermissions) {
+                throw e
+            } else {
+                null
+            }
+        }
+    }
+
+    override suspend fun create(client: LocalStorageClient, fromCollection: Collection): LocalCalendar {
         val service = serviceRepository.get(fromCollection.serviceId)
             ?: throw IllegalArgumentException("Couldn't fetch DB service from collection")
         val accountId = accountRepository.getAccountIdFromName(service.accountName)
@@ -87,7 +95,7 @@ class LocalCalendarStore @Inject constructor(
         return LocalCalendar(provider.createAndGetCalendar(values))
     }
 
-    override fun getAll(accountId: AccountId, client: ContentProviderClient): List<LocalCalendar> {
+    override fun getAll(accountId: AccountId, client: LocalStorageClient): List<LocalCalendar> {
         val account = androidAccountManager.getAndroidAccount(accountId)
         return AndroidCalendarProvider(account, client)
             .findCalendars("${Calendars.SYNC_EVENTS}!=0", null)
@@ -96,7 +104,7 @@ class LocalCalendarStore @Inject constructor(
 
     override fun getByDbCollectionId(
         accountId: AccountId,
-        client: ContentProviderClient,
+        client: LocalStorageClient,
         dbCollectionId: Long
     ): LocalCalendar? {
         val account = androidAccountManager.getAndroidAccount(accountId)
@@ -107,7 +115,7 @@ class LocalCalendarStore @Inject constructor(
 
     override fun update(
         accountId: AccountId,
-        client: ContentProviderClient,
+        client: LocalStorageClient,
         localCollection: LocalCalendar,
         fromCollection: Collection
     ) {
@@ -180,7 +188,7 @@ class LocalCalendarStore @Inject constructor(
         return values
     }
 
-    override fun updateAccount(oldAccount: Account, newAccount: Account, @WillNotClose client: ContentProviderClient?) {
+    override fun updateAccount(oldAccount: Account, newAccount: Account, @WillNotClose client: LocalStorageClient?) {
         if (client == null)
             return
         val values = contentValuesOf(

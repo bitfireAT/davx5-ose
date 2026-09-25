@@ -5,11 +5,11 @@
 package at.bitfire.synctools.storage.contacts
 
 import android.Manifest
-import android.content.ContentProviderClient
 import android.provider.ContactsContract
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
 import at.bitfire.synctools.mapping.contacts.Contact
+import at.bitfire.synctools.storage.LocalStorageClient
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
@@ -30,25 +30,25 @@ class AndroidGroupTest {
         @ClassRule
         val permissionRule = GrantPermissionRule.grant(Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS)!!
 
-        private lateinit var provider: ContentProviderClient
+        private lateinit var client: LocalStorageClient
         private lateinit var addressBook: AndroidAddressBook
 
         @BeforeClass
         @JvmStatic
         fun connect() {
             val context = InstrumentationRegistry.getInstrumentation().context
-            provider = context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)!!
-            assertNotNull(provider)
+            val provider = context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)!!
+            client = LocalStorageClient(provider)
+            assertNotNull(client)
 
-            addressBook = TestAddressBook.create(provider)
+            addressBook = TestAddressBook.create(client)
         }
 
         @AfterClass
         @JvmStatic
         fun disconnect() {
             TestAddressBook.remove(addressBook)
-            @Suppress("DEPRECATION")
-            provider.release()
+            client.close()
         }
     }
 

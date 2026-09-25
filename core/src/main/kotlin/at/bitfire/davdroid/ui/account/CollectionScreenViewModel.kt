@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.ui.account
 
-import android.content.ContentProviderClient
 import android.content.Context
 import android.database.ContentObserver
 import android.net.Uri
@@ -266,8 +265,8 @@ class CollectionScreenViewModel @AssistedInject constructor(
         localDataStore: LocalDataStore<*>,
         watchUris: List<Uri>
     ): Flow<LocalItemsCount?> = callbackFlow {
-        val client: ContentProviderClient = try {
-            localDataStore.acquireContentProvider()
+        val client = try {
+            localDataStore.acquireLocalStorageClient()
         } catch (e: SecurityException) {
             logger.log(Level.WARNING, "No permission to access data store", e)
             null

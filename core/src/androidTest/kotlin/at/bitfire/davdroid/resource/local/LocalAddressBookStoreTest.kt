@@ -6,7 +6,6 @@ package at.bitfire.davdroid.resource.local
 
 import android.accounts.Account
 import android.accounts.AccountManager
-import android.content.ContentProviderClient
 import android.content.Context
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.LegacyAccount
@@ -17,6 +16,7 @@ import at.bitfire.davdroid.di.AndroidServicesModule
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.account.TestAccount
 import at.bitfire.davdroid.util.DavUtils.toUrl
+import at.bitfire.synctools.storage.LocalStorageClient
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -52,7 +52,7 @@ class LocalAddressBookStoreTest {
     lateinit var localAddressBookStore: LocalAddressBookStore
 
     @RelaxedMockK
-    lateinit var provider: ContentProviderClient
+    lateinit var client: LocalStorageClient
 
     @BindValue @MockK(relaxed = true)
     lateinit var accountManager: AccountManager
@@ -168,7 +168,7 @@ class LocalAddressBookStoreTest {
         mockkObject(localAddressBookStore)
         every { localAddressBookStore.createAddressBookAccount(any(), any(), any()) } returns null
 
-        assertEquals(null, localAddressBookStore.create(provider, collection))
+        assertEquals(null, localAddressBookStore.create(client, collection))
     }
 
     @Test
@@ -179,7 +179,7 @@ class LocalAddressBookStoreTest {
             every { url } returns "https://example.com/addressbook/funnyfriends/".toUrl()
             every { readOnly() } returns true
         }
-        val addrBook = localAddressBookStore.create(provider, collection)!!
+        val addrBook = localAddressBookStore.create(client, collection)!!
         assertEquals(Account("funnyfriends (Test Account) #1", addressBookAccountType), addrBook.addressBookAccount)
         assertTrue(addrBook.readOnly)
     }
@@ -193,7 +193,7 @@ class LocalAddressBookStoreTest {
             every { readOnly() } returns false
         }
 
-        val addrBook = localAddressBookStore.create(provider, collection)!!
+        val addrBook = localAddressBookStore.create(client, collection)!!
         assertEquals(Account("funnyfriends (Test Account) #1", addressBookAccountType), addrBook.addressBookAccount)
         assertFalse(addrBook.readOnly)
     }
@@ -204,7 +204,7 @@ class LocalAddressBookStoreTest {
         every { accountManager.getAccountsByType(any()) } returns arrayOf(addressBookAccount)
         val unrelatedAccount = Account("Another Unrelated Account", accountId.androidAccount.type)
         every { addressBookAccountProperties.getAppAccount(addressBookAccount) } returns LegacyAccount(unrelatedAccount)
-        val result = localAddressBookStore.getAll(accountId, provider)
+        val result = localAddressBookStore.getAll(accountId, client)
         assertTrue(result.isEmpty())
     }
 
@@ -212,7 +212,7 @@ class LocalAddressBookStoreTest {
     fun test_getAll_sameAccount() {
         every { accountManager.getAccountsByType(any()) } returns arrayOf(addressBookAccount)
         every { addressBookAccountProperties.getAppAccount(addressBookAccount) } returns accountId
-        val result = localAddressBookStore.getAll(accountId, provider)
+        val result = localAddressBookStore.getAll(accountId, client)
         assertEquals(1, result.size)
         assertEquals(addressBookAccount, result.first().addressBookAccount)
     }

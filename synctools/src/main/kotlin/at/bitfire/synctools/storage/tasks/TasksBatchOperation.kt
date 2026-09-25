@@ -4,7 +4,6 @@
 
 package at.bitfire.synctools.storage.tasks
 
-import android.content.ContentProviderClient
 import at.bitfire.synctools.storage.BatchOperation
 import at.bitfire.synctools.storage.LocalStorageClient
 
@@ -14,8 +13,6 @@ import at.bitfire.synctools.storage.LocalStorageClient
 class TasksBatchOperation(
     client: LocalStorageClient
 ) : BatchOperation(client, maxOperationsPerYieldPoint = OPERATIONS_PER_YIELD_POINT) {
-    @Deprecated("Remove once all of at.bitfire.synctools.storage uses LocalStorageClient")
-    constructor(providerClient: ContentProviderClient) : this(LocalStorageClient(providerClient))
 
     companion object {
 

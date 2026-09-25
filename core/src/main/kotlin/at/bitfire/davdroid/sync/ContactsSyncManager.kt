@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.sync
 
-import android.content.ContentProviderClient
 import at.bitfire.dav4jvm.ktor.DavAddressBook
 import at.bitfire.davdroid.ProductIds
 import at.bitfire.davdroid.accounts.AccountId
@@ -24,6 +23,7 @@ import at.bitfire.davdroid.util.DavUtils.extractFileName
 import at.bitfire.synctools.mapping.contacts.Contact
 import at.bitfire.synctools.mapping.contacts.ContactReader
 import at.bitfire.synctools.mapping.contacts.ContactWriter
+import at.bitfire.synctools.storage.LocalStorageClient
 import at.bitfire.synctools.vcard.GroupMethod
 import at.bitfire.synctools.vcard.VCardParser
 import dagger.assisted.Assisted
@@ -81,7 +81,7 @@ class ContactsSyncManager @AssistedInject constructor(
     @Assisted accountId: AccountId,
     @Assisted httpClient: HttpClient,
     @Assisted syncResult: SyncResult,
-    @Assisted val provider: ContentProviderClient,
+    @Assisted val client: LocalStorageClient,
     @Assisted override val localCollection: LocalAddressBook,
     @Assisted collectionInfo: Collection,
     @Assisted override val remoteCollection: CardDavCollection,
@@ -107,7 +107,7 @@ class ContactsSyncManager @AssistedInject constructor(
             accountId: AccountId,
             httpClient: HttpClient,
             syncResult: SyncResult,
-            provider: ContentProviderClient,
+            client: LocalStorageClient,
             localAddressBook: LocalAddressBook,
             collectionInfo: Collection,
             remoteCollection: CardDavCollection,

@@ -5,10 +5,10 @@
 package at.bitfire.synctools.storage.jtx
 
 import android.accounts.Account
-import android.content.ContentProviderClient
 import androidx.core.content.contentValuesOf
 import androidx.test.platform.app.InstrumentationRegistry
 import at.bitfire.synctools.storage.BatchOperation
+import at.bitfire.synctools.storage.LocalStorageClient
 import at.bitfire.synctools.storage.TaskProvider
 import at.bitfire.synctools.test.BuildConfig
 import at.bitfire.synctools.test.GrantPermissionOrSkipRule
@@ -26,24 +26,25 @@ class JtxBatchOperationTest {
 
     private val testAccount = Account(javaClass.name, BuildConfig.APPLICATION_ID)
 
-    lateinit var provider: ContentProviderClient
+    lateinit var client: LocalStorageClient
 
     @Before
     fun setUp() {
-        provider = InstrumentationRegistry.getInstrumentation().targetContext.contentResolver
+        val provider = InstrumentationRegistry.getInstrumentation().targetContext.contentResolver
             .acquireContentProviderClient(JtxContract.AUTHORITY)!!
+        client = LocalStorageClient(provider)
     }
 
     @After
     fun tearDown() {
-        provider.close()
+        client.close()
     }
 
 
     @Test
     fun testJtxBoard_OperationsPerYieldPoint_501() {
-        val batch = JtxBatchOperation(provider)
-        val jtxProvider = JtxCollectionProvider(testAccount, provider)
+        val batch = JtxBatchOperation(client)
+        val jtxProvider = JtxCollectionProvider(testAccount, client)
         val collectionId = jtxProvider.createCollection(
             contentValuesOf(
             JtxContract.JtxCollection.DISPLAYNAME to javaClass.name

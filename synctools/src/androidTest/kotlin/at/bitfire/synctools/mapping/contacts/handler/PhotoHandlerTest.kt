@@ -5,7 +5,6 @@
 package at.bitfire.synctools.mapping.contacts.handler
 
 import android.Manifest
-import android.content.ContentProviderClient
 import android.content.ContentUris
 import android.content.ContentValues
 import android.provider.ContactsContract
@@ -41,24 +40,24 @@ class PhotoHandlerTest {
         val permissionRule = GrantPermissionRule.grant(Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS)!!
 
         val testContext = InstrumentationRegistry.getInstrumentation().context
-        private lateinit var provider: ContentProviderClient
+        private lateinit var client: LocalStorageClient
         private lateinit var addressBook: AndroidAddressBook
 
         @BeforeClass
         @JvmStatic
         fun connect() {
-            provider = testContext.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)!!
-            assertNotNull(provider)
+            val provider = testContext.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)!!
+            client = LocalStorageClient(provider)
+            assertNotNull(client)
 
-            addressBook = TestAddressBook.create(provider)
+            addressBook = TestAddressBook.create(client)
         }
 
         @AfterClass
         @JvmStatic
         fun disconnect() {
             TestAddressBook.remove(addressBook)
-            @Suppress("DEPRECATION")
-            provider.release()
+            client.close()
         }
     }
 
@@ -115,7 +114,7 @@ class PhotoHandlerTest {
         val dataUri = ContentUris.withAppendedId(RawContacts.CONTENT_URI, rawContactId).buildUpon()
             .appendPath(RawContacts.Data.CONTENT_DIRECTORY)
             .build()
-        val thumbnail = provider.query(dataUri, arrayOf(Photo.PHOTO_FILE_ID, Photo.PHOTO),
+        val thumbnail = client.query(dataUri, arrayOf(Photo.PHOTO_FILE_ID, Photo.PHOTO),
             "${RawContacts.Data.MIMETYPE}=?", arrayOf(Photo.CONTENT_ITEM_TYPE),
             null
         )!!.use { cursor ->

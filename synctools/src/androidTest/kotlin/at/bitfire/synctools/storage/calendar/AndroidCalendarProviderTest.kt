@@ -6,7 +6,6 @@ package at.bitfire.synctools.storage.calendar
 
 import android.Manifest
 import android.accounts.Account
-import android.content.ContentProviderClient
 import android.content.Entity
 import android.provider.CalendarContract
 import android.provider.CalendarContract.Calendars
@@ -15,6 +14,7 @@ import androidx.core.content.contentValuesOf
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
 import at.bitfire.synctools.icalendar.Css3Color
+import at.bitfire.synctools.storage.LocalStorageClient
 import org.junit.After
 import org.junit.AfterClass
 import org.junit.Assert.assertEquals
@@ -32,7 +32,7 @@ class AndroidCalendarProviderTest {
 
         private val testAccount = Account(AndroidCalendarProviderTest::class.java.name, CalendarContract.ACCOUNT_TYPE_LOCAL)
 
-        private lateinit var client: ContentProviderClient
+        private lateinit var client: LocalStorageClient
         private lateinit var provider: AndroidCalendarProvider
         private lateinit var calendar: AndroidCalendar
 
@@ -40,7 +40,8 @@ class AndroidCalendarProviderTest {
         @JvmStatic
         fun setUpClass() {
             val context = InstrumentationRegistry.getInstrumentation().targetContext
-            client = context.contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)!!
+            val contentProviderClient = context.contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)!!
+            client = LocalStorageClient(contentProviderClient)
             provider = AndroidCalendarProvider(testAccount, client)
 
             calendar = TestCalendar.create(testAccount, client)
