@@ -38,7 +38,7 @@ class DmfsTaskListTest(providerName: TaskProvider.ProviderName) :
             taskList.provider.client.query(
                 taskList.tasksPropertiesUri(), null,
                 "${TaskContract.Properties.TASK_ID}=?", arrayOf(childId.toString()),
-                null, null
+                null
             )!!.use { cursor ->
                 assertEquals(1, cursor.count)
                 cursor.moveToNext()

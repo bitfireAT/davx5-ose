@@ -8,11 +8,9 @@ import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Entity
 import android.net.Uri
-import android.os.RemoteException
 import at.bitfire.synctools.storage.BatchOperation
 import at.bitfire.synctools.storage.LocalStorageException
 import at.bitfire.synctools.storage.TaskProvider
-import at.bitfire.synctools.storage.queryFlow
 import at.bitfire.synctools.storage.tasks.DmfsTasksContract.asSyncAdapter
 import at.bitfire.synctools.storage.toContentValues
 import kotlinx.coroutines.Dispatchers
@@ -75,17 +73,13 @@ class DmfsTaskList(
      * @throws LocalStorageException when the content provider returns an error
      */
     fun addTask(entity: Entity): Long {
-        try {
-            val batch = TasksBatchOperation(client)
-            val backRefIdx = addTask(entity, batch)
-            batch.commit()
+        val batch = TasksBatchOperation(client)
+        val backRefIdx = addTask(entity, batch)
+        batch.commit()
 
-            val uri = batch.getResult(backRefIdx)?.uri
-                ?: throw LocalStorageException("Content provider returned null on insert")
-            return ContentUris.parseId(uri)
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't insert task", e)
-        }
+        val uri = batch.getResult(backRefIdx)?.uri
+            ?: throw LocalStorageException("Content provider returned null on insert")
+        return ContentUris.parseId(uri)
     }
 
     /**
@@ -130,16 +124,12 @@ class DmfsTaskList(
      * @throws LocalStorageException when the content provider returns an error
      */
     fun countTasks(where: String? = null, whereArgs: Array<String>? = null): Int {
-        try {
-            val (protectedWhere, protectedWhereArgs) = whereWithTaskListId(where, whereArgs)
-            client.query(
-                tasksUri(), arrayOf(Tasks._ID),
-                protectedWhere, protectedWhereArgs, null
-            )?.use { cursor ->
-                return cursor.count
-            }
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't count ${providerName.authority} tasks", e)
+        val (protectedWhere, protectedWhereArgs) = whereWithTaskListId(where, whereArgs)
+        client.query(
+            tasksUri(), arrayOf(Tasks._ID),
+            protectedWhere, protectedWhereArgs, null
+        )?.use { cursor ->
+            return cursor.count
         }
         // If the query was invalid, an exception should have been thrown. So this should never be reached:
         return 0
@@ -158,14 +148,10 @@ class DmfsTaskList(
      */
     @TestOnly
     fun findTaskRow(projection: Array<String>?, where: String?, whereArgs: Array<String>?): ContentValues? {
-        try {
-            val (protectedWhere, protectedWhereArgs) = whereWithTaskListId(where, whereArgs)
-            client.query(tasksUri(), projection, protectedWhere, protectedWhereArgs, null)?.use { cursor ->
-                if (cursor.moveToNext())
-                    return cursor.toContentValues()
-            }
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't query task rows", e)
+        val (protectedWhere, protectedWhereArgs) = whereWithTaskListId(where, whereArgs)
+        client.query(tasksUri(), projection, protectedWhere, protectedWhereArgs, null)?.use { cursor ->
+            if (cursor.moveToNext())
+                return cursor.toContentValues()
         }
         return null
     }
@@ -182,15 +168,11 @@ class DmfsTaskList(
      */
     fun findTask(where: String?, whereArgs: Array<String>?): Entity? {
         val (protectedWhere, protectedWhereArgs) = whereWithTaskListId(where, whereArgs)
-        try {
-            client.query(tasksUri(), null, protectedWhere, protectedWhereArgs, null)?.use { cursor ->
-                if (cursor.moveToFirst()) {
-                    val id = cursor.getLong(cursor.getColumnIndexOrThrow(Tasks._ID))
-                    return getTask(id)
-                }
+        client.query(tasksUri(), null, protectedWhere, protectedWhereArgs, null)?.use { cursor ->
+            if (cursor.moveToFirst()) {
+                val id = cursor.getLong(cursor.getColumnIndexOrThrow(Tasks._ID))
+                return getTask(id)
             }
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't query tasks", e)
         }
         return null
     }
@@ -204,32 +186,28 @@ class DmfsTaskList(
      * @throws LocalStorageException when the content provider returns an error
      */
     fun getTask(id: Long): Entity? {
-        try {
-            // query tasks
-            client.query(taskUri(id, loadProperties = false), null, null, null, null)?.use { cursor ->
-                if (cursor.moveToFirst()) {
-                    val entity = Entity(cursor.toContentValues())
-                    // explicitly load task properties into subrows
-                    client.query(
-                        tasksPropertiesUri(),
-                        null,
-                        "${TaskContract.Properties.TASK_ID}=?",
-                        arrayOf(id.toString()),
-                        null
-                    )?.use { propertiesCursor ->
-                        while (propertiesCursor.moveToNext()) {
-                            // plain URI as sub-value key, not an actual provider operation
-                            entity.addSubValue(
-                                tasksPropertiesUri(asSyncAdapter = false),
-                                propertiesCursor.toContentValues()
-                            )
-                        }
+        // query tasks
+        client.query(taskUri(id, loadProperties = false), null, null, null, null)?.use { cursor ->
+            if (cursor.moveToFirst()) {
+                val entity = Entity(cursor.toContentValues())
+                // explicitly load task properties into subrows
+                client.query(
+                    tasksPropertiesUri(),
+                    null,
+                    "${TaskContract.Properties.TASK_ID}=?",
+                    arrayOf(id.toString()),
+                    null
+                )?.use { propertiesCursor ->
+                    while (propertiesCursor.moveToNext()) {
+                        // plain URI as sub-value key, not an actual provider operation
+                        entity.addSubValue(
+                            tasksPropertiesUri(asSyncAdapter = false),
+                            propertiesCursor.toContentValues()
+                        )
                     }
-                    return entity
                 }
+                return entity
             }
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't query task entity", e)
         }
         return null
     }
@@ -252,13 +230,9 @@ class DmfsTaskList(
         where: String? = null,
         whereArgs: Array<String>? = null
     ): ContentValues? {
-        try {
-            client.query(taskUri(id), projection, where, whereArgs, null)?.use { cursor ->
-                if (cursor.moveToNext())
-                    return cursor.toContentValues()
-            }
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't query task row", e)
+        client.query(taskUri(id), projection, where, whereArgs, null)?.use { cursor ->
+            if (cursor.moveToNext())
+                return cursor.toContentValues()
         }
         return null
     }
@@ -279,16 +253,12 @@ class DmfsTaskList(
         whereArgs: Array<String>?,
         body: (ContentValues) -> Unit
     ) {
-        try {
-            val (protectedWhere, protectedWhereArgs) = whereWithTaskListId(where, whereArgs)
-            client.query(tasksUri(), projection, protectedWhere, protectedWhereArgs, null)?.use { cursor ->
-                while (cursor.moveToNext()) {
-                    val row = cursor.toContentValues()
-                    body(row)
-                }
+        val (protectedWhere, protectedWhereArgs) = whereWithTaskListId(where, whereArgs)
+        client.query(tasksUri(), projection, protectedWhere, protectedWhereArgs, null)?.use { cursor ->
+            while (cursor.moveToNext()) {
+                val row = cursor.toContentValues()
+                body(row)
             }
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't iterate task rows", e)
         }
     }
 
@@ -319,11 +289,7 @@ class DmfsTaskList(
      * @throws LocalStorageException when the content provider returns an error
      */
     fun updateTaskRow(id: Long, values: ContentValues) {
-        try {
-            client.update(taskUri(id), values, null, null)
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't update task row $id", e)
-        }
+        client.update(taskUri(id), values, null, null)
     }
 
     /**
@@ -346,13 +312,9 @@ class DmfsTaskList(
      * @throws LocalStorageException when the content provider returns an error
      */
     fun updateTask(id: Long, entity: Entity) {
-        try {
-            val batch = TasksBatchOperation(client)
-            updateTask(id, entity, batch)
-            batch.commit()
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't update task $id", e)
-        }
+        val batch = TasksBatchOperation(client)
+        updateTask(id, entity, batch)
+        batch.commit()
     }
 
     /**
@@ -365,13 +327,10 @@ class DmfsTaskList(
      * @return number of updated rows
      * @throws LocalStorageException when the content provider returns an error
      */
-    fun updateTasks(values: ContentValues, where: String?, whereArgs: Array<String>?): Int =
-        try {
-            val (protectedWhere, protectedWhereArgs) = whereWithTaskListId(where, whereArgs)
-            client.update(tasksUri(), values, protectedWhere, protectedWhereArgs)
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't update ${providerName.authority} tasks", e)
-        }
+    fun updateTasks(values: ContentValues, where: String?, whereArgs: Array<String>?): Int {
+        val (protectedWhere, protectedWhereArgs) = whereWithTaskListId(where, whereArgs)
+        return client.update(tasksUri(), values, protectedWhere, protectedWhereArgs)
+    }
 
     /**
      * Enqueues an update of a task into a batch operation.
@@ -416,11 +375,7 @@ class DmfsTaskList(
      * @throws LocalStorageException when the content provider returns an error
      */
     fun deleteTask(id: Long): Int =
-        try {
-            client.delete(taskUri(id), null, null)
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't delete task $id", e)
-        }
+        client.delete(taskUri(id), null, null)
 
     /**
      * Enqueues a delete operation for a task into a batch.
@@ -441,13 +396,10 @@ class DmfsTaskList(
      * @return number of deleted rows
      * @throws LocalStorageException when the content provider returns an error
      */
-    fun deleteTasks(where: String?, whereArgs: Array<String>?): Int =
-        try {
-            val (protectedWhere, protectedWhereArgs) = whereWithTaskListId(where, whereArgs)
-            client.delete(tasksUri(), protectedWhere, protectedWhereArgs)
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't delete ${providerName.authority} tasks", e)
-        }
+    fun deleteTasks(where: String?, whereArgs: Array<String>?): Int {
+        val (protectedWhere, protectedWhereArgs) = whereWithTaskListId(where, whereArgs)
+        return client.delete(tasksUri(), protectedWhere, protectedWhereArgs)
+    }
 
 
     // other operations
@@ -474,30 +426,29 @@ class DmfsTaskList(
      */
     fun touchRelations(): Int {
         logger.fine("Touching relations to set parent_id")
-        try {
-            val batch = TasksBatchOperation(client)
-            client.query(
-                tasksUri(true), null,
-                "${Tasks.LIST_ID}=? AND ${Tasks.PARENT_ID} IS NULL AND ${TaskContract.Property.Relation.MIMETYPE}=? AND ${TaskContract.Property.Relation.RELATED_ID} IS NOT NULL",
-                arrayOf(id.toString(), TaskContract.Property.Relation.CONTENT_ITEM_TYPE),
-                null, null
-            )?.use { cursor ->
-                while (cursor.moveToNext()) {
-                    val values = cursor.toContentValues()
-                    val id = values.getAsLong(TaskContract.Property.Relation.PROPERTY_ID)
-                    val propertyContentUri = ContentUris.withAppendedId(tasksPropertiesUri(), id)
-                    batch += BatchOperation.CpoBuilder
-                        .newUpdate(propertyContentUri)
-                        .withValue(
-                            TaskContract.Property.Relation.RELATED_ID,
-                            values.getAsLong(TaskContract.Property.Relation.RELATED_ID)
-                        )
-                }
+        val batch = TasksBatchOperation(client)
+        client.query(
+            url = tasksUri(true),
+            projection = null,
+            selection = "${Tasks.LIST_ID}=? AND ${Tasks.PARENT_ID} IS NULL AND " +
+                    "${TaskContract.Property.Relation.MIMETYPE}=? AND " +
+                    "${TaskContract.Property.Relation.RELATED_ID} IS NOT NULL",
+            selectionArgs = arrayOf(id.toString(), TaskContract.Property.Relation.CONTENT_ITEM_TYPE),
+            sortOrder = null
+        )?.use { cursor ->
+            while (cursor.moveToNext()) {
+                val values = cursor.toContentValues()
+                val id = values.getAsLong(TaskContract.Property.Relation.PROPERTY_ID)
+                val propertyContentUri = ContentUris.withAppendedId(tasksPropertiesUri(), id)
+                batch += BatchOperation.CpoBuilder
+                    .newUpdate(propertyContentUri)
+                    .withValue(
+                        TaskContract.Property.Relation.RELATED_ID,
+                        values.getAsLong(TaskContract.Property.Relation.RELATED_ID)
+                    )
             }
-            return batch.commit()
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't touch ${providerName.authority} task relations", e)
         }
+        return batch.commit()
     }
 
 

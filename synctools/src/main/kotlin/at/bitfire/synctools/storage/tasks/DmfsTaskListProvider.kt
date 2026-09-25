@@ -8,9 +8,10 @@ import android.accounts.Account
 import android.content.ContentProviderClient
 import android.content.ContentUris
 import android.content.ContentValues
-import android.os.RemoteException
+import at.bitfire.synctools.storage.LocalStorageClient
 import at.bitfire.synctools.storage.LocalStorageException
 import at.bitfire.synctools.storage.TaskProvider
+import at.bitfire.synctools.storage.jtx.JtxCollectionProvider
 import at.bitfire.synctools.storage.tasks.DmfsTasksContract.asSyncAdapter
 import at.bitfire.synctools.storage.toContentValues
 import org.dmfs.tasks.contract.TaskContract
@@ -27,9 +28,12 @@ import java.util.logging.Logger
  */
 class DmfsTaskListProvider(
     val account: Account,
-    internal val client: ContentProviderClient,
+    internal val client: LocalStorageClient,
     val providerName: TaskProvider.ProviderName
 ) {
+    @Deprecated("Remove once all of at.bitfire.synctools.storage uses LocalStorageClient")
+    constructor(account: Account, provider: ContentProviderClient, providerName: TaskProvider.ProviderName)
+            : this(account, LocalStorageClient(provider), providerName)
 
     private val logger
         get() = Logger.getLogger(DmfsTaskList::class.java.name)
@@ -43,13 +47,9 @@ class DmfsTaskListProvider(
         values.put(TaskContract.ACCOUNT_NAME, account.name)
         values.put(TaskContract.ACCOUNT_TYPE, account.type)
 
-        val uri = try {
-            client.insert(taskListsUri, values)
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't create task list", e)
-        }
-        if (uri == null)
-            throw LocalStorageException("Couldn't create task list (empty result from provider)")
+        val uri = client.insert(taskListsUri, values)
+            ?: throw LocalStorageException("Couldn't create task list (empty result from provider)")
+
         return ContentUris.parseId(uri)
     }
 
@@ -83,13 +83,9 @@ class DmfsTaskListProvider(
         sortOrder: String? = null
     ): List<DmfsTaskList> {
         val result = LinkedList<DmfsTaskList>()
-        try {
-            client.query(taskListsUri, null, where, whereArgs, sortOrder)?.use { cursor ->
-                while (cursor.moveToNext())
-                    result += DmfsTaskList(this, cursor.toContentValues(), providerName)
-            }
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't query ${providerName.authority} task lists", e)
+        client.query(taskListsUri, null, where, whereArgs, sortOrder)?.use { cursor ->
+            while (cursor.moveToNext())
+                result += DmfsTaskList(this, cursor.toContentValues(), providerName)
         }
         return result
     }
@@ -105,13 +101,9 @@ class DmfsTaskListProvider(
      * @throws LocalStorageException when the content provider returns an error
      */
     fun findFirstTaskList(where: String?, whereArgs: Array<String>?, sortOrder: String? = null): DmfsTaskList? {
-        try {
-            client.query(taskListsUri, null, where, whereArgs, sortOrder)?.use { cursor ->
-                if (cursor.moveToNext())
-                    return DmfsTaskList(this, cursor.toContentValues(), providerName)
-            }
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't query ${providerName.authority} task lists", e)
+        client.query(taskListsUri, null, where, whereArgs, sortOrder)?.use { cursor ->
+            if (cursor.moveToNext())
+                return DmfsTaskList(this, cursor.toContentValues(), providerName)
         }
         return null
     }
@@ -125,13 +117,9 @@ class DmfsTaskListProvider(
      * @throws LocalStorageException when the content provider returns an error
      */
     fun getTaskListRow(id: Long, projection: Array<String>? = null): ContentValues? {
-        try {
-            client.query(taskListUri(id), projection, null, null, null)?.use { cursor ->
-                if (cursor.moveToNext())
-                    return cursor.toContentValues()
-            }
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't query ${providerName.authority} task list", e)
+        client.query(taskListUri(id), projection, null, null, null)?.use { cursor ->
+            if (cursor.moveToNext())
+                return cursor.toContentValues()
         }
         return null
     }
@@ -151,11 +139,7 @@ class DmfsTaskListProvider(
 
     fun updateTaskList(id: Long, info: ContentValues): Int {
         logger.log(Level.FINE, "Updating {0} task list {1} with {2}", arrayOf(providerName.authority, id, info))
-        try {
-            return client.update(taskListUri(id), info, null, null)
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't update ${providerName.authority} task list", e)
-        }
+        return client.update(taskListUri(id), info, null, null)
     }
 
     /**
@@ -165,11 +149,7 @@ class DmfsTaskListProvider(
      */
     fun deleteTaskList(id: Long): Boolean {
         logger.log(Level.FINE, "Deleting {0} task list {1}", arrayOf<Any>(providerName.authority, id))
-        try {
-            return client.delete(taskListUri(id), null, null) > 0
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't delete ${providerName.authority} task list", e)
-        }
+        return client.delete(taskListUri(id), null, null) > 0
     }
 
 
