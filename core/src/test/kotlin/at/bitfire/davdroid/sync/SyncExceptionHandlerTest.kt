@@ -5,7 +5,6 @@
 package at.bitfire.davdroid.sync
 
 import android.accounts.Account
-import android.os.DeadObjectException
 import android.os.RemoteException
 import at.bitfire.dav4jvm.ktor.exception.DavException
 import at.bitfire.dav4jvm.ktor.exception.HttpException
@@ -157,32 +156,12 @@ class SyncExceptionHandlerTest {
     // classifySyncException()
 
     @Test
-    fun `classifySyncException() rethrows unwrapped DeadObjectException`() {
-        val exception = DeadObjectException()
+    fun `classifySyncException() rethrows LocalStorageException with softError = true`() {
+        val exception = LocalStorageException(message = null, cause = null, softError = true)
 
         val action = handler().classifySyncException(exception)
 
         assertEquals(SyncExceptionHandler.SyncErrorAction.Rethrow(exception), action)
-    }
-
-    @Test
-    fun `classifySyncException() rethrows DeadObjectException wrapped in LocalStorageException`() {
-        val deadObjectException = DeadObjectException()
-        val exception = LocalStorageException("provider error", deadObjectException)
-
-        val action = handler().classifySyncException(exception)
-
-        assertEquals(SyncExceptionHandler.SyncErrorAction.Rethrow(deadObjectException), action)
-    }
-
-    @Test
-    fun `classifySyncException() rethrows DeadObjectException wrapped several levels deep`() {
-        val deadObjectException = DeadObjectException()
-        val exception = LocalStorageException("provider error", RuntimeException("wrapper", deadObjectException))
-
-        val action = handler().classifySyncException(exception)
-
-        assertEquals(SyncExceptionHandler.SyncErrorAction.Rethrow(deadObjectException), action)
     }
 
     @Test

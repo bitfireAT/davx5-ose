@@ -11,8 +11,10 @@ import android.content.EntityIterator
 import android.content.res.AssetFileDescriptor
 import android.database.Cursor
 import android.net.Uri
+import android.os.DeadObjectException
 import android.os.ParcelFileDescriptor
 import android.os.RemoteException
+import at.bitfire.synctools.util.causedBy
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -195,6 +197,40 @@ internal inline fun <T> runWrappingRemoteException(block: () -> T): T {
     return try {
         block()
     } catch (e: RemoteException) {
+        throwWrappedLocalStorageException(e)
+    }
+}
+
+@Suppress("NOTHING_TO_INLINE")
+internal inline fun throwWrappedLocalStorageException(e: RemoteException): Nothing {
+    /* A DeadObjectException anywhere in the cause chain means the content provider process died:
+    either because it crashed, or because of this Android 14+ behavior:
+
+    1. Holding a ContentProviderClient doesn't keep the provider process "important" - its priority
+       is derived from whatever's currently bound to it, recomputed continuously.
+    2. Since we're just a background sync worker (not a foreground service), our own importance is
+       low, so the provider's derived importance can drop into the "cached" range even while we're
+       still connected to it.
+    3. Android's app freezer suspends cached processes to save battery/CPU.
+    4. If we then make a synchronous call into it while frozen, Android treats this as a bug on our
+       side and kills the frozen process.
+    5. That kill is what surfaces here as DeadObjectException.
+
+    See AOSP frameworks/base:
+    - OomAdjuster.computeProviderHostOomAdjLSP() - derives a provider's importance (adj) from its client,
+      showing why holding a connection doesn't pin its priority.
+    - com.android.server.am.CachedAppOptimizer - implements freezer and kill-on-sync-call-while-frozen policy.
+    - android.os.BinderProxy - where DeadObjectException is actually thrown once the process is dead.
+
+    See also:
+    - https://developer.android.com/about/versions/14/behavior-changes-all#cached-apps
+    - https://developer.android.com/develop/background-work/services/bound-services#Additional_Notes
+      "Always trap DeadObjectException exceptions, which are thrown when the connection has broken."
+
+    Either way, retrying later should work, so mark as a soft error. */
+    if (e.causedBy<DeadObjectException>() != null) {
+        throw LocalStorageException("Content provider operation failed", e, softError = true)
+    } else {
         throw LocalStorageException("Content provider operation failed", e)
     }
 }

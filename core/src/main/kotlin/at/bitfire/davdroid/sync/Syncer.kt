@@ -17,8 +17,9 @@ import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.resource.local.LocalCollection
 import at.bitfire.davdroid.resource.local.LocalDataStore
 import at.bitfire.davdroid.sync.account.InvalidAccountException
-import at.bitfire.davdroid.util.causedBy
+import at.bitfire.synctools.util.causedBy
 import at.bitfire.synctools.storage.LocalStorageClient
+import at.bitfire.synctools.storage.LocalStorageException
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CancellationException
 import java.io.Closeable
@@ -306,21 +307,23 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
                 collection are already handled in SyncManager. The exceptions here usually
                 - have occurred during Syncer operation (for instance when creating/deleting local collections) —
                   content provider access here can also throw a DeadObjectException wrapped by the storage layer,
-                - or have been re-thrown from SyncManager (like the unwrapped DeadObjectException). */
-                when {
+                - or have been re-thrown from SyncManager (like a LocalStorageException caused by DeadObjectException).
+                */
+                when (e) {
                     /* The sync has been canceled (usually because WorkManager stopped our worker). Cancellation is
                     not a sync error and must never be swallowed: the coroutine has to stop here, and the worker has
                     to pass the cancellation on to WorkManager. See BaseSyncWorker. */
-                    e is CancellationException ->
+                    is CancellationException ->
                         throw e
 
-                    // content provider process died, or (Android 14+) was killed for being frozen/cached; see SyncExceptionHandler
-                    e.causedBy<DeadObjectException>() != null -> {
-                        logger.log(Level.WARNING, "Received DeadObjectException, treating as soft error", e)
+                    // content provider process died, or (Android 14+) was killed for being frozen/cached;
+                    // see throwWrappedLocalStorageException() in LocalStorageClient.kt
+                    is LocalStorageException if (e.softError) -> {
+                        logger.log(Level.WARNING, "Temporary error while accessing storage, treating as soft error", e)
                         syncResult.softError = true
                     }
 
-                    e is InvalidAccountException ->
+                    is InvalidAccountException ->
                         logger.log(Level.WARNING, "Account was removed during synchronization", e)
 
                     else -> {

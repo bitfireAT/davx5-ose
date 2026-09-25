@@ -143,7 +143,7 @@ open class BatchOperation internal constructor(
             runBatch(start, mid)
             runBatch(mid, end)
         } catch (e: RemoteException) {
-            throw LocalStorageException("Content provider batch operation failed", e)
+            throwWrappedLocalStorageException(e)
         }
     }
 
