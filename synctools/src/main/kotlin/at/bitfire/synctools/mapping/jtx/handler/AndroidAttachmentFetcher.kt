@@ -5,16 +5,16 @@
 package at.bitfire.synctools.mapping.jtx.handler
 
 import android.accounts.Account
-import android.content.ContentProviderClient
 import android.content.ContentUris
 import android.os.ParcelFileDescriptor
+import at.bitfire.synctools.storage.LocalStorageClient
 import at.techbee.jtx.JtxContract
 import at.techbee.jtx.JtxContract.asSyncAdapter
 import java.util.logging.Level
 import java.util.logging.Logger
 
 class AndroidAttachmentFetcher(
-    private val client: ContentProviderClient,
+    private val client: LocalStorageClient,
     private val account: Account
 ) : AttachmentFetcher {
 

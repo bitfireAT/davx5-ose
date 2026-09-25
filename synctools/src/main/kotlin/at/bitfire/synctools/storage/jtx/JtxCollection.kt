@@ -9,10 +9,8 @@ import android.content.ContentValues
 import android.content.Entity
 import android.net.Uri
 import android.os.ParcelFileDescriptor
-import android.os.RemoteException
 import at.bitfire.synctools.storage.BatchOperation.CpoBuilder
 import at.bitfire.synctools.storage.LocalStorageException
-import at.bitfire.synctools.storage.queryFlow
 import at.bitfire.synctools.storage.toContentValues
 import at.techbee.jtx.JtxContract
 import at.techbee.jtx.JtxContract.asSyncAdapter
@@ -103,20 +101,16 @@ class JtxCollection(
      * @throws LocalStorageException when the content provider returns an error
      */
     fun addJtxObject(jtxEntity: JtxEntity): Long {
-        try {
-            val batch = JtxBatchOperation(client)
-            addJtxObject(jtxEntity.entity, batch)
-            batch.commit()
+        val batch = JtxBatchOperation(client)
+        addJtxObject(jtxEntity.entity, batch)
+        batch.commit()
 
-            val uri = batch.getResult(0)?.uri ?: throw LocalStorageException("Content provider returned null on insert")
-            val mainRowId = ContentUris.parseId(uri)
+        val uri = batch.getResult(0)?.uri ?: throw LocalStorageException("Content provider returned null on insert")
+        val mainRowId = ContentUris.parseId(uri)
 
-            addBinaryDataRows(jtxEntity.binaryDataRows, mainRowId)
+        addBinaryDataRows(jtxEntity.binaryDataRows, mainRowId)
 
-            return mainRowId
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't insert jtx object", e)
-        }
+        return mainRowId
     }
 
     /**
@@ -131,29 +125,25 @@ class JtxCollection(
      */
     fun addJtxObjects(jtxEntities: List<JtxEntity>): Long {
         require(jtxEntities.isNotEmpty()) { "jtxEntities must not be empty" }
-        try {
-            val batch = JtxBatchOperation(client)
+        val batch = JtxBatchOperation(client)
 
-            val mainRowIndices = mutableListOf<Int>()
-            for (jtxEntity in jtxEntities) {
-                mainRowIndices.add(batch.nextBackrefIdx())
-                addJtxObject(jtxEntity.entity, batch)
-            }
-
-            batch.commit()
-
-            for (jtxEntitiesIndex in jtxEntities.indices) {
-                val mainRowIndex = mainRowIndices[jtxEntitiesIndex]
-                val mainRowId = ContentUris.parseId(batch.getResult(mainRowIndex)?.uri ?: continue)
-                val jtxEntity = jtxEntities[jtxEntitiesIndex]
-                addBinaryDataRows(jtxEntity.binaryDataRows, mainRowId)
-            }
-
-            val uri = batch.getResult(0)?.uri ?: throw LocalStorageException("Content provider returned null on insert")
-            return ContentUris.parseId(uri)
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't insert jtx objects", e)
+        val mainRowIndices = mutableListOf<Int>()
+        for (jtxEntity in jtxEntities) {
+            mainRowIndices.add(batch.nextBackrefIdx())
+            addJtxObject(jtxEntity.entity, batch)
         }
+
+        batch.commit()
+
+        for (jtxEntitiesIndex in jtxEntities.indices) {
+            val mainRowIndex = mainRowIndices[jtxEntitiesIndex]
+            val mainRowId = ContentUris.parseId(batch.getResult(mainRowIndex)?.uri ?: continue)
+            val jtxEntity = jtxEntities[jtxEntitiesIndex]
+            addBinaryDataRows(jtxEntity.binaryDataRows, mainRowId)
+        }
+
+        val uri = batch.getResult(0)?.uri ?: throw LocalStorageException("Content provider returned null on insert")
+        return ContentUris.parseId(uri)
     }
 
     private fun addJtxObject(entity: Entity, batch: JtxBatchOperation) {
@@ -196,14 +186,10 @@ class JtxCollection(
      * @throws LocalStorageException when the content provider returns an error
      */
     fun countJtxObjects(where: String?, whereArgs: Array<String>?): Int {
-        try {
-            val (protectedWhere, protectedWhereArgs) = whereWithCollectionId(where, whereArgs)
-            client.query(jtxObjectsUri, arrayOf(JtxContract.JtxICalObject.ID),
-                protectedWhere, protectedWhereArgs, null)?.use { cursor ->
-                return cursor.count
-            }
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't count jtx objects", e)
+        val (protectedWhere, protectedWhereArgs) = whereWithCollectionId(where, whereArgs)
+        client.query(jtxObjectsUri, arrayOf(JtxContract.JtxICalObject.ID),
+            protectedWhere, protectedWhereArgs, null)?.use { cursor ->
+            return cursor.count
         }
         return 0
     }
@@ -222,14 +208,10 @@ class JtxCollection(
      * @throws LocalStorageException when the content provider returns an error
      */
     fun findJtxObject(where: String?, whereArgs: Array<String>?, sortOrder: String? = null): Entity? {
-        try {
-            val (protectedWhere, protectedWhereArgs) = whereWithCollectionId(where, whereArgs)
-            client.query(jtxObjectsUri, null, protectedWhere, protectedWhereArgs, sortOrder)?.use { cursor ->
-                if (cursor.moveToNext())
-                    return readEntity(cursor.toContentValues())
-            }
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't query jtx objects", e)
+        val (protectedWhere, protectedWhereArgs) = whereWithCollectionId(where, whereArgs)
+        client.query(jtxObjectsUri, null, protectedWhere, protectedWhereArgs, sortOrder)?.use { cursor ->
+            if (cursor.moveToNext())
+                return readEntity(cursor.toContentValues())
         }
         return null
     }
@@ -248,14 +230,10 @@ class JtxCollection(
      * @throws LocalStorageException when the content provider returns an error
      */
     fun findJtxObjectRow(projection: Array<String>?, where: String?, whereArgs: Array<String>?): ContentValues? {
-        try {
-            val (protectedWhere, protectedWhereArgs) = whereWithCollectionId(where, whereArgs)
-            client.query(jtxObjectsUri, projection, protectedWhere, protectedWhereArgs, null)?.use { cursor ->
-                if (cursor.moveToNext())
-                    return cursor.toContentValues()
-            }
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't query jtx object rows", e)
+        val (protectedWhere, protectedWhereArgs) = whereWithCollectionId(where, whereArgs)
+        client.query(jtxObjectsUri, projection, protectedWhere, protectedWhereArgs, null)?.use { cursor ->
+            if (cursor.moveToNext())
+                return cursor.toContentValues()
         }
         return null
     }
@@ -270,13 +248,9 @@ class JtxCollection(
      * @throws LocalStorageException when the content provider returns an error
      */
     fun getJtxObject(id: Long): Entity? {
-        try {
-            client.query(jtxObjectUri(id), null, null, null, null)?.use { cursor ->
-                if (cursor.moveToNext())
-                    return readEntity(cursor.toContentValues())
-            }
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't query jtx object entity", e)
+        client.query(jtxObjectUri(id), null, null, null, null)?.use { cursor ->
+            if (cursor.moveToNext())
+                return readEntity(cursor.toContentValues())
         }
         return null
     }
@@ -294,13 +268,9 @@ class JtxCollection(
      * @throws LocalStorageException when the content provider returns an error
      */
     fun getJtxObjectRow(id: Long, projection: Array<String>? = null, where: String? = null, whereArgs: Array<String>? = null): ContentValues? {
-        try {
-            client.query(jtxObjectUri(id), projection, where, whereArgs, null)?.use { cursor ->
-                if (cursor.moveToNext())
-                    return cursor.toContentValues()
-            }
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't query jtx object row", e)
+        client.query(jtxObjectUri(id), projection, where, whereArgs, null)?.use { cursor ->
+            if (cursor.moveToNext())
+                return cursor.toContentValues()
         }
         return null
     }
@@ -318,14 +288,10 @@ class JtxCollection(
      * @throws LocalStorageException when the content provider returns an error
      */
     fun iterateJtxObjectRows(projection: Array<String>?, where: String?, whereArgs: Array<String>?, body: (ContentValues) -> Unit) {
-        try {
-            val (protectedWhere, protectedWhereArgs) = whereWithCollectionId(where, whereArgs)
-            client.query(jtxObjectsUri, projection, protectedWhere, protectedWhereArgs, null)?.use { cursor ->
-                while (cursor.moveToNext())
-                    body(cursor.toContentValues())
-            }
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't iterate jtx object rows", e)
+        val (protectedWhere, protectedWhereArgs) = whereWithCollectionId(where, whereArgs)
+        client.query(jtxObjectsUri, projection, protectedWhere, protectedWhereArgs, null)?.use { cursor ->
+            while (cursor.moveToNext())
+                body(cursor.toContentValues())
         }
     }
 
@@ -362,11 +328,7 @@ class JtxCollection(
      * @throws LocalStorageException when the content provider returns an error
      */
     fun updateJtxObjectRow(id: Long, values: ContentValues) {
-        try {
-            client.update(jtxObjectUri(id), values, null, null)
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't update jtx object row $id", e)
-        }
+        client.update(jtxObjectUri(id), values, null, null)
     }
 
     /**
@@ -396,15 +358,11 @@ class JtxCollection(
      * @throws LocalStorageException when the content provider returns an error
      */
     fun updateJtxObject(id: Long, jtxEntity: JtxEntity) {
-        try {
-            val batch = JtxBatchOperation(client)
-            updateJtxObject(id, jtxEntity.entity, batch)
-            batch.commit()
+        val batch = JtxBatchOperation(client)
+        updateJtxObject(id, jtxEntity.entity, batch)
+        batch.commit()
 
-            addBinaryDataRows(jtxEntity.binaryDataRows, id)
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't update jtx object $id", e)
-        }
+        addBinaryDataRows(jtxEntity.binaryDataRows, id)
     }
 
     /**
@@ -462,13 +420,10 @@ class JtxCollection(
      *
      * @throws LocalStorageException when the content provider returns an error
      */
-    fun updateJtxObjectRows(values: ContentValues, where: String?, whereArgs: Array<String>?): Int =
-        try {
-            val (protectedWhere, protectedWhereArgs) = whereWithCollectionId(where, whereArgs)
-            client.update(jtxObjectsUri, values, protectedWhere, protectedWhereArgs)
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't update jtx objects", e)
-        }
+    fun updateJtxObjectRows(values: ContentValues, where: String?, whereArgs: Array<String>?): Int {
+        val (protectedWhere, protectedWhereArgs) = whereWithCollectionId(where, whereArgs)
+        return client.update(jtxObjectsUri, values, protectedWhere, protectedWhereArgs)
+    }
 
     /**
      * Deletes all jtx objects of this collection from the local storage.
@@ -477,12 +432,8 @@ class JtxCollection(
      */
     @TestOnly
     fun deleteAllJtxObjects() {
-        try {
-            val (protectedWhere, protectedWhereArgs) = whereWithCollectionId(null, null)
-            client.delete(jtxObjectsUri, protectedWhere, protectedWhereArgs)
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't delete all jtx objects from collection", e)
-        }
+        val (protectedWhere, protectedWhereArgs) = whereWithCollectionId(null, null)
+        client.delete(jtxObjectsUri, protectedWhere, protectedWhereArgs)
     }
 
     /**
@@ -493,11 +444,7 @@ class JtxCollection(
      * @throws LocalStorageException when the content provider returns an error
      */
     fun deleteJtxObject(id: Long) {
-        try {
-            client.delete(jtxObjectUri(id), null, null)
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't delete jtx object $id", e)
-        }
+        client.delete(jtxObjectUri(id), null, null)
     }
 
     internal fun deleteJtxObject(id: Long, batch: JtxBatchOperation) {
@@ -567,16 +514,12 @@ class JtxCollection(
         val objectId = mainValues.getAsLong(JtxContract.JtxICalObject.ID) ?: return entity
 
         for (subUri in SUB_VALUE_URIS) {
-            try {
-                client.query(
-                    subUri.asSyncAdapter(account),
-                    null, "$ICALOBJECT_ID=?", arrayOf(objectId.toString()), null
-                )?.use { cursor ->
-                    while (cursor.moveToNext())
-                        entity.addSubValue(subUri, cursor.toContentValues())
-                }
-            } catch (e: RemoteException) {
-                throw LocalStorageException("Couldn't query jtx sub-rows from $subUri", e)
+            client.query(
+                subUri.asSyncAdapter(account),
+                null, "$ICALOBJECT_ID=?", arrayOf(objectId.toString()), null
+            )?.use { cursor ->
+                while (cursor.moveToNext())
+                    entity.addSubValue(subUri, cursor.toContentValues())
             }
         }
 

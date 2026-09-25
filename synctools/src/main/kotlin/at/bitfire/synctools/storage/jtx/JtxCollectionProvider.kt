@@ -8,8 +8,8 @@ import android.accounts.Account
 import android.content.ContentProviderClient
 import android.content.ContentUris
 import android.content.ContentValues
-import android.os.RemoteException
 import androidx.core.content.contentValuesOf
+import at.bitfire.synctools.storage.LocalStorageClient
 import at.bitfire.synctools.storage.LocalStorageException
 import at.bitfire.synctools.storage.toContentValues
 import at.techbee.jtx.JtxContract
@@ -22,12 +22,14 @@ import java.util.logging.Logger
  * [JtxCollection], in the jtx Board content provider.
  *
  * @param account   Account that all operations are bound to
- * @param client    content provider client
+ * @param client    [LocalStorageClient] to access the content provider
  */
 class JtxCollectionProvider(
     val account: Account,
-    internal val client: ContentProviderClient
+    internal val client: LocalStorageClient
 ) {
+    @Deprecated("Remove once all of at.bitfire.synctools.storage uses LocalStorageClient")
+    constructor(account: Account, provider: ContentProviderClient) : this(account, LocalStorageClient(provider))
 
     private val logger = Logger.getLogger(javaClass.name)
 
@@ -47,14 +49,7 @@ class JtxCollectionProvider(
         values.put(JtxContract.JtxCollection.ACCOUNT_NAME, account.name)
         values.put(JtxContract.JtxCollection.ACCOUNT_TYPE, account.type)
 
-        val uri =
-            try {
-                client.insert(collectionsUri, values)
-            } catch (e: RemoteException) {
-                throw LocalStorageException("Couldn't create jtx collection", e)
-            }
-        if (uri == null)
-            throw LocalStorageException("Couldn't create jtx collection")
+        val uri = client.insert(collectionsUri, values) ?: throw LocalStorageException("Couldn't create jtx collection")
         return ContentUris.parseId(uri)
     }
 
@@ -81,13 +76,9 @@ class JtxCollectionProvider(
      */
     fun findCollections(where: String? = null, whereArgs: Array<String>? = null, sortOrder: String? = null): List<JtxCollection> {
         val result = LinkedList<JtxCollection>()
-        try {
-            client.query(collectionsUri, null, where, whereArgs, sortOrder)?.use { cursor ->
-                while (cursor.moveToNext())
-                    result += JtxCollection(this, cursor.toContentValues())
-            }
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't query jtx collections", e)
+        client.query(collectionsUri, null, where, whereArgs, sortOrder)?.use { cursor ->
+            while (cursor.moveToNext())
+                result += JtxCollection(this, cursor.toContentValues())
         }
         return result
     }
@@ -102,13 +93,9 @@ class JtxCollectionProvider(
      * @throws LocalStorageException when the content provider returns an error
      */
     fun findFirstCollection(where: String? = null, whereArgs: Array<String>? = null, sortOrder: String? = null): JtxCollection? {
-        try {
-            client.query(collectionsUri, null, where, whereArgs, sortOrder)?.use { cursor ->
-                if (cursor.moveToNext())
-                    return JtxCollection(this, cursor.toContentValues())
-            }
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't query jtx collections", e)
+        client.query(collectionsUri, null, where, whereArgs, sortOrder)?.use { cursor ->
+            if (cursor.moveToNext())
+                return JtxCollection(this, cursor.toContentValues())
         }
         return null
     }
@@ -121,13 +108,9 @@ class JtxCollectionProvider(
      * @throws LocalStorageException when the content provider returns an error
      */
     fun getCollection(id: Long): JtxCollection? {
-        try {
-            client.query(collectionUri(id), null, null, null, null)?.use { cursor ->
-                if (cursor.moveToNext())
-                    return JtxCollection(this, cursor.toContentValues())
-            }
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't query jtx collection", e)
+        client.query(collectionUri(id), null, null, null, null)?.use { cursor ->
+            if (cursor.moveToNext())
+                return JtxCollection(this, cursor.toContentValues())
         }
         return null
     }
@@ -142,11 +125,7 @@ class JtxCollectionProvider(
      */
     fun updateCollection(id: Long, values: ContentValues): Int {
         logger.fine("Updating jtx collection #$id with $values")
-        try {
-            return client.update(collectionUri(id), values, null, null)
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't update jtx collection", e)
-        }
+        return client.update(collectionUri(id), values, null, null)
     }
 
     /**
@@ -158,11 +137,7 @@ class JtxCollectionProvider(
      */
     fun deleteCollection(id: Long): Int {
         logger.fine("Deleting jtx collection #$id")
-        try {
-            return client.delete(collectionUri(id), null, null)
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't delete jtx collection", e)
-        }
+        return client.delete(collectionUri(id), null, null)
     }
 
 
@@ -176,15 +151,11 @@ class JtxCollectionProvider(
      * @throws LocalStorageException when the content provider returns an error
      */
     fun readCollectionSyncState(id: Long): String? =
-        try {
-            client.query(collectionUri(id), arrayOf(JtxContract.JtxCollection.SYNC_VERSION), null, null, null)?.use { cursor ->
-                if (cursor.moveToNext())
-                    cursor.getString(0)
-                else
-                    null
-            }
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't query jtx collection sync state", e)
+        client.query(collectionUri(id), arrayOf(JtxContract.JtxCollection.SYNC_VERSION), null, null, null)?.use { cursor ->
+            if (cursor.moveToNext())
+                cursor.getString(0)
+            else
+                null
         }
 
     /**
