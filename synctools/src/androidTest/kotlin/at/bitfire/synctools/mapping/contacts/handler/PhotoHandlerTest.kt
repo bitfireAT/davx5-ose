@@ -15,9 +15,11 @@ import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
 import at.bitfire.synctools.mapping.contacts.Contact
 import at.bitfire.synctools.mapping.contacts.TestUtils
+import at.bitfire.synctools.storage.LocalStorageClient
 import at.bitfire.synctools.storage.contacts.AndroidAddressBook
 import at.bitfire.synctools.storage.contacts.AndroidContact
 import at.bitfire.synctools.storage.contacts.TestAddressBook
+import io.mockk.mockk
 import org.junit.AfterClass
 import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
@@ -82,8 +84,9 @@ class PhotoHandlerTest {
 
     @Test
     fun testPhoto_Empty() {
+        val client = mockk<LocalStorageClient>(relaxed = true)
         val contact = Contact()
-        PhotoHandler(null).handle(ContentValues().apply {
+        PhotoHandler(client).handle(ContentValues().apply {
             putNull(Photo.PHOTO)
         }, contact)
         assertNull(contact.photo)
@@ -91,9 +94,10 @@ class PhotoHandlerTest {
 
     @Test
     fun testPhoto_Blob() {
+        val client = mockk<LocalStorageClient>(relaxed = true)
         val blob = TestUtils.resourceToByteArray("/small.jpg")
         val contact = Contact()
-        PhotoHandler(null).handle(ContentValues().apply {
+        PhotoHandler(client).handle(ContentValues().apply {
             put(Photo.PHOTO, blob)
         }, contact)
         assertEquals(blob, contact.photo)

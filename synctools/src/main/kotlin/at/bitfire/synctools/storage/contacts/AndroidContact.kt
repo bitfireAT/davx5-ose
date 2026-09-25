@@ -104,7 +104,7 @@ class AndroidContact(
         var iter: EntityIterator? = null
         try {
             iter = RawContacts.newEntityIterator(
-                addressBook.provider.query(
+                addressBook.client.query(
                     ContactsContract.RawContactsEntity.CONTENT_URI.asSyncAdapter(),
                     null, RawContacts._ID + "=?", arrayOf(id.toString()), null
                 )
@@ -140,7 +140,7 @@ class AndroidContact(
 
     fun add(): Uri {
         try {
-            val provider = addressBook.provider
+            val provider = addressBook.client
             val batch = ContactsBatchOperation(provider)
 
             val builder = BatchOperation.CpoBuilder.newInsert(RawContacts.CONTENT_URI.asSyncAdapter())
@@ -166,7 +166,7 @@ class AndroidContact(
         try {
             setContact(data)
 
-            val provider = addressBook.provider
+            val provider = addressBook.client
             val batch = ContactsBatchOperation(provider)
             val uri = rawContactSyncURI()
             val builder = BatchOperation.CpoBuilder.newUpdate(uri)
@@ -206,7 +206,7 @@ class AndroidContact(
      */
     fun delete() {
         try {
-            addressBook.provider.delete(rawContactSyncURI(), null, null)
+            addressBook.client.delete(rawContactSyncURI(), null, null)
         } catch (e: RemoteException) {
             throw LocalStorageException("Couldn't delete raw contact $id", e)
         }
@@ -219,7 +219,7 @@ class AndroidContact(
      */
     fun update(values: ContentValues) {
         try {
-            addressBook.provider.update(rawContactSyncURI(), values, null, null)
+            addressBook.client.update(rawContactSyncURI(), values, null, null)
         } catch (e: RemoteException) {
             throw LocalStorageException("Couldn't update raw contact $id", e)
         }

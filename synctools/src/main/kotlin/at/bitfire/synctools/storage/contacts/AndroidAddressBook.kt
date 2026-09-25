@@ -13,7 +13,6 @@ import android.content.Context
 import android.content.Entity
 import android.graphics.BitmapFactory
 import android.net.Uri
-import android.os.RemoteException
 import android.provider.ContactsContract
 import android.provider.ContactsContract.CommonDataKinds.Photo
 import android.provider.ContactsContract.Groups
@@ -21,10 +20,10 @@ import android.provider.ContactsContract.RawContacts
 import androidx.core.content.contentValuesOf
 import androidx.core.net.toUri
 import at.bitfire.synctools.storage.BatchOperation
+import at.bitfire.synctools.storage.LocalStorageClient
 import at.bitfire.synctools.storage.LocalStorageException
 import at.bitfire.synctools.storage.contacts.AddressContract.asSyncAdapter
-import at.bitfire.synctools.storage.contacts.AndroidAddressBook.Companion.USER_DATA_READ_ONLY
-import at.bitfire.synctools.storage.queryFlow
+import at.bitfire.synctools.storage.runWrappingRemoteException
 import at.bitfire.synctools.storage.toContentValues
 import at.bitfire.synctools.util.setAndVerifyUserData
 import at.bitfire.synctools.vcard.GroupMethod
@@ -47,15 +46,22 @@ import java.util.logging.Logger
  *
  * @param context            application context (used to obtain the [AccountManager])
  * @param addressBookAccount account whose contacts and groups are managed
- * @param provider           content provider client for [ContactsContract]
+ * @param client             [LocalStorageClient] for [ContactsContract]
  * @param groupMethod        method used to represent group memberships (as vCard groups or as CATEGORIES)
  */
 class AndroidAddressBook(
     private val context: Context,
     var addressBookAccount: Account,
-    val provider: ContentProviderClient,
+    val client: LocalStorageClient,
     val groupMethod: GroupMethod
 ) {
+    @Deprecated("Remove once all of at.bitfire.synctools.storage uses LocalStorageClient")
+    constructor(
+        context: Context,
+        addressBookAccount: Account,
+        provider: ContentProviderClient,
+        groupMethod: GroupMethod
+    ) : this(context, addressBookAccount, LocalStorageClient(provider), groupMethod)
 
     private val logger
         get() = Logger.getLogger(AndroidAddressBook::class.java.name)
@@ -82,45 +88,48 @@ class AndroidAddressBook(
 
             // update raw contacts
             val rawContactValues = contentValuesOf(RawContacts.RAW_CONTACT_IS_READ_ONLY to if (readOnly) 1 else 0)
-            provider.update(rawContactsSyncUri(), rawContactValues, null, null)
+            client.update(rawContactsSyncUri(), rawContactValues, null, null)
 
             // update data rows
             val dataValues = contentValuesOf(ContactsContract.Data.IS_READ_ONLY to if (readOnly) 1 else 0)
-            provider.update(ContactsContract.Data.CONTENT_URI.asSyncAdapter(addressBookAccount), dataValues, null, null)
+            client.update(ContactsContract.Data.CONTENT_URI.asSyncAdapter(addressBookAccount), dataValues, null, null)
 
             // update group rows
             val groupValues = contentValuesOf(Groups.GROUP_IS_READ_ONLY to if (readOnly) 1 else 0)
-            provider.update(groupsSyncUri(), groupValues, null, null)
+            client.update(groupsSyncUri(), groupValues, null, null)
         }
 
+    /**
+     * [ContactsContract.Settings] for the current address book.
+     *
+     * @throws FileNotFoundException if the settings row couldn't be fetched.
+     * @throws LocalStorageException on content provider errors
+     */
     var settings: ContentValues
-        /**
-         * Retrieves [ContactsContract.Settings] for the current address book.
-         * @throws FileNotFoundException if the settings row couldn't be fetched.
-         * @throws android.os.RemoteException on content provider errors
-         */
         get() {
-            provider.query(ContactsContract.Settings.CONTENT_URI.asSyncAdapter(addressBookAccount), null, null, null, null)?.use { cursor ->
+            client.query(ContactsContract.Settings.CONTENT_URI.asSyncAdapter(addressBookAccount), null, null, null, null)?.use { cursor ->
                 if (cursor.moveToNext())
                     return cursor.toContentValues()
             }
             throw FileNotFoundException()
         }
-        /**
-         * Updates [ContactsContract.Settings] by inserting the given values into
-         * the current address book.
-         * @param values settings to be updated
-         * @throws android.os.RemoteException on content provider errors
-         */
         set(values) {
             values.put(ContactsContract.Settings.ACCOUNT_NAME, addressBookAccount.name)
             values.put(ContactsContract.Settings.ACCOUNT_TYPE, addressBookAccount.type)
-            provider.insert(ContactsContract.Settings.CONTENT_URI.asSyncAdapter(addressBookAccount), values)
+            client.insert(ContactsContract.Settings.CONTENT_URI.asSyncAdapter(addressBookAccount), values)
         }
 
     var syncState: ByteArray?
-        get() = ContactsContract.SyncState.get(provider, addressBookAccount)
-        set(data) = ContactsContract.SyncState.set(provider, addressBookAccount, data)
+        get() {
+            return runWrappingRemoteException {
+                ContactsContract.SyncState.get(client.provider, addressBookAccount)
+            }
+        }
+        set(data) {
+            runWrappingRemoteException {
+                ContactsContract.SyncState.set(client.provider, addressBookAccount, data)
+            }
+        }
 
     // region ContactsContract.RawContacts CRUD
 
@@ -134,34 +143,30 @@ class AndroidAddressBook(
      * @throws LocalStorageException If the contact cannot be inserted.
      */
     fun addRawContact(rawContact: Entity): Long {
-        try {
-            val batch = ContactsBatchOperation(provider)
+        val batch = ContactsBatchOperation(client)
 
-            val rawContactValues = ContentValues(rawContact.entityValues).apply {
-                remove(RawContacts._ID)
-                put(RawContacts.ACCOUNT_NAME, addressBookAccount.name)
-                put(RawContacts.ACCOUNT_TYPE, addressBookAccount.type)
+        val rawContactValues = ContentValues(rawContact.entityValues).apply {
+            remove(RawContacts._ID)
+            put(RawContacts.ACCOUNT_NAME, addressBookAccount.name)
+            put(RawContacts.ACCOUNT_TYPE, addressBookAccount.type)
+        }
+        batch += BatchOperation.CpoBuilder
+            .newInsert(rawContactsSyncUri())
+            .withValues(rawContactValues)
+
+        for (subValue in rawContact.subValues) {
+            val dataValues = ContentValues(subValue.values).apply {
+                remove(ContactsContract.Data._ID)
             }
             batch += BatchOperation.CpoBuilder
-                .newInsert(rawContactsSyncUri())
-                .withValues(rawContactValues)
-
-            for (subValue in rawContact.subValues) {
-                val dataValues = ContentValues(subValue.values).apply {
-                    remove(ContactsContract.Data._ID)
-                }
-                batch += BatchOperation.CpoBuilder
-                    .newInsert(ContactsContract.Data.CONTENT_URI.asSyncAdapter())
-                    .withValues(dataValues)
-                    .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
-            }
-
-            batch.commit()
-            val uri = batch.getResult(0)?.uri ?: throw LocalStorageException("Content provider returned null on insert")
-            return ContentUris.parseId(uri)
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't insert raw contact", e)
+                .newInsert(ContactsContract.Data.CONTENT_URI.asSyncAdapter())
+                .withValues(dataValues)
+                .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
         }
+
+        batch.commit()
+        val uri = batch.getResult(0)?.uri ?: throw LocalStorageException("Content provider returned null on insert")
+        return ContentUris.parseId(uri)
     }
 
     /**
@@ -175,7 +180,7 @@ class AndroidAddressBook(
      */
     fun countRawContacts(where: String?, whereArgs: Array<String>?): Int {
         // account is implicitly restricted via the URI (asSyncAdapter appends ACCOUNT_NAME/ACCOUNT_TYPE)
-        provider.query(
+        client.query(
             rawContactsSyncUri(), arrayOf(RawContacts._ID),
             where, whereArgs, null
         )?.use { cursor ->
@@ -193,7 +198,7 @@ class AndroidAddressBook(
      * @param whereArgs  optional arguments for [where]
      */
     fun queryRawContactRows(where: String? = null, whereArgs: Array<String>? = null): Flow<ContentValues> =
-        provider.queryFlow(rawContactsSyncUri(), null, where, whereArgs)
+        client.queryFlow(rawContactsSyncUri(), null, where, whereArgs)
 
     /**
      * Finds the first raw contact row matching the given selection, without collecting
@@ -206,7 +211,7 @@ class AndroidAddressBook(
      * @return the matching row, or `null` if none matches
      */
     fun getRawContactRowOrNull(where: String?, whereArgs: Array<String>?): ContentValues? {
-        provider.query(rawContactsSyncUri(), null, where, whereArgs, null)?.use { cursor ->
+        client.query(rawContactsSyncUri(), null, where, whereArgs, null)?.use { cursor ->
             if (cursor.moveToNext())
                 return cursor.toContentValues()
         }
@@ -263,7 +268,7 @@ class AndroidAddressBook(
             ?: throw FileNotFoundException()
 
     fun findOrCreateGroup(title: String): Long {
-        provider.query(
+        client.query(
             Groups.CONTENT_URI.asSyncAdapter(addressBookAccount), arrayOf(Groups._ID),
             "${Groups.TITLE}=?", arrayOf(title), null
         )?.use { cursor ->
@@ -272,8 +277,8 @@ class AndroidAddressBook(
         }
 
         val values = contentValuesOf(Groups.TITLE to title)
-        val uri = provider.insert(Groups.CONTENT_URI.asSyncAdapter(addressBookAccount), values)
-            ?: throw RemoteException("Couldn't create contact group")
+        val uri = client.insert(Groups.CONTENT_URI.asSyncAdapter(addressBookAccount), values)
+            ?: throw LocalStorageException("Couldn't create contact group")
         return ContentUris.parseId(uri)
     }
 
@@ -291,7 +296,7 @@ class AndroidAddressBook(
         where: String? = null,
         whereArgs: Array<String>? = null
     ): Flow<ContentValues> =
-        provider.queryFlow(groupsSyncUri(), projection, where, whereArgs)
+        client.queryFlow(groupsSyncUri(), projection, where, whereArgs)
 
     /**
      * Finds the first group row matching the given selection, without collecting
@@ -304,7 +309,7 @@ class AndroidAddressBook(
      * @return the matching row, or `null` if none matches
      */
     fun getGroupOrNull(where: String?, whereArgs: Array<String>?): ContentValues? {
-        provider.query(groupsSyncUri(), null, where, whereArgs, null)?.use { cursor ->
+        client.query(groupsSyncUri(), null, where, whereArgs, null)?.use { cursor ->
             if (cursor.moveToNext())
                 return cursor.toContentValues()
         }
@@ -322,7 +327,7 @@ class AndroidAddressBook(
      */
     fun countGroups(where: String?, whereArgs: Array<String>?): Int {
         // account is implicitly restricted via the URI (asSyncAdapter appends ACCOUNT_NAME/ACCOUNT_TYPE)
-        provider.query(
+        client.query(
             groupsSyncUri(), arrayOf(Groups._ID),
             where, whereArgs, null
         )?.use { cursor ->
@@ -405,7 +410,7 @@ class AndroidAddressBook(
      */
     fun setPhoto(rawContactId: Long, photo: ByteArray?) {
         if (photo == null)
-            provider.delete(
+            client.delete(
                 /* url = */ ContactsContract.Data.CONTENT_URI.asSyncAdapter(addressBookAccount),
                 /* selection = */ "${ContactsContract.Data.RAW_CONTACT_ID}=? AND ${ContactsContract.Data.MIMETYPE}=?",
                 /* selectionArgs = */ arrayOf(rawContactId.toString(), Photo.CONTENT_ITEM_TYPE)
@@ -415,7 +420,7 @@ class AndroidAddressBook(
             // insert path (mDataId=0) rather than the update path. PipeMonitor's
             // internal update call uses a bare Data URI (no asSyncAdapter), which
             // is silently blocked when IS_READ_ONLY=1. Inserts are not blocked.
-            provider.delete(
+            client.delete(
                 ContactsContract.Data.CONTENT_URI.asSyncAdapter(addressBookAccount),
                 "${ContactsContract.Data.RAW_CONTACT_ID}=? AND ${ContactsContract.Data.MIMETYPE}=?",
                 arrayOf(rawContactId.toString(), Photo.CONTENT_ITEM_TYPE)
@@ -430,7 +435,7 @@ class AndroidAddressBook(
             logger.log(Level.WARNING, "Ignoring invalid contact photo")
 
         // reset dirty flag — see KDoc for why this is always needed
-        provider.update(rawContactSyncUri(rawContactId), contentValuesOf(RawContacts.DIRTY to 0), null, null)
+        client.update(rawContactSyncUri(rawContactId), contentValuesOf(RawContacts.DIRTY to 0), null, null)
     }
 
     private fun isValidPhoto(photo: ByteArray): Boolean {
@@ -445,7 +450,7 @@ class AndroidAddressBook(
             .appendPath(RawContacts.DisplayPhoto.CONTENT_DIRECTORY)
             .build()
         logger.log(Level.FINE, "Writing photo to {0} ({1} bytes)", arrayOf(uri, photo.size))
-        provider.openAssetFile(uri, "w")?.use { fd ->
+        client.openAssetFile(uri, "w")?.use { fd ->
             try {
                 fd.createOutputStream()?.use { os ->
                     os.write(photo)
@@ -463,7 +468,7 @@ class AndroidAddressBook(
             .build()
         (1..70).forEach { i ->
             // wait max. 70x100 ms = 7 seconds
-            provider.query(dataRowUri, arrayOf(Photo.PHOTO_URI), "${RawContacts.Data.MIMETYPE}=?", arrayOf(Photo.CONTENT_ITEM_TYPE), null)?.use { cursor ->
+            client.query(dataRowUri, arrayOf(Photo.PHOTO_URI), "${RawContacts.Data.MIMETYPE}=?", arrayOf(Photo.CONTENT_ITEM_TYPE), null)?.use { cursor ->
                 if (cursor.moveToNext())
                     cursor.getString(0)?.let { uriStr ->
                         return uriStr.toUri()

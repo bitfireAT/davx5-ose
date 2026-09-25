@@ -76,7 +76,7 @@ class AndroidGroup(
 
         val id = requireNotNull(id)
         val contact = Contact()
-        addressBook.provider.query(
+        addressBook.client.query(
             ContentUris.withAppendedId(Groups.CONTENT_URI, id).asSyncAdapter(),
             arrayOf(AddressContract.GroupColumns.UID, Groups.TITLE, Groups.NOTES), null, null, null
         )?.use { cursor ->
@@ -90,7 +90,7 @@ class AndroidGroup(
         }
 
         // get all contacts which are member of the group
-        addressBook.provider.query(
+        addressBook.client.query(
             ContactsContract.Data.CONTENT_URI.asSyncAdapter(),
             arrayOf(Data.RAW_CONTACT_ID),
             GroupMembership.MIMETYPE + "=? AND " + GroupMembership.GROUP_ROW_ID + "=?",
@@ -101,7 +101,7 @@ class AndroidGroup(
                 logger.fine("Member ID: $contactId")
 
                 // get UID from the member
-                addressBook.provider.query(
+                addressBook.client.query(
                     ContentUris.withAppendedId(RawContacts.CONTENT_URI, contactId).asSyncAdapter(),
                     arrayOf(AddressContract.RawContactColumns.UID), null, null, null
                 )?.use { rawContactCursor ->
@@ -151,7 +151,7 @@ class AndroidGroup(
         )
         if (addressBook.readOnly)
             values.put(Groups.GROUP_IS_READ_ONLY, 1)
-        val uri = addressBook.provider.insert(addressBook.groupsSyncUri(), values)
+        val uri = addressBook.client.insert(addressBook.groupsSyncUri(), values)
             ?: throw LocalStorageException("Empty result from content provider when adding group")
         id = ContentUris.parseId(uri)
         return uri
@@ -177,7 +177,7 @@ class AndroidGroup(
     fun update(values: ContentValues): Uri {
         val uri = groupSyncURI()
         try {
-            addressBook.provider.update(uri, values, null, null)
+            addressBook.client.update(uri, values, null, null)
         } catch (e: RemoteException) {
             throw LocalStorageException("Couldn't update group $id", e)
         }
@@ -191,7 +191,7 @@ class AndroidGroup(
      */
     fun delete() {
         try {
-            addressBook.provider.delete(groupSyncURI(), null, null)
+            addressBook.client.delete(groupSyncURI(), null, null)
         } catch (e: RemoteException) {
             throw LocalStorageException("Couldn't delete group $id", e)
         }
@@ -204,7 +204,7 @@ class AndroidGroup(
     fun getMembers(): List<Long> {
         val id = requireNotNull(id)
         val members = LinkedList<Long>()
-        addressBook.provider.query(
+        addressBook.client.query(
             ContactsContract.Data.CONTENT_URI.asSyncAdapter(),
             arrayOf(Data.RAW_CONTACT_ID),
             "${GroupMembership.MIMETYPE}=? AND ${GroupMembership.GROUP_ROW_ID}=?",

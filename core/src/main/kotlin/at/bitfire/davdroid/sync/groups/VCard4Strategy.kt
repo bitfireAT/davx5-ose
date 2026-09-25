@@ -31,7 +31,7 @@ class VCard4Strategy(val addressBook: LocalAddressBook): ContactGroupStrategy {
                3. Mark groups which have been added to/removed from the contact as dirty so that they will be uploaded.
                4. Successful upload will reset dirty flag and update cached group memberships.
              */
-            val batch = ContactsBatchOperation(addressBook.ab.provider)
+            val batch = ContactsBatchOperation(addressBook.ab.client)
             addressBook.findDirtyContacts().collect { contact ->
                 try {
                     logger.log(

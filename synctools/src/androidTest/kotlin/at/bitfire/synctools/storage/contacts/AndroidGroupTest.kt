@@ -63,7 +63,7 @@ class AndroidGroupTest {
     }
 
     private fun removeGroups() = runBlocking {
-        addressBook.provider.delete(addressBook.groupsSyncUri(), null, null)
+        addressBook.client.delete(addressBook.groupsSyncUri(), null, null)
         assertEquals(0, addressBook.countGroups(null, null))
     }
 
@@ -150,7 +150,7 @@ class AndroidGroupTest {
         val contact = AndroidContact(addressBook, Contact().apply { displayName = "Test Contact" }, null, null, 0)
         contact.add()
 
-        val batch = ContactsBatchOperation(addressBook.provider)
+        val batch = ContactsBatchOperation(addressBook.client)
         contact.addToGroup(batch, group.id!!)
         batch.commit()
 

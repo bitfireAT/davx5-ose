@@ -30,7 +30,7 @@ class LocalGroup(
     val androidGroup: AndroidGroup
 ) : LocalAddress {
 
-    private val provider get() = androidGroup.addressBook.provider
+    private val provider get() = androidGroup.addressBook.client
 
     override val id: Long?
         get() = androidGroup.id
