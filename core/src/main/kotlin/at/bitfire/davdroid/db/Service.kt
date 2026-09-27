@@ -23,8 +23,9 @@ annotation class ServiceType
 @Entity(
     tableName = "service",
     indices = [
-        // only one service per type and account
-        Index("accountName", "type", unique = true)
+        // only one service per type and account - either id or name
+        Index("accountName", "type", unique = true),
+        Index("accountId", "type", unique = true)
     ],
     foreignKeys = [
         ForeignKey(
