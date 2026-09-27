@@ -77,11 +77,13 @@ class AndroidCalendarProvider(
      * @param sortOrder     sort order
      *
      * @return list of calendars
-     * @throws LocalStorageException when the content provider returns an error
+     * @throws LocalStorageException when the content provider returns nothing or an error
      */
     fun findCalendars(where: String? = null, whereArgs: Array<String>? = null, sortOrder: String? = null): List<AndroidCalendar> {
         val result = LinkedList<AndroidCalendar>()
-        client.query(calendarsUri, null, where, whereArgs, sortOrder)?.use { cursor ->
+        val cursor = client.query(calendarsUri, null, where, whereArgs, sortOrder)
+            ?: throw LocalStorageException("Calendar provider returned no cursor")
+        cursor.use {
             while (cursor.moveToNext())
                 result += AndroidCalendar(this, cursor.toContentValues())
         }

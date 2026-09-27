@@ -70,7 +70,7 @@ class DmfsTaskListProvider(
      * @param sortOrder     sort order
      *
      * @return list of task lists
-     * @throws LocalStorageException when the content provider returns an error
+     * @throws LocalStorageException when the content provider returns nothing or an error
      */
     fun findTaskLists(
         where: String? = null,
@@ -78,7 +78,9 @@ class DmfsTaskListProvider(
         sortOrder: String? = null
     ): List<DmfsTaskList> {
         val result = LinkedList<DmfsTaskList>()
-        client.query(taskListsUri, null, where, whereArgs, sortOrder)?.use { cursor ->
+        val cursor = client.query(taskListsUri, null, where, whereArgs, sortOrder)
+            ?: throw LocalStorageException("Tasks provider returned no cursor")
+        cursor.use {
             while (cursor.moveToNext())
                 result += DmfsTaskList(this, cursor.toContentValues(), providerName)
         }
