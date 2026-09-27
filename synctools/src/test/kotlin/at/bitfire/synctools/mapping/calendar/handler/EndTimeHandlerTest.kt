@@ -122,7 +122,10 @@ class EndTimeHandlerTest {
             Events.DTEND to 1592733600000L      // 21/06/2020 12:00 +0200
         ))
         handler.process(entity, entity, result)
-        assertEquals(DtEnd(dateTimeValue("20200621T120000", defaultTz)), result.dtEnd<ZonedDateTime>())
+        assertEquals(
+            DtEnd(Instant.ofEpochMilli(1592733600000L).atZone(defaultTz)),
+            result.dtEnd<ZonedDateTime>()
+        )
         assertEquals(
             defaultTz.id,
             result.dtEnd<LocalDateTime>()?.getParameter<TzId>(Parameter.TZID)?.getOrNull()?.value

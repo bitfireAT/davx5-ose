@@ -42,6 +42,7 @@ import java.time.DateTimeException
 import java.time.Duration
 import java.time.LocalDateTime
 import java.time.Period
+import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import java.time.temporal.Temporal
@@ -115,7 +116,10 @@ class Ical4jTest {
         ICalPreprocessor().preprocessCalendar(iCalFromKOrganizer)
         val vEvent = iCalFromKOrganizer.getComponent<VEvent>(Component.VEVENT).get()
         val dtStart = vEvent.requireDtStart<ZonedDateTime>()
-        assertEquals(ZoneOffset.ofHours(-3), ZoneOffset.from(dtStart.date))
+        // the moment and the wall-clock time, not how the parser chose to name the zone
+        val expected = ZonedDateTime.of(2025, 8, 28, 13, 0, 0, 0, ZoneId.of("America/Asuncion"))
+        assertEquals(expected.toInstant(), dtStart.date.toInstant())
+        assertEquals(expected.toLocalDateTime(), dtStart.date.toLocalDateTime())
     }
 
     @Test
