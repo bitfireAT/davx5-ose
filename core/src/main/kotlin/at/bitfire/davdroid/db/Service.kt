@@ -40,7 +40,6 @@ data class Service(
     @PrimaryKey(autoGenerate = true)
     val id: Long,
 
-    // TODO: Reference accounts by their database ID once we've gotten rid of `LegacyAccount`.
     @Deprecated("Use accountId instead")
     val accountName: String?,
     val accountId: Long? = null,
