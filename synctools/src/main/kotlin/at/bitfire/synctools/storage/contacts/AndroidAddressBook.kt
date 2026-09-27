@@ -259,6 +259,7 @@ class AndroidAddressBook(
             ?.let { AndroidGroup(this, it) }
             ?: throw FileNotFoundException()
 
+    @Synchronized
     fun findOrCreateGroup(title: String): Long {
         client.query(
             Groups.CONTENT_URI.asSyncAdapter(addressBookAccount), arrayOf(Groups._ID),
