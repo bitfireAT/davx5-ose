@@ -41,7 +41,7 @@ data class Service(
 
     // TODO: Reference accounts by their database ID once we've gotten rid of `LegacyAccount`.
     @Deprecated("Use accountId instead")
-    val accountName: String,
+    val accountName: String?,
     val accountId: Long? = null,
 
     @ServiceType
