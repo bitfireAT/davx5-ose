@@ -50,6 +50,14 @@ data class Service(
     val principal: Url? = null
 ) {
 
+    init {
+        // Make sure always accountName or accountId is set, but not both.
+        @Suppress("DEPRECATION")
+        require((accountName == null) xor (accountId == null)) {
+            "Either accountName or accountId must be set, but not both."
+        }
+    }
+
     companion object {
         const val TYPE_CALDAV = "caldav"
         const val TYPE_CARDDAV = "carddav"
