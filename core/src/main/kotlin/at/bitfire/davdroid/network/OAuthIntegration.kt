@@ -45,8 +45,11 @@ class OAuthIntegration @Inject constructor(
                 // success, save authState (= refresh token)
                 authState.update(tokenResponse, refreshTokenException)
                 authStateFuture.complete(authState)
-            } else if (refreshTokenException != null)
-                authStateFuture.completeExceptionally(refreshTokenException)
+            } else {
+                authStateFuture.completeExceptionally(
+                    refreshTokenException ?: IllegalStateException("OAuth token exchange returned no result")
+                )
+            }
         }
 
         return authStateFuture.await()
