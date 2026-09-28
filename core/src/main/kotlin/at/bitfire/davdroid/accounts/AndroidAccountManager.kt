@@ -14,7 +14,6 @@ import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.sync.account.InvalidAccountException
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 import javax.inject.Provider
 
@@ -44,7 +43,7 @@ class AndroidAccountManager @Inject constructor(
                 //       should be dynamically created, and this method should be able to create the account if it
                 //       doesn't exist yet. for now, we just throw an exception.
                 // note: currently, this is using runBlocking. ideally we should make the function suspending
-                runBlocking(ioDispatcher) { dbAccountDao.get(accountId.id) }
+                dbAccountDao.getBlocking(accountId.id)
                     ?.let { Account(it.name, accountType) }
                     ?: throw InvalidAccountException(accountId)
             }
