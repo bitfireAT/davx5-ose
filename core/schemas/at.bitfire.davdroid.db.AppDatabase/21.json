@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 21,
-    "identityHash": "0a0155313ac9586534ace61afe3f634f",
+    "identityHash": "bbe6b7645e31ecdb0b035777b778de00",
     "entities": [
       {
         "tableName": "account_setting",
@@ -471,7 +471,7 @@
       },
       {
         "tableName": "service",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `accountName` TEXT NOT NULL, `accountId` INTEGER, `type` TEXT NOT NULL, `principal` TEXT, FOREIGN KEY(`accountId`) REFERENCES `account`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `accountName` TEXT, `accountId` INTEGER, `type` TEXT NOT NULL, `principal` TEXT, FOREIGN KEY(`accountId`) REFERENCES `account`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "id",
@@ -482,8 +482,7 @@
           {
             "fieldPath": "accountName",
             "columnName": "accountName",
-            "affinity": "TEXT",
-            "notNull": true
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "accountId",
@@ -518,6 +517,16 @@
             ],
             "orders": [],
             "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_service_accountName_type` ON `${TABLE_NAME}` (`accountName`, `type`)"
+          },
+          {
+            "name": "index_service_accountId_type",
+            "unique": true,
+            "columnNames": [
+              "accountId",
+              "type"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_service_accountId_type` ON `${TABLE_NAME}` (`accountId`, `type`)"
           }
         ],
         "foreignKeys": [
@@ -765,7 +774,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '0a0155313ac9586534ace61afe3f634f')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'bbe6b7645e31ecdb0b035777b778de00')"
     ]
   }
 }
