@@ -24,6 +24,7 @@ import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.BatterySaver
 import androidx.compose.material.icons.filled.DataSaverOn
+import androidx.compose.material.icons.filled.Lan
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.NotificationsOff
 import androidx.compose.material.icons.filled.SignalCellularOff
@@ -262,11 +263,17 @@ fun AccountsScreen(
                                     rememberPermissionState(Manifest.permission.POST_NOTIFICATIONS)
                                 else
                                     null
+                            val localNetworkPermissionState =
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.CINNAMON_BUN && !LocalInspectionMode.current)
+                                    rememberPermissionState(Manifest.permission.ACCESS_LOCAL_NETWORK)
+                                else
+                                    null
 
                             // Warnings show as action cards
                             val context = LocalContext.current
                             SyncWarnings(
                                 notificationsWarning = notificationsPermissionState?.status?.isGranted == false,
+                                localNetworkWarning = localNetworkPermissionState?.status?.isGranted == false,
                                 onManagePermissions = onManagePermissions,
                                 internetWarning = internetUnavailable,
                                 onManageConnections = {
@@ -500,6 +507,7 @@ fun AccountList_Preview_Syncing() {
 @Composable
 fun SyncWarnings(
     notificationsWarning: Boolean = true,
+    localNetworkWarning: Boolean = true,
     onManagePermissions: () -> Unit = {},
     internetWarning: Boolean = true,
     onManageConnections: () -> Unit = {},
@@ -522,6 +530,15 @@ fun SyncWarnings(
                 modifier = Modifier.padding(vertical = 4.dp)
             ) {
                 Text(stringResource(R.string.sync_warning_no_notification_permission))
+            }
+        if (localNetworkWarning)
+            ActionCard(
+                icon = Icons.Default.Lan,
+                actionText = stringResource(R.string.account_manage_permissions),
+                onAction = onManagePermissions,
+                modifier = Modifier.padding(vertical = 4.dp)
+            ) {
+                Text(stringResource(R.string.sync_warning_no_local_network_permission))
             }
 
         if (internetWarning)
