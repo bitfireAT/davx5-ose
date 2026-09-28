@@ -5,7 +5,6 @@
 package at.bitfire.davdroid.sync.adapter
 
 import android.accounts.Account
-import android.accounts.AccountManager
 import android.content.AbstractThreadedSyncAdapter
 import android.content.ContentProviderClient
 import android.content.ContentResolver
@@ -23,7 +22,6 @@ import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.resource.local.AddressBookAccountProperties
-import at.bitfire.davdroid.resource.local.LocalAddressBook
 import at.bitfire.davdroid.settings.AccountSettingsFactory
 import at.bitfire.davdroid.sync.SyncConditions
 import at.bitfire.davdroid.sync.SyncDataType
@@ -152,7 +150,7 @@ class SyncAdapterImpl @Inject constructor(
             addressBookAccountProperties.getCollectionId(accountOrAddressBookAccount)?.let { collectionId ->
                 collectionRepository.getAsync(collectionId)?.let { collection ->
                     serviceRepository.get(collection.serviceId)?.let { service ->
-                        accountRepository.getAccountIdFromName(service.accountName)
+                        accountRepository.getAccountIdFromService(service)
                     }
                 }
             }

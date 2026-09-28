@@ -51,7 +51,7 @@ class CollectionSelectedUseCase @Inject constructor(
     suspend fun handleWithDelay(collectionId: Long) {
         val collection = collectionRepository.getAsync(collectionId) ?: return
         val service = serviceRepository.get(collection.serviceId) ?: return
-        val accountId = accountRepository.getAccountIdFromName(service.accountName)
+        val accountId = accountRepository.getAccountIdFromService(service)
 
         // Atomically cancel, launch and remember delay coroutine of given account
         delayJobs.compute(accountId) { _, previousJob ->

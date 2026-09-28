@@ -55,7 +55,7 @@ class LocalCalendarStore @Inject constructor(
     override suspend fun create(client: ContentProviderClient, fromCollection: Collection): LocalCalendar {
         val service = serviceRepository.get(fromCollection.serviceId)
             ?: throw IllegalArgumentException("Couldn't fetch DB service from collection")
-        val accountId = accountRepository.getAccountIdFromName(service.accountName)
+        val accountId = accountRepository.getAccountIdFromService(service)
         val account = androidAccountManager.getAndroidAccount(accountId)
 
         // If the collection doesn't have a color, use a default color.

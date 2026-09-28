@@ -191,7 +191,7 @@ class DavCollectionRepository @Inject constructor(
     /** Deletes the given collection from the server and the database. */
     suspend fun deleteRemote(collection: Collection) {
         val service = serviceRepository.get(collection.serviceId) ?: throw IllegalArgumentException("Service not found")
-        val accountId = accountRepository.getAccountIdFromName(service.accountName)
+        val accountId = accountRepository.getAccountIdFromService(service)
 
         httpClientBuilder
             .fromAccountAsync(accountId)

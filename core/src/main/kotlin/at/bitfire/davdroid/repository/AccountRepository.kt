@@ -209,6 +209,13 @@ class AccountRepository @Inject constructor(
         return LegacyAccount(fromName(accountName))
     }
 
+    /**
+     * Returns the [AccountId] for the account associated with [service].
+     */
+    suspend fun getAccountIdFromService(service: Service): AccountId {
+        return service.accountId?.let { DbAccountId(it) } ?: getAccountIdFromName(service.accountName!!)
+    }
+
     suspend fun getAll(): List<AccountId> {
         return withContext(ioDispatcher) {
             getAllBlocking()

@@ -63,7 +63,7 @@ class LocalTaskListStore @AssistedInject constructor(
     override suspend fun create(client: ContentProviderClient, fromCollection: Collection): LocalTaskList {
         val service = serviceDao.get(fromCollection.serviceId)
             ?: throw IllegalArgumentException("Couldn't fetch DB service from collection")
-        val accountId = accountRepository.getAccountIdFromName(service.accountName)
+        val accountId = accountRepository.getAccountIdFromService(service)
         val account = androidAccountManager.getAndroidAccount(accountId)
 
         logger.info("Adding local task list: $fromCollection")
