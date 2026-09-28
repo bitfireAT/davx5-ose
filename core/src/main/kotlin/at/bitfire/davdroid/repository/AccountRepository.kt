@@ -10,6 +10,7 @@ import android.accounts.OnAccountsUpdateListener
 import android.content.Context
 import android.database.sqlite.SQLiteConstraintException
 import androidx.annotation.WorkerThread
+import at.bitfire.davdroid.FeatureFlags
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.accounts.DbAccountId
@@ -138,6 +139,20 @@ class AccountRepository @Inject constructor(
         groupMethod: GroupMethod,
         preconfigurationUrl: String?,
     ): AccountId? {
+        return if (FeatureFlags.useNewAccountSystem) {
+            createDbAccount(accountName, credentials, config, groupMethod, preconfigurationUrl)
+        } else {
+            createLegacyBlocking(accountName, credentials, config, groupMethod, preconfigurationUrl)
+        }
+    }
+
+    suspend fun createDbAccount(
+        accountName: String,
+        credentials: Credentials?,
+        config: DavResourceFinder.Configuration,
+        groupMethod: GroupMethod,
+        preconfigurationUrl: String?,
+    ): AccountId? {
         // create the account into the database
         val accountIdNumber = try {
             dbAccountDao.insert(DbAccount(name = accountName))
@@ -203,6 +218,56 @@ class AccountRepository @Inject constructor(
             return null
         }
         return accountId
+    }
+
+    fun createLegacyBlocking(
+        accountName: String,
+        credentials: Credentials?,
+        config: DavResourceFinder.Configuration,
+        groupMethod: GroupMethod,
+        preconfigurationUrl: String?,
+    ): LegacyAccount? {
+        val account = fromName(accountName)
+        val accountId = LegacyAccount(account)
+
+        // create Android account
+        val userData = AccountSettings.initialUserData(credentials, preconfigurationUrl)
+        logger.log(Level.INFO, "Creating Android account {0} with initial config {1}", arrayOf(account, userData))
+
+        if (!AndroidAccountUtils.createAccount(context, account, userData, credentials?.password))
+            return null
+
+        // add entries for account to database
+        logger.log(Level.INFO, "Writing account configuration to database: {0}", arrayOf(config))
+        try {
+            if (config.cardDAV != null) {
+                // insert CardDAV service
+                val id = insertService(accountId, accountName, Service.TYPE_CARDDAV, config.cardDAV)
+
+                // set initial CardDAV account settings and set sync intervals (enables automatic sync)
+                val accountSettings = accountSettingsFactory.create(accountId)
+                accountSettings.setGroupMethod(groupMethod)
+
+                // start CardDAV service detection (refresh collections)
+                RefreshCollectionsWorker.enqueue(context, id)
+            }
+
+            if (config.calDAV != null) {
+                // insert CalDAV service
+                val id = insertService(accountId, accountName, Service.TYPE_CALDAV, config.calDAV)
+
+                // start CalDAV service detection (refresh collections)
+                RefreshCollectionsWorker.enqueue(context, id)
+            }
+
+            // set up automatic sync (processes inserted services)
+            automaticSyncManager.get().updateAutomaticSync(accountId)
+
+        } catch (e: InvalidAccountException) {
+            logger.log(Level.SEVERE, "Couldn't access account settings", e)
+            return null
+        }
+        return LegacyAccount(account)
     }
 
     suspend fun delete(accountId: AccountId): Boolean {
