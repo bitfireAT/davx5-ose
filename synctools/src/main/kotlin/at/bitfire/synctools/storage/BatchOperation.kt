@@ -63,14 +63,12 @@ open class BatchOperation internal constructor(
      *
      * @return number of affected rows
      *
-     * @throws RemoteException on calendar provider errors. In case of [android.os.DeadObjectException],
-     * the provider has probably been killed/crashed or the calling process is cached and thus IPC is frozen (Android 14+).
-     *
      * @throws LocalStorageException if
      *
      * - the transaction is too large and can't be split (wrapped [TransactionTooLargeException])
      * - the batch can't be processed (wrapped [OperationApplicationException])
      * - the content provider throws a [RuntimeException] (will be wrapped)
+     * - the content provider throws a [RemoteException] (will be wrapped)
      */
     fun commit(): Int {
         var affected = 0
@@ -106,14 +104,12 @@ open class BatchOperation internal constructor(
      * @param start index of first operation which will be run (inclusive)
      * @param end   index of last operation which will be run (exclusive!)
      *
-     * @throws RemoteException on calendar provider errors. In case of [android.os.DeadObjectException],
-     * the provider has probably been killed/crashed or the calling process is cached and thus IPC is frozen (Android 14+).
-     *
      * @throws LocalStorageException if
      *
      * - the transaction is too large and can't be split (wrapped [TransactionTooLargeException])
      * - the batch can't be processed (wrapped [OperationApplicationException])
      * - the content provider throws a [RuntimeException] (will be wrapped)
+     * - the content provider throws a [RemoteException] (will be wrapped)
      */
     private fun runBatch(start: Int, end: Int) {
         if (end == start)
