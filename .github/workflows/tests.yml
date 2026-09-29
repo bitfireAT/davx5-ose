@@ -244,6 +244,8 @@ jobs:
     needs: [ core_unit_tests, core_instrumented_tests, synctools_unit_tests, synctools_instrumented_tests ]
     if: ${{ !cancelled() }}
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write    # for notifying about failed l10n updates
     steps:
       - name: Combine test results
         run: |
@@ -266,3 +268,11 @@ jobs:
             exit 1
           fi
           echo "All required tests passed"
+
+      # l10n updates are auto-merged (see dependabot-auto-merge.yml). Notify when they fail
+      - name: Notify about failed l10n update
+        if: ${{ failure() && github.event.pull_request.user.login == 'dependabot[bot]' && startsWith(github.head_ref, 'dependabot/submodules/l10n') }}
+        run: gh pr comment "$PR_URL" --body "@bitfireAT/app-dev Tests failed for this l10n update, so it won't be merged automatically."
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

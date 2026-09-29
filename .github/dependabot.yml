@@ -33,7 +33,8 @@ updates:
   - package-ecosystem: "gitsubmodule"
     directory: "/"
     schedule:
-      interval: "weekly"
+      interval: "cron"
+      cronjob: "0 6 1,15 * *"   # about every two weeks
     commit-message:
       prefix: "[l10n] "
     labels:
