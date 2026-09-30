@@ -196,13 +196,15 @@ class LocalStorageClient(
 internal inline fun <T> runWrappingRemoteException(block: () -> T): T {
     return try {
         block()
+    } catch (e: RuntimeException) {
+        throwWrappedLocalStorageException(e)
     } catch (e: RemoteException) {
         throwWrappedLocalStorageException(e)
     }
 }
 
 @Suppress("NOTHING_TO_INLINE")
-internal inline fun throwWrappedLocalStorageException(e: RemoteException): Nothing {
+internal inline fun throwWrappedLocalStorageException(e: Exception): Nothing {
     /* A DeadObjectException anywhere in the cause chain means the content provider process died:
     either because it crashed, or because of this Android 14+ behavior:
 

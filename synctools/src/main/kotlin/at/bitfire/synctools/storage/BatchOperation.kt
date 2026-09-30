@@ -130,7 +130,7 @@ open class BatchOperation internal constructor(
             throw LocalStorageException("Couldn't apply batch operation", e)
 
         } catch (e: RuntimeException) {
-            throw LocalStorageException("Content provider threw a runtime exception", e)
+            throwWrappedLocalStorageException(e)
 
         } catch (e: TransactionTooLargeException) {
             if (end <= start + 1)
