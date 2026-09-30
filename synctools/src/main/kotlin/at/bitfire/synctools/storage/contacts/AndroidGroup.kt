@@ -137,7 +137,7 @@ class AndroidGroup(
 
     /**
      * Creates a group with data taken from the constructor.
-     * @return number of affected rows
+     * @return content provider URI of the newly added group
      * @throws LocalStorageException when the group can't be added
      */
     fun add(): Uri {
@@ -159,7 +159,7 @@ class AndroidGroup(
      * Updates a group from a [Contact], which represents a vCard received from the
      * CardDAV server.
      * @param data data object to take group title, members etc. from
-     * @return number of affected rows
+     * @return content provider URI of the updated group
      * @throws LocalStorageException on contact provider errors
      */
     fun update(data: Contact): Uri {
