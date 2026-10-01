@@ -181,7 +181,10 @@ class AccountRepository @Inject constructor(
         val userData = AccountSettings.initialUserData(credentials, preconfigurationUrl)
         logger.log(Level.INFO, "Creating Android account {0} with initial config {1}", arrayOf(account, userData))
 
-        if (!AndroidAccountUtils.createAccount(context, account, userData, credentials?.password)) {
+        val accountCreated = withContext(ioDispatcher) {
+            AndroidAccountUtils.createAccount(context, account, userData, credentials?.password)
+        }
+        if (!accountCreated) {
             logger.log(Level.WARNING, "Failed to create Android account {0}", arrayOf(account))
 
             // If the system account creation fails, we need to clean up the database account that was just created.
@@ -195,10 +198,14 @@ class AccountRepository @Inject constructor(
         try {
             if (config.cardDAV != null) {
                 // insert CardDAV service
-                val id = insertService(accountId, accountName, Service.TYPE_CARDDAV, config.cardDAV)
+                val id = withContext(ioDispatcher) {
+                    insertService(accountId, accountName, Service.TYPE_CARDDAV, config.cardDAV)
+                }
 
                 // set initial CardDAV account settings and set sync intervals (enables automatic sync)
-                accountSettings.setGroupMethod(groupMethod)
+                withContext(ioDispatcher) {
+                    accountSettings.setGroupMethod(groupMethod)
+                }
 
                 // start CardDAV service detection (refresh collections)
                 RefreshCollectionsWorker.enqueue(context, id)
@@ -206,14 +213,18 @@ class AccountRepository @Inject constructor(
 
             if (config.calDAV != null) {
                 // insert CalDAV service
-                val id = insertService(accountId, accountName, Service.TYPE_CALDAV, config.calDAV)
+                val id = withContext(ioDispatcher) {
+                    insertService(accountId, accountName, Service.TYPE_CALDAV, config.calDAV)
+                }
 
                 // start CalDAV service detection (refresh collections)
                 RefreshCollectionsWorker.enqueue(context, id)
             }
 
             // set up automatic sync (processes inserted services)
-            automaticSyncManager.get().updateAutomaticSync(accountId)
+            withContext(ioDispatcher) {
+                automaticSyncManager.get().updateAutomaticSync(accountId)
+            }
 
         } catch (e: InvalidAccountException) {
             logger.log(Level.SEVERE, "Couldn't access account settings", e)
