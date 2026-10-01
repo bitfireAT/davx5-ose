@@ -141,7 +141,7 @@ class AccountRepository @Inject constructor(
     ): AccountId? {
         return if (FeatureFlags.useNewAccountSystem) {
             createDbAccount(accountName, credentials, config, groupMethod, preconfigurationUrl)
-        } else {
+        } else withContext(ioDispatcher) {
             createLegacyBlocking(accountName, credentials, config, groupMethod, preconfigurationUrl)
         }
     }
