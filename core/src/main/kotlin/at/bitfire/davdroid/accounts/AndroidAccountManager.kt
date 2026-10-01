@@ -10,10 +10,8 @@ import android.content.Context
 import android.os.Build
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
-import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.sync.account.InvalidAccountException
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.CoroutineDispatcher
 import javax.inject.Inject
 import javax.inject.Provider
 
@@ -23,8 +21,7 @@ import javax.inject.Provider
 class AndroidAccountManager @Inject constructor(
     private val accountManager: Provider<AccountManager>,
     @ApplicationContext context: Context,
-    database: AppDatabase,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher
+    database: AppDatabase
 ) {
     private val accountType = context.getString(R.string.account_type)
 
