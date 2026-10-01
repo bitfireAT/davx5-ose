@@ -17,7 +17,7 @@ import at.bitfire.davdroid.R
 /**
  * Account authenticator for the DAVx5 account type.
  */
-class AccountAuthenticatorService: Service() {
+open class AccountAuthenticatorService: Service() {
 
     private lateinit var accountAuthenticator: AccountAuthenticator
 

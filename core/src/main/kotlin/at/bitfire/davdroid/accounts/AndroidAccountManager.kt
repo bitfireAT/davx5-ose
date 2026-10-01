@@ -23,7 +23,7 @@ class AndroidAccountManager @Inject constructor(
     @ApplicationContext context: Context,
     database: AppDatabase
 ) {
-    private val accountType = context.getString(R.string.account_type)
+    private val dbAccountType = context.getString(R.string.account_type_db)
 
     private val dbAccountDao = database.dbAccountDao()
 
@@ -40,7 +40,7 @@ class AndroidAccountManager @Inject constructor(
                 //       should be dynamically created, and this method should be able to create the account if it
                 //       doesn't exist yet. for now, we just throw an exception.
                 dbAccountDao.getBlocking(accountId.id)
-                    ?.let { Account(it.name, accountType) }
+                    ?.let { Account(it.name, dbAccountType) }
                     ?: throw InvalidAccountException(accountId)
             }
         }

@@ -49,6 +49,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
+import org.jetbrains.annotations.TestOnly
 import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
@@ -76,7 +77,8 @@ class AccountRepository @Inject constructor(
     db: AppDatabase
 ) {
 
-    private val accountType = context.getString(R.string.account_type)
+    private val legacyAccountType = context.getString(R.string.account_type)
+    private val dbAccountType = context.getString(R.string.account_type_db)
 
     private val accountRenameFlow = MutableSharedFlow<AccountRename>()
 
@@ -175,7 +177,7 @@ class AccountRepository @Inject constructor(
             accountSettings.putInitialSettings(credentials, preconfigurationUrl)
         }
 
-        val account = fromName(accountName)
+        val account = Account(accountName, dbAccountType)
 
         // create Android account - extract the initial settings from the database and pass them to the Android account creation API
         val userData = AccountSettings.initialUserData(credentials, preconfigurationUrl)
@@ -240,7 +242,7 @@ class AccountRepository @Inject constructor(
         groupMethod: GroupMethod,
         preconfigurationUrl: String?,
     ): LegacyAccount? {
-        val account = fromName(accountName)
+        val account = Account(accountName, legacyAccountType)
         val accountId = LegacyAccount(account)
 
         // create Android account
@@ -284,17 +286,17 @@ class AccountRepository @Inject constructor(
     }
 
     suspend fun delete(accountId: AccountId): Boolean {
-        val account = when(accountId) {
+        val androidAccount = when(accountId) {
             is LegacyAccount -> accountId.androidAccount
             is DbAccountId -> {
                 val dbAccount = dbAccountDao.get(accountId.id) ?: return false
-                fromName(dbAccount.name)
+                Account(dbAccount.name, legacyAccountType)
             }
         }
 
         // remove account directly (bypassing the authenticator, which is our own)
         val deletedSystemAccount = try {
-            accountManager.removeAccountExplicitly(account)
+            accountManager.removeAccountExplicitly(androidAccount)
 
             // delete address books (= address book accounts)
             serviceRepository.getByAccountIdAndType(accountId, Service.TYPE_CARDDAV)?.let { service ->
@@ -335,11 +337,15 @@ class AccountRepository @Inject constructor(
             false
         else
             accountManager
-                .getAccountsByType(accountType)
+                .getAccountsByType(legacyAccountType)
                 .any { it.name == accountName }
 
-    fun fromName(accountName: String) =
-        Account(accountName, accountType)
+    /**
+     * Returns a legacy Android [Account] for a given account name.
+     * Use only in tests, as this method does not check whether the named account is a legacy account or a database account.
+     */
+    @TestOnly
+    fun legacyAccountFromName(accountName: String) = Account(accountName, legacyAccountType)
 
     /**
      * Returns the [AccountId] for a given account name.
@@ -351,7 +357,7 @@ class AccountRepository @Inject constructor(
         // Try to find the account in the database first, if it's not there, we assume it was created before the change
         // to database account creation
         val dbAccount = dbAccountDao.getFromName(accountName)?.let { DbAccountId(it.id) }
-        return dbAccount ?: LegacyAccount(fromName(accountName))
+        return dbAccount ?: LegacyAccount(Account(accountName, legacyAccountType))
     }
 
     /**
@@ -369,7 +375,7 @@ class AccountRepository @Inject constructor(
 
     fun getAllBlocking(): List<AccountId> {
         val dbAccounts = dbAccountDao.getAllBlocking()
-        val systemAccounts = accountManager.getAccountsByType(accountType).map { LegacyAccount(it) }
+        val systemAccounts = accountManager.getAccountsByType(legacyAccountType).map { LegacyAccount(it) }
         val dbAccountNames = dbAccounts.map { it.name }.toSet()
         return systemAccounts.filter { it.androidAccount.name !in dbAccountNames } + dbAccounts.map { DbAccountId(it.id) }
     }
@@ -377,7 +383,7 @@ class AccountRepository @Inject constructor(
     fun getAllLegacyAccountFlow() = callbackFlow {
         val listener = OnAccountsUpdateListener { accounts ->
             val accountIds = accounts
-                .filter { it.type == accountType }
+                .filter { it.type == legacyAccountType }
                 .map { LegacyAccount(it) }
                 .toSet()
 
@@ -418,8 +424,9 @@ class AccountRepository @Inject constructor(
      * @throws Exception (or sub-classes) on other errors
      */
     suspend fun rename(oldName: String, oldAccountId: AccountId, newName: String): AccountId = withContext(ioDispatcher) {
-        val oldAccount = fromName(oldName)
-        val newAccount = fromName(newName)
+        val isLegacyAccount = oldAccountId is LegacyAccount
+        val oldAccount = Account(oldName, if (isLegacyAccount) legacyAccountType else dbAccountType)
+        val newAccount = Account(newName, if (isLegacyAccount) legacyAccountType else dbAccountType)
         val newAccountId: AccountId = when (oldAccountId) {
             is LegacyAccount -> LegacyAccount(newAccount)
             // DbAccountId only contains an id and not the name, so we can just return the oldAccountId since the id does not change

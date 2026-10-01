@@ -175,7 +175,7 @@ class AccountRepositoryTest {
     fun testRename_updatesAddressBooks() = runTest {
         accountRepository.rename(accountId, newName)
 
-        val newAccount = accountRepository.fromName(newName)
+        val newAccount = accountRepository.legacyAccountFromName(newName)
         coVerify { localAddressBookStore.updateAccount(accountId.androidAccount, newAccount, any()) }
     }
 
@@ -183,7 +183,7 @@ class AccountRepositoryTest {
     fun testRename_updatesCalendarEvents() = runTest {
         accountRepository.rename(accountId, newName)
 
-        val newAccount = accountRepository.fromName(newName)
+        val newAccount = accountRepository.legacyAccountFromName(newName)
         coVerify { localCalendarStore.updateAccount(accountId.androidAccount, newAccount, any()) }
     }
 
@@ -193,7 +193,7 @@ class AccountRepositoryTest {
         every { tasksAppManager.getDataStore() } returns mockDataStore
         accountRepository.rename(accountId, newName)
 
-        val newAccount = accountRepository.fromName(newName)
+        val newAccount = accountRepository.legacyAccountFromName(newName)
         coVerify { mockDataStore.updateAccount(accountId.androidAccount, newAccount, any()) }
     }
 
