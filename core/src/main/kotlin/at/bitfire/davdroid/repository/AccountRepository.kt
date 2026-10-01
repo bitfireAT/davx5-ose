@@ -171,7 +171,9 @@ class AccountRepository @Inject constructor(
 
         // insert the initial account settings into the database
         val accountSettings = accountSettingsFactory.create(accountId)
-        accountSettings.putInitialSettings(credentials, preconfigurationUrl)
+        withContext(ioDispatcher) {
+            accountSettings.putInitialSettings(credentials, preconfigurationUrl)
+        }
 
         val account = fromName(accountName)
 
