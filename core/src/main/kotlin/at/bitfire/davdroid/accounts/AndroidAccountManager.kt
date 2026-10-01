@@ -39,7 +39,6 @@ class AndroidAccountManager @Inject constructor(
                 // note: this currently depends on the account being created before. at some point, the system accounts
                 //       should be dynamically created, and this method should be able to create the account if it
                 //       doesn't exist yet. for now, we just throw an exception.
-                // note: currently, this is using runBlocking. ideally we should make the function suspending
                 dbAccountDao.getBlocking(accountId.id)
                     ?.let { Account(it.name, accountType) }
                     ?: throw InvalidAccountException(accountId)
