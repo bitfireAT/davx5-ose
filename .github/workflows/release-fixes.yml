@@ -1,0 +1,121 @@
+name: Add release comment to issues
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  check-release:
+    name: Check release and find closed issues
+    runs-on: ubuntu-latest
+    outputs:
+      skip: ${{ steps.releases.outputs.skip }}
+      current_release: ${{ steps.releases.outputs.current_release }}
+      previous_release: ${{ steps.releases.outputs.previous_release }}
+      issues_json: ${{ steps.issues.outputs.issues_json }}
+    permissions:
+      releases: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Get current and previous release
+        id: releases
+        run: |
+          CURRENT_RELEASE="${{ github.event.release.tag_name }}"
+          echo "current_release=$CURRENT_RELEASE" >> $GITHUB_OUTPUT
+          if [[ "$CURRENT_RELEASE" =~ (alpha|beta|rc) ]]; then
+            echo "Skipping alpha/beta/rc release: $CURRENT_RELEASE"
+            echo "skip=true" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          PREVIOUS_RELEASE=$(gh api /repos/${{ github.repository }}/releases \
+            --jq '.[] | select(.prerelease == false and .tag_name != "'"$CURRENT_RELEASE"'") | .tag_name' \
+            | tail -1)
+          if [ -z "$PREVIOUS_RELEASE" ]; then
+            PREVIOUS_RELEASE=""
+          fi
+          echo "previous_release=$PREVIOUS_RELEASE" >> $GITHUB_OUTPUT
+          echo "skip=false" >> $GITHUB_OUTPUT
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Find closed issues between releases
+        id: issues
+        run: |
+          CURRENT="${{ steps.releases.outputs.current_release }}"
+          PREVIOUS="${{ steps.releases.outputs.previous_release }}"
+          if [ -z "$PREVIOUS" ]; then
+            AFTER_date=""
+          else
+            AFTER_date=$(gh api /repos/${{ github.repository }}/releases/tags/$PREVIOUS --jq '.created_at')
+          fi
+          BEFORE_date=$(gh api /repos/${{ github.repository }}/releases/tags/$CURRENT --jq '.created_at')
+          echo "Searching for issues closed between $AFTER_date and $BEFORE_date"
+          ISSUES_JSON=$(gh api /repos/${{ github.repository }}/issues \
+            --jq '.[] | select(.state == "closed" and .pull_request == null) | {
+              number: .number,
+              title: .title,
+              closed_at: .closed_at
+            }' \
+            --paginate)
+          FILTERED_ISSUES=$(echo "$ISSUES_JSON" | jq --arg af "$AFTER_date" --arg bf "$BEFORE_date" '
+            .[] | select(
+              (.closed_at >= $af or $af == "") and
+              (.closed_at <= $bf or $bf == "")
+            )
+          ')
+          FILTERED_ISSUES_COMPACT=$(echo "$FILTERED_ISSUES" | jq -c '.')
+          echo "issues_json=$FILTERED_ISSUES_COMPACT" >> $GITHUB_OUTPUT
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  add-comments:
+    name: Add release inclusion comments to issues
+    needs: check-release
+    runs-on: ubuntu-latest
+    if: needs.check-release.outputs.skip == 'false'
+    permissions:
+      issues: write
+      pull-requests: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Process issues and add comments
+        run: |
+          CURRENT_RELEASE="${{ needs.check-release.outputs.current_release }}"
+          ISSUES_JSON="${{ needs.check-release.outputs.issues_json }}"
+          echo "$ISSUES_JSON" > issues.json
+          ISSUES_COUNT=$(echo "$ISSUES_JSON" | jq 'length')
+          echo "Processing $ISSUES_COUNT issues for release $CURRENT_RELEASE"
+          echo "$ISSUES_JSON" | jq -c '.[]' | while read -r issue; do
+            ISSUE_NUMBER=$(echo "$issue" | jq -r '.number')
+            ISSUE_TITLE=$(echo "$issue" | jq -r '.title')
+            echo "Processing issue #$ISSUE_NUMBER: $ISSUE_TITLE"
+            ISSUE_REF="#$ISSUE_NUMBER"
+            PRS=$(gh api /repos/${{ github.repository }}/pulls \
+              --jq '[.[] | select(
+                .state == "closed" and
+                (.body | test("'"$ISSUE_REF"'")) or
+                (.title | test("'"$ISSUE_REF"'"))
+              ) | {number: .number, title: .title, html_url: .html_url}]')
+            PR_LIST=$(echo "$PRS" | jq -r 'map(" - #" + (.number|tostring) + ": " + .title + " (" + .html_url + ")") | join("\n")')
+            if [ -z "$PR_LIST" ]; then
+              PR_LIST="No associated pull requests found."
+            fi
+            echo "Found PRs for issue #$ISSUE_NUMBER"
+            EXISTING_COMMENT=$(gh api /repos/${{ github.repository }}/issues/$ISSUE_NUMBER/comments \
+              --jq '[.[] | select(.body | test("Included in release "))] | length')
+            if [ "$EXISTING_COMMENT" -eq 0 ]; then
+              COMMENT_BODY=$(printf "Included in release **%s**.\n\nAssociated pull requests:\n%s" "$CURRENT_RELEASE" "$PR_LIST")
+              echo "Adding comment to issue #$ISSUE_NUMBER"
+              gh api /repos/${{ github.repository }}/issues/$ISSUE_NUMBER/comments \
+                --method POST \
+                --field body="$COMMENT_BODY"
+            else
+              echo "Comment already exists for issue #$ISSUE_NUMBER, skipping"
+            fi
+          done
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
