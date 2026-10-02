@@ -4,7 +4,6 @@
 
 package at.bitfire.synctools.storage
 
-import android.content.ContentProviderClient
 import android.content.ContentProviderOperation
 import android.content.ContentProviderResult
 import android.content.ContentUris
@@ -24,11 +23,11 @@ import java.util.logging.Logger
  * Should not be used directly. Instead, use a subclass that defines [maxOperationsPerYieldPoint]
  * for the respective provider.
  *
- * @param providerClient                the [ContentProviderClient] to use
+ * @param client                        the [LocalStorageClient] to use
  * @param maxOperationsPerYieldPoint    maximum number of operations per yield point (`null` for none)
  */
 open class BatchOperation internal constructor(
-    private val providerClient: ContentProviderClient,
+    private val client: LocalStorageClient,
     private val maxOperationsPerYieldPoint: Int?
 ) {
 
@@ -64,14 +63,12 @@ open class BatchOperation internal constructor(
      *
      * @return number of affected rows
      *
-     * @throws RemoteException on calendar provider errors. In case of [android.os.DeadObjectException],
-     * the provider has probably been killed/crashed or the calling process is cached and thus IPC is frozen (Android 14+).
-     *
      * @throws LocalStorageException if
      *
      * - the transaction is too large and can't be split (wrapped [TransactionTooLargeException])
      * - the batch can't be processed (wrapped [OperationApplicationException])
      * - the content provider throws a [RuntimeException] (will be wrapped)
+     * - the content provider throws a [RemoteException] (will be wrapped)
      */
     fun commit(): Int {
         var affected = 0
@@ -101,20 +98,18 @@ open class BatchOperation internal constructor(
 
 
     /**
-     * Runs a subset of the operations in [queue] using [providerClient] in a transaction.
+     * Runs a subset of the operations in [queue] using [client] in a transaction.
      * Catches [TransactionTooLargeException] and splits the operations accordingly (if possible).
      *
      * @param start index of first operation which will be run (inclusive)
      * @param end   index of last operation which will be run (exclusive!)
-     *
-     * @throws RemoteException on calendar provider errors. In case of [android.os.DeadObjectException],
-     * the provider has probably been killed/crashed or the calling process is cached and thus IPC is frozen (Android 14+).
      *
      * @throws LocalStorageException if
      *
      * - the transaction is too large and can't be split (wrapped [TransactionTooLargeException])
      * - the batch can't be processed (wrapped [OperationApplicationException])
      * - the content provider throws a [RuntimeException] (will be wrapped)
+     * - the content provider throws a [RemoteException] (will be wrapped)
      */
     private fun runBatch(start: Int, end: Int) {
         if (end == start)
@@ -123,7 +118,7 @@ open class BatchOperation internal constructor(
         try {
             val ops = toCPO(start, end)
             logger.fine("Running ${ops.size} operation(s) idx $start..${end - 1}")
-            val partResults = providerClient.applyBatch(ops)
+            val partResults = client.provider.applyBatch(ops)
 
             val n = end - start
             if (partResults.size != n)
@@ -137,7 +132,7 @@ open class BatchOperation internal constructor(
         } catch (e: RuntimeException) {
             throw LocalStorageException("Content provider threw a runtime exception", e)
 
-        } catch(e: TransactionTooLargeException) {
+        } catch (e: TransactionTooLargeException) {
             if (end <= start + 1)
                 // only one operation, can't be split
                 throw LocalStorageException("Can't transfer data to content provider (too large data row can't be split)", e)
@@ -147,6 +142,8 @@ open class BatchOperation internal constructor(
 
             runBatch(start, mid)
             runBatch(mid, end)
+        } catch (e: RemoteException) {
+            throw LocalStorageException("Content provider batch operation failed", e)
         }
     }
 

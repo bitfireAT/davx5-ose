@@ -6,13 +6,16 @@ package at.bitfire.synctools.storage.tasks
 
 import android.content.ContentProviderClient
 import at.bitfire.synctools.storage.BatchOperation
+import at.bitfire.synctools.storage.LocalStorageClient
 
 /**
  * [at.bitfire.synctools.storage.BatchOperation] for the tasks.org / OpenTasks provider
  */
 class TasksBatchOperation(
-    providerClient: ContentProviderClient
-) : BatchOperation(providerClient, maxOperationsPerYieldPoint = OPERATIONS_PER_YIELD_POINT) {
+    client: LocalStorageClient
+) : BatchOperation(client, maxOperationsPerYieldPoint = OPERATIONS_PER_YIELD_POINT) {
+    @Deprecated("Remove once all of at.bitfire.synctools.storage uses LocalStorageClient")
+    constructor(providerClient: ContentProviderClient) : this(LocalStorageClient(providerClient))
 
     companion object {
 

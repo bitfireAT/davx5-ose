@@ -8,6 +8,7 @@ import android.content.ContentProviderClient
 import android.os.Build
 import androidx.annotation.CallSuper
 import androidx.test.platform.app.InstrumentationRegistry
+import at.bitfire.synctools.storage.LocalStorageClient
 import at.bitfire.synctools.storage.TaskProvider
 import at.bitfire.synctools.test.GrantPermissionOrSkipRule
 import org.junit.After
@@ -41,6 +42,7 @@ abstract class DmfsStyleProvidersTaskTest(
 
     var providerOrNull: ContentProviderClient? = null
     lateinit var provider: ContentProviderClient
+    lateinit var client: LocalStorageClient
 
     @Before
     @CallSuper
@@ -49,6 +51,7 @@ abstract class DmfsStyleProvidersTaskTest(
         assertNotNull("$providerName is not installed", providerOrNull != null)
 
         provider = providerOrNull!!
+        client = LocalStorageClient(provider)
         Logger.getLogger(javaClass.name).fine("Using task provider: $providerName")
     }
 

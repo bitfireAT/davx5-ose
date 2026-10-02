@@ -19,7 +19,7 @@ class TasksBatchOperationTest(
 
     @Test(expected = LocalStorageException::class)
     fun testTasksProvider_OperationsPerYieldPoint_500_WithoutMax() {
-        val batch = BatchOperation(provider, maxOperationsPerYieldPoint = null)
+        val batch = BatchOperation(client, maxOperationsPerYieldPoint = null)
         val taskList = TestTaskList.create(testAccount, providerName, provider)
         try {
             // 500 operations should fail with BatchOperation(maxOperationsPerYieldPoint = null) (max. 499)
@@ -36,7 +36,7 @@ class TasksBatchOperationTest(
 
     @Test
     fun testTasksProvider_OperationsPerYieldPoint_501() {
-        val batch = TasksBatchOperation(provider)
+        val batch = TasksBatchOperation(client)
         val taskList = TestTaskList.create(testAccount, providerName, provider)
         try {
             // 501 operations should succeed with ContactsBatchOperation
