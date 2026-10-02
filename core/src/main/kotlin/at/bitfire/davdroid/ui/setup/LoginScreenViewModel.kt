@@ -83,9 +83,6 @@ class LoginScreenViewModel @AssistedInject constructor(
     var page by mutableStateOf(startPage)
         private set
 
-    var finish by mutableStateOf(false)
-        private set
-
 
     // navigation events
 
@@ -126,24 +123,41 @@ class LoginScreenViewModel @AssistedInject constructor(
         }
     }
 
-    fun navBack() {
-        when (page) {
-            Page.LoginType ->
-                finish = true
+    /**
+     * Handles back/up navigation within the login flow, usually by navigating to the previous page.
+     *
+     * @return  *true* if the navigation was handled within the login flow;
+     *          *false* if there's no previous page and the caller should leave the flow
+     */
+    fun navBack(): Boolean {
+        // Account creation can't be canceled, so ignore back navigation while it's running – otherwise
+        // the account would be created anyway and its result would be applied when the account details
+        // page is opened again.
+        if (_accountDetailsUiState.value.creatingAccount)
+            return true
+
+        return when (page) {
+            Page.LoginType -> false
 
             Page.LoginDetails ->
-                if (loginTypesProvider.maybeNonInteractive)
-                    finish = true
-                else
+                // don't go back to the login type page if it was skipped or may be non-interactive
+                if (skipLoginTypePage || loginTypesProvider.maybeNonInteractive)
+                    false
+                else {
                     page = Page.LoginType
+                    true
+                }
 
             Page.DetectResources -> {
                 cancelResourceDetection()
                 page = Page.LoginDetails
+                true
             }
 
-            Page.AccountDetails ->
+            Page.AccountDetails -> {
                 page = Page.LoginDetails
+                true
+            }
         }
     }
 
