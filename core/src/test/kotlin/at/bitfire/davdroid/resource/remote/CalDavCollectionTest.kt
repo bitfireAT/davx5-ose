@@ -11,12 +11,15 @@ import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
 import io.ktor.client.engine.mock.toByteArray
 import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.Url
 import io.ktor.http.headersOf
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.time.Instant
@@ -24,6 +27,34 @@ import java.time.Instant
 class CalDavCollectionTest {
 
     private val url = Url("https://example.com/dav/calendar/")
+
+    @Test
+    fun `queryCapabilities() detects RFC 7809 support in the DAV header`() = runTest {
+        val calendar = collectionWithOptions("1, 2, 3, calendar-access, calendar-no-timezone")
+
+        val result = calendar.queryCapabilities()
+
+        assertTrue(result.capabilities.supportsTimeZonesByReference)
+    }
+
+    @Test
+    fun `queryCapabilities() doesn't detect RFC 7809 support when the DAV header doesn't advertise it`() = runTest {
+        val calendar = collectionWithOptions("1, 2, 3, calendar-access")
+
+        val result = calendar.queryCapabilities()
+
+        assertFalse(result.capabilities.supportsTimeZonesByReference)
+    }
+
+    @Test
+    fun `queryCapabilities() survives an OPTIONS error`() = runTest {
+        // some servers don't answer OPTIONS on collections – that must not fail the sync
+        val calendar = collectionWithOptions(davHeader = null, optionsStatus = HttpStatusCode.MethodNotAllowed)
+
+        val result = calendar.queryCapabilities()
+
+        assertFalse(result.capabilities.supportsTimeZonesByReference)
+    }
 
     @Test
     fun `listFilteredMembers() sends one calendar-query REPORT per filtered component`() = runTest {
@@ -188,6 +219,33 @@ class CalDavCollectionTest {
         assertEquals("Received multi-get response without data", e.unwrapContext().cause.message)
     }
 
+    @Test
+    fun `multiget() sends CalDAV-Timezones F when the server supports RFC 7809`() = runTest {
+        val engine = minimalMultiStatus()
+        val calendar = collection(engine, CalendarQueryFilter(components = listOf("VEVENT")))
+
+        calendar.multiget(
+            listOf(Url("https://example.com/dav/calendar/event1.ics")),
+            WebDavCollection.Capabilities(supportsTimeZonesByReference = true)
+        ).toList()
+
+        assertEquals("F", engine.requestHistory.last().headers["CalDAV-Timezones"])
+    }
+
+    @Test
+    fun `multiget() doesn't send CalDAV-Timezones when the server doesn't support RFC 7809`() = runTest {
+        val engine = minimalMultiStatus()
+        val calendar = collection(engine, CalendarQueryFilter(components = listOf("VEVENT")))
+
+        calendar.multiget(
+            listOf(Url("https://example.com/dav/calendar/event1.ics")),
+            WebDavCollection.Capabilities(supportsTimeZonesByReference = false)
+        ).toList()
+
+        assertNull(engine.requestHistory.last().headers["CalDAV-Timezones"])
+    }
+
+
     private fun collection(
         xmlResponse: String,
         filter: CalendarQueryFilter = CalendarQueryFilter(components = listOf("VEVENT"))
@@ -200,5 +258,30 @@ class CalDavCollectionTest {
 
     private fun collection(engine: MockEngine, filter: CalendarQueryFilter): CalDavCollection =
         CalDavCollection(HttpClient(engine), url, filter)
+
+    /**
+     * Creates a collection whose engine answers OPTIONS with the given `DAV` header (or, if [davHeader]
+     * is *null*, with [optionsStatus] and no `DAV` header) and every other request with an empty Multi-Status.
+     */
+    private fun collectionWithOptions(
+        davHeader: String?,
+        optionsStatus: HttpStatusCode = HttpStatusCode.OK
+    ): CalDavCollection {
+        val engine = MockEngine { request ->
+            if (request.method == HttpMethod.Options)
+                respond(
+                    content = "",
+                    status = optionsStatus,
+                    headers = if (davHeader != null) headersOf("DAV", davHeader) else headersOf()
+                )
+            else
+                respond(
+                    "<?xml version=\"1.0\" encoding=\"utf-8\"?><multistatus xmlns=\"DAV:\"/>",
+                    HttpStatusCode.MultiStatus,
+                    headersOf(HttpHeaders.ContentType, "text/xml")
+                )
+        }
+        return collection(engine, CalendarQueryFilter(components = listOf("VEVENT")))
+    }
 
 }
