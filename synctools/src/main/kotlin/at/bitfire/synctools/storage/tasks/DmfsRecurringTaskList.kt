@@ -48,26 +48,22 @@ class DmfsRecurringTaskList(
      * @return ID of the resulting main task
      */
     fun addTaskAndExceptions(taskAndExceptions: TaskAndExceptions): Long {
-        try {
-            // validate / clean up input
-            val cleaned = cleanUp(taskAndExceptions, mainId = null)
+        // validate / clean up input
+        val cleaned = cleanUp(taskAndExceptions, mainId = null)
 
-            // add main task
-            val batch = TasksBatchOperation(taskList.client)
-            val idxMainTask = taskList.addTask(cleaned.main, batch)
+        // add main task
+        val batch = TasksBatchOperation(taskList.client)
+        val idxMainTask = taskList.addTask(cleaned.main, batch)
 
-            // add exceptions
-            for (exception in cleaned.exceptions)
-                taskList.addTask(exception, batch, idxOriginalInstanceId = idxMainTask)
+        // add exceptions
+        for (exception in cleaned.exceptions)
+            taskList.addTask(exception, batch, idxOriginalInstanceId = idxMainTask)
 
-            batch.commit()
+        batch.commit()
 
-            // main task was created as first row, return its insert result (= ID)
-            val uri = batch.getResult(idxMainTask)?.uri ?: throw LocalStorageException("Content provider returned null on insert")
-            return ContentUris.parseId(uri)
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't insert task/exceptions", e)
-        }
+        // main task was created as first row, return its insert result (= ID)
+        val uri = batch.getResult(idxMainTask)?.uri ?: throw LocalStorageException("Content provider returned null on insert")
+        return ContentUris.parseId(uri)
     }
 
     /**
@@ -118,26 +114,22 @@ class DmfsRecurringTaskList(
      * @param taskAndExceptions    new task (including exceptions)
      */
     fun updateTaskAndExceptions(id: Long, taskAndExceptions: TaskAndExceptions) {
-        try {
-            // validate / clean up input
-            val cleaned = cleanUp(taskAndExceptions, mainId = id)
+        // validate / clean up input
+        val cleaned = cleanUp(taskAndExceptions, mainId = id)
 
-            // remove old exceptions (because they may be invalid for the updated task)
-            val batch = TasksBatchOperation(taskList.client)
-            batch += CpoBuilder.newDelete(taskList.tasksUri())
-                .withSelection("${Tasks.ORIGINAL_INSTANCE_ID}=?", arrayOf(id.toString()))
+        // remove old exceptions (because they may be invalid for the updated task)
+        val batch = TasksBatchOperation(taskList.client)
+        batch += CpoBuilder.newDelete(taskList.tasksUri())
+            .withSelection("${Tasks.ORIGINAL_INSTANCE_ID}=?", arrayOf(id.toString()))
 
-            // update main task
-            taskList.updateTask(id, cleaned.main, batch)
+        // update main task
+        taskList.updateTask(id, cleaned.main, batch)
 
-            // add updated exceptions
-            for (exception in cleaned.exceptions)
-                taskList.addTask(exception, batch)
+        // add updated exceptions
+        for (exception in cleaned.exceptions)
+            taskList.addTask(exception, batch)
 
-            batch.commit()
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't update task/exceptions", e)
-        }
+        batch.commit()
     }
 
     /**
@@ -146,21 +138,17 @@ class DmfsRecurringTaskList(
      * @param id    ID of the task
      */
     fun deleteTaskAndExceptions(id: Long) {
-        try {
-            val batch = TasksBatchOperation(taskList.client)
+        val batch = TasksBatchOperation(taskList.client)
 
-            // delete main task
-            batch += CpoBuilder.newDelete(taskList.taskUri(id))
+        // delete main task
+        batch += CpoBuilder.newDelete(taskList.taskUri(id))
 
-            // delete exceptions, too (not automatically done by provider)
-            batch += CpoBuilder
-                .newDelete(taskList.tasksUri())
-                .withSelection("${Tasks.ORIGINAL_INSTANCE_ID}=?", arrayOf(id.toString()))
+        // delete exceptions, too (not automatically done by provider)
+        batch += CpoBuilder
+            .newDelete(taskList.tasksUri())
+            .withSelection("${Tasks.ORIGINAL_INSTANCE_ID}=?", arrayOf(id.toString()))
 
-            batch.commit()
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't delete task $id", e)
-        }
+        batch.commit()
     }
 
 
@@ -274,38 +262,34 @@ class DmfsRecurringTaskList(
      * - and then the exception is actually deleted (so that it won't show up anymore during sync).
      */
     fun processDeletedExceptions() {
-        try {
-            val batch = TasksBatchOperation(taskList.client)
+        val batch = TasksBatchOperation(taskList.client)
 
-            // iterate through deleted exceptions
-            taskList.iterateTaskRows(
-                arrayOf(Tasks._ID, Tasks.ORIGINAL_INSTANCE_ID),
-                "${Tasks._DELETED} AND ${Tasks.ORIGINAL_INSTANCE_ID} IS NOT NULL", null
-            ) { values ->
-                val exceptionId = values.getAsLong(Tasks._ID)               // can't be null (by definition)
-                val mainId = values.getAsLong(Tasks.ORIGINAL_INSTANCE_ID)   // can't be null (by query)
-                logger.fine("Found deleted exception $exceptionId, removing it and marking original task $mainId as dirty")
+        // iterate through deleted exceptions
+        taskList.iterateTaskRows(
+            arrayOf(Tasks._ID, Tasks.ORIGINAL_INSTANCE_ID),
+            "${Tasks._DELETED} AND ${Tasks.ORIGINAL_INSTANCE_ID} IS NOT NULL", null
+        ) { values ->
+            val exceptionId = values.getAsLong(Tasks._ID)               // can't be null (by definition)
+            val mainId = values.getAsLong(Tasks.ORIGINAL_INSTANCE_ID)   // can't be null (by query)
+            logger.fine("Found deleted exception $exceptionId, removing it and marking original task $mainId as dirty")
 
-                // main task: get current sequence
-                val mainValues = taskList.getTaskRow(mainId, arrayOf(Tasks.SYNC_VERSION))
-                val mainSeq = mainValues?.getAsInteger(Tasks.SYNC_VERSION) ?: 0
+            // main task: get current sequence
+            val mainValues = taskList.getTaskRow(mainId, arrayOf(Tasks.SYNC_VERSION))
+            val mainSeq = mainValues?.getAsInteger(Tasks.SYNC_VERSION) ?: 0
 
-                // increase sequence and mark as dirty
-                taskList.updateTaskRow(
-                    mainId, contentValuesOf(
-                        Tasks.SYNC_VERSION to mainSeq + 1,
-                        Tasks._DIRTY to 1
-                    ), batch
-                )
+            // increase sequence and mark as dirty
+            taskList.updateTaskRow(
+                mainId, contentValuesOf(
+                    Tasks.SYNC_VERSION to mainSeq + 1,
+                    Tasks._DIRTY to 1
+                ), batch
+            )
 
-                // actually remove deleted exception
-                taskList.deleteTask(exceptionId, batch)
-            }
-
-            batch.commit()
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't process deleted exceptions", e)
+            // actually remove deleted exception
+            taskList.deleteTask(exceptionId, batch)
         }
+
+        batch.commit()
     }
 
     /**
@@ -319,39 +303,35 @@ class DmfsRecurringTaskList(
      * - but the main task is marked as dirty (so that it will be synced).
      */
     fun processDirtyExceptions() {
-        try {
-            val batch = TasksBatchOperation(taskList.client)
+        val batch = TasksBatchOperation(taskList.client)
 
-            // iterate through dirty exceptions
-            taskList.iterateTaskRows(
-                arrayOf(Tasks._ID, Tasks.ORIGINAL_INSTANCE_ID, Tasks.SYNC_VERSION),
-                "${Tasks._DIRTY} AND NOT ${Tasks._DELETED} AND ${Tasks.ORIGINAL_INSTANCE_ID} IS NOT NULL", null
-            ) { values ->
-                val exceptionId = values.getAsLong(Tasks._ID)          // can't be null (by definition)
-                val mainId = values.getAsLong(Tasks.ORIGINAL_INSTANCE_ID)       // can't be null (by query)
-                val exceptionSeq = values.getAsInteger(Tasks.SYNC_VERSION) ?: 0
-                logger.fine("Found dirty exception $exceptionId, increasing SEQUENCE and marking main task $mainId as dirty")
+        // iterate through dirty exceptions
+        taskList.iterateTaskRows(
+            arrayOf(Tasks._ID, Tasks.ORIGINAL_INSTANCE_ID, Tasks.SYNC_VERSION),
+            "${Tasks._DIRTY} AND NOT ${Tasks._DELETED} AND ${Tasks.ORIGINAL_INSTANCE_ID} IS NOT NULL", null
+        ) { values ->
+            val exceptionId = values.getAsLong(Tasks._ID)          // can't be null (by definition)
+            val mainId = values.getAsLong(Tasks.ORIGINAL_INSTANCE_ID)       // can't be null (by query)
+            val exceptionSeq = values.getAsInteger(Tasks.SYNC_VERSION) ?: 0
+            logger.fine("Found dirty exception $exceptionId, increasing SEQUENCE and marking main task $mainId as dirty")
 
-                // mark main task as dirty
-                taskList.updateTaskRow(
-                    mainId, contentValuesOf(
-                        Tasks._DIRTY to 1
-                    ), batch
-                )
+            // mark main task as dirty
+            taskList.updateTaskRow(
+                mainId, contentValuesOf(
+                    Tasks._DIRTY to 1
+                ), batch
+            )
 
-                // increase exception SEQUENCE and set _DIRTY to 0
-                taskList.updateTaskRow(
-                    exceptionId, contentValuesOf(
-                        Tasks.SYNC_VERSION to exceptionSeq + 1,
-                        Tasks._DIRTY to 0
-                    ), batch
-                )
-            }
-
-            batch.commit()
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't process dirty exceptions", e)
+            // increase exception SEQUENCE and set _DIRTY to 0
+            taskList.updateTaskRow(
+                exceptionId, contentValuesOf(
+                    Tasks.SYNC_VERSION to exceptionSeq + 1,
+                    Tasks._DIRTY to 0
+                ), batch
+            )
         }
+
+        batch.commit()
     }
 
 
