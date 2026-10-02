@@ -25,6 +25,7 @@ import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.repository.DavSyncStatsRepository
 import at.bitfire.davdroid.resource.local.LocalAddressBookStore
 import at.bitfire.davdroid.resource.local.LocalCalendarStore
+import at.bitfire.davdroid.resource.local.LocalChangesCounter
 import at.bitfire.davdroid.resource.local.LocalDataStore
 import at.bitfire.davdroid.settings.AccountSettingsFactory
 import at.bitfire.davdroid.settings.Settings
@@ -49,6 +50,7 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
@@ -72,6 +74,7 @@ class CollectionScreenViewModel @AssistedInject constructor(
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val localAddressBookStore: Lazy<LocalAddressBookStore>,
     private val localCalendarStore: Lazy<LocalCalendarStore>,
+    private val localChangesCounter: LocalChangesCounter,
     private val logger: Logger,
     private val serviceRepository: DavServiceRepository,
     settings: SettingsManager,
@@ -203,11 +206,41 @@ class CollectionScreenViewModel @AssistedInject constructor(
         }
     }
 
+    /** Request to turn off synchronization that waits for user confirmation */
+    var disableSyncRequest by mutableStateOf<DisableCollectionSyncRequest?>(null)
+        private set
+
+    /**
+     * Turns synchronization on, or asks for confirmation (see [disableSyncRequest]) before turning it off
+     * because that removes local data.
+     */
     fun setSync(sync: Boolean) {
         viewModelScope.launch {
-            collectionRepository.setSync(collectionId, sync)
+            if (sync) {
+                collectionRepository.setSync(collectionId, true)
+                collectionSelectedUseCase.get().handleWithDelay(collectionId)
+            } else {
+                val collection = collection.value ?: return@launch
+                val accountId = accountId.first() ?: return@launch
+                disableSyncRequest = DisableCollectionSyncRequest(
+                    collectionId = collectionId,
+                    title = collection.title(),
+                    unsyncedChanges = localChangesCounter.countUnsyncedChanges(accountId, collection)
+                )
+            }
+        }
+    }
+
+    fun confirmDisableSync() {
+        disableSyncRequest = null
+        viewModelScope.launch {
+            collectionRepository.setSync(collectionId, false)
             collectionSelectedUseCase.get().handleWithDelay(collectionId)
         }
+    }
+
+    fun dismissDisableSync() {
+        disableSyncRequest = null
     }
 
 

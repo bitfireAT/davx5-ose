@@ -466,6 +466,13 @@
     <string name="collection_synchronization">Synchronization</string>
     <string name="collection_synchronization_on">Synchronization enabled</string>
     <string name="collection_synchronization_off">Synchronization disabled</string>
+    <string name="collection_disable_sync_title">Turn off synchronization?</string>
+    <string name="collection_disable_sync_warning">Turning off synchronization will remove local data of this collection (%s) from this device when the next synchronization runs. Data on the server isn\'t affected.</string>
+    <plurals name="collection_disable_sync_unsynced_changes">
+        <item quantity="one">Additionally %d local change hasn\'t been uploaded yet and will be lost!</item>
+        <item quantity="other">Additionally %d local changes haven\'t been uploaded yet and will be lost!</item>
+    </plurals>
+    <string name="collection_disable_sync_confirm">Turn off</string>
     <string name="collection_read_only">Read-only</string>
     <string name="collection_read_only_by_server">Read-only (by server)</string>
     <string name="collection_read_only_by_setting">Read-only (by policy)</string>
