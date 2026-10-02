@@ -11,6 +11,7 @@ import android.content.EntityIterator
 import android.content.res.AssetFileDescriptor
 import android.database.Cursor
 import android.net.Uri
+import android.os.ParcelFileDescriptor
 import android.os.RemoteException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
@@ -18,6 +19,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.buffer
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import java.io.FileNotFoundException
 
 /**
  * Wraps a [ContentProviderClient] to throw [LocalStorageException] instead of [android.os.RemoteException].
@@ -167,6 +169,17 @@ class LocalStorageClient(
     fun openAssetFile(url: Uri, mode: String): AssetFileDescriptor? {
         return runWrappingRemoteException {
             provider.openAssetFile(url, mode)
+        }
+    }
+
+    /**
+     * @see ContentProviderClient.openFile
+     *
+     * @throws LocalStorageException when the content provider returns an error
+     */
+    fun openFile(url: Uri, mode: String): ParcelFileDescriptor? {
+        return runWrappingRemoteException {
+            provider.openFile(url, mode)
         }
     }
 }
