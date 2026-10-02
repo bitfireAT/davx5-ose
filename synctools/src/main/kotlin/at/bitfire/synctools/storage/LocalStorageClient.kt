@@ -6,9 +6,17 @@ package at.bitfire.synctools.storage
 
 import android.content.ContentProviderClient
 import android.content.ContentValues
+import android.content.Entity
+import android.content.EntityIterator
 import android.database.Cursor
 import android.net.Uri
 import android.os.RemoteException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.buffer
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 
 /**
  * Wraps a [ContentProviderClient] to throw [LocalStorageException] instead of [android.os.RemoteException].
@@ -31,6 +39,37 @@ class LocalStorageClient(
         return runWrappingRemoteException {
             provider.query(url, projection, selection, selectionArgs, sortOrder)
         }
+    }
+
+    /**
+     * Like [queryFlow], but for providers that expose rows via an [EntityIterator] (e.g. raw contacts,
+     * calendar events), built from the cursor by [buildIterator].
+     *
+     * @param uri content URI to query
+     * @param projection columns to return
+     * @param where selection
+     * @param whereArgs arguments for selection
+     * @param buildIterator builds the [EntityIterator] from the query's cursor
+     *
+     * @throws LocalStorageException when the content provider returns an error
+     */
+    fun queryEntityFlow(
+        uri: Uri,
+        projection: Array<String>? = null,
+        where: String? = null,
+        whereArgs: Array<String>? = null,
+        buildIterator: (Cursor) -> EntityIterator
+    ): Flow<Entity> {
+        return flow {
+            runWrappingRemoteException {
+                query(uri, projection, where, whereArgs, sortOrder = null)?.use { cursor ->
+                    for (entity in buildIterator(cursor)) {
+                        emit(entity)
+                    }
+                }
+            }
+        }.flowOn(Dispatchers.IO)            // buffers by default
+            .buffer(capacity = Channel.RENDEZVOUS)   // Entity-s could be big → reduce buffer size to 1
     }
 
     /**

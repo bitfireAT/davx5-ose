@@ -22,7 +22,6 @@ import at.bitfire.synctools.mapping.UnknownProperty
 import at.bitfire.synctools.storage.BatchOperation.CpoBuilder
 import at.bitfire.synctools.storage.LocalStorageException
 import at.bitfire.synctools.storage.calendar.EventsContract.asSyncAdapter
-import at.bitfire.synctools.storage.queryEntityFlow
 import at.bitfire.synctools.storage.toContentValues
 import kotlinx.coroutines.flow.Flow
 import org.jetbrains.annotations.TestOnly
@@ -89,16 +88,12 @@ class AndroidCalendar(
      * @throws LocalStorageException when the content provider returns an error
      */
     fun addEvent(entity: Entity): Long {
-        try {
-            val batch = CalendarBatchOperation(client)
-            addEvent(entity, batch)
-            batch.commit()
+        val batch = CalendarBatchOperation(client)
+        addEvent(entity, batch)
+        batch.commit()
 
-            val uri = batch.getResult(0)?.uri ?: throw LocalStorageException("Content provider returned null on insert")
-            return ContentUris.parseId(uri)
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't insert event", e)
-        }
+        val uri = batch.getResult(0)?.uri ?: throw LocalStorageException("Content provider returned null on insert")
+        return ContentUris.parseId(uri)
     }
 
     fun addEvent(entity: Entity, batch: CalendarBatchOperation) {
@@ -122,17 +117,17 @@ class AndroidCalendar(
      * @throws LocalStorageException when the content provider returns an error
      */
     fun countEvents(where: String?, whereArgs: Array<String>?): Int {
-        try {
-            val (protectedWhere, protectedWhereArgs) = whereWithCalendarId(where, whereArgs)
-            client.query(
-                eventsUri, arrayOf(Events._ID),
-                protectedWhere, protectedWhereArgs, null
-            )?.use { cursor ->
-                return cursor.count
-            }
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't count events", e)
+        val (protectedWhere, protectedWhereArgs) = whereWithCalendarId(where, whereArgs)
+        client.query(
+            eventsUri,
+            projection = arrayOf(Events._ID),
+            protectedWhere,
+            protectedWhereArgs,
+            sortOrder = null
+        )?.use { cursor ->
+            return cursor.count
         }
+
         // If the query was invalid, an exception should have been thrown. So this should never be reached:
         return 0
     }
@@ -151,15 +146,15 @@ class AndroidCalendar(
      * @throws LocalStorageException when the content provider returns an error
      */
     fun findEvent(where: String?, whereArgs: Array<String>?, sortOrder: String? = null): Entity? {
-        try {
-            val (protectedWhere, protectedWhereArgs) = whereWithCalendarId(where, whereArgs)
-            client.query(eventEntitiesUri, null, protectedWhere, protectedWhereArgs, sortOrder)?.use { cursor ->
-                val iter = EventsEntity.newEntityIterator(cursor, client)
+        val (protectedWhere, protectedWhereArgs) = whereWithCalendarId(where, whereArgs)
+        client.query(eventEntitiesUri, null, protectedWhere, protectedWhereArgs, sortOrder)?.use { cursor ->
+            val iter = EventsEntity.newEntityIterator(cursor, client.provider)
+            try {
                 if (iter.hasNext())
                     return iter.next()
+            } catch (e: RemoteException) {
+                throw LocalStorageException("Couldn't query events", e)
             }
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't query events", e)
         }
         return null
     }
@@ -173,14 +168,10 @@ class AndroidCalendar(
      */
     @TestOnly
     fun findEventRow(projection: Array<String>?, where: String?, whereArgs: Array<String>?): ContentValues? {
-        try {
-            val (protectedWhere, protectedWhereArgs) = whereWithCalendarId(where, whereArgs)
-            client.query(eventsUri, projection, protectedWhere, protectedWhereArgs, null)?.use { cursor ->
-                if (cursor.moveToNext())
-                    return cursor.toContentValues()
-            }
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't query event rows", e)
+        val (protectedWhere, protectedWhereArgs) = whereWithCalendarId(where, whereArgs)
+        client.query(eventsUri, projection, protectedWhere, protectedWhereArgs, null)?.use { cursor ->
+            if (cursor.moveToNext())
+                return cursor.toContentValues()
         }
         return null
     }
@@ -194,14 +185,14 @@ class AndroidCalendar(
      */
     @TestOnly
     fun getEvent(id: Long): Entity? {
-        try {
-            client.query(eventEntityUri(id), null, null, null, null)?.use { cursor ->
-                val iterator = EventsEntity.newEntityIterator(cursor, client)
+        client.query(eventEntityUri(id), null, null, null, null)?.use { cursor ->
+            val iterator = EventsEntity.newEntityIterator(cursor, client.provider)
+            try {
                 if (iterator.hasNext())
                     return iterator.next()
+            } catch (e: RemoteException) {
+                throw LocalStorageException("Couldn't query event entity", e)
             }
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't query event entity", e)
         }
         return null
     }
@@ -221,13 +212,9 @@ class AndroidCalendar(
         where: String? = null,
         whereArgs: Array<String>? = null
     ): ContentValues? {
-        try {
-            client.query(eventUri(id), projection, where, whereArgs, null)?.use { cursor ->
-                if (cursor.moveToNext())
-                    return cursor.toContentValues()
-            }
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't query event row", e)
+        client.query(eventUri(id), projection, where, whereArgs, null)?.use { cursor ->
+            if (cursor.moveToNext())
+                return cursor.toContentValues()
         }
         return null
     }
@@ -250,15 +237,11 @@ class AndroidCalendar(
         whereArgs: Array<String>?,
         body: (ContentValues) -> Unit
     ) {
-        try {
-            val (protectedWhere, protectedWhereArgs) = whereWithCalendarId(where, whereArgs)
-            client.query(eventsUri, projection, protectedWhere, protectedWhereArgs, null)?.use { cursor ->
-                while (cursor.moveToNext()) {
-                    body(cursor.toContentValues())
-                }
+        val (protectedWhere, protectedWhereArgs) = whereWithCalendarId(where, whereArgs)
+        client.query(eventsUri, projection, protectedWhere, protectedWhereArgs, null)?.use { cursor ->
+            while (cursor.moveToNext()) {
+                body(cursor.toContentValues())
             }
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't iterate event rows", e)
         }
     }
 
@@ -273,7 +256,7 @@ class AndroidCalendar(
     fun queryEvents(where: String?, whereArgs: Array<String>?): Flow<Entity> {
         val (protectedWhere, protectedWhereArgs) = whereWithCalendarId(where, whereArgs)
         return client.queryEntityFlow(eventEntitiesUri, null, protectedWhere, protectedWhereArgs) {
-            EventsEntity.newEntityIterator(it, client)
+            EventsEntity.newEntityIterator(it, client.provider)
         }
     }
 
@@ -290,11 +273,7 @@ class AndroidCalendar(
      * @throws LocalStorageException when the content provider returns an error
      */
     fun updateEventRow(id: Long, values: ContentValues) {
-        try {
-            client.update(eventUri(id), values, null, null)
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't update event row $id", e)
-        }
+        client.update(eventUri(id), values, null, null)
     }
 
     /**
@@ -324,22 +303,18 @@ class AndroidCalendar(
      * @return ID of the updated event (not necessarily the same as the original event)
      */
     fun updateEvent(id: Long, entity: Entity): Long {
-        try {
-            val batch = CalendarBatchOperation(client)
-            val newEventIdIdx = updateEvent(id, entity, batch)
-            batch.commit()
+        val batch = CalendarBatchOperation(client)
+        val newEventIdIdx = updateEvent(id, entity, batch)
+        batch.commit()
 
-            if (newEventIdIdx == null) {
-                // event was updated
-                return id
-            } else {
-                // event was re-built
-                val result = batch.getResult(newEventIdIdx)
-                val newEventUri = result?.uri ?: throw LocalStorageException("Content provider returned null on insert")
-                return ContentUris.parseId(newEventUri)
-            }
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't update event $id", e)
+        if (newEventIdIdx == null) {
+            // event was updated
+            return id
+        } else {
+            // event was re-built
+            val result = batch.getResult(newEventIdIdx)
+            val newEventUri = result?.uri ?: throw LocalStorageException("Content provider returned null on insert")
+            return ContentUris.parseId(newEventUri)
         }
     }
 
@@ -455,13 +430,10 @@ class AndroidCalendar(
      *
      * @throws LocalStorageException when the content provider returns an error
      */
-    fun updateEventRows(values: ContentValues, where: String?, whereArgs: Array<String>?): Int =
-        try {
-            val (protectedWhere, protectedWhereArgs) = whereWithCalendarId(where, whereArgs)
-            client.update(eventsUri, values, protectedWhere, protectedWhereArgs)
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't update events", e)
-        }
+    fun updateEventRows(values: ContentValues, where: String?, whereArgs: Array<String>?): Int {
+        val (protectedWhere, protectedWhereArgs) = whereWithCalendarId(where, whereArgs)
+        return client.update(eventsUri, values, protectedWhere, protectedWhereArgs)
+    }
 
     /**
      * Deletes all events of this calendar from the local storage.
@@ -470,12 +442,8 @@ class AndroidCalendar(
      */
     @TestOnly
     fun deleteAllEvents() {
-        try {
-            val (protectedWhere, protectedWhereArgs) = whereWithCalendarId(null, null)
-            client.delete(eventsUri, protectedWhere, protectedWhereArgs)
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't delete all events from calendar", e)
-        }
+        val (protectedWhere, protectedWhereArgs) = whereWithCalendarId(null, null)
+        client.delete(eventsUri, protectedWhere, protectedWhereArgs)
     }
 
     /**
@@ -486,11 +454,7 @@ class AndroidCalendar(
      * @param id    ID of the event
      */
     fun deleteEvent(id: Long) {
-        try {
-            client.delete(eventUri(id), null, null)
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't delete event $id", e)
-        }
+        client.delete(eventUri(id), null, null)
     }
 
     internal fun deleteEvent(id: Long, batch: CalendarBatchOperation) {
@@ -551,20 +515,14 @@ class AndroidCalendar(
         val safeEventIdsSql = getExceptionIds(eventId).joinToString(",")
         logger.fine("Querying instances between $firstTs and $lastTs and filtering for event IDs: $safeEventIdsSql")
 
-        var numInstances: Int? = null
-        try {
-            client.query(
-                instancesUri, arrayOf(Instances._ID),
-                // SQL injection not possible because safeEventIdsSql is built from numeric IDs
-                "${Instances.EVENT_ID} IN ($safeEventIdsSql)", null,
-                null
-            )?.use { cursor ->
-                numInstances = cursor.count
-            }
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't query number of instances for event $eventId", e)
+        return client.query(
+            instancesUri, arrayOf(Instances._ID),
+            // SQL injection not possible because safeEventIdsSql is built from numeric IDs
+            "${Instances.EVENT_ID} IN ($safeEventIdsSql)", null,
+            null
+        )?.use { cursor ->
+            cursor.count
         }
-        return numInstances
     }
 
     /**
@@ -604,31 +562,27 @@ class AndroidCalendar(
      * as deleted.
      */
     fun deleteDirtyEventsWithoutInstances() {
-        try {
-            val batch = CalendarBatchOperation(client)
+        val batch = CalendarBatchOperation(client)
 
-            // Iterate dirty main events without exceptions
-            iterateEventRows(
-                arrayOf(Events._ID),
-                "${Events.DIRTY} AND NOT ${Events.DELETED} AND ${Events.ORIGINAL_ID} IS NULL",
-                null
-            ) { values ->
-                val eventId = values.getAsLong(Events._ID)
+        // Iterate dirty main events without exceptions
+        iterateEventRows(
+            arrayOf(Events._ID),
+            "${Events.DIRTY} AND NOT ${Events.DELETED} AND ${Events.ORIGINAL_ID} IS NULL",
+            null
+        ) { values ->
+            val eventId = values.getAsLong(Events._ID)
 
-                // get number of instances
-                val numEventInstances = numInstances(eventId)
+            // get number of instances
+            val numEventInstances = numInstances(eventId)
 
-                // delete event if there are no instances
-                if (numEventInstances == 0) {
-                    logger.warning("Marking event #$eventId without instances as deleted")
-                    updateEventRow(eventId, contentValuesOf(Events.DELETED to 1), batch)
-                }
+            // delete event if there are no instances
+            if (numEventInstances == 0) {
+                logger.warning("Marking event #$eventId without instances as deleted")
+                updateEventRow(eventId, contentValuesOf(Events.DELETED to 1), batch)
             }
-
-            batch.commit()
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't mark dirty events without instances as deleted", e)
         }
+
+        batch.commit()
     }
 
 
@@ -672,7 +626,7 @@ class AndroidCalendar(
         get() = provider.account
 
     val client
-        get() = provider.client.provider
+        get() = provider.client
 
     val eventsUri
         get() = Events.CONTENT_URI.asSyncAdapter(account)
