@@ -87,6 +87,8 @@ import at.bitfire.davdroid.ui.PermissionsActivity
 import at.bitfire.davdroid.ui.account.AccountProgress
 import at.bitfire.davdroid.ui.account.AccountScreenViewModel
 import at.bitfire.davdroid.ui.account.CollectionsList
+import at.bitfire.davdroid.ui.account.DisableCollectionSyncDialog
+import at.bitfire.davdroid.ui.account.DisableCollectionSyncRequest
 import at.bitfire.davdroid.ui.account.RenameAccountDialog
 import at.bitfire.davdroid.ui.composable.ActionCard
 import at.bitfire.davdroid.ui.composable.AppTheme
@@ -143,6 +145,9 @@ fun AccountScreen(
         hasWebcal = subscriptions.itemCount != 0,
         subscriptions = subscriptions,
         onUpdateCollectionSync = model::setCollectionSync,
+        disableCollectionSyncRequest = model.disableCollectionSyncRequest,
+        onConfirmDisableCollectionSync = model::confirmDisableCollectionSync,
+        onDismissDisableCollectionSync = model::dismissDisableCollectionSync,
         onSubscribe = { collection ->
             // subscribe
             var uri = collection.source.toString().toUri()
@@ -197,6 +202,9 @@ fun AccountScreen(
     hasWebcal: Boolean,
     subscriptions: LazyPagingItems<Collection>?,
     onUpdateCollectionSync: (collectionId: Long, sync: Boolean) -> Unit = { _, _ -> },
+    disableCollectionSyncRequest: DisableCollectionSyncRequest? = null,
+    onConfirmDisableCollectionSync: () -> Unit = {},
+    onDismissDisableCollectionSync: () -> Unit = {},
     onSubscribe: (Collection) -> Unit = {},
     onCollectionDetails: (Collection) -> Unit = {},
     showNoWebcalApp: Boolean = false,
@@ -221,6 +229,14 @@ fun AccountScreen(
                 onFinish()
             }
         }
+
+        if (disableCollectionSyncRequest != null)
+            DisableCollectionSyncDialog(
+                title = disableCollectionSyncRequest.title,
+                unsyncedChanges = disableCollectionSyncRequest.unsyncedChanges,
+                onConfirm = onConfirmDisableCollectionSync,
+                onDismiss = onDismissDisableCollectionSync
+            )
 
         val snackbarHostState = remember { SnackbarHostState() }
         LaunchedEffect(error) {
