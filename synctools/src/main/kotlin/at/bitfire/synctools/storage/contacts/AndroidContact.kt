@@ -9,7 +9,6 @@ import android.content.ContentValues
 import android.content.EntityIterator
 import android.database.DatabaseUtils
 import android.net.Uri
-import android.os.RemoteException
 import android.provider.ContactsContract
 import android.provider.ContactsContract.CommonDataKinds.GroupMembership
 import android.provider.ContactsContract.RawContacts
@@ -94,7 +93,7 @@ class AndroidContact(
      *
      * @throws IllegalArgumentException if there's no [id] (usually because the contact has never been saved yet)
      * @throws FileNotFoundException when the contact is not available (anymore)
-     * @throws RemoteException on contact provider errors
+     * @throws LocalStorageException on contact provider errors
      */
     fun getContact(): Contact {
         // use cached version if available
@@ -139,64 +138,56 @@ class AndroidContact(
 
 
     fun add(): Uri {
-        try {
-            val provider = addressBook.client
-            val batch = ContactsBatchOperation(provider)
+        val provider = addressBook.client
+        val batch = ContactsBatchOperation(provider)
 
-            val builder = BatchOperation.CpoBuilder.newInsert(RawContacts.CONTENT_URI.asSyncAdapter())
-            buildContact(builder, false)
-            batch += builder
+        val builder = BatchOperation.CpoBuilder.newInsert(RawContacts.CONTENT_URI.asSyncAdapter())
+        buildContact(builder, false)
+        batch += builder
 
-            insertDataRows(batch)
+        insertDataRows(batch)
 
-            batch.commit()
-            val resultUri = batch.getResult(0)?.uri
-                ?: throw LocalStorageException("Empty result from content provider when adding contact")
-            id = ContentUris.parseId(resultUri)
+        batch.commit()
+        val resultUri = batch.getResult(0)?.uri
+            ?: throw LocalStorageException("Empty result from content provider when adding contact")
+        id = ContentUris.parseId(resultUri)
 
-            addressBook.setPhoto(id!!, getContact().photo)
+        addressBook.setPhoto(id!!, getContact().photo)
 
-            return resultUri
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't add contact", e)
-        }
+        return resultUri
     }
 
     fun update(data: Contact): Uri {
-        try {
-            setContact(data)
+        setContact(data)
 
-            val provider = addressBook.client
-            val batch = ContactsBatchOperation(provider)
-            val uri = rawContactSyncURI()
-            val builder = BatchOperation.CpoBuilder.newUpdate(uri)
-            buildContact(builder, true)
-            batch += builder
+        val provider = addressBook.client
+        val batch = ContactsBatchOperation(provider)
+        val uri = rawContactSyncURI()
+        val builder = BatchOperation.CpoBuilder.newUpdate(uri)
+        buildContact(builder, true)
+        batch += builder
 
-            // Delete known data rows before adding the new ones.
-            // - We don't delete group memberships because they're managed separately.
-            // - We'll only delete rows we have inserted so that unknown rows like
-            //   vnd.android.cursor.item/important_people (= contact is in Samsung "edge panel") remain untouched.
-            val typesToRemove = rawContactBuilder.builderMimeTypes()
-            val sqlTypesToRemove = typesToRemove.joinToString(",") { mimeType ->
-                DatabaseUtils.sqlEscapeString(mimeType)
-            }
-            batch += BatchOperation.CpoBuilder
-                .newDelete(dataSyncURI())
-                .withSelection(
-                    Data.RAW_CONTACT_ID + "=? AND ${Data.MIMETYPE} IN ($sqlTypesToRemove)",
-                    arrayOf(id!!.toString())
-                )
-
-            insertDataRows(batch)
-            batch.commit()
-
-            addressBook.setPhoto(id!!, getContact().photo)
-
-            return uri
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't update raw contact $id", e)
+        // Delete known data rows before adding the new ones.
+        // - We don't delete group memberships because they're managed separately.
+        // - We'll only delete rows we have inserted so that unknown rows like
+        //   vnd.android.cursor.item/important_people (= contact is in Samsung "edge panel") remain untouched.
+        val typesToRemove = rawContactBuilder.builderMimeTypes()
+        val sqlTypesToRemove = typesToRemove.joinToString(",") { mimeType ->
+            DatabaseUtils.sqlEscapeString(mimeType)
         }
+        batch += BatchOperation.CpoBuilder
+            .newDelete(dataSyncURI())
+            .withSelection(
+                Data.RAW_CONTACT_ID + "=? AND ${Data.MIMETYPE} IN ($sqlTypesToRemove)",
+                arrayOf(id!!.toString())
+            )
+
+        insertDataRows(batch)
+        batch.commit()
+
+        addressBook.setPhoto(id!!, getContact().photo)
+
+        return uri
     }
 
     /**
@@ -205,11 +196,7 @@ class AndroidContact(
      * @throws LocalStorageException on contacts provider errors
      */
     fun delete() {
-        try {
-            addressBook.client.delete(rawContactSyncURI(), null, null)
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't delete raw contact $id", e)
-        }
+        addressBook.client.delete(rawContactSyncURI(), null, null)
     }
 
     /**
@@ -218,11 +205,7 @@ class AndroidContact(
      * @throws LocalStorageException on contact provider errors
      */
     fun update(values: ContentValues) {
-        try {
-            addressBook.client.update(rawContactSyncURI(), values, null, null)
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't update raw contact $id", e)
-        }
+        addressBook.client.update(rawContactSyncURI(), values, null, null)
     }
 
 
@@ -248,7 +231,7 @@ class AndroidContact(
      *
      * @param  batch    batch operation used to insert the data rows
      *
-     * @throws RemoteException on contact provider errors
+     * @throws LocalStorageException on contact provider errors
      */
     private fun insertDataRows(batch: ContactsBatchOperation) {
         val contact = getContact()
@@ -291,7 +274,7 @@ class AndroidContact(
      * whether a membership has been deleted/added when a raw contact is dirty.
      * @return set of [GroupMembership.GROUP_ROW_ID] (may be empty)
      * @throws FileNotFoundException if the current contact can't be found
-     * @throws RemoteException on contacts provider errors
+     * @throws LocalStorageException on contacts provider errors
      */
     fun getCachedGroupMemberships(): Set<Long> {
         getContact()
@@ -302,7 +285,7 @@ class AndroidContact(
      * Returns the IDs of all groups the contact is member of.
      * @return set of [GroupMembership.GROUP_ROW_ID]s (may be empty)
      * @throws FileNotFoundException if the current contact can't be found
-     * @throws RemoteException on contacts provider errors
+     * @throws LocalStorageException on contacts provider errors
      */
     fun getGroupMemberships(): Set<Long> {
         getContact()

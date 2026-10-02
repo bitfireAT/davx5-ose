@@ -8,14 +8,12 @@ import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Context
 import android.net.Uri
-import android.os.RemoteException
 import android.provider.ContactsContract
 import android.provider.ContactsContract.Groups
 import android.provider.ContactsContract.RawContacts
 import androidx.core.content.contentValuesOf
 import at.bitfire.synctools.mapping.contacts.Contact
 import at.bitfire.synctools.storage.BatchOperation
-import at.bitfire.synctools.storage.LocalStorageException
 import at.bitfire.synctools.storage.contacts.AddressContract.CachedGroupMembership
 import at.bitfire.synctools.storage.contacts.AddressContract.GroupColumns
 import at.bitfire.synctools.storage.contacts.AddressContract.asSyncAdapter
@@ -71,29 +69,25 @@ class LocalGroup(
 
         // update cached group memberships
         withContext(Dispatchers.IO) {
-            try {
-                val batch = ContactsBatchOperation(provider)
+            val batch = ContactsBatchOperation(provider)
 
-                // delete old cached group memberships
+            // delete old cached group memberships
+            batch += BatchOperation.CpoBuilder
+                .newDelete(ContactsContract.Data.CONTENT_URI.asSyncAdapter())
+                .withSelection(
+                    CachedGroupMembership.MIMETYPE + "=? AND " + CachedGroupMembership.GROUP_ID + "=?",
+                    arrayOf(CachedGroupMembership.CONTENT_ITEM_TYPE, id.toString())
+                )
+
+            // insert updated cached group memberships
+            for (member in androidGroup.getMembers())
                 batch += BatchOperation.CpoBuilder
-                    .newDelete(ContactsContract.Data.CONTENT_URI.asSyncAdapter())
-                    .withSelection(
-                        CachedGroupMembership.MIMETYPE + "=? AND " + CachedGroupMembership.GROUP_ID + "=?",
-                        arrayOf(CachedGroupMembership.CONTENT_ITEM_TYPE, id.toString())
-                    )
+                    .newInsert(ContactsContract.Data.CONTENT_URI.asSyncAdapter())
+                    .withValue(CachedGroupMembership.MIMETYPE, CachedGroupMembership.CONTENT_ITEM_TYPE)
+                    .withValue(CachedGroupMembership.RAW_CONTACT_ID, member)
+                    .withValue(CachedGroupMembership.GROUP_ID, id)
 
-                // insert updated cached group memberships
-                for (member in androidGroup.getMembers())
-                    batch += BatchOperation.CpoBuilder
-                        .newInsert(ContactsContract.Data.CONTENT_URI.asSyncAdapter())
-                        .withValue(CachedGroupMembership.MIMETYPE, CachedGroupMembership.CONTENT_ITEM_TYPE)
-                        .withValue(CachedGroupMembership.RAW_CONTACT_ID, member)
-                        .withValue(CachedGroupMembership.GROUP_ID, id)
-
-                batch.commit()
-            } catch (e: RemoteException) {
-                throw LocalStorageException("Couldn't update cached group memberships", e)
-            }
+            batch.commit()
         }
     }
 
@@ -101,18 +95,14 @@ class LocalGroup(
      * Marks all members of the current group as dirty.
      */
     fun markMembersDirty() {
-        try {
-            val batch = ContactsBatchOperation(provider)
+        val batch = ContactsBatchOperation(provider)
 
-            for (member in androidGroup.getMembers())
-                batch += BatchOperation.CpoBuilder
-                    .newUpdate(ContentUris.withAppendedId(RawContacts.CONTENT_URI, member).asSyncAdapter())
-                    .withValue(RawContacts.DIRTY, 1)
+        for (member in androidGroup.getMembers())
+            batch += BatchOperation.CpoBuilder
+                .newUpdate(ContentUris.withAppendedId(RawContacts.CONTENT_URI, member).asSyncAdapter())
+                .withValue(RawContacts.DIRTY, 1)
 
-            batch.commit()
-        }  catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't mark group members dirty", e)
-        }
+        batch.commit()
     }
 
     override fun update(data: Contact, fileName: String?, eTag: String?, scheduleTag: String?, flags: Int) {

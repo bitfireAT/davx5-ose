@@ -7,7 +7,6 @@ package at.bitfire.synctools.storage.tasks
 import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Entity
-import android.os.RemoteException
 import androidx.annotation.VisibleForTesting
 import androidx.core.content.contentValuesOf
 import at.bitfire.synctools.storage.BatchOperation.CpoBuilder
