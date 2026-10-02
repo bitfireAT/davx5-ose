@@ -9,6 +9,8 @@
 
     <string name="account_invalid">Account does not exist (anymore)</string>
     <string name="account_type" translatable="false">bitfire.at.davdroid</string>
+    <!-- The account type for accounts stored in the database -->
+    <string name="account_type_db" translatable="false">at.bitfire.davx5</string>
     <string name="account_type_address_book" translatable="false">at.bitfire.davdroid.address_book</string>
     <string name="account_title_address_book">DAVx⁵ Address book</string>
     <string name="account_prefs_use_app">Don\'t change the account here! Directly use the app to manage accounts instead.</string>

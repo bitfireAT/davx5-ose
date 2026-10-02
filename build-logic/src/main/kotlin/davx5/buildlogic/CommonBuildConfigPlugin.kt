@@ -89,8 +89,14 @@ class CommonBuildConfigPlugin : Plugin<Project> {
         compileSdk = 37     // Android 17
         // see also synctools/robolectric.properties
 
+        // Enable BuildConfig to generate the IS_BETA flag
+        buildFeatures.buildConfig = true
+
         defaultConfig.apply {
             minSdk = 24     // Android 7
+
+            val isPreRelease = setOf("alpha", "beta", "rc").any { AppVersion.NAME.contains(it, ignoreCase = true) }
+            buildConfigField("boolean", "PRE_RELEASE", isPreRelease.toString())
         }
 
         // enable desugaring for Java 8 Time API etc.
