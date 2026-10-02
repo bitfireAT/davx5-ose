@@ -5,7 +5,6 @@ package at.bitfire.davdroid.resource.local
 
 import android.accounts.Account
 import android.accounts.AccountManager
-import android.content.ContentProviderClient
 import android.content.ContentValues
 import android.content.Context
 import android.os.RemoteException
@@ -21,6 +20,7 @@ import at.bitfire.davdroid.settings.AccountSettingsFactory
 import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.adapter.SyncFrameworkIntegration
 import at.bitfire.synctools.mapping.contacts.Contact
+import at.bitfire.synctools.storage.LocalStorageClient
 import at.bitfire.synctools.storage.LocalStorageException
 import at.bitfire.synctools.storage.contacts.AddressContract.GroupColumns
 import at.bitfire.synctools.storage.contacts.AddressContract.RawContactColumns
@@ -56,13 +56,13 @@ import kotlin.jvm.optionals.getOrNull
  * @param _addressBookAccount Address book account (not: DAVx5 account) storing the actual Android
  * contacts. This is the initial value of [addressBookAccount]. However, when the address book is renamed,
  * the new name will only be available in [addressBookAccount], so usually that one should be used.
- * @param provider            Content provider needed to access and modify the address book
+ * @param client            [LocalStorageClient] needed to access and modify the address book
  */
 @OpenForTesting
 open class LocalAddressBook @AssistedInject constructor(
     @Assisted val accountId: AccountId,
     @Assisted _addressBookAccount: Account,
-    @Assisted provider: ContentProviderClient,
+    @Assisted client: LocalStorageClient,
     @Assisted val groupMethod: GroupMethod,
     private val accountManager: Provider<AccountManager>,
     private val accountSettingsFactory: AccountSettingsFactory,
@@ -78,12 +78,12 @@ open class LocalAddressBook @AssistedInject constructor(
         fun create(
             @Assisted accountId: AccountId,
             @Assisted addressBookAccount: Account,
-            provider: ContentProviderClient,
+            client: LocalStorageClient,
             groupMethod: GroupMethod
         ): LocalAddressBook
     }
 
-    internal val ab = AndroidAddressBook(context, _addressBookAccount, provider, groupMethod)
+    internal val ab = AndroidAddressBook(context, _addressBookAccount, client, groupMethod)
 
     var addressBookAccount: Account by ab::addressBookAccount
 

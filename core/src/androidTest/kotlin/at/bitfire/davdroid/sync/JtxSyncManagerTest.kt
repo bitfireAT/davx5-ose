@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.sync
 
-import android.content.ContentProviderClient
 import android.content.Context
 import at.bitfire.davdroid.accounts.LegacyAccount
 import at.bitfire.davdroid.db.Collection
@@ -18,6 +17,7 @@ import at.bitfire.davdroid.resource.remote.CalendarQueryFilter
 import at.bitfire.davdroid.sync.account.TestAccount
 import at.bitfire.davdroid.util.DavUtils.toUrl
 import at.bitfire.davdroid.util.PermissionUtils
+import at.bitfire.synctools.storage.LocalStorageClient
 import at.bitfire.synctools.storage.TaskProvider
 import at.bitfire.synctools.test.GrantPermissionOrSkipRule
 import at.techbee.jtx.JtxContract
@@ -68,7 +68,7 @@ class JtxSyncManagerTest {
 
     lateinit var accountId: LegacyAccount
 
-    private lateinit var provider: ContentProviderClient
+    private lateinit var client: LocalStorageClient
     private lateinit var syncManager: JtxSyncManager
     private lateinit var localJtxCollection: LocalJtxCollection
 
@@ -82,7 +82,7 @@ class JtxSyncManagerTest {
         // Acquire the jtx content provider
         val providerOrNull = context.contentResolver.acquireContentProviderClient(JtxContract.AUTHORITY)
         assumeNotNull(providerOrNull)
-        provider = providerOrNull!!
+        client = LocalStorageClient(providerOrNull!!)
 
         accountId = LegacyAccount(TestAccount.create())
 
@@ -95,7 +95,7 @@ class JtxSyncManagerTest {
             type = Collection.TYPE_CALENDAR,
             url = "https://example.com".toUrl()
         )
-        localJtxCollection = runBlocking { localJtxCollectionStore.create(provider, dbCollection) }
+        localJtxCollection = runBlocking { localJtxCollectionStore.create(client, dbCollection) }
         val httpClient = httpClientBuilder.build()
         syncManager = jtxSyncManagerFactory.jtxSyncManager(
             accountId = accountId,
@@ -119,8 +119,8 @@ class JtxSyncManagerTest {
             localJtxCollectionStore.delete(localJtxCollection)
         serviceRepository.deleteAllBlocking()
 
-        if (this::provider.isInitialized)
-            provider.close()
+        if (this::client.isInitialized)
+            client.close()
 
         if (this::accountId.isInitialized)
             TestAccount.remove(accountId.androidAccount)

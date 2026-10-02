@@ -6,7 +6,6 @@ package at.bitfire.synctools.storage.contacts
 
 import android.accounts.Account
 import android.accounts.AccountManager
-import android.content.ContentProviderClient
 import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Context
@@ -55,13 +54,6 @@ class AndroidAddressBook(
     val client: LocalStorageClient,
     val groupMethod: GroupMethod
 ) {
-    @Deprecated("Remove once all of at.bitfire.synctools.storage uses LocalStorageClient")
-    constructor(
-        context: Context,
-        addressBookAccount: Account,
-        provider: ContentProviderClient,
-        groupMethod: GroupMethod
-    ) : this(context, addressBookAccount, LocalStorageClient(provider), groupMethod)
 
     private val logger
         get() = Logger.getLogger(AndroidAddressBook::class.java.name)

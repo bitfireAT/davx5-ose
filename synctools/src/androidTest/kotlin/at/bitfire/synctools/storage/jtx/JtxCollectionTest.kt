@@ -5,7 +5,6 @@
 package at.bitfire.synctools.storage.jtx
 
 import android.accounts.Account
-import android.content.ContentProviderClient
 import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Entity
@@ -13,6 +12,7 @@ import android.os.ParcelFileDescriptor
 import androidx.core.content.contentValuesOf
 import androidx.core.net.toUri
 import androidx.test.platform.app.InstrumentationRegistry
+import at.bitfire.synctools.storage.LocalStorageClient
 import at.bitfire.synctools.storage.TaskProvider
 import at.bitfire.synctools.test.GrantPermissionOrSkipRule
 import at.bitfire.synctools.test.assertEntitiesEqual
@@ -44,7 +44,7 @@ class JtxCollectionTest {
             JtxContract.JtxCollection.TEST_ACCOUNT_TYPE
         )
 
-        private lateinit var client: ContentProviderClient
+        private lateinit var client: LocalStorageClient
         private lateinit var provider: JtxCollectionProvider
         private lateinit var collection: JtxCollection
 
@@ -52,7 +52,8 @@ class JtxCollectionTest {
         @JvmStatic
         fun setUpClass() {
             val context = InstrumentationRegistry.getInstrumentation().targetContext
-            client = context.contentResolver.acquireContentProviderClient(JtxContract.AUTHORITY)!!
+            val contentProviderClient = context.contentResolver.acquireContentProviderClient(JtxContract.AUTHORITY)!!
+            client = LocalStorageClient(contentProviderClient)
             provider = JtxCollectionProvider(testAccount, client)
             collection = provider.createAndGetCollection(contentValuesOf(
                 JtxContract.JtxCollection.URL to "https://example.com/test",

@@ -41,7 +41,6 @@ abstract class DmfsStyleProvidersTaskTest(
     val permissionRule = GrantPermissionOrSkipRule(providerName.permissions.toSet())
 
     var providerOrNull: ContentProviderClient? = null
-    lateinit var provider: ContentProviderClient
     lateinit var client: LocalStorageClient
 
     @Before
@@ -50,15 +49,14 @@ abstract class DmfsStyleProvidersTaskTest(
         providerOrNull = TaskProvider.acquireRecentClient(InstrumentationRegistry.getInstrumentation().context, providerName)
         assertNotNull("$providerName is not installed", providerOrNull != null)
 
-        provider = providerOrNull!!
-        client = LocalStorageClient(provider)
+        client = LocalStorageClient(providerOrNull!!)
         Logger.getLogger(javaClass.name).fine("Using task provider: $providerName")
     }
 
     @After
     @CallSuper
     open fun shutdown() {
-        providerOrNull?.close()
+        client.close()
     }
 
 }

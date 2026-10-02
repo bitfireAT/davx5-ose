@@ -304,7 +304,7 @@ class AccountRepository @Inject constructor(
             try {
                 // update calendar events
                 val store = localCalendarStore.get()
-                store.acquireContentProvider(true)?.use { client ->
+                store.acquireLocalStorageClient(true)?.use { client ->
                     store.updateAccount(oldAccount, newAccount, client)
                 }
             } catch (e: Exception) {
@@ -314,7 +314,7 @@ class AccountRepository @Inject constructor(
             try {
                 // update account_name of local tasks
                 val store = tasksAppManager.get().getDataStore()
-                store?.acquireContentProvider(true)?.use { client ->
+                store?.acquireLocalStorageClient(true)?.use { client ->
                     store.updateAccount(oldAccount, newAccount, client)
                 }
             } catch (e: Exception) {

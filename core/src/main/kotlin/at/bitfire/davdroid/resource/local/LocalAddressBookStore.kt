@@ -24,6 +24,7 @@ import at.bitfire.davdroid.settings.AccountSettingsFactory
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.util.DavUtils.extractCollectionName
+import at.bitfire.synctools.storage.LocalStorageClient
 import at.bitfire.synctools.util.AndroidAccountUtils
 import com.google.common.base.CharMatcher
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -87,16 +88,23 @@ class LocalAddressBookStore @Inject constructor(
         return sb.toString()
     }
 
-    override fun acquireContentProvider(throwOnMissingPermissions: Boolean) = try {
-        context.contentResolver.acquireContentProviderClient(authority)
-    } catch (e: SecurityException) {
-        if (throwOnMissingPermissions)
-            throw e
-        else
-            /* return */ null
+    override fun acquireLocalStorageClient(throwOnMissingPermissions: Boolean): LocalStorageClient? {
+        return acquireContentProviderClient(throwOnMissingPermissions)?.let { LocalStorageClient(it) }
     }
 
-    override suspend fun create(client: ContentProviderClient, fromCollection: Collection): LocalAddressBook? {
+    private fun acquireContentProviderClient(throwOnMissingPermissions: Boolean): ContentProviderClient? {
+        return try {
+            context.contentResolver.acquireContentProviderClient(authority)
+        } catch (e: SecurityException) {
+            if (throwOnMissingPermissions) {
+                throw e
+            } else {
+                null
+            }
+        }
+    }
+
+    override suspend fun create(client: LocalStorageClient, fromCollection: Collection): LocalAddressBook? {
         val service = serviceRepository.get(fromCollection.serviceId)
             ?: throw IllegalArgumentException("Couldn't fetch DB service from collection")
         val accountId = accountRepository.getAccountIdFromName(service.accountName)
@@ -112,7 +120,7 @@ class LocalAddressBookStore @Inject constructor(
         val addressBook = localAddressBookFactory.create(
             accountId = accountId,
             addressBookAccount = addressBookAccount,
-            provider = client,
+            client = client,
             groupMethod = accountSettings.getGroupMethod()
         )
 
@@ -139,7 +147,7 @@ class LocalAddressBookStore @Inject constructor(
         return addressBookAccount
     }
 
-    override fun getAll(accountId: AccountId, client: ContentProviderClient): List<LocalAddressBook> {
+    override fun getAll(accountId: AccountId, client: LocalStorageClient): List<LocalAddressBook> {
         val accountSettings = accountSettingsFactory.create(accountId)
         val groupMethod = accountSettings.getGroupMethod()
         return getAddressBookAccounts(accountId).map { addressBookAccount ->
@@ -149,7 +157,7 @@ class LocalAddressBookStore @Inject constructor(
 
     override fun getByDbCollectionId(
         accountId: AccountId,
-        client: ContentProviderClient,
+        client: LocalStorageClient,
         dbCollectionId: Long
     ): LocalAddressBook? {
         return getAll(accountId, client).firstOrNull { it.dbCollectionId == dbCollectionId }
@@ -157,7 +165,7 @@ class LocalAddressBookStore @Inject constructor(
 
     override fun update(
         accountId: AccountId,
-        client: ContentProviderClient,
+        client: LocalStorageClient,
         localCollection: LocalAddressBook,
         fromCollection: Collection
     ) {
@@ -197,7 +205,7 @@ class LocalAddressBookStore @Inject constructor(
      * @param newAccount    The new account
      * @param client        content provider client (not needed/does not exist for address books)
      */
-    override fun updateAccount(oldAccount: Account, newAccount: Account, client: ContentProviderClient?) {
+    override fun updateAccount(oldAccount: Account, newAccount: Account, client: LocalStorageClient?) {
         val oldAccountId = androidAccountManager.getAccountId(oldAccount)
         val newAccountId = androidAccountManager.getAccountId(newAccount)
 

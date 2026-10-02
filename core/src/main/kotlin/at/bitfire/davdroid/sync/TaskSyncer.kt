@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.sync
 
-import android.content.ContentProviderClient
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
@@ -12,6 +11,7 @@ import at.bitfire.davdroid.resource.local.LocalTaskList
 import at.bitfire.davdroid.resource.local.LocalTaskListStore
 import at.bitfire.davdroid.resource.remote.CalDavCollection
 import at.bitfire.davdroid.resource.remote.CalendarQueryFilter
+import at.bitfire.synctools.storage.LocalStorageClient
 import at.bitfire.synctools.storage.TaskProvider
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -49,7 +49,7 @@ class TaskSyncer @AssistedInject constructor(
         get() = Service.TYPE_CALDAV
 
 
-    override fun prepare(provider: ContentProviderClient): Boolean {
+    override fun prepare(client: LocalStorageClient): Boolean {
         // Don't sync if task provider is too old
         try {
             TaskProvider.checkVersion(context, providerName)
@@ -69,7 +69,7 @@ class TaskSyncer @AssistedInject constructor(
         collectionRepository.getSyncTaskLists(serviceId)
 
     override suspend fun syncCollection(
-        provider: ContentProviderClient,
+        client: LocalStorageClient,
         localCollection: LocalTaskList,
         remoteCollectionInfo: Collection
     ) {

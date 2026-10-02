@@ -9,6 +9,7 @@ import android.provider.CalendarContract
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.accounts.AndroidAccountManager
 import at.bitfire.davdroid.settings.AccountSettingsStore
+import at.bitfire.synctools.storage.LocalStorageClient
 import at.bitfire.synctools.storage.calendar.AndroidCalendarProvider
 import dagger.Binds
 import dagger.Module
@@ -31,10 +32,12 @@ class AccountSettingsMigration7 @Inject constructor(
 
     private fun addCalendarColors(accountId: AccountId) {
         val account = accountAccountManager.getAndroidAccount(accountId)
-        context.contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)?.use { client ->
-            val provider = AndroidCalendarProvider(account, client)
-            provider.provideCss3ColorIndices()
-        }
+        context.contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)
+            ?.let { provider -> LocalStorageClient(provider) }
+            ?.use { client ->
+                val provider = AndroidCalendarProvider(account, client)
+                provider.provideCss3ColorIndices()
+            }
     }
 
     private fun updateWifiOnlySsids(store: AccountSettingsStore) {

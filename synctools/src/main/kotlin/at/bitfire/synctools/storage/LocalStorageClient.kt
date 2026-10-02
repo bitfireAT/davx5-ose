@@ -19,14 +19,14 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.buffer
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
-import java.io.FileNotFoundException
+import java.lang.AutoCloseable
 
 /**
  * Wraps a [ContentProviderClient] to throw [LocalStorageException] instead of [android.os.RemoteException].
  */
 class LocalStorageClient(
     val provider: ContentProviderClient
-) {
+) : AutoCloseable {
     /**
      * @see ContentProviderClient.query
      *
@@ -181,6 +181,10 @@ class LocalStorageClient(
         return runWrappingRemoteException {
             provider.openFile(url, mode)
         }
+    }
+
+    override fun close() {
+        provider.close()
     }
 }
 

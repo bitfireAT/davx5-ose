@@ -6,7 +6,6 @@ package at.bitfire.synctools.storage.calendar
 
 import android.Manifest
 import android.accounts.Account
-import android.content.ContentProviderClient
 import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Entity
@@ -17,6 +16,7 @@ import androidx.core.content.contentValuesOf
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
 import at.bitfire.synctools.storage.BatchOperation
+import at.bitfire.synctools.storage.LocalStorageClient
 import at.bitfire.synctools.test.assertContentValuesEqual
 import at.bitfire.synctools.test.assertEntitiesEqual
 import kotlinx.coroutines.flow.toList
@@ -42,7 +42,7 @@ class AndroidCalendarTest {
 
         private val testAccount = Account(AndroidCalendarTest::class.java.name, CalendarContract.ACCOUNT_TYPE_LOCAL)
 
-        private lateinit var client: ContentProviderClient
+        private lateinit var client: LocalStorageClient
         private lateinit var calendar: AndroidCalendar
         private lateinit var recurringCalendar: AndroidRecurringCalendar
 
@@ -50,7 +50,8 @@ class AndroidCalendarTest {
         @JvmStatic
         fun setUpClass() {
             val context = InstrumentationRegistry.getInstrumentation().targetContext
-            client = context.contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)!!
+            val provider = context.contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)!!
+            client = LocalStorageClient(provider)
 
             calendar = TestCalendar.create(testAccount, client)
             recurringCalendar = AndroidRecurringCalendar(calendar)

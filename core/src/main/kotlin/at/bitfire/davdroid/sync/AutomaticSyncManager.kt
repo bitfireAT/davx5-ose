@@ -86,8 +86,8 @@ class AutomaticSyncManager @Inject constructor(
             syncFramework.disableSyncAbility(account, ContactsContract.AUTHORITY)
 
             // pass through request to update all existing address books
-            localAddressBookStore.acquireContentProvider()?.use { provider ->
-                for (addressBookAccount in localAddressBookStore.getAll(accountId, provider))
+            localAddressBookStore.acquireLocalStorageClient()?.use { client ->
+                for (addressBookAccount in localAddressBookStore.getAll(accountId, client))
                     addressBookAccount.updateSyncFrameworkSettings()
             }
 

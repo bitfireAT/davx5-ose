@@ -63,8 +63,8 @@ class AccountSettingsMigration20 @Inject constructor(
 
     @OpenForTesting
     internal fun migrateAddressBooks(accountId: AccountId, cardDavServiceId: Long) {
-        addressBookStore.acquireContentProvider()?.use { provider ->
-            for (addressBook in addressBookStore.getAll(accountId, provider)) {
+        addressBookStore.acquireLocalStorageClient()?.use { client ->
+            for (addressBook in addressBookStore.getAll(accountId, client)) {
                 val url = accountManager.getUserData(addressBook.addressBookAccount, ADDRESS_BOOK_USER_DATA_URL)
                     ?: continue
                 val collection = collectionRepository.getByServiceAndUrl(cardDavServiceId, url) ?: continue
@@ -75,7 +75,7 @@ class AccountSettingsMigration20 @Inject constructor(
 
     @OpenForTesting
     internal fun migrateCalendars(account: Account, calDavServiceId: Long) {
-        calendarStore.acquireContentProvider()?.use { client ->
+        calendarStore.acquireLocalStorageClient()?.use { client ->
             val calendarProvider = AndroidCalendarProvider(account, client)
             // for each calendar, assign _SYNC_ID := ID if collection (identified by NAME field = URL)
             for (calendar in calendarProvider.findCalendars()) {
@@ -95,8 +95,8 @@ class AccountSettingsMigration20 @Inject constructor(
     @OpenForTesting
     internal fun migrateTaskLists(accountId: AccountId, calDavServiceId: Long) {
         val taskListStore = tasksAppManager.getDataStore() ?: /* no tasks app */ return
-        taskListStore.acquireContentProvider()?.use { provider ->
-            for (taskList in taskListStore.getAll(accountId, provider)) {
+        taskListStore.acquireLocalStorageClient()?.use { client ->
+            for (taskList in taskListStore.getAll(accountId, client)) {
                 when (taskList) {
                     is LocalTaskList -> {       // tasks.org, OpenTasks
                         val url = taskList.dmfsTaskList.syncId ?: continue

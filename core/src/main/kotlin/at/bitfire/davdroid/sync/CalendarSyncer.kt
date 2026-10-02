@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.sync
 
-import android.content.ContentProviderClient
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
@@ -12,6 +11,7 @@ import at.bitfire.davdroid.resource.local.LocalCalendar
 import at.bitfire.davdroid.resource.local.LocalCalendarStore
 import at.bitfire.davdroid.resource.remote.CalDavCollection
 import at.bitfire.davdroid.resource.remote.CalendarQueryFilter
+import at.bitfire.synctools.storage.LocalStorageClient
 import at.bitfire.synctools.storage.calendar.AndroidCalendarProvider
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -48,10 +48,10 @@ class CalendarSyncer @AssistedInject constructor(
         get() = Service.TYPE_CALDAV
 
 
-    override fun prepare(provider: ContentProviderClient): Boolean {
+    override fun prepare(client: LocalStorageClient): Boolean {
         // Update colors
         val account = androidAccountManager.getAndroidAccount(accountId)
-        val calendarProvider = AndroidCalendarProvider(account, provider)
+        val calendarProvider = AndroidCalendarProvider(account, client)
         if (settings.eventColors)
             calendarProvider.provideCss3ColorIndices()
         else
@@ -63,7 +63,7 @@ class CalendarSyncer @AssistedInject constructor(
         collectionRepository.getSyncCalendars(serviceId)
 
     override suspend fun syncCollection(
-        provider: ContentProviderClient,
+        client: LocalStorageClient,
         localCollection: LocalCalendar,
         remoteCollectionInfo: Collection
     ) {

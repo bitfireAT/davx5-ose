@@ -6,7 +6,6 @@ package at.bitfire.davdroid.resource.local
 
 import android.Manifest
 import android.accounts.Account
-import android.content.ContentProviderClient
 import android.content.ContentUris
 import android.content.Context
 import android.provider.ContactsContract
@@ -21,6 +20,7 @@ import at.bitfire.davdroid.accounts.LegacyAccount
 import at.bitfire.synctools.mapping.contacts.Contact
 import at.bitfire.synctools.mapping.contacts.LabeledProperty
 import at.bitfire.synctools.mapping.contacts.PendingMemberships
+import at.bitfire.synctools.storage.LocalStorageClient
 import at.bitfire.synctools.storage.contacts.AddressContract.CachedGroupMembership
 import at.bitfire.synctools.storage.contacts.AddressContract.GroupColumns
 import at.bitfire.synctools.storage.contacts.AddressContract.asSyncAdapter
@@ -67,7 +67,7 @@ class LocalAddressBookTest {
 
     @Test
     fun test_readOnly() = runTest {
-        localTestAddressBook.provide(accountId, provider) { addressBook ->
+        localTestAddressBook.provide(accountId, client) { addressBook ->
             // insert contact with phone number and a group
             val localContact = addressBook.addContact(
                 Contact(
@@ -90,7 +90,7 @@ class LocalAddressBookTest {
 
             assertTrue(isGroupReadOnly(addressBook, groupId))
             // verify that non-sync-adapter updates are silently ignored when read-only
-            provider.update(
+            client.update(
                 ContactsContract.Data.CONTENT_URI,
                 contentValuesOf(Phone.NUMBER to "0000000000"),
                 "${ContactsContract.Data.RAW_CONTACT_ID}=? AND ${ContactsContract.Data.MIMETYPE}=?",
@@ -109,7 +109,7 @@ class LocalAddressBookTest {
      */
     @Test
     fun test_renameAccount_retainsContacts() = runTest {
-        localTestAddressBook.provide(accountId, provider) { addressBook ->
+        localTestAddressBook.provide(accountId, client) { addressBook ->
             // insert contact with data row
             val uid = "12345"
             val contact = Contact(
@@ -143,7 +143,7 @@ class LocalAddressBookTest {
      */
     @Test
     fun test_renameAccount_retainsGroups() = runTest {
-        localTestAddressBook.provide(accountId, provider) { addressBook ->
+        localTestAddressBook.provide(accountId, client) { addressBook ->
             // insert group
             val localGroup = addressBook.addGroup(Contact(displayName = "Test Group"), null, null, 0)
             val id = localGroup.id!!
@@ -169,7 +169,7 @@ class LocalAddressBookTest {
 
     @Test
     fun testApplyPendingMemberships_addPendingMembership() = runTest {
-        localTestAddressBook.provide(accountId, provider, GroupMethod.GROUP_VCARDS) { localAddressBook ->
+        localTestAddressBook.provide(accountId, client, GroupMethod.GROUP_VCARDS) { localAddressBook ->
             val contact1 = localAddressBook.addContact(Contact().apply {
                 uid = "test1"
                 displayName = "Test"
@@ -219,7 +219,7 @@ class LocalAddressBookTest {
 
     @Test
     fun testApplyPendingMemberships_removeMembership() = runTest {
-        localTestAddressBook.provide(accountId, provider, GroupMethod.GROUP_VCARDS) { localAddressBook ->
+        localTestAddressBook.provide(accountId, client, GroupMethod.GROUP_VCARDS) { localAddressBook ->
             val contact1 = localAddressBook.addContact(Contact().apply {
                 uid = "test1"
                 displayName = "Test"
@@ -275,7 +275,7 @@ class LocalAddressBookTest {
      */
     fun isContactDirty(addressBook: LocalAddressBook, id: Long): Boolean {
         val uri = ContentUris.withAppendedId(addressBook.ab.rawContactsSyncUri(), id)
-        provider.query(uri, arrayOf(RawContacts.DIRTY), null, null, null)?.use { cursor ->
+        client.query(uri, arrayOf(RawContacts.DIRTY), null, null, null)?.use { cursor ->
             if (cursor.moveToFirst())
                 return cursor.getInt(0) != 0
         }
@@ -291,7 +291,7 @@ class LocalAddressBookTest {
      */
     fun isGroupDirty(addressBook: LocalAddressBook, id: Long): Boolean {
         val uri = ContentUris.withAppendedId(addressBook.ab.groupsSyncUri(), id)
-        provider.query(uri, arrayOf(Groups.DIRTY), null, null, null)?.use { cursor ->
+        client.query(uri, arrayOf(Groups.DIRTY), null, null, null)?.use { cursor ->
             if (cursor.moveToFirst())
                 return cursor.getInt(0) != 0
         }
@@ -300,7 +300,7 @@ class LocalAddressBookTest {
 
     fun isGroupReadOnly(addressBook: LocalAddressBook, id: Long): Boolean {
         val uri = ContentUris.withAppendedId(addressBook.ab.groupsSyncUri(), id)
-        provider.query(uri, arrayOf(Groups.GROUP_IS_READ_ONLY), null, null, null)?.use { cursor ->
+        client.query(uri, arrayOf(Groups.GROUP_IS_READ_ONLY), null, null, null)?.use { cursor ->
             if (cursor.moveToFirst())
                 return cursor.getInt(0) != 0
         }
@@ -308,7 +308,7 @@ class LocalAddressBookTest {
     }
 
     fun getPhoneNumber(addressBook: LocalAddressBook, contactId: Long): String? {
-        provider.query(
+        client.query(
             ContactsContract.Data.CONTENT_URI.asSyncAdapter(addressBook.addressBookAccount),
             arrayOf(Phone.NUMBER),
             "${ContactsContract.Data.RAW_CONTACT_ID}=? AND ${ContactsContract.Data.MIMETYPE}=?",
@@ -327,19 +327,20 @@ class LocalAddressBookTest {
         @ClassRule
         val permissionRule = GrantPermissionRule.grant(Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS)!!
 
-        private lateinit var provider: ContentProviderClient
+        private lateinit var client: LocalStorageClient
 
         @BeforeClass
         @JvmStatic
         fun connect() {
             val context = InstrumentationRegistry.getInstrumentation().context
-            provider = context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)!!
+            val provider = context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)!!
+            client = LocalStorageClient(provider)
         }
 
         @AfterClass
         @JvmStatic
         fun disconnect() {
-            provider.close()
+            client.close()
         }
     }
 

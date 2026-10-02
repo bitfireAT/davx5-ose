@@ -5,13 +5,13 @@
 package at.bitfire.synctools.mapping.contacts.builder
 
 import android.Manifest
-import android.content.ContentProviderClient
 import android.net.Uri
 import android.provider.ContactsContract
 import android.provider.ContactsContract.CommonDataKinds.GroupMembership
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
 import at.bitfire.synctools.mapping.contacts.Contact
+import at.bitfire.synctools.storage.LocalStorageClient
 import at.bitfire.synctools.storage.contacts.TestAddressBook
 import at.bitfire.synctools.vcard.GroupMethod
 import org.junit.AfterClass
@@ -24,7 +24,7 @@ class GroupMembershipBuilderTest {
 
     @Test
     fun testCategories_GroupsAsCategories() {
-        val addressBook = TestAddressBook.create(provider)
+        val addressBook = TestAddressBook.create(client)
         try {
             val contact = Contact().apply {
                 categories += "TEST GROUP"
@@ -41,7 +41,7 @@ class GroupMembershipBuilderTest {
 
     @Test
     fun testCategories_GroupsAsVCards() {
-        val addressBook = TestAddressBook.create(provider)
+        val addressBook = TestAddressBook.create(client)
         try {
             val contact = Contact().apply {
                 categories += "TEST GROUP"
@@ -62,19 +62,20 @@ class GroupMembershipBuilderTest {
         @ClassRule
         val permissionRule = GrantPermissionRule.grant(Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS)!!
 
-        private lateinit var provider: ContentProviderClient
+        private lateinit var client: LocalStorageClient
 
         @BeforeClass
         @JvmStatic
         fun connect() {
             val context = InstrumentationRegistry.getInstrumentation().context
-            provider = context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)!!
+            val provider = context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)!!
+            client = LocalStorageClient(provider)
         }
 
         @AfterClass
         @JvmStatic
         fun disconnect() {
-            provider.close()
+            client.close()
         }
 
     }

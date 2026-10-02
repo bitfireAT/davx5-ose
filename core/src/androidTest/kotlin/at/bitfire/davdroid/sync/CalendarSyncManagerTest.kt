@@ -5,7 +5,6 @@
 package at.bitfire.davdroid.sync
 
 import android.Manifest
-import android.content.ContentProviderClient
 import android.content.Context
 import android.content.Entity
 import android.provider.CalendarContract
@@ -20,6 +19,7 @@ import at.bitfire.davdroid.resource.remote.CalDavCollection
 import at.bitfire.davdroid.resource.remote.CalendarQueryFilter
 import at.bitfire.davdroid.resource.remote.WebDavCollection
 import at.bitfire.davdroid.sync.account.TestAccount
+import at.bitfire.synctools.storage.LocalStorageClient
 import at.bitfire.synctools.storage.calendar.AndroidCalendar
 import at.bitfire.synctools.storage.calendar.AndroidCalendarProvider
 import at.bitfire.synctools.storage.calendar.EventAndExceptions
@@ -57,7 +57,7 @@ class CalendarSyncManagerTest {
     lateinit var syncManagerFactory: CalendarSyncManager.Factory
 
     lateinit var accountId: LegacyAccount
-    lateinit var providerClient: ContentProviderClient
+    lateinit var client: LocalStorageClient
     lateinit var androidCalendar: AndroidCalendar
     lateinit var localCalendar: LocalCalendar
 
@@ -66,10 +66,11 @@ class CalendarSyncManagerTest {
         hiltRule.inject()
 
         accountId = LegacyAccount(TestAccount.create())
-        providerClient = context.contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)!!
+        val provider = context.contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)!!
+        client = LocalStorageClient(provider)
 
         // create LocalCalendar
-        val androidCalendarProvider = AndroidCalendarProvider(accountId.androidAccount, providerClient)
+        val androidCalendarProvider = AndroidCalendarProvider(accountId.androidAccount, client)
         androidCalendar = androidCalendarProvider.createAndGetCalendar(contentValuesOf(
             Calendars.NAME to "Sample Calendar"
         ))
@@ -79,7 +80,7 @@ class CalendarSyncManagerTest {
     @After
     fun tearDown() {
         localCalendar.androidCalendar.delete()
-        providerClient.close()
+        client.close()
         TestAccount.remove(accountId.androidAccount)
     }
 

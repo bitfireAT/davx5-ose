@@ -5,7 +5,6 @@
 package at.bitfire.synctools.storage.calendar
 
 import android.accounts.Account
-import android.content.ContentProviderClient
 import android.content.ContentUris
 import android.content.ContentValues
 import android.os.Build
@@ -33,8 +32,6 @@ class AndroidCalendarProvider(
     val account: Account,
     internal val client: LocalStorageClient
 ) {
-    @Deprecated("Remove once all of at.bitfire.synctools.storage uses LocalStorageClient")
-    constructor(account: Account, provider: ContentProviderClient) : this(account, LocalStorageClient(provider))
 
     private val logger = Logger.getLogger(javaClass.name)
 

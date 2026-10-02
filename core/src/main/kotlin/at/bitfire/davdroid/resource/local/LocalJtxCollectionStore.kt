@@ -18,6 +18,7 @@ import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.PrincipalRepository
 import at.bitfire.davdroid.settings.AccountSettingsFactory
 import at.bitfire.davdroid.util.DavUtils.extractCollectionName
+import at.bitfire.synctools.storage.LocalStorageClient
 import at.bitfire.synctools.storage.jtx.JtxCollectionProvider
 import at.techbee.jtx.JtxContract
 import at.techbee.jtx.JtxContract.asSyncAdapter
@@ -40,16 +41,23 @@ class LocalJtxCollectionStore @Inject constructor(
     override val authority: String
         get() = JtxContract.AUTHORITY
 
-    override fun acquireContentProvider(throwOnMissingPermissions: Boolean) = try {
-        context.contentResolver.acquireContentProviderClient(authority)
-    } catch (e: SecurityException) {
-        if (throwOnMissingPermissions)
-            throw e
-        else
-            /* return */ null
+    override fun acquireLocalStorageClient(throwOnMissingPermissions: Boolean): LocalStorageClient? {
+        return acquireContentProviderClient(throwOnMissingPermissions)?.let { LocalStorageClient(it) }
     }
 
-    override suspend fun create(client: ContentProviderClient, fromCollection: Collection): LocalJtxCollection {
+    private fun acquireContentProviderClient(throwOnMissingPermissions: Boolean): ContentProviderClient? {
+        return try {
+            context.contentResolver.acquireContentProviderClient(authority)
+        } catch (e: SecurityException) {
+            if (throwOnMissingPermissions) {
+                throw e
+            } else {
+                null
+            }
+        }
+    }
+
+    override suspend fun create(client: LocalStorageClient, fromCollection: Collection): LocalJtxCollection {
         val service = serviceDao.get(fromCollection.serviceId)
             ?: throw IllegalArgumentException("Couldn't fetch DB service from collection")
         val accountId = accountRepository.getAccountIdFromName(service.accountName)
@@ -99,7 +107,7 @@ class LocalJtxCollectionStore @Inject constructor(
         }
     }
 
-    override fun getAll(accountId: AccountId, client: ContentProviderClient): List<LocalJtxCollection> {
+    override fun getAll(accountId: AccountId, client: LocalStorageClient): List<LocalJtxCollection> {
         val account = androidAccountManager.getAndroidAccount(accountId)
         return JtxCollectionProvider(account, client).findCollections().map { jtxCollection ->
             LocalJtxCollection(jtxCollection)
@@ -108,7 +116,7 @@ class LocalJtxCollectionStore @Inject constructor(
 
     override fun getByDbCollectionId(
         accountId: AccountId,
-        client: ContentProviderClient,
+        client: LocalStorageClient,
         dbCollectionId: Long
     ): LocalJtxCollection? {
         val account = androidAccountManager.getAndroidAccount(accountId)
@@ -119,7 +127,7 @@ class LocalJtxCollectionStore @Inject constructor(
 
     override fun update(
         accountId: AccountId,
-        client: ContentProviderClient,
+        client: LocalStorageClient,
         localCollection: LocalJtxCollection,
         fromCollection: Collection
     ) {
@@ -136,7 +144,7 @@ class LocalJtxCollectionStore @Inject constructor(
         return accountSettings.getManageCalendarColors()
     }
 
-    override fun updateAccount(oldAccount: Account, newAccount: Account, @WillNotClose client: ContentProviderClient?) {
+    override fun updateAccount(oldAccount: Account, newAccount: Account, @WillNotClose client: LocalStorageClient?) {
         if (client == null)
             return
         val values = contentValuesOf(JtxContract.JtxCollection.ACCOUNT_NAME to newAccount.name)

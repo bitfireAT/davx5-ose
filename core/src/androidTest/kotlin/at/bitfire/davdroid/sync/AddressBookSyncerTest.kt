@@ -5,10 +5,10 @@
 package at.bitfire.davdroid.sync
 
 import android.accounts.AccountManager
-import android.content.ContentProviderClient
 import android.os.DeadObjectException
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.resource.local.LocalAddressBook
+import at.bitfire.synctools.storage.LocalStorageClient
 import at.bitfire.synctools.storage.LocalStorageException
 import at.bitfire.synctools.test.assertThrows
 import io.ktor.http.Url
@@ -40,7 +40,7 @@ class AddressBookSyncerTest {
     private val addressBook: LocalAddressBook = mockk(relaxed = true)
     private val contactsSyncManager: ContactsSyncManager = mockk(relaxed = true)
     private val contactsSyncManagerFactory: ContactsSyncManager.Factory = mockk()
-    private val provider: ContentProviderClient = mockk(relaxed = true)
+    private val client: LocalStorageClient = mockk(relaxed = true)
     private val settings = SyncSettingsFixtures.default()
     private val syncResult = SyncResult()
 
@@ -77,7 +77,7 @@ class AddressBookSyncerTest {
                 accountId = any(),
                 httpClient = any(),
                 syncResult = any(),
-                provider = any(),
+                client = any(),
                 localAddressBook = any(),
                 collectionInfo = any(),
                 remoteCollection = any(),
@@ -96,7 +96,7 @@ class AddressBookSyncerTest {
         /* Cancellation must not be swallowed here: only the Syncer/BaseSyncWorker may decide what to do
         about it (see issue #2663). */
         assertThrows<CancellationException> {
-            syncer.syncCollection(provider, addressBook, collection)
+            syncer.syncCollection(client, addressBook, collection)
         }
         assertFalse(syncResult.hasError)
     }
@@ -108,7 +108,7 @@ class AddressBookSyncerTest {
 
         // Same for the DeadObjectException, which the Syncer treats as soft error
         assertThrows<LocalStorageException> {
-            syncer.syncCollection(provider, addressBook, collection)
+            syncer.syncCollection(client, addressBook, collection)
         }
     }
 

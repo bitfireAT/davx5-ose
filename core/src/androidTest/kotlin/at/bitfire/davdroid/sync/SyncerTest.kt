@@ -5,12 +5,12 @@
 package at.bitfire.davdroid.sync
 
 import android.accounts.Account
-import android.content.ContentProviderClient
 import android.os.DeadObjectException
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.accounts.LegacyAccount
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.resource.local.LocalDataStore
+import at.bitfire.synctools.storage.LocalStorageClient
 import at.bitfire.synctools.storage.LocalStorageException
 import at.bitfire.synctools.test.assertThrows
 import io.mockk.coEvery
@@ -44,7 +44,7 @@ class SyncerTest {
     lateinit var logger: Logger
 
     val dataStore: LocalTestStore = mockk(relaxed = true)
-    val provider: ContentProviderClient = mockk(relaxed = true)
+    val client: LocalStorageClient = mockk(relaxed = true)
     val syncResult = SyncResult()
 
     private val accountId = LegacyAccount(Account("test", "test"))
@@ -62,23 +62,23 @@ class SyncerTest {
 
     @Test
     fun testSync_prepare_fails() = runTest {
-        every { syncer.prepare(provider) } returns false
+        every { syncer.prepare(client) } returns false
         coEvery { syncer.getSyncEnabledCollections() } returns emptyMap()
 
         // Should stop the sync after prepare returns false
-        syncer.sync(provider)
-        verify(exactly = 1) { syncer.prepare(provider) }
+        syncer.sync(client)
+        verify(exactly = 1) { syncer.prepare(client) }
         coVerify(exactly = 0) { syncer.getSyncEnabledCollections() }
     }
 
     @Test
     fun testSync_prepare_succeeds() = runTest {
-        every { syncer.prepare(provider) } returns true
+        every { syncer.prepare(client) } returns true
         coEvery { syncer.getSyncEnabledCollections() } returns emptyMap()
 
         // Should continue the sync after prepare returns true
-        syncer.sync(provider)
-        verify(exactly = 1) { syncer.prepare(provider) }
+        syncer.sync(client)
+        verify(exactly = 1) { syncer.prepare(client) }
         coVerify(exactly = 1) { syncer.getSyncEnabledCollections() }
     }
 
@@ -109,8 +109,8 @@ class SyncerTest {
         val dbCollections = mapOf(0L to dbCollection)
 
         // Should update the localCollection if it exists
-        val result = syncer.updateCollections(provider, listOf(localCollection), dbCollections)
-        verify(exactly = 1) { dataStore.update(accountId, provider, localCollection, dbCollection) }
+        val result = syncer.updateCollections(client, listOf(localCollection), dbCollections)
+        verify(exactly = 1) { dataStore.update(accountId, client, localCollection, dbCollection) }
 
         // Updated local collection list should be same as input
         assertArrayEquals(arrayOf(localCollection), result.toTypedArray())
@@ -126,10 +126,10 @@ class SyncerTest {
         })
         val dbCollections = listOf(dbCollection)
         val dbCollectionsMap = mapOf(dbCollection.id to dbCollection)
-        coEvery { syncer.createLocalCollections(provider, dbCollections) } returns localCollections
+        coEvery { syncer.createLocalCollections(client, dbCollections) } returns localCollections
 
         // Should return the new collection, because it was not updated
-        val result = syncer.updateCollections(provider, emptyList(), dbCollectionsMap)
+        val result = syncer.updateCollections(client, emptyList(), dbCollectionsMap)
 
         // Updated local collection list contain new entry
         assertEquals(1, result.size)
@@ -141,10 +141,10 @@ class SyncerTest {
     fun testCreateLocalCollections() = runTest {
         val localCollection = mockk<LocalTestCollection>()
         val dbCollection = mockk<Collection>()
-        coEvery { dataStore.create(provider, dbCollection) } returns localCollection
+        coEvery { dataStore.create(client, dbCollection) } returns localCollection
 
         // Should return list of newly created local collections
-        val result = syncer.createLocalCollections(provider, listOf(dbCollection))
+        val result = syncer.createLocalCollections(client, listOf(dbCollection))
         assertEquals(listOf(localCollection), result)
     }
 
@@ -162,19 +162,19 @@ class SyncerTest {
         val localCollections = listOf(localCollection1, localCollection2)
         every { localCollection1.dbCollectionId } returns 0L
         every { localCollection2.dbCollectionId } returns 1L
-        coEvery { syncer.syncCollection(provider, any(), any()) } just runs
+        coEvery { syncer.syncCollection(client, any(), any()) } just runs
 
         // Should call the collection content sync on both collections
-        syncer.syncCollectionContents(provider, localCollections, dbCollections)
-        coVerify(exactly = 1) { syncer.syncCollection(provider, localCollection1, dbCollection1) }
-        coVerify(exactly = 1) { syncer.syncCollection(provider, localCollection2, dbCollection2) }
+        syncer.syncCollectionContents(client, localCollections, dbCollections)
+        coVerify(exactly = 1) { syncer.syncCollection(client, localCollection1, dbCollection1) }
+        coVerify(exactly = 1) { syncer.syncCollection(client, localCollection2, dbCollection2) }
     }
 
 
     @Test
     fun testInvoke_cancellation_isRethrown() = runTest {
-        every { dataStore.acquireContentProvider(any()) } returns provider
-        coEvery { syncer.sync(provider) } throws CancellationException()
+        every { dataStore.acquireLocalStorageClient(any()) } returns client
+        coEvery { syncer.sync(client) } throws CancellationException()
 
         // Cancellation is not a sync error, but has to be passed on to the worker
         assertThrows<CancellationException> {
@@ -185,8 +185,8 @@ class SyncerTest {
 
     @Test
     fun testInvoke_deadObjectException_isSoftError() = runTest {
-        every { dataStore.acquireContentProvider(any()) } returns provider
-        coEvery { syncer.sync(provider) } throws
+        every { dataStore.acquireLocalStorageClient(any()) } returns client
+        coEvery { syncer.sync(client) } throws
                 LocalStorageException("Couldn't access local storage", DeadObjectException())
 
         syncer()
@@ -196,8 +196,8 @@ class SyncerTest {
 
     @Test
     fun testInvoke_unclassifiedException_isHardError() = runTest {
-        every { dataStore.acquireContentProvider(any()) } returns provider
-        coEvery { syncer.sync(provider) } throws Exception("Some unexpected problem")
+        every { dataStore.acquireLocalStorageClient(any()) } returns client
+        coEvery { syncer.sync(client) } throws Exception("Some unexpected problem")
 
         syncer()
         assertTrue(syncResult.hardError)
@@ -221,14 +221,14 @@ class SyncerTest {
         override val serviceType: String
             get() = throw NotImplementedError()
 
-        override fun prepare(provider: ContentProviderClient): Boolean =
+        override fun prepare(client: LocalStorageClient): Boolean =
             throw NotImplementedError()
 
         override fun getDbSyncCollections(serviceId: Long): List<Collection> =
             throw NotImplementedError()
 
         override suspend fun syncCollection(
-            provider: ContentProviderClient,
+            client: LocalStorageClient,
             localCollection: LocalTestCollection,
             remoteCollectionInfo: Collection
         ) {
@@ -242,12 +242,12 @@ class SyncerTest {
         override val authority: String
             get() = throw NotImplementedError()
 
-        override fun acquireContentProvider(throwOnMissingPermissions: Boolean): ContentProviderClient? {
+        override fun acquireLocalStorageClient(throwOnMissingPermissions: Boolean): LocalStorageClient? {
             throw NotImplementedError()
         }
 
         override suspend fun create(
-            client: ContentProviderClient,
+            client: LocalStorageClient,
             fromCollection: Collection
         ): LocalTestCollection? {
             throw NotImplementedError()
@@ -255,14 +255,14 @@ class SyncerTest {
 
         override fun getAll(
             accountId: AccountId,
-            client: ContentProviderClient
+            client: LocalStorageClient
         ): List<LocalTestCollection> {
             throw NotImplementedError()
         }
 
         override fun getByDbCollectionId(
             accountId: AccountId,
-            client: ContentProviderClient,
+            client: LocalStorageClient,
             dbCollectionId: Long
         ): LocalTestCollection? {
             throw NotImplementedError()
@@ -270,7 +270,7 @@ class SyncerTest {
 
         override fun update(
             accountId: AccountId,
-            client: ContentProviderClient,
+            client: LocalStorageClient,
             localCollection: LocalTestCollection,
             fromCollection: Collection
         ) {
@@ -281,7 +281,7 @@ class SyncerTest {
             throw NotImplementedError()
         }
 
-        override fun updateAccount(oldAccount: Account, newAccount: Account, client: ContentProviderClient?) {
+        override fun updateAccount(oldAccount: Account, newAccount: Account, client: LocalStorageClient?) {
             throw NotImplementedError()
         }
 

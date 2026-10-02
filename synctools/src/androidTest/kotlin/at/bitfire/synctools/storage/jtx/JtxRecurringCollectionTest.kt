@@ -5,11 +5,11 @@
 package at.bitfire.synctools.storage.jtx
 
 import android.accounts.Account
-import android.content.ContentProviderClient
 import android.content.ContentValues
 import android.content.Entity
 import androidx.core.content.contentValuesOf
 import androidx.test.platform.app.InstrumentationRegistry
+import at.bitfire.synctools.storage.LocalStorageClient
 import at.bitfire.synctools.storage.LocalStorageException
 import at.bitfire.synctools.storage.TaskProvider
 import at.bitfire.synctools.test.GrantPermissionOrSkipRule
@@ -48,7 +48,7 @@ class JtxRecurringCollectionTest {
             JtxContract.JtxCollection.TEST_ACCOUNT_TYPE
         )
 
-        private lateinit var client: ContentProviderClient
+        private lateinit var client: LocalStorageClient
         private lateinit var provider: JtxCollectionProvider
         private lateinit var collection: JtxCollection
         private lateinit var recurringCollection: JtxRecurringCollection
@@ -57,7 +57,8 @@ class JtxRecurringCollectionTest {
         @JvmStatic
         fun setUpClass() {
             val context = InstrumentationRegistry.getInstrumentation().targetContext
-            client = context.contentResolver.acquireContentProviderClient(JtxContract.AUTHORITY)!!
+            val contentProviderClient = context.contentResolver.acquireContentProviderClient(JtxContract.AUTHORITY)!!
+            client = LocalStorageClient(contentProviderClient)
             provider = JtxCollectionProvider(testAccount, client)
             collection = provider.createAndGetCollection(contentValuesOf(
                 JtxContract.JtxCollection.URL to "https://example.com/recurring-test",
