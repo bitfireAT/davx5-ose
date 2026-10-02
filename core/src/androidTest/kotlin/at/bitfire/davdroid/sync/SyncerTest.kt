@@ -187,7 +187,7 @@ class SyncerTest {
     fun testInvoke_deadObjectException_isSoftError() = runTest {
         every { dataStore.acquireLocalStorageClient(any()) } returns client
         coEvery { syncer.sync(client) } throws
-                LocalStorageException("Couldn't access local storage", DeadObjectException())
+                LocalStorageException("Couldn't access local storage", DeadObjectException(), softError = true)
 
         syncer()
         assertTrue(syncResult.softError)
