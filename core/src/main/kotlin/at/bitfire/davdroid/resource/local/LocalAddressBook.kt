@@ -113,7 +113,7 @@ open class LocalAddressBook @AssistedInject constructor(
 
     override suspend fun markNotDirty(flags: Int): Int =
         withContext(Dispatchers.IO) {
-            val batch = ContactsBatchOperation(ab.provider)
+            val batch = ContactsBatchOperation(ab.client)
             ab.updateRawContactRows(
                 contentValuesOf(RawContactColumns.FLAGS to flags),
                 "${RawContacts.DIRTY}=0", null,
@@ -131,7 +131,7 @@ open class LocalAddressBook @AssistedInject constructor(
 
     override suspend fun removeNotDirtyMarked(flags: Int): Int =
         withContext(Dispatchers.IO) {
-            val batch = ContactsBatchOperation(ab.provider)
+            val batch = ContactsBatchOperation(ab.client)
             ab.deleteRawContacts(
                 "NOT ${RawContacts.DIRTY} AND ${RawContactColumns.FLAGS}=?", arrayOf(flags.toString()),
                 batch
@@ -170,7 +170,7 @@ open class LocalAddressBook @AssistedInject constructor(
 
         // move contacts and groups to new account
         // no explicit account WHERE needed: updateGroups/updateRawContactRows scope via asSyncAdapter(addressBookAccount)
-        val batch = ContactsBatchOperation(ab.provider)
+        val batch = ContactsBatchOperation(ab.client)
         ab.updateGroups(
             contentValuesOf(Groups.ACCOUNT_NAME to newAccount.name, Groups.ACCOUNT_TYPE to newAccount.type),
             null, null, batch
@@ -297,7 +297,7 @@ open class LocalAddressBook @AssistedInject constructor(
 
     override suspend fun forgetETags() {
         withContext(Dispatchers.IO) {
-            val batch = ContactsBatchOperation(ab.provider)
+            val batch = ContactsBatchOperation(ab.client)
             if (includeGroups)
                 ab.updateGroups(contentValuesOf(GroupColumns.ETAG to null), null, null, batch)
             ab.updateRawContactRows(contentValuesOf(RawContactColumns.ETAG to null), null, null, batch)
@@ -349,7 +349,7 @@ open class LocalAddressBook @AssistedInject constructor(
 
 
     fun getContactIdsByGroupMembership(groupId: Long): List<Long> = buildList {
-        ab.provider.query(
+        ab.client.query(
             ContactsContract.Data.CONTENT_URI.asSyncAdapter(), arrayOf(GroupMembership.RAW_CONTACT_ID),
             "(${GroupMembership.MIMETYPE}=? AND ${GroupMembership.GROUP_ROW_ID}=?)",
             arrayOf(GroupMembership.CONTENT_ITEM_TYPE, groupId.toString()), null
@@ -380,7 +380,7 @@ open class LocalAddressBook @AssistedInject constructor(
             try {
                 val groupId = group.id!!
                 val pendingMemberUids = group.androidGroup.pendingMemberships.toMutableSet()
-                val batch = ContactsBatchOperation(ab.provider)
+                val batch = ContactsBatchOperation(ab.client)
 
                 val changeContactIDs = HashSet<Long>()
 

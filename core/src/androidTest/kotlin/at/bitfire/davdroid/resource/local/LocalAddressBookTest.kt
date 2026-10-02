@@ -177,7 +177,7 @@ class LocalAddressBookTest {
 
             val group = newGroup(localAddressBook)
             // set pending membership of contact1
-            localAddressBook.ab.provider.update(
+            localAddressBook.ab.client.update(
                 ContentUris.withAppendedId(localAddressBook.ab.groupsSyncUri(), group.id!!),
                 contentValuesOf(GroupColumns.PENDING_MEMBERS to PendingMemberships(setOf("test1")).toString()),
                 null, null
@@ -187,7 +187,7 @@ class LocalAddressBookTest {
             localAddressBook.applyPendingMemberships()
 
             // check group membership
-            localAddressBook.ab.provider.query(
+            localAddressBook.ab.client.query(
                 ContactsContract.Data.CONTENT_URI.asSyncAdapter(), arrayOf(GroupMembership.GROUP_ROW_ID, GroupMembership.RAW_CONTACT_ID),
                 // Data.CONTENT_URI ignores the account in the asSyncAdapter() URI for queries, so filter explicitly
                 "${GroupMembership.MIMETYPE}=? AND ${RawContacts.ACCOUNT_NAME}=? AND ${RawContacts.ACCOUNT_TYPE}=?",
@@ -201,7 +201,7 @@ class LocalAddressBookTest {
                 assertFalse(cursor.moveToNext())
             }
             // check cached group membership
-            localAddressBook.ab.provider.query(
+            localAddressBook.ab.client.query(
                 ContactsContract.Data.CONTENT_URI.asSyncAdapter(), arrayOf(CachedGroupMembership.GROUP_ID, CachedGroupMembership.RAW_CONTACT_ID),
                 // Data.CONTENT_URI ignores the account in the asSyncAdapter() URI for queries, so filter explicitly
                 "${CachedGroupMembership.MIMETYPE}=? AND ${RawContacts.ACCOUNT_NAME}=? AND ${RawContacts.ACCOUNT_TYPE}=?",
@@ -228,7 +228,7 @@ class LocalAddressBookTest {
             val group = newGroup(localAddressBook)
 
             // add contact1 to group
-            val batch = ContactsBatchOperation(localAddressBook.ab.provider)
+            val batch = ContactsBatchOperation(localAddressBook.ab.client)
             contact1.androidContact.addToGroup(batch, group.id!!)
             batch.commit()
 
@@ -236,7 +236,7 @@ class LocalAddressBookTest {
             localAddressBook.applyPendingMemberships()
 
             // check group membership
-            localAddressBook.ab.provider.query(
+            localAddressBook.ab.client.query(
                 ContactsContract.Data.CONTENT_URI.asSyncAdapter(),
                 arrayOf(GroupMembership.GROUP_ROW_ID, GroupMembership.RAW_CONTACT_ID),
                 // Data.CONTENT_URI ignores the account in the asSyncAdapter() URI for queries, so filter explicitly
@@ -247,7 +247,7 @@ class LocalAddressBookTest {
                 assertFalse(cursor.moveToNext())
             }
             // check cached group membership
-            localAddressBook.ab.provider.query(
+            localAddressBook.ab.client.query(
                 ContactsContract.Data.CONTENT_URI.asSyncAdapter(),
                 arrayOf(CachedGroupMembership.GROUP_ID, CachedGroupMembership.RAW_CONTACT_ID),
                 // Data.CONTENT_URI ignores the account in the asSyncAdapter() URI for queries, so filter explicitly

@@ -25,7 +25,7 @@ class LocalContact(
     val androidContact: AndroidContact
 ) : LocalAddress {
 
-    private val provider get() = androidContact.addressBook.provider
+    private val provider get() = androidContact.addressBook.client
 
     override val id: Long?
         get() = androidContact.id

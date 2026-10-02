@@ -75,7 +75,7 @@ class LocalGroupTest {
             val contact1 = localAddressBook.addContact(Contact().apply { displayName = "Test" }, "fn.vcf", null, 0)
 
             // insert group membership, but no cached group membership
-            localAddressBook.ab.provider.insert(
+            localAddressBook.ab.client.insert(
                 ContactsContract.Data.CONTENT_URI.asSyncAdapter(),
                 contentValuesOf(
                     GroupMembership.MIMETYPE to GroupMembership.CONTENT_ITEM_TYPE,
@@ -87,7 +87,7 @@ class LocalGroupTest {
             group.clearDirty(Optional.empty(), null)
 
             // check cached group membership
-            localAddressBook.ab.provider.query(
+            localAddressBook.ab.client.query(
                 ContactsContract.Data.CONTENT_URI.asSyncAdapter(),
                 arrayOf(CachedGroupMembership.GROUP_ID, CachedGroupMembership.RAW_CONTACT_ID),
                 // Data.CONTENT_URI ignores the account in the asSyncAdapter() URI for queries, so filter explicitly
@@ -112,7 +112,7 @@ class LocalGroupTest {
             val contact1 = localAddressBook.addContact(Contact().apply { displayName = "Test" }, "fn.vcf", null, 0)
 
             // insert cached group membership, but no group membership
-            localAddressBook.ab.provider.insert(
+            localAddressBook.ab.client.insert(
                 ContactsContract.Data.CONTENT_URI.asSyncAdapter(),
                 contentValuesOf(
                     CachedGroupMembership.MIMETYPE to CachedGroupMembership.CONTENT_ITEM_TYPE,
@@ -124,7 +124,7 @@ class LocalGroupTest {
             group.clearDirty(Optional.empty(), null)
 
             // cached group membership should be gone
-            localAddressBook.ab.provider.query(
+            localAddressBook.ab.client.query(
                 ContactsContract.Data.CONTENT_URI.asSyncAdapter(), arrayOf(CachedGroupMembership.GROUP_ID, CachedGroupMembership.RAW_CONTACT_ID),
                 // Data.CONTENT_URI ignores the account in the asSyncAdapter() URI for queries, so filter explicitly
                 "${CachedGroupMembership.MIMETYPE}=? AND ${RawContacts.ACCOUNT_NAME}=? AND ${RawContacts.ACCOUNT_TYPE}=?",
@@ -144,7 +144,7 @@ class LocalGroupTest {
 
             val contact1 = localAddressBook.addContact(Contact().apply { displayName = "Test" }, "fn.vcf", null, 0)
 
-            val batch = ContactsBatchOperation(localAddressBook.ab.provider)
+            val batch = ContactsBatchOperation(localAddressBook.ab.client)
             contact1.androidContact.addToGroup(batch, group.id!!)
             batch.commit()
 

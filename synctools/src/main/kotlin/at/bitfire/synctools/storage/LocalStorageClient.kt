@@ -8,6 +8,7 @@ import android.content.ContentProviderClient
 import android.content.ContentValues
 import android.content.Entity
 import android.content.EntityIterator
+import android.content.res.AssetFileDescriptor
 import android.database.Cursor
 import android.net.Uri
 import android.os.RemoteException
@@ -39,6 +40,36 @@ class LocalStorageClient(
         return runWrappingRemoteException {
             provider.query(url, projection, selection, selectionArgs, sortOrder)
         }
+    }
+
+    /**
+     * Cold [Flow] over a content provider query, one row per emission.
+     *
+     * Runs on [Dispatchers.IO]. Chained blocking work (e.g. a nested query in `.map { }`) needs its
+     * own trailing [kotlinx.coroutines.flow.flowOn] — this one only covers the query itself.
+     *
+     * @param uri content URI to query
+     * @param projection columns to return
+     * @param where selection
+     * @param whereArgs arguments for selection
+     *
+     * @throws LocalStorageException when the content provider returns an error
+     */
+    fun queryFlow(
+        uri: Uri,
+        projection: Array<String>? = null,
+        where: String? = null,
+        whereArgs: Array<String>? = null
+    ): Flow<ContentValues> {
+        return flow {
+            runWrappingRemoteException {
+                query(uri, projection, where, whereArgs, sortOrder = null)?.use { cursor ->
+                    while (cursor.moveToNext()) {
+                        emit(cursor.toContentValues())
+                    }
+                }
+            }
+        }.flowOn(Dispatchers.IO)    // buffers by default – but main rows are not big enough to worry
     }
 
     /**
@@ -125,6 +156,17 @@ class LocalStorageClient(
     ): Int {
         return runWrappingRemoteException {
             provider.delete(url, selection, selectionArgs)
+        }
+    }
+
+    /**
+     * @see ContentProviderClient.openAssetFile
+     *
+     * @throws LocalStorageException when the content provider returns an error
+     */
+    fun openAssetFile(url: Uri, mode: String): AssetFileDescriptor? {
+        return runWrappingRemoteException {
+            provider.openAssetFile(url, mode)
         }
     }
 }
