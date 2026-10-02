@@ -16,33 +16,45 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface ServiceDao {
 
+    @Deprecated("Use getByAccountAndType(accountId: AccountId, type: String) instead")
     @Query("SELECT * FROM service WHERE accountName=:accountName AND type=:type")
     suspend fun getByAccountAndType(accountName: String, @ServiceType type: String): Service?
 
+    @Query("SELECT * FROM service WHERE accountId=:accountId AND type=:type")
+    suspend fun getByAccountAndType(accountId: Long, @ServiceType type: String): Service?
+
+    @Deprecated("Use getByAccountAndTypeFlow(accountId: AccountId, type: String) instead")
     @Query("SELECT * FROM service WHERE accountName=:accountName AND type=:type")
     fun getByAccountAndTypeBlocking(accountName: String, @ServiceType type: String): Service?
+
+    @Query("SELECT * FROM service WHERE accountId=:accountId AND type=:type")
+    fun getByAccountAndTypeBlocking(accountId: Long, @ServiceType type: String): Service?
 
     suspend fun getByAccountIdAndType(accountId: AccountId, @ServiceType type: String): Service? {
         return when (accountId) {
             is LegacyAccount -> getByAccountAndType(accountId.androidAccount.name, type)
-            is DbAccountId -> TODO("Currently not possible to get services by DbAccountId")
+            is DbAccountId -> getByAccountAndType(accountId.id, type)
         }
     }
 
     fun getByAccountIdAndTypeBlocking(accountId: AccountId, @ServiceType type: String): Service? {
         return when (accountId) {
             is LegacyAccount -> getByAccountAndTypeBlocking(accountId.androidAccount.name, type)
-            is DbAccountId -> TODO("Currently not possible to get services by DbAccountId")
+            is DbAccountId -> getByAccountAndTypeBlocking(accountId.id, type)
         }
     }
 
+    @Deprecated("Use getByAccountAndTypeFlow(accountId: AccountId, type: String) instead")
     @Query("SELECT * FROM service WHERE accountName=:accountName AND type=:type")
     fun getByAccountAndTypeFlow(accountName: String, @ServiceType type: String): Flow<Service?>
+
+    @Query("SELECT * FROM service WHERE accountId=:accountId AND type=:type")
+    fun getByAccountAndTypeFlow(accountId: Long, @ServiceType type: String): Flow<Service?>
 
     fun getByAccountAndTypeFlow(accountId: AccountId, @ServiceType type: String): Flow<Service?> {
         return when (accountId) {
             is LegacyAccount -> getByAccountAndTypeFlow(accountId.androidAccount.name, type)
-            is DbAccountId -> TODO("Currently not possible to get services by DbAccountId")
+            is DbAccountId -> getByAccountAndTypeFlow(accountId.id, type)
         }
     }
 
@@ -64,13 +76,17 @@ interface ServiceDao {
     @Query("DELETE FROM service")
     fun deleteAllBlocking()
 
+    @Deprecated("Use deleteByAccount(accountId: AccountId) instead")
     @Query("DELETE FROM service WHERE accountName=:accountName")
     suspend fun deleteByAccount(accountName: String)
+
+    @Query("DELETE FROM service WHERE accountId=:accountId")
+    suspend fun deleteByAccount(accountId: Long)
 
     suspend fun deleteByAccount(accountId: AccountId) {
         when (accountId) {
             is LegacyAccount -> deleteByAccount(accountId.androidAccount.name)
-            is DbAccountId -> TODO("Currently not possible to delete services by DbAccountId")
+            is DbAccountId -> deleteByAccount(accountId.id)
         }
     }
 

@@ -103,7 +103,7 @@ class CollectionScreenViewModel @AssistedInject constructor(
     /** Flow that provides the account associated with the current collection */
     val accountId: Flow<AccountId?> = collection.filterNotNull().map { collection ->
         serviceRepository.get(collection.serviceId)?.let { service ->
-            accountRepository.getAccountIdFromName(service.accountName)
+            accountRepository.getAccountIdFromService(service)
         }
     }
 
