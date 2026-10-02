@@ -32,7 +32,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -41,9 +40,8 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.ExternalUris
 import at.bitfire.davdroid.ui.ExternalUris.withStatParams
 import at.bitfire.davdroid.ui.composable.AppTheme
-import com.mikepenz.aboutlibraries.Libs
+import com.mikepenz.aboutlibraries.ui.compose.android.produceLibraries
 import com.mikepenz.aboutlibraries.ui.compose.m3.LibrariesContainer
-import com.mikepenz.aboutlibraries.util.withContext
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import java.util.Optional
@@ -152,13 +150,15 @@ class AboutActivity: AppCompatActivity() {
                                     )
                                 }
 
-                                2 -> LibrariesContainer(
-                                    modifier = Modifier.fillMaxSize(),
-                                    contentPadding = PaddingValues(8.dp),
-                                    libraries = Libs.Builder()
-                                        .withContext(LocalContext.current)
-                                        .build()
-                                )
+                                2 -> {
+                                    // explicit R.raw reference so that resource shrinking keeps the aboutlibraries.json file
+                                    val libraries by produceLibraries(R.raw.aboutlibraries)
+                                    LibrariesContainer(
+                                        modifier = Modifier.fillMaxSize(),
+                                        contentPadding = PaddingValues(8.dp),
+                                        libraries = libraries
+                                    )
+                                }
                             }
                         }
                     }
