@@ -8,12 +8,14 @@ import net.fortuna.ical4j.model.DefaultTimeZoneRegistryFactory
 import net.fortuna.ical4j.model.TimeZone
 import net.fortuna.ical4j.model.TimeZoneRegistry
 import net.fortuna.ical4j.model.TimeZoneRegistryFactory
+import net.fortuna.ical4j.model.ZoneRulesProviderImpl
 import net.fortuna.ical4j.model.component.Observance
 import java.time.DateTimeException
 import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.zone.ZoneRules
 import java.util.logging.Logger
+import kotlin.jvm.optionals.getOrNull
 
 /**
  * A [TimeZoneRegistry] that uses system timezone IDs for all TZIDs recognised by [ZoneId.of],
@@ -104,30 +106,13 @@ class SystemAwareTimeZoneRegistry(
      * the chance of pool exhaustion during time zone registration.
      */
     private fun triggerGcBeforeZoneIdAllocation() {
-        if (availableZoneIds() == 0) {
+        // IDE inspector fails becasuse `java.time.zone.ZoneRulesProvider` is not available, but it's fixed with desugaring. Compile works well
+        val provider = ZoneRulesProviderImpl.getInstance().getOrNull() ?: return
+        if (provider.zoneIdPool.availableZoneIds() == 0) {
             // Trigger garbage collection in the hope that old TimeZoneRegistry instances will be freed and in turn
             // ZoneIdPool.cleanup() will be able to reclaim zone IDs that are no longer used.
             Runtime.getRuntime().gc()
         }
-    }
-
-    /**
-     * Number of free zone IDs in ical4j's `ZoneRulesProviderImpl` pool, or `null` if the provider
-     * is not available (ical4j falls back to platform zones then, so there's no pool to exhaust).
-     *
-     * Accessed by reflection because `ZoneRulesProviderImpl` extends `java.time.zone.ZoneRulesProvider`,
-     * which is not part of the Android SDK, so it can't be referenced directly from Kotlin.
-     */
-    private fun availableZoneIds(): Int? = try {
-        val providerClass = Class.forName("net.fortuna.ical4j.model.ZoneRulesProviderImpl")
-        val provider = (providerClass.getMethod("getInstance").invoke(null) as java.util.Optional<*>).orElse(null)
-        provider?.let {
-            val pool = providerClass.getMethod("getZoneIdPool").invoke(it)
-            pool.javaClass.getMethod("availableZoneIds").invoke(pool) as Int
-        }
-    } catch (e: ReflectiveOperationException) {
-        logger.log(java.util.logging.Level.FINE, "Couldn't query ical4j zone ID pool", e)
-        null
     }
 
 
