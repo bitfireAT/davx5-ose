@@ -5,10 +5,10 @@
 package at.bitfire.davdroid.util
 
 import at.bitfire.dav4jvm.ktor.toUrlOrNull
-import at.bitfire.davdroid.util.DavUtils.generateUidIfNecessary
-import at.bitfire.davdroid.util.DavUtils.toUrlOrNull
 import io.ktor.http.ContentType
+import io.ktor.http.URLBuilder
 import io.ktor.http.Url
+import io.ktor.http.encodedPath
 import org.jetbrains.annotations.TestOnly
 import java.net.URI
 import java.net.URISyntaxException
@@ -139,6 +139,23 @@ object DavUtils {
 
         return url.segments.lastOrNull() ?: "/"
     }
+
+    /**
+     * Normalizes a member URL as reported by the server.
+     *
+     * Some servers report non-collection members with a trailing slash (`/file.vcf/`). Members are never collections,
+     * so the trailing slash is meaningless and is removed. Call this for every member URL that
+     * comes from a server response, before it's used as member URL or passed to [extractFileName].
+     *
+     * @param url  member URL, as reported by the server
+     *
+     * @return [url] without trailing slash(es)
+     */
+    fun normalizeMemberUrl(url: Url): Url =
+        if (url.encodedPath.endsWith('/'))
+            URLBuilder(url).apply { encodedPath = encodedPath.trimEnd('/') }.build()
+        else
+            url
 
     /**
      * Extracts the file name of the non-collection resource that [url] points to. The result is

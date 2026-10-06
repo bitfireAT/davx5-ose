@@ -19,6 +19,7 @@ import at.bitfire.dav4jvm.property.webdav.SupportedReportSet
 import at.bitfire.dav4jvm.property.webdav.SyncToken
 import at.bitfire.dav4jvm.property.webdav.WebDAV
 import at.bitfire.davdroid.resource.local.SyncState
+import at.bitfire.davdroid.util.DavUtils.normalizeMemberUrl
 import io.ktor.client.HttpClient
 import io.ktor.http.Headers
 import io.ktor.http.HttpHeaders
@@ -118,10 +119,10 @@ abstract class BaseWebDavCollection(
                         response[ResourceType::class.java]?.types?.contains(WebDAV.Collection) == true -> null
 
                         response.isSuccess() ->
-                            CollectionSyncItem.ChangedMember(InternalMemberState(response.href, response.requireETag()))
+                            CollectionSyncItem.ChangedMember(InternalMemberState(normalizeMemberUrl(response.href), response.requireETag()))
 
                         response.status == HttpStatusCode.NotFound ->
-                            CollectionSyncItem.RemovedMember(response.href)
+                            CollectionSyncItem.RemovedMember(normalizeMemberUrl(response.href))
 
                         else -> {
                             logger.warning("Ignoring response for ${response.href} (${response.status})")
