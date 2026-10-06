@@ -48,6 +48,7 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import org.jetbrains.annotations.TestOnly
 import java.util.logging.Level
@@ -416,14 +417,13 @@ class AccountRepository @Inject constructor(
         }
     }.distinctUntilChanged()
 
-    fun getAllDbAccountFlow() = dbAccountDao.getAllFlow()
+    fun getAllDbAccountFlow() = dbAccountDao.getAllFlow().map { list -> list.map { DbAccountId(it.id) } }
 
     /**
      * Returns a flow of all accounts, both legacy and database accounts.
      */
     fun getAllFlow() = combine(getAllLegacyAccountFlow(), getAllDbAccountFlow()) { legacyAccounts, dbAccounts ->
-        val dbAccountsNames = dbAccounts.map { it.name }.toSet()
-        legacyAccounts.filter { it.androidAccount.name !in dbAccountsNames } + dbAccounts.map { DbAccountId(it.id) }
+        legacyAccounts + dbAccounts
     }
 
     /**
