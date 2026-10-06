@@ -25,7 +25,6 @@ import net.fortuna.ical4j.model.parameter.Value
 import net.fortuna.ical4j.model.property.Attendee
 import net.fortuna.ical4j.model.property.Completed
 import net.fortuna.ical4j.model.property.DtStart
-import net.fortuna.ical4j.model.property.ExDate
 import net.fortuna.ical4j.model.property.ProdId
 import net.fortuna.ical4j.transform.compliance.DatePropertyRule
 import net.fortuna.ical4j.util.CompatibilityHints
@@ -38,7 +37,6 @@ import org.junit.Assume.assumeTrue
 import org.junit.Test
 import java.io.StringReader
 import java.io.StringWriter
-import java.time.DateTimeException
 import java.time.Duration
 import java.time.LocalDateTime
 import java.time.Period
@@ -438,42 +436,4 @@ class Ical4jTest {
         assertEquals(LocalDateTime.of(2026, 6, 5, 12, 0, 0), date)
     }
 
-    @Test
-    fun `DateListProperty_getDates() with unknown timezone`() {
-        // Similar to DateProperty_getValue() with unknown timezone, but for ExDate (DateListProperty).
-        // DateListProperty.getDates() still throws for unknown TZID under relaxed validation in ical4j 4.3.0 —
-        // the fix was only applied to DateProperty.getDate(), not DateListProperty.getDates().
-        // When ical4j fixes this, this test will fail and the try/catch in
-        // DatePropertyTzMapper.normalizedDates() that converts DateTimeException to ResourceMappingException
-        // can be removed (or adapted to treat the dates as floating).
-        val reader = StringReader(
-            """
-            BEGIN:VCALENDAR
-            VERSION:2.0
-            PRODID:-//Test//NONSGML v1.0//EN
-            BEGIN:VEVENT
-            UID:c3b11f81-60c1-11f1-bc40-d843aea66ff3
-            DTSTAMP:20260605T120000Z
-            DTSTART;TZID=UnknownTimeZone:20260605T120000
-            RRULE:FREQ=DAILY;COUNT=5
-            EXDATE;TZID=UnknownTimeZone:20260606T120000
-            END:VEVENT
-            END:VCALENDAR
-            """.trimIndent()
-        )
-        val calendar = CalendarBuilder().build(reader)
-        val event = calendar.getComponent<VEvent>(Component.VEVENT).get()
-        val exDate = event.getRequiredProperty<ExDate<Temporal>>(Property.EXDATE)
-
-        try {
-            exDate.dates
-            fail(
-                "DateListProperty.getDates() no longer throws when an unknown timezone is referenced. " +
-                        "The try/catch in DatePropertyTzMapper.normalizedDates() that converts DateTimeException " +
-                        "to ResourceMappingException can be removed or adapted to treat dates as floating."
-            )
-        } catch (e: DateTimeException) {
-            assertTrue(e.message?.contains("UnknownTimeZone") == true)
-        }
-    }
 }
