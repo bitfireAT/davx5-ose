@@ -115,7 +115,6 @@ class SystemAwareTimeZoneRegistry(
         }
     }
 
-
     private companion object {
         val NON_EMPTY_ZONE_RULES: Map<String, ZoneRules> =
             mapOf("_ical4j_zone_" to ZoneOffset.UTC.rules)
