@@ -332,13 +332,31 @@ class AccountRepository @Inject constructor(
         return deletedSystemAccount && deletedDatabaseAccount
     }
 
-    fun exists(accountName: String): Boolean =
+    /**
+     * Checks whether an account with the given name exists.
+     * For legacy accounts, this checks the Android account manager, for database accounts, this checks the database.
+     *
+     * @param accountName the name of the account to check
+     *
+     * @return true if the account exists, false otherwise
+     */
+    suspend fun exists(accountName: String): Boolean =
         if (accountName.isEmpty())
             false
-        else
-            accountManager
+        else {
+            // Check if the account exists in the account manager (legacy)
+            val isLegacyAccount = accountManager
                 .getAccountsByType(legacyAccountType)
                 .any { it.name == accountName }
+            if (isLegacyAccount) return true
+
+            // If it doesn't, check if it exists in the database (new account system)
+            val isDbAccount = dbAccountDao.getFromName(accountName) != null
+            if (isDbAccount) return true
+
+            // If it doesn't exist in either, return false
+            return false
+        }
 
     /**
      * Returns a legacy Android [Account] for a given account name.
