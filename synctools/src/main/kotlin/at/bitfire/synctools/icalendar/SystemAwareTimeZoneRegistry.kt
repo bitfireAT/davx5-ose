@@ -106,7 +106,7 @@ class SystemAwareTimeZoneRegistry(
      * the chance of pool exhaustion during time zone registration.
      */
     private fun triggerGcBeforeZoneIdAllocation() {
-        // IDE inspector fails becasuse `java.time.zone.ZoneRulesProvider` is not available, but it's fixed with desugaring. Compile works well
+        // IDE inspector fails because `java.time.zone.ZoneRulesProvider` is not available, but it's fixed with desugaring. Compile works well
         val provider = ZoneRulesProviderImpl.getInstance().getOrNull() ?: return
         if (provider.zoneIdPool.availableZoneIds() == 0) {
             // Trigger garbage collection in the hope that old TimeZoneRegistry instances will be freed and in turn
