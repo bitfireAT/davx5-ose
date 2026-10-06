@@ -442,9 +442,11 @@ class AccountRepository @Inject constructor(
      * @throws Exception (or sub-classes) on other errors
      */
     suspend fun rename(oldName: String, oldAccountId: AccountId, newName: String): AccountId = withContext(ioDispatcher) {
-        val isLegacyAccount = oldAccountId is LegacyAccount
-        val oldAccount = Account(oldName, if (isLegacyAccount) legacyAccountType else dbAccountType)
-        val newAccount = Account(newName, if (isLegacyAccount) legacyAccountType else dbAccountType)
+        // system accounts and database accounts have different account types
+        val accountType = if (oldAccountId is LegacyAccount) legacyAccountType else dbAccountType
+
+        val oldAccount = Account(oldName, accountType)
+        val newAccount = Account(newName, accountType)
         val newAccountId: AccountId = when (oldAccountId) {
             is LegacyAccount -> LegacyAccount(newAccount)
             // DbAccountId only contains an id and not the name, so we can just return the oldAccountId since the id does not change
@@ -452,9 +454,7 @@ class AccountRepository @Inject constructor(
         }
 
         // check whether new account name already exists
-        // Note: right now this check is enough, because we create a system account for each database account. But we should
-        //       extend this check in the future to also check the database for existing accounts.
-        if (accountManager.getAccountsByType(context.getString(R.string.account_type)).contains(newAccount))
+        if (accountManager.getAccountsByType(accountType).contains(newAccount))
             throw IllegalArgumentException("Account with name \"$newName\" already exists")
 
         // rename account
