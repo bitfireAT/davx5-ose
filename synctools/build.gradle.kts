@@ -26,6 +26,9 @@ android {
     testFixtures {
         enable = true
     }
+    compileOptions {
+        isCoreLibraryDesugaringEnabled = true
+    }
 
     sourceSets {
         getByName("main") {
