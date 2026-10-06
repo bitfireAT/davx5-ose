@@ -27,7 +27,7 @@ jobs:
         with:
           distribution: temurin
           java-version: ${{ env.java-version }}
-      - uses: gradle/actions/setup-gradle@v6.3.0
+      - uses: gradle/actions/setup-gradle@v6.4.0
         with:
           cache-encryption-key: ${{ secrets.gradle_encryption_key }}
 
