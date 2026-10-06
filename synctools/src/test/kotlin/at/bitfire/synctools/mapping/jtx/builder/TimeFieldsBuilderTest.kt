@@ -28,7 +28,7 @@ import org.robolectric.RobolectricTestRunner
 class TimeFieldsBuilderTest {
 
     private val tzRegistry = TimeZoneRegistryFactory.getInstance().createRegistry()
-    private val tzVienna = tzRegistry.getTimeZone("Europe/Vienna")
+    private val tzVienna = tzRegistry.getTimeZone("Europe/Vienna") ?: throw NullPointerException("Time zone Europe/Vienna not found")
 
     private val builder = TimeFieldsBuilder()
 

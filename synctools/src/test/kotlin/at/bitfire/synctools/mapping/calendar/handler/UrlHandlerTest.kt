@@ -51,7 +51,7 @@ class UrlHandlerTest {
             ExtendedProperties.VALUE to "https://example.com"
         ))
         handler.process(entity, entity, result)
-        assertEquals(URI("https://example.com"), result.url.uri)
+        assertEquals(URI("https://example.com"), result.url?.uri)
     }
 
 }

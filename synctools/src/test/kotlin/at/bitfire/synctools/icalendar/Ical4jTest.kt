@@ -46,6 +46,7 @@ import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import java.time.temporal.Temporal
+import kotlin.test.assertNotNull
 
 class Ical4jTest {
 
@@ -168,6 +169,7 @@ class Ical4jTest {
     fun `TZ Darwin`() {
         // https://github.com/ical4j/ical4j/issues/491
         val darwin = tzReg.getTimeZone("Australia/Darwin")
+        assertNotNull(darwin, "Failed to get VTIMEZONE for Australia/Darwin from registry")
         val date = dateTimeValue("20210326T103000", darwin)
         val timestamp = date.toInstant().toEpochMilli()
 
@@ -224,6 +226,7 @@ class Ical4jTest {
     fun `TZ Karachi`() {
         // https://github.com/ical4j/ical4j/issues/475
         val karachi = tzReg.getTimeZone("Asia/Karachi")
+        assertNotNull(karachi, "Failed to get VTIMEZONE for Asia/Karachi from registry")
         val date = dateTimeValue("20210106T200000", karachi)
         val timestamp = date.toInstant().toEpochMilli()
 

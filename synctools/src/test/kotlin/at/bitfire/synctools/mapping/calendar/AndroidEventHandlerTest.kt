@@ -75,13 +75,13 @@ class AndroidEventHandlerTest {
             )
         ).associatedEvents
         val main = result.main!!
-        assertEquals("Recurring non-all-day event with exception", main.summary.value)
+        assertEquals("Recurring non-all-day event with exception", main.summary?.value)
         assertEquals(DtStart(dateTimeValue("20200706T193000", tzVienna)), main.dtStart<ZonedDateTime>())
         assertEquals("FREQ=DAILY;COUNT=10", main.getProperty<RRule<Temporal>>(Property.RRULE).getOrNull()?.value)
         val exception = result.exceptions.first()
         assertEquals(RecurrenceId(dateTimeValue("20200707T193000", tzVienna)), exception.recurrenceId)
         assertEquals(DtStart(dateTimeValue("20200706T203000", tzShanghai)), exception.dtStart<ZonedDateTime>())
-        assertEquals("Event moved to one hour later", exception.summary.value)
+        assertEquals("Event moved to one hour later", exception.summary?.value)
     }
 
     @Test
@@ -108,7 +108,7 @@ class AndroidEventHandlerTest {
             )
         ).associatedEvents
         val main = result.main!!
-        assertEquals("Factically non-recurring non-all-day event with exception", main.summary.value)
+        assertEquals("Factically non-recurring non-all-day event with exception", main.summary?.value)
         assertEquals(DtStart(dateTimeValue("20200706T193000", tzVienna)), main.dtStart<ZonedDateTime>())
         assertTrue(main.getProperties<RRule<*>>(Property.RRULE).isEmpty())
         assertTrue(result.exceptions.isEmpty())
@@ -138,7 +138,7 @@ class AndroidEventHandlerTest {
             )
         ).associatedEvents
         val main = result.main!!
-        assertEquals("Recurring all-day event with cancelled exception", main.summary.value)
+        assertEquals("Recurring all-day event with cancelled exception", main.summary?.value)
         assertEquals(DtStart(dateTimeValue("20200706T193000", tzVienna)), main.dtStart<ZonedDateTime>())
         assertEquals("FREQ=DAILY;COUNT=10", main.getProperty<RRule<*>>(Property.RRULE).getOrNull()?.value)
         assertEquals(
@@ -172,7 +172,7 @@ class AndroidEventHandlerTest {
             )
         ).associatedEvents
         val main = result.main!!
-        assertEquals("Recurring all-day event with cancelled all-day exception", main.summary.value)
+        assertEquals("Recurring all-day event with cancelled all-day exception", main.summary?.value)
         assertEquals("FREQ=DAILY;COUNT=10", main.getProperty<RRule<*>>(Property.RRULE).get().value)
 
         // Check that EXDATE has VALUE=DATE
@@ -209,7 +209,7 @@ class AndroidEventHandlerTest {
             )
         ).associatedEvents
         val main = result.main!!
-        assertEquals("Recurring all-day event with cancelled exception", main.summary.value)
+        assertEquals("Recurring all-day event with cancelled exception", main.summary?.value)
         assertEquals(DtStart(dateTimeValue("20200706T173000Z")), main.dtStart<Instant>())
         assertEquals("FREQ=DAILY;COUNT=10", main.getProperty<RRule<*>>(Property.RRULE).getOrNull()?.value)
         assertEquals(
@@ -242,7 +242,7 @@ class AndroidEventHandlerTest {
             )
         ).associatedEvents
         val main = result.main!!
-        assertEquals("Recurring all-day event with cancelled exception and no RECURRENCE-ID", main.summary.value)
+        assertEquals("Recurring all-day event with cancelled exception and no RECURRENCE-ID", main.summary?.value)
         assertEquals(DtStart(dateTimeValue("20200706T193000", tzVienna)), main.dtStart<ZonedDateTime>())
         assertEquals("FREQ=DAILY;COUNT=10", main.getProperty<RRule<*>>(Property.RRULE).getOrNull()?.value)
         assertNull(main.getProperty<ExDate<*>>(Property.EXDATE)?.getOrNull())

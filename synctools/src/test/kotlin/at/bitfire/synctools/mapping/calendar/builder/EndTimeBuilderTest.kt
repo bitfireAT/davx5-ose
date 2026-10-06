@@ -34,7 +34,7 @@ class EndTimeBuilderTest {
     val tzRule = DefaultTimezoneRule("Europe/Berlin")
 
     private val tzRegistry = TimeZoneRegistryFactory.getInstance().createRegistry()
-    private val tzVienna = tzRegistry.getTimeZone("Europe/Vienna")
+    private val tzVienna = tzRegistry.getTimeZone("Europe/Vienna") ?: throw NullPointerException("Failed to get timezone Europe/Vienna from registry")
 
     private val builder = EndTimeBuilder()
 

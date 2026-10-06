@@ -40,7 +40,7 @@ import kotlin.test.assertFailsWith
 class TimeFieldsHandlerTest {
 
     private val tzRegistry = TimeZoneRegistryFactory.getInstance().createRegistry()
-    private val tzVienna = tzRegistry.getTimeZone("Europe/Vienna")
+    private val tzVienna = tzRegistry.getTimeZone("Europe/Vienna") ?: throw NullPointerException("Timezone Europe/Vienna not found")
 
     private val builder = TimeFieldsBuilder()
     private val handler = TimeFieldsHandler()

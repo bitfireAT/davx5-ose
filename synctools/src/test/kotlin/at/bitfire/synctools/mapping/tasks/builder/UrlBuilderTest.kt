@@ -9,6 +9,7 @@ import android.content.Entity
 import androidx.core.content.contentValuesOf
 import at.bitfire.synctools.mapping.tasks.VToDoUtil
 import at.bitfire.synctools.test.assertContentValuesEqual
+import net.fortuna.ical4j.model.ParameterList
 import net.fortuna.ical4j.model.component.VToDo
 import net.fortuna.ical4j.model.property.Url
 import org.dmfs.tasks.contract.TaskContract.Tasks
@@ -37,7 +38,7 @@ class UrlBuilderTest {
     fun `URL is set`() {
         val result = Entity(ContentValues())
         builder.build(
-            from = VToDoUtil.build(Url(null, "https://example.com")),
+            from = VToDoUtil.build(Url(ParameterList(), "https://example.com")),
             to = result
         )
         assertContentValuesEqual(contentValuesOf(

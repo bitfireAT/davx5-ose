@@ -46,9 +46,11 @@ class AlarmsHandler : DmfsTaskEntityHandler {
                     // show alarm by default
                     else -> Action.VALUE_DISPLAY
                 }
-            ),
-            Description(values.getAsString(Alarm.MESSAGE) ?: summary)
+            )
         )
+
+        // If the alarm has a message, use it as description. Otherwise, use the task summary if any.
+        (values.getAsString(Alarm.MESSAGE) ?: summary)?.let { props += Description(it) }
 
         to += VAlarm(props)
     }
