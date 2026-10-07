@@ -13,22 +13,32 @@ import at.bitfire.dav4jvm.property.webdav.GetETag
 import at.bitfire.dav4jvm.property.webdav.SyncToken
 import at.bitfire.davdroid.resource.local.SyncState
 import at.bitfire.davdroid.sync.withExceptionContext
+import java.util.logging.Logger
+
+private val logger = Logger.getLogger("at.bitfire.davdroid.resource.remote.ResponseExt")
 
 /**
  * Turns this multi-get response into a [WebDavCollection.MultiGetItem].
  *
  * @param getContent extracts the data (calendar-data or address-data) from this response
  *
- * @throws DavException if this response doesn't contain the expected resource data or an ETag
+ * @return the multi-get item, or `null` if this response doesn't contain data (logged as warning)
+ *
+ * @throws DavException if this response doesn't contain an ETag
  * @throws IllegalArgumentException if this response is not successful (callers must filter beforehand)
  */
-suspend fun Response.asMultiGetItem(getContent: (Response) -> String?): WebDavCollection.MultiGetItem {
+suspend fun Response.asMultiGetItem(getContent: (Response) -> String?): WebDavCollection.MultiGetItem? {
     val response = this
     require(response.isSuccess()) { "Must only be called for successful responses" }
 
     return response.href.withExceptionContext {
+        /* Some servers (e.g. Posteo, see #1700, #2941) send 200 responses without data. Skip them instead
+        of throwing, so that a single broken resource doesn't abort the sync of the whole collection. */
         val content = getContent(response)
-            ?: throw DavException("Received multi-get response without data")
+        if (content == null) {
+            logger.warning("Ignoring multi-get response without data: ${response.href}")
+            return@withExceptionContext null
+        }
         WebDavCollection.MultiGetItem(
             url = response.href.omitTrailingSlash(),
             eTag = response.requireETag(),
