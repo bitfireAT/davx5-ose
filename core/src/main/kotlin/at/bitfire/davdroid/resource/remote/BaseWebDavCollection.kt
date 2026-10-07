@@ -8,6 +8,7 @@ import at.bitfire.dav4jvm.QuotedStringUtils
 import at.bitfire.dav4jvm.ktor.DavResource
 import at.bitfire.dav4jvm.ktor.MultiStatusItem
 import at.bitfire.dav4jvm.ktor.Response
+import at.bitfire.dav4jvm.ktor.omitTrailingSlash
 import at.bitfire.dav4jvm.ktor.selfResponse
 import at.bitfire.dav4jvm.property.caldav.CalDAV
 import at.bitfire.dav4jvm.property.caldav.ScheduleTag
@@ -118,10 +119,10 @@ abstract class BaseWebDavCollection(
                         response[ResourceType::class.java]?.types?.contains(WebDAV.Collection) == true -> null
 
                         response.isSuccess() ->
-                            CollectionSyncItem.ChangedMember(InternalMemberState(response.href, response.requireETag()))
+                            CollectionSyncItem.ChangedMember(InternalMemberState(response.href.omitTrailingSlash(), response.requireETag()))
 
                         response.status == HttpStatusCode.NotFound ->
-                            CollectionSyncItem.RemovedMember(response.href)
+                            CollectionSyncItem.RemovedMember(response.href.omitTrailingSlash())
 
                         else -> {
                             logger.warning("Ignoring response for ${response.href} (${response.status})")
