@@ -454,7 +454,7 @@ class AccountRepository @Inject constructor(
         }
 
         // check whether new account name already exists
-        if (accountManager.getAccountsByType(accountType).contains(newAccount))
+        if (exists(newName))
             throw IllegalArgumentException("Account with name \"$newName\" already exists")
 
         // rename account
