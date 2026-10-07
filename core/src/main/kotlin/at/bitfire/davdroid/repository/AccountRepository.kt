@@ -142,6 +142,11 @@ class AccountRepository @Inject constructor(
         groupMethod: GroupMethod,
         preconfigurationUrl: String?,
     ): AccountId? {
+        if (exists(accountName)) {
+            logger.log(Level.WARNING, "Account with name $accountName already exists")
+            return null
+        }
+
         return if (FeatureFlags.useNewAccountSystem) {
             createDbAccount(accountName, credentials, config, groupMethod, preconfigurationUrl)
         } else withContext(ioDispatcher) {
