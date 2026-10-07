@@ -5,7 +5,6 @@
 package at.bitfire.davdroid.resource.remote
 
 import at.bitfire.dav4jvm.ktor.Response
-import at.bitfire.dav4jvm.ktor.exception.DavException
 import at.bitfire.dav4jvm.property.caldav.GetCTag
 import at.bitfire.dav4jvm.property.caldav.ScheduleTag
 import at.bitfire.dav4jvm.property.webdav.GetETag
@@ -21,9 +20,8 @@ private val logger = Logger.getLogger("at.bitfire.davdroid.resource.remote.Respo
  *
  * @param getContent extracts the data (calendar-data or address-data) from this response
  *
- * @return the multi-get item, or `null` if this response doesn't contain data (logged as warning)
+ * @return the multi-get item, or `null` if this response doesn't contain data or ETag (logged as warning)
  *
- * @throws DavException if this response doesn't contain an ETag
  * @throws IllegalArgumentException if this response is not successful (callers must filter beforehand)
  */
 suspend fun Response.asMultiGetItem(getContent: (Response) -> String?): WebDavCollection.MultiGetItem? {
@@ -38,23 +36,20 @@ suspend fun Response.asMultiGetItem(getContent: (Response) -> String?): WebDavCo
             logger.warning("Ignoring multi-get response without data: ${response.href}")
             return@withExceptionContext null
         }
+        // ETag is required by RFC 4791 5.3.4 / RFC 6352 6.3.2; without it, we couldn't detect changes later (#2934)
+        val eTag = response[GetETag::class.java]?.eTag
+        if (eTag == null) {
+            logger.warning("Ignoring multi-get response without ETag: ${response.href}")
+            return@withExceptionContext null
+        }
         WebDavCollection.MultiGetItem(
             url = response.href,
-            eTag = response.requireETag(),
+            eTag = eTag,
             scheduleTag = response[ScheduleTag::class.java]?.scheduleTag,
             content = content
         )
     }
 }
-
-/**
- * Returns this response's ETag.
- *
- * @throws DavException if this response doesn't contain a [GetETag] property
- */
-fun Response.requireETag(): String =
-    this[GetETag::class.java]?.eTag
-        ?: throw DavException("Server didn't provide ETag for ${this.href}")
 
 /**
  * Extracts the [SyncState] (`sync-token` or `CTag`) reported by this response, if any.

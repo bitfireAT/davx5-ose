@@ -8,11 +8,9 @@ import at.bitfire.dav4jvm.Property
 import at.bitfire.dav4jvm.ktor.MultiStatusItem
 import at.bitfire.dav4jvm.ktor.PropStat
 import at.bitfire.dav4jvm.ktor.Response
-import at.bitfire.dav4jvm.ktor.exception.DavException
 import at.bitfire.dav4jvm.property.webdav.GetETag
 import at.bitfire.dav4jvm.property.webdav.ResourceType
 import at.bitfire.dav4jvm.property.webdav.WebDAV
-import at.bitfire.synctools.test.assertThrows
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.Url
 import kotlinx.coroutines.flow.flowOf
@@ -28,11 +26,12 @@ class MultiStatusItemExtTest {
     private fun item(
         status: HttpStatusCode?,
         relation: Response.HrefRelation,
-        properties: List<Property> = emptyList()
+        properties: List<Property> = emptyList(),
+        href: Url = Url("https://example.com/dav/some-file.ics")
     ) = MultiStatusItem.Response(
         Response(
             url,
-            Url("https://example.com/dav/some-file.ics"),
+            href,
             status,
             listOf(PropStat(properties, HttpStatusCode.OK))
         ),
@@ -130,14 +129,39 @@ class MultiStatusItemExtTest {
     }
 
     @Test
-    fun `toInternalMemberStates() throws when a member response lacks an ETag`() = runTest {
+    fun `toInternalMemberStates() maps a member response without ETag to null ETag`() = runTest {
         val member = item(null, Response.HrefRelation.MEMBER)
+        val result = flowOf(member).toInternalMemberStates().toList()
 
-        val e = assertThrows<DavException> {
-            flowOf(member).toInternalMemberStates().toList()
-        }
+        assertEquals(
+            listOf(InternalMemberState(Url("https://example.com/dav/some-file.ics"), null)),
+            result
+        )
+    }
 
-        assertEquals("Server didn't provide ETag for https://example.com/dav/some-file.ics", e.message)
+    @Test
+    fun `toInternalMemberStates() keeps valid members around a member without ETag`() = runTest {
+        val members = flowOf(
+            item(
+                null,
+                Response.HrefRelation.MEMBER,
+                listOf(GetETag("\"etag1\"")),
+                Url("https://example.com/dav/1.ics")
+            ),
+            item(null, Response.HrefRelation.MEMBER, href = Url("https://example.com/dav/2.ics")),
+            item(null, Response.HrefRelation.MEMBER, listOf(GetETag("\"etag3\"")), Url("https://example.com/dav/3.ics"))
+        )
+
+        val result = members.toInternalMemberStates().toList()
+
+        assertEquals(
+            listOf(
+                InternalMemberState(Url("https://example.com/dav/1.ics"), "etag1"),
+                InternalMemberState(Url("https://example.com/dav/2.ics"), null),
+                InternalMemberState(Url("https://example.com/dav/3.ics"), "etag3")
+            ),
+            result
+        )
     }
 
 }

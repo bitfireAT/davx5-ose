@@ -118,7 +118,12 @@ abstract class BaseWebDavCollection(
                         response[ResourceType::class.java]?.types?.contains(WebDAV.Collection) == true -> null
 
                         response.isSuccess() ->
-                            CollectionSyncItem.ChangedMember(InternalMemberState(response.href, response.requireETag()))
+                            CollectionSyncItem.ChangedMember(
+                                InternalMemberState(
+                                    response.href,
+                                    response[GetETag::class.java]?.eTag
+                                )
+                            )
 
                         response.status == HttpStatusCode.NotFound ->
                             CollectionSyncItem.RemovedMember(response.href)

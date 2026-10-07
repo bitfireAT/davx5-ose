@@ -6,8 +6,8 @@ package at.bitfire.davdroid.resource.remote
 
 import at.bitfire.dav4jvm.ktor.MultiStatusItem
 import at.bitfire.dav4jvm.ktor.Response
-import at.bitfire.dav4jvm.ktor.exception.DavException
 import at.bitfire.dav4jvm.ktor.responsesWithRelation
+import at.bitfire.dav4jvm.property.webdav.GetETag
 import at.bitfire.dav4jvm.property.webdav.ResourceType
 import at.bitfire.dav4jvm.property.webdav.WebDAV
 import kotlinx.coroutines.flow.Flow
@@ -58,7 +58,7 @@ fun Flow<MultiStatusItem.Response>.filterSuccessful(): Flow<MultiStatusItem.Resp
  * Maps this flow to [InternalMemberState]s, dropping everything that isn't an actual member:
  * the collection's own response, sub-collections, and unsuccessful responses.
  *
- * @throws DavException if a member is listed without ETag
+ * Members without ETag are kept (with `null` ETag), see [InternalMemberState.eTag].
  */
 fun Flow<MultiStatusItem>.toInternalMemberStates(): Flow<InternalMemberState> =
     responsesWithRelation()
@@ -68,6 +68,6 @@ fun Flow<MultiStatusItem>.toInternalMemberStates(): Flow<InternalMemberState> =
         .map { item ->
             InternalMemberState(
                 href = item.response.href,
-                eTag = item.response.requireETag()
+                eTag = item.response[GetETag::class.java]?.eTag
             )
         }

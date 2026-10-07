@@ -185,6 +185,62 @@ class CardDavCollectionTest {
         )
     }
 
+    @Test
+    fun `multiget() skips a member response that lacks an ETag`() = runTest {
+        val engine = MockEngine { _ ->
+            respond(
+                """
+                <?xml version="1.0" encoding="utf-8"?>
+                <multistatus xmlns="DAV:" xmlns:CARD="urn:ietf:params:xml:ns:carddav">
+                  <response>
+                    <href>/dav/contacts/contact1.vcf</href>
+                    <propstat>
+                      <prop>
+                        <CARD:address-data>BEGIN:VCARD
+                END:VCARD</CARD:address-data>
+                      </prop>
+                      <status>HTTP/1.1 200 OK</status>
+                    </propstat>
+                  </response>
+                  <response>
+                    <href>/dav/contacts/contact2.vcf</href>
+                    <propstat>
+                      <prop>
+                        <getetag>"contact2-etag"</getetag>
+                        <CARD:address-data>BEGIN:VCARD
+                END:VCARD</CARD:address-data>
+                      </prop>
+                      <status>HTTP/1.1 200 OK</status>
+                    </propstat>
+                  </response>
+                </multistatus>
+                """.trimIndent(),
+                HttpStatusCode.MultiStatus,
+                headersOf(HttpHeaders.ContentType, "text/xml")
+            )
+        }
+        val collection = CardDavCollection(HttpClient(engine), url)
+
+        val items = collection.multiget(
+            listOf(
+                Url("https://example.com/dav/contacts/contact1.vcf"),
+                Url("https://example.com/dav/contacts/contact2.vcf")
+            ),
+            WebDavCollection.Capabilities()
+        ).toList()
+
+        assertEquals(
+            listOf(
+                WebDavCollection.MultiGetItem(
+                    url = Url("https://example.com/dav/contacts/contact2.vcf"),
+                    eTag = "contact2-etag",
+                    content = "BEGIN:VCARD\nEND:VCARD"
+                )
+            ),
+            items
+        )
+    }
+
     private fun minimalMultiStatus() = MockEngine { _ ->
         respond(
             "<?xml version=\"1.0\" encoding=\"utf-8\"?><multistatus xmlns=\"DAV:\"/>",

@@ -38,6 +38,7 @@ import io.mockk.junit4.MockKRule
 import io.mockk.mockk
 import io.mockk.spyk
 import io.mockk.verify
+import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
@@ -894,6 +895,63 @@ class SyncManagerTest {
         assertFalse(syncManager.syncResult.hasError)
         assertEquals(1, collection.entries.size)
         assertEquals("MemberETag2", collection.entries.first().eTag)
+    }
+
+    @Test
+    fun testPerformSync_KeepLocalMemberWithoutETag() = runTest {
+        val collection = LocalTestCollection().apply {
+            lastSyncState = SyncState(SyncState.Type.CTAG, "old-ctag")
+            entries += LocalTestResource().apply {
+                fileName = "downloaded-member.txt"
+                eTag = "MemberETag1"
+            }
+        }
+        enqueueQueryCapabilities(cTag = "new-ctag")
+
+        val syncManager = syncManager(collection).apply {
+            (remoteCollection as TestWebDavCollection).listFilteredMembersResult = listOf(
+                InternalMemberState(Url("$BASE_URL/downloaded-member.txt"), null)
+            )
+        }
+        syncManager.performSync()
+
+        verify(exactly = 0) { syncManager.remoteCollection.multiget(any(), any()) }
+        assertTrue(syncManager.processedDownloads.isEmpty())
+        assertFalse(syncManager.syncResult.hasError)
+        assertEquals(1, collection.entries.size)
+        assertEquals("MemberETag1", collection.entries.first().eTag)
+    }
+
+    @Test
+    fun testPerformSync_IgnoreNewMemberWithoutETag() = runTest {
+        val collection = LocalTestCollection().apply {
+            lastSyncState = SyncState(SyncState.Type.CTAG, "old-ctag")
+        }
+        enqueueQueryCapabilities(cTag = "new-ctag")
+
+        val syncManager = syncManager(collection).apply {
+            (remoteCollection as TestWebDavCollection).listFilteredMembersResult = listOf(
+                InternalMemberState(Url("$BASE_URL/member1.txt"), "ETag1"),
+                InternalMemberState(Url("$BASE_URL/member2.txt"), null),
+                InternalMemberState(Url("$BASE_URL/member3.txt"), "ETag3")
+            )
+        }
+        val downloaded = listOf(
+            WebDavCollection.MultiGetItem(Url("$BASE_URL/member1.txt"), "ETag1", content = "ignored"),
+            WebDavCollection.MultiGetItem(Url("$BASE_URL/member3.txt"), "ETag3", content = "ignored")
+        )
+        every { syncManager.remoteCollection.multiget(any(), any()) } returns downloaded.asFlow()
+        syncManager.performSync()
+
+        verify(exactly = 1) {
+            syncManager.remoteCollection.multiget(
+                listOf(Url("$BASE_URL/member1.txt"), Url("$BASE_URL/member3.txt")),
+                any()
+            )
+        }
+        assertEquals(downloaded, syncManager.processedDownloads)
+        assertFalse(syncManager.syncResult.hasError)
+        assertEquals(2, collection.entries.size)
     }
 
     @Test
