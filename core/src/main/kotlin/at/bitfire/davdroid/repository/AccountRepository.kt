@@ -351,9 +351,11 @@ class AccountRepository @Inject constructor(
             false
         else {
             // Check if the account exists in the account manager (legacy)
-            val isLegacyAccount = accountManager
-                .getAccountsByType(legacyAccountType)
-                .any { it.name == accountName }
+            val isLegacyAccount = withContext(ioDispatcher) {
+                accountManager
+                    .getAccountsByType(legacyAccountType)
+                    .any { it.name == accountName }
+            }
             if (isLegacyAccount) return true
 
             // If it doesn't, check if it exists in the database (new account system)
