@@ -5,13 +5,10 @@
 package at.bitfire.synctools.icalendar
 
 import androidx.annotation.VisibleForTesting
-import at.bitfire.synctools.exception.ResourceMappingException
-import at.bitfire.synctools.icalendar.DatePropertyTzMapper.normalizedDate
 import net.fortuna.ical4j.model.Parameter
 import net.fortuna.ical4j.model.parameter.TzId
 import net.fortuna.ical4j.model.property.DateListProperty
 import net.fortuna.ical4j.model.property.DateProperty
-import java.time.DateTimeException
 import java.time.OffsetDateTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -91,15 +88,7 @@ object DatePropertyTzMapper {
         - OffsetDateTime for UTC date-times ("...Z") and
         - ZonedDateTime with ical4j-based timezones for date-times with TZID. */
 
-        val origDates: List<Temporal> = try {
-            dates
-        } catch (e: DateTimeException) {
-            val message = "Error while getting list of dates"
-            logger.log(Level.WARNING, message, e)
-            throw ResourceMappingException(message, e)
-        }
-
-        return origDates.map { origDate ->
+        return dates.map { origDate ->
             when (origDate) {
                 // In content providers, there's no concept of offset date-times. We just want the UTC timestamp instead.
                 is OffsetDateTime ->

@@ -27,12 +27,13 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.temporal.Temporal
+import kotlin.test.assertNotNull
 
 class ICalendarGeneratorTest {
 
     private val tzRegistry = TimeZoneRegistryFactory.getInstance().createRegistry()
-    private val tzBerlin = tzRegistry.getTimeZone("Europe/Berlin").toZoneId()
-    private val tzLondon = tzRegistry.getTimeZone("Europe/London").toZoneId()
+    private val tzBerlin = tzRegistry.getTimeZone("Europe/Berlin")?.toZoneId()
+    private val tzLondon = tzRegistry.getTimeZone("Europe/London")?.toZoneId()
 
     private val userAgent = ProdId("TestUA/1.0")
     private val writer = ICalendarGenerator()
@@ -136,7 +137,7 @@ class ICalendarGeneratorTest {
         // Verify that ical4j returns a VTIMEZONE with the new Europe/Kyiv TZID (by alias)
         val tzReg = TimeZoneRegistryFactory.getInstance().createRegistry()
         // We call getTimeZone(Europe/Kiev), but we get VTIMEZONE(Europe/Kyiv):
-        assertEquals("Europe/Kyiv", tzReg.getTimeZone(tzKiev.id).id)
+        assertEquals("Europe/Kyiv", tzReg.getTimeZone(tzKiev.id)?.id)
 
         // Generate the iCalendar (must NOT map Europe/Kiev to Europe/Kyiv silently)
         val iCal = StringWriter()
@@ -175,8 +176,10 @@ class ICalendarGeneratorTest {
     fun `copyVTimeZone result properties can be added without modifying original`() {
         // Get a timezone from the registry
         val tzReg = TimeZoneRegistryFactory.getInstance().createRegistry()
-        val originalVTimeZone = tzReg.getTimeZone("Europe/Berlin").vTimeZone
+        val originalVTimeZone = tzReg.getTimeZone("Europe/Berlin")?.vTimeZone
         val originalVTZ = originalVTimeZone.toString()
+
+        assertNotNull(originalVTimeZone, "Failed to get VTIMEZONE for Europe/Berlin from registry")
 
         // Create a copy using the method
         val copiedVTimeZone = writer.copyVTimeZone(originalVTimeZone)

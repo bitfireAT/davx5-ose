@@ -9,6 +9,7 @@ import android.content.Entity
 import at.bitfire.synctools.icalendar.Css3Color
 import at.bitfire.synctools.icalendar.propertyListOf
 import at.techbee.jtx.JtxContract
+import net.fortuna.ical4j.model.ParameterList
 import net.fortuna.ical4j.model.component.VToDo
 import net.fortuna.ical4j.model.property.Color
 import org.junit.Assert.assertEquals
@@ -37,7 +38,7 @@ class ColorBuilderTest {
 
     @Test
     fun `COLOR is set - css name`() {
-        val task = VToDo(propertyListOf(Color(null, Css3Color.nearestMatch(0xFF112233.toInt()).name)))
+        val task = VToDo(propertyListOf(Color(ParameterList(), Css3Color.nearestMatch(0xFF112233.toInt()).name)))
         val main = VToDo()
         val output = Entity(ContentValues())
 
@@ -48,7 +49,7 @@ class ColorBuilderTest {
 
     @Test
     fun `COLOR is set - hex`() {
-        val task = VToDo(propertyListOf(Color(null, "#FF112233")))
+        val task = VToDo(propertyListOf(Color(ParameterList(), "#FF112233")))
         val main = VToDo()
         val output = Entity(ContentValues())
 
