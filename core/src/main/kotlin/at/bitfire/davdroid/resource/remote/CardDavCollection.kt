@@ -13,7 +13,7 @@ import ezvcard.VCardVersion
 import io.ktor.client.HttpClient
 import io.ktor.http.Url
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
 import java.util.logging.Logger
 
 /**
@@ -53,7 +53,7 @@ class CardDavCollection(httpClient: HttpClient, url: Url) : BaseWebDavCollection
         return davCollection.multiget(urls, contentType, vCardVersion).responsesWithRelation()
             .filterMembers()
             .filterSuccessful()
-            .map {
+            .mapNotNull {
                 it.response.asMultiGetItem { r -> r[AddressData::class.java]?.card }
             }
     }

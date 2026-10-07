@@ -4,8 +4,6 @@
 
 package at.bitfire.davdroid.resource.remote
 
-import at.bitfire.davdroid.sync.unwrapContext
-import at.bitfire.synctools.test.assertThrows
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
@@ -160,16 +158,27 @@ class CalDavCollectionTest {
     }
 
     @Test
-    fun `multiget() throws when a member response lacks calendar-data`() = runTest {
+    fun `multiget() skips a member response that lacks calendar-data`() = runTest {
         val calendar = collection(
             """
             <?xml version="1.0" encoding="utf-8"?>
-            <multistatus xmlns="DAV:">
+            <multistatus xmlns="DAV:" xmlns:C="urn:ietf:params:xml:ns:caldav">
               <response>
                 <href>/dav/calendar/event1.ics</href>
                 <propstat>
                   <prop>
-                    <getetag>"event-etag"</getetag>
+                    <getetag>"event1-etag"</getetag>
+                  </prop>
+                  <status>HTTP/1.1 200 OK</status>
+                </propstat>
+              </response>
+              <response>
+                <href>/dav/calendar/event2.ics</href>
+                <propstat>
+                  <prop>
+                    <getetag>"event2-etag"</getetag>
+                    <C:calendar-data>BEGIN:VCALENDAR
+            END:VCALENDAR</C:calendar-data>
                   </prop>
                   <status>HTTP/1.1 200 OK</status>
                 </propstat>
@@ -178,14 +187,24 @@ class CalDavCollectionTest {
             """.trimIndent()
         )
 
-        val e = assertThrows<Throwable> {
-            calendar.multiget(
-                listOf(Url("https://example.com/dav/calendar/event1.ics")),
-                WebDavCollection.Capabilities()
-            ).toList()
-        }
+        val items = calendar.multiget(
+            listOf(
+                Url("https://example.com/dav/calendar/event1.ics"),
+                Url("https://example.com/dav/calendar/event2.ics")
+            ),
+            WebDavCollection.Capabilities()
+        ).toList()
 
-        assertEquals("Received multi-get response without data", e.unwrapContext().cause.message)
+        assertEquals(
+            listOf(
+                WebDavCollection.MultiGetItem(
+                    url = Url("https://example.com/dav/calendar/event2.ics"),
+                    eTag = "event2-etag",
+                    content = "BEGIN:VCALENDAR\nEND:VCALENDAR"
+                )
+            ),
+            items
+        )
     }
 
     private fun collection(

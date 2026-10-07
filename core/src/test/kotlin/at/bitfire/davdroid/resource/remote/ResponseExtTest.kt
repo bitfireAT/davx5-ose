@@ -16,6 +16,7 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.http.Url
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Test
 
 class ResponseExtTest {
@@ -55,12 +56,12 @@ class ResponseExtTest {
     }
 
     @Test
-    fun `asMultiGetItem() with missing content throws DavException`() = runTest {
+    fun `asMultiGetItem() with missing content returns null`() = runTest {
         val response = response(null, listOf(GetETag("some-etag")))
 
-        val e = assertThrows<Throwable> { response.asMultiGetItem { null } }
+        val item = response.asMultiGetItem { null }
 
-        assertEquals("Received multi-get response without data", e.unwrapContext().cause.message)
+        assertNull(item)
     }
 
     @Test
