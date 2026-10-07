@@ -4,8 +4,6 @@
 
 package at.bitfire.davdroid.resource.remote
 
-import at.bitfire.davdroid.sync.unwrapContext
-import at.bitfire.synctools.test.assertThrows
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
@@ -133,17 +131,28 @@ class CardDavCollectionTest {
     }
 
     @Test
-    fun `multiget() throws when a member response lacks address-data`() = runTest {
+    fun `multiget() skips a member response that lacks address-data`() = runTest {
         val engine = MockEngine { _ ->
             respond(
                 """
                 <?xml version="1.0" encoding="utf-8"?>
-                <multistatus xmlns="DAV:">
+                <multistatus xmlns="DAV:" xmlns:CARD="urn:ietf:params:xml:ns:carddav">
                   <response>
                     <href>/dav/contacts/contact1.vcf</href>
                     <propstat>
                       <prop>
-                        <getetag>"contact-etag"</getetag>
+                        <getetag>"contact1-etag"</getetag>
+                      </prop>
+                      <status>HTTP/1.1 200 OK</status>
+                    </propstat>
+                  </response>
+                  <response>
+                    <href>/dav/contacts/contact2.vcf</href>
+                    <propstat>
+                      <prop>
+                        <getetag>"contact2-etag"</getetag>
+                        <CARD:address-data>BEGIN:VCARD
+                END:VCARD</CARD:address-data>
                       </prop>
                       <status>HTTP/1.1 200 OK</status>
                     </propstat>
@@ -154,17 +163,26 @@ class CardDavCollectionTest {
                 headersOf(HttpHeaders.ContentType, "text/xml")
             )
         }
-
         val collection = CardDavCollection(HttpClient(engine), url)
 
-        val e = assertThrows<Throwable> {
-            collection.multiget(
-                listOf(Url("https://example.com/dav/contacts/contact1.vcf")),
-                WebDavCollection.Capabilities()
-            ).toList()
-        }
+        val items = collection.multiget(
+            listOf(
+                Url("https://example.com/dav/contacts/contact1.vcf"),
+                Url("https://example.com/dav/contacts/contact2.vcf")
+            ),
+            WebDavCollection.Capabilities()
+        ).toList()
 
-        assertEquals("Received multi-get response without data", e.unwrapContext().cause.message)
+        assertEquals(
+            listOf(
+                WebDavCollection.MultiGetItem(
+                    url = Url("https://example.com/dav/contacts/contact2.vcf"),
+                    eTag = "contact2-etag",
+                    content = "BEGIN:VCARD\nEND:VCARD"
+                )
+            ),
+            items
+        )
     }
 
     private fun minimalMultiStatus() = MockEngine { _ ->

@@ -12,7 +12,7 @@ import io.ktor.http.Url
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
 import java.util.logging.Logger
 
 /**
@@ -61,7 +61,7 @@ class CalDavCollection(
         return davCollection.multiget(urls).responsesWithRelation()
             .filterMembers()
             .filterSuccessful()
-            .map {
+            .mapNotNull {
                 it.response.asMultiGetItem { r -> r[CalendarData::class.java]?.iCalendar }
             }
     }
