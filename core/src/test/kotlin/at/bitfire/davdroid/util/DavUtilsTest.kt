@@ -70,13 +70,6 @@ class DavUtilsTest {
     }
 
     @Test
-    fun testNormalizeMemberUrl() {
-        assertEquals("https://domain.example/ab/file.vcf".toUrl(), DavUtils.normalizeMemberUrl("https://domain.example/ab/file.vcf/".toUrl()))
-        assertEquals("https://domain.example/ab/file.vcf?x=1".toUrl(), DavUtils.normalizeMemberUrl("https://domain.example/ab/file.vcf/?x=1".toUrl()))
-        assertEquals("https://domain.example/ab/file.vcf".toUrl(), DavUtils.normalizeMemberUrl("https://domain.example/ab/file.vcf".toUrl()))
-    }
-
-    @Test
     fun testUrl_extractFileName() {
         assertEquals("file.ext", DavUtils.extractFileName("https://domain.example/file.ext".toUrl()))
         assertEquals("file", DavUtils.extractFileName("https://domain.example/collection/file".toUrl()))

@@ -7,10 +7,10 @@ package at.bitfire.davdroid.resource.remote
 import at.bitfire.dav4jvm.ktor.MultiStatusItem
 import at.bitfire.dav4jvm.ktor.Response
 import at.bitfire.dav4jvm.ktor.exception.DavException
+import at.bitfire.dav4jvm.ktor.omitTrailingSlash
 import at.bitfire.dav4jvm.ktor.responsesWithRelation
 import at.bitfire.dav4jvm.property.webdav.ResourceType
 import at.bitfire.dav4jvm.property.webdav.WebDAV
-import at.bitfire.davdroid.util.DavUtils.normalizeMemberUrl
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNot
@@ -68,7 +68,7 @@ fun Flow<MultiStatusItem>.toInternalMemberStates(): Flow<InternalMemberState> =
         .filterSuccessful()
         .map { item ->
             InternalMemberState(
-                href = normalizeMemberUrl(item.response.href),
+                href = item.response.href.omitTrailingSlash(),
                 eTag = item.response.requireETag()
             )
         }

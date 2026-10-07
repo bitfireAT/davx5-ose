@@ -6,13 +6,13 @@ package at.bitfire.davdroid.resource.remote
 
 import at.bitfire.dav4jvm.ktor.Response
 import at.bitfire.dav4jvm.ktor.exception.DavException
+import at.bitfire.dav4jvm.ktor.omitTrailingSlash
 import at.bitfire.dav4jvm.property.caldav.GetCTag
 import at.bitfire.dav4jvm.property.caldav.ScheduleTag
 import at.bitfire.dav4jvm.property.webdav.GetETag
 import at.bitfire.dav4jvm.property.webdav.SyncToken
 import at.bitfire.davdroid.resource.local.SyncState
 import at.bitfire.davdroid.sync.withExceptionContext
-import at.bitfire.davdroid.util.DavUtils.normalizeMemberUrl
 
 /**
  * Turns this multi-get response into a [WebDavCollection.MultiGetItem].
@@ -30,7 +30,7 @@ suspend fun Response.asMultiGetItem(getContent: (Response) -> String?): WebDavCo
         val content = getContent(response)
             ?: throw DavException("Received multi-get response without data")
         WebDavCollection.MultiGetItem(
-            url = normalizeMemberUrl(response.href),
+            url = response.href.omitTrailingSlash(),
             eTag = response.requireETag(),
             scheduleTag = response[ScheduleTag::class.java]?.scheduleTag,
             content = content

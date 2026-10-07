@@ -8,6 +8,7 @@ import at.bitfire.dav4jvm.QuotedStringUtils
 import at.bitfire.dav4jvm.ktor.DavResource
 import at.bitfire.dav4jvm.ktor.MultiStatusItem
 import at.bitfire.dav4jvm.ktor.Response
+import at.bitfire.dav4jvm.ktor.omitTrailingSlash
 import at.bitfire.dav4jvm.ktor.selfResponse
 import at.bitfire.dav4jvm.property.caldav.CalDAV
 import at.bitfire.dav4jvm.property.caldav.ScheduleTag
@@ -19,7 +20,6 @@ import at.bitfire.dav4jvm.property.webdav.SupportedReportSet
 import at.bitfire.dav4jvm.property.webdav.SyncToken
 import at.bitfire.dav4jvm.property.webdav.WebDAV
 import at.bitfire.davdroid.resource.local.SyncState
-import at.bitfire.davdroid.util.DavUtils.normalizeMemberUrl
 import io.ktor.client.HttpClient
 import io.ktor.http.Headers
 import io.ktor.http.HttpHeaders
@@ -119,10 +119,10 @@ abstract class BaseWebDavCollection(
                         response[ResourceType::class.java]?.types?.contains(WebDAV.Collection) == true -> null
 
                         response.isSuccess() ->
-                            CollectionSyncItem.ChangedMember(InternalMemberState(normalizeMemberUrl(response.href), response.requireETag()))
+                            CollectionSyncItem.ChangedMember(InternalMemberState(response.href.omitTrailingSlash(), response.requireETag()))
 
                         response.status == HttpStatusCode.NotFound ->
-                            CollectionSyncItem.RemovedMember(normalizeMemberUrl(response.href))
+                            CollectionSyncItem.RemovedMember(response.href.omitTrailingSlash())
 
                         else -> {
                             logger.warning("Ignoring response for ${response.href} (${response.status})")
