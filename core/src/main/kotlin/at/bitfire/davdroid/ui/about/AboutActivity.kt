@@ -151,7 +151,6 @@ class AboutActivity: AppCompatActivity() {
                                 }
 
                                 2 -> {
-                                    // explicit R.raw reference so that resource shrinking keeps the aboutlibraries.json file
                                     val libraries by produceLibraries(R.raw.aboutlibraries)
                                     LibrariesContainer(
                                         modifier = Modifier.fillMaxSize(),

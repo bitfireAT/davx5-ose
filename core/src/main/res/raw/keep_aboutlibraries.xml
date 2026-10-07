@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- prevent resource shrinking from removing the generated aboutlibraries.json -->
+<resources xmlns:tools="http://schemas.android.com/tools"
+    tools:keep="@raw/aboutlibraries" />
