@@ -51,14 +51,14 @@ class VTimeZoneMinifierTest {
         // Remove obsolete observances when DST is used.
         assertEquals(6, vtzVienna.observances.size)
         // By default, the earliest observance is in 1893. We can drop that for events in 2020.
-        assertEquals(LocalDateTime.parse("1893-04-01T00:00:00"), vtzVienna.observances.minOfOrNull { it.startDate.date })
+        assertEquals(LocalDateTime.parse("1893-04-01T00:00:00"), vtzVienna.observances.mapNotNull { it.startDate }.minOfOrNull { it.date })
 
         val minified = minifier.minify(vtzVienna, vtzVienna.zonedDateTime("2020-01-01"))
 
         assertEquals(2, minified.observances.size)
         // now earliest observance for STANDARD/DAYLIGHT is 1996/1981
-        assertEquals(LocalDateTime.parse("1996-10-27T03:00:00"), minified.observances[0].startDate.date)
-        assertEquals(LocalDateTime.parse("1981-03-29T02:00:00"), minified.observances[1].startDate.date)
+        assertEquals(LocalDateTime.parse("1996-10-27T03:00:00"), minified.observances[0].startDate?.date)
+        assertEquals(LocalDateTime.parse("1981-03-29T02:00:00"), minified.observances[1].startDate?.date)
     }
 
     @Test
@@ -77,7 +77,7 @@ class VTimeZoneMinifierTest {
         // Keep future observances.
         minifier.minify(vtzVienna, vtzVienna.zonedDateTime("1975-10-01")).let { minified ->
             val sortedStartDates = minified.observances
-                .map { it.startDate.date }
+                .mapNotNull { it.startDate?.date }
                 .sorted()
                 .map { it.toString() }
 
@@ -127,7 +127,7 @@ class VTimeZoneMinifierTest {
 
     private fun VTimeZone.zonedDateTime(dateTimeStr: String): ZonedDateTime {
         val dateTimeText = if ('T' in dateTimeStr) dateTimeStr else "${dateTimeStr}T00:00:00"
-        val zoneId = ZoneId.of(timeZoneId.value)
+        val zoneId = ZoneId.of(timeZoneId?.value)
         return ZonedDateTime.of(LocalDateTime.parse(dateTimeText), zoneId)
     }
 

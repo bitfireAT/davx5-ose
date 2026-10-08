@@ -103,7 +103,7 @@ class RemindersHandler : JtxObjectEntityHandler {
             }
 
             return Trigger().apply {
-                this.duration = duration
+                setDuration(duration)
                 when (triggerRelativeTo?.uppercase()) {
                     JtxContract.JtxAlarm.AlarmRelativeTo.END.name -> this += Related.END
                     // START is the default if RELATED is absent/invalid

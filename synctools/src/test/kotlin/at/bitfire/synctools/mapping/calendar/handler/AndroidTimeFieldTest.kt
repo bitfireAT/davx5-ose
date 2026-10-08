@@ -14,6 +14,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
 import java.time.Instant
+import kotlin.test.assertNotNull
 
 class AndroidTimeFieldTest {
 
@@ -59,8 +60,10 @@ class AndroidTimeFieldTest {
 
         val result = androidTimeField.toTemporal()
 
+        val tzVienna = tzRegistry.getTimeZone("Europe/Vienna")
+        assertNotNull(tzVienna, "Failed to get timezone Europe/Vienna from registry")
         assertEquals(
-            dateTimeValue("20251015T114659", tzRegistry.getTimeZone("Europe/Vienna")),
+            dateTimeValue("20251015T114659", tzVienna),
             result
         )
     }

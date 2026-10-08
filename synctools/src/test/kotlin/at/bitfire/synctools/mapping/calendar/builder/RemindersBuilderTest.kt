@@ -35,8 +35,8 @@ import java.time.Period
 class RemindersBuilderTest {
 
     private val tzRegistry = TimeZoneRegistryFactory.getInstance().createRegistry()
-    private val tzShanghai = tzRegistry.getTimeZone("Asia/Shanghai")
-    private val tzVienna = tzRegistry.getTimeZone("Europe/Vienna")
+    private val tzShanghai = tzRegistry.getTimeZone("Asia/Shanghai") ?: throw NullPointerException("Failed to get timezone Asia/Shanghai from registry")
+    private val tzVienna = tzRegistry.getTimeZone("Europe/Vienna") ?: throw NullPointerException("Failed to get timezone Europe/Vienna from registry")
 
     private val builder = RemindersBuilder()
 

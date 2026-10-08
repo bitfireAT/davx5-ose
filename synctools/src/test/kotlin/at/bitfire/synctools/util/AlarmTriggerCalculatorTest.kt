@@ -42,7 +42,7 @@ import java.time.Duration as JavaDuration
 class AlarmTriggerCalculatorTest {
 
     private val tzRegistry = TimeZoneRegistryFactory.getInstance().createRegistry()
-    private val tzVienna = tzRegistry.getTimeZone("Europe/Vienna")
+    private val tzVienna = tzRegistry.getTimeZone("Europe/Vienna") ?: throw NullPointerException("Timezone Europe/Vienna not found")
 
     // current time stamp
     private val currentTime = ZonedDateTime.now()

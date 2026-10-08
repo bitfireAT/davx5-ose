@@ -31,7 +31,7 @@ import java.time.temporal.Temporal
 class RecurrenceFieldsBuilderTest {
 
     private val tzRegistry = TimeZoneRegistryFactory.getInstance().createRegistry()
-    private val tzVienna = tzRegistry.getTimeZone("Europe/Vienna")
+    private val tzVienna = tzRegistry.getTimeZone("Europe/Vienna") ?: throw NullPointerException("Time zone Europe/Vienna not found")
 
     private val builder = RecurrenceFieldsBuilder()
 

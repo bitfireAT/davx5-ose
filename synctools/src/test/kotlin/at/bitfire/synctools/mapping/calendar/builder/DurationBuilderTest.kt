@@ -10,6 +10,7 @@ import android.provider.CalendarContract.Events
 import at.bitfire.dateTimeValue
 import at.bitfire.dateValue
 import at.bitfire.synctools.icalendar.propertyListOf
+import net.fortuna.ical4j.model.TimeZone
 import net.fortuna.ical4j.model.TimeZoneRegistryFactory
 import net.fortuna.ical4j.model.component.VEvent
 import net.fortuna.ical4j.model.property.DtEnd
@@ -31,7 +32,7 @@ import java.time.temporal.Temporal
 class DurationBuilderTest {
 
     private val tzRegistry = TimeZoneRegistryFactory.getInstance().createRegistry()
-    private val tzVienna = tzRegistry.getTimeZone("Europe/Vienna")
+    private val tzVienna: TimeZone = tzRegistry.getTimeZone("Europe/Vienna") ?: throw NullPointerException("TimeZone Europe/Vienna not found in registry")
 
     private val builder = DurationBuilder()
 

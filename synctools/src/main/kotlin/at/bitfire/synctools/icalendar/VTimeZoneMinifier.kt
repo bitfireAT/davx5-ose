@@ -6,6 +6,7 @@ package at.bitfire.synctools.icalendar
 
 import net.fortuna.ical4j.model.ComponentList
 import net.fortuna.ical4j.model.Property
+import net.fortuna.ical4j.model.PropertyList
 import net.fortuna.ical4j.model.TemporalAdapter
 import net.fortuna.ical4j.model.component.Daylight
 import net.fortuna.ical4j.model.component.Observance
@@ -49,7 +50,7 @@ class VTimeZoneMinifier {
         val start = asZonedDateTime(
             startTemporal,
             zoneId = try {
-                ZoneId.of(originalTz.timeZoneId.value)
+                originalTz.timeZoneId?.value?.let(ZoneId::of) ?: ZoneId.systemDefault()
             } catch (_: Exception) {
                 ZoneId.systemDefault()
             }
@@ -99,7 +100,7 @@ class VTimeZoneMinifier {
 
             // check RRULEs
             for (rRule in daylight.getProperties<RRule<Temporal>>(Property.RRULE)) {
-                val nextDstOnset = rRule.recur.getNextDate(daylight.startDate.date, startLocal)
+                val nextDstOnset = daylight.startDate?.let { rRule.recur.getNextDate(it.date, startLocal) }
                 if (nextDstOnset != null) {
                     // there will be a DST onset in the future -> keep DAYLIGHT
                     keep += daylight
@@ -117,7 +118,7 @@ class VTimeZoneMinifier {
         }
 
         // construct minified time zone that only contains the ID and relevant observances
-        val relevantProperties = propertyListOf(originalTz.timeZoneId)
+        val relevantProperties = originalTz.timeZoneId?.let { propertyListOf(it) } ?: PropertyList()
         val relevantObservances = ComponentList(keep.toList())
         val newTz = VTimeZone(relevantProperties, relevantObservances)
 
