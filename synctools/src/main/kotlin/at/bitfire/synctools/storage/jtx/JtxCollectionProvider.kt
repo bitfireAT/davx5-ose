@@ -69,11 +69,13 @@ class JtxCollectionProvider(
      * @param whereArgs     arguments for selection
      * @param sortOrder     sort order
      * @return list of collections
-     * @throws LocalStorageException when the content provider returns an error
+     * @throws LocalStorageException when the content provider returns nothing or an error
      */
     fun findCollections(where: String? = null, whereArgs: Array<String>? = null, sortOrder: String? = null): List<JtxCollection> {
         val result = LinkedList<JtxCollection>()
-        client.query(collectionsUri, null, where, whereArgs, sortOrder)?.use { cursor ->
+        val cursor = client.query(collectionsUri, null, where, whereArgs, sortOrder)
+            ?: throw LocalStorageException("Jtx provider returned no cursor")
+        cursor.use {
             while (cursor.moveToNext())
                 result += JtxCollection(this, cursor.toContentValues())
         }
