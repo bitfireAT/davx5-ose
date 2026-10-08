@@ -8,6 +8,7 @@ import at.bitfire.dav4jvm.QuotedStringUtils
 import at.bitfire.dav4jvm.ktor.DavResource
 import at.bitfire.dav4jvm.ktor.MultiStatusItem
 import at.bitfire.dav4jvm.ktor.Response
+import at.bitfire.dav4jvm.ktor.omitTrailingSlash
 import at.bitfire.dav4jvm.ktor.selfResponse
 import at.bitfire.dav4jvm.property.caldav.CalDAV
 import at.bitfire.dav4jvm.property.caldav.ScheduleTag
@@ -120,13 +121,13 @@ abstract class BaseWebDavCollection(
                         response.isSuccess() ->
                             CollectionSyncItem.ChangedMember(
                                 InternalMemberState(
-                                    response.href,
+                                    response.href.omitTrailingSlash(),
                                     response[GetETag::class.java]?.eTag
                                 )
                             )
 
                         response.status == HttpStatusCode.NotFound ->
-                            CollectionSyncItem.RemovedMember(response.href)
+                            CollectionSyncItem.RemovedMember(response.href.omitTrailingSlash())
 
                         else -> {
                             logger.warning("Ignoring response for ${response.href} (${response.status})")

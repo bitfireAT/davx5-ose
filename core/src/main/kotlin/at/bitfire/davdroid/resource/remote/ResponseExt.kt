@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.resource.remote
 
 import at.bitfire.dav4jvm.ktor.Response
+import at.bitfire.dav4jvm.ktor.omitTrailingSlash
 import at.bitfire.dav4jvm.property.caldav.GetCTag
 import at.bitfire.dav4jvm.property.caldav.ScheduleTag
 import at.bitfire.dav4jvm.property.webdav.GetETag
@@ -43,7 +44,7 @@ suspend fun Response.asMultiGetItem(getContent: (Response) -> String?): WebDavCo
             return@withExceptionContext null
         }
         WebDavCollection.MultiGetItem(
-            url = response.href,
+            url = response.href.omitTrailingSlash(),
             eTag = eTag,
             scheduleTag = response[ScheduleTag::class.java]?.scheduleTag,
             content = content

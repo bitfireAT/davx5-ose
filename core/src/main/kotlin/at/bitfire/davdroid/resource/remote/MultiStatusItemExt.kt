@@ -6,6 +6,7 @@ package at.bitfire.davdroid.resource.remote
 
 import at.bitfire.dav4jvm.ktor.MultiStatusItem
 import at.bitfire.dav4jvm.ktor.Response
+import at.bitfire.dav4jvm.ktor.omitTrailingSlash
 import at.bitfire.dav4jvm.ktor.responsesWithRelation
 import at.bitfire.dav4jvm.property.webdav.GetETag
 import at.bitfire.dav4jvm.property.webdav.ResourceType
@@ -67,7 +68,7 @@ fun Flow<MultiStatusItem>.toInternalMemberStates(): Flow<InternalMemberState> =
         .filterSuccessful()
         .map { item ->
             InternalMemberState(
-                href = item.response.href,
+                href = item.response.href.omitTrailingSlash(),
                 eTag = item.response[GetETag::class.java]?.eTag
             )
         }
