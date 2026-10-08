@@ -110,6 +110,8 @@ abstract class AppDatabase: RoomDatabase() {
                     // remove all accounts because they're unfortunately useless without database
                     for (account in accountManager.getAccountsByType(context.getString(R.string.account_type)))
                         accountManager.removeAccountExplicitly(account)
+                    for (account in accountManager.getAccountsByType(context.getString(R.string.account_type_db)))
+                        accountManager.removeAccountExplicitly(account)
                 }
             })
             .build()

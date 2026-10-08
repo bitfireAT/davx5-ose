@@ -22,7 +22,8 @@ class AddressBookAccountProperties @Inject constructor(
     private val accountManager: AccountManager,
     @ApplicationContext private val context: Context
 ) {
-    private val mainAccountType = context.getString(R.string.account_type)
+    private val mainLegacyAccountType = context.getString(R.string.account_type)
+    private val mainDbAccountType = context.getString(R.string.account_type_db)
     private val addressBookAccountType = context.getString(R.string.account_type_address_book)
 
 
@@ -35,8 +36,12 @@ class AddressBookAccountProperties @Inject constructor(
         val ownerName = accountManager.getUserData(account, USER_DATA_ACCOUNT_NAME)
         val ownerType = accountManager.getUserData(account, USER_DATA_ACCOUNT_TYPE)
 
-        return if (ownerName != null && ownerType == mainAccountType) {
-            LegacyAccount(Account(ownerName, ownerType))
+        return if (ownerName != null) {
+            when (ownerType) {
+                mainLegacyAccountType -> LegacyAccount(Account(ownerName, ownerType))
+                mainDbAccountType -> DbAccountId(ownerName.toLong())
+                else -> null
+            }
         } else {
             null
         }
