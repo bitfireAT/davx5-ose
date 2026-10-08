@@ -34,19 +34,21 @@ class LocalChangesCounter @Inject constructor(
      * @return number of unsynced local changes (0 if there are none or they couldn't be counted)
      */
     @CheckReturnValue
-    suspend fun countUnsyncedChanges(accountId: AccountId, collection: Collection): Int {
-        val dataStores: List<LocalDataStore<*>> = when (collection.type) {
-            Collection.TYPE_ADDRESSBOOK -> listOf(localAddressBookStore.get())
-            Collection.TYPE_CALENDAR -> listOfNotNull(localCalendarStore.get(), tasksAppManager.get().getDataStore())
-            else -> emptyList()
-        }
+    suspend fun countUnsyncedChanges(accountId: AccountId, collection: Collection): Int =
+        withContext(ioDispatcher) {
+            val dataStores: List<LocalDataStore<*>> = when (collection.type) {
+                Collection.TYPE_ADDRESSBOOK -> listOf(localAddressBookStore.get())
+                Collection.TYPE_CALENDAR -> listOfNotNull(
+                    localCalendarStore.get(),
+                    tasksAppManager.get().getDataStore()
+                )
+                else -> emptyList()
+            }
 
-        return withContext(ioDispatcher) {
             dataStores.sumOf { dataStore ->
                 countUnsyncedChanges(accountId, collection.id, dataStore)
             }
         }
-    }
 
     private fun countUnsyncedChanges(accountId: AccountId, collectionId: Long, dataStore: LocalDataStore<*>): Int {
         val client = dataStore.acquireLocalStorageClient()
