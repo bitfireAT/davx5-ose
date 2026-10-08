@@ -107,7 +107,7 @@ class LocalAddressBookStore @Inject constructor(
     override suspend fun create(client: LocalStorageClient, fromCollection: Collection): LocalAddressBook? {
         val service = serviceRepository.get(fromCollection.serviceId)
             ?: throw IllegalArgumentException("Couldn't fetch DB service from collection")
-        val accountId = accountRepository.getAccountIdFromName(service.accountName)
+        val accountId = accountRepository.getAccountIdFromService(service)
 
         val name = accountName(fromCollection)
         val addressBookAccount = createAddressBookAccount(

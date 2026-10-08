@@ -60,7 +60,7 @@ class LocalJtxCollectionStore @Inject constructor(
     override suspend fun create(client: LocalStorageClient, fromCollection: Collection): LocalJtxCollection {
         val service = serviceDao.get(fromCollection.serviceId)
             ?: throw IllegalArgumentException("Couldn't fetch DB service from collection")
-        val accountId = accountRepository.getAccountIdFromName(service.accountName)
+        val accountId = accountRepository.getAccountIdFromService(service)
         val account = androidAccountManager.getAndroidAccount(accountId)
 
         // If the collection doesn't have a color, use a default color.
