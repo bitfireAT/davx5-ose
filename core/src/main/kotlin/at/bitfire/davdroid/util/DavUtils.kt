@@ -5,6 +5,8 @@
 package at.bitfire.davdroid.util
 
 import at.bitfire.dav4jvm.ktor.toUrlOrNull
+import at.bitfire.davdroid.util.DavUtils.generateUidIfNecessary
+import at.bitfire.davdroid.util.DavUtils.toUrlOrNull
 import io.ktor.http.ContentType
 import io.ktor.http.Url
 import org.jetbrains.annotations.TestOnly

@@ -207,6 +207,57 @@ class CalDavCollectionTest {
         )
     }
 
+    @Test
+    fun `multiget() skips a member response that lacks an ETag`() = runTest {
+        val calendar = collection(
+            """
+            <?xml version="1.0" encoding="utf-8"?>
+            <multistatus xmlns="DAV:" xmlns:C="urn:ietf:params:xml:ns:caldav">
+              <response>
+                <href>/dav/calendar/event1.ics</href>
+                <propstat>
+                  <prop>
+                    <C:calendar-data>BEGIN:VCALENDAR
+            END:VCALENDAR</C:calendar-data>
+                  </prop>
+                  <status>HTTP/1.1 200 OK</status>
+                </propstat>
+              </response>
+              <response>
+                <href>/dav/calendar/event2.ics</href>
+                <propstat>
+                  <prop>
+                    <getetag>"event2-etag"</getetag>
+                    <C:calendar-data>BEGIN:VCALENDAR
+            END:VCALENDAR</C:calendar-data>
+                  </prop>
+                  <status>HTTP/1.1 200 OK</status>
+                </propstat>
+              </response>
+            </multistatus>
+            """.trimIndent()
+        )
+
+        val items = calendar.multiget(
+            listOf(
+                Url("https://example.com/dav/calendar/event1.ics"),
+                Url("https://example.com/dav/calendar/event2.ics")
+            ),
+            WebDavCollection.Capabilities()
+        ).toList()
+
+        assertEquals(
+            listOf(
+                WebDavCollection.MultiGetItem(
+                    url = Url("https://example.com/dav/calendar/event2.ics"),
+                    eTag = "event2-etag",
+                    content = "BEGIN:VCALENDAR\nEND:VCALENDAR"
+                )
+            ),
+            items
+        )
+    }
+
     private fun collection(
         xmlResponse: String,
         filter: CalendarQueryFilter = CalendarQueryFilter(components = listOf("VEVENT"))
