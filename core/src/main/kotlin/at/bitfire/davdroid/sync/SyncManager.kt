@@ -817,8 +817,9 @@ abstract class SyncManager<LocalType : LocalResource>(
 
             when {
                 /* Some servers (e.g. cPanel, see #2934) list members without ETag, although it's required by
-                RFC 4791 5.3.4. Skip them instead of aborting the sync, but keep the local copy. Don't download
-                them because without ETag, we would have to re-download them at every sync. */
+                RFC 4791 5.3.4. Skip them instead of aborting the sync, but keep the local copy (marked as remotely '
+                present above). Don't download them because without ETag, we would have to re-download them at every
+                sync. Also don't notify the user, since it's a server issue */
                 member.eTag == null -> {
                     logger.warning("Server didn't provide ETag for ${member.href}, ignoring")
                     false
