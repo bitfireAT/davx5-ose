@@ -230,11 +230,16 @@ class AccountScreenViewModel @AssistedInject constructor(
                 collectionSelectedUseCase.get().handleWithDelay(id)
             } else {
                 val collection = collectionRepository.getAsync(id) ?: return@launch
-                disableCollectionSyncRequest = DisableCollectionSyncRequest(
+                val request = DisableCollectionSyncRequest(
                     collectionId = id,
-                    title = collection.title(),
-                    unsyncedChanges = localChangesCounter.countUnsyncedChanges(accountId, collection)
+                    title = collection.title()
                 )
+                disableCollectionSyncRequest = request
+
+                // show dialog immediately and count only once available (may take a while)
+                val unsyncedChanges = localChangesCounter.countUnsyncedChanges(accountId, collection)
+                if (disableCollectionSyncRequest === request)
+                    disableCollectionSyncRequest = request.copy(unsyncedChanges = unsyncedChanges)
             }
         }
     }

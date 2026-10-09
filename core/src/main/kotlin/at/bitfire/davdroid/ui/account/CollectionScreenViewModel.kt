@@ -222,11 +222,16 @@ class CollectionScreenViewModel @AssistedInject constructor(
             } else {
                 val collection = collection.value ?: return@launch
                 val accountId = accountId.first() ?: return@launch
-                disableSyncRequest = DisableCollectionSyncRequest(
+                val request = DisableCollectionSyncRequest(
                     collectionId = collectionId,
-                    title = collection.title(),
-                    unsyncedChanges = localChangesCounter.countUnsyncedChanges(accountId, collection)
+                    title = collection.title()
                 )
+                disableSyncRequest = request
+
+                // show dialog immediately and count only once available (may take a while)
+                val unsyncedChanges = localChangesCounter.countUnsyncedChanges(accountId, collection)
+                if (disableSyncRequest === request)
+                    disableSyncRequest = request.copy(unsyncedChanges = unsyncedChanges)
             }
         }
     }
