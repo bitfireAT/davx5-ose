@@ -296,8 +296,8 @@ class DavCollectionRepository @Inject constructor(
     /**
      * Whether or not the local collection should be synced with the server
      */
-    suspend fun setSync(id: Long, forceReadOnly: Boolean) {
-        dao.updateSync(id, forceReadOnly)
+    suspend fun setSync(id: Long, sync: Boolean) {
+        dao.updateSync(id, sync)
     }
 
     /**
