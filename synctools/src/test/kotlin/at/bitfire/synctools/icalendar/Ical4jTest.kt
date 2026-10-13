@@ -6,6 +6,7 @@ package at.bitfire.synctools.icalendar
 
 import at.bitfire.dateTimeValue
 import at.bitfire.synctools.icalendar.validation.ICalPreprocessor
+import at.bitfire.synctools.util.getTimeZoneOrThrow
 import net.fortuna.ical4j.data.CalendarBuilder
 import net.fortuna.ical4j.data.CalendarOutputter
 import net.fortuna.ical4j.data.ParserException
@@ -166,8 +167,7 @@ class Ical4jTest {
     @Test
     fun `TZ Darwin`() {
         // https://github.com/ical4j/ical4j/issues/491
-        val darwin = tzReg.getTimeZone("Australia/Darwin")
-        assertNotNull(darwin, "Failed to get VTIMEZONE for Australia/Darwin from registry")
+        val darwin = tzReg.getTimeZoneOrThrow("Australia/Darwin")
         val date = dateTimeValue("20210326T103000", darwin)
         val timestamp = date.toInstant().toEpochMilli()
 
@@ -223,8 +223,7 @@ class Ical4jTest {
     @Test
     fun `TZ Karachi`() {
         // https://github.com/ical4j/ical4j/issues/475
-        val karachi = tzReg.getTimeZone("Asia/Karachi")
-        assertNotNull(karachi, "Failed to get VTIMEZONE for Asia/Karachi from registry")
+        val karachi = tzReg.getTimeZoneOrThrow("Asia/Karachi")
         val date = dateTimeValue("20210106T200000", karachi)
         val timestamp = date.toInstant().toEpochMilli()
 

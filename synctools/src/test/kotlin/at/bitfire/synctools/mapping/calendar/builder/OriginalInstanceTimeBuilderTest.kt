@@ -12,6 +12,7 @@ import at.bitfire.dateTimeValue
 import at.bitfire.dateValue
 import at.bitfire.synctools.icalendar.propertyListOf
 import at.bitfire.synctools.test.assertContentValuesEqual
+import at.bitfire.synctools.util.getTimeZoneOrThrow
 import net.fortuna.ical4j.model.TimeZoneRegistryFactory
 import net.fortuna.ical4j.model.component.VEvent
 import net.fortuna.ical4j.model.property.DtStart
@@ -27,8 +28,8 @@ import java.time.temporal.Temporal
 class OriginalInstanceTimeBuilderTest {
 
     private val tzRegistry = TimeZoneRegistryFactory.getInstance().createRegistry()
-    private val tzShanghai = tzRegistry.getTimeZone("Asia/Shanghai") ?: throw NullPointerException("Failed to get timezone Asia/Shanghai from registry")
-    private val tzVienna = tzRegistry.getTimeZone("Europe/Vienna") ?: throw NullPointerException("Failed to get timezone Europe/Vienna from registry")
+    private val tzShanghai = tzRegistry.getTimeZoneOrThrow("Asia/Shanghai")
+    private val tzVienna = tzRegistry.getTimeZoneOrThrow("Europe/Vienna")
 
     private val builder = OriginalInstanceTimeBuilder()
 

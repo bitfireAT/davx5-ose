@@ -11,6 +11,7 @@ import at.bitfire.dateTimeValue
 import at.bitfire.dateValue
 import at.bitfire.synctools.icalendar.plusAssign
 import at.bitfire.synctools.test.assertContentValuesEqual
+import at.bitfire.synctools.util.getTimeZoneOrThrow
 import at.techbee.jtx.JtxContract
 import net.fortuna.ical4j.model.TimeZoneRegistryFactory
 import net.fortuna.ical4j.model.component.VJournal
@@ -28,7 +29,7 @@ import org.robolectric.RobolectricTestRunner
 class TimeFieldsBuilderTest {
 
     private val tzRegistry = TimeZoneRegistryFactory.getInstance().createRegistry()
-    private val tzVienna = tzRegistry.getTimeZone("Europe/Vienna") ?: throw NullPointerException("Time zone Europe/Vienna not found")
+    private val tzVienna = tzRegistry.getTimeZoneOrThrow("Europe/Vienna")
 
     private val builder = TimeFieldsBuilder()
 
