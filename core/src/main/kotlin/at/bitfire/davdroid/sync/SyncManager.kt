@@ -805,24 +805,37 @@ abstract class SyncManager<LocalType : LocalResource>(
      *
      * @param member    listed member to decide on
      *
-     * @return whether [member] needs to be (re)downloaded
+     * @return whether [member] needs to be (re)downloaded (never for members without ETag)
      */
     private suspend fun decideDownload(member: InternalMemberState): Boolean {
         logger.fine("Found remote resource: ${member.fileName}")
 
         val local = localCollection.findByName(member.fileName)
         return local.withExceptionContext {
-            if (local == null) {
-                logger.info("${member.fileName} has been added remotely, queueing download")
-                true
-            } else {
-                // mark as remotely present, so that this resource won't be deleted at the end
-                local.updateFlags(LocalResource.FLAG_REMOTELY_PRESENT)
+            // mark as remotely present, so that this resource won't be deleted at the end
+            local?.updateFlags(LocalResource.FLAG_REMOTELY_PRESENT)
 
-                if (local.eTag == member.eTag) {
+            when {
+                /* Some servers (e.g. cPanel, see #2934) list members without ETag, although it's required by
+                RFC 4791 5.3.4. Skip them instead of aborting the sync, but keep the local copy (marked as remotely '
+                present above). Don't download them because without ETag, we would have to re-download them at every
+                sync. Also don't notify the user, since it's a server issue */
+                member.eTag == null -> {
+                    logger.warning("Server didn't provide ETag for ${member.href}, ignoring")
+                    false
+                }
+
+                local == null -> {
+                    logger.info("${member.fileName} has been added remotely, queueing download")
+                    true
+                }
+
+                local.eTag == member.eTag -> {
                     logger.info("${member.fileName} has not been changed on server (ETag still ${member.eTag})")
                     false
-                } else {
+                }
+
+                else -> {
                     logger.info("${member.fileName} has been changed on server (current ETag=${member.eTag}, last known ETag=${local.eTag})")
                     true
                 }

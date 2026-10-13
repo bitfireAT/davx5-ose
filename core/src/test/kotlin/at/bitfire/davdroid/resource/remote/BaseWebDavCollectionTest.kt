@@ -5,10 +5,8 @@
 package at.bitfire.davdroid.resource.remote
 
 import at.bitfire.dav4jvm.ktor.DavCollection
-import at.bitfire.dav4jvm.ktor.exception.DavException
 import at.bitfire.dav4jvm.property.webdav.SyncToken
 import at.bitfire.davdroid.resource.local.SyncState
-import at.bitfire.synctools.test.assertThrows
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
@@ -411,8 +409,8 @@ class BaseWebDavCollectionTest {
     }
 
     @Test
-    fun `listChanges() throws when a changed member has no ETag`() = runTest {
-        val flow = collection(
+    fun `listChanges() emits ChangedMember with null ETag when a changed member has no ETag`() = runTest {
+        val items = collection(
             "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
                     "<multistatus xmlns=\"DAV:\">\n" +
                     "  <response>\n" +
@@ -424,9 +422,15 @@ class BaseWebDavCollectionTest {
                     "  </response>\n" +
                     "  <sync-token>http://example.com/ns/sync/1234</sync-token>\n" +
                     "</multistatus>"
-        ).listChanges(since = null)
+        ).listChanges(since = null).toList()
 
-        assertThrows<DavException> { flow.toList() }
+        assertEquals(
+            listOf(
+                CollectionSyncItem.ChangedMember(InternalMemberState(Url("https://example.com/dav/event1.ics"), null)),
+                CollectionSyncItem.SyncToken(SyncToken("http://example.com/ns/sync/1234"))
+            ),
+            items
+        )
     }
 
     @Test

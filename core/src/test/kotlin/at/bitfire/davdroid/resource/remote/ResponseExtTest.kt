@@ -7,10 +7,8 @@ package at.bitfire.davdroid.resource.remote
 import at.bitfire.dav4jvm.Property
 import at.bitfire.dav4jvm.ktor.PropStat
 import at.bitfire.dav4jvm.ktor.Response
-import at.bitfire.dav4jvm.ktor.exception.DavException
 import at.bitfire.dav4jvm.property.caldav.ScheduleTag
 import at.bitfire.dav4jvm.property.webdav.GetETag
-import at.bitfire.davdroid.sync.unwrapContext
 import at.bitfire.synctools.test.assertThrows
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.Url
@@ -65,31 +63,12 @@ class ResponseExtTest {
     }
 
     @Test
-    fun `asMultiGetItem() with missing ETag throws DavException`() = runTest {
+    fun `asMultiGetItem() with missing ETag returns null`() = runTest {
         val response = response(null, emptyList())
 
-        val e = assertThrows<Throwable> { response.asMultiGetItem { "BEGIN:VCALENDAR" } }
+        val item = response.asMultiGetItem { "BEGIN:VCALENDAR" }
 
-        assertEquals(
-            "Server didn't provide ETag for https://example.com/dav/some-file.ics",
-            e.unwrapContext().cause.message
-        )
-    }
-
-    @Test
-    fun `requireETag() returns the ETag when present`() = runTest {
-        val response = response(null, listOf(GetETag("some-etag")))
-
-        assertEquals("some-etag", response.requireETag())
-    }
-
-    @Test
-    fun `requireETag() throws DavException when ETag is missing`() = runTest {
-        val response = response(null, emptyList())
-
-        val e = assertThrows<DavException> { response.requireETag() }
-
-        assertEquals("Server didn't provide ETag for https://example.com/dav/some-file.ics", e.message)
+        assertNull(item)
     }
 
 }

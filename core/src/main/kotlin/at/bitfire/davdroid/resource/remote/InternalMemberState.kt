@@ -11,11 +11,11 @@ import io.ktor.http.Url
  * State of an internal member ("direct child") that is not a collection of a remote collection.
  *
  * @param href  URL of the member
- * @param eTag  current ETag of the member
+ * @param eTag  current ETag of the member; `null` if the server didn't send one (violates RFC 4791 5.3.4)
  */
 data class InternalMemberState(
     val href: Url,
-    val eTag: String
+    val eTag: String?
 ) {
 
     /**
