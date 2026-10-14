@@ -197,7 +197,12 @@ internal inline fun <T> runWrappingRemoteException(block: () -> T): T {
     return try {
         block()
     } catch (e: RuntimeException) {
-        throwWrappedLocalStorageException(e)
+        // E.g. CursorEntityIterator wraps a RemoteException in a RuntimeException
+        if (e.causedBy<RemoteException>() != null) {
+            throwWrappedLocalStorageException(e)
+        } else {
+            throw e
+        }
     } catch (e: RemoteException) {
         throwWrappedLocalStorageException(e)
     }
