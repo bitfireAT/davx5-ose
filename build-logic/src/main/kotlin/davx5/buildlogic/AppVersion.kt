@@ -4,6 +4,9 @@
 
 package davx5.buildlogic
 
+import davx5.buildlogic.AppVersion.CODE
+import davx5.buildlogic.AppVersion.NAME
+
 
 /**
  * Centralized version information for DAVx5 app variants.
@@ -27,7 +30,7 @@ package davx5.buildlogic
  */
 object AppVersion {
 
-    const val CODE: Int = 405210000
-    const val NAME: String = "4.5.21-rc.1"
+    const val CODE: Int = 405200003
+    const val NAME: String = "4.5.20-beta.2"
 
 }
