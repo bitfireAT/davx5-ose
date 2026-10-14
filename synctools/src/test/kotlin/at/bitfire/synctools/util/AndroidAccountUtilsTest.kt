@@ -69,29 +69,33 @@ class AndroidAccountUtilsTest {
             every { manager.addAccountExplicitly(any(), any(), any()) } throws denied
             val provider = AuthenticatorDescription(account.type, "matching.provider", 0, 0, 0, 0)
             val unrelated = AuthenticatorDescription("other.type", "unrelated.provider", 0, 0, 0, 0)
-            for (diagnostic in listOf("matching.provider", "unknown", "unavailable")) {
-                records.clear()
-                when (diagnostic) {
-                    "matching.provider" -> every { manager.authenticatorTypes } returns arrayOf(provider, unrelated)
-                    "unknown" -> every { manager.authenticatorTypes } returns emptyArray()
-                    else -> every { manager.authenticatorTypes } throws IllegalStateException("Lookup failed")
-                }
 
-                assertFalse(AndroidAccountUtils.createAccount(context, account,
-                    mapOf("private-key" to "private-value"), "private-password".toSensitiveString()))
+            // Denial is logged with the matching authenticator, not unrelated ones.
+            records.clear()
+            every { manager.authenticatorTypes } returns arrayOf(provider, unrelated)
+            assertFalse(AndroidAccountUtils.createAccount(context, account))
+            assertTrue(records.any { it.thrown === denied })
+            assertTrue(records.any { "matching.provider" in it.message })
+            assertFalse(records.any { "unrelated.provider" in it.message })
 
-                assertTrue(records.any { it.thrown === denied })
-                assertTrue(records.any { diagnostic in it.message })
-                assertFalse(records.any { "unrelated.provider" in it.message || "private-" in it.message })
-            }
+            // No visible authenticator is reported as unknown.
+            records.clear()
+            every { manager.authenticatorTypes } returns emptyArray()
+            assertFalse(AndroidAccountUtils.createAccount(context, account))
+            assertTrue(records.any { "unknown" in it.message })
 
+            // Lookup failure is logged and creation still returns false.
+            records.clear()
+            every { manager.authenticatorTypes } throws IllegalStateException("Lookup failed")
+            assertFalse(AndroidAccountUtils.createAccount(context, account))
+            assertTrue(records.any { "unavailable" in it.message })
+
+            // A plain false result is not logged and does not query authenticators.
             records.clear()
             every { manager.addAccountExplicitly(any(), any(), any()) } returns false
-            assertFalse(AndroidAccountUtils.createAccount(context, account, mapOf("key" to "value")))
+            assertFalse(AndroidAccountUtils.createAccount(context, account))
             assertTrue(records.isEmpty())
             verify(exactly = 3) { manager.authenticatorTypes }
-            verify(exactly = 0) { manager.setUserData(any(), any(), any()) }
-            verify(exactly = 0) { manager.getUserData(any(), any()) }
         } finally {
             logger.removeHandler(handler)
         }

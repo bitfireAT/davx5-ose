@@ -50,6 +50,7 @@ object AndroidAccountUtils {
                     .map { it.packageName }
                 logger.warning("Registered account providers: ${providers.joinToString().ifEmpty { "unknown (none visible)" }}")
             } catch (e: RuntimeException) {
+                // getAuthenticatorTypes() rethrows RemoteException as RuntimeException
                 logger.log(Level.WARNING, "Registered account providers unavailable", e)
             }
             return false
