@@ -334,7 +334,7 @@ class AndroidCalendarProviderBehaviorTest {
     /**
      * Reported as https://issuetracker.google.com/issues/446730408.
      */
-    @Test
+    @Test(expected = NullPointerException::class)
     fun testUpdateEventStatusFromNonNullToNull() {
         val id = calendar.addEvent(Entity(contentValuesOf(
             Events.CALENDAR_ID to calendar.id,
@@ -344,15 +344,10 @@ class AndroidCalendarProviderBehaviorTest {
             Events.STATUS to Events.STATUS_TENTATIVE
         )))
 
-        try {
-            calendar.updateEventRow(id, contentValuesOf(
-                Events.STATUS to null,      // updating status to null causes NullPointerException
-                Events.TITLE to "Some Event (Status null)"
-            ))
-            fail("Expected exception")
-        } catch (e: LocalStorageException) {
-            assertTrue(e.cause is NullPointerException)
-        }
+        calendar.updateEventRow(id, contentValuesOf(
+            Events.STATUS to null,      // updating status to null causes NullPointerException
+            Events.TITLE to "Some Event (Status null)"
+        ))
     }
 
     @Test
@@ -375,7 +370,7 @@ class AndroidCalendarProviderBehaviorTest {
     /**
      * Reported as https://issuetracker.google.com/issues/446730408.
      */
-    @Test
+    @Test(expected = NullPointerException::class)
     fun testUpdateEventStatusFromNullToNull() {
         val id = calendar.addEvent(Entity(contentValuesOf(
             Events.CALENDAR_ID to calendar.id,
@@ -385,15 +380,10 @@ class AndroidCalendarProviderBehaviorTest {
             Events.STATUS to null
         )))
 
-        try {
-            calendar.updateEventRow(id, contentValuesOf(
-                Events.STATUS to null,      // updating status to null causes NullPointerException
-                Events.TITLE to "Some Event (Status null)"
-            ))
-            fail("Expected exception")
-        } catch (e: LocalStorageException) {
-            assertTrue(e.cause is NullPointerException)
-        }
+        calendar.updateEventRow(id, contentValuesOf(
+            Events.STATUS to null,      // updating status to null causes NullPointerException
+            Events.TITLE to "Some Event (Status null)"
+        ))
     }
 
 }
