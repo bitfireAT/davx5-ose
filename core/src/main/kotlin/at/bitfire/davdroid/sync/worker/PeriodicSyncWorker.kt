@@ -63,7 +63,7 @@ class PeriodicSyncWorker @AssistedInject constructor(
                     val account = accountId.androidAccount
                     "periodic-sync $dataType ${account.type}/${account.name}"
                 }
-                is DbAccountId -> TODO("Operation not yet implemented")
+                is DbAccountId -> "periodic-sync $dataType ${accountId.id}"
             }
         }
 

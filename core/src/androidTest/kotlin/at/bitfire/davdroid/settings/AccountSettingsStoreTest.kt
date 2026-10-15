@@ -62,7 +62,7 @@ class AccountSettingsStoreTest(private val parameters: TestParameters) {
             return TestParameters(
                 name = "DbAccountSettingsStore",
                 storeFactory = {
-                    val id = appDatabase.dbAccountDao().insert(DbAccount(name = "test"))
+                    val id = appDatabase.dbAccountDao().insertBlocking(DbAccount(name = "test"))
                     accountId = DbAccountId(id)
 
                     DbAccountSettingsStore(accountId, appDatabase)

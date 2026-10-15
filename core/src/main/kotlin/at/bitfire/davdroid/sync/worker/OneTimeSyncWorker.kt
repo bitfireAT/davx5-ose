@@ -68,7 +68,7 @@ class OneTimeSyncWorker @AssistedInject constructor(
                     val account = accountId.androidAccount
                     "onetime-sync $dataType ${account.type}/${account.name}"
                 }
-                is DbAccountId -> TODO("Operation not yet implemented")
+                is DbAccountId -> "onetime-sync $dataType ${accountId.id}"
             }
         }
 
