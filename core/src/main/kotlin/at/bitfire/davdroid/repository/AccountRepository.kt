@@ -178,9 +178,10 @@ class AccountRepository @Inject constructor(
         )
 
         // insert the initial account settings into the database
-        val accountSettings = accountSettingsFactory.create(accountId)
-        withContext(ioDispatcher) {
-            accountSettings.putInitialSettings(credentials, preconfigurationUrl)
+        val accountSettings = withContext(ioDispatcher) {
+            accountSettingsFactory.create(accountId).also {
+                it.putInitialSettings(credentials, preconfigurationUrl)
+            }
         }
 
         val account = Account(accountName, dbAccountType)
@@ -241,6 +242,7 @@ class AccountRepository @Inject constructor(
         return accountId
     }
 
+    @WorkerThread
     fun createLegacyBlocking(
         accountName: String,
         credentials: Credentials?,
