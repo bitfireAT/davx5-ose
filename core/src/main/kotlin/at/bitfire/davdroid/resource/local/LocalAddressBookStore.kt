@@ -17,7 +17,9 @@ import androidx.core.content.contentValuesOf
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.accounts.AndroidAccountManager
+import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
+import at.bitfire.davdroid.db.DbAccountDao
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.settings.AccountSettingsFactory
@@ -45,6 +47,7 @@ class LocalAddressBookStore @Inject constructor(
     private val localAddressBookFactory: LocalAddressBook.Factory,
     private val logger: Logger,
     private val serviceRepository: DavServiceRepository,
+    db: AppDatabase,
     private val settings: SettingsManager
 ): LocalDataStore<LocalAddressBook> {
 
@@ -54,6 +57,8 @@ class LocalAddressBookStore @Inject constructor(
     /** whether a (usually managed) setting wants all address-books to be read-only **/
     val forceAllReadOnly: Boolean
         get() = settings.getBoolean(Settings.FORCE_READ_ONLY_ADDRESSBOOKS)
+
+    private val dbAccountDao: DbAccountDao = db.dbAccountDao()
 
 
     /**
@@ -81,7 +86,8 @@ class LocalAddressBookStore @Inject constructor(
         // Add the actual account name to the address book account name
         val sb = StringBuilder(name)
         serviceRepository.getBlocking(info.serviceId)?.let { service ->
-            sb.append(" (${service.accountName})")
+            val accountName = service.accountId?.let(dbAccountDao::getBlocking)?.name ?: service.accountName
+            sb.append(" ($accountName)")
         }
         // Add the collection ID for uniqueness
         sb.append(" #${info.id}")
