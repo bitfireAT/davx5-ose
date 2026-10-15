@@ -94,9 +94,11 @@ class AutomaticSyncManager @Inject constructor(
             }
 
             // pass through request to update all existing address books
-            localAddressBookStore.acquireLocalStorageClient()?.use { client ->
-                for (addressBookAccount in localAddressBookStore.getAll(accountId, client))
-                    addressBookAccount.updateSyncFrameworkSettings()
+            withContext(ioDispatcher) {
+                localAddressBookStore.acquireLocalStorageClient()?.use { client ->
+                    for (addressBookAccount in localAddressBookStore.getAll(accountId, client))
+                        addressBookAccount.updateSyncFrameworkSettings()
+                }
             }
 
         } else {

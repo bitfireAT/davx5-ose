@@ -10,7 +10,6 @@ import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.sync.TasksAppManager
 import dagger.Lazy
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import java.util.logging.Logger
 import javax.annotation.CheckReturnValue
@@ -51,7 +50,7 @@ class LocalChangesCounter @Inject constructor(
             }
         }
 
-    private fun countUnsyncedChanges(accountId: AccountId, collectionId: Long, dataStore: LocalDataStore<*>): Int {
+    private suspend fun countUnsyncedChanges(accountId: AccountId, collectionId: Long, dataStore: LocalDataStore<*>): Int {
         val client = dataStore.acquireLocalStorageClient()
         if (client == null) {
             logger.fine("Can't access ${dataStore.authority}, not counting unsynced changes")
@@ -59,9 +58,7 @@ class LocalChangesCounter @Inject constructor(
         }
 
         return client.use {
-            runBlocking(ioDispatcher) {
-                dataStore.getByDbCollectionId(accountId, client, collectionId)
-            }?.let { localCollection ->
+            dataStore.getByDbCollectionId(accountId, client, collectionId)?.let { localCollection ->
                 localCollection.countModified() + localCollection.countDeleted()
             } ?: 0
         }
