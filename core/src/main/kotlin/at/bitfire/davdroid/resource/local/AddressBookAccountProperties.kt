@@ -11,6 +11,7 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.accounts.DbAccountId
 import at.bitfire.davdroid.accounts.LegacyAccount
+import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.synctools.util.setAndVerifyUserData
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
@@ -20,11 +21,14 @@ import javax.inject.Inject
  */
 class AddressBookAccountProperties @Inject constructor(
     private val accountManager: AccountManager,
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context,
+    db: AppDatabase
 ) {
     private val mainLegacyAccountType = context.getString(R.string.account_type)
     private val mainDbAccountType = context.getString(R.string.account_type_db)
     private val addressBookAccountType = context.getString(R.string.account_type_address_book)
+
+    private val dbAccountDao = db.dbAccountDao()
 
 
     /**
@@ -58,7 +62,13 @@ class AddressBookAccountProperties @Inject constructor(
                 accountManager.setAndVerifyUserData(account, USER_DATA_ACCOUNT_NAME, owner.androidAccount.name)
                 accountManager.setAndVerifyUserData(account, USER_DATA_ACCOUNT_TYPE, owner.androidAccount.type)
             }
-            is DbAccountId -> TODO("Operation not implemented")
+            is DbAccountId -> {
+                // TODO: Eventually the account should be provided automatically
+                val dbAccount = dbAccountDao.getBlocking(owner.id) ?: throw NoSuchElementException("Database Account doesn't have a matching system account")
+                val ownerAccount = Account(dbAccount.name, mainDbAccountType)
+                accountManager.setAndVerifyUserData(account, USER_DATA_ACCOUNT_NAME, ownerAccount.name)
+                accountManager.setAndVerifyUserData(account, USER_DATA_ACCOUNT_TYPE, ownerAccount.type)
+            }
         }
     }
 
