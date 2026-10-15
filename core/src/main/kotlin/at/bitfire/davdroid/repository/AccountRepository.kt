@@ -560,7 +560,7 @@ class AccountRepository @Inject constructor(
         // insert service
         val service = when(accountId) {
             is LegacyAccount -> Service(0, accountName, null, type, info.principal)
-            is DbAccountId -> Service(0, accountName, accountId.id, type, info.principal)
+            is DbAccountId -> Service(0, null, accountId.id, type, info.principal)
         }
         val serviceId = serviceRepository.insertOrReplaceBlocking(service)
 
