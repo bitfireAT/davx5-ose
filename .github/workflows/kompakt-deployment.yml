@@ -26,10 +26,19 @@ jobs:
 
       - run: pip install requests
 
+      # The GitHub App needs the repository permission "Variables: Read and write" (to bump BUILD_NUMBER).
+      # No permission-* inputs here: "variables" isn't supported by the action, so the token gets the app's permissions.
+      - name: Create GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@v3
+        with:
+          client-id: ${{ vars.APP_CLIENT_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+
       - name: Bump VERSION_CODE
         env:
           GITHUB_REPOSITORY: ${{ github.repository }}
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
         run: |
           set -euo pipefail
           VERSION_CODE=$(python3 buildSrc/src/main/kotlin/scripts/bump_build_version.py BUILD_NUMBER)
