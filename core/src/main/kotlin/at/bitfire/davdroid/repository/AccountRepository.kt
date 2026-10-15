@@ -283,7 +283,9 @@ class AccountRepository @Inject constructor(
             }
 
             // set up automatic sync (processes inserted services)
-            automaticSyncManager.get().updateAutomaticSync(accountId)
+            runBlocking(ioDispatcher) {
+                automaticSyncManager.get().updateAutomaticSync(accountId)
+            }
 
         } catch (e: InvalidAccountException) {
             logger.log(Level.SEVERE, "Couldn't access account settings", e)

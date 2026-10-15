@@ -9,6 +9,7 @@ import android.provider.CalendarContract
 import androidx.work.WorkManager
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.accounts.AndroidAccountManager
+import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.settings.AccountSettingsStore
 import at.bitfire.davdroid.sync.AutomaticSyncManager
 import at.bitfire.synctools.storage.TaskProvider
@@ -19,6 +20,8 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import dagger.multibindings.IntKey
 import dagger.multibindings.IntoMap
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 /**
@@ -30,7 +33,8 @@ import javax.inject.Inject
 class AccountSettingsMigration19 @Inject constructor(
     @ApplicationContext private val context: Context,
     private val androidAccountManager: AndroidAccountManager,
-    private val automaticSyncManager: AutomaticSyncManager
+    private val automaticSyncManager: AutomaticSyncManager,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ): AccountSettingsMigration {
 
     override fun migrate(accountId: AccountId, store: AccountSettingsStore) {
@@ -47,7 +51,9 @@ class AccountSettingsMigration19 @Inject constructor(
         }
 
         // enqueue new workers
-        automaticSyncManager.updateAutomaticSync(accountId)
+        runBlocking(ioDispatcher) {
+            automaticSyncManager.updateAutomaticSync(accountId)
+        }
     }
 
 
