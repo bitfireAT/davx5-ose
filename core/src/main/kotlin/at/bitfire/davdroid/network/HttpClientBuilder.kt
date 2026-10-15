@@ -5,14 +5,12 @@
 package at.bitfire.davdroid.network
 
 import androidx.annotation.VisibleForTesting
-import androidx.annotation.WorkerThread
 import at.bitfire.dav4jvm.ktor.DomainAuthProvider
 import at.bitfire.dav4jvm.ktor.PreemptiveBasicDigestAuthProvider
 import at.bitfire.dav4jvm.ktor.UrlUtils
 import at.bitfire.davdroid.ProductIds
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
-import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.AccountSettingsFactory
 import at.bitfire.davdroid.settings.Credentials
 import at.bitfire.davdroid.settings.Settings
@@ -226,8 +224,6 @@ class HttpClientBuilder private constructor(
     /**
      * Takes authentication (basic/digest or OAuth and client certificate) from a given account.
      *
-     * **Must not be run on main thread, because it creates [AccountSettings]!** Use [fromAccountAsync] if possible.
-     *
      * @param accountId     [AccountId] of the account to take the authentication credentials from
      * @param authDomain    (optional) Send credentials only for the hosts of the given domain. Can be:
      *
@@ -238,7 +234,9 @@ class HttpClientBuilder private constructor(
      * @throws at.bitfire.davdroid.sync.account.InvalidAccountException     when the account doesn't exist
      */
     suspend fun fromAccount(accountId: AccountId, authDomain: String? = null): HttpClientBuilder {
-        val accountSettings = accountSettingsFactory.create(accountId)
+        val accountSettings = withContext(ioDispatcher) {
+            accountSettingsFactory.create(accountId)
+        }
         return authenticate(
             domain = UrlUtils.hostToDomain(authDomain),
             getCredentials = {
@@ -249,16 +247,6 @@ class HttpClientBuilder private constructor(
             }
         )
     }
-
-    /**
-     * Same as [fromAccount], but can be called on any thread.
-     *
-     * @throws at.bitfire.davdroid.sync.account.InvalidAccountException     when the account doesn't exist
-     */
-    suspend fun fromAccountAsync(accountId: AccountId, onlyHost: String? = null): HttpClientBuilder =
-        withContext(ioDispatcher) {
-            fromAccount(accountId, onlyHost)
-        }
 
 
     // actual client building
