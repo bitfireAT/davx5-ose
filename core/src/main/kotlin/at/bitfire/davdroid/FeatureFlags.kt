@@ -4,7 +4,8 @@
 
 package at.bitfire.davdroid
 
-@Suppress("SimplifyBooleanWithConstants")
+@Suppress("SimplifyBooleanWithConstants", "MayBeConstant")
 object FeatureFlags {
-    val useNewAccountSystem = BuildConfig.DEBUG || BuildConfig.PRE_RELEASE
+    // Disabled for now, enable when testing
+    val useNewAccountSystem = false
 }
