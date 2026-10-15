@@ -202,8 +202,19 @@ class AccountSettingsViewModel @AssistedInject constructor(
 
     fun authorizationContract() = OAuthIntegration.AuthorizationContract(authService)
 
-    fun newAuthorizationRequest(): AuthorizationRequest? =
+    private suspend fun newAuthorizationRequest(): AuthorizationRequest? = withContext(ioDispatcher) {
         accountSettings.credentials().authState?.lastAuthorizationResponse?.request
+    }
+
+    /**
+     * Starts OAuth re-authentication: loads the authorization request off the main thread and then
+     * hands it to [launchAuthorization] (on the main thread), if there is one.
+     */
+    fun authenticateOAuth(launchAuthorization: (AuthorizationRequest) -> Unit) {
+        viewModelScope.launch {
+            newAuthorizationRequest()?.let(launchAuthorization)
+        }
+    }
 
     fun authenticate(authResponse: AuthorizationResponse) {
         viewModelScope.launch {

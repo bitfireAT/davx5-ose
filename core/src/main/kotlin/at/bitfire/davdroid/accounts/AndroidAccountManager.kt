@@ -46,8 +46,17 @@ class AndroidAccountManager @Inject constructor(
         }
     }
 
-    fun getAccountId(account: Account): AccountId {
-        return LegacyAccount(account)
+    /**
+     * Returns the [AccountId] for a given Android [Account].
+     *
+     * @return the [DbAccountId] if [account] is a database account (looked up by name), or a [LegacyAccount]
+     *   otherwise. `null` if [account] is a database account that doesn't exist in the database.
+     */
+    suspend fun getAccountId(account: Account): AccountId? {
+        return when (account.type) {
+            dbAccountType -> dbAccountDao.getFromName(account.name)?.let { DbAccountId(it.id) }
+            else -> LegacyAccount(account)
+        }
     }
 
     /**
