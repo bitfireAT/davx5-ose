@@ -296,7 +296,7 @@ class AccountRepository @Inject constructor(
             is LegacyAccount -> accountId.androidAccount
             is DbAccountId -> {
                 val dbAccount = dbAccountDao.get(accountId.id) ?: return false
-                Account(dbAccount.name, legacyAccountType)
+                Account(dbAccount.name, dbAccountType)
             }
         }
 
