@@ -15,6 +15,8 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import javax.inject.Inject
 
@@ -36,7 +38,10 @@ class SyncPendingProvider @Inject constructor(
      *
      * @return flow emitting true if any of the given data types has a sync pending, false otherwise
      */
-    suspend fun isSyncPending(accountId: AccountId, dataTypes: Iterable<SyncDataType>): Flow<Boolean> {
+    @OptIn(ExperimentalCoroutinesApi::class)
+    fun isSyncPending(accountId: AccountId, dataTypes: Iterable<SyncDataType>): Flow<Boolean> = flow {
+        emit(androidAccountManager.getAndroidAccount(accountId))
+    }.flatMapLatest { account ->
         // Determine the pending state for each data type of the account as separate flows
         val pendingStateFlows: List<Flow<Boolean>> = dataTypes.mapNotNull { dataType ->
             // Map datatype to authority
@@ -46,10 +51,7 @@ class SyncPendingProvider @Inject constructor(
                     SyncDataType.CONTACTS -> {
                         localAddressBookStore.getAddressBookAccountsFlow(accountId)
                     }
-                    else -> {
-                        val account = androidAccountManager.getAndroidAccount(accountId)
-                        flowOf(listOf(account))
-                    }
+                    else -> flowOf(listOf(account))
                 }
 
                 // Return the pending state flow for accounts with this authority
@@ -58,7 +60,7 @@ class SyncPendingProvider @Inject constructor(
         }
 
         // Combine the different per data type pending state flows into one
-        return combine(pendingStateFlows) { pendingStates ->
+        combine(pendingStateFlows) { pendingStates ->
             pendingStates.any { pending -> pending }
         }.distinctUntilChanged()
     }
