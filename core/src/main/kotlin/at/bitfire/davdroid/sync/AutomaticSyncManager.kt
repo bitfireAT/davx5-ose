@@ -6,7 +6,6 @@ package at.bitfire.davdroid.sync
 
 import android.provider.CalendarContract
 import android.provider.ContactsContract
-import androidx.annotation.WorkerThread
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.accounts.AndroidAccountManager
 import at.bitfire.davdroid.db.Service
@@ -18,7 +17,6 @@ import at.bitfire.davdroid.settings.AccountSettingsFactory
 import at.bitfire.davdroid.sync.adapter.SyncFrameworkIntegration
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Provider
@@ -48,13 +46,14 @@ class AutomaticSyncManager @Inject constructor(
     /**
      * Disable automatic synchronization for the given account and data type.
      */
-    private fun disableAutomaticSync(accountId: AccountId, dataType: SyncDataType) {
-        workerManager.disablePeriodic(accountId, dataType)
-
-        val account = androidAccountManager.getAndroidAccountBlocking(accountId)
-        for (authority in dataType.possibleAuthorities()) {
-            syncFramework.disableSyncAbility(account, authority)
-            // no need to disable content-triggered sync, as it can't be active when sync-ability is disabled
+    private suspend fun disableAutomaticSync(accountId: AccountId, dataType: SyncDataType) {
+        val account = androidAccountManager.getAndroidAccount(accountId)
+        withContext(ioDispatcher) {
+            workerManager.disablePeriodic(accountId, dataType)
+            for (authority in dataType.possibleAuthorities()) {
+                syncFramework.disableSyncAbility(account, authority)
+                // no need to disable content-triggered sync, as it can't be active when sync-ability is disabled
+            }
         }
     }
 
@@ -130,8 +129,7 @@ class AutomaticSyncManager @Inject constructor(
      *
      * @param accountId [AccountId] of the account for which automatic synchronization shall be updated
      */
-    @WorkerThread
-    fun updateAutomaticSync(accountId: AccountId) {
+    suspend fun updateAutomaticSync(accountId: AccountId) {
         for (dataType in SyncDataType.entries)
             updateAutomaticSync(accountId, dataType)
     }
@@ -146,21 +144,20 @@ class AutomaticSyncManager @Inject constructor(
      * @param accountId [AccountId] of the account for which automatic synchronization shall be updated
      * @param dataType  sync data type for which automatic synchronization shall be updated
      */
-    @WorkerThread
-    fun updateAutomaticSync(accountId: AccountId, dataType: SyncDataType) {
+    suspend fun updateAutomaticSync(accountId: AccountId, dataType: SyncDataType) {
         val serviceType = when (dataType) {
             SyncDataType.CONTACTS -> Service.TYPE_CARDDAV
             SyncDataType.EVENTS,
             SyncDataType.TASKS -> Service.TYPE_CALDAV
         }
-        val hasService = serviceRepository.getByAccountIdAndTypeBlocking(accountId, serviceType) != null
+        val hasService = serviceRepository.getByAccountIdAndType(accountId, serviceType) != null
 
         val hasProvider = if (dataType == SyncDataType.TASKS)
-            tasksAppManager.get().currentProvider() != null
+            withContext(ioDispatcher) { tasksAppManager.get().currentProvider() != null }
         else
             true
 
-        if (hasService && hasProvider) runBlocking(ioDispatcher) {
+        if (hasService && hasProvider) {
             enableAutomaticSync(accountId, dataType)
         } else
             disableAutomaticSync(accountId, dataType)

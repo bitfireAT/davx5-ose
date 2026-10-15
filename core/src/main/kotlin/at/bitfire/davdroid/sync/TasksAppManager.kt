@@ -9,11 +9,11 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.drawable.BitmapDrawable
-import androidx.annotation.WorkerThread
 import androidx.core.app.NotificationCompat
 import androidx.core.app.TaskStackBuilder
 import androidx.core.net.toUri
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.resource.local.LocalDataStore
 import at.bitfire.davdroid.resource.local.LocalJtxCollectionStore
@@ -26,8 +26,10 @@ import at.bitfire.synctools.storage.TaskProvider
 import at.bitfire.synctools.storage.TaskProvider.ProviderName
 import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
 import java.util.logging.Logger
 import javax.inject.Inject
 
@@ -43,6 +45,7 @@ class TasksAppManager @Inject constructor(
     private val settingsManager: SettingsManager,
     private val localTaskListStoreFactory: LocalTaskListStore.Factory,
     private val localJtxCollectionStore: Lazy<LocalJtxCollectionStore>,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
 ) {
 
     /**
@@ -78,19 +81,20 @@ class TasksAppManager @Inject constructor(
     /**
      * Sets up sync for the selected TaskProvider.
      */
-    @WorkerThread
-    fun selectProvider(selectedProvider: ProviderName?) {
+    suspend fun selectProvider(selectedProvider: ProviderName?) {
         logger.info("Selecting tasks app: $selectedProvider")
 
         val selectedAuthority = selectedProvider?.authority
-        settingsManager.putString(Settings.SELECTED_TASKS_PROVIDER, selectedAuthority)
+        withContext(ioDispatcher) {
+            settingsManager.putString(Settings.SELECTED_TASKS_PROVIDER, selectedAuthority)
+        }
 
         // check permission
         if (selectedProvider != null && !PermissionUtils.havePermissions(context, selectedProvider.permissions))
             notificationRegistry.get().notifyPermissions()
 
         // check all accounts and update task sync
-        for (accountId in accountRepository.get().getAllBlocking())
+        for (accountId in accountRepository.get().getAll())
             automaticSyncManager.updateAutomaticSync(accountId, SyncDataType.TASKS)
     }
 

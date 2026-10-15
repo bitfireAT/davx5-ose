@@ -5,7 +5,6 @@
 package at.bitfire.davdroid.startup
 
 import android.content.Context
-import androidx.annotation.WorkerThread
 import at.bitfire.davdroid.di.qualifier.ApplicationScope
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.startup.StartupAction.Companion.PRIORITY_DEFAULT
@@ -46,17 +45,18 @@ class TasksAppWatcher @Inject constructor(
         }
     }
 
-    @WorkerThread
-    private fun onPackageChanged() {
+    private suspend fun onPackageChanged() {
         val manager = tasksAppManager.get()
-        val currentProvider = manager.currentProvider()
+        val currentProvider = withContext(ioDispatcher) { manager.currentProvider() }
         logger.info("App launched or package (un)installed; current tasks provider = $currentProvider")
 
         if (currentProvider == null) {
             // Iterate through all supported providers and select one, if available.
             val newProvider = TaskProvider.ProviderName.entries
                 .firstOrNull { provider ->
-                    context.packageManager.resolveContentProvider(provider.authority, 0) != null
+                    withContext(ioDispatcher) {
+                        context.packageManager.resolveContentProvider(provider.authority, 0) != null
+                    }
                 }
 
             // Select provider or clear setting and sync if now provider available
