@@ -62,11 +62,13 @@ class AddressBookAccountProperties @Inject constructor(
 
         when (owner) {
             is LegacyAccount -> {
+                accountManager.setAndVerifyUserData(account, USER_DATA_ACCOUNT_ID, null)
                 accountManager.setAndVerifyUserData(account, USER_DATA_ACCOUNT_NAME, owner.androidAccount.name)
                 accountManager.setAndVerifyUserData(account, USER_DATA_ACCOUNT_TYPE, owner.androidAccount.type)
             }
             is DbAccountId -> {
                 accountManager.setAndVerifyUserData(account, USER_DATA_ACCOUNT_ID, owner.id.toString())
+                accountManager.setAndVerifyUserData(account, USER_DATA_ACCOUNT_NAME, null)
                 accountManager.setAndVerifyUserData(account, USER_DATA_ACCOUNT_TYPE, mainDbAccountType)
             }
         }
