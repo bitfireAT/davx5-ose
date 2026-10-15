@@ -13,11 +13,11 @@ class InMemorySettingsStore(
     private val storage: MutableMap<String, String> = storage.toMutableMap()
     private val sensitiveStorage: MutableMap<String, SensitiveString> = sensitiveStorage.toMutableMap()
 
-    override fun getValue(key: String): String? {
+    override suspend fun getValue(key: String): String? {
         return storage[key]
     }
 
-    override fun putValue(key: String, value: String?) {
+    override suspend fun putValue(key: String, value: String?) {
         check(key !in sensitiveStorage) { """Key "$key" is already used for a sensitive value""" }
 
         if (value == null)
@@ -26,11 +26,11 @@ class InMemorySettingsStore(
             storage[key] = value
     }
 
-    override fun getSensitiveValue(key: String): SensitiveString? {
+    override suspend fun getSensitiveValue(key: String): SensitiveString? {
         return sensitiveStorage[key]
     }
 
-    override fun putSensitiveValue(key: String, value: SensitiveString?) {
+    override suspend fun putSensitiveValue(key: String, value: SensitiveString?) {
         check(key !in storage) { """Key "$key" is already used for a non-sensitive value""" }
 
         if (value == null)

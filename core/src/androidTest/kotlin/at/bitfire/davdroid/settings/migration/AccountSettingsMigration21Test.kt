@@ -81,7 +81,7 @@ class AccountSettingsMigration21Test {
         // Start hot flow
         registerSyncStateObserver()
 
-        every { androidAccountManager.getAndroidAccount(accountId) } returns account
+        every { androidAccountManager.getAndroidAccountBlocking(accountId) } returns account
     }
 
     @After

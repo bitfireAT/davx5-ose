@@ -23,12 +23,14 @@ import at.bitfire.davdroid.util.PermissionUtils
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit4.MockKRule
 import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.spyk
+import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -75,7 +77,7 @@ class SyncConditionsTest {
         // prepare accountSettings with some necessary data
         accountSettings = mockk<AccountSettings> {
             every { accountId } returns LegacyAccount(Account("test", "test"))
-            every { getIgnoreVpns() } returns false     // default value
+            coEvery { getIgnoreVpns() } returns false     // default value
         }
 
         conditions = factory.create(accountSettings)
@@ -93,7 +95,7 @@ class SyncConditionsTest {
 
     @Test
     fun testCorrectWifiSsid_CorrectWiFiSsid() {
-        every { accountSettings.getSyncWifiOnlySSIDs() } returns listOf("SampleWiFi1","ConnectedWiFi")
+        coEvery { accountSettings.getSyncWifiOnlySSIDs() } returns listOf("SampleWiFi1","ConnectedWiFi")
 
         mockkObject(PermissionUtils)
         every { PermissionUtils.canAccessWifiSsid(any()) } returns true
@@ -109,7 +111,7 @@ class SyncConditionsTest {
 
     @Test
     fun testCorrectWifiSsid_WrongWiFiSsid() {
-        every { accountSettings.getSyncWifiOnlySSIDs() } returns listOf("SampleWiFi1","SampleWiFi2")
+        coEvery { accountSettings.getSyncWifiOnlySSIDs() } returns listOf("SampleWiFi1","SampleWiFi2")
 
         mockkObject(PermissionUtils)
         every { PermissionUtils.canAccessWifiSsid(any()) } returns true
@@ -154,7 +156,7 @@ class SyncConditionsTest {
 
     @Test
     fun testInternetAvailable_ignoreVpns() {
-        every { accountSettings.getIgnoreVpns() } returns true
+        coEvery { accountSettings.getIgnoreVpns() } returns true
         every { capabilities.hasCapability(NET_CAPABILITY_INTERNET) } returns true
         every { capabilities.hasCapability(NET_CAPABILITY_VALIDATED) } returns true
         every { capabilities.hasCapability(NET_CAPABILITY_NOT_VPN) } returns false
@@ -163,7 +165,7 @@ class SyncConditionsTest {
 
     @Test
     fun testInternetAvailable_ignoreVpns_NotVpn() {
-        every { accountSettings.getIgnoreVpns() } returns true
+        coEvery { accountSettings.getIgnoreVpns() } returns true
         every { capabilities.hasCapability(NET_CAPABILITY_INTERNET) } returns true
         every { capabilities.hasCapability(NET_CAPABILITY_VALIDATED) } returns true
         every { capabilities.hasCapability(NET_CAPABILITY_NOT_VPN) } returns true
@@ -194,7 +196,7 @@ class SyncConditionsTest {
 
     @Test
     fun testInternetAvailable_twoConnectionsFirstOneWithoutNotVpn() {
-        every { accountSettings.getIgnoreVpns() } returns true
+        coEvery { accountSettings.getIgnoreVpns() } returns true
         every { capabilities.hasCapability(NET_CAPABILITY_INTERNET) } returns true
         every { capabilities.hasCapability(NET_CAPABILITY_VALIDATED) } returns true
         every { capabilities.hasCapability(NET_CAPABILITY_NOT_VPN) } returns false andThen true
@@ -239,17 +241,17 @@ class SyncConditionsTest {
 
 
     @Test
-    fun testWifiConditionsMet_withoutWifi() {
+    fun testWifiConditionsMet_withoutWifi() = runBlocking {
         // "Sync only over Wi-Fi" is disabled
-        every { accountSettings.getSyncWifiOnly() } returns false
+        coEvery { accountSettings.getSyncWifiOnly() } returns false
 
         assertTrue(factory.create(accountSettings).wifiConditionsMet())
     }
 
     @Test
-    fun testWifiConditionsMet_anyWifi_wifiEnabled() {
+    fun testWifiConditionsMet_anyWifi_wifiEnabled() = runBlocking {
         // "Sync only over Wi-Fi" is enabled
-        every { accountSettings.getSyncWifiOnly() } returns true
+        coEvery { accountSettings.getSyncWifiOnly() } returns true
 
         // Wi-Fi is available
         mockkObject(conditions) {
@@ -264,9 +266,9 @@ class SyncConditionsTest {
     }
 
     @Test
-    fun testWifiConditionsMet_anyWifi_wifiDisabled() {
+    fun testWifiConditionsMet_anyWifi_wifiDisabled() = runBlocking {
         // "Sync only over Wi-Fi" is enabled
-        every { accountSettings.getSyncWifiOnly() } returns true
+        coEvery { accountSettings.getSyncWifiOnly() } returns true
 
         mockkObject(conditions) {
             // Wi-Fi is not available

@@ -18,6 +18,8 @@ import at.bitfire.davdroid.db.migration.AutoMigration18
 import at.bitfire.davdroid.sync.account.TestAccount
 import at.bitfire.synctools.util.SensitiveString.Companion.toSensitiveString
 import io.mockk.mockk
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
@@ -81,7 +83,7 @@ class AccountSettingsStoreTest(private val parameters: TestParameters) {
                 name = "AccountManagerSettingsStore",
                 storeFactory = {
                     account = TestAccount.create()
-                    AccountManagerSettingsStore(account, accountManager)
+                    AccountManagerSettingsStore(account, accountManager, Dispatchers.Unconfined)
                 },
                 throwOnValueTypeMixup = false,
                 cleanUp = { TestAccount.remove(account) }
@@ -104,21 +106,21 @@ class AccountSettingsStoreTest(private val parameters: TestParameters) {
     }
 
     @Test
-    fun test_getValue_withUnknownKey() {
+    fun test_getValue_withUnknownKey() = runTest {
         val result = store.getValue(KEY)
 
         assertNull(result)
     }
 
     @Test
-    fun test_putValue() {
+    fun test_putValue() = runTest {
         store.putValue(KEY, VALUE)
 
         assertEquals(VALUE, store.getValue(KEY))
     }
 
     @Test
-    fun test_putValue_overwriting_value() {
+    fun test_putValue_overwriting_value() = runTest {
         store.putValue(KEY, VALUE)
 
         store.putValue(KEY, VALUE2)
@@ -127,21 +129,21 @@ class AccountSettingsStoreTest(private val parameters: TestParameters) {
     }
 
     @Test
-    fun test_getSensitiveValue_withUnknownKey() {
+    fun test_getSensitiveValue_withUnknownKey() = runTest {
         val result = store.getSensitiveValue(KEY)
 
         assertNull(result)
     }
 
     @Test
-    fun test_putSensitiveValue() {
+    fun test_putSensitiveValue() = runTest {
         store.putSensitiveValue(KEY, SENSITIVE_VALUE)
 
         assertEquals(SENSITIVE_VALUE, store.getSensitiveValue(KEY))
     }
 
     @Test
-    fun test_putSensitiveValue_overwriting_sensitiveValue() {
+    fun test_putSensitiveValue_overwriting_sensitiveValue() = runTest {
         store.putSensitiveValue(KEY, SENSITIVE_VALUE)
 
         store.putSensitiveValue(KEY, SENSITIVE_VALUE2)
@@ -150,7 +152,7 @@ class AccountSettingsStoreTest(private val parameters: TestParameters) {
     }
 
     @Test
-    fun test_putValue_overwritingSensitiveValue() {
+    fun test_putValue_overwritingSensitiveValue() = runTest {
         assumeTrue(parameters.throwOnValueTypeMixup)
 
         store.putSensitiveValue(KEY, SENSITIVE_VALUE)
@@ -164,7 +166,7 @@ class AccountSettingsStoreTest(private val parameters: TestParameters) {
     }
 
     @Test
-    fun test_putSensitiveValue_overwritesValue() {
+    fun test_putSensitiveValue_overwritesValue() = runTest {
         assumeTrue(parameters.throwOnValueTypeMixup)
 
         store.putValue(KEY, VALUE)

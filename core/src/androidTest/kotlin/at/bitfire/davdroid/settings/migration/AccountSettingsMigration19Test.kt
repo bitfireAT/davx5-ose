@@ -18,11 +18,11 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import io.mockk.coVerify
 import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit4.MockKRule
 import io.mockk.mockkObject
-import io.mockk.verify
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -75,7 +75,7 @@ class AccountSettingsMigration19Test {
         val accountId = LegacyAccount(Account("Some", "Test"))
         migration.migrate(accountId, store)
 
-        verify {
+        coVerify {
             workManager.cancelUniqueWork("periodic-sync at.bitfire.davdroid.addressbooks Test/Some")
             workManager.cancelUniqueWork("periodic-sync com.android.calendar Test/Some")
             workManager.cancelUniqueWork("periodic-sync at.techbee.jtx.provider Test/Some")
