@@ -18,6 +18,7 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.accounts.AndroidAccountManager
 import at.bitfire.davdroid.db.Collection
+import at.bitfire.davdroid.db.DbAccountDao
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
@@ -33,7 +34,6 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import java.util.logging.Logger
 import javax.inject.Inject
@@ -49,6 +49,7 @@ class LocalAddressBookStore @Inject constructor(
     private val localAddressBookFactory: LocalAddressBook.Factory,
     private val logger: Logger,
     private val serviceRepository: DavServiceRepository,
+    private val dbAccountDao: DbAccountDao,
     private val settings: SettingsManager,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ): LocalDataStore<LocalAddressBook> {
@@ -86,7 +87,8 @@ class LocalAddressBookStore @Inject constructor(
         // Add the actual account name to the address book account name
         val sb = StringBuilder(name)
         serviceRepository.getBlocking(info.serviceId)?.let { service ->
-            sb.append(" (${service.accountName})")
+            val accountName = service.accountId?.let(dbAccountDao::getBlocking) ?: service.accountName
+            sb.append(" ($accountName)")
         }
         // Add the collection ID for uniqueness
         sb.append(" #${info.id}")
