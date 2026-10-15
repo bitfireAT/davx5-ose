@@ -11,6 +11,7 @@ import at.bitfire.dateTimeValue
 import at.bitfire.dateValue
 import at.bitfire.synctools.icalendar.plusAssign
 import at.bitfire.synctools.test.assertContentValuesEqual
+import at.bitfire.synctools.util.getTimeZoneOrThrow
 import at.techbee.jtx.JtxContract
 import net.fortuna.ical4j.model.DateList
 import net.fortuna.ical4j.model.Period
@@ -31,7 +32,7 @@ import java.time.temporal.Temporal
 class RecurrenceFieldsBuilderTest {
 
     private val tzRegistry = TimeZoneRegistryFactory.getInstance().createRegistry()
-    private val tzVienna = tzRegistry.getTimeZone("Europe/Vienna")
+    private val tzVienna = tzRegistry.getTimeZoneOrThrow("Europe/Vienna")
 
     private val builder = RecurrenceFieldsBuilder()
 

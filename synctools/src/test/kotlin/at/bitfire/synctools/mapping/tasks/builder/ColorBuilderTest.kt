@@ -10,6 +10,7 @@ import androidx.core.content.contentValuesOf
 import at.bitfire.synctools.icalendar.Css3Color
 import at.bitfire.synctools.mapping.tasks.VToDoUtil.build
 import at.bitfire.synctools.test.assertContentValuesEqual
+import net.fortuna.ical4j.model.ParameterList
 import net.fortuna.ical4j.model.component.VToDo
 import net.fortuna.ical4j.model.property.Color
 import org.dmfs.tasks.contract.TaskContract.Tasks
@@ -39,7 +40,7 @@ class ColorBuilderTest {
     fun `COLOR is set - css name`() {
         val result = Entity(ContentValues())
         builder.build(
-            from = build(Color(null, Css3Color.nearestMatch(0xFF112233.toInt()).name)),
+            from = build(Color(ParameterList(), Css3Color.nearestMatch(0xFF112233.toInt()).name)),
             to = result
         )
         assertContentValuesEqual(contentValuesOf(
@@ -51,7 +52,7 @@ class ColorBuilderTest {
     fun `COLOR is set - hex`() {
         val result = Entity(ContentValues())
         builder.build(
-            from = build(Color(null, "#FF112233")),
+            from = build(Color(ParameterList(), "#FF112233")),
             to = result
         )
         assertContentValuesEqual(contentValuesOf(

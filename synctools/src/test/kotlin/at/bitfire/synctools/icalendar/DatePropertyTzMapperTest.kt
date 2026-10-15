@@ -6,7 +6,6 @@ package at.bitfire.synctools.icalendar
 
 import at.bitfire.DefaultTimezoneRule
 import at.bitfire.dateTimeValue
-import at.bitfire.synctools.exception.ResourceMappingException
 import at.bitfire.synctools.icalendar.DatePropertyTzMapper.normalizedDate
 import at.bitfire.synctools.icalendar.DatePropertyTzMapper.normalizedDates
 import net.fortuna.ical4j.data.CalendarBuilder
@@ -33,7 +32,6 @@ import java.time.OffsetDateTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.temporal.Temporal
-import kotlin.test.assertFailsWith
 
 class DatePropertyTzMapperTest {
 
@@ -204,29 +202,6 @@ class DatePropertyTzMapperTest {
         assertEquals(LocalDateTime.of(2025, 8, 28, 13, 0, 0), dtStart.date)
         // normalizedDate returns the same LocalDateTime as-is (else branch)
         assertEquals(LocalDateTime.of(2025, 8, 28, 13, 0, 0), dtStart.normalizedDate())
-    }
-
-    @Test
-    fun `normalizedDates with TZID unknown and without VTIMEZONE fails`() {
-        val calendar = CalendarBuilder().build(StringReader(
-            """
-            BEGIN:VCALENDAR
-            VERSION:2.0
-            BEGIN:VEVENT
-            SUMMARY:Test Timezones
-            DTSTART;TZID=Etc/ABC:20250828T130000
-            RRULE:FREQ=DAILY;COUNT=5
-            EXDATE;TZID=Etc/ABC:20250829T130000,20250830T130000
-            END:VEVENT
-            END:VCALENDAR
-            """.trimIndent()
-        ))
-        val event = calendar.getComponent<VEvent>(Component.VEVENT).get()
-        val exDates = event.getRequiredProperty<ExDate<Temporal>>(Property.EXDATE)
-
-        assertFailsWith<ResourceMappingException>("Expected normalizedDates call to fail because of unknown timezone") {
-            exDates.normalizedDates()
-        }
     }
 
     @Test

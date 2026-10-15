@@ -9,6 +9,7 @@ import android.content.Entity
 import androidx.core.content.contentValuesOf
 import at.bitfire.synctools.mapping.tasks.VToDoUtil
 import at.bitfire.synctools.test.assertContentValuesEqual
+import net.fortuna.ical4j.model.ParameterList
 import net.fortuna.ical4j.model.property.Duration
 import org.dmfs.tasks.contract.TaskContract.Tasks
 import org.junit.Test
@@ -37,7 +38,7 @@ class DurationBuilderTest {
     fun `DURATION is set`() {
         val result = Entity(ContentValues())
         builder.build(
-            from = VToDoUtil.build(Duration(null, "PT2H")),
+            from = VToDoUtil.build(Duration(ParameterList(), "PT2H")),
             to = result
         )
         assertContentValuesEqual(contentValuesOf(

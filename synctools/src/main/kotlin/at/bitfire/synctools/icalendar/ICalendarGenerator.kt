@@ -89,7 +89,7 @@ class ICalendarGenerator {
             name used by Android because if we would use the new TZ ID, it wouldn't be understood
             by Android (and thus downgraded to the system default timezone) if we get it back
             again from the server. */
-            val ical4jTzId = vTimeZone.timeZoneId.value
+            val ical4jTzId = vTimeZone.timeZoneId?.value
             if (ical4jTzId != tzId) {
                 logger.warning("Android timezone $tzId maps to ical4j $ical4jTzId. Using Android TZID.")
 

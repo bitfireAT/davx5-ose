@@ -8,6 +8,7 @@ import at.bitfire.DefaultTimezoneRule
 import at.bitfire.dateTimeValue
 import at.bitfire.dateValue
 import at.bitfire.synctools.util.AndroidTimeUtils
+import at.bitfire.synctools.util.getTimeZoneOrThrow
 import net.fortuna.ical4j.model.TimeZoneRegistryFactory
 import net.fortuna.ical4j.util.TimeZones
 import org.junit.Assert.assertEquals
@@ -59,8 +60,9 @@ class AndroidTimeFieldTest {
 
         val result = androidTimeField.toTemporal()
 
+        val tzVienna = tzRegistry.getTimeZoneOrThrow("Europe/Vienna")
         assertEquals(
-            dateTimeValue("20251015T114659", tzRegistry.getTimeZone("Europe/Vienna")),
+            dateTimeValue("20251015T114659", tzVienna),
             result
         )
     }

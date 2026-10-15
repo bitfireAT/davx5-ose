@@ -45,7 +45,7 @@ class SequenceHandlerTest {
         ))
         val result = VEvent()
         handler.process(entity, entity, result)
-        assertEquals(1, result.sequence.sequenceNo)
+        assertEquals(1, result.sequence?.sequenceNo)
     }
 
 }

@@ -15,6 +15,7 @@ import io.mockk.every
 import io.mockk.impl.annotations.SpyK
 import io.mockk.junit4.MockKRule
 import io.mockk.mockk
+import net.fortuna.ical4j.model.ParameterList
 import net.fortuna.ical4j.model.component.VEvent
 import net.fortuna.ical4j.model.property.Color
 import org.junit.Rule
@@ -55,7 +56,7 @@ class ColorBuilderTest {
 
         val result = Entity(ContentValues())
         builder.build(
-            from = VEvent(propertyListOf(Color(null, color.name))),
+            from = VEvent(propertyListOf(Color(ParameterList(), color.name))),
             main = VEvent(),
             to = result
         )
@@ -74,7 +75,7 @@ class ColorBuilderTest {
 
         val result = Entity(ContentValues())
         builder.build(
-            from = VEvent(propertyListOf(Color(null, color.name))),
+            from = VEvent(propertyListOf(Color(ParameterList(), color.name))),
             main = VEvent(),
             to = result
         )

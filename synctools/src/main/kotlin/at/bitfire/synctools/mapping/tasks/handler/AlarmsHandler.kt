@@ -31,7 +31,7 @@ class AlarmsHandler : DmfsTaskEntityHandler {
     }
 
     private fun processAlarm(values: ContentValues, summary: String?, to: VToDo) {
-        val props = propertyListOf(
+        var props = propertyListOf(
             Trigger(Duration.ofMinutes(-values.getAsLong(Alarm.MINUTES_BEFORE))).let {
                 when (values.getAsInteger(Alarm.REFERENCE)) {
                     Alarm.ALARM_REFERENCE_START_DATE -> it.add(Related.START)
@@ -46,9 +46,11 @@ class AlarmsHandler : DmfsTaskEntityHandler {
                     // show alarm by default
                     else -> Action.VALUE_DISPLAY
                 }
-            ),
-            Description(values.getAsString(Alarm.MESSAGE) ?: summary)
+            )
         )
+
+        // If the alarm has a message, use it as description. Otherwise, use the task summary if any.
+        (values.getAsString(Alarm.MESSAGE) ?: summary)?.let { props = props.add(Description(it)) }
 
         to += VAlarm(props)
     }
