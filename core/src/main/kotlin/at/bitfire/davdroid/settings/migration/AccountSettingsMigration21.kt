@@ -42,7 +42,7 @@ class AccountSettingsMigration21 @Inject constructor(
      * Cancel any possibly forever pending account syncs of the different authorities
      */
     override fun migrate(accountId: AccountId, store: AccountSettingsStore) {
-        val account = androidAccountManager.getAndroidAccount(accountId)
+        val account = androidAccountManager.getAndroidAccountBlocking(accountId)
         if (Build.VERSION.SDK_INT >= 34) {
             // Request new dummy syncs (yes, seems like this is needed)
             val extras = Bundle().apply {

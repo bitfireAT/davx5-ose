@@ -35,6 +35,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import net.openid.appauth.AuthorizationRequest
 import net.openid.appauth.AuthorizationResponse
@@ -202,8 +203,9 @@ class AccountSettingsViewModel @AssistedInject constructor(
 
     fun authorizationContract() = OAuthIntegration.AuthorizationContract(authService)
 
-    fun newAuthorizationRequest(): AuthorizationRequest? =
+    fun newAuthorizationRequest(): AuthorizationRequest? = runBlocking(ioDispatcher) {
         accountSettings.credentials().authState?.lastAuthorizationResponse?.request
+    }
 
     fun authenticate(authResponse: AuthorizationResponse) {
         viewModelScope.launch {

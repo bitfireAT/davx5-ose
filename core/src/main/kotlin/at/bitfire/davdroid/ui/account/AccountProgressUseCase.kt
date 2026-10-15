@@ -8,23 +8,28 @@ import android.content.Context
 import androidx.work.WorkInfo
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.db.Service
+import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.adapter.SyncPendingProvider
 import at.bitfire.davdroid.sync.worker.OneTimeSyncWorker
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
 import dagger.hilt.android.qualifiers.ApplicationContext
+import io.ktor.utils.io.ioDispatcher
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 class AccountProgressUseCase @Inject constructor(
     @ApplicationContext val context: Context,
     private val syncPendingProvider: SyncPendingProvider,
-    private val syncWorkerManager: SyncWorkerManager
+    private val syncWorkerManager: SyncWorkerManager,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) {
 
     /**
@@ -37,7 +42,7 @@ class AccountProgressUseCase @Inject constructor(
     ): Flow<AccountProgress> {
         val serviceRefreshing = isServiceRefreshing(serviceFlow)
         val syncEnqueued = isSyncEnqueued(accountId, dataTypes)
-        val syncPending = syncPendingProvider.isSyncPending(accountId, dataTypes)
+        val syncPending = runBlocking(ioDispatcher) { syncPendingProvider.isSyncPending(accountId, dataTypes) }
         val syncRunning = isSyncRunning(accountId, dataTypes)
 
         return combine(

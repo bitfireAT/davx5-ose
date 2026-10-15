@@ -34,7 +34,7 @@ class AccountSettingsMigration8 @Inject constructor(
      * SEQUENCE and should not be used for the eTag.
      */
     override fun migrate(accountId: AccountId, store: AccountSettingsStore) {
-        val account = androidAccountManager.getAndroidAccount(accountId)
+        val account = androidAccountManager.getAndroidAccountBlocking(accountId)
         val providerName = TaskProvider.ProviderName.OpenTasks
         TaskProvider.acquireRecentClient(context, providerName)?.use { client ->
             // ETag is now in sync_version instead of sync1

@@ -36,8 +36,7 @@ class SyncPendingProvider @Inject constructor(
      *
      * @return flow emitting true if any of the given data types has a sync pending, false otherwise
      */
-    @OptIn(ExperimentalCoroutinesApi::class)
-    fun isSyncPending(accountId: AccountId, dataTypes: Iterable<SyncDataType>): Flow<Boolean> {
+    suspend fun isSyncPending(accountId: AccountId, dataTypes: Iterable<SyncDataType>): Flow<Boolean> {
         // Determine the pending state for each data type of the account as separate flows
         val pendingStateFlows: List<Flow<Boolean>> = dataTypes.mapNotNull { dataType ->
             // Map datatype to authority

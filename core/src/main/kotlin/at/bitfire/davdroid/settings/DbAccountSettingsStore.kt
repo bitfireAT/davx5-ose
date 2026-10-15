@@ -30,8 +30,8 @@ class DbAccountSettingsStore @AssistedInject constructor(@Assisted account: DbAc
      *
      * @return The value stored, or `null` if not set.
      */
-    override fun getValue(key: String): String? {
-        val entry = dao.getBlocking(accountId, key)
+    override suspend fun getValue(key: String): String? {
+        val entry = dao.get(accountId, key)
         return entry?.value
     }
 
@@ -43,15 +43,15 @@ class DbAccountSettingsStore @AssistedInject constructor(@Assisted account: DbAc
      *
      * @throws IllegalArgumentException if the entry at [key] already exists and contains a sensitive value.
      */
-    override fun putValue(key: String, value: String?) {
-        val existing = dao.getBlocking(accountId, key)
+    override suspend fun putValue(key: String, value: String?) {
+        val existing = dao.get(accountId, key)
         if (existing != null) {
             check(existing.sensitiveValue == null) { """Key "$key" is already used for a sensitive value""" }
 
             if (value == null) {
-                dao.deleteBlocking(existing)
+                dao.delete(existing)
             } else {
-                dao.updateBlocking(existing.copy(value = value))
+                dao.update(existing.copy(value = value))
             }
         } else {
             val entry = AccountSetting(
@@ -59,7 +59,7 @@ class DbAccountSettingsStore @AssistedInject constructor(@Assisted account: DbAc
                 key = key,
                 value = value
             )
-            dao.insertBlocking(entry)
+            dao.insert(entry)
         }
     }
 
@@ -71,8 +71,8 @@ class DbAccountSettingsStore @AssistedInject constructor(@Assisted account: DbAc
      *
      * @return The value stored, or `null` if not set.
      */
-    override fun getSensitiveValue(key: String): SensitiveString? {
-        val entry = dao.getBlocking(accountId, key)
+    override suspend fun getSensitiveValue(key: String): SensitiveString? {
+        val entry = dao.get(accountId, key)
         return entry?.sensitiveValue
     }
 
@@ -86,15 +86,15 @@ class DbAccountSettingsStore @AssistedInject constructor(@Assisted account: DbAc
      *
      * @throws IllegalArgumentException if the entry at [key] already exists and contains a non-sensitive value.
      */
-    override fun putSensitiveValue(key: String, value: SensitiveString?) {
-        val existing = dao.getBlocking(accountId, key)
+    override suspend fun putSensitiveValue(key: String, value: SensitiveString?) {
+        val existing = dao.get(accountId, key)
         if (existing != null) {
             check(existing.value == null) { """Key "$key" is already used for a non-sensitive value""" }
 
             if (value == null) {
-                dao.deleteBlocking(existing)
+                dao.delete(existing)
             } else {
-                dao.updateBlocking(existing.copy(sensitiveValue = value))
+                dao.update(existing.copy(sensitiveValue = value))
             }
         } else {
             val entry = AccountSetting(
@@ -102,7 +102,7 @@ class DbAccountSettingsStore @AssistedInject constructor(@Assisted account: DbAc
                 key = key,
                 sensitiveValue = value
             )
-            dao.insertBlocking(entry)
+            dao.insert(entry)
         }
     }
 }

@@ -34,7 +34,7 @@ class AccountSettingsMigration19 @Inject constructor(
 ): AccountSettingsMigration {
 
     override fun migrate(accountId: AccountId, store: AccountSettingsStore) {
-        val account = androidAccountManager.getAndroidAccount(accountId)
+        val account = androidAccountManager.getAndroidAccountBlocking(accountId)
         // cancel old workers
         val workManager = WorkManager.getInstance(context)
         val authorities = listOf(

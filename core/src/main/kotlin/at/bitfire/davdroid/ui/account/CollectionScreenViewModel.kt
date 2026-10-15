@@ -56,6 +56,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import org.dmfs.tasks.contract.TaskContract
 import java.util.logging.Level
@@ -319,7 +320,9 @@ class CollectionScreenViewModel @AssistedInject constructor(
         }
 
         fun queryAndSend() {
-            val count = localDataStore.getByDbCollectionId(accountId, client, collectionId)?.let { store ->
+            val count = runBlocking(ioDispatcher) {
+                localDataStore.getByDbCollectionId(accountId, client, collectionId)
+            }?.let { store ->
                 LocalItemsCount(
                     contentProviderName = getProviderAppName(localDataStore.authority),
                     total = store.countAll(),

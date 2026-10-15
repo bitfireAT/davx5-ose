@@ -10,12 +10,16 @@ import androidx.annotation.WorkerThread
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.accounts.AndroidAccountManager
 import at.bitfire.davdroid.db.Service
+import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.resource.local.LocalAddressBookStore
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.AccountSettingsFactory
 import at.bitfire.davdroid.sync.adapter.SyncFrameworkIntegration
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Provider
 
@@ -37,7 +41,8 @@ class AutomaticSyncManager @Inject constructor(
     private val serviceRepository: DavServiceRepository,
     private val syncFramework: SyncFrameworkIntegration,
     private val tasksAppManager: Provider<TasksAppManager>,
-    private val workerManager: SyncWorkerManager
+    private val workerManager: SyncWorkerManager,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) {
 
     /**
@@ -46,7 +51,7 @@ class AutomaticSyncManager @Inject constructor(
     private fun disableAutomaticSync(accountId: AccountId, dataType: SyncDataType) {
         workerManager.disablePeriodic(accountId, dataType)
 
-        val account = androidAccountManager.getAndroidAccount(accountId)
+        val account = androidAccountManager.getAndroidAccountBlocking(accountId)
         for (authority in dataType.possibleAuthorities()) {
             syncFramework.disableSyncAbility(account, authority)
             // no need to disable content-triggered sync, as it can't be active when sync-ability is disabled
@@ -63,8 +68,7 @@ class AutomaticSyncManager @Inject constructor(
      * @param accountId [AccountId] of the account to synchronize
      * @param dataType  the data type to synchronize
      */
-    @WorkerThread
-    private fun enableAutomaticSync(
+    private suspend fun enableAutomaticSync(
         accountId: AccountId,
         dataType: SyncDataType
     ) {
@@ -74,16 +78,21 @@ class AutomaticSyncManager @Inject constructor(
         // 1. Update sync workers (needs already updated sync interval in AccountSettings).
         if (syncInterval != null) {
             val wifiOnly = accountSettings.getSyncWifiOnly()
-            workerManager.enablePeriodic(accountId, dataType, syncInterval, wifiOnly)
-        } else
+            withContext(ioDispatcher) {
+                workerManager.enablePeriodic(accountId, dataType, syncInterval, wifiOnly)
+            }
+        } else withContext(ioDispatcher) {
             workerManager.disablePeriodic(accountId, dataType)
+        }
 
         // 2. Enable/disable content-triggered syncs.
         val account = androidAccountManager.getAndroidAccount(accountId)
         if (dataType == SyncDataType.CONTACTS) {
             // Contact updates are handled by their respective address book accounts, so we must always
             // disable the content-triggered sync for the main account.
-            syncFramework.disableSyncAbility(account, ContactsContract.AUTHORITY)
+            withContext(ioDispatcher) {
+                syncFramework.disableSyncAbility(account, ContactsContract.AUTHORITY)
+            }
 
             // pass through request to update all existing address books
             localAddressBookStore.acquireLocalStorageClient()?.use { client ->
@@ -99,15 +108,17 @@ class AutomaticSyncManager @Inject constructor(
                 SyncDataType.EVENTS -> CalendarContract.AUTHORITY
                 SyncDataType.TASKS -> tasksAppManager.get().currentProvider()?.authority
             }
-            if (authority != null && syncInterval != null) {
-                // enable given authority, but completely disable all other possible authorities
-                // (for instance, tasks apps which are not the current task app)
-                syncFramework.enableSyncOnContentChange(account, authority)
-                for (disableAuthority in possibleAuthorities - authority)
-                    syncFramework.disableSyncAbility(account, disableAuthority)
-            } else
-                for (authority in possibleAuthorities)
-                    syncFramework.disableSyncOnContentChange(account, authority)
+            withContext(ioDispatcher) {
+                if (authority != null && syncInterval != null) {
+                    // enable given authority, but completely disable all other possible authorities
+                    // (for instance, tasks apps which are not the current task app)
+                    syncFramework.enableSyncOnContentChange(account, authority)
+                    for (disableAuthority in possibleAuthorities - authority)
+                        syncFramework.disableSyncAbility(account, disableAuthority)
+                } else
+                    for (authority in possibleAuthorities)
+                        syncFramework.disableSyncOnContentChange(account, authority)
+            }
         }
     }
 
@@ -149,9 +160,9 @@ class AutomaticSyncManager @Inject constructor(
         else
             true
 
-        if (hasService && hasProvider)
+        if (hasService && hasProvider) runBlocking(ioDispatcher) {
             enableAutomaticSync(accountId, dataType)
-        else
+        } else
             disableAutomaticSync(accountId, dataType)
     }
 

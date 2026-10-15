@@ -10,6 +10,7 @@ import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.sync.TasksAppManager
 import dagger.Lazy
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import java.util.logging.Logger
 import javax.annotation.CheckReturnValue
@@ -58,7 +59,9 @@ class LocalChangesCounter @Inject constructor(
         }
 
         return client.use {
-            dataStore.getByDbCollectionId(accountId, client, collectionId)?.let { localCollection ->
+            runBlocking(ioDispatcher) {
+                dataStore.getByDbCollectionId(accountId, client, collectionId)
+            }?.let { localCollection ->
                 localCollection.countModified() + localCollection.countDeleted()
             } ?: 0
         }

@@ -32,7 +32,7 @@ class AccountSettingsMigration9 @Inject constructor(
 
     override fun migrate(accountId: AccountId, store: AccountSettingsStore) {
         val hasCalDAV = db.serviceDao().getByAccountIdAndTypeBlocking(accountId, Service.TYPE_CALDAV) != null
-        val account = androidAccountManager.getAndroidAccount(accountId)
+        val account = androidAccountManager.getAndroidAccountBlocking(accountId)
         if (!hasCalDAV && ContentResolver.getIsSyncable(account, TaskProvider.ProviderName.OpenTasks.authority) != 0) {
             logger.info("Disabling OpenTasks sync for $account")
             ContentResolver.setIsSyncable(account, TaskProvider.ProviderName.OpenTasks.authority, 0)

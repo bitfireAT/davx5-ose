@@ -32,7 +32,7 @@ class AndroidAccountManager @Inject constructor(
      * @return the Android account for the given [accountId]
      * @throws InvalidAccountException if the account does not exist
      */
-    fun getAndroidAccount(accountId: AccountId): Account {
+    fun getAndroidAccountBlocking(accountId: AccountId): Account {
         return when (accountId) {
             is LegacyAccount -> accountId.androidAccount
             is DbAccountId -> {
@@ -40,6 +40,25 @@ class AndroidAccountManager @Inject constructor(
                 //       should be dynamically created, and this method should be able to create the account if it
                 //       doesn't exist yet. for now, we just throw an exception.
                 dbAccountDao.getBlocking(accountId.id)
+                    ?.let { Account(it.name, dbAccountType) }
+                    ?: throw InvalidAccountException(accountId)
+            }
+        }
+    }
+
+    /**
+     * Returns the Android [Account] for a given [AccountId].
+     * @return the Android account for the given [accountId]
+     * @throws InvalidAccountException if the account does not exist
+     */
+    suspend fun getAndroidAccount(accountId: AccountId): Account {
+        return when (accountId) {
+            is LegacyAccount -> accountId.androidAccount
+            is DbAccountId -> {
+                // note: this currently depends on the account being created before. at some point, the system accounts
+                //       should be dynamically created, and this method should be able to create the account if it
+                //       doesn't exist yet. for now, we just throw an exception.
+                dbAccountDao.get(accountId.id)
                     ?.let { Account(it.name, dbAccountType) }
                     ?: throw InvalidAccountException(accountId)
             }
@@ -59,7 +78,7 @@ class AndroidAccountManager @Inject constructor(
             // AccountManager.LOGIN_ACCOUNTS_CHANGED_ACTION Intent. This cancels running syncs and starts them again!
             // So make sure setAccountVisibility is only called when necessary.
             val accountManager = accountManager.get()
-            val account = getAndroidAccount(accountId)
+            val account = getAndroidAccountBlocking(accountId)
 
             if (accountManager.getAccountVisibility(account, packageName) != AccountManager.VISIBILITY_VISIBLE) {
                 accountManager.setAccountVisibility(account, packageName, AccountManager.VISIBILITY_VISIBLE)

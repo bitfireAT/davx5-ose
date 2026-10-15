@@ -14,6 +14,7 @@ import android.provider.ContactsContract.RawContacts
 import androidx.annotation.OpenForTesting
 import androidx.core.content.contentValuesOf
 import at.bitfire.davdroid.accounts.AccountId
+import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.resource.workaround.ContactDirtyVerifier
 import at.bitfire.davdroid.settings.AccountSettingsFactory
 import at.bitfire.davdroid.sync.SyncDataType
@@ -34,11 +35,13 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import java.io.FileNotFoundException
 import java.util.Optional
@@ -69,7 +72,8 @@ open class LocalAddressBook @AssistedInject constructor(
     @ApplicationContext private val context: Context,
     internal val dirtyVerifier: Optional<ContactDirtyVerifier>,
     private val logger: Logger,
-    private val syncFramework: SyncFrameworkIntegration
+    private val syncFramework: SyncFrameworkIntegration,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) : LocalCollection<LocalAddress> {
 
     @AssistedFactory
@@ -187,15 +191,17 @@ open class LocalAddressBook @AssistedInject constructor(
      * Enables or disables sync on content changes for the address book account based on the current sync
      * interval account setting.
      */
-    fun updateSyncFrameworkSettings() {
+    suspend fun updateSyncFrameworkSettings() {
         val accountSettings = accountSettingsFactory.create(accountId)
         val syncInterval = accountSettings.getSyncInterval(SyncDataType.CONTACTS)
 
         // Enable/Disable content triggered syncs for the address book account.
-        if (syncInterval != null)
-            syncFramework.enableSyncOnContentChange(addressBookAccount, ContactsContract.AUTHORITY)
-        else
-            syncFramework.disableSyncOnContentChange(addressBookAccount, ContactsContract.AUTHORITY)
+        withContext(ioDispatcher) {
+            if (syncInterval != null)
+                syncFramework.enableSyncOnContentChange(addressBookAccount, ContactsContract.AUTHORITY)
+            else
+                syncFramework.disableSyncOnContentChange(addressBookAccount, ContactsContract.AUTHORITY)
+        }
     }
 
 

@@ -41,7 +41,7 @@ class AccountSettingsMigration18 @Inject constructor(
 ): AccountSettingsMigration {
 
     override fun migrate(accountId: AccountId, store: AccountSettingsStore) {
-        val account = androidAccountManager.getAndroidAccount(accountId)
+        val account = androidAccountManager.getAndroidAccountBlocking(accountId)
         db.serviceDao().getByAccountIdAndTypeBlocking(accountId, Service.TYPE_CARDDAV)?.let { service ->
             db.collectionDao().getByServiceBlocking(service.id).forEach { collection ->
                 // Find associated address book account by collection ID (if it exists)

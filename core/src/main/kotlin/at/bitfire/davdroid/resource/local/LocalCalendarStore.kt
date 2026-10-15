@@ -18,6 +18,7 @@ import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.accounts.AndroidAccountManager
 import at.bitfire.davdroid.db.Collection
+import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.settings.AccountSettingsFactory
@@ -26,6 +27,9 @@ import at.bitfire.synctools.storage.LocalStorageClient
 import at.bitfire.synctools.storage.calendar.AndroidCalendarProvider
 import at.bitfire.synctools.storage.calendar.EventsContract.asSyncAdapter
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import java.time.ZoneId
 import java.util.logging.Level
 import java.util.logging.Logger
@@ -38,7 +42,8 @@ class LocalCalendarStore @Inject constructor(
     private val accountSettingsFactory: AccountSettingsFactory,
     private val androidAccountManager: AndroidAccountManager,
     private val logger: Logger,
-    private val serviceRepository: DavServiceRepository
+    private val serviceRepository: DavServiceRepository,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ): LocalDataStore<LocalCalendar> {
 
     override val authority: String
@@ -95,25 +100,29 @@ class LocalCalendarStore @Inject constructor(
         return LocalCalendar(provider.createAndGetCalendar(values))
     }
 
-    override fun getAll(accountId: AccountId, client: LocalStorageClient): List<LocalCalendar> {
+    override suspend fun getAll(accountId: AccountId, client: LocalStorageClient): List<LocalCalendar> {
         val account = androidAccountManager.getAndroidAccount(accountId)
-        return AndroidCalendarProvider(account, client)
-            .findCalendars("${Calendars.SYNC_EVENTS}!=0", null)
-            .map { androidCalendar -> LocalCalendar(androidCalendar) }
+        return withContext(ioDispatcher) {
+            AndroidCalendarProvider(account, client)
+                .findCalendars("${Calendars.SYNC_EVENTS}!=0", null)
+                .map { androidCalendar -> LocalCalendar(androidCalendar) }
+        }
     }
 
-    override fun getByDbCollectionId(
+    override suspend fun getByDbCollectionId(
         accountId: AccountId,
         client: LocalStorageClient,
         dbCollectionId: Long
     ): LocalCalendar? {
         val account = androidAccountManager.getAndroidAccount(accountId)
-        return AndroidCalendarProvider(account, client)
-            .findFirstCalendar("${Calendars._SYNC_ID}=?", arrayOf(dbCollectionId.toString()))
-            ?.let { androidCalendar -> LocalCalendar(androidCalendar) }
+        return withContext(ioDispatcher) {
+            AndroidCalendarProvider(account, client)
+                .findFirstCalendar("${Calendars._SYNC_ID}=?", arrayOf(dbCollectionId.toString()))
+                ?.let { androidCalendar -> LocalCalendar(androidCalendar) }
+        }
     }
 
-    override fun update(
+    override suspend fun update(
         accountId: AccountId,
         client: LocalStorageClient,
         localCollection: LocalCalendar,
@@ -127,10 +136,12 @@ class LocalCalendarStore @Inject constructor(
         logger.log(Level.FINE, "Updating local calendar {0}: {1}", arrayOf(fromCollection.url, values))
         val androidCalendar = localCollection.androidCalendar
         val provider = AndroidCalendarProvider(androidCalendar.account, client)
-        provider.updateCalendar(androidCalendar.id, values)
+        withContext(ioDispatcher) {
+            provider.updateCalendar(androidCalendar.id, values)
+        }
     }
 
-    private fun useManagedCalendarColors(accountId: AccountId): Boolean {
+    private suspend fun useManagedCalendarColors(accountId: AccountId): Boolean {
         val accountSettings = accountSettingsFactory.create(accountId)
         return accountSettings.getManageCalendarColors()
     }

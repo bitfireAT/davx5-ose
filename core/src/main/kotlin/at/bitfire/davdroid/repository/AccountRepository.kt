@@ -49,6 +49,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import org.jetbrains.annotations.TestOnly
 import java.util.logging.Level
@@ -267,7 +268,7 @@ class AccountRepository @Inject constructor(
 
                 // set initial CardDAV account settings and set sync intervals (enables automatic sync)
                 val accountSettings = accountSettingsFactory.create(accountId)
-                accountSettings.setGroupMethod(groupMethod)
+                runBlocking(ioDispatcher) { accountSettings.setGroupMethod(groupMethod) }
 
                 // start CardDAV service detection (refresh collections)
                 RefreshCollectionsWorker.enqueue(context, id)

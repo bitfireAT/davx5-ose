@@ -7,12 +7,15 @@ package at.bitfire.davdroid.settings
 import android.accounts.Account
 import android.accounts.AccountManager
 import androidx.annotation.WorkerThread
+import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.synctools.util.SensitiveString
 import at.bitfire.synctools.util.SensitiveString.Companion.toSensitiveString
 import at.bitfire.synctools.util.setAndVerifyUserData
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.withContext
 
 /**
  * [AccountSettingsStore] that uses [AccountManager] to store settings.
@@ -20,6 +23,7 @@ import dagger.assisted.AssistedInject
 class AccountManagerSettingsStore @AssistedInject constructor(
     @Assisted val account: Account,
     private val accountManager: AccountManager,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
 ) : AccountSettingsStore {
 
     @AssistedFactory
@@ -34,13 +38,13 @@ class AccountManagerSettingsStore @AssistedInject constructor(
     /**
      * Retrieves the value stored in user data of [account] at [key]. May be `null` if not set.
      */
-    override fun getValue(key: String): String? = accountManager.getUserData(account, key)
+    override suspend fun getValue(key: String): String? = accountManager.getUserData(account, key)
 
     /**
      * Updates the value stored as user data for [account] at [key].
      * `null` [value] clears the stored value.
      */
-    override fun putValue(key: String, value: String?) {
+    override suspend fun putValue(key: String, value: String?) {
         accountManager.setAndVerifyUserData(account, key, value)
     }
 
@@ -48,9 +52,9 @@ class AccountManagerSettingsStore @AssistedInject constructor(
      * If [key] is [AccountSettings.KEY_PASSWORD], retrieves the password of the account.
      * Otherwise, does the same as [getValue].
      */
-    override fun getSensitiveValue(key: String): SensitiveString? {
+    override suspend fun getSensitiveValue(key: String): SensitiveString? {
         val value = if (key == AccountSettings.KEY_PASSWORD)
-            accountManager.getPassword(account)
+            withContext(ioDispatcher) { accountManager.getPassword(account) }
         else
             getValue(key)
         return value?.toSensitiveString()
@@ -60,7 +64,7 @@ class AccountManagerSettingsStore @AssistedInject constructor(
      * If [key] is [AccountSettings.KEY_PASSWORD], the password of the account is updated. Otherwise, [value] is stored
      * as plain text at [key] in user data (same as [putValue]).
      */
-    override fun putSensitiveValue(key: String, value: SensitiveString?) {
+    override suspend fun putSensitiveValue(key: String, value: SensitiveString?) {
         if (key == AccountSettings.KEY_PASSWORD)
             accountManager.setPassword(account, value?.asString())
         else

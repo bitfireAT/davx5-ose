@@ -104,8 +104,8 @@ class HttpClientBuilder private constructor(
         val authUsername: String? = null,
         val authPassword: SensitiveString? = null,
         val authDomain: String? = null,
-        val readAuthStateCallback: (() -> AuthState?)? = null,
-        val updateAuthStateCallback: ((AuthState) -> Unit)? = null,
+        val readAuthStateCallback: (suspend () -> AuthState?)? = null,
+        val updateAuthStateCallback: (suspend (AuthState) -> Unit)? = null,
         // request/response handling
         val contentNegotiationJson: Boolean = false,
         val followRedirects: Boolean = false
@@ -117,7 +117,7 @@ class HttpClientBuilder private constructor(
      * @param update block that takes the current Config and returns a new Config with desired changes
      * @return new instance with updated config
      */
-    private fun withConfig(update: (Config) -> Config) = HttpClientBuilder(
+    private inline fun withConfig(update: (Config) -> Config) = HttpClientBuilder(
         accountSettingsFactory,
         connectionSecurityManager,
         ioDispatcher,
@@ -154,10 +154,10 @@ class HttpClientBuilder private constructor(
      * @return new builder with updated config (chainable)
      */
     @CheckReturnValue
-    fun authenticate(
+    suspend fun authenticate(
         domain: String?,
-        getCredentials: () -> Credentials,
-        updateAuthState: ((AuthState) -> Unit)? = null
+        getCredentials: suspend () -> Credentials,
+        updateAuthState: (suspend (AuthState) -> Unit)? = null
     ): HttpClientBuilder = withConfig { config ->
         val credentials = getCredentials()
         var newConfig = config
@@ -237,8 +237,7 @@ class HttpClientBuilder private constructor(
      *
      * @throws at.bitfire.davdroid.sync.account.InvalidAccountException     when the account doesn't exist
      */
-    @WorkerThread
-    fun fromAccount(accountId: AccountId, authDomain: String? = null): HttpClientBuilder {
+    suspend fun fromAccount(accountId: AccountId, authDomain: String? = null): HttpClientBuilder {
         val accountSettings = accountSettingsFactory.create(accountId)
         return authenticate(
             domain = UrlUtils.hostToDomain(authDomain),

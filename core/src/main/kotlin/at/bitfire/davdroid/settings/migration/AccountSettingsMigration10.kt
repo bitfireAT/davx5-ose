@@ -39,7 +39,7 @@ class AccountSettingsMigration10 @Inject constructor(
 ): AccountSettingsMigration {
 
     override fun migrate(accountId: AccountId, store: AccountSettingsStore) {
-        val account = androidAccountManager.getAndroidAccount(accountId)
+        val account = androidAccountManager.getAndroidAccountBlocking(accountId)
         val providerName = TaskProvider.ProviderName.OpenTasks
         TaskProvider.acquireRecentClient(context, providerName)?.use { client ->
             val tasksUri = TaskContract.Tasks.getContentUri(providerName.authority)!!.asSyncAdapter(account)

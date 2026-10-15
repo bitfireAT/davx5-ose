@@ -6,6 +6,7 @@ package at.bitfire.davdroid.settings
 import android.accounts.AccountManager
 import androidx.annotation.WorkerThread
 import at.bitfire.davdroid.accounts.AccountId
+import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.settings.AccountSettings.Companion.CREDENTIALS_LOCK
 import at.bitfire.davdroid.settings.AccountSettings.Companion.CREDENTIALS_LOCK_AT_LOGIN_AND_SETTINGS
 import at.bitfire.davdroid.settings.AccountSettings.Companion.initialUserData
@@ -18,6 +19,9 @@ import at.bitfire.synctools.vcard.GroupMethod
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import net.openid.appauth.AuthState
 import java.util.Collections
 import java.util.logging.Level
@@ -36,7 +40,8 @@ class AccountSettings @AssistedInject constructor(
     private val automaticSyncManager: AutomaticSyncManager,
     private val logger: Logger,
     private val migrations: Map<Int, @JvmSuppressWildcards Provider<AccountSettingsMigration>>,
-    private val settingsManager: SettingsManager
+    private val settingsManager: SettingsManager,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) {
 
     @AssistedFactory
@@ -55,7 +60,9 @@ class AccountSettings @AssistedInject constructor(
             if (currentlyUpdating.contains(accountId))
                 logger.warning("AccountSettings created during migration of $accountId – not running update()")
             else {
-                val versionStr = store.getValue(KEY_SETTINGS_VERSION) ?: throw InvalidAccountException(accountId)
+                val versionStr = runBlocking(ioDispatcher) {
+                    store.getValue(KEY_SETTINGS_VERSION)
+                } ?: throw InvalidAccountException(accountId)
                 var version = 0
                 try {
                     version = Integer.parseInt(versionStr)
@@ -67,7 +74,9 @@ class AccountSettings @AssistedInject constructor(
                 if (version < CURRENT_VERSION) {
                     currentlyUpdating += accountId
                     try {
-                        update(accountId, version, abortOnMissingMigration)
+                        runBlocking(ioDispatcher) {
+                            update(accountId, version, abortOnMissingMigration)
+                        }
                     } finally {
                         currentlyUpdating -= accountId
                     }
@@ -83,7 +92,7 @@ class AccountSettings @AssistedInject constructor(
      * @param preconfigurationUrl initial preconfiguration URL to store (may be null)
      * @see initialUserData
      */
-    fun putInitialSettings(credentials: Credentials?, preconfigurationUrl: String?) {
+    suspend fun putInitialSettings(credentials: Credentials?, preconfigurationUrl: String?) {
         val all = initialUserData(credentials, preconfigurationUrl)
 
         for ((key, value) in all) {
@@ -100,7 +109,7 @@ class AccountSettings @AssistedInject constructor(
 
     // authentication settings
 
-    fun credentials() = Credentials(
+    suspend fun credentials() = Credentials(
         store.getValue(KEY_USERNAME),
         store.getSensitiveValue(KEY_PASSWORD),
 
@@ -111,7 +120,7 @@ class AccountSettings @AssistedInject constructor(
         }
     )
 
-    fun credentials(credentials: Credentials) {
+    suspend fun credentials(credentials: Credentials) {
         // Basic/Digest auth
         store.putValue(KEY_USERNAME, credentials.username)
         store.putSensitiveValue(KEY_PASSWORD, credentials.password)
@@ -125,7 +134,7 @@ class AccountSettings @AssistedInject constructor(
         }
     }
 
-    fun updateAuthState(authState: AuthState) {
+    suspend fun updateAuthState(authState: AuthState) {
         store.putValue(KEY_AUTH_STATE, authState.jsonSerializeString())
     }
 
@@ -147,14 +156,17 @@ class AccountSettings @AssistedInject constructor(
      * @param dataType  data type of desired sync interval
      * @return sync interval in seconds, or `null` if not set (not applicable or only manual sync)
      */
-    fun getSyncInterval(dataType: SyncDataType): Long? {
+    suspend fun getSyncInterval(dataType: SyncDataType): Long? {
         val key = when (dataType) {
             SyncDataType.CONTACTS -> KEY_SYNC_INTERVAL_ADDRESSBOOKS
             SyncDataType.EVENTS -> KEY_SYNC_INTERVAL_CALENDARS
             SyncDataType.TASKS -> KEY_SYNC_INTERVAL_TASKS
         }
         return when (val seconds = store.getValue(key)?.toLong()) {
-            null -> settingsManager.getLongOrNull(Settings.DEFAULT_SYNC_INTERVAL)   // no setting → default value
+            null -> withContext(ioDispatcher) {
+                // no setting → default value
+                settingsManager.getLongOrNull(Settings.DEFAULT_SYNC_INTERVAL)
+            }
             SYNC_INTERVAL_MANUALLY -> null      // manual sync
             else -> seconds
         }
@@ -166,7 +178,7 @@ class AccountSettings @AssistedInject constructor(
      * @param dataType              data type of the sync interval to set
      * @param seconds               sync interval in seconds; _null_ for no periodic sync
      */
-    fun setSyncInterval(dataType: SyncDataType, seconds: Long?) {
+    suspend fun setSyncInterval(dataType: SyncDataType, seconds: Long?) {
         val key = when (dataType) {
             SyncDataType.CONTACTS -> KEY_SYNC_INTERVAL_ADDRESSBOOKS
             SyncDataType.EVENTS -> KEY_SYNC_INTERVAL_CALENDARS
@@ -175,46 +187,51 @@ class AccountSettings @AssistedInject constructor(
         val newValue = seconds ?: SYNC_INTERVAL_MANUALLY
         store.putValue(key, newValue.toString())
 
-        automaticSyncManager.updateAutomaticSync(accountId, dataType)
+        withContext(ioDispatcher) {
+            automaticSyncManager.updateAutomaticSync(accountId, dataType)
+        }
     }
 
-    fun getSyncWifiOnly() =
-        if (settingsManager.containsKey(KEY_WIFI_ONLY))
+    suspend fun getSyncWifiOnly() =
+        if (settingsManager.containsKey(KEY_WIFI_ONLY)) withContext(ioDispatcher) {
             settingsManager.getBoolean(KEY_WIFI_ONLY)
-        else
+        } else
             store.getValue(KEY_WIFI_ONLY) != null
 
-    fun setSyncWiFiOnly(wiFiOnly: Boolean) {
+    suspend fun setSyncWiFiOnly(wiFiOnly: Boolean) {
         store.putValue(KEY_WIFI_ONLY, if (wiFiOnly) "1" else null)
-        automaticSyncManager.updateAutomaticSync(accountId)
+        withContext(ioDispatcher) {
+            automaticSyncManager.updateAutomaticSync(accountId)
+        }
     }
 
-    fun getSyncWifiOnlySSIDs(): List<String>? =
+    suspend fun getSyncWifiOnlySSIDs(): List<String>? =
         if (getSyncWifiOnly()) {
             val strSsids = if (settingsManager.containsKey(KEY_WIFI_ONLY_SSIDS))
                 settingsManager.getString(KEY_WIFI_ONLY_SSIDS)
-            else
+            else withContext(ioDispatcher) {
                 store.getValue(KEY_WIFI_ONLY_SSIDS)
+            }
             strSsids?.split(',')
         } else
             null
-    fun setSyncWifiOnlySSIDs(ssids: List<String>?) =
+    suspend fun setSyncWifiOnlySSIDs(ssids: List<String>?) =
         store.putValue(KEY_WIFI_ONLY_SSIDS, ssids?.joinToString(",").trimToNull())
 
-    fun getIgnoreVpns(): Boolean =
+    suspend fun getIgnoreVpns(): Boolean =
         when (store.getValue(KEY_IGNORE_VPNS)) {
-            null -> settingsManager.getBoolean(KEY_IGNORE_VPNS)
+            null -> withContext(ioDispatcher) { settingsManager.getBoolean(KEY_IGNORE_VPNS) }
             "0" -> false
             else -> true
         }
 
-    fun setIgnoreVpns(ignoreVpns: Boolean) =
+    suspend fun setIgnoreVpns(ignoreVpns: Boolean) =
         store.putValue(KEY_IGNORE_VPNS, if (ignoreVpns) "1" else "0")
 
 
     // CalDAV settings
 
-    fun getTimeRangePastDays(): Int? {
+    suspend fun getTimeRangePastDays(): Int? {
         val strDays = store.getValue(KEY_TIME_RANGE_PAST_DAYS)
         return if (strDays != null) {
             val days = strDays.toInt()
@@ -226,7 +243,7 @@ class AccountSettings @AssistedInject constructor(
             DEFAULT_TIME_RANGE_PAST_DAYS
     }
 
-    fun setTimeRangePastDays(days: Int?) =
+    suspend fun setTimeRangePastDays(days: Int?) =
         store.putValue(KEY_TIME_RANGE_PAST_DAYS, (days ?: -1).toString())
 
     /**
@@ -238,9 +255,11 @@ class AccountSettings @AssistedInject constructor(
      * @return A default reminder shall be created this number of minutes before the start of every
      * non-full-day event without reminder. *null*: No default reminders shall be created.
      */
-    fun getDefaultAlarm() =
+    suspend fun getDefaultAlarm() =
         store.getValue(KEY_DEFAULT_ALARM)?.toInt() ?:
-        settingsManager.getIntOrNull(KEY_DEFAULT_ALARM)?.takeIf { it != -1 }
+        withContext(ioDispatcher) {
+            settingsManager.getIntOrNull(KEY_DEFAULT_ALARM)?.takeIf { it != -1 }
+        }
 
     /**
      * Sets the default alarm value in the local account settings, if the new value differs
@@ -251,34 +270,41 @@ class AccountSettings @AssistedInject constructor(
      * @param minBefore The number of minutes a default reminder shall be created before the
      * start of every non-full-day event without reminder. *null*: No default reminders shall be created.
      */
-    fun setDefaultAlarm(minBefore: Int?) =
-        store.putValue(KEY_DEFAULT_ALARM,
-                if (minBefore == settingsManager.getIntOrNull(KEY_DEFAULT_ALARM)?.takeIf { it != -1 })
-                    null
-                else
-                    minBefore?.toString())
+    suspend fun setDefaultAlarm(minBefore: Int?) {
+        val defaultAlarm = withContext(ioDispatcher) {
+            settingsManager.getIntOrNull(KEY_DEFAULT_ALARM)
+        }
+        return store.putValue(
+            KEY_DEFAULT_ALARM,
+            if (minBefore == defaultAlarm?.takeIf { it != -1 })
+                null
+            else
+                minBefore?.toString()
+        )
+    }
 
-    fun getManageCalendarColors() =
-        if (settingsManager.containsKey(KEY_MANAGE_CALENDAR_COLORS))
+    suspend fun getManageCalendarColors() =
+        if (settingsManager.containsKey(KEY_MANAGE_CALENDAR_COLORS)) withContext(ioDispatcher) {
             settingsManager.getBoolean(KEY_MANAGE_CALENDAR_COLORS)
-        else
+        } else
             store.getValue(KEY_MANAGE_CALENDAR_COLORS) == null
-    fun setManageCalendarColors(manage: Boolean) =
+    suspend fun setManageCalendarColors(manage: Boolean) =
             store.putValue(KEY_MANAGE_CALENDAR_COLORS, if (manage) null else "0")
 
-    fun getEventColors() =
-        if (settingsManager.containsKey(KEY_EVENT_COLORS))
+    suspend fun getEventColors() =
+        if (settingsManager.containsKey(KEY_EVENT_COLORS)) withContext(ioDispatcher) {
             settingsManager.getBoolean(KEY_EVENT_COLORS)
-        else
+        } else
             store.getValue(KEY_EVENT_COLORS) != null
-    fun setEventColors(useColors: Boolean) =
+    suspend fun setEventColors(useColors: Boolean) =
             store.putValue(KEY_EVENT_COLORS, if (useColors) "1" else null)
 
     // CardDAV settings
 
-    fun getGroupMethod(): GroupMethod {
-        val name = settingsManager.getString(KEY_CONTACT_GROUP_METHOD) ?:
-                store.getValue(KEY_CONTACT_GROUP_METHOD)
+    suspend fun getGroupMethod(): GroupMethod {
+        val name = withContext(ioDispatcher) {
+            settingsManager.getString(KEY_CONTACT_GROUP_METHOD)
+        } ?: store.getValue(KEY_CONTACT_GROUP_METHOD)
         if (name != null)
             try {
                 return GroupMethod.valueOf(name)
@@ -288,7 +314,7 @@ class AccountSettings @AssistedInject constructor(
         return GroupMethod.GROUP_VCARDS
     }
 
-    fun setGroupMethod(method: GroupMethod) {
+    suspend fun setGroupMethod(method: GroupMethod) {
         store.putValue(KEY_CONTACT_GROUP_METHOD, method.name)
     }
 
@@ -300,7 +326,9 @@ class AccountSettings @AssistedInject constructor(
      *
      * @return *true* if only personal collections shall be shown; *false* otherwise
      */
-    fun getShowOnlyPersonal(): Boolean = when (settingsManager.getIntOrNull(KEY_SHOW_ONLY_PERSONAL)) {
+    suspend fun getShowOnlyPersonal(): Boolean = when (
+        withContext(ioDispatcher) { settingsManager.getIntOrNull(KEY_SHOW_ONLY_PERSONAL) }
+    ) {
         0 -> false
         1 -> true
         else /* including -1 */ -> store.getValue(KEY_SHOW_ONLY_PERSONAL) != null
@@ -316,13 +344,13 @@ class AccountSettings @AssistedInject constructor(
         else /* including -1 */ -> false
     }
 
-    fun setShowOnlyPersonal(showOnlyPersonal: Boolean) {
+    suspend fun setShowOnlyPersonal(showOnlyPersonal: Boolean) {
         store.putValue(KEY_SHOW_ONLY_PERSONAL, if (showOnlyPersonal) "1" else null)
     }
 
 
     // update from previous account settings
-    private fun update(accountId: AccountId, baseVersion: Int, abortOnMissingMigration: Boolean) {
+    private suspend fun update(accountId: AccountId, baseVersion: Int, abortOnMissingMigration: Boolean) {
         for (toVersion in baseVersion+1 ..CURRENT_VERSION) {
             val fromVersion = toVersion - 1
             logger.info("Updating account $accountId settings version $fromVersion → $toVersion")
@@ -334,7 +362,9 @@ class AccountSettings @AssistedInject constructor(
                     throw IllegalArgumentException("Missing AccountSettings migration $fromVersion → $toVersion")
             } else {
                 try {
-                    migration.get().migrate(accountId, store)
+                    withContext(ioDispatcher) {
+                        migration.get().migrate(accountId, store)
+                    }
 
                     logger.info("Account settings version update to $toVersion successful")
                     store.putValue(KEY_SETTINGS_VERSION, toVersion.toString())

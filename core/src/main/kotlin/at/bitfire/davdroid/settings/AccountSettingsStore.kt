@@ -10,7 +10,7 @@ interface AccountSettingsStore {
     /**
      * Gets the value stored at [key].
      */
-    fun getValue(key: String): String?
+    suspend fun getValue(key: String): String?
 
     /**
      * Stores [value] at [key].
@@ -18,12 +18,12 @@ interface AccountSettingsStore {
      * May throw [IllegalStateException] if the same key was already used with [putSensitiveValue]. Values stored using
      * [putValue] must only be retrieved using [getValue].
      */
-    fun putValue(key: String, value: String?)
+    suspend fun putValue(key: String, value: String?)
 
     /**
      * Gets the value stored at [key] as a [SensitiveString].
      */
-    fun getSensitiveValue(key: String): SensitiveString?
+    suspend fun getSensitiveValue(key: String): SensitiveString?
 
     /**
      * Stores [value] at [key].
@@ -31,5 +31,5 @@ interface AccountSettingsStore {
      * May throw [IllegalStateException] if the same key was already used with [putValue]. Values stored using
      * [putSensitiveValue] must only be retrieved using [getSensitiveValue].
      */
-    fun putSensitiveValue(key: String, value: SensitiveString?)
+    suspend fun putSensitiveValue(key: String, value: SensitiveString?)
 }

@@ -11,6 +11,7 @@ import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.accounts.AndroidAccountManager
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.ServiceType
+import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.network.HttpClientBuilder
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
@@ -22,6 +23,8 @@ import at.bitfire.synctools.storage.LocalStorageClient
 import at.bitfire.synctools.storage.LocalStorageException
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.runBlocking
 import java.io.Closeable
 import java.util.Optional
 import java.util.logging.Level
@@ -73,6 +76,10 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
     @Inject
     lateinit var syncValidator: Optional<SyncValidator>
 
+    @Inject
+    @IoDispatcher
+    lateinit var ioDispatcher: CoroutineDispatcher
+
     @ServiceType
     abstract val serviceType: String
 
@@ -81,7 +88,9 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
     }
 
     private val lazyHttpClient = lazy {
-        httpClientBuilder.fromAccount(accountId).build()
+        runBlocking(ioDispatcher) {
+            httpClientBuilder.fromAccount(accountId).build()
+        }
     }
 
     /** authenticated HTTP client to be used by subclasses */

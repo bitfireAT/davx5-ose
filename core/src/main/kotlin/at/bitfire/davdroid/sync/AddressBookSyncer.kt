@@ -36,8 +36,7 @@ class AddressBookSyncer @AssistedInject constructor(
     @Assisted settings: SyncSettings,
     private val accountManager: Provider<AccountManager>,
     addressBookStore: LocalAddressBookStore,
-    private val contactsSyncManagerFactory: ContactsSyncManager.Factory,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher
+    private val contactsSyncManagerFactory: ContactsSyncManager.Factory
 ) : Syncer<LocalAddressBookStore, LocalAddressBook>(accountId, resync, syncResult, settings) {
 
     @AssistedFactory
