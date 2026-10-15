@@ -29,6 +29,9 @@ import org.junit.Assert.assertTrue
 import org.junit.BeforeClass
 import org.junit.ClassRule
 import org.junit.Test
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 
 class AndroidAddressBookTest {
 
@@ -247,6 +250,35 @@ class AndroidAddressBookTest {
                 .toList().map { it.getAsLong(Groups._ID) }
             assertEquals(listOf(id1), ids)
         } finally {
+            TestAddressBook.remove(addressBook)
+        }
+    }
+
+    @Test
+    fun testFindOrCreateGroup_concurrentCallsCreateOneGroup() {
+        val addressBook = TestAddressBook.create(client)
+        val executor = Executors.newFixedThreadPool(16)
+        try {
+            val start = CountDownLatch(1)
+            val results = (1..16).map {
+                executor.submit<Long> {
+                    start.await()
+                    addressBook.findOrCreateGroup("Concurrent Group")
+                }
+            }
+            start.countDown()
+
+            val ids = results.map { it.get(10, TimeUnit.SECONDS) }
+            assertEquals(1, ids.toSet().size)
+            client.query(
+                addressBook.groupsSyncUri(),
+                arrayOf(Groups._ID),
+                "${Groups.TITLE}=?",
+                arrayOf("Concurrent Group"),
+                null
+            )!!.use { cursor -> assertEquals(1, cursor.count) }
+        } finally {
+            executor.shutdownNow()
             TestAddressBook.remove(addressBook)
         }
     }

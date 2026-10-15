@@ -196,6 +196,7 @@ dependencies {
     androidTestImplementation(libs.mockk.android)
     androidTestImplementation(testFixtures(project(":synctools")))
 
+    testImplementation(libs.androidx.test.core)
     testImplementation(libs.bitfire.dav4jvm)
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
