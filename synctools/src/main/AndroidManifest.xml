@@ -27,6 +27,11 @@
         <package android:name="at.techbee.jtx" />
         <package android:name="org.dmfs.tasks" />
         <package android:name="org.tasks" />
+
+        <!-- getAuthenticatorTypes() is filtered by package visibility on API 34+ -->
+        <intent>
+            <action android:name="android.accounts.AccountAuthenticator" />
+        </intent>
     </queries>
 
 </manifest>
