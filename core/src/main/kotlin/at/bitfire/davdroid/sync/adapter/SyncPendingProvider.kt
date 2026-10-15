@@ -11,6 +11,7 @@ import at.bitfire.davdroid.accounts.AndroidAccountManager
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.resource.local.LocalAddressBookStore
 import at.bitfire.davdroid.sync.SyncDataType
+import at.bitfire.davdroid.sync.account.InvalidAccountException
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -52,9 +53,14 @@ class SyncPendingProvider @Inject constructor(
                         localAddressBookStore.getAddressBookAccountsFlow(accountId)
                     }
                     else -> flow {
-                        // may access the database, so it must not run on the main thread
-                        emit(listOf(androidAccountManager.getAndroidAccount(accountId)))
-                    }.flowOn(ioDispatcher)
+                        val accounts = try {
+                            listOf(androidAccountManager.getAndroidAccount(accountId))
+                        } catch (_: InvalidAccountException) {
+                            // account doesn't exist (anymore), so there can't be a pending sync
+                            emptyList()
+                        }
+                        emit(accounts)
+                    }.flowOn(ioDispatcher)       // may access the database, so it must not run on the main thread
                 }
 
                 // Return the pending state flow for accounts with this authority
