@@ -121,9 +121,7 @@ fun AccountSettingsScreen(
             credentials = uiState.credentials,
             onUpdateCredentials = model::updateCredentials,
             onAuthenticateOAuth = {
-                val request = model.newAuthorizationRequest()
-                if (request != null)
-                    authRequestContract.launch(request)
+                model.authenticateOAuth { request -> authRequestContract.launch(request) }
             },
             isCredentialsUpdateAllowed = uiState.allowCredentialsChange,
 
