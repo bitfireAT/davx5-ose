@@ -21,14 +21,11 @@ import javax.inject.Inject
  */
 class AddressBookAccountProperties @Inject constructor(
     private val accountManager: AccountManager,
-    @ApplicationContext private val context: Context,
-    db: AppDatabase
+    @ApplicationContext private val context: Context
 ) {
     private val mainLegacyAccountType = context.getString(R.string.account_type)
     private val mainDbAccountType = context.getString(R.string.account_type_db)
     private val addressBookAccountType = context.getString(R.string.account_type_address_book)
-
-    private val dbAccountDao = db.dbAccountDao()
 
 
     /**
@@ -37,14 +34,21 @@ class AddressBookAccountProperties @Inject constructor(
     fun getAppAccount(account: Account): AccountId? {
         requireAddressBookAccount(account)
 
+        val ownerId = accountManager.getUserData(account, USER_DATA_ACCOUNT_ID)?.toLongOrNull()
         val ownerName = accountManager.getUserData(account, USER_DATA_ACCOUNT_NAME)
         val ownerType = accountManager.getUserData(account, USER_DATA_ACCOUNT_TYPE)
 
         return if (ownerName != null) {
-            when (ownerType) {
-                mainLegacyAccountType -> LegacyAccount(Account(ownerName, ownerType))
-                mainDbAccountType -> DbAccountId(ownerName.toLong())
-                else -> null
+            if (ownerType == mainLegacyAccountType) {
+                LegacyAccount(Account(ownerName, ownerType))
+            } else {
+                null
+            }
+        } else if (ownerId != null) {
+            if (ownerType == mainDbAccountType) {
+                DbAccountId(ownerId)
+            } else {
+                null
             }
         } else {
             null
@@ -63,11 +67,8 @@ class AddressBookAccountProperties @Inject constructor(
                 accountManager.setAndVerifyUserData(account, USER_DATA_ACCOUNT_TYPE, owner.androidAccount.type)
             }
             is DbAccountId -> {
-                // TODO: Eventually the account should be provided automatically
-                val dbAccount = dbAccountDao.getBlocking(owner.id) ?: throw NoSuchElementException("Database Account doesn't have a matching system account")
-                val ownerAccount = Account(dbAccount.name, mainDbAccountType)
-                accountManager.setAndVerifyUserData(account, USER_DATA_ACCOUNT_NAME, ownerAccount.name)
-                accountManager.setAndVerifyUserData(account, USER_DATA_ACCOUNT_TYPE, ownerAccount.type)
+                accountManager.setAndVerifyUserData(account, USER_DATA_ACCOUNT_ID, owner.id.toString())
+                accountManager.setAndVerifyUserData(account, USER_DATA_ACCOUNT_TYPE, mainDbAccountType)
             }
         }
     }
@@ -96,6 +97,7 @@ class AddressBookAccountProperties @Inject constructor(
 
 
     companion object {
+        private const val USER_DATA_ACCOUNT_ID = "account_id"
         private const val USER_DATA_ACCOUNT_NAME = "account_name"
         private const val USER_DATA_ACCOUNT_TYPE = "account_type"
 
