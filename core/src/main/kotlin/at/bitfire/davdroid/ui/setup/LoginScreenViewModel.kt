@@ -35,7 +35,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.io.IOException
 import java.net.URI
 import java.util.Optional
@@ -343,7 +342,7 @@ class LoginScreenViewModel @AssistedInject constructor(
         combinedState
     }.stateIn(viewModelScope, SharingStarted.Lazily, _accountDetailsUiState.value)
 
-    fun updateAccountName(accountName: String) {
+    fun updateAccountName(accountName: String) = viewModelScope.launch {
         _accountDetailsUiState.update { currentState ->
             currentState.copy(
                 accountName = accountName,
@@ -352,7 +351,7 @@ class LoginScreenViewModel @AssistedInject constructor(
         }
     }
 
-    fun updateAccountNameAndEmails(accountName: String, emails: Set<String>) {
+    fun updateAccountNameAndEmails(accountName: String, emails: Set<String>) = viewModelScope.launch {
         _accountDetailsUiState.update { currentState ->
             currentState.copy(
                 accountName = accountName,
@@ -380,15 +379,13 @@ class LoginScreenViewModel @AssistedInject constructor(
         }
 
         viewModelScope.launch {
-            val accountId = withContext(ioDispatcher) {
-                accountRepository.createBlocking(
-                    accountDetailsUiState.value.accountName,
-                    loginInfo.credentials,
-                    foundConfig!!,
-                    accountDetailsUiState.value.groupMethod,
-                    loginInfo.preconfigurationUrl
-                )
-            }
+            val accountId = accountRepository.create(
+                accountDetailsUiState.value.accountName,
+                loginInfo.credentials,
+                foundConfig!!,
+                accountDetailsUiState.value.groupMethod,
+                loginInfo.preconfigurationUrl
+            )
 
             _accountDetailsUiState.update { currentState ->
                 if (accountId != null)

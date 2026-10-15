@@ -162,6 +162,16 @@
                 android:resource="@xml/account_authenticator"/>
         </service>
         <service
+            android:name=".sync.account.DbAccountAuthenticatorService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.accounts.AccountAuthenticator"/>
+            </intent-filter>
+            <meta-data
+                android:name="android.accounts.AccountAuthenticator"
+                android:resource="@xml/db_account_authenticator"/>
+        </service>
+        <service
             android:name=".sync.adapter.CalendarsSyncAdapterService"
             android:exported="true"
             tools:ignore="ExportedService">
