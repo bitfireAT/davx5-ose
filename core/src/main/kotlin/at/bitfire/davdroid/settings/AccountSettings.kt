@@ -16,6 +16,7 @@ import at.bitfire.synctools.vcard.GroupMethod
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
@@ -364,6 +365,8 @@ class AccountSettings @AssistedInject constructor(
                     logger.info("Account settings version update to $toVersion successful")
                     store.putValue(KEY_SETTINGS_VERSION, toVersion.toString())
                 } catch (e: Exception) {
+                    // Rethrow cancellation exceptions instead of swallowing them
+                    if (e is CancellationException) throw e
                     logger.log(Level.SEVERE, "Couldn't run AccountSettings migration $fromVersion → $toVersion", e)
                 }
             }
