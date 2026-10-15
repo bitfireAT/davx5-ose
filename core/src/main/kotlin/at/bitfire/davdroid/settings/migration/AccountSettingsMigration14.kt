@@ -9,6 +9,7 @@ import android.content.ContentResolver
 import android.provider.CalendarContract
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.accounts.AndroidAccountManager
+import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.settings.AccountSettingsFactory
 import at.bitfire.davdroid.settings.AccountSettingsStore
 import at.bitfire.davdroid.sync.SyncDataType
@@ -19,6 +20,8 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import dagger.multibindings.IntKey
 import dagger.multibindings.IntoMap
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.runBlocking
 import java.util.logging.Logger
 import javax.inject.Inject
 
@@ -28,11 +31,12 @@ import javax.inject.Inject
 class AccountSettingsMigration14 @Inject constructor(
     private val accountSettingsFactory: AccountSettingsFactory,
     private val androidAccountManager: AndroidAccountManager,
-    private val logger: Logger
+    private val logger: Logger,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ): AccountSettingsMigration {
 
     override fun migrate(accountId: AccountId, store: AccountSettingsStore) {
-        val account = androidAccountManager.getAndroidAccount(accountId)
+        val account = androidAccountManager.getAndroidAccountBlocking(accountId)
         // Cancel any potentially running syncs for this account (sync framework)
         ContentResolver.cancelSync(account, null)
 
@@ -49,11 +53,12 @@ class AccountSettingsMigration14 @Inject constructor(
             disableSyncFramework(account, authority)
 
         // Enable PeriodicSyncWorker (WorkManager), with known intervals
-        for (dataType in SyncDataType.entries)
+        for (dataType in SyncDataType.entries) runBlocking(ioDispatcher) {
             enableWorkManager(accountId, dataType)
+        }
     }
 
-    private fun enableWorkManager(accountId: AccountId, dataType: SyncDataType) {
+    private suspend fun enableWorkManager(accountId: AccountId, dataType: SyncDataType) {
         val accountSettings = accountSettingsFactory.create(accountId)
         val enabled: Boolean = accountSettings.getSyncInterval(dataType)?.let { syncInterval ->
             accountSettings.setSyncInterval(dataType, syncInterval)

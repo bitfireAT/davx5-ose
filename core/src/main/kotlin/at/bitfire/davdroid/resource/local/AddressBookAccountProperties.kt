@@ -11,6 +11,7 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.accounts.DbAccountId
 import at.bitfire.davdroid.accounts.LegacyAccount
+import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.synctools.util.setAndVerifyUserData
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
@@ -33,14 +34,21 @@ class AddressBookAccountProperties @Inject constructor(
     fun getAppAccount(account: Account): AccountId? {
         requireAddressBookAccount(account)
 
+        val ownerId = accountManager.getUserData(account, USER_DATA_ACCOUNT_ID)?.toLongOrNull()
         val ownerName = accountManager.getUserData(account, USER_DATA_ACCOUNT_NAME)
         val ownerType = accountManager.getUserData(account, USER_DATA_ACCOUNT_TYPE)
 
         return if (ownerName != null) {
-            when (ownerType) {
-                mainLegacyAccountType -> LegacyAccount(Account(ownerName, ownerType))
-                mainDbAccountType -> DbAccountId(ownerName.toLong())
-                else -> null
+            if (ownerType == mainLegacyAccountType) {
+                LegacyAccount(Account(ownerName, ownerType))
+            } else {
+                null
+            }
+        } else if (ownerId != null) {
+            if (ownerType == mainDbAccountType) {
+                DbAccountId(ownerId)
+            } else {
+                null
             }
         } else {
             null
@@ -58,7 +66,10 @@ class AddressBookAccountProperties @Inject constructor(
                 accountManager.setAndVerifyUserData(account, USER_DATA_ACCOUNT_NAME, owner.androidAccount.name)
                 accountManager.setAndVerifyUserData(account, USER_DATA_ACCOUNT_TYPE, owner.androidAccount.type)
             }
-            is DbAccountId -> TODO("Operation not implemented")
+            is DbAccountId -> {
+                accountManager.setAndVerifyUserData(account, USER_DATA_ACCOUNT_ID, owner.id.toString())
+                accountManager.setAndVerifyUserData(account, USER_DATA_ACCOUNT_TYPE, mainDbAccountType)
+            }
         }
     }
 
@@ -86,6 +97,7 @@ class AddressBookAccountProperties @Inject constructor(
 
 
     companion object {
+        private const val USER_DATA_ACCOUNT_ID = "account_id"
         private const val USER_DATA_ACCOUNT_NAME = "account_name"
         private const val USER_DATA_ACCOUNT_TYPE = "account_type"
 

@@ -194,7 +194,7 @@ class DavCollectionRepository @Inject constructor(
         val accountId = accountRepository.getAccountIdFromService(service)
 
         httpClientBuilder
-            .fromAccountAsync(accountId)
+            .fromAccount(accountId)
             .build()
             .use { httpClient ->
                 try {
@@ -339,7 +339,7 @@ class DavCollectionRepository @Inject constructor(
      */
     private suspend fun createOnServer(accountId: AccountId, url: Url, method: String, xmlBody: String) {
         httpClientBuilder
-            .fromAccountAsync(accountId)
+            .fromAccount(accountId)
             .build()
             .use { httpClient ->
                 DavResource(httpClient, url).mkCol(

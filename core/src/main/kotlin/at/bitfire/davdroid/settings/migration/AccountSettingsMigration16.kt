@@ -7,6 +7,7 @@ package at.bitfire.davdroid.settings.migration
 import android.content.Context
 import androidx.work.WorkManager
 import at.bitfire.davdroid.accounts.AccountId
+import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.settings.AccountSettingsFactory
 import at.bitfire.davdroid.settings.AccountSettingsStore
 import at.bitfire.davdroid.sync.SyncDataType
@@ -18,6 +19,8 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import dagger.multibindings.IntKey
 import dagger.multibindings.IntoMap
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.runBlocking
 import java.util.logging.Logger
 import javax.inject.Inject
 
@@ -30,7 +33,8 @@ class AccountSettingsMigration16 @Inject constructor(
     private val accountSettingsFactory: AccountSettingsFactory,
     @ApplicationContext private val context: Context,
     private val logger: Logger,
-    private val syncWorkerManager: SyncWorkerManager
+    private val syncWorkerManager: SyncWorkerManager,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ): AccountSettingsMigration {
 
     override fun migrate(accountId: AccountId, store: AccountSettingsStore) {
@@ -47,10 +51,10 @@ class AccountSettingsMigration16 @Inject constructor(
             pruneOp.result.get()    // block until worker with old name is removed from DB
 
             val accountSettings = accountSettingsFactory.create(accountId)
-            val interval = accountSettings.getSyncInterval(dataType)
+            val interval = runBlocking(ioDispatcher) { accountSettings.getSyncInterval(dataType) }
             if (interval != null) {
                 // There's a sync interval for this account/authority; a periodic sync worker should be there, too.
-                val onlyWifi = accountSettings.getSyncWifiOnly()
+                val onlyWifi = runBlocking(ioDispatcher) { accountSettings.getSyncWifiOnly() }
                 syncWorkerManager.enablePeriodic(accountId, dataType, interval, onlyWifi)
             }
         }

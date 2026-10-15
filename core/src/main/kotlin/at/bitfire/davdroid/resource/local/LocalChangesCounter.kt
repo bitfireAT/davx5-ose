@@ -50,7 +50,7 @@ class LocalChangesCounter @Inject constructor(
             }
         }
 
-    private fun countUnsyncedChanges(accountId: AccountId, collectionId: Long, dataStore: LocalDataStore<*>): Int {
+    private suspend fun countUnsyncedChanges(accountId: AccountId, collectionId: Long, dataStore: LocalDataStore<*>): Int {
         val client = dataStore.acquireLocalStorageClient()
         if (client == null) {
             logger.fine("Can't access ${dataStore.authority}, not counting unsynced changes")

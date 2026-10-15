@@ -15,6 +15,7 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.http.HttpHeaders
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertArrayEquals
@@ -49,7 +50,7 @@ class ResourceRetrieverTest {
 
         // add credentials to test account so that we can check whether they have been sent
         val settings = accountSettingsFactory.create(accountId)
-        settings.credentials(Credentials("test", "test".toSensitiveString()))
+        runBlocking { settings.credentials(Credentials("test", "test".toSensitiveString())) }
     }
 
     @After

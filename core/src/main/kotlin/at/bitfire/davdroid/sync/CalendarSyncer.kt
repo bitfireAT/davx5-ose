@@ -50,7 +50,7 @@ class CalendarSyncer @AssistedInject constructor(
 
     override fun prepare(client: LocalStorageClient): Boolean {
         // Update colors
-        val account = androidAccountManager.getAndroidAccount(accountId)
+        val account = androidAccountManager.getAndroidAccountBlocking(accountId)
         val calendarProvider = AndroidCalendarProvider(account, client)
         if (settings.eventColors)
             calendarProvider.provideCss3ColorIndices()

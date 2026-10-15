@@ -14,6 +14,8 @@ import at.bitfire.davdroid.sync.AutomaticSyncManager
 import at.bitfire.davdroid.sync.account.TestAccount
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.fail
@@ -60,7 +62,7 @@ class AccountSettingsMigrationTest {
 
     @Test
     fun runAllMigrations() {
-        store.putValue(KEY_SETTINGS_VERSION, "6")
+        runBlocking { store.putValue(KEY_SETTINGS_VERSION, "6") }
 
         AccountSettings(
             accountId = accountId,
@@ -69,15 +71,16 @@ class AccountSettingsMigrationTest {
             automaticSyncManager = automaticSyncManager,
             logger = logger,
             migrations = migrations,
-            settingsManager = settingsManager
+            settingsManager = settingsManager,
+            ioDispatcher = Dispatchers.Unconfined
         )
 
-        assertEquals(CURRENT_VERSION.toString(), store.getValue(KEY_SETTINGS_VERSION))
+        assertEquals(CURRENT_VERSION.toString(), runBlocking { store.getValue(KEY_SETTINGS_VERSION) })
     }
 
     @Test
     fun testAbortOnMissingMigration() {
-        store.putValue(KEY_SETTINGS_VERSION, "1")
+        runBlocking { store.putValue(KEY_SETTINGS_VERSION, "1") }
 
         try {
             AccountSettings(
@@ -87,7 +90,8 @@ class AccountSettingsMigrationTest {
                 automaticSyncManager = automaticSyncManager,
                 logger = logger,
                 migrations = migrations,
-                settingsManager = settingsManager
+                settingsManager = settingsManager,
+                ioDispatcher = Dispatchers.Unconfined
             )
             fail("Expected exception")
         } catch (e: IllegalArgumentException) {

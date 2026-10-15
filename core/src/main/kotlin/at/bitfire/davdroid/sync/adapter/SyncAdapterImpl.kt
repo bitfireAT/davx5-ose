@@ -18,6 +18,7 @@ import androidx.work.WorkManager
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.accounts.AndroidAccountManager
+import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
@@ -30,6 +31,7 @@ import at.bitfire.davdroid.sync.worker.SyncWorkerManager
 import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.guava.await
@@ -62,7 +64,8 @@ class SyncAdapterImpl @Inject constructor(
     private val logger: Logger,
     private val syncConditionsFactory: SyncConditions.Factory,
     private val syncFrameworkIntegration: Lazy<SyncFrameworkIntegration>,
-    private val syncWorkerManager: SyncWorkerManager
+    private val syncWorkerManager: SyncWorkerManager,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) : AbstractThreadedSyncAdapter(
     /* context = */ context,
     /* autoInitialize = */ true     // Sets isSyncable=1 when isSyncable=-1 and SYNC_EXTRAS_INITIALIZE is set.
@@ -172,7 +175,8 @@ class SyncAdapterImpl @Inject constructor(
             return false
         }
         val syncConditions = syncConditionsFactory.create(accountSettings)
-        if (!syncConditions.wifiConditionsMet()) {
+        val wifiConditionsMet = runBlocking(ioDispatcher) { syncConditions.wifiConditionsMet() }
+        if (!wifiConditionsMet) {
             logger.info("Sync conditions not met. Ignoring sync framework-initiated sync")
             return false
         }

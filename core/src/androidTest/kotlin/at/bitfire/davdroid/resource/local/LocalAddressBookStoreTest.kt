@@ -200,7 +200,7 @@ class LocalAddressBookStoreTest {
 
 
     @Test
-    fun test_getAll_differentAccount() {
+    fun test_getAll_differentAccount() = runTest {
         every { accountManager.getAccountsByType(any()) } returns arrayOf(addressBookAccount)
         val unrelatedAccount = Account("Another Unrelated Account", accountId.androidAccount.type)
         every { addressBookAccountProperties.getAppAccount(addressBookAccount) } returns LegacyAccount(unrelatedAccount)
@@ -209,7 +209,7 @@ class LocalAddressBookStoreTest {
     }
 
     @Test
-    fun test_getAll_sameAccount() {
+    fun test_getAll_sameAccount() = runTest {
         every { accountManager.getAccountsByType(any()) } returns arrayOf(addressBookAccount)
         every { addressBookAccountProperties.getAppAccount(addressBookAccount) } returns accountId
         val result = localAddressBookStore.getAll(accountId, client)

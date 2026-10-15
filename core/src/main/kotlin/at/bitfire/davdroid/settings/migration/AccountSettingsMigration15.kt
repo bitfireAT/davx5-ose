@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.settings.migration
 
 import at.bitfire.davdroid.accounts.AccountId
+import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.settings.AccountSettingsStore
 import at.bitfire.davdroid.sync.AutomaticSyncManager
 import dagger.Binds
@@ -13,6 +14,8 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import dagger.multibindings.IntKey
 import dagger.multibindings.IntoMap
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 /**
@@ -22,11 +25,14 @@ import javax.inject.Inject
  * can be detected correctly.
  */
 class AccountSettingsMigration15 @Inject constructor(
-    private val automaticSyncManager: AutomaticSyncManager
+    private val automaticSyncManager: AutomaticSyncManager,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ): AccountSettingsMigration {
 
     override fun migrate(accountId: AccountId, store: AccountSettingsStore) {
-        automaticSyncManager.updateAutomaticSync(accountId)
+        runBlocking(ioDispatcher) {
+            automaticSyncManager.updateAutomaticSync(accountId)
+        }
     }
 
 

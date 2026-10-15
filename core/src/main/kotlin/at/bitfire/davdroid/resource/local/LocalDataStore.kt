@@ -57,7 +57,7 @@ interface LocalDataStore<T: LocalCollection<*>> {
      *
      * @return a list of all local collections
      */
-    fun getAll(accountId: AccountId, client: LocalStorageClient): List<T>
+    suspend fun getAll(accountId: AccountId, client: LocalStorageClient): List<T>
 
     /**
      * Retrieves a local collection by its database collection ID.
@@ -68,8 +68,7 @@ interface LocalDataStore<T: LocalCollection<*>> {
      *
      * @return The local collection with the specified DB collection ID, or `null` if not found.
      */
-    @WorkerThread
-    fun getByDbCollectionId(accountId: AccountId, client: LocalStorageClient, dbCollectionId: Long): T?
+    suspend fun getByDbCollectionId(accountId: AccountId, client: LocalStorageClient, dbCollectionId: Long): T?
 
     /**
      * Updates the local collection with the data from the given (remote) collection info.
@@ -79,7 +78,7 @@ interface LocalDataStore<T: LocalCollection<*>> {
      * @param localCollection the local collection to update
      * @param fromCollection  collection info
      */
-    fun update(accountId: AccountId, client: LocalStorageClient, localCollection: T, fromCollection: Collection)
+    suspend fun update(accountId: AccountId, client: LocalStorageClient, localCollection: T, fromCollection: Collection)
 
     /**
      * Deletes the local collection.

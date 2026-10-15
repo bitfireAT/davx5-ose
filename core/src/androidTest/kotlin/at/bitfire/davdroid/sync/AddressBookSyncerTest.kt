@@ -62,10 +62,10 @@ class AddressBookSyncerTest {
             settings = settings,
             accountManager = { accountManager },
             addressBookStore = mockk(relaxed = true),
-            contactsSyncManagerFactory = contactsSyncManagerFactory,
-            ioDispatcher = Dispatchers.Unconfined
+            contactsSyncManagerFactory = contactsSyncManagerFactory
         ).apply {
             httpClientBuilder = mockk(relaxed = true)
+            ioDispatcher = Dispatchers.Unconfined
             logger = this@AddressBookSyncerTest.logger
         }
 

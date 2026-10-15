@@ -9,6 +9,7 @@ import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.sync.TasksAppManager
 import at.bitfire.synctools.storage.LocalStorageClient
+import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit4.MockKRule
@@ -97,7 +98,7 @@ class LocalChangesCounterTest {
     fun `countUnsyncedChanges() without local collection returns 0`() = runTest(testDispatcher) {
         val client = mockk<LocalStorageClient>(relaxed = true)
         every { addressBookStore.acquireLocalStorageClient(any()) } returns client
-        every { addressBookStore.getByDbCollectionId(accountId, client, COLLECTION_ID) } returns null
+        coEvery { addressBookStore.getByDbCollectionId(accountId, client, COLLECTION_ID) } returns null
 
         val result = counter.countUnsyncedChanges(accountId, collection(Collection.TYPE_ADDRESSBOOK))
 
@@ -132,7 +133,7 @@ class LocalChangesCounterTest {
             every { countDeleted() } returns deleted
         }
         every { store.acquireLocalStorageClient(any()) } returns client
-        every { store.getByDbCollectionId(accountId, client, COLLECTION_ID) } returns localCollection
+        coEvery { store.getByDbCollectionId(accountId, client, COLLECTION_ID) } returns localCollection
         return client
     }
 

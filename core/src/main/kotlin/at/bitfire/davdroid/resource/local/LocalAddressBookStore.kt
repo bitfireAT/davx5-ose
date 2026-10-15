@@ -17,7 +17,10 @@ import androidx.core.content.contentValuesOf
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.accounts.AndroidAccountManager
+import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
+import at.bitfire.davdroid.db.DbAccountDao
+import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.settings.AccountSettingsFactory
@@ -28,9 +31,11 @@ import at.bitfire.synctools.storage.LocalStorageClient
 import at.bitfire.synctools.util.AndroidAccountUtils
 import com.google.common.base.CharMatcher
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.withContext
 import java.util.logging.Logger
 import javax.inject.Inject
 import javax.inject.Provider
@@ -45,7 +50,9 @@ class LocalAddressBookStore @Inject constructor(
     private val localAddressBookFactory: LocalAddressBook.Factory,
     private val logger: Logger,
     private val serviceRepository: DavServiceRepository,
-    private val settings: SettingsManager
+    db: AppDatabase,
+    private val settings: SettingsManager,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ): LocalDataStore<LocalAddressBook> {
 
     override val authority: String
@@ -54,6 +61,8 @@ class LocalAddressBookStore @Inject constructor(
     /** whether a (usually managed) setting wants all address-books to be read-only **/
     val forceAllReadOnly: Boolean
         get() = settings.getBoolean(Settings.FORCE_READ_ONLY_ADDRESSBOOKS)
+
+    private val dbAccountDao: DbAccountDao = db.dbAccountDao()
 
 
     /**
@@ -81,7 +90,8 @@ class LocalAddressBookStore @Inject constructor(
         // Add the actual account name to the address book account name
         val sb = StringBuilder(name)
         serviceRepository.getBlocking(info.serviceId)?.let { service ->
-            sb.append(" (${service.accountName})")
+            val accountName = service.accountId?.let(dbAccountDao::getBlocking)?.name ?: service.accountName
+            sb.append(" ($accountName)")
         }
         // Add the collection ID for uniqueness
         sb.append(" #${info.id}")
@@ -147,15 +157,17 @@ class LocalAddressBookStore @Inject constructor(
         return addressBookAccount
     }
 
-    override fun getAll(accountId: AccountId, client: LocalStorageClient): List<LocalAddressBook> {
+    override suspend fun getAll(accountId: AccountId, client: LocalStorageClient): List<LocalAddressBook> {
         val accountSettings = accountSettingsFactory.create(accountId)
         val groupMethod = accountSettings.getGroupMethod()
-        return getAddressBookAccounts(accountId).map { addressBookAccount ->
-            localAddressBookFactory.create(accountId, addressBookAccount, client, groupMethod)
+        return withContext(ioDispatcher) {
+            getAddressBookAccounts(accountId).map { addressBookAccount ->
+                localAddressBookFactory.create(accountId, addressBookAccount, client, groupMethod)
+            }
         }
     }
 
-    override fun getByDbCollectionId(
+    override suspend fun getByDbCollectionId(
         accountId: AccountId,
         client: LocalStorageClient,
         dbCollectionId: Long
@@ -163,7 +175,7 @@ class LocalAddressBookStore @Inject constructor(
         return getAll(accountId, client).firstOrNull { it.dbCollectionId == dbCollectionId }
     }
 
-    override fun update(
+    override suspend fun update(
         accountId: AccountId,
         client: LocalStorageClient,
         localCollection: LocalAddressBook,
@@ -176,13 +188,17 @@ class LocalAddressBookStore @Inject constructor(
         val newAccountName = accountName(fromCollection)
         if (currentAccount.name != newAccountName) {
             // rename, move contacts/groups and update [AndroidAddressBook.]account
-            localCollection.renameAccount(newAccountName)
+            withContext(ioDispatcher) {
+                localCollection.renameAccount(newAccountName)
+            }
             currentAccount = Account(newAccountName, currentAccount.type)
         }
 
         // Update the account user data
-        addressBookAccountProperties.setAppAccount(currentAccount, accountId)
-        addressBookAccountProperties.setCollectionId(currentAccount, fromCollection.id)
+        withContext(ioDispatcher) {
+            addressBookAccountProperties.setAppAccount(currentAccount, accountId)
+            addressBookAccountProperties.setCollectionId(currentAccount, fromCollection.id)
+        }
 
         // Set contacts provider settings
         localCollection.settings = contactsProviderSettings

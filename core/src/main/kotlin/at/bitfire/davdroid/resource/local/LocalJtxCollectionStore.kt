@@ -14,6 +14,7 @@ import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.accounts.AndroidAccountManager
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
+import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.PrincipalRepository
 import at.bitfire.davdroid.settings.AccountSettingsFactory
@@ -23,6 +24,8 @@ import at.bitfire.synctools.storage.jtx.JtxCollectionProvider
 import at.techbee.jtx.JtxContract
 import at.techbee.jtx.JtxContract.asSyncAdapter
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.withContext
 import java.util.logging.Logger
 import javax.annotation.WillNotClose
 import javax.inject.Inject
@@ -33,7 +36,8 @@ class LocalJtxCollectionStore @Inject constructor(
     val accountSettingsFactory: AccountSettingsFactory,
     val androidAccountManager: AndroidAccountManager,
     db: AppDatabase,
-    val principalRepository: PrincipalRepository
+    val principalRepository: PrincipalRepository,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ): LocalDataStore<LocalJtxCollection> {
 
     private val serviceDao = db.serviceDao()
@@ -107,25 +111,29 @@ class LocalJtxCollectionStore @Inject constructor(
         }
     }
 
-    override fun getAll(accountId: AccountId, client: LocalStorageClient): List<LocalJtxCollection> {
+    override suspend fun getAll(accountId: AccountId, client: LocalStorageClient): List<LocalJtxCollection> {
         val account = androidAccountManager.getAndroidAccount(accountId)
-        return JtxCollectionProvider(account, client).findCollections().map { jtxCollection ->
-            LocalJtxCollection(jtxCollection)
+        return withContext(ioDispatcher) {
+            JtxCollectionProvider(account, client).findCollections().map { jtxCollection ->
+                LocalJtxCollection(jtxCollection)
+            }
         }
     }
 
-    override fun getByDbCollectionId(
+    override suspend fun getByDbCollectionId(
         accountId: AccountId,
         client: LocalStorageClient,
         dbCollectionId: Long
     ): LocalJtxCollection? {
         val account = androidAccountManager.getAndroidAccount(accountId)
-        return JtxCollectionProvider(account, client).findFirstCollection(
-            "${JtxContract.JtxCollection.SYNC_ID}=?", arrayOf(dbCollectionId.toString())
-        )?.let { jtxCollection -> LocalJtxCollection(jtxCollection) }
+        return withContext(ioDispatcher) {
+            JtxCollectionProvider(account, client).findFirstCollection(
+                "${JtxContract.JtxCollection.SYNC_ID}=?", arrayOf(dbCollectionId.toString())
+            )?.let { jtxCollection -> LocalJtxCollection(jtxCollection) }
+        }
     }
 
-    override fun update(
+    override suspend fun update(
         accountId: AccountId,
         client: LocalStorageClient,
         localCollection: LocalJtxCollection,
@@ -136,10 +144,12 @@ class LocalJtxCollectionStore @Inject constructor(
             account = localCollection.jtxCollection.account,
             withColor = useManagedCalendarColors(accountId)
         )
-        localCollection.jtxCollection.update(values)
+        withContext(ioDispatcher) {
+            localCollection.jtxCollection.update(values)
+        }
     }
 
-    private fun useManagedCalendarColors(accountId: AccountId): Boolean {
+    private suspend fun useManagedCalendarColors(accountId: AccountId): Boolean {
         val accountSettings = accountSettingsFactory.create(accountId)
         return accountSettings.getManageCalendarColors()
     }

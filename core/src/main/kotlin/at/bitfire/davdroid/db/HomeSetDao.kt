@@ -11,6 +11,7 @@ import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
 import at.bitfire.davdroid.accounts.AccountId
+import at.bitfire.davdroid.accounts.DbAccountId
 import at.bitfire.davdroid.accounts.LegacyAccount
 import kotlinx.coroutines.flow.Flow
 
@@ -32,8 +33,12 @@ interface HomeSetDao {
     @Query("SELECT * FROM homeset WHERE serviceId=:serviceId")
     fun getByServiceBlocking(serviceId: Long): List<HomeSet>
 
+    @Deprecated("Use getBindableByAccountIdAndServiceTypeFlow")
     @Query("SELECT * FROM homeset WHERE serviceId=(SELECT id FROM service WHERE accountName=:accountName AND type=:serviceType) AND privBind ORDER BY displayName, url COLLATE NOCASE")
     fun getBindableByAccountAndServiceTypeFlow(accountName: String, @ServiceType serviceType: String): Flow<List<HomeSet>>
+
+    @Query("SELECT * FROM homeset WHERE serviceId=(SELECT id FROM service WHERE accountId=:accountId AND type=:serviceType) AND privBind ORDER BY displayName, url COLLATE NOCASE")
+    fun getBindableByAccountIdAndServiceTypeFlow(accountId: Long, @ServiceType serviceType: String): Flow<List<HomeSet>>
 
     fun getBindableByAccountAndServiceTypeFlow(
         accountId: AccountId,
@@ -43,7 +48,9 @@ interface HomeSetDao {
             is LegacyAccount -> {
                 getBindableByAccountAndServiceTypeFlow(accountId.androidAccount.name, serviceType)
             }
-            else -> TODO("Operation not yet implemented")
+            is DbAccountId -> {
+                getBindableByAccountIdAndServiceTypeFlow(accountId.id, serviceType)
+            }
         }
     }
 

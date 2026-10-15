@@ -20,6 +20,15 @@ interface AccountSettingDao {
     @Insert
     suspend fun insert(setting: AccountSetting): Long
 
+    @Query("SELECT * FROM account_setting WHERE accountId=:accountId AND `key`=:key")
+    suspend fun get(accountId: Long, key: String): AccountSetting?
+
+    @Update
+    suspend fun update(setting: AccountSetting)
+
+    @Delete
+    suspend fun delete(setting: AccountSetting)
+
     /**
      * Inserts a new instance of [setting].
      * [AccountSetting.id] may be generated automatically.

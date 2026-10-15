@@ -39,8 +39,8 @@ import javax.inject.Provider
  * @param writeAuthState    callback that persists a new authorization state
  */
 class OAuthProvider @AssistedInject constructor(
-    @Assisted private val readAuthState: () -> AuthState?,
-    @Assisted private val writeAuthState: (AuthState) -> Unit,
+    @Assisted private val readAuthState: suspend () -> AuthState?,
+    @Assisted private val writeAuthState: suspend (AuthState) -> Unit,
     private val authServiceProvider: Provider<AuthorizationService>,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val logger: Logger
@@ -48,7 +48,7 @@ class OAuthProvider @AssistedInject constructor(
 
     @AssistedFactory
     interface Factory {
-        fun create(readAuthState: () -> AuthState?, writeAuthState: (AuthState) -> Unit): OAuthProvider
+        fun create(readAuthState: suspend () -> AuthState?, writeAuthState: suspend (AuthState) -> Unit): OAuthProvider
     }
 
     /**
@@ -71,7 +71,7 @@ class OAuthProvider @AssistedInject constructor(
      * Provides the current access token, if any. Doesn't check whether it's expired — BearerAuthProvider calls
      * [retrieveFreshAccessToken] in that case.
      */
-    private fun loadAccessToken(): BearerTokens? {
+    private suspend fun loadAccessToken(): BearerTokens? {
         val authState = readAuthState() ?: return null
         val accessToken = authState.accessToken ?: return null
 

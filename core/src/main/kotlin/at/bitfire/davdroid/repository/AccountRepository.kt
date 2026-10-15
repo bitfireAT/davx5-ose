@@ -49,6 +49,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import org.jetbrains.annotations.TestOnly
 import java.util.logging.Level
@@ -267,7 +268,7 @@ class AccountRepository @Inject constructor(
 
                 // set initial CardDAV account settings and set sync intervals (enables automatic sync)
                 val accountSettings = accountSettingsFactory.create(accountId)
-                accountSettings.setGroupMethod(groupMethod)
+                runBlocking(ioDispatcher) { accountSettings.setGroupMethod(groupMethod) }
 
                 // start CardDAV service detection (refresh collections)
                 RefreshCollectionsWorker.enqueue(context, id)
@@ -282,7 +283,9 @@ class AccountRepository @Inject constructor(
             }
 
             // set up automatic sync (processes inserted services)
-            automaticSyncManager.get().updateAutomaticSync(accountId)
+            runBlocking(ioDispatcher) {
+                automaticSyncManager.get().updateAutomaticSync(accountId)
+            }
 
         } catch (e: InvalidAccountException) {
             logger.log(Level.SEVERE, "Couldn't access account settings", e)
@@ -296,7 +299,7 @@ class AccountRepository @Inject constructor(
             is LegacyAccount -> accountId.androidAccount
             is DbAccountId -> {
                 val dbAccount = dbAccountDao.get(accountId.id) ?: return false
-                Account(dbAccount.name, legacyAccountType)
+                Account(dbAccount.name, dbAccountType)
             }
         }
 
@@ -559,7 +562,7 @@ class AccountRepository @Inject constructor(
         // insert service
         val service = when(accountId) {
             is LegacyAccount -> Service(0, accountName, null, type, info.principal)
-            is DbAccountId -> Service(0, accountName, accountId.id, type, info.principal)
+            is DbAccountId -> Service(0, null, accountId.id, type, info.principal)
         }
         val serviceId = serviceRepository.insertOrReplaceBlocking(service)
 

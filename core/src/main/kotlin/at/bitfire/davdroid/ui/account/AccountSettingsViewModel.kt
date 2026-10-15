@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.ui.account
 
 import android.content.Context
+import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.R
@@ -202,8 +203,17 @@ class AccountSettingsViewModel @AssistedInject constructor(
 
     fun authorizationContract() = OAuthIntegration.AuthorizationContract(authService)
 
-    fun newAuthorizationRequest(): AuthorizationRequest? =
-        accountSettings.credentials().authState?.lastAuthorizationResponse?.request
+    suspend fun newAuthorizationRequest(): AuthorizationRequest? {
+        return accountSettings.credentials().authState?.lastAuthorizationResponse?.request
+    }
+
+    fun newAuthorizationRequestWithLauncher(
+        launcher: ManagedActivityResultLauncher<AuthorizationRequest, AuthorizationResponse?>
+    ) = viewModelScope.launch {
+        val request = newAuthorizationRequest()
+        if (request != null)
+            launcher.launch(request)
+    }
 
     fun authenticate(authResponse: AuthorizationResponse) {
         viewModelScope.launch {

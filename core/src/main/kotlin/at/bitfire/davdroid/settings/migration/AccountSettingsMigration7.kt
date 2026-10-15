@@ -18,6 +18,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import dagger.multibindings.IntKey
 import dagger.multibindings.IntoMap
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 class AccountSettingsMigration7 @Inject constructor(
@@ -27,11 +28,13 @@ class AccountSettingsMigration7 @Inject constructor(
 
     override fun migrate(accountId: AccountId, store: AccountSettingsStore) {
         addCalendarColors(accountId)
-        updateWifiOnlySsids(store)
+        runBlocking {
+            updateWifiOnlySsids(store)
+        }
     }
 
     private fun addCalendarColors(accountId: AccountId) {
-        val account = accountAccountManager.getAndroidAccount(accountId)
+        val account = accountAccountManager.getAndroidAccountBlocking(accountId)
         context.contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)
             ?.let { provider -> LocalStorageClient(provider) }
             ?.use { client ->
@@ -40,7 +43,7 @@ class AccountSettingsMigration7 @Inject constructor(
             }
     }
 
-    private fun updateWifiOnlySsids(store: AccountSettingsStore) {
+    private suspend fun updateWifiOnlySsids(store: AccountSettingsStore) {
         val onlySSID = store.getValue(KEY_WIFI_ONLY_SSID_OLD)
         store.putValue(KEY_WIFI_ONLY_SSIDS_NEW, onlySSID)
         store.putValue(KEY_WIFI_ONLY_SSID_OLD, null)

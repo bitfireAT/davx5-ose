@@ -12,6 +12,7 @@ import at.bitfire.davdroid.db.DbAccountDao
 import at.bitfire.synctools.util.SensitiveString.Companion.toSensitiveString
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
@@ -57,7 +58,7 @@ class DbAccountSettingsStoreTest {
     }
 
     @Test
-    fun test_putValue() {
+    fun test_putValue() = runTest {
         // Verify that initially there's no value
         assertNull(dao.getBlocking(accountId = dbAccountId, key = "test"))
 
@@ -81,7 +82,7 @@ class DbAccountSettingsStoreTest {
     }
 
     @Test
-    fun test_putSensitiveValue() {
+    fun test_putSensitiveValue() = runTest {
         // Verify that initially there's no value
         assertNull(dao.getBlocking(accountId = dbAccountId, key = "sensitive-test"))
 

@@ -12,6 +12,7 @@ import androidx.core.content.contentValuesOf
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.accounts.AndroidAccountManager
 import at.bitfire.davdroid.db.Service
+import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.resource.local.LocalAddressBookStore
@@ -28,6 +29,8 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import dagger.multibindings.IntKey
 import dagger.multibindings.IntoMap
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.runBlocking
 import org.dmfs.tasks.contract.TaskContract.TaskLists
 import javax.inject.Inject
 
@@ -46,11 +49,12 @@ class AccountSettingsMigration20 @Inject constructor(
     private val calendarStore: LocalCalendarStore,
     private val collectionRepository: DavCollectionRepository,
     private val serviceRepository: DavServiceRepository,
-    private val tasksAppManager: TasksAppManager
+    private val tasksAppManager: TasksAppManager,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) : AccountSettingsMigration {
 
     override fun migrate(accountId: AccountId, store: AccountSettingsStore) {
-        val account = androidAccountManager.getAndroidAccount(accountId)
+        val account = androidAccountManager.getAndroidAccountBlocking(accountId)
         serviceRepository.getByAccountIdAndTypeBlocking(accountId, Service.TYPE_CARDDAV)?.let { cardDavService ->
             migrateAddressBooks(accountId, cardDavService.id)
         }
@@ -64,7 +68,8 @@ class AccountSettingsMigration20 @Inject constructor(
     @OpenForTesting
     internal fun migrateAddressBooks(accountId: AccountId, cardDavServiceId: Long) {
         addressBookStore.acquireLocalStorageClient()?.use { client ->
-            for (addressBook in addressBookStore.getAll(accountId, client)) {
+            val addressBooks = runBlocking(ioDispatcher) { addressBookStore.getAll(accountId, client) }
+            for (addressBook in addressBooks) {
                 val url = accountManager.getUserData(addressBook.addressBookAccount, ADDRESS_BOOK_USER_DATA_URL)
                     ?: continue
                 val collection = collectionRepository.getByServiceAndUrl(cardDavServiceId, url) ?: continue
@@ -96,7 +101,8 @@ class AccountSettingsMigration20 @Inject constructor(
     internal fun migrateTaskLists(accountId: AccountId, calDavServiceId: Long) {
         val taskListStore = tasksAppManager.getDataStore() ?: /* no tasks app */ return
         taskListStore.acquireLocalStorageClient()?.use { client ->
-            for (taskList in taskListStore.getAll(accountId, client)) {
+            val taskLists = runBlocking(ioDispatcher) { taskListStore.getAll(accountId, client) }
+            for (taskList in taskLists) {
                 when (taskList) {
                     is LocalTaskList -> {       // tasks.org, OpenTasks
                         val url = taskList.dmfsTaskList.syncId ?: continue

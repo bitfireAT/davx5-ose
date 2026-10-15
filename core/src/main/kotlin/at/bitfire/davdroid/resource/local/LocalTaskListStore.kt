@@ -14,6 +14,7 @@ import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.accounts.AndroidAccountManager
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
+import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.settings.AccountSettingsFactory
 import at.bitfire.davdroid.util.DavUtils.extractCollectionName
@@ -25,6 +26,8 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.withContext
 import org.dmfs.tasks.contract.TaskContract.TaskListColumns
 import org.dmfs.tasks.contract.TaskContract.TaskLists
 import org.dmfs.tasks.contract.TaskContract.Tasks
@@ -39,7 +42,8 @@ class LocalTaskListStore @AssistedInject constructor(
     val androidAccountManager: AndroidAccountManager,
     @ApplicationContext val context: Context,
     val db: AppDatabase,
-    val logger: Logger
+    val logger: Logger,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ): LocalDataStore<LocalTaskList> {
 
     @AssistedFactory
@@ -120,24 +124,28 @@ class LocalTaskListStore @AssistedInject constructor(
         return values
     }
 
-    override fun getAll(accountId: AccountId, client: LocalStorageClient): List<LocalTaskList> {
+    override suspend fun getAll(accountId: AccountId, client: LocalStorageClient): List<LocalTaskList> {
         val account = androidAccountManager.getAndroidAccount(accountId)
-        return DmfsTaskListProvider(account, client, providerName).findTaskLists()
-            .map { taskList -> LocalTaskList(taskList) }
+        return withContext(ioDispatcher) {
+            DmfsTaskListProvider(account, client, providerName).findTaskLists()
+                .map { taskList -> LocalTaskList(taskList) }
+        }
     }
 
-    override fun getByDbCollectionId(
+    override suspend fun getByDbCollectionId(
         accountId: AccountId,
         client: LocalStorageClient,
         dbCollectionId: Long
     ): LocalTaskList? {
         val account = androidAccountManager.getAndroidAccount(accountId)
-        return DmfsTaskListProvider(account, client, providerName)
-            .findFirstTaskList("${TaskLists._SYNC_ID}=?", arrayOf(dbCollectionId.toString()))
-            ?.let { taskList -> LocalTaskList(taskList) }
+        return withContext(ioDispatcher) {
+            DmfsTaskListProvider(account, client, providerName)
+                .findFirstTaskList("${TaskLists._SYNC_ID}=?", arrayOf(dbCollectionId.toString()))
+                ?.let { taskList -> LocalTaskList(taskList) }
+        }
     }
 
-    override fun update(
+    override suspend fun update(
         accountId: AccountId,
         client: LocalStorageClient,
         localCollection: LocalTaskList,
@@ -148,10 +156,12 @@ class LocalTaskListStore @AssistedInject constructor(
             info = fromCollection,
             withColor = useManagedCalendarColors(accountId)
         )
-        localCollection.dmfsTaskList.update(values)
+        withContext(ioDispatcher) {
+            localCollection.dmfsTaskList.update(values)
+        }
     }
 
-    private fun useManagedCalendarColors(accountId: AccountId): Boolean {
+    private suspend fun useManagedCalendarColors(accountId: AccountId): Boolean {
         val accountSettings = accountSettingsFactory.create(accountId)
         return accountSettings.getManageCalendarColors()
     }

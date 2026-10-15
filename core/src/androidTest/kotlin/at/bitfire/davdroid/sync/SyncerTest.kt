@@ -110,7 +110,7 @@ class SyncerTest {
 
         // Should update the localCollection if it exists
         val result = syncer.updateCollections(client, listOf(localCollection), dbCollections)
-        verify(exactly = 1) { dataStore.update(accountId, client, localCollection, dbCollection) }
+        coVerify(exactly = 1) { dataStore.update(accountId, client, localCollection, dbCollection) }
 
         // Updated local collection list should be same as input
         assertArrayEquals(arrayOf(localCollection), result.toTypedArray())
@@ -253,14 +253,14 @@ class SyncerTest {
             throw NotImplementedError()
         }
 
-        override fun getAll(
+        override suspend fun getAll(
             accountId: AccountId,
             client: LocalStorageClient
         ): List<LocalTestCollection> {
             throw NotImplementedError()
         }
 
-        override fun getByDbCollectionId(
+        override suspend fun getByDbCollectionId(
             accountId: AccountId,
             client: LocalStorageClient,
             dbCollectionId: Long
@@ -268,7 +268,7 @@ class SyncerTest {
             throw NotImplementedError()
         }
 
-        override fun update(
+        override suspend fun update(
             accountId: AccountId,
             client: LocalStorageClient,
             localCollection: LocalTestCollection,

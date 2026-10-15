@@ -16,6 +16,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import dagger.multibindings.IntKey
 import dagger.multibindings.IntoMap
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 /**
@@ -28,11 +29,12 @@ class AccountSettingsMigration11 @Inject constructor(
 ): AccountSettingsMigration {
 
     override fun migrate(accountId: AccountId, store: AccountSettingsStore) {
-        val account = androidAccountManager.getAndroidAccount(accountId)
+        val account = androidAccountManager.getAndroidAccountBlocking(accountId)
         tasksAppManager.currentProvider()?.let { provider ->
             val interval = getSyncFrameworkInterval(account, provider.authority)
-            if (interval != null)
+            if (interval != null) runBlocking {
                 store.putValue(KEY_SYNC_INTERVAL_TASKS, interval.toString())
+            }
         }
     }
 

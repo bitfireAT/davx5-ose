@@ -22,7 +22,6 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.network.HttpClientBuilder
-import at.bitfire.davdroid.push.PushRegistrationManager.Companion.mutex
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
@@ -195,7 +194,7 @@ class PushRegistrationManager @Inject constructor(
 
         val accountId = accountRepository.get().getAccountIdFromService(service)
         httpClientBuilder
-            .fromAccountAsync(accountId)
+            .fromAccount(accountId)
             .build()
             .use { httpClient ->
             for (collection in subscribeTo) {
@@ -301,7 +300,7 @@ class PushRegistrationManager @Inject constructor(
 
         val accountId = accountRepository.get().getAccountIdFromService(service)
         httpClientBuilder
-            .fromAccountAsync(accountId)
+            .fromAccount(accountId)
             .build()
             .use { httpClient ->
             for (collection in from)

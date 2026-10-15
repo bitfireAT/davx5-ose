@@ -5,14 +5,12 @@
 package at.bitfire.davdroid.network
 
 import androidx.annotation.VisibleForTesting
-import androidx.annotation.WorkerThread
 import at.bitfire.dav4jvm.ktor.DomainAuthProvider
 import at.bitfire.dav4jvm.ktor.PreemptiveBasicDigestAuthProvider
 import at.bitfire.dav4jvm.ktor.UrlUtils
 import at.bitfire.davdroid.ProductIds
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
-import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.AccountSettingsFactory
 import at.bitfire.davdroid.settings.Credentials
 import at.bitfire.davdroid.settings.Settings
@@ -104,8 +102,8 @@ class HttpClientBuilder private constructor(
         val authUsername: String? = null,
         val authPassword: SensitiveString? = null,
         val authDomain: String? = null,
-        val readAuthStateCallback: (() -> AuthState?)? = null,
-        val updateAuthStateCallback: ((AuthState) -> Unit)? = null,
+        val readAuthStateCallback: (suspend () -> AuthState?)? = null,
+        val updateAuthStateCallback: (suspend (AuthState) -> Unit)? = null,
         // request/response handling
         val contentNegotiationJson: Boolean = false,
         val followRedirects: Boolean = false
@@ -117,7 +115,7 @@ class HttpClientBuilder private constructor(
      * @param update block that takes the current Config and returns a new Config with desired changes
      * @return new instance with updated config
      */
-    private fun withConfig(update: (Config) -> Config) = HttpClientBuilder(
+    private inline fun withConfig(update: (Config) -> Config) = HttpClientBuilder(
         accountSettingsFactory,
         connectionSecurityManager,
         ioDispatcher,
@@ -154,10 +152,10 @@ class HttpClientBuilder private constructor(
      * @return new builder with updated config (chainable)
      */
     @CheckReturnValue
-    fun authenticate(
+    suspend fun authenticate(
         domain: String?,
-        getCredentials: () -> Credentials,
-        updateAuthState: ((AuthState) -> Unit)? = null
+        getCredentials: suspend () -> Credentials,
+        updateAuthState: (suspend (AuthState) -> Unit)? = null
     ): HttpClientBuilder = withConfig { config ->
         val credentials = getCredentials()
         var newConfig = config
@@ -226,8 +224,6 @@ class HttpClientBuilder private constructor(
     /**
      * Takes authentication (basic/digest or OAuth and client certificate) from a given account.
      *
-     * **Must not be run on main thread, because it creates [AccountSettings]!** Use [fromAccountAsync] if possible.
-     *
      * @param accountId     [AccountId] of the account to take the authentication credentials from
      * @param authDomain    (optional) Send credentials only for the hosts of the given domain. Can be:
      *
@@ -237,9 +233,10 @@ class HttpClientBuilder private constructor(
      *
      * @throws at.bitfire.davdroid.sync.account.InvalidAccountException     when the account doesn't exist
      */
-    @WorkerThread
-    fun fromAccount(accountId: AccountId, authDomain: String? = null): HttpClientBuilder {
-        val accountSettings = accountSettingsFactory.create(accountId)
+    suspend fun fromAccount(accountId: AccountId, authDomain: String? = null): HttpClientBuilder {
+        val accountSettings = withContext(ioDispatcher) {
+            accountSettingsFactory.create(accountId)
+        }
         return authenticate(
             domain = UrlUtils.hostToDomain(authDomain),
             getCredentials = {
@@ -250,16 +247,6 @@ class HttpClientBuilder private constructor(
             }
         )
     }
-
-    /**
-     * Same as [fromAccount], but can be called on any thread.
-     *
-     * @throws at.bitfire.davdroid.sync.account.InvalidAccountException     when the account doesn't exist
-     */
-    suspend fun fromAccountAsync(accountId: AccountId, onlyHost: String? = null): HttpClientBuilder =
-        withContext(ioDispatcher) {
-            fromAccount(accountId, onlyHost)
-        }
 
 
     // actual client building

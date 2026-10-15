@@ -38,6 +38,7 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.accounts.AndroidAccountManager
 import at.bitfire.davdroid.db.AppDatabase
+import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.resource.local.LocalAddressBook
 import at.bitfire.davdroid.settings.AccountSettingsFactory
@@ -53,6 +54,8 @@ import at.bitfire.synctools.storage.TaskProvider
 import at.bitfire.synctools.storage.contacts.AndroidAddressBook
 import at.techbee.jtx.JtxContract
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.runBlocking
 import org.dmfs.tasks.contract.TaskContract
 import java.io.PrintWriter
 import java.io.Writer
@@ -81,7 +84,8 @@ class DebugInfoGenerator @Inject constructor(
     private val db: AppDatabase,
     private val logger: Logger,
     private val settings: SettingsManager,
-    private val syncFramework: SyncFrameworkIntegration
+    private val syncFramework: SyncFrameworkIntegration,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) {
 
     operator fun invoke(
@@ -434,11 +438,11 @@ class DebugInfoGenerator @Inject constructor(
         val accountName = accountRepository.getAccountNameBlocking(accountId)
         writer.append("\n\n - Account: ${accountName}\n")
         val accountSettings = accountSettingsFactory.create(accountId)
-        val account = androidAccountManager.getAndroidAccount(accountId)
+        val account = androidAccountManager.getAndroidAccountBlocking(accountId)
 
         writer.append(dumpAndroidAccount(account, AccountDumpInfo.caldavAccount(account)))
         try {
-            val credentials = accountSettings.credentials()
+            val credentials = runBlocking(ioDispatcher) {accountSettings.credentials() }
             val authStr = mutableListOf<String>()
             if (credentials.username != null)
                 authStr += "user name"
@@ -454,17 +458,19 @@ class DebugInfoGenerator @Inject constructor(
                     .append(authStr.joinToString(", "))
                     .append("\n")
 
-            writer.append("  WiFi only: ${accountSettings.getSyncWifiOnly()}")
-            accountSettings.getSyncWifiOnlySSIDs()?.let { ssids ->
-                writer.append(", SSIDs: ${ssids.joinToString(", ")}")
+            runBlocking(ioDispatcher) {
+                writer.append("  WiFi only: ${accountSettings.getSyncWifiOnly()}")
+                accountSettings.getSyncWifiOnlySSIDs()?.let { ssids ->
+                    writer.append(", SSIDs: ${ssids.joinToString(", ")}")
+                }
+                writer.append(
+                    "\n  Contact group method: ${accountSettings.getGroupMethod()}\n" +
+                            "  Time range (past days): ${accountSettings.getTimeRangePastDays()}\n" +
+                            "  Default alarm (min before): ${accountSettings.getDefaultAlarm()}\n" +
+                            "  Manage calendar colors: ${accountSettings.getManageCalendarColors()}\n" +
+                            "  Use event colors: ${accountSettings.getEventColors()}\n"
+                )
             }
-            writer.append(
-                "\n  Contact group method: ${accountSettings.getGroupMethod()}\n" +
-                        "  Time range (past days): ${accountSettings.getTimeRangePastDays()}\n" +
-                        "  Default alarm (min before): ${accountSettings.getDefaultAlarm()}\n" +
-                        "  Manage calendar colors: ${accountSettings.getManageCalendarColors()}\n" +
-                        "  Use event colors: ${accountSettings.getEventColors()}\n"
-            )
 
             writer.append("\nSync workers:\n")
             dumpSyncWorkers(accountId, writer)

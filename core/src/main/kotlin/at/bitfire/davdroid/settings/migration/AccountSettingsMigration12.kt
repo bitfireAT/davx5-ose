@@ -44,7 +44,7 @@ class AccountSettingsMigration12 @Inject constructor(
 ): AccountSettingsMigration {
 
     override fun migrate(accountId: AccountId, store: AccountSettingsStore) {
-        val account = androidAccountManager.getAndroidAccount(accountId)
+        val account = androidAccountManager.getAndroidAccountBlocking(accountId)
         if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.WRITE_CALENDAR) == PackageManager.PERMISSION_GRANTED) {
             context.contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)?.use { provider ->
                 // Attention: CalendarProvider does NOT limit the results of the ExtendedProperties query

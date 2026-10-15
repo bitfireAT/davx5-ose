@@ -120,11 +120,7 @@ fun AccountSettingsScreen(
             // Authentication Settings
             credentials = uiState.credentials,
             onUpdateCredentials = model::updateCredentials,
-            onAuthenticateOAuth = {
-                val request = model.newAuthorizationRequest()
-                if (request != null)
-                    authRequestContract.launch(request)
-            },
+            onAuthenticateOAuth = { model.newAuthorizationRequestWithLauncher(authRequestContract) },
             isCredentialsUpdateAllowed = uiState.allowCredentialsChange,
 
             // CalDav Settings

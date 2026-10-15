@@ -10,6 +10,7 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.net.wifi.WifiManager
 import androidx.core.content.getSystemService
+import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.ui.NotificationRegistry
 import at.bitfire.davdroid.ui.account.WifiPermissionsActivity
@@ -18,6 +19,8 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.runBlocking
 import java.util.logging.Level
 import java.util.logging.Logger
 
@@ -28,7 +31,8 @@ class SyncConditions @AssistedInject constructor(
     @Assisted private val accountSettings: AccountSettings,
     @ApplicationContext private val context: Context,
     private val logger: Logger,
-    private val notificationRegistry: NotificationRegistry
+    private val notificationRegistry: NotificationRegistry,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) {
 
     @AssistedFactory
@@ -47,7 +51,7 @@ class SyncConditions @AssistedInject constructor(
      * account settings; *false* otherwise
      */
     internal fun correctWifiSsid(): Boolean {
-        accountSettings.getSyncWifiOnlySSIDs()?.let { onlySSIDs ->
+        runBlocking(ioDispatcher) { accountSettings.getSyncWifiOnlySSIDs() }?.let { onlySSIDs ->
             // check required permissions and location status
             if (!PermissionUtils.canAccessWifiSsid(context)) {
                 // not all permissions granted; show notification
@@ -107,7 +111,7 @@ class SyncConditions @AssistedInject constructor(
                     return@any false
                 }
 
-                val ignoreVpns = accountSettings.getIgnoreVpns()
+                val ignoreVpns = runBlocking(ioDispatcher) { accountSettings.getIgnoreVpns() }
                 if (ignoreVpns)
                     if (!capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_VPN)) {
                         logger.fine("Missing network capability: NOT_VPN")
@@ -145,7 +149,7 @@ class SyncConditions @AssistedInject constructor(
      *
      * @return *true* if conditions are met; *false* if not
      */
-    fun wifiConditionsMet(): Boolean {
+    suspend fun wifiConditionsMet(): Boolean {
         // May we sync without WiFi?
         if (!accountSettings.getSyncWifiOnly())
             return true     // yes, continue
