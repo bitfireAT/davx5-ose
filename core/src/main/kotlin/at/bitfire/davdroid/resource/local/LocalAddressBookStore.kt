@@ -90,7 +90,7 @@ class LocalAddressBookStore @Inject constructor(
         // Add the actual account name to the address book account name
         val sb = StringBuilder(name)
         serviceRepository.getBlocking(info.serviceId)?.let { service ->
-            val accountName = service.accountId?.let(dbAccountDao::getBlocking) ?: service.accountName
+            val accountName = service.accountId?.let(dbAccountDao::getBlocking)?.name ?: service.accountName
             sb.append(" ($accountName)")
         }
         // Add the collection ID for uniqueness
