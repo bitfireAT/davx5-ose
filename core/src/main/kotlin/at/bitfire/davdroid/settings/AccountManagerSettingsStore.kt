@@ -38,14 +38,18 @@ class AccountManagerSettingsStore @AssistedInject constructor(
     /**
      * Retrieves the value stored in user data of [account] at [key]. May be `null` if not set.
      */
-    override suspend fun getValue(key: String): String? = accountManager.getUserData(account, key)
+    override suspend fun getValue(key: String): String? = withContext(ioDispatcher) {
+        accountManager.getUserData(account, key)
+    }
 
     /**
      * Updates the value stored as user data for [account] at [key].
      * `null` [value] clears the stored value.
      */
     override suspend fun putValue(key: String, value: String?) {
-        accountManager.setAndVerifyUserData(account, key, value)
+        withContext(ioDispatcher) {
+            accountManager.setAndVerifyUserData(account, key, value)
+        }
     }
 
     /**
@@ -65,9 +69,9 @@ class AccountManagerSettingsStore @AssistedInject constructor(
      * as plain text at [key] in user data (same as [putValue]).
      */
     override suspend fun putSensitiveValue(key: String, value: SensitiveString?) {
-        if (key == AccountSettings.KEY_PASSWORD)
+        if (key == AccountSettings.KEY_PASSWORD) withContext(ioDispatcher) {
             accountManager.setPassword(account, value?.asString())
-        else
+        } else
             putValue(key, value?.asString())
     }
 }
