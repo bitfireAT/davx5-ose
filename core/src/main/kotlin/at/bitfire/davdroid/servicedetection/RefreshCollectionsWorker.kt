@@ -142,7 +142,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
             return Result.failure()
         }
 
-        val accountId = accountRepository.getAccountIdFromName(service.accountName)
+        val accountId = accountRepository.getAccountIdFromService(service)
         try {
             logger.log(Level.INFO, "Refreshing {0} collections of service #{1}", arrayOf(service.type, service))
 
