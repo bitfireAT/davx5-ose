@@ -17,6 +17,7 @@ import androidx.core.content.contentValuesOf
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.accounts.AndroidAccountManager
+import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.DbAccountDao
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
@@ -49,7 +50,7 @@ class LocalAddressBookStore @Inject constructor(
     private val localAddressBookFactory: LocalAddressBook.Factory,
     private val logger: Logger,
     private val serviceRepository: DavServiceRepository,
-    private val dbAccountDao: DbAccountDao,
+    db: AppDatabase,
     private val settings: SettingsManager,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ): LocalDataStore<LocalAddressBook> {
@@ -60,6 +61,8 @@ class LocalAddressBookStore @Inject constructor(
     /** whether a (usually managed) setting wants all address-books to be read-only **/
     val forceAllReadOnly: Boolean
         get() = settings.getBoolean(Settings.FORCE_READ_ONLY_ADDRESSBOOKS)
+
+    private val dbAccountDao: DbAccountDao = db.dbAccountDao()
 
 
     /**
