@@ -20,6 +20,7 @@ import at.bitfire.davdroid.accounts.AndroidAccountManager
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.DbAccountDao
+import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.settings.AccountSettingsFactory
@@ -30,9 +31,11 @@ import at.bitfire.synctools.storage.LocalStorageClient
 import at.bitfire.synctools.util.AndroidAccountUtils
 import com.google.common.base.CharMatcher
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.runBlocking
 import java.util.logging.Logger
 import javax.inject.Inject
 import javax.inject.Provider
@@ -48,7 +51,8 @@ class LocalAddressBookStore @Inject constructor(
     private val logger: Logger,
     private val serviceRepository: DavServiceRepository,
     db: AppDatabase,
-    private val settings: SettingsManager
+    private val settings: SettingsManager,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ): LocalDataStore<LocalAddressBook> {
 
     override val authority: String
@@ -212,8 +216,11 @@ class LocalAddressBookStore @Inject constructor(
      * @param client        content provider client (not needed/does not exist for address books)
      */
     override fun updateAccount(oldAccount: Account, newAccount: Account, client: LocalStorageClient?) {
-        val oldAccountId = androidAccountManager.getAccountId(oldAccount)
-        val newAccountId = androidAccountManager.getAccountId(newAccount)
+        val oldAccountId = runBlocking(ioDispatcher) { androidAccountManager.getAccountId(oldAccount) }
+        val newAccountId = runBlocking(ioDispatcher) { androidAccountManager.getAccountId(newAccount) }
+
+        checkNotNull(oldAccountId) { "Could not find id for old account ($oldAccount)" }
+        checkNotNull(newAccountId) { "Could not find id for old account ($newAccount)" }
 
         accountManager.get().getAccountsByType(context.getString(R.string.account_type_address_book))
             .filter { addressBookAccount ->
