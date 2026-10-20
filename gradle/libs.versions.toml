@@ -4,6 +4,7 @@
 android-agp = "9.4.1"
 android-desugaring = "2.1.5"
 androidx-annotation = "1.11.0"
+androidx-annotation-experimental = "1.6.0"
 androidx-activityCompose = "1.13.0"
 androidx-appcompat = "1.8.0"
 androidx-arch = "2.2.0"
@@ -57,6 +58,7 @@ commons-lang = { strictly = "3.15.0" }
 android-agp = { module = "com.android.tools.build:gradle", version.ref = "android-agp" }
 android-desugaring = { module = "com.android.tools:desugar_jdk_libs_nio", version.ref = "android-desugaring" }
 androidx-annotation = { module = "androidx.annotation:annotation", version.ref = "androidx-annotation" }
+androidx-annotation-experimental = { module = "androidx.annotation:annotation-experimental", version.ref = "androidx-annotation-experimental" }
 androidx-activityCompose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx-appcompat" }
 androidx-arch-core-testing = { module = "androidx.arch.core:core-testing", version.ref = "androidx-arch" }

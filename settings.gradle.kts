@@ -42,6 +42,8 @@ include(":app-ose")
 include(":core")
 include(":synctools")
 
+include(":features:preconfigured-settings:shared")
+
 // Uncomment for debugging / working in the subprojects.
 // Make sure that you have checked out the desired branch in the respective subproject!
 /*includeBuild("../cert4android") {
