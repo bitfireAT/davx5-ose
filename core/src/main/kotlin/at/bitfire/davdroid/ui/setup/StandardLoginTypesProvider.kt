@@ -15,19 +15,17 @@ class StandardLoginTypesProvider @Inject constructor(
     private val logger: Logger
 ) : LoginTypesProvider {
 
-    companion object {
-        val genericLoginTypes = listOf(
-            UrlLogin,
-            EmailLogin,
-            AdvancedLogin
-        )
+    private val genericLoginTypes = listOf(
+        UrlLogin,
+        EmailLogin,
+        AdvancedLogin
+    )
 
-        val specificLoginTypes = listOf(
-            FastmailLogin,
-            GoogleLogin,
-            NextcloudLogin
-        )
-    }
+    private val specificLoginTypes = listOf(
+        FastmailLogin,
+        GoogleLogin,
+        NextcloudLogin
+    )
 
     override val defaultLoginType = UrlLogin
 
@@ -56,6 +54,8 @@ class StandardLoginTypesProvider @Inject constructor(
         onContinue: () -> Unit
     ) {
         StandardLoginTypePage(
+            genericLoginTypes = genericLoginTypes,
+            specificLoginTypes = specificLoginTypes,
             selectedLoginType = selectedLoginType,
             onSelectLoginType = onSelectLoginType,
             setInitialLoginInfo = setInitialLoginInfo,
