@@ -10,6 +10,7 @@ plugins {
 
 android {
     namespace = "com.davx5.feature.preconfiguredsettings.shared"
+    resourcePrefix = "preconfigured_settings_"
 }
 
 dependencies {

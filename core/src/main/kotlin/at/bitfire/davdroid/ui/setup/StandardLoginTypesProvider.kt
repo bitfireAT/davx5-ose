@@ -8,17 +8,20 @@ import android.content.Intent
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import at.bitfire.davdroid.ui.setup.LoginTypesProvider.LoginAction
+import com.davx5.feature.preconfiguredsettings.api.PreconfiguredSettingsType
 import java.util.logging.Logger
 import javax.inject.Inject
 
 class StandardLoginTypesProvider @Inject constructor(
-    private val logger: Logger
+    private val logger: Logger,
+    @PreconfiguredSettingsType private val preconfiguredSettingsLogin: LoginType
 ) : LoginTypesProvider {
 
     private val genericLoginTypes = listOf(
         UrlLogin,
         EmailLogin,
-        AdvancedLogin
+        AdvancedLogin,
+        preconfiguredSettingsLogin
     )
 
     private val specificLoginTypes = listOf(
@@ -34,6 +37,8 @@ class StandardLoginTypesProvider @Inject constructor(
             when {
                 intent.hasExtra(LoginActivity.EXTRA_LOGIN_FLOW) ->
                     LoginAction(NextcloudLogin, true)
+                uri?.scheme == "davx5" && !uri.getQueryParameter("config").isNullOrEmpty() ->
+                    LoginAction(preconfiguredSettingsLogin, skipLoginTypePage = true)
                 uri?.scheme == "mailto" ->
                     LoginAction(EmailLogin, true)
                 listOf("caldavs", "carddavs", "davx5", "http", "https").any { uri?.scheme == it } ->

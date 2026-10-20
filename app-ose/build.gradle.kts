@@ -102,6 +102,7 @@ android {
 dependencies {
     // include core subproject (manages its own dependencies itself, however from same version catalog)
     implementation(project(":core"))
+    implementation(project(":features:preconfigured-settings:external-scanner"))
 
     // Kotlin / Android
     implementation(libs.kotlin.stdlib)
