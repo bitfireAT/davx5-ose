@@ -161,8 +161,6 @@ object PermissionUtils {
      *
      * @return whether all [permissions] are granted
      */
-    fun havePermissions(context: Context, permissions: Array<RequiredPermission>) = havePermissions(context, permissions.toList())
-
     fun havePermissions(context: Context, permissions: List<RequiredPermission>) = permissions.all { it.isGranted(context) }
 
     fun showAppSettings(context: Context) {
