@@ -14,6 +14,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.TaskStackBuilder
 import androidx.core.net.toUri
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.permissions.requiredPermissions
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.resource.local.LocalDataStore
 import at.bitfire.davdroid.resource.local.LocalJtxCollectionStore
@@ -86,7 +87,7 @@ class TasksAppManager @Inject constructor(
         settingsManager.putString(Settings.SELECTED_TASKS_PROVIDER, selectedAuthority)
 
         // check permission
-        if (selectedProvider != null && !PermissionUtils.havePermissions(context, selectedProvider.permissions))
+        if (selectedProvider != null && !PermissionUtils.havePermissions(context, selectedProvider.requiredPermissions()))
             notificationRegistry.get().notifyPermissions()
 
         // check all accounts and update task sync

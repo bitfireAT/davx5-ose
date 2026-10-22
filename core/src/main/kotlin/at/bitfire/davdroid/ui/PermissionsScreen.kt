@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.ui
 
-import android.Manifest
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
@@ -38,6 +37,8 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.permissions.RequiredPermission
+import at.bitfire.davdroid.permissions.requiredPermissions
 import at.bitfire.davdroid.ui.composable.AppTheme
 import at.bitfire.davdroid.ui.composable.CardWithImage
 import at.bitfire.davdroid.ui.composable.PermissionSwitchRow
@@ -156,19 +157,17 @@ fun PermissionsScreen(
                 )
             }
 
-            val allPermissions = mutableListOf<String>()
+            val allPermissions = mutableListOf<RequiredPermission>()
             allPermissions.addAll(PermissionUtils.CONTACT_PERMISSIONS)
             allPermissions.addAll(PermissionUtils.CALENDAR_PERMISSIONS)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
-                allPermissions += Manifest.permission.POST_NOTIFICATIONS
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.CINNAMON_BUN)
-                allPermissions += Manifest.permission.ACCESS_LOCAL_NETWORK
+            allPermissions.addAll(PermissionUtils.POST_NOTIFICATIONS_PERMISSIONS)
+            allPermissions.addAll(PermissionUtils.ACCESS_LOCAL_NETWORK_PERMISSIONS)
             if (openTasksAvailable == true)
-                allPermissions.addAll(TaskProvider.ProviderName.OpenTasks.permissions)
+                allPermissions.addAll(TaskProvider.ProviderName.OpenTasks.requiredPermissions())
             if (tasksOrgAvailable == true)
-                allPermissions.addAll(TaskProvider.ProviderName.TasksOrg.permissions)
+                allPermissions.addAll(TaskProvider.ProviderName.TasksOrg.requiredPermissions())
             if (jtxAvailable == true)
-                allPermissions.addAll(TaskProvider.ProviderName.JtxBoard.permissions)
+                allPermissions.addAll(TaskProvider.ProviderName.JtxBoard.requiredPermissions())
             PermissionSwitchRow(
                 text = stringResource(R.string.permissions_all_title),
                 permissions = allPermissions,
@@ -183,7 +182,7 @@ fun PermissionsScreen(
                     text = stringResource(R.string.permissions_notification_title),
                     summaryWhenGranted = stringResource(R.string.permissions_notification_status_on),
                     summaryWhenNotGranted = stringResource(R.string.permissions_notification_status_off),
-                    permissions = listOf(Manifest.permission.POST_NOTIFICATIONS),
+                    permissions = PermissionUtils.POST_NOTIFICATIONS_PERMISSIONS,
                     modifier = Modifier.padding(vertical = 4.dp)
                 )
 
@@ -207,7 +206,7 @@ fun PermissionsScreen(
                     text = stringResource(R.string.permissions_local_network_title),
                     summaryWhenGranted = stringResource(R.string.permissions_local_network_status_on),
                     summaryWhenNotGranted = stringResource(R.string.permissions_local_network_status_off),
-                    permissions = listOf(Manifest.permission.ACCESS_LOCAL_NETWORK),
+                    permissions = PermissionUtils.ACCESS_LOCAL_NETWORK_PERMISSIONS,
                     modifier = Modifier.padding(vertical = 4.dp)
                 )
 
@@ -216,7 +215,7 @@ fun PermissionsScreen(
                     text = stringResource(R.string.permissions_jtx_title),
                     summaryWhenGranted = stringResource(R.string.permissions_tasks_status_on),
                     summaryWhenNotGranted = stringResource(R.string.permissions_tasks_status_off),
-                    permissions = TaskProvider.ProviderName.JtxBoard.permissions.toList(),
+                    permissions = TaskProvider.ProviderName.JtxBoard.requiredPermissions(),
                     modifier = Modifier.padding(vertical = 4.dp)
                 )
             if (openTasksAvailable == true)
@@ -224,7 +223,7 @@ fun PermissionsScreen(
                     text = stringResource(R.string.permissions_opentasks_title),
                     summaryWhenGranted = stringResource(R.string.permissions_tasks_status_on),
                     summaryWhenNotGranted = stringResource(R.string.permissions_tasks_status_off),
-                    permissions = TaskProvider.ProviderName.OpenTasks.permissions.toList(),
+                    permissions = TaskProvider.ProviderName.OpenTasks.requiredPermissions(),
                     modifier = Modifier.padding(vertical = 4.dp)
                 )
             if (tasksOrgAvailable == true)
@@ -232,7 +231,7 @@ fun PermissionsScreen(
                     text = stringResource(R.string.permissions_tasksorg_title),
                     summaryWhenGranted = stringResource(R.string.permissions_tasks_status_on),
                     summaryWhenNotGranted = stringResource(R.string.permissions_tasks_status_off),
-                    permissions = TaskProvider.ProviderName.TasksOrg.permissions.toList(),
+                    permissions = TaskProvider.ProviderName.TasksOrg.requiredPermissions(),
                     modifier = Modifier.padding(vertical = 4.dp)
                 )
 
