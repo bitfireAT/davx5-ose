@@ -18,10 +18,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
-import androidx.glance.LocalContext
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import at.bitfire.synctools.storage.TaskProvider
 import java.util.logging.Logger
