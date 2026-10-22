@@ -123,7 +123,7 @@ object PermissionUtils {
                 flowOf(true)
         val locationAvailable by locationAvailableFlow.collectAsStateWithLifecycle(false)
 
-        val permissions = rememberPermissionsRequest(WIFI_SSID_PERMISSIONS)
+        val permissions = rememberPermissionsState(WIFI_SSID_PERMISSIONS)
 
         return remember {
             derivedStateOf {

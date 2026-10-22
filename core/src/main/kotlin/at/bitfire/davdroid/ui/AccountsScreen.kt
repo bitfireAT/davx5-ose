@@ -75,7 +75,7 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.accounts.LegacyAccount
 import at.bitfire.davdroid.permissions.PermissionUtils
-import at.bitfire.davdroid.permissions.rememberPermissionsRequest
+import at.bitfire.davdroid.permissions.rememberPermissionsState
 import at.bitfire.davdroid.ui.account.AccountProgress
 import at.bitfire.davdroid.ui.composable.ActionCard
 import at.bitfire.davdroid.ui.composable.AppTheme
@@ -258,12 +258,12 @@ fun AccountsScreen(
                         Column {
                             val notificationsPermissionState =
                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !LocalInspectionMode.current)
-                                    rememberPermissionsRequest(PermissionUtils.POST_NOTIFICATIONS_PERMISSIONS)
+                                    rememberPermissionsState(PermissionUtils.POST_NOTIFICATIONS_PERMISSIONS)
                                 else
                                     null
                             val localNetworkPermissionState =
                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.CINNAMON_BUN && !LocalInspectionMode.current)
-                                    rememberPermissionsRequest(PermissionUtils.ACCESS_LOCAL_NETWORK_PERMISSIONS)
+                                    rememberPermissionsState(PermissionUtils.ACCESS_LOCAL_NETWORK_PERMISSIONS)
                                 else
                                     null
 

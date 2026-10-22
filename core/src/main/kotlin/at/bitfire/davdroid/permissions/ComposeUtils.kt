@@ -72,7 +72,7 @@ class PermissionsStatusWithActivityLauncher(
 }
 
 @Composable
-fun rememberPermissionsRequest(permissions: List<RequiredPermission>): PermissionsStatusWithLauncher {
+fun rememberPermissionsState(permissions: List<RequiredPermission>): PermissionsStatusWithLauncher {
     if (LocalInspectionMode.current) {
         return PermissionsStatusWithLauncherPreview()
     }

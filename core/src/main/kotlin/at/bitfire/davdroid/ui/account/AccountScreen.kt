@@ -87,7 +87,7 @@ import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.permissions.PermissionUtils
 import at.bitfire.davdroid.permissions.PermissionUtils.requiredPermissions
 import at.bitfire.davdroid.permissions.RequiredPermission
-import at.bitfire.davdroid.permissions.rememberPermissionsRequest
+import at.bitfire.davdroid.permissions.rememberPermissionsState
 import at.bitfire.davdroid.ui.composable.ActionCard
 import at.bitfire.davdroid.ui.composable.AppTheme
 import at.bitfire.davdroid.ui.composable.ProgressBar
@@ -717,7 +717,7 @@ fun AccountScreen_ServiceTab(
 
         // permissions warning
         if (!LocalInspectionMode.current) {
-            val permissionsState = rememberPermissionsRequest(requiredPermissions)
+            val permissionsState = rememberPermissionsState(requiredPermissions)
             if (!permissionsState.allPermissionsGranted)
                 ActionCard(
                     icon = Icons.Default.SyncProblem,

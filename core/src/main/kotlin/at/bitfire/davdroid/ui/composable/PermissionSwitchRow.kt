@@ -25,7 +25,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import at.bitfire.davdroid.permissions.RequiredPermission
-import at.bitfire.davdroid.permissions.rememberPermissionsRequest
+import at.bitfire.davdroid.permissions.rememberPermissionsState
 
 @Composable
 fun PermissionSwitchRow(
@@ -100,7 +100,7 @@ fun PermissionSwitchRow(
     }
 
     val context = LocalContext.current
-    val state = rememberPermissionsRequest(permissions)
+    val state = rememberPermissionsState(permissions)
     PermissionSwitchRow(
         text = text,
         fontWeight = fontWeight,
