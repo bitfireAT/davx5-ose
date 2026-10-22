@@ -110,7 +110,8 @@ class PermissionsStatusWithActivityLauncher(
             launcher.launch(missingRuntimePermissions.permissions().toTypedArray())
             return
         }
-        missingSpecialPermissions.firstOrNull()?.specialAccessIntent?.invoke(context)
+        val intent = missingSpecialPermissions.firstOrNull()?.specialAccessIntent?.invoke(context) ?: return
+        context.startActivity(intent)
     }
 }
 
