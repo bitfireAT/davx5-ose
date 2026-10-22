@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
+  -->
+<resources>
+
+    <string name="preconfigured_settings_external_scanner_error_no_app_found">Couldn\'t find compatible QR code scanner to launch. Try manually launching an app with QR code scanning functionality.</string>
+
+</resources>

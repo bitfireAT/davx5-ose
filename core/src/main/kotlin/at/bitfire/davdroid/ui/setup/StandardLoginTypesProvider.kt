@@ -8,26 +8,27 @@ import android.content.Intent
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import at.bitfire.davdroid.ui.setup.LoginTypesProvider.LoginAction
+import com.davx5.feature.preconfiguredsettings.api.PreconfiguredSettingsType
 import java.util.logging.Logger
 import javax.inject.Inject
 
 class StandardLoginTypesProvider @Inject constructor(
-    private val logger: Logger
+    private val logger: Logger,
+    @PreconfiguredSettingsType private val preconfiguredSettingsLogin: LoginType
 ) : LoginTypesProvider {
 
-    companion object {
-        val genericLoginTypes = listOf(
-            UrlLogin,
-            EmailLogin,
-            AdvancedLogin
-        )
+    private val genericLoginTypes = listOf(
+        UrlLogin,
+        EmailLogin,
+        preconfiguredSettingsLogin,
+        AdvancedLogin
+    )
 
-        val specificLoginTypes = listOf(
-            FastmailLogin,
-            GoogleLogin,
-            NextcloudLogin
-        )
-    }
+    private val specificLoginTypes = listOf(
+        FastmailLogin,
+        GoogleLogin,
+        NextcloudLogin
+    )
 
     override val defaultLoginType = UrlLogin
 
@@ -36,6 +37,8 @@ class StandardLoginTypesProvider @Inject constructor(
             when {
                 intent.hasExtra(LoginActivity.EXTRA_LOGIN_FLOW) ->
                     LoginAction(NextcloudLogin, true)
+                uri?.scheme == "davx5" && !uri.getQueryParameter("config").isNullOrEmpty() ->
+                    LoginAction(preconfiguredSettingsLogin, skipLoginTypePage = true)
                 uri?.scheme == "mailto" ->
                     LoginAction(EmailLogin, true)
                 listOf("caldavs", "carddavs", "davx5", "http", "https").any { uri?.scheme == it } ->
@@ -56,6 +59,8 @@ class StandardLoginTypesProvider @Inject constructor(
         onContinue: () -> Unit
     ) {
         StandardLoginTypePage(
+            genericLoginTypes = genericLoginTypes,
+            specificLoginTypes = specificLoginTypes,
             selectedLoginType = selectedLoginType,
             onSelectLoginType = onSelectLoginType,
             setInitialLoginInfo = setInitialLoginInfo,

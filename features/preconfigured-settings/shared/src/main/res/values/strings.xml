@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
+  -->
+<resources>
+
+    <!-- Login with preconfigured settings -->
+    <string name="preconfigured_settings_login_type_preconfigured">Login with QR or connection profile</string>
+
+    <string name="preconfigured_settings_profile_url">Config URL</string>
+    <string name="preconfigured_settings_profile_url_help">Your server provider should give you a pre-configuration url.</string>
+
+    <string name="preconfigured_settings_scan_qr">Scan QR Code</string>
+
+    <!-- Select QR Code Login exceptions -->
+    <string name="preconfigured_settings_error_no_uri">The QR code does not contain a valid URL</string>
+    <string name="preconfigured_settings_error_no_config_url">The URL of the QR code is not a valid config URL</string>
+    <string name="preconfigured_settings_error_invalid_schema">The URL of the QR code has an unknown scheme</string>
+
+</resources>
