@@ -9,6 +9,7 @@ import at.bitfire.davdroid.accounts.LegacyAccount
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.network.HttpClientBuilder
+import at.bitfire.davdroid.permissions.requiredPermissions
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.resource.local.LocalJtxCollection
 import at.bitfire.davdroid.resource.local.LocalJtxCollectionStore
@@ -77,7 +78,7 @@ class JtxSyncManagerTest {
         hiltRule.inject()
 
         // Check jtxBoard permissions were granted (+jtxBoard is installed); skip test otherwise
-        assumeTrue(PermissionUtils.havePermissions(context, TaskProvider.ProviderName.JtxBoard.permissions))
+        assumeTrue(PermissionUtils.havePermissions(context, TaskProvider.ProviderName.JtxBoard.requiredPermissions()))
 
         // Acquire the jtx content provider
         val providerOrNull = context.contentResolver.acquireContentProviderClient(JtxContract.AUTHORITY)
