@@ -125,6 +125,15 @@ class AccountRepository @Inject constructor(
     }
 
     /**
+     * Returns the account name for the account associated with [service].
+     * @return The account name associated with the service, or `null` if not found.
+     */
+    @WorkerThread
+    fun getAccountNameBlocking(service: Service): String? {
+        return service.accountId?.let(dbAccountDao::getBlocking)?.name ?: service.accountName
+    }
+
+    /**
      * Creates a new account with discovered services and enables periodic syncs with
      * default sync interval times.
      *
