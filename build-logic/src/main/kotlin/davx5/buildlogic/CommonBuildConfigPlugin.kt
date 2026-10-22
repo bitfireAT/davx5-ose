@@ -86,13 +86,7 @@ class CommonBuildConfigPlugin : Plugin<Project> {
 
     /** Common configuration for all Android modules */
     private fun CommonExtension.configureCommonAndroid() {
-        compileSdk {
-            // Android 17
-            version = release(37) {
-                // QPR 2
-                minorApiLevel = 2
-            }
-        }
+        compileSdk = 37     // Android 17
         // see also synctools/robolectric.properties
 
         // Enable BuildConfig to generate the IS_BETA flag
