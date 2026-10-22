@@ -34,7 +34,19 @@ object PermissionUtils {
     /** There's an undocumented intent that is sent when the battery optimization whitelist changes. */
     const val ACTION_POWER_SAVE_WHITELIST_CHANGED = "android.os.action.POWER_SAVE_WHITELIST_CHANGED"
 
-    val CONTACT_PERMISSIONS = listOf(
+    val CONTACT_PERMISSIONS = if (
+        // MANAGE_CONTACTS is introduced in Android 17 QPR 2, so we have to check the full version code
+        Build.VERSION.SDK_INT_FULL >= Build.VERSION_CODES_FULL.CINNAMON_BUN_2
+    ) listOf(
+        RequiredPermission(
+            Manifest.permission.MANAGE_CONTACTS,
+            isRuntime = false,
+            specialAccessIntent = { context ->
+                val uri = Uri.fromParts("package", context.packageName, null)
+                Intent(Settings.ACTION_MANAGE_CONTACTS, uri)
+            }
+        )
+    ) else listOf(
         Manifest.permission.READ_CONTACTS,
         Manifest.permission.WRITE_CONTACTS
     ).asRuntimePermissions()
