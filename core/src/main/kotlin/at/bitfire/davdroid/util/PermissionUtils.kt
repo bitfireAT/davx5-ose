@@ -24,8 +24,8 @@ import androidx.core.location.LocationManagerCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import at.bitfire.davdroid.permissions.RequiredPermission
 import at.bitfire.davdroid.permissions.asRuntimePermissions
+import at.bitfire.davdroid.permissions.rememberPermissionsRequest
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
@@ -126,7 +126,7 @@ object PermissionUtils {
                 flowOf(true)
         val locationAvailable by locationAvailableFlow.collectAsStateWithLifecycle(false)
 
-        val permissions = rememberMultiplePermissionsState(WIFI_SSID_PERMISSIONS.map { it.permission })
+        val permissions = WIFI_SSID_PERMISSIONS.rememberPermissionsRequest()
 
         return remember {
             derivedStateOf {

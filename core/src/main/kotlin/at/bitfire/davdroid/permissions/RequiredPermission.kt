@@ -9,11 +9,20 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Process
+import androidx.activity.compose.ManagedActivityResultLauncher
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
+import androidx.glance.LocalContext
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import at.bitfire.synctools.storage.TaskProvider
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.MultiplePermissionsState
 import java.util.logging.Logger
 
 data class RequiredPermission(
@@ -24,6 +33,8 @@ data class RequiredPermission(
     companion object {
         private val logger = Logger.getLogger("RequiredPermission")
     }
+
+    val isSpecialAccess = specialAccessIntent != null
 
     fun isGranted(context: Context): Boolean {
         return if (isRuntime)
@@ -45,23 +56,66 @@ data class RequiredPermission(
 fun List<String>.asRuntimePermissions() = map { RequiredPermission(it) }
 
 fun List<RequiredPermission>.permissions() = map { it.permission }
-fun List<RequiredPermission>.runtimePermissions() = filter { it.isRuntime }
-fun List<RequiredPermission>.specialPermissions() = filter { it.specialAccessIntent != null }
-
-@ExperimentalPermissionsApi
-fun List<RequiredPermission>.launchRequest(
-    context: Context,
-    state: MultiplePermissionsState
-) {
-    val allRuntimePermissionsGranted = filter { it.isRuntime }.all { it.isGranted(context) }
-    if (!allRuntimePermissionsGranted)
-        return state.launchMultiplePermissionRequest()
-
-    val nextSpecialAccessPermissionRequest = firstOrNull { it.specialAccessIntent != null }
-    val intent = nextSpecialAccessPermissionRequest?.specialAccessIntent?.invoke(context) ?: return
-    context.startActivity(intent)
-}
 
 fun TaskProvider.ProviderName.requiredPermissions(): List<RequiredPermission> {
     return permissions.toList().asRuntimePermissions()
+}
+
+@Stable
+open class PermissionsStatus(
+    val permissions: List<RequiredPermission>,
+    val granted: List<RequiredPermission>,
+    val denied: List<RequiredPermission>
+) {
+    val allRuntimePermissionsGranted = permissions.filter { it.isRuntime }.all { granted.contains(it) }
+    val allSpecialPermissionsGranted = permissions.filter { it.isSpecialAccess }.all { granted.contains(it) }
+    val allPermissionsGranted = allRuntimePermissionsGranted && allSpecialPermissionsGranted
+
+    fun withLauncher(
+        launcher: ManagedActivityResultLauncher<Array<String>, Map<String, Boolean>>
+    ): PermissionsStatusWithLauncher {
+        return PermissionsStatusWithLauncher(permissions, granted, denied, launcher)
+    }
+}
+
+class PermissionsStatusWithLauncher(
+    permissions: List<RequiredPermission>,
+    granted: List<RequiredPermission>,
+    denied: List<RequiredPermission>,
+    private val launcher: ManagedActivityResultLauncher<Array<String>, Map<String, Boolean>>
+): PermissionsStatus(permissions, granted, denied) {
+    fun launch(context: Context) {
+        val missingRuntimePermissions = denied.filter { it.isRuntime }
+        val missingSpecialPermissions = denied.filter { it.isSpecialAccess }
+        if (missingRuntimePermissions.isNotEmpty()) {
+            launcher.launch(missingRuntimePermissions.permissions().toTypedArray())
+            return
+        }
+        missingSpecialPermissions.firstOrNull()?.specialAccessIntent?.invoke(context)
+    }
+}
+
+@Composable
+fun List<RequiredPermission>.rememberPermissionsRequest(): PermissionsStatusWithLauncher {
+    val context = LocalContext.current
+
+    fun calculateCurrentRequestStatus(): PermissionsStatus {
+        val granted = filter { it.isGranted(context) }
+        val denied = filterNot { granted.contains(it) }
+        return PermissionsStatus(this, granted, denied)
+    }
+
+    var status by remember { mutableStateOf(calculateCurrentRequestStatus()) }
+    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
+        // When we get a response from the permission request, refresh status
+        status = calculateCurrentRequestStatus()
+    }
+
+    LifecycleResumeEffect(Unit) {
+        // When app is resumed, refresh status
+        status = calculateCurrentRequestStatus()
+        onPauseOrDispose { /*nothing*/ }
+    }
+
+    return status.withLauncher(launcher)
 }

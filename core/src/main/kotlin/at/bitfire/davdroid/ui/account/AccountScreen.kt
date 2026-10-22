@@ -85,18 +85,14 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.permissions.RequiredPermission
-import at.bitfire.davdroid.permissions.permissions
+import at.bitfire.davdroid.permissions.rememberPermissionsRequest
 import at.bitfire.davdroid.permissions.requiredPermissions
-import at.bitfire.davdroid.permissions.runtimePermissions
-import at.bitfire.davdroid.permissions.specialPermissions
-import at.bitfire.davdroid.ui.PermissionsActivity
 import at.bitfire.davdroid.ui.composable.ActionCard
 import at.bitfire.davdroid.ui.composable.AppTheme
 import at.bitfire.davdroid.ui.composable.ProgressBar
 import at.bitfire.davdroid.util.PermissionUtils
 import at.bitfire.synctools.storage.TaskProvider
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -724,22 +720,12 @@ fun AccountScreen_ServiceTab(
 
         // permissions warning
         if (!LocalInspectionMode.current) {
-            val permissionsState = rememberMultiplePermissionsState(requiredPermissions.permissions())
+            val permissionsState = requiredPermissions.rememberPermissionsRequest()
             if (!permissionsState.allPermissionsGranted)
                 ActionCard(
                     icon = Icons.Default.SyncProblem,
                     actionText = stringResource(R.string.account_manage_permissions),
-                    onAction = {
-                        val intent = when {
-                            requiredPermissions.runtimePermissions().isNotEmpty() ->
-                                Intent(context, PermissionsActivity::class.java)
-                            requiredPermissions.specialPermissions().isNotEmpty() ->
-                                requiredPermissions.first().specialAccessIntent?.invoke(context)
-                            else -> null
-                        } ?: return@ActionCard
-
-                        context.startActivity(intent)
-                    },
+                    onAction = { permissionsState.launch(context) },
                     modifier = Modifier.padding(8.dp)
                 ) {
                     Text(stringResource(R.string.account_missing_permissions))

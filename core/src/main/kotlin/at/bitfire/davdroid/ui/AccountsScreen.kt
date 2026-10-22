@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.ui
 
-import android.Manifest
 import android.accounts.Account
 import android.content.Intent
 import android.os.Build
@@ -75,14 +74,13 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.accounts.LegacyAccount
+import at.bitfire.davdroid.permissions.rememberPermissionsRequest
 import at.bitfire.davdroid.ui.account.AccountProgress
 import at.bitfire.davdroid.ui.composable.ActionCard
 import at.bitfire.davdroid.ui.composable.AppTheme
 import at.bitfire.davdroid.ui.composable.FlavorComposable
 import at.bitfire.davdroid.ui.composable.ProgressBar
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.isGranted
-import com.google.accompanist.permissions.rememberPermissionState
+import at.bitfire.davdroid.util.PermissionUtils
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -133,7 +131,7 @@ fun AccountsScreen(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AccountsScreen(
     flavorComposables: Set<FlavorComposable> = emptySet(),
@@ -260,20 +258,20 @@ fun AccountsScreen(
                         Column {
                             val notificationsPermissionState =
                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !LocalInspectionMode.current)
-                                    rememberPermissionState(Manifest.permission.POST_NOTIFICATIONS)
+                                    PermissionUtils.POST_NOTIFICATIONS_PERMISSIONS.rememberPermissionsRequest()
                                 else
                                     null
                             val localNetworkPermissionState =
                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.CINNAMON_BUN && !LocalInspectionMode.current)
-                                    rememberPermissionState(Manifest.permission.ACCESS_LOCAL_NETWORK)
+                                    PermissionUtils.ACCESS_LOCAL_NETWORK_PERMISSIONS.rememberPermissionsRequest()
                                 else
                                     null
 
                             // Warnings show as action cards
                             val context = LocalContext.current
                             SyncWarnings(
-                                notificationsWarning = notificationsPermissionState?.status?.isGranted == false,
-                                localNetworkWarning = localNetworkPermissionState?.status?.isGranted == false,
+                                notificationsWarning = notificationsPermissionState?.allPermissionsGranted == false,
+                                localNetworkWarning = localNetworkPermissionState?.allPermissionsGranted == false,
                                 onManagePermissions = onManagePermissions,
                                 internetWarning = internetUnavailable,
                                 onManageConnections = {
