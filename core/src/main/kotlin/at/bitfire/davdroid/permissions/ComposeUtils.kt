@@ -43,7 +43,7 @@ abstract class PermissionsStatusWithLauncher(
     abstract fun launch(context: Context)
 }
 
-class PermissionsStatusWithLauncherPreview: PermissionsStatusWithLauncher(
+private class PermissionsStatusWithLauncherPreview: PermissionsStatusWithLauncher(
     permissions = emptyList(),
     granted = emptyList(),
     denied = emptyList()
