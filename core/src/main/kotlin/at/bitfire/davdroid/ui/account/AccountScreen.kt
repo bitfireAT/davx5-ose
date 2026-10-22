@@ -411,7 +411,7 @@ fun AccountScreen(
                             onRefresh = { isRefreshing = true; onSync() }
                         ) {
                             when (index) {
-                                idxCardDav -> {
+                                idxCardDav ->
                                     AccountScreen_ServiceTab(
                                         requiredPermissions = PermissionUtils.CONTACT_PERMISSIONS,
                                         progress = cardDavProgress,
@@ -420,7 +420,6 @@ fun AccountScreen(
                                         onCollectionDetails = onCollectionDetails,
                                         state = cardDavScrollState
                                     )
-                                }
 
                                 idxCalDav -> {
                                     val permissions = PermissionUtils.CALENDAR_PERMISSIONS.toMutableList()

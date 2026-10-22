@@ -37,6 +37,11 @@ data class RequiredPermission(
 
     val isSpecialAccess = specialAccessIntent != null
 
+    /**
+     * Checks whether the permission is granted.
+     *
+     * This automatically handles both runtime and special access permissions.
+     */
     fun isGranted(context: Context): Boolean {
         return if (isRuntime)
             ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED
@@ -54,10 +59,16 @@ data class RequiredPermission(
     }
 }
 
+/**
+ * Converts a list of Android permission [android.Manifest.permission] into a list of [RequiredPermission].
+ *
+ * The list is not checked, so it's the caller's responsibility to make sure the given permissions are valid.
+ */
 fun List<String>.asRuntimePermissions() = map { RequiredPermission(it) }
 
-fun List<RequiredPermission>.permissions() = map { it.permission }
-
+/**
+ * Converts the [permissions] list into [RequiredPermission].
+ */
 fun TaskProvider.ProviderName.requiredPermissions(): List<RequiredPermission> {
     return permissions.toList().asRuntimePermissions()
 }
@@ -107,7 +118,7 @@ class PermissionsStatusWithActivityLauncher(
         val missingRuntimePermissions = denied.filter { it.isRuntime }
         val missingSpecialPermissions = denied.filter { it.isSpecialAccess }
         if (missingRuntimePermissions.isNotEmpty()) {
-            launcher.launch(missingRuntimePermissions.permissions().toTypedArray())
+            launcher.launch(missingRuntimePermissions.map { it.permission }.toTypedArray())
             return
         }
         val intent = missingSpecialPermissions.firstOrNull()?.specialAccessIntent?.invoke(context) ?: return
