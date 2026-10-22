@@ -23,7 +23,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
 import androidx.core.location.LocationManagerCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import at.bitfire.davdroid.util.PermissionUtils.WIFI_SSID_PERMISSIONS
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import kotlinx.coroutines.flow.Flow
@@ -36,7 +35,12 @@ object PermissionUtils {
     /** There's an undocumented intent that is sent when the battery optimization whitelist changes. */
     const val ACTION_POWER_SAVE_WHITELIST_CHANGED = "android.os.action.POWER_SAVE_WHITELIST_CHANGED"
 
-    val CONTACT_PERMISSIONS = arrayOf(
+    val CONTACT_PERMISSIONS = if(
+        // MANAGE_CONTACTS is introduced in Android 17 QPR 2, so we have to check the full version code
+        Build.VERSION.SDK_INT_FULL >= Build.VERSION_CODES_FULL.CINNAMON_BUN_2
+    ) arrayOf(
+        Manifest.permission.MANAGE_CONTACTS
+    ) else arrayOf(
         Manifest.permission.READ_CONTACTS,
         Manifest.permission.WRITE_CONTACTS
     )
