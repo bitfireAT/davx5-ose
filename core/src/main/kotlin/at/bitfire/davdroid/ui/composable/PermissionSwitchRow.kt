@@ -26,7 +26,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import at.bitfire.davdroid.permissions.RequiredPermission
 import at.bitfire.davdroid.permissions.rememberPermissionsRequest
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
 
 @Composable
 fun PermissionSwitchRow(
@@ -78,7 +77,6 @@ fun PermissionSwitchRow(
 }
 
 @Composable
-@OptIn(ExperimentalPermissionsApi::class)
 fun PermissionSwitchRow(
     text: String,
     permissions: List<RequiredPermission>,

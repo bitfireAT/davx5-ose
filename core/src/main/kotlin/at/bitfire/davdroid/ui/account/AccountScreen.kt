@@ -92,7 +92,6 @@ import at.bitfire.davdroid.ui.composable.AppTheme
 import at.bitfire.davdroid.ui.composable.ProgressBar
 import at.bitfire.davdroid.util.PermissionUtils
 import at.bitfire.synctools.storage.TaskProvider
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -687,7 +686,6 @@ fun AccountScreen_Actions(
         )
 }
 
-@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun AccountScreen_ServiceTab(
     requiredPermissions: List<RequiredPermission>,

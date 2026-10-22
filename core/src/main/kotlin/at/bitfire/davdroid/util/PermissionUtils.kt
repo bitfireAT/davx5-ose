@@ -25,7 +25,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import at.bitfire.davdroid.permissions.RequiredPermission
 import at.bitfire.davdroid.permissions.asRuntimePermissions
 import at.bitfire.davdroid.permissions.rememberPermissionsRequest
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
@@ -111,7 +110,6 @@ object PermissionUtils {
      * @return `true` if SSID can be obtained reliably; `false` otherwise (SSID will be "unknown" or something like that)
      */
     @Composable
-    @OptIn(ExperimentalPermissionsApi::class)
     fun rememberCanAccessWifiSsid(): State<Boolean> {
         // before Android 8.1, SSIDs are always readable
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O_MR1)
