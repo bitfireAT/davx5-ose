@@ -18,6 +18,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
 import androidx.glance.LocalContext
@@ -74,17 +75,35 @@ open class PermissionsStatus(
     fun withLauncher(
         launcher: ManagedActivityResultLauncher<Array<String>, Map<String, Boolean>>
     ): PermissionsStatusWithLauncher {
-        return PermissionsStatusWithLauncher(permissions, granted, denied, launcher)
+        return PermissionsStatusWithActivityLauncher(permissions, granted, denied, launcher)
     }
 }
 
-class PermissionsStatusWithLauncher(
+abstract class PermissionsStatusWithLauncher(
+    permissions: List<RequiredPermission>,
+    granted: List<RequiredPermission>,
+    denied: List<RequiredPermission>,
+): PermissionsStatus(permissions, granted, denied) {
+    abstract fun launch(context: Context)
+}
+
+class PermissionsStatusWithLauncherPreview: PermissionsStatusWithLauncher(
+    permissions = emptyList(),
+    granted = emptyList(),
+    denied = emptyList()
+) {
+    override fun launch(context: Context) {
+        // no-op
+    }
+}
+
+class PermissionsStatusWithActivityLauncher(
     permissions: List<RequiredPermission>,
     granted: List<RequiredPermission>,
     denied: List<RequiredPermission>,
     private val launcher: ManagedActivityResultLauncher<Array<String>, Map<String, Boolean>>
-): PermissionsStatus(permissions, granted, denied) {
-    fun launch(context: Context) {
+): PermissionsStatusWithLauncher(permissions, granted, denied) {
+    override fun launch(context: Context) {
         val missingRuntimePermissions = denied.filter { it.isRuntime }
         val missingSpecialPermissions = denied.filter { it.isSpecialAccess }
         if (missingRuntimePermissions.isNotEmpty()) {
@@ -97,6 +116,10 @@ class PermissionsStatusWithLauncher(
 
 @Composable
 fun List<RequiredPermission>.rememberPermissionsRequest(): PermissionsStatusWithLauncher {
+    if (LocalInspectionMode.current) {
+        return PermissionsStatusWithLauncherPreview()
+    }
+
     val context = LocalContext.current
 
     fun calculateCurrentRequestStatus(): PermissionsStatus {
