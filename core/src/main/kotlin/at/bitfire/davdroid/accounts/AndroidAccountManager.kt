@@ -6,12 +6,21 @@ package at.bitfire.davdroid.accounts
 
 import android.accounts.Account
 import android.accounts.AccountManager
+import android.accounts.OnAccountsUpdateListener
 import android.content.Context
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
+import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.sync.account.InvalidAccountException
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
 import javax.inject.Provider
 
@@ -21,7 +30,8 @@ import javax.inject.Provider
 class AndroidAccountManager @Inject constructor(
     private val accountManager: Provider<AccountManager>,
     @ApplicationContext context: Context,
-    database: AppDatabase
+    database: AppDatabase,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) {
     private val dbAccountType = context.getString(R.string.account_type_db)
 
@@ -45,6 +55,27 @@ class AndroidAccountManager @Inject constructor(
             }
         }
     }
+
+    /**
+     * Returns a flow that updates automatically whenever the account with id [accountId] is updated.
+     * @param accountId The id of the account to get updates from
+     * @param handler The handler to attach the listener to
+     */
+    fun getAndroidAccountFlow(
+        accountId: AccountId,
+        handler: Handler = Handler(Looper.getMainLooper())
+    ): Flow<Account> = callbackFlow {
+        val accountManager = accountManager.get()
+
+        val listener = OnAccountsUpdateListener {
+            trySend(getAndroidAccount(accountId))
+        }
+        accountManager.addOnAccountsUpdatedListener(listener, handler, true)
+
+        awaitClose {
+            accountManager.removeOnAccountsUpdatedListener(listener)
+        }
+    }.flowOn(ioDispatcher) // we access the database, so the run the flow in the io dispatcher
 
     /**
      * Returns the [AccountId] for a given Android [Account].

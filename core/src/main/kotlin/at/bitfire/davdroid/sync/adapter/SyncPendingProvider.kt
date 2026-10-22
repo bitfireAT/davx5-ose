@@ -11,15 +11,12 @@ import at.bitfire.davdroid.accounts.AndroidAccountManager
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.resource.local.LocalAddressBookStore
 import at.bitfire.davdroid.sync.SyncDataType
-import at.bitfire.davdroid.sync.account.InvalidAccountException
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class SyncPendingProvider @Inject constructor(
@@ -41,7 +38,6 @@ class SyncPendingProvider @Inject constructor(
      *
      * @return flow emitting true if any of the given data types has a sync pending, false otherwise
      */
-    @OptIn(ExperimentalCoroutinesApi::class)
     fun isSyncPending(accountId: AccountId, dataTypes: Iterable<SyncDataType>): Flow<Boolean> {
         // Determine the pending state for each data type of the account as separate flows
         val pendingStateFlows: List<Flow<Boolean>> = dataTypes.mapNotNull { dataType ->
@@ -52,15 +48,9 @@ class SyncPendingProvider @Inject constructor(
                     SyncDataType.CONTACTS -> {
                         localAddressBookStore.getAddressBookAccountsFlow(accountId)
                     }
-                    else -> flow {
-                        val accounts = try {
-                            listOf(androidAccountManager.getAndroidAccount(accountId))
-                        } catch (_: InvalidAccountException) {
-                            // account doesn't exist (anymore), so there can't be a pending sync
-                            emptyList()
-                        }
-                        emit(accounts)
-                    }.flowOn(ioDispatcher)       // may access the database, so it must not run on the main thread
+                    else -> {
+                        androidAccountManager.getAndroidAccountFlow(accountId).map { listOf(it) }
+                    }
                 }
 
                 // Return the pending state flow for accounts with this authority
