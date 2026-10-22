@@ -128,7 +128,6 @@ dependencies {
     implementation(libs.androidx.work.base)
 
     // Jetpack Compose
-    implementation(libs.compose.accompanist.permissions)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.material3.adaptive)

@@ -39,11 +39,12 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.permissions.PermissionUtils
+import at.bitfire.davdroid.permissions.PermissionUtils.asRuntimePermissions
 import at.bitfire.davdroid.ui.ExternalUris
 import at.bitfire.davdroid.ui.ExternalUris.withStatParams
 import at.bitfire.davdroid.ui.composable.AppTheme
 import at.bitfire.davdroid.ui.composable.PermissionSwitchRow
-import at.bitfire.davdroid.util.PermissionUtils
 
 @Composable
 fun WifiPermissionsScreen(
@@ -202,7 +203,7 @@ fun LocationPermission(
 
     PermissionSwitchRow(
         text = stringResource(R.string.wifi_permissions_location_permission),
-        permissions = listOf(permission),
+        permissions = listOf(permission).asRuntimePermissions(),
         summaryWhenGranted = stringResource(R.string.wifi_permissions_location_permission_on),
         summaryWhenNotGranted = stringResource(R.string.wifi_permissions_location_permission_off),
         modifier = modifier
@@ -217,7 +218,7 @@ fun BackgroundLocationPermission(
 ) {
     PermissionSwitchRow(
         text = stringResource(R.string.wifi_permissions_background_location_permission),
-        permissions = listOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION),
+        permissions = listOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION).asRuntimePermissions(),
         summaryWhenGranted = stringResource(R.string.wifi_permissions_background_location_permission_on, backgroundPermissionOptionLabel),
         summaryWhenNotGranted = stringResource(R.string.wifi_permissions_background_location_permission_off, backgroundPermissionOptionLabel),
         modifier = modifier

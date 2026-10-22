@@ -9,6 +9,8 @@ import at.bitfire.davdroid.accounts.LegacyAccount
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.network.HttpClientBuilder
+import at.bitfire.davdroid.permissions.PermissionUtils
+import at.bitfire.davdroid.permissions.PermissionUtils.requiredPermissions
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.resource.local.LocalJtxCollection
 import at.bitfire.davdroid.resource.local.LocalJtxCollectionStore
@@ -16,7 +18,6 @@ import at.bitfire.davdroid.resource.remote.CalDavCollection
 import at.bitfire.davdroid.resource.remote.CalendarQueryFilter
 import at.bitfire.davdroid.sync.account.TestAccount
 import at.bitfire.davdroid.util.DavUtils.toUrl
-import at.bitfire.davdroid.util.PermissionUtils
 import at.bitfire.synctools.storage.LocalStorageClient
 import at.bitfire.synctools.storage.TaskProvider
 import at.bitfire.synctools.test.GrantPermissionOrSkipRule
@@ -77,7 +78,7 @@ class JtxSyncManagerTest {
         hiltRule.inject()
 
         // Check jtxBoard permissions were granted (+jtxBoard is installed); skip test otherwise
-        assumeTrue(PermissionUtils.havePermissions(context, TaskProvider.ProviderName.JtxBoard.permissions))
+        assumeTrue(PermissionUtils.havePermissions(context, TaskProvider.ProviderName.JtxBoard.requiredPermissions()))
 
         // Acquire the jtx content provider
         val providerOrNull = context.contentResolver.acquireContentProviderClient(JtxContract.AUTHORITY)
