@@ -6,12 +6,12 @@ package at.bitfire.davdroid.ui.intro
 
 import android.content.Context
 import androidx.compose.runtime.Composable
-import at.bitfire.davdroid.permissions.requiredPermissions
+import at.bitfire.davdroid.permissions.PermissionUtils
+import at.bitfire.davdroid.permissions.PermissionUtils.CALENDAR_PERMISSIONS
+import at.bitfire.davdroid.permissions.PermissionUtils.CONTACT_PERMISSIONS
+import at.bitfire.davdroid.permissions.PermissionUtils.requiredPermissions
 import at.bitfire.davdroid.ui.PermissionsScreen
 import at.bitfire.davdroid.ui.PermissionsViewModel
-import at.bitfire.davdroid.util.PermissionUtils
-import at.bitfire.davdroid.util.PermissionUtils.CALENDAR_PERMISSIONS
-import at.bitfire.davdroid.util.PermissionUtils.CONTACT_PERMISSIONS
 import at.bitfire.synctools.storage.TaskProvider
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject

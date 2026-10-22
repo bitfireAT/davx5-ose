@@ -2,7 +2,7 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  */
 
-package at.bitfire.davdroid.util
+package at.bitfire.davdroid.permissions
 
 import android.Manifest
 import android.content.Context
@@ -22,9 +22,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.getSystemService
 import androidx.core.location.LocationManagerCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import at.bitfire.davdroid.permissions.RequiredPermission
-import at.bitfire.davdroid.permissions.asRuntimePermissions
-import at.bitfire.davdroid.permissions.rememberPermissionsRequest
+import at.bitfire.davdroid.util.broadcastReceiverFlow
+import at.bitfire.synctools.storage.TaskProvider
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
@@ -124,7 +123,7 @@ object PermissionUtils {
                 flowOf(true)
         val locationAvailable by locationAvailableFlow.collectAsStateWithLifecycle(false)
 
-        val permissions = WIFI_SSID_PERMISSIONS.rememberPermissionsRequest()
+        val permissions = rememberPermissionsRequest(WIFI_SSID_PERMISSIONS)
 
         return remember {
             derivedStateOf {
@@ -173,6 +172,20 @@ object PermissionUtils {
             context.startActivity(intent)
         else
             Logger.getGlobal().warning("App settings Intent not resolvable")
+    }
+
+    /**
+     * Converts a list of Android permission [android.Manifest.permission] into a list of [RequiredPermission].
+     *
+     * The list is not checked, so it's the caller's responsibility to make sure the given permissions are valid.
+     */
+    fun List<String>.asRuntimePermissions() = map { RequiredPermission(it) }
+
+    /**
+     * Converts the [permissions] list into [RequiredPermission].
+     */
+    fun TaskProvider.ProviderName.requiredPermissions(): List<RequiredPermission> {
+        return permissions.asRuntimePermissions()
     }
 
 }

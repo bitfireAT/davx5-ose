@@ -84,13 +84,13 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.db.Collection
+import at.bitfire.davdroid.permissions.PermissionUtils
+import at.bitfire.davdroid.permissions.PermissionUtils.requiredPermissions
 import at.bitfire.davdroid.permissions.RequiredPermission
 import at.bitfire.davdroid.permissions.rememberPermissionsRequest
-import at.bitfire.davdroid.permissions.requiredPermissions
 import at.bitfire.davdroid.ui.composable.ActionCard
 import at.bitfire.davdroid.ui.composable.AppTheme
 import at.bitfire.davdroid.ui.composable.ProgressBar
-import at.bitfire.davdroid.util.PermissionUtils
 import at.bitfire.synctools.storage.TaskProvider
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -717,7 +717,7 @@ fun AccountScreen_ServiceTab(
 
         // permissions warning
         if (!LocalInspectionMode.current) {
-            val permissionsState = requiredPermissions.rememberPermissionsRequest()
+            val permissionsState = rememberPermissionsRequest(requiredPermissions)
             if (!permissionsState.allPermissionsGranted)
                 ActionCard(
                     icon = Icons.Default.SyncProblem,

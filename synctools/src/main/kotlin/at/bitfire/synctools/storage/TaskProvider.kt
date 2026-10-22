@@ -23,7 +23,7 @@ object TaskProvider {
         val packageName: String,
         val minVersionCode: Long,
         val minVersionName: String,
-        val permissions: Array<String>
+        val permissions: List<String>
     ) {
 
         JtxBoard(
@@ -31,21 +31,21 @@ object TaskProvider {
             packageName = "at.techbee.jtx",
             minVersionCode = 217020009,
             minVersionName = "2.17.00",
-            permissions = arrayOf("at.techbee.jtx.permission.READ", "at.techbee.jtx.permission.WRITE")
+            permissions = listOf("at.techbee.jtx.permission.READ", "at.techbee.jtx.permission.WRITE")
         ),
         TasksOrg(
             authority = "org.tasks.opentasks",
             packageName = "org.tasks",
             minVersionCode = 100000,
             minVersionName = "10.0",
-            permissions = arrayOf("org.tasks.permission.READ_TASKS", "org.tasks.permission.WRITE_TASKS")
+            permissions = listOf("org.tasks.permission.READ_TASKS", "org.tasks.permission.WRITE_TASKS")
         ),
         OpenTasks(
             authority = "org.dmfs.tasks",
             packageName = "org.dmfs.tasks",
             minVersionCode = 103,
             minVersionName = "1.1.8.2",
-            permissions = arrayOf("org.dmfs.permission.READ_TASKS", "org.dmfs.permission.WRITE_TASKS")
+            permissions = listOf("org.dmfs.permission.READ_TASKS", "org.dmfs.permission.WRITE_TASKS")
         );
     }
 

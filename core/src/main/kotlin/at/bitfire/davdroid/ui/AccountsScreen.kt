@@ -74,13 +74,13 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.accounts.LegacyAccount
+import at.bitfire.davdroid.permissions.PermissionUtils
 import at.bitfire.davdroid.permissions.rememberPermissionsRequest
 import at.bitfire.davdroid.ui.account.AccountProgress
 import at.bitfire.davdroid.ui.composable.ActionCard
 import at.bitfire.davdroid.ui.composable.AppTheme
 import at.bitfire.davdroid.ui.composable.FlavorComposable
 import at.bitfire.davdroid.ui.composable.ProgressBar
-import at.bitfire.davdroid.util.PermissionUtils
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -258,12 +258,12 @@ fun AccountsScreen(
                         Column {
                             val notificationsPermissionState =
                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !LocalInspectionMode.current)
-                                    PermissionUtils.POST_NOTIFICATIONS_PERMISSIONS.rememberPermissionsRequest()
+                                    rememberPermissionsRequest(PermissionUtils.POST_NOTIFICATIONS_PERMISSIONS)
                                 else
                                     null
                             val localNetworkPermissionState =
                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.CINNAMON_BUN && !LocalInspectionMode.current)
-                                    PermissionUtils.ACCESS_LOCAL_NETWORK_PERMISSIONS.rememberPermissionsRequest()
+                                    rememberPermissionsRequest(PermissionUtils.ACCESS_LOCAL_NETWORK_PERMISSIONS)
                                 else
                                     null
 
