@@ -100,7 +100,7 @@ fun PermissionSwitchRow(
     }
 
     val context = LocalContext.current
-    val state = permissions.rememberPermissionsRequest()
+    val state = rememberPermissionsRequest(permissions)
     PermissionSwitchRow(
         text = text,
         fontWeight = fontWeight,

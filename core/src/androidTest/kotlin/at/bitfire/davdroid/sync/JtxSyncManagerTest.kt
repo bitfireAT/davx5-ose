@@ -10,7 +10,7 @@ import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.network.HttpClientBuilder
 import at.bitfire.davdroid.permissions.PermissionUtils
-import at.bitfire.davdroid.permissions.requiredPermissions
+import at.bitfire.davdroid.permissions.PermissionUtils.requiredPermissions
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.resource.local.LocalJtxCollection
 import at.bitfire.davdroid.resource.local.LocalJtxCollectionStore
