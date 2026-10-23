@@ -220,7 +220,7 @@ class LocalAddressBookStore @Inject constructor(
         val newAccountId = runBlocking(ioDispatcher) { androidAccountManager.getAccountId(newAccount) }
 
         checkNotNull(oldAccountId) { "Could not find id for old account ($oldAccount)" }
-        checkNotNull(newAccountId) { "Could not find id for old account ($newAccount)" }
+        checkNotNull(newAccountId) { "Could not find id for new account ($newAccount)" }
 
         accountManager.get().getAccountsByType(context.getString(R.string.account_type_address_book))
             .filter { addressBookAccount ->
