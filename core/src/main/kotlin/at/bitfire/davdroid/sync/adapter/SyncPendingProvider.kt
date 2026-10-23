@@ -49,7 +49,7 @@ class SyncPendingProvider @Inject constructor(
                         localAddressBookStore.getAddressBookAccountsFlow(accountId)
                     }
                     else -> {
-                        androidAccountManager.getAndroidAccountFlow(accountId).map { listOf(it) }
+                        androidAccountManager.getAndroidAccountFlow(accountId).map { listOfNotNull(it) }
                     }
                 }
 
