@@ -125,6 +125,15 @@ class AccountRepository @Inject constructor(
     }
 
     /**
+     * Returns the account name for the account associated with [service].
+     * @return The account name associated with the service, or `null` if not found.
+     */
+    @WorkerThread
+    fun getAccountNameBlocking(service: Service): String? {
+        return service.accountId?.let(dbAccountDao::getBlocking)?.name ?: service.accountName
+    }
+
+    /**
      * Creates a new account with discovered services and enables periodic syncs with
      * default sync interval times.
      *
@@ -178,9 +187,10 @@ class AccountRepository @Inject constructor(
         )
 
         // insert the initial account settings into the database
-        val accountSettings = accountSettingsFactory.create(accountId)
-        withContext(ioDispatcher) {
-            accountSettings.putInitialSettings(credentials, preconfigurationUrl)
+        val accountSettings = withContext(ioDispatcher) {
+            accountSettingsFactory.create(accountId).also {
+                it.putInitialSettings(credentials, preconfigurationUrl)
+            }
         }
 
         val account = Account(accountName, dbAccountType)
@@ -241,6 +251,7 @@ class AccountRepository @Inject constructor(
         return accountId
     }
 
+    @WorkerThread
     fun createLegacyBlocking(
         accountName: String,
         credentials: Credentials?,
@@ -296,7 +307,7 @@ class AccountRepository @Inject constructor(
             is LegacyAccount -> accountId.androidAccount
             is DbAccountId -> {
                 val dbAccount = dbAccountDao.get(accountId.id) ?: return false
-                Account(dbAccount.name, legacyAccountType)
+                Account(dbAccount.name, dbAccountType)
             }
         }
 
@@ -559,7 +570,7 @@ class AccountRepository @Inject constructor(
         // insert service
         val service = when(accountId) {
             is LegacyAccount -> Service(0, accountName, null, type, info.principal)
-            is DbAccountId -> Service(0, accountName, accountId.id, type, info.principal)
+            is DbAccountId -> Service(0, null, accountId.id, type, info.principal)
         }
         val serviceId = serviceRepository.insertOrReplaceBlocking(service)
 

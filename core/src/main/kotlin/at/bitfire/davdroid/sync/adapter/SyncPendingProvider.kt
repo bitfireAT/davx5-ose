@@ -8,21 +8,23 @@ import android.accounts.Account
 import android.content.Context
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.accounts.AndroidAccountManager
+import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.resource.local.LocalAddressBookStore
 import at.bitfire.davdroid.sync.SyncDataType
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class SyncPendingProvider @Inject constructor(
     private val androidAccountManager: AndroidAccountManager,
     @ApplicationContext private val context: Context,
     private val localAddressBookStore: LocalAddressBookStore,
-    private val syncFrameworkIntegration: SyncFrameworkIntegration
+    private val syncFrameworkIntegration: SyncFrameworkIntegration,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) {
 
     /**
@@ -36,7 +38,6 @@ class SyncPendingProvider @Inject constructor(
      *
      * @return flow emitting true if any of the given data types has a sync pending, false otherwise
      */
-    @OptIn(ExperimentalCoroutinesApi::class)
     fun isSyncPending(accountId: AccountId, dataTypes: Iterable<SyncDataType>): Flow<Boolean> {
         // Determine the pending state for each data type of the account as separate flows
         val pendingStateFlows: List<Flow<Boolean>> = dataTypes.mapNotNull { dataType ->
@@ -48,8 +49,7 @@ class SyncPendingProvider @Inject constructor(
                         localAddressBookStore.getAddressBookAccountsFlow(accountId)
                     }
                     else -> {
-                        val account = androidAccountManager.getAndroidAccount(accountId)
-                        flowOf(listOf(account))
+                        androidAccountManager.getAndroidAccountFlow(accountId).map { listOfNotNull(it) }
                     }
                 }
 
