@@ -64,11 +64,29 @@ class AndroidAccountManager @Inject constructor(
     fun getAndroidAccountFlow(
         accountId: AccountId,
         handler: Handler = Handler(Looper.getMainLooper())
-    ): Flow<Account> = callbackFlow {
+    ): Flow<Account?> = callbackFlow {
         val accountManager = accountManager.get()
 
-        val listener = OnAccountsUpdateListener {
-            trySend(getAndroidAccount(accountId))
+        val listener = OnAccountsUpdateListener { accounts ->
+            val account = try {
+                getAndroidAccount(accountId)
+            } catch (_: InvalidAccountException) {
+                // DB Account not found
+                null
+            }
+            // If account was not found, emit null
+            if (account == null) {
+                trySend(null)
+                return@OnAccountsUpdateListener
+            }
+            // Once here, it's still possible that the account doesn't exist anymore, check it
+            if (!accounts.contains(account)) {
+                // The updated accounts list that account manager gave us doesn't contain the account: it no longer exists
+                trySend(null)
+                return@OnAccountsUpdateListener
+            }
+            // Finally, the account does indeed exist, emit it
+            trySend(account)
         }
         accountManager.addOnAccountsUpdatedListener(listener, handler, true)
 
