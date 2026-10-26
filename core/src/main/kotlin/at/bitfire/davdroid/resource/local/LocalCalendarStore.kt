@@ -127,6 +127,22 @@ class LocalCalendarStore @Inject constructor(
         logger.log(Level.FINE, "Updating local calendar {0}: {1}", arrayOf(fromCollection.url, values))
         val androidCalendar = localCollection.androidCalendar
         val provider = AndroidCalendarProvider(androidCalendar.account, client)
+
+        // Before the collection URL was stored in AndroidCalendarProvider.COLUMN_CALENDAR_URL, the sync state
+        // was stored in this column. Move it to the sync state column so that it isn't lost when the URL is
+        // written below.
+        client.query(
+            provider.calendarUri(androidCalendar.id),
+            arrayOf(AndroidCalendarProvider.COLUMN_CALENDAR_SYNC_STATE, AndroidCalendarProvider.COLUMN_CALENDAR_URL),
+            null, null, null
+        )?.use { cursor ->
+            if (cursor.moveToNext() && cursor.isNull(0)) {
+                val legacySyncState = cursor.getString(1)
+                if (legacySyncState != null && SyncState.fromString(legacySyncState) != null)
+                    values.put(AndroidCalendarProvider.COLUMN_CALENDAR_SYNC_STATE, legacySyncState)
+            }
+        }
+
         provider.updateCalendar(androidCalendar.id, values)
     }
 
@@ -138,6 +154,11 @@ class LocalCalendarStore @Inject constructor(
     private fun valuesFromCollectionInfo(info: Collection, withColor: Boolean): ContentValues {
         val values = contentValuesOf(
             Calendars._SYNC_ID to info.id,
+
+            // Collection URL, so that other apps (which don't have access to DAVx⁵'s database)
+            // can find out the URL of the collection. Uses the same column as Google Calendar.
+            AndroidCalendarProvider.COLUMN_CALENDAR_URL to info.url.toString(),
+
             Calendars.CALENDAR_DISPLAY_NAME to
                     if (info.displayName.isNullOrBlank()) extractCollectionName(info.url) else info.displayName,
 

@@ -18,6 +18,7 @@ import at.bitfire.synctools.storage.LocalStorageClient
 import org.junit.After
 import org.junit.AfterClass
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.BeforeClass
 import org.junit.ClassRule
 import org.junit.Test
@@ -114,6 +115,50 @@ class AndroidCalendarProviderTest {
         } finally {
             cal.delete()
         }
+    }
+
+    @Test
+    fun testReadWriteCalendarSyncState() {
+        provider.writeCalendarSyncState(calendar.id, null)
+        assertNull(provider.readCalendarSyncState(calendar.id))
+
+        val syncState = """{"type":"CTAG","value":"ctag-123"}"""
+        provider.writeCalendarSyncState(calendar.id, syncState)
+        assertEquals(syncState, provider.readCalendarSyncState(calendar.id))
+
+        // the sync state is stored in the sync state column (not the URL column)
+        client.query(provider.calendarUri(calendar.id), arrayOf(AndroidCalendarProvider.COLUMN_CALENDAR_SYNC_STATE), null, null, null)!!.use { cursor ->
+            cursor.moveToNext()
+            assertEquals(syncState, cursor.getString(0))
+        }
+
+        provider.writeCalendarSyncState(calendar.id, null)
+    }
+
+    @Test
+    fun testReadCalendarSyncState_IgnoresCalendarUrl() {
+        // the URL column (which was used for the sync state before) may contain a calendar URL,
+        // which is no valid sync state and must not be returned as sync state
+        provider.updateCalendar(calendar.id, contentValuesOf(
+            AndroidCalendarProvider.COLUMN_CALENDAR_SYNC_STATE to null,
+            AndroidCalendarProvider.COLUMN_CALENDAR_URL to "https://example.com/caldav/calendar/"
+        ))
+        assertNull(provider.readCalendarSyncState(calendar.id))
+
+        provider.updateCalendar(calendar.id, contentValuesOf(AndroidCalendarProvider.COLUMN_CALENDAR_URL to null))
+    }
+
+    @Test
+    fun testCalendarUrl() {
+        // other apps can access the collection URL in the URL column
+        val url = "https://example.com/caldav/calendar/"
+        provider.updateCalendar(calendar.id, contentValuesOf(AndroidCalendarProvider.COLUMN_CALENDAR_URL to url))
+        client.query(provider.calendarUri(calendar.id), arrayOf(AndroidCalendarProvider.COLUMN_CALENDAR_URL), null, null, null)!!.use { cursor ->
+            cursor.moveToNext()
+            assertEquals(url, cursor.getString(0))
+        }
+
+        provider.updateCalendar(calendar.id, contentValuesOf(AndroidCalendarProvider.COLUMN_CALENDAR_URL to null))
     }
 
     private fun countColors(): Int {
