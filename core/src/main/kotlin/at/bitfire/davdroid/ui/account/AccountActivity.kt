@@ -95,6 +95,7 @@ class AccountActivity : AppCompatActivity() {
         finish()
     }
 
+    // TODO: Move this functionality to AccountScreenViewModel the next time it is refactored.
     private suspend fun loadAccountId(): AccountId? {
         return extractAccountIdFromExtra() ?: fetchAccountIdForAndroidAccount()
     }
