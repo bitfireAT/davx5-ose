@@ -2,16 +2,16 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  */
 
-package at.bitfire.davdroid.util
+package at.bitfire.davdroid.permissions
 
 import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.content.pm.PackageManager
 import android.location.LocationManager
 import android.net.Uri
 import android.os.Build
+import android.provider.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
@@ -19,13 +19,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
-import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
 import androidx.core.location.LocationManagerCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import at.bitfire.davdroid.util.PermissionUtils.WIFI_SSID_PERMISSIONS
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import at.bitfire.davdroid.util.broadcastReceiverFlow
+import at.bitfire.synctools.storage.TaskProvider
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
@@ -36,24 +34,34 @@ object PermissionUtils {
     /** There's an undocumented intent that is sent when the battery optimization whitelist changes. */
     const val ACTION_POWER_SAVE_WHITELIST_CHANGED = "android.os.action.POWER_SAVE_WHITELIST_CHANGED"
 
-    val CONTACT_PERMISSIONS = arrayOf(
+    val CONTACT_PERMISSIONS = listOf(
         Manifest.permission.READ_CONTACTS,
         Manifest.permission.WRITE_CONTACTS
-    )
-    val CALENDAR_PERMISSIONS = arrayOf(
+    ).asRuntimePermissions()
+    val CALENDAR_PERMISSIONS = listOf(
         Manifest.permission.READ_CALENDAR,
         Manifest.permission.WRITE_CALENDAR
-    )
+    ).asRuntimePermissions()
+
+    val POST_NOTIFICATIONS_PERMISSIONS = when {
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> listOf(Manifest.permission.POST_NOTIFICATIONS)
+        else -> emptyList()
+    }.asRuntimePermissions()
+
+    val ACCESS_LOCAL_NETWORK_PERMISSIONS = when {
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.CINNAMON_BUN -> listOf(Manifest.permission.ACCESS_LOCAL_NETWORK)
+        else -> emptyList()
+    }.asRuntimePermissions()
 
     val WIFI_SSID_PERMISSIONS =
         when {
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q ->
-                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+                listOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_BACKGROUND_LOCATION)
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1 ->
-                arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION)
+                listOf(Manifest.permission.ACCESS_COARSE_LOCATION)
             else ->
-                arrayOf()
-        }
+                emptyList()
+        }.asRuntimePermissions()
 
     /**
      * Checks whether all conditions to access the current WiFi's SSID are met:
@@ -89,7 +97,6 @@ object PermissionUtils {
      * @return `true` if SSID can be obtained reliably; `false` otherwise (SSID will be "unknown" or something like that)
      */
     @Composable
-    @OptIn(ExperimentalPermissionsApi::class)
     fun rememberCanAccessWifiSsid(): State<Boolean> {
         // before Android 8.1, SSIDs are always readable
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O_MR1)
@@ -104,7 +111,7 @@ object PermissionUtils {
                 flowOf(true)
         val locationAvailable by locationAvailableFlow.collectAsStateWithLifecycle(false)
 
-        val permissions = rememberMultiplePermissionsState(WIFI_SSID_PERMISSIONS.toList())
+        val permissions = rememberPermissionsState(WIFI_SSID_PERMISSIONS)
 
         return remember {
             derivedStateOf {
@@ -132,8 +139,7 @@ object PermissionUtils {
      *
      * @return whether at least one of [permissions] is granted
      */
-    fun haveAnyPermission(context: Context, permissions: Array<String>) =
-        permissions.any { ContextCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED }
+    fun haveAnyPermission(context: Context, permissions: List<RequiredPermission>) = permissions.any { it.isGranted(context) }
 
     /**
      * Checks whether all given permissions are granted.
@@ -143,16 +149,29 @@ object PermissionUtils {
      *
      * @return whether all [permissions] are granted
      */
-    fun havePermissions(context: Context, permissions: Array<String>) =
-        permissions.all { ContextCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED }
+    fun havePermissions(context: Context, permissions: List<RequiredPermission>) = permissions.all { it.isGranted(context) }
 
     fun showAppSettings(context: Context) {
-        val intent = Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
                 Uri.fromParts("package", context.packageName, null))
         if (intent.resolveActivity(context.packageManager) != null)
             context.startActivity(intent)
         else
             Logger.getGlobal().warning("App settings Intent not resolvable")
+    }
+
+    /**
+     * Converts a list of Android permission [android.Manifest.permission] into a list of [RequiredPermission].
+     *
+     * The list is not checked, so it's the caller's responsibility to make sure the given permissions are valid.
+     */
+    fun List<String>.asRuntimePermissions() = map { RequiredPermission(it) }
+
+    /**
+     * Converts the [permissions] list into [RequiredPermission].
+     */
+    fun TaskProvider.ProviderName.requiredPermissions(): List<RequiredPermission> {
+        return permissions.asRuntimePermissions()
     }
 
 }

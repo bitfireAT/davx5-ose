@@ -10,10 +10,10 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.net.wifi.WifiManager
 import androidx.core.content.getSystemService
+import at.bitfire.davdroid.permissions.PermissionUtils
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.ui.NotificationRegistry
 import at.bitfire.davdroid.ui.account.WifiPermissionsActivity
-import at.bitfire.davdroid.util.PermissionUtils
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject

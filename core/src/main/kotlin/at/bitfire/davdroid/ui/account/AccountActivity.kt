@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.ui.account
 
-import AccountScreen
 import android.accounts.Account
 import android.content.Context
 import android.content.Intent
