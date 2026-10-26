@@ -9,6 +9,8 @@ package at.bitfire.davdroid.sync
  * to determine whether there will be retries.
  */
 data class SyncResult(
+    /** server rejected the credentials (HTTP 401); remaining collections are skipped */
+    var authenticationFailed: Boolean = false,
     var hardError: Boolean = false,
     var softError: Boolean = false,
     var delayUntil: Long = 0

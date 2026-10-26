@@ -205,7 +205,11 @@ abstract class SyncManager<LocalType : LocalResource>(
                     result.delayUntil?.let { syncResult.delayUntil = it.epochSecond }
                 }
 
-                SyncExceptionHandler.SyncErrorResult.AuthenticationError,
+                SyncExceptionHandler.SyncErrorResult.AuthenticationError -> {
+                    syncResult.authenticationFailed = true
+                    syncResult.hardError = true
+                }
+
                 SyncExceptionHandler.SyncErrorResult.HardError ->
                     syncResult.hardError = true
 
