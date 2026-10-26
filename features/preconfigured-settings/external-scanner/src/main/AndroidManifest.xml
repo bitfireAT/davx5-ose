@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <application>
+      
+        <!-- Add intent filter for QR code scanning - handle custom scheme URLs -->
+        <activity
+                android:name="at.bitfire.davdroid.ui.setup.LoginActivity"
+                android:exported="true"
+                tools:node="merge">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data android:scheme="davx5" android:host="setup"/>
+            </intent-filter>
+        </activity>
+
+    </application>
+
+</manifest>

@@ -99,6 +99,7 @@ aboutLibraries {
 dependencies {
     // gradle project dependencies
     implementation(project(":synctools"))
+    implementation(project(":features:preconfigured-settings:api"))
 
     // Kotlin / Android
     implementation(libs.kotlin.stdlib)
@@ -194,6 +195,7 @@ dependencies {
     androidTestImplementation(libs.ktor.client.mock)
     androidTestImplementation(libs.mockk.android)
     androidTestImplementation(testFixtures(project(":synctools")))
+    androidTestImplementation(project(":features:preconfigured-settings:external-scanner"))
 
     testImplementation(kotlin("test"))
     testImplementation(libs.bitfire.dav4jvm)
