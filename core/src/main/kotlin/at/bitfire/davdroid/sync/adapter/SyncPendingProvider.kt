@@ -8,11 +8,9 @@ import android.accounts.Account
 import android.content.Context
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.accounts.AndroidAccountManager
-import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.resource.local.LocalAddressBookStore
 import at.bitfire.davdroid.sync.SyncDataType
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -23,8 +21,7 @@ class SyncPendingProvider @Inject constructor(
     private val androidAccountManager: AndroidAccountManager,
     @ApplicationContext private val context: Context,
     private val localAddressBookStore: LocalAddressBookStore,
-    private val syncFrameworkIntegration: SyncFrameworkIntegration,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher
+    private val syncFrameworkIntegration: SyncFrameworkIntegration
 ) {
 
     /**
