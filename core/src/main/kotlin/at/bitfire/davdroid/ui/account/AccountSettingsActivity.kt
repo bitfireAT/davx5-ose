@@ -20,10 +20,15 @@ class AccountSettingsActivity: AppCompatActivity() {
 
     companion object {
         private const val EXTRA_ACCOUNT = "account"
-        
-        fun createIntent(context: Context, accountId: AccountId): Intent {
+        private const val EXTRA_EDIT_PASSWORD = "edit_password"
+
+        /**
+         * @param editPassword  whether to open the password dialog directly
+         */
+        fun createIntent(context: Context, accountId: AccountId, editPassword: Boolean = false): Intent {
             return Intent(context, AccountSettingsActivity::class.java).apply {
                 AccountIdIntentSerializer.addExtra(this, EXTRA_ACCOUNT, accountId)
+                putExtra(EXTRA_EDIT_PASSWORD, editPassword)
             }
         }
         
@@ -43,6 +48,7 @@ class AccountSettingsActivity: AppCompatActivity() {
         setContent {
             AccountSettingsScreen(
                 accountId = accountId,
+                editPassword = intent.getBooleanExtra(EXTRA_EDIT_PASSWORD, false),
                 onNavWifiPermissionsScreen = {
                     val intent = WifiPermissionsActivity.createIntent(this, accountId)
                     startActivity(intent)

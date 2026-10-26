@@ -18,6 +18,8 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.resource.local.LocalResource
+import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.DebugInfoActivity
 import at.bitfire.davdroid.ui.NotificationRegistry
 import at.bitfire.davdroid.ui.account.AccountSettingsActivity
@@ -34,7 +36,8 @@ class SyncNotificationManager @AssistedInject constructor(
     private val accountRepository: AccountRepository,
     @ApplicationContext private val context: Context,
     private val logger: Logger,
-    private val notificationRegistry: NotificationRegistry
+    private val notificationRegistry: NotificationRegistry,
+    private val settingsManager: SettingsManager
 ) {
 
     @AssistedFactory
@@ -95,15 +98,21 @@ class SyncNotificationManager @AssistedInject constructor(
 
     /**
      * Notifies the user that the server rejected the credentials of the account. Shown once per account
-     * (not per collection). Opens the account settings.
+     * (not per collection). Opens the account settings with the password dialog, unless credentials are locked.
      *
      * Use [dismissAuthenticationFailed] to dismiss the notification.
      */
     suspend fun notifyAuthenticationFailed() {
         val accountName = accountRepository.getAccountName(accountId)
+        val canUpdateCredentials = AccountSettings.changingCredentialsAllowed(settingsManager)
         notificationRegistry.notifyIfPossible(NotificationRegistry.NOTIFY_AUTHENTICATION_FAILED, tag = accountId.toString()) {
-            val message = context.getString(R.string.sync_error_authentication_failed_update)
-            val contentIntent = AccountSettingsActivity.createIntent(context, accountId)
+            val message = context.getString(
+                if (canUpdateCredentials)
+                    R.string.sync_error_authentication_failed_update
+                else
+                    R.string.sync_error_authentication_failed_contact_admin
+            )
+            val contentIntent = AccountSettingsActivity.createIntent(context, accountId, editPassword = canUpdateCredentials)
 
             // to make the PendingIntent unique per account
             contentIntent.data = "davdroid:authentication/$accountId".toUri()

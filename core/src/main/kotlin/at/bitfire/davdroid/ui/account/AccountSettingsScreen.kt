@@ -43,6 +43,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -76,6 +77,7 @@ import kotlinx.coroutines.launch
 fun AccountSettingsScreen(
     onNavUp: () -> Unit,
     accountId: AccountId,
+    editPassword: Boolean = false,
     onNavWifiPermissionsScreen: () -> Unit
 ) {
     val model = hiltViewModel { factory: AccountSettingsViewModel.Factory ->
@@ -118,6 +120,7 @@ fun AccountSettingsScreen(
             onUpdateIgnoreVpns = model::updateIgnoreVpns,
 
             // Authentication Settings
+            editPassword = editPassword,
             credentials = uiState.credentials,
             onUpdateCredentials = model::updateCredentials,
             onAuthenticateOAuth = {
@@ -169,6 +172,7 @@ fun AccountSettingsScreen(
     onUpdateIgnoreVpns: (Boolean) -> Unit = {},
 
     // Authentication Settings
+    editPassword: Boolean = false,
     credentials: Credentials?,
     onUpdateCredentials: (Credentials) -> Unit = {},
     onAuthenticateOAuth: () -> Unit = {},
@@ -251,6 +255,7 @@ fun AccountSettingsScreen(
                 onUpdateIgnoreVpns = onUpdateIgnoreVpns,
 
                 // Authentication Settings
+                editPassword = editPassword,
                 credentials = credentials,
                 onUpdateCredentials = onUpdateCredentials,
                 onAuthenticateOAuth = onAuthenticateOAuth,
@@ -298,6 +303,7 @@ fun AccountSettings_FromModel(
     onUpdateIgnoreVpns: (Boolean) -> Unit = {},
 
     // Authentication Settings
+    editPassword: Boolean = false,
     credentials: Credentials?,
     onUpdateCredentials: (Credentials) -> Unit = {},
     onAuthenticateOAuth: () -> Unit = {},
@@ -341,6 +347,7 @@ fun AccountSettings_FromModel(
         credentials?.let {
             AuthenticationSettings(
                 snackbarHostState = snackbarHostState,
+                editPassword = editPassword,
                 credentials = credentials,
                 isEnabled = isCredentialsUpdateAllowed,
                 onUpdateCredentials = onUpdateCredentials,
@@ -526,6 +533,7 @@ fun SyncIntervalSetting(
 fun AuthenticationSettings(
     credentials: Credentials,
     snackbarHostState: SnackbarHostState = SnackbarHostState(),
+    editPassword: Boolean = false,
     isEnabled: Boolean = true,
     onUpdateCredentials: (Credentials) -> Unit = {},
     onAuthenticateOAuth: () -> Unit = {}
@@ -561,7 +569,8 @@ fun AuthenticationSettings(
                         onDismiss = { showUsernameDialog = false }
                     )
 
-                var showPasswordDialog by remember { mutableStateOf(false) }
+                // initially open when requested, but not again after configuration changes
+                var showPasswordDialog by rememberSaveable { mutableStateOf(editPassword && isEnabled) }
                 Setting(
                     icon = Icons.Default.Password,
                     name = stringResource(R.string.settings_password),
