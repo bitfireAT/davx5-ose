@@ -17,7 +17,10 @@ import androidx.core.content.contentValuesOf
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.accounts.AndroidAccountManager
+import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
+import at.bitfire.davdroid.db.DbAccountDao
+import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.settings.AccountSettingsFactory
@@ -28,9 +31,11 @@ import at.bitfire.synctools.storage.LocalStorageClient
 import at.bitfire.synctools.util.AndroidAccountUtils
 import com.google.common.base.CharMatcher
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.runBlocking
 import java.util.logging.Logger
 import javax.inject.Inject
 import javax.inject.Provider
@@ -45,7 +50,9 @@ class LocalAddressBookStore @Inject constructor(
     private val localAddressBookFactory: LocalAddressBook.Factory,
     private val logger: Logger,
     private val serviceRepository: DavServiceRepository,
-    private val settings: SettingsManager
+    db: AppDatabase,
+    private val settings: SettingsManager,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ): LocalDataStore<LocalAddressBook> {
 
     override val authority: String
@@ -54,6 +61,8 @@ class LocalAddressBookStore @Inject constructor(
     /** whether a (usually managed) setting wants all address-books to be read-only **/
     val forceAllReadOnly: Boolean
         get() = settings.getBoolean(Settings.FORCE_READ_ONLY_ADDRESSBOOKS)
+
+    private val dbAccountDao: DbAccountDao = db.dbAccountDao()
 
 
     /**
@@ -81,7 +90,8 @@ class LocalAddressBookStore @Inject constructor(
         // Add the actual account name to the address book account name
         val sb = StringBuilder(name)
         serviceRepository.getBlocking(info.serviceId)?.let { service ->
-            sb.append(" (${service.accountName})")
+            val accountName = accountRepository.getAccountNameBlocking(service)
+            sb.append(" ($accountName)")
         }
         // Add the collection ID for uniqueness
         sb.append(" #${info.id}")
@@ -206,8 +216,11 @@ class LocalAddressBookStore @Inject constructor(
      * @param client        content provider client (not needed/does not exist for address books)
      */
     override fun updateAccount(oldAccount: Account, newAccount: Account, client: LocalStorageClient?) {
-        val oldAccountId = androidAccountManager.getAccountId(oldAccount)
-        val newAccountId = androidAccountManager.getAccountId(newAccount)
+        val oldAccountId = runBlocking(ioDispatcher) { androidAccountManager.getAccountId(oldAccount) }
+        val newAccountId = runBlocking(ioDispatcher) { androidAccountManager.getAccountId(newAccount) }
+
+        checkNotNull(oldAccountId) { "Could not find id for old account ($oldAccount)" }
+        checkNotNull(newAccountId) { "Could not find id for new account ($newAccount)" }
 
         accountManager.get().getAccountsByType(context.getString(R.string.account_type_address_book))
             .filter { addressBookAccount ->
