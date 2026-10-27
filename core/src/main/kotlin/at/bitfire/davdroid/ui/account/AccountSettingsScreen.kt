@@ -570,7 +570,7 @@ fun AuthenticationSettings(
                     )
 
                 // initially open when requested, but not again after configuration changes
-                var showPasswordDialog by rememberSaveable { mutableStateOf(editPassword && isEnabled) }
+                var showPasswordDialog by rememberSaveable { mutableStateOf(editPassword) }
                 Setting(
                     icon = Icons.Default.Password,
                     name = stringResource(R.string.settings_password),
@@ -580,7 +580,7 @@ fun AuthenticationSettings(
                         showPasswordDialog = true
                     }
                 )
-                if (showPasswordDialog)
+                if (showPasswordDialog && isEnabled)
                     EditTextInputDialog(
                         title = stringResource(R.string.settings_password),
                         inputLabel = stringResource(R.string.settings_new_password),
