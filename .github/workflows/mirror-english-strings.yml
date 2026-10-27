@@ -48,12 +48,13 @@ jobs:
       - name: Copy English strings (:features:preconfigured-settings:external-scanner)
         run: cp features/preconfigured-settings/external-scanner/src/main/res/values/strings.xml davx5-translations/sources/features/preconfigured-settings/external-scanner/strings.xml
 
-      - name: Commit sources/ose/strings.xml
+      - name: Commit ose strings
         uses: stefanzweifel/git-auto-commit-action@v7
         with:
           repository: davx5-translations
           branch: main
           file_pattern: 'sources/*/strings.xml'
+          disable_globbing: true
           commit_message: "Mirror English strings (ose) from davx5-ose@${{ github.sha }}"
           commit_user_name: mirror-original-english-strings[bot]
           commit_user_email: 316112360+mirror-original-english-strings[bot]@users.noreply.github.com
