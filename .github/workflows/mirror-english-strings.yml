@@ -53,7 +53,7 @@ jobs:
         with:
           repository: davx5-translations
           branch: main
-          file_pattern: sources/ose/strings.xml
+          file_pattern: 'sources/*/strings.xml'
           commit_message: "Mirror English strings (ose) from davx5-ose@${{ github.sha }}"
           commit_user_name: mirror-original-english-strings[bot]
           commit_user_email: 316112360+mirror-original-english-strings[bot]@users.noreply.github.com
