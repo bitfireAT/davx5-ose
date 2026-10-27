@@ -2,7 +2,7 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  */
 
-package at.bitfire.davdroid.resource
+package at.bitfire.davdroid.resource.local
 
 import android.content.ContentValues
 import android.content.Entity
@@ -11,6 +11,9 @@ import at.bitfire.synctools.storage.tasks.DmfsTaskList
 import at.bitfire.synctools.storage.tasks.DmfsTasksContract
 import io.mockk.every
 import io.mockk.mockk
+import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.test.runTest
 import org.dmfs.tasks.contract.TaskContract.Tasks
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
@@ -36,15 +39,16 @@ class LocalTaskListTest {
         queryCount = 0
 
         val dmfsTaskList = mockk<DmfsTaskList>()
-        every { dmfsTaskList.findTasks(any(), any()) } returns emptyList()
-        every { dmfsTaskList.iterateTasks(any(), any(), any()) } answers {
+        every { dmfsTaskList.queryTasks(any(), any()) } answers {
+            val where = firstArg<String?>().orEmpty()
+            if (!where.contains("${Tasks._SYNC_ID}=?"))
+                return@answers emptyFlow()      // exceptions of a main task: none here
             queryCount++
             val syncId = secondArg<Array<String>>().single()
-            val body = thirdArg<(Entity) -> Unit>()
             providerTasks
                 .filter { it.entityValues.getAsString(Tasks._SYNC_ID) == syncId }
                 .map { Entity(ContentValues(it.entityValues)) }
-                .forEach(body)
+                .asFlow()
         }
         every { dmfsTaskList.updateTaskRow(any(), any()) } answers {
             val id = firstArg<Long>()
@@ -59,7 +63,7 @@ class LocalTaskListTest {
     }
 
     @Test
-    fun testFindByName_ReassignsDirtyDuplicateAndReturnsSyncedTask() {
+    fun testFindByName_ReassignsDirtyDuplicateAndReturnsSyncedTask() = runTest {
         val syncId = "duplicate.ics"
         providerTasks += task(id = 1, syncId = syncId, eTag = "etag-1", dirty = 0)
         providerTasks += task(id = 2, syncId = syncId, eTag = null, dirty = 1)
@@ -81,7 +85,7 @@ class LocalTaskListTest {
     }
 
     @Test
-    fun testFindByName_AllDuplicatesReassigned_ReturnsNull() {
+    fun testFindByName_AllDuplicatesReassigned_ReturnsNull() = runTest {
         val syncId = "duplicate.ics"
         providerTasks += task(id = 1, syncId = syncId, eTag = null, dirty = 1)
         providerTasks += task(id = 2, syncId = syncId, eTag = null, dirty = 1)
