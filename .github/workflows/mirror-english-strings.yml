@@ -5,6 +5,8 @@ on:
       - main
     paths:
       - core/src/main/res/values/strings.xml
+      - features/preconfigured-settings/shared/src/main/res/values/strings.xml
+      - features/preconfigured-settings/external-scanner/src/main/res/values/strings.xml
   workflow_dispatch:
 
 concurrency:
