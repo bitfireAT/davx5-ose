@@ -1,0 +1,186 @@
+/*
+ * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
+ */
+
+package at.bitfire.davdroid.resource.remote
+
+import at.bitfire.dav4jvm.ktor.DavCollection
+import at.bitfire.davdroid.resource.local.SyncState
+import io.ktor.http.Url
+import io.ktor.http.content.OutgoingContent
+import kotlinx.coroutines.flow.Flow
+
+/**
+ * Provides remote collection access as required for [at.bitfire.davdroid.sync.SyncManager].
+ *
+ * Currently, most call sites just call through [davCollection], but the goal is to provide
+ * all remote collection operations that are required for synchronization here.
+ */
+interface WebDavCollection {
+
+    val davCollection: DavCollection
+
+    // create
+
+    /**
+     * Creates a new member (non-collection resource) of this collection (HTTP `PUT`).
+     * Fails if a member with that file name already exists (`If-None-Match: *`).
+     *
+     * @param fileName          file name of the member to create
+     * @param content           content to upload
+     * @param additionalHeaders further headers to send (for instance `Push-Dont-Notify`)
+     *
+     * @return the new member's ETag / Schedule-Tag, if returned by the server
+     *
+     * @throws at.bitfire.dav4jvm.ktor.exception.PreconditionFailedException if a member with that file name already exists
+     * @throws at.bitfire.dav4jvm.ktor.exception.HttpException on other HTTP errors
+     */
+    suspend fun createMember(
+        fileName: String,
+        content: OutgoingContent,
+        additionalHeaders: Map<String, String> = emptyMap()
+    ): PutMemberResult
+
+    data class PutMemberResult(
+        val eTag: String? = null,
+        val scheduleTag: String? = null
+    )
+
+
+    // read/query
+
+    /**
+     * Queries the collection's current capabilities. Also fetches the [SyncState]
+     * in the same PROPFIND request to save a network round-trip.
+     *
+     * @throws at.bitfire.dav4jvm.ktor.exception.HttpException on HTTP errors
+     */
+    suspend fun queryCapabilities(): QueryCapabilitiesResult
+
+    data class QueryCapabilitiesResult(
+        val syncState: SyncState?,
+        val capabilities: Capabilities
+    )
+
+    data class Capabilities(
+        /** whether the server supports Collection Sync (RFC 6578) */
+        val canCollectionSync: Boolean = false,
+
+        /** max. CalDAV resource size */
+        val maxCalResourceSize: Long? = null,
+
+        /** max. CardDAV resource size */
+        val maxCardResourceSize: Long? = null,
+
+        /** whether the (CardDAV) server supports vCard/4 */
+        val supportsVCard4: Boolean = false
+    )
+
+    /**
+     * Queries the collection's current [SyncState] (`sync-token` or `CTag`).
+     *
+     * @throws at.bitfire.dav4jvm.ktor.exception.HttpException on HTTP errors
+     */
+    suspend fun querySyncState(): SyncState?
+
+    /**
+     * Lists the filtered members (non-collection resources) of this collection with
+     * their current ETags.
+     *
+     * If the collection supports a filter (like [CalDavCollection], which can filter by
+     * component and time range), this collection-wide filter is applied.
+     *
+     * Implementations must only request one level in depth and, if collections may
+     * be returned, must request [at.bitfire.dav4jvm.property.webdav.WebDAV.ResourceType]
+     * so that they can be filtered out.
+     *
+     * @throws at.bitfire.dav4jvm.ktor.exception.DavException on WebDAV errors, for instance
+     *   when a member is listed without ETag
+     * @throws at.bitfire.dav4jvm.ktor.exception.HttpException on other HTTP errors
+     */
+    fun listFilteredMembers(): Flow<InternalMemberState>
+
+    /**
+     * Lists changes since [since] via `sync-collection` REPORT (RFC 6578), with a
+     * `sync-level` of 1 (one).
+     *
+     * Must only be called when [Capabilities.canCollectionSync] is `true`; behavior is undefined
+     * (server will likely respond with an error) otherwise.
+     *
+     * @param since sync state to list changes since; `null` for an initial sync
+     *
+     * @throws at.bitfire.dav4jvm.ktor.exception.DavException on WebDAV errors, for instance
+     *   when a changed member is listed without ETag
+     * @throws at.bitfire.dav4jvm.ktor.exception.HttpException on other HTTP errors (for instance,
+     *   if the sync-token is invalid)
+     */
+    fun listChanges(since: SyncState?): Flow<CollectionSyncItem>
+
+    /**
+     * Downloads a batch of members via multi-get (CalDAV/CardDAV report). Only successful
+     * responses that contain the expected resource data are emitted.
+     *
+     * @param urls          members to download (max. size depends on server limits, so this should be a reasonably sized batch)
+     * @param capabilities  current capabilities of the collection
+     *
+     * @throws at.bitfire.dav4jvm.ktor.exception.DavException on invalid response (like missing ETag or content)
+     * @throws at.bitfire.dav4jvm.ktor.exception.HttpException on HTTP errors
+     */
+    fun multiget(urls: List<Url>, capabilities: Capabilities): Flow<MultiGetItem>
+
+    data class MultiGetItem(
+        val url: Url,
+        val eTag: String,
+        val scheduleTag: String? = null,
+        val content: String
+    )
+
+
+    // update
+
+    /**
+     * Updates an existing member (non-collection resource) of this collection (HTTP `PUT`).
+     *
+     * @param fileName          file name of the member to update
+     * @param content           new content to upload
+     * @param ifETag            if given, sets `If-Match` so that the update only succeeds if the member's ETag matches
+     * @param ifScheduleTag     if given, sets `If-Schedule-Tag-Match` so that the update only succeeds if the member's Schedule-Tag matches
+     * @param additionalHeaders further headers to send (for instance `Push-Dont-Notify`)
+     *
+     * @return the updated member's ETag / Schedule-Tag, if returned by the server
+     *
+     * @throws at.bitfire.dav4jvm.ktor.exception.PreconditionFailedException if ifETag or ifScheduleTag is given and
+     *   doesn't match the member's current state (also if the file doesn't exist on the server)
+     * @throws at.bitfire.dav4jvm.ktor.exception.HttpException on other HTTP errors
+     */
+    suspend fun updateMember(
+        fileName: String,
+        content: OutgoingContent,
+        ifETag: String? = null,
+        ifScheduleTag: String? = null,
+        additionalHeaders: Map<String, String> = emptyMap()
+    ): PutMemberResult
+
+
+    // delete
+
+    /**
+     * Deletes a member (non-collection resource) of this collection (HTTP `DELETE`).
+     *
+     * @param fileName          file name of the member to delete
+     * @param ifETag            if given, sets `If-Match` so that the deletion only succeeds if the member's ETag matches
+     * @param ifScheduleTag     if given, sets `If-Schedule-Tag-Match` so that the deletion only succeeds if the member's Schedule-Tag matches
+     * @param additionalHeaders further headers to send (for instance `Push-Dont-Notify`)
+     *
+     * @throws at.bitfire.dav4jvm.ktor.exception.PreconditionFailedException if ifETag or ifScheduleTag is given and
+     *   doesn't match the member's current state (also if the file doesn't exist on the server)
+     * @throws at.bitfire.dav4jvm.ktor.exception.HttpException on HTTP errors
+     */
+    suspend fun deleteMember(
+        fileName: String,
+        ifETag: String? = null,
+        ifScheduleTag: String? = null,
+        additionalHeaders: Map<String, String> = emptyMap()
+    )
+
+}

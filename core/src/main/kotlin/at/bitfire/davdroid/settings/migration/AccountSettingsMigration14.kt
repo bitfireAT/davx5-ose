@@ -7,7 +7,10 @@ package at.bitfire.davdroid.settings.migration
 import android.accounts.Account
 import android.content.ContentResolver
 import android.provider.CalendarContract
-import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.accounts.AccountId
+import at.bitfire.davdroid.accounts.AndroidAccountManager
+import at.bitfire.davdroid.settings.AccountSettingsFactory
+import at.bitfire.davdroid.settings.AccountSettingsStore
 import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.synctools.storage.TaskProvider
 import dagger.Binds
@@ -23,11 +26,13 @@ import javax.inject.Inject
  * Disables all sync adapter periodic syncs for every authority. Then enables corresponding periodic sync workers.
  */
 class AccountSettingsMigration14 @Inject constructor(
-    private val accountSettingsFactory: AccountSettings.Factory,
+    private val accountSettingsFactory: AccountSettingsFactory,
+    private val androidAccountManager: AndroidAccountManager,
     private val logger: Logger
 ): AccountSettingsMigration {
 
-    override fun migrate(account: Account) {
+    override fun migrate(accountId: AccountId, store: AccountSettingsStore) {
+        val account = androidAccountManager.getAndroidAccount(accountId)
         // Cancel any potentially running syncs for this account (sync framework)
         ContentResolver.cancelSync(account, null)
 
@@ -45,16 +50,16 @@ class AccountSettingsMigration14 @Inject constructor(
 
         // Enable PeriodicSyncWorker (WorkManager), with known intervals
         for (dataType in SyncDataType.entries)
-            enableWorkManager(account, dataType)
+            enableWorkManager(accountId, dataType)
     }
 
-    private fun enableWorkManager(account: Account, dataType: SyncDataType) {
-        val accountSettings = accountSettingsFactory.create(account)
+    private fun enableWorkManager(accountId: AccountId, dataType: SyncDataType) {
+        val accountSettings = accountSettingsFactory.create(accountId)
         val enabled: Boolean = accountSettings.getSyncInterval(dataType)?.let { syncInterval ->
             accountSettings.setSyncInterval(dataType, syncInterval)
             true
         } == true
-        logger.info("PeriodicSyncWorker for $account/$dataType enabled=$enabled")
+        logger.info("PeriodicSyncWorker for $accountId/$dataType enabled=$enabled")
     }
 
     private fun disableSyncFramework(account: Account, authority: String) {

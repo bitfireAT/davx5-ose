@@ -15,6 +15,7 @@ import at.bitfire.synctools.icalendar.dtStart
 import at.bitfire.synctools.icalendar.due
 import at.bitfire.synctools.icalendar.plusAssign
 import at.bitfire.synctools.mapping.jtx.builder.TimeFieldsBuilder
+import at.bitfire.synctools.util.getTimeZoneOrThrow
 import at.techbee.jtx.JtxContract
 import net.fortuna.ical4j.model.Property
 import net.fortuna.ical4j.model.TimeZoneRegistryFactory
@@ -40,7 +41,7 @@ import kotlin.test.assertFailsWith
 class TimeFieldsHandlerTest {
 
     private val tzRegistry = TimeZoneRegistryFactory.getInstance().createRegistry()
-    private val tzVienna = tzRegistry.getTimeZone("Europe/Vienna")
+    private val tzVienna = tzRegistry.getTimeZoneOrThrow("Europe/Vienna")
 
     private val builder = TimeFieldsBuilder()
     private val handler = TimeFieldsHandler()

@@ -4,7 +4,7 @@
 
 package at.bitfire.davdroid.sync
 
-import at.bitfire.davdroid.resource.LocalCollection
+import at.bitfire.davdroid.resource.local.LocalCollection
 import java.util.Optional
 import java.util.logging.Logger
 import javax.inject.Inject
@@ -26,7 +26,7 @@ class ReadOnlyPolicy @Inject constructor(
         var modified = false
         collection.findDeleted().collect { local ->
             logger.warning("Restoring locally deleted resource (read-only collection!)")
-            SyncException.wrapWithLocalResource(local) {
+            local.withExceptionContext {
                 local.resetDeleted()
             }
             modified = true
@@ -50,7 +50,7 @@ class ReadOnlyPolicy @Inject constructor(
         var modified = false
         collection.findDirty().collect { local ->
             logger.warning("Resetting locally modified resource to ETag=null (read-only collection!)")
-            SyncException.wrapWithLocalResource(local) {
+            local.withExceptionContext {
                 local.clearDirty(
                     fileName = Optional.empty(),
                     eTag = null,

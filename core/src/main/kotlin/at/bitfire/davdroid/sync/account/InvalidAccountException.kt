@@ -4,9 +4,9 @@
 
 package at.bitfire.davdroid.sync.account
 
-import android.accounts.Account
+import at.bitfire.davdroid.accounts.AccountId
 
 /**
  * Thrown when an account is invalid (usually because it doesn't exist anymore).
  */
-class InvalidAccountException(account: Account): Exception("Invalid account: $account")
+class InvalidAccountException(accountId: AccountId): Exception("Invalid account: $accountId")

@@ -45,7 +45,7 @@ class TitleHandlerTest {
         ))
         val result = VEvent()
         handler.process(entity, entity, result)
-        assertEquals("Two words", result.summary.value)
+        assertEquals("Two words", result.summary?.value)
     }
 
 }

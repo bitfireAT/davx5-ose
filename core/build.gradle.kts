@@ -16,6 +16,13 @@ ksp {
     arg("room.schemaLocation", "$projectDir/schemas")
 }
 
+// Translations are maintained in davx5-translations and pulled in as the l10n submodule.
+// The English original strings stay in core/src/main/res/values/strings.xml.
+val translationsDir = file("$rootDir/l10n/translations/ose")
+// Credits are updated automatically in the davx5-translations workflow, and pulled in as the l10n submodule.
+// This directory should be included as "asset"
+val creditsDir = file("$rootDir/l10n/credits")
+
 android {
     defaultConfig {
         testInstrumentationRunner = "at.bitfire.davdroid.HiltTestRunner"
@@ -50,8 +57,16 @@ android {
     }
 
     sourceSets {
+        getByName("main") {
+            res.directories += translationsDir.path
+            assets.directories += creditsDir.path
+        }
         getByName("androidTest") {
+            kotlin.directories +=  "$projectDir/src/sharedTest/kotlin"
             assets.srcDir("$projectDir/schemas")
+        }
+        getByName("test") {
+            kotlin.directories +=  "$projectDir/src/sharedTest/kotlin"
         }
     }
 
@@ -68,6 +83,9 @@ android {
                 }
             }
         }
+        unitTests {
+            isIncludeAndroidResources = true
+        }
     }
 }
 
@@ -81,6 +99,7 @@ aboutLibraries {
 dependencies {
     // gradle project dependencies
     implementation(project(":synctools"))
+    implementation(project(":features:preconfigured-settings:api"))
 
     // Kotlin / Android
     implementation(libs.kotlin.stdlib)
@@ -110,7 +129,6 @@ dependencies {
     implementation(libs.androidx.work.base)
 
     // Jetpack Compose
-    implementation(libs.compose.accompanist.permissions)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.material3.adaptive)
@@ -162,6 +180,8 @@ dependencies {
     implementation(libs.commons.lang)
 
     // for tests
+    kspAndroidTest(libs.androidx.hilt.compiler)
+    kspAndroidTest(libs.hilt.android.compiler)
     androidTestImplementation(libs.androidx.arch.core.testing)
     androidTestImplementation(libs.androidx.room.testing)
     androidTestImplementation(libs.androidx.test.core)
@@ -175,13 +195,32 @@ dependencies {
     androidTestImplementation(libs.ktor.client.mock)
     androidTestImplementation(libs.mockk.android)
     androidTestImplementation(testFixtures(project(":synctools")))
+    androidTestImplementation(project(":features:preconfigured-settings:external-scanner"))
 
+    testImplementation(kotlin("test"))
     testImplementation(libs.bitfire.dav4jvm)
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.ktor.client.mock)
     testImplementation(libs.mockk)
     testImplementation(libs.robolectric)
     testImplementation(testFixtures(project(":synctools")))
+}
+
+// AGP silently ignores a resource directory that doesn't exist, so a clone without submodules
+// would build a perfectly fine English-only app. Fail such builds instead.
+val verifyTranslations by tasks.registering {
+    val dir = translationsDir   // local copy: the check below must not capture the build script
+
+    doLast {
+        require(!dir.list().isNullOrEmpty()) {
+            "l10n/translations/ose is missing or empty.\nRun: git submodule update --init --recursive"
+        }
+    }
+}
+
+tasks.named("preBuild") {
+    dependsOn(verifyTranslations)
 }
 
 tasks.withType<Test>().configureEach {

@@ -5,9 +5,9 @@
 package at.bitfire.synctools.storage.calendar
 
 import android.accounts.Account
-import android.content.ContentProviderClient
 import android.provider.CalendarContract
 import androidx.core.content.contentValuesOf
+import at.bitfire.synctools.storage.LocalStorageClient
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 import java.util.UUID
@@ -18,7 +18,7 @@ object TestCalendar {
     private val logger
         get() = Logger.getLogger(javaClass.name)
 
-    fun create(account: Account, client: ContentProviderClient, withColors: Boolean = false): AndroidCalendar {
+    fun create(account: Account, client: LocalStorageClient, withColors: Boolean = false): AndroidCalendar {
         val provider = AndroidCalendarProvider(account, client)
 
         // we use colors for testing

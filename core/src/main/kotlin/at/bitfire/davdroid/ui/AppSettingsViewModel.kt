@@ -17,6 +17,7 @@ import androidx.lifecycle.viewModelScope
 import at.bitfire.cert4android.CustomCertStore
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
+import at.bitfire.davdroid.permissions.PermissionUtils
 import at.bitfire.davdroid.push.PushDistributorManager
 import at.bitfire.davdroid.repository.PreferenceRepository
 import at.bitfire.davdroid.settings.Settings
@@ -28,7 +29,6 @@ import at.bitfire.davdroid.ui.PushSummary.PushLoading
 import at.bitfire.davdroid.ui.intro.BackupsPage
 import at.bitfire.davdroid.ui.intro.BatteryOptimizationsPageViewModel
 import at.bitfire.davdroid.ui.intro.OpenSourcePage
-import at.bitfire.davdroid.util.PermissionUtils
 import at.bitfire.davdroid.util.broadcastReceiverFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext

@@ -21,16 +21,17 @@ class DavHomeSetRepository @Inject constructor(
 
     fun getBindableByServiceFlow(serviceId: Long) = dao.getBindableByServiceFlow(serviceId)
 
-    fun getByIdBlocking(id: Long) = dao.getById(id)
-
-    fun getByServiceBlocking(serviceId: Long) = dao.getByService(serviceId)
+    suspend fun getByService(serviceId: Long) = dao.getByService(serviceId)
 
     fun getCalendarHomeSetsFlow(accountId: AccountId) =
         dao.getBindableByAccountAndServiceTypeFlow(accountId, Service.TYPE_CALDAV)
 
+    suspend fun insertOrUpdateByUrl(homeSet: HomeSet): Long =
+        dao.insertOrUpdateByUrl(homeSet)
+
     fun insertOrUpdateByUrlBlocking(homeSet: HomeSet): Long =
         dao.insertOrUpdateByUrlBlocking(homeSet)
 
-    fun deleteBlocking(homeSet: HomeSet) = dao.delete(homeSet)
+    suspend fun delete(homeSet: HomeSet) = dao.delete(homeSet)
 
 }

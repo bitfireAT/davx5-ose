@@ -5,8 +5,6 @@
 package at.bitfire.davdroid.util
 
 import at.bitfire.dav4jvm.ktor.toUrlOrNull
-import at.bitfire.davdroid.util.DavUtils.generateUidIfNecessary
-import at.bitfire.davdroid.util.DavUtils.toUrlOrNull
 import io.ktor.http.ContentType
 import io.ktor.http.Url
 import org.jetbrains.annotations.TestOnly
@@ -115,13 +113,55 @@ object DavUtils {
         }
 
 
-    // extension methods
+    /**
+     * Extracts the name of the collection that [url] points to, for display purposes.
+     *
+     * [url] must be a collection URL, that is, its path must end with a slash. The one exception we allow is a URL with
+     * an empty path. It is treated it like a URL with a path of `/`.
+     * The root collection has no name of its own and is reported as `"/"`.
+     *
+     * **Attention:** The returned name is decoded, so it may contain characters like `/` that
+     * would otherwise be path separators.
+     *
+     * @param url  collection URL
+     *
+     * @return name of the collection, or `"/"` for the root collection
+     *
+     * @throws IllegalArgumentException  if [url] is not a collection URL
+     */
+    fun extractCollectionName(url: Url): String {
+        val path = url.encodedPath
+        require(path.isEmpty() || path.endsWith('/')) {
+            "Not a collection URL (path does not end with a slash): $url"
+        }
+
+        return url.segments.lastOrNull() ?: "/"
+    }
 
     /**
-     * Safely gets the last segment of the URL, or returns `"/"` if none could be obtained.
+     * Extracts the file name of the non-collection resource that [url] points to. The result is
+     * used as the identifier of a collection member, so [url] must not be a collection URL.
+     *
+     * **Attention:** The returned name is decoded, so it may contain characters like `/` that
+     * would otherwise be path separators.
+     *
+     * @param url  member URL
+     *
+     * @return file name of the member
+     *
+     * @throws IllegalArgumentException  if [url] has an empty path, or is a collection URL
      */
-    val Url.lastSegment: String
-        get() = this.segments.lastOrNull { it.isNotEmpty() } ?: "/"
+    fun extractFileName(url: Url): String {
+        val path = url.encodedPath
+        require(path.isNotEmpty() && !path.endsWith('/')) {
+            "Not a member URL (path is empty or ends with a slash): $url"
+        }
+
+        return url.segments.last()
+    }
+
+
+    // extension methods
 
     fun String.toURIorNull(): URI? = try {
         URI(this)

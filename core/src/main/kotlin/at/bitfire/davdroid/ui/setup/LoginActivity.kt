@@ -8,7 +8,6 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
-import at.bitfire.davdroid.accounts.toAccountId
 import at.bitfire.davdroid.settings.Credentials
 import at.bitfire.davdroid.ui.account.AccountActivity
 import at.bitfire.synctools.util.SensitiveString.Companion.toSensitiveString

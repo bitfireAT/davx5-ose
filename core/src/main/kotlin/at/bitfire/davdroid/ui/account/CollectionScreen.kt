@@ -92,6 +92,9 @@ fun CollectionScreen(
         color = collection.color,
         sync = collection.sync,
         onSetSync = model::setSync,
+        disableSyncRequest = model.disableSyncRequest,
+        onConfirmDisableSync = model::confirmDisableSync,
+        onDismissDisableSync = model::dismissDisableSync,
         readOnly = model.readOnly.collectAsStateWithLifecycle(CollectionScreenViewModel.ReadOnlyState.READ_WRITE).value,
         onSetForceReadOnly = model::setForceReadOnly,
         title = collection.title(),
@@ -119,6 +122,9 @@ fun CollectionScreen(
     color: Int?,
     sync: Boolean,
     onSetSync: (Boolean) -> Unit = {},
+    disableSyncRequest: DisableCollectionSyncRequest? = null,
+    onConfirmDisableSync: () -> Unit = {},
+    onDismissDisableSync: () -> Unit = {},
     readOnly: CollectionScreenViewModel.ReadOnlyState,
     onSetForceReadOnly: (Boolean) -> Unit = {},
     title: String,
@@ -140,6 +146,14 @@ fun CollectionScreen(
             ExceptionInfoDialog(
                 exception = error,
                 onDismiss = onResetError
+            )
+
+        if (disableSyncRequest != null)
+            DisableCollectionSyncDialog(
+                title = disableSyncRequest.title,
+                unsyncedChanges = disableSyncRequest.unsyncedChanges,
+                onConfirm = onConfirmDisableSync,
+                onDismiss = onDismissDisableSync
             )
 
         Scaffold(

@@ -14,20 +14,20 @@ import javax.annotation.WillNotClose
 class VCardParser {
 
     /**
-     * Parses vCard data from a [Reader] into a list of [VCard] objects.
+     * Parses the first vCard from a [Reader].
      *
      * Defaults to vCard version 3.0 and supports custom property scribes.
      *
+     * Malformed vCard content is currently parsed leniently (invalid lines or
+     * values are skipped) rather than throwing an exception.
+     *
      * @param reader The [Reader] providing the vCard data to parse. Will not be closed by this method.
-     * @return List of parsed [VCard] objects.
+     * @return the first parsed [VCard], or `null` if the reader didn't contain one.
      */
-    fun parse(@WillNotClose reader: Reader): List<VCard> {
+    fun parse(@WillNotClose reader: Reader): VCard? =
         // By default, CardDAV assumes vCard 3
-        val vCards = VCardReader(reader, VCardVersion.V3_0)
+        VCardReader(reader, VCardVersion.V3_0)
             .registerCustomScribes()
-            .readAll()
-
-        return vCards
-    }
+            .readNext()
 
 }

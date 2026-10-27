@@ -7,7 +7,6 @@ package at.bitfire.synctools.storage.calendar
 import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Entity
-import android.os.RemoteException
 import android.provider.CalendarContract.Events
 import androidx.annotation.VisibleForTesting
 import androidx.core.content.contentValuesOf
@@ -56,26 +55,22 @@ class AndroidRecurringCalendar(
      * @return ID of the resulting main event
      */
     fun addEventAndExceptions(eventAndExceptions: EventAndExceptions): Long {
-        try {
-            // validate / clean up input
-            val cleaned = cleanUp(eventAndExceptions)
+        // validate / clean up input
+        val cleaned = cleanUp(eventAndExceptions)
 
-            // add main event
-            val batch = CalendarBatchOperation(calendar.client)
-            calendar.addEvent(cleaned.main, batch)
+        // add main event
+        val batch = CalendarBatchOperation(calendar.client)
+        calendar.addEvent(cleaned.main, batch)
 
-            // add exceptions
-            for (exception in cleaned.exceptions)
-                calendar.addEvent(exception, batch)
+        // add exceptions
+        for (exception in cleaned.exceptions)
+            calendar.addEvent(exception, batch)
 
-            batch.commit()
+        batch.commit()
 
-            // main event was created as first row (index 0), return its insert result (= ID)
-            val uri = batch.getResult(0)?.uri ?: throw LocalStorageException("Content provider returned null on insert")
-            return ContentUris.parseId(uri)
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't insert event/exceptions", e)
-        }
+        // main event was created as first row (index 0), return its insert result (= ID)
+        val uri = batch.getResult(0)?.uri ?: throw LocalStorageException("Content provider returned null on insert")
+        return ContentUris.parseId(uri)
     }
 
     /**
@@ -132,35 +127,31 @@ class AndroidRecurringCalendar(
      * @return main event ID of the updated row (may be different than [id] when the event had to be re-created)
      */
     fun updateEventAndExceptions(id: Long, eventAndExceptions: EventAndExceptions): Long {
-        try {
-            // validate / clean up input
-            val cleaned = cleanUp(eventAndExceptions)
+        // validate / clean up input
+        val cleaned = cleanUp(eventAndExceptions)
 
-            // remove old exceptions (because they may be invalid for the updated event)
-            val batch = CalendarBatchOperation(calendar.client)
-            batch += CpoBuilder.newDelete(calendar.eventsUri)
-                .withSelection("${Events.ORIGINAL_ID}=?", arrayOf(id.toString()))
+        // remove old exceptions (because they may be invalid for the updated event)
+        val batch = CalendarBatchOperation(calendar.client)
+        batch += CpoBuilder.newDelete(calendar.eventsUri)
+            .withSelection("${Events.ORIGINAL_ID}=?", arrayOf(id.toString()))
 
-            // update main event (also applies eventStatus workaround, if needed)
-            val newEventIdIdx = calendar.updateEvent(id, cleaned.main, batch)
+        // update main event (also applies eventStatus workaround, if needed)
+        val newEventIdIdx = calendar.updateEvent(id, cleaned.main, batch)
 
-            // add updated exceptions
-            for (exception in cleaned.exceptions)
-                calendar.addEvent(exception, batch)
+        // add updated exceptions
+        for (exception in cleaned.exceptions)
+            calendar.addEvent(exception, batch)
 
-            batch.commit()
+        batch.commit()
 
-            if (newEventIdIdx == null) {
-                // original row was updated, so return original ID
-                return id
-            } else {
-                // event was re-built
-                val result = batch.getResult(newEventIdIdx)
-                val newEventUri = result?.uri ?: throw LocalStorageException("Content provider returned null on insert")
-                return ContentUris.parseId(newEventUri)
-            }
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't update event/exceptions", e)
+        if (newEventIdIdx == null) {
+            // original row was updated, so return original ID
+            return id
+        } else {
+            // event was re-built
+            val result = batch.getResult(newEventIdIdx)
+            val newEventUri = result?.uri ?: throw LocalStorageException("Content provider returned null on insert")
+            return ContentUris.parseId(newEventUri)
         }
     }
 
@@ -170,21 +161,17 @@ class AndroidRecurringCalendar(
      * @param id    ID of the main event
      */
     fun deleteEventAndExceptions(id: Long) {
-        try {
-            val batch = CalendarBatchOperation(calendar.client)
+        val batch = CalendarBatchOperation(calendar.client)
 
-            // delete main event
-            batch += CpoBuilder.newDelete(calendar.eventUri(id))
+        // delete main event
+        batch += CpoBuilder.newDelete(calendar.eventUri(id))
 
-            // delete exceptions, too (not automatically done by provider)
-            batch += CpoBuilder
-                .newDelete(calendar.eventsUri)
-                .withSelection("${Events.ORIGINAL_ID}=?", arrayOf(id.toString()))
+        // delete exceptions, too (not automatically done by provider)
+        batch += CpoBuilder
+            .newDelete(calendar.eventsUri)
+            .withSelection("${Events.ORIGINAL_ID}=?", arrayOf(id.toString()))
 
-            batch.commit()
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't delete event $id", e)
-        }
+        batch.commit()
     }
 
 

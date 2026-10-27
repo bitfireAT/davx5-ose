@@ -54,6 +54,13 @@ android {
         generateLocaleConfig = true
     }
 
+    // The dependencies info block is only useful for Google Play [https://developer.android.com/build/dependencies#dependency-info-play]
+    // and encrypted with Google's public key (encryption is non-deterministic by design → breaks reproducible builds).
+    dependenciesInfo {
+        includeInApk = false
+        includeInBundle = false
+    }
+
     @Suppress("UnstableApiUsage")
     testOptions {
         managedDevices {
@@ -85,7 +92,8 @@ android {
 
             isShrinkResources = true
 
-            // must be after signingConfigs {} block
+            // Must be after signingConfigs {} block. Uncomment following line to test release build with debug signing key:
+            // signingConfig = signingConfigs.getByName("debug")
             signingConfig = signingConfigs.findByName("bitfire")
         }
     }
@@ -94,6 +102,7 @@ android {
 dependencies {
     // include core subproject (manages its own dependencies itself, however from same version catalog)
     implementation(project(":core"))
+    implementation(project(":features:preconfigured-settings:external-scanner"))
 
     // Kotlin / Android
     implementation(libs.kotlin.stdlib)

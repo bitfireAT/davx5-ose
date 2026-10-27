@@ -8,6 +8,7 @@ import android.content.Entity
 import android.provider.CalendarContract.Events
 import at.bitfire.synctools.icalendar.Css3Color
 import at.bitfire.synctools.icalendar.plusAssign
+import net.fortuna.ical4j.model.ParameterList
 import net.fortuna.ical4j.model.component.VEvent
 import net.fortuna.ical4j.model.property.Color
 import java.util.logging.Logger
@@ -34,7 +35,7 @@ class ColorHandler : AndroidEventEntityHandler {
             }
 
         if (color != null)
-            to += Color(null, color.name)
+            to += Color(ParameterList(), color.name)
     }
 
 }

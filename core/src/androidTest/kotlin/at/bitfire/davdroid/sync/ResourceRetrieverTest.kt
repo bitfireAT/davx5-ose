@@ -4,12 +4,10 @@
 
 package at.bitfire.davdroid.sync
 
-import android.accounts.Account
 import at.bitfire.davdroid.MockEngineUtils.basic
 import at.bitfire.davdroid.accounts.LegacyAccount
-import at.bitfire.davdroid.accounts.toAndroidAccount
 import at.bitfire.davdroid.network.HttpClientBuilder
-import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.settings.AccountSettingsFactory
 import at.bitfire.davdroid.settings.Credentials
 import at.bitfire.davdroid.sync.account.TestAccount
 import at.bitfire.synctools.util.SensitiveString.Companion.toSensitiveString
@@ -34,7 +32,7 @@ class ResourceRetrieverTest {
     val hiltRule = HiltAndroidRule(this)
 
     @Inject
-    lateinit var accountSettingsFactory: AccountSettings.Factory
+    lateinit var accountSettingsFactory: AccountSettingsFactory
 
     @Inject
     lateinit var resourceRetrieverFactory: ResourceRetriever.Factory
@@ -50,7 +48,7 @@ class ResourceRetrieverTest {
         accountId = LegacyAccount(TestAccount.create())
 
         // add credentials to test account so that we can check whether they have been sent
-        val settings = accountSettingsFactory.create(accountId.toAndroidAccount())
+        val settings = accountSettingsFactory.create(accountId)
         settings.credentials(Credentials("test", "test".toSensitiveString()))
     }
 
@@ -80,7 +78,7 @@ class ResourceRetrieverTest {
             httpClientBuilder
                 // fromAccount() restricts authentication to the given domain; build the test client the
                 // same way production code does so that restriction is actually exercised.
-                .fromAccount(accountId.toAndroidAccount(), authDomain = "example.com")
+                .fromAccount(accountId, authDomain = "example.com")
                 .build(engine)
                 .use { httpClient ->
                     val retriever = resourceRetrieverFactory.create(accountId, "example.com", httpClient)
@@ -99,7 +97,7 @@ class ResourceRetrieverTest {
     fun testRetrieve_SameDomain() = runTest {
         MockEngine.basic("TEST").use { engine ->
             httpClientBuilder
-                .fromAccount(accountId.toAndroidAccount(), authDomain = "example.com")
+                .fromAccount(accountId, authDomain = "example.com")
                 .build(engine)
                 .use { httpClient ->
                     val retriever = resourceRetrieverFactory.create(accountId, "example.com", httpClient)

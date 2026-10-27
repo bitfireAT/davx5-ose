@@ -17,7 +17,7 @@ import androidx.work.WorkerParameters
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.repository.AccountRepository
-import at.bitfire.davdroid.resource.LocalAddressBook
+import at.bitfire.davdroid.resource.local.AddressBookAccountProperties
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -29,7 +29,9 @@ import java.util.logging.Logger
 class AccountsCleanupWorker @AssistedInject constructor(
     @Assisted val context: Context,
     @Assisted workerParameters: WorkerParameters,
+    private val accountManager: AccountManager,
     private val accountRepository: AccountRepository,
+    private val addressBookAccountProperties: AddressBookAccountProperties,
     private val db: AppDatabase,
     private val logger: Logger
 ): Worker(context, workerParameters) {
@@ -39,8 +41,6 @@ class AccountsCleanupWorker @AssistedInject constructor(
     interface Factory {
         fun create(appContext: Context, workerParams: WorkerParameters): AccountsCleanupWorker
     }
-
-    private val accountManager = AccountManager.get(context)
 
     override fun doWork(): Result {
         lockAccountsCleanup()
@@ -61,13 +61,15 @@ class AccountsCleanupWorker @AssistedInject constructor(
         // Later, accounts which are not in the DB should be deleted here
 
         // Delete orphaned services in DB – only necessary as long as accounts are implemented as system accounts (not in DB)
-        val accounts = accountRepository.getAllBlocking()
-        logger.info("Cleaning up accounts. Currently existing accounts: ${accounts.contentToString()}")
+        val accountIds = accountRepository.getAllBlocking()
+        logger.info("Cleaning up accounts. Currently existing accounts: ${accountIds.joinToString()}")
         val serviceDao = db.serviceDao()
-        if (accounts.isEmpty())
-            serviceDao.deleteAll()
-        else
-            serviceDao.deleteExceptAccounts(accounts.map { it.name }.toTypedArray())
+        if (accountIds.isEmpty()) {
+            serviceDao.deleteAllBlocking()
+        } else {
+            val accountNames = accountIds.map { accountId -> accountRepository.getAccountNameBlocking(accountId) }
+            serviceDao.deleteExceptAccountsBlocking(accountNames)
+        }
     }
 
     /**
@@ -75,11 +77,10 @@ class AccountsCleanupWorker @AssistedInject constructor(
      */
     @VisibleForTesting
     internal fun cleanUpAddressBooks() {
-        val accounts = accountRepository.getAllBlocking()
+        val accountIds = accountRepository.getAllBlocking().toSet()
         for (addressBookAccount in accountManager.getAccountsByType(context.getString(R.string.account_type_address_book))) {
-            val accountName = accountManager.getUserData(addressBookAccount, LocalAddressBook.USER_DATA_ACCOUNT_NAME)
-            val accountType = accountManager.getUserData(addressBookAccount, LocalAddressBook.USER_DATA_ACCOUNT_TYPE)
-            if (!accounts.any { it.name == accountName && it.type == accountType }) {
+            val accountId = addressBookAccountProperties.getAppAccount(addressBookAccount)
+            if (accountId !in accountIds) {
                 // If no valid account exists for this address book, we can delete it
                 logger.info("Deleting address book account without valid account: $addressBookAccount")
                 accountManager.removeAccountExplicitly(addressBookAccount)

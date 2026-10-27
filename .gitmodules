@@ -1,0 +1,3 @@
+[submodule "l10n"]
+	path = l10n
+	url = https://github.com/bitfireAT/davx5-translations

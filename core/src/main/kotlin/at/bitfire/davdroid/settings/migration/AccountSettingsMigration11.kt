@@ -5,17 +5,14 @@
 package at.bitfire.davdroid.settings.migration
 
 import android.accounts.Account
-import android.accounts.AccountManager
 import android.content.ContentResolver
-import android.content.Context
-import at.bitfire.davdroid.settings.AccountSettings
-import at.bitfire.davdroid.settings.AccountSettings.Companion.SYNC_INTERVAL_MANUALLY
+import at.bitfire.davdroid.accounts.AccountId
+import at.bitfire.davdroid.accounts.AndroidAccountManager
+import at.bitfire.davdroid.settings.AccountSettingsStore
 import at.bitfire.davdroid.sync.TasksAppManager
-import at.bitfire.synctools.util.setAndVerifyUserData
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import dagger.multibindings.IntKey
 import dagger.multibindings.IntoMap
@@ -26,16 +23,16 @@ import javax.inject.Inject
  * again when the tasks provider is switched.
  */
 class AccountSettingsMigration11 @Inject constructor(
-    @ApplicationContext private val context: Context,
+    private val androidAccountManager: AndroidAccountManager,
     private val tasksAppManager: TasksAppManager
 ): AccountSettingsMigration {
 
-    override fun migrate(account: Account) {
-        val accountManager: AccountManager = AccountManager.get(context)
+    override fun migrate(accountId: AccountId, store: AccountSettingsStore) {
+        val account = androidAccountManager.getAndroidAccount(accountId)
         tasksAppManager.currentProvider()?.let { provider ->
             val interval = getSyncFrameworkInterval(account, provider.authority)
             if (interval != null)
-                accountManager.setAndVerifyUserData(account, AccountSettings.KEY_SYNC_INTERVAL_TASKS, interval.toString())
+                store.putValue(KEY_SYNC_INTERVAL_TASKS, interval.toString())
         }
     }
 
@@ -58,4 +55,8 @@ class AccountSettingsMigration11 @Inject constructor(
         abstract fun provide(impl: AccountSettingsMigration11): AccountSettingsMigration
     }
 
+    companion object {
+        private const val KEY_SYNC_INTERVAL_TASKS = "sync_interval_tasks"
+        private const val SYNC_INTERVAL_MANUALLY = -1L
+    }
 }

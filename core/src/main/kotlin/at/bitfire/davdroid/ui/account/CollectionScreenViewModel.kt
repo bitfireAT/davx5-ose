@@ -4,8 +4,6 @@
 
 package at.bitfire.davdroid.ui.account
 
-import android.accounts.Account
-import android.content.ContentProviderClient
 import android.content.Context
 import android.database.ContentObserver
 import android.net.Uri
@@ -16,6 +14,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.di.qualifier.ApplicationScope
@@ -24,14 +23,15 @@ import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.repository.DavSyncStatsRepository
-import at.bitfire.davdroid.resource.LocalAddressBookStore
-import at.bitfire.davdroid.resource.LocalCalendarStore
-import at.bitfire.davdroid.resource.LocalDataStore
-import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.resource.local.LocalAddressBookStore
+import at.bitfire.davdroid.resource.local.LocalCalendarStore
+import at.bitfire.davdroid.resource.local.LocalChangesCounter
+import at.bitfire.davdroid.resource.local.LocalDataStore
+import at.bitfire.davdroid.settings.AccountSettingsFactory
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.sync.TasksAppManager
-import at.bitfire.davdroid.util.DavUtils.lastSegment
+import at.bitfire.davdroid.util.DavUtils.extractFileName
 import dagger.Lazy
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -50,6 +50,7 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
@@ -64,7 +65,7 @@ import java.util.logging.Logger
 class CollectionScreenViewModel @AssistedInject constructor(
     @ApplicationContext val context: Context,
     private val accountRepository: AccountRepository,
-    private val accountSettingsFactory: AccountSettings.Factory,
+    private val accountSettingsFactory: AccountSettingsFactory,
     @ApplicationScope private val applicationScope: CoroutineScope,
     @Assisted val collectionId: Long,
     private val collectionRepository: DavCollectionRepository,
@@ -73,6 +74,7 @@ class CollectionScreenViewModel @AssistedInject constructor(
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val localAddressBookStore: Lazy<LocalAddressBookStore>,
     private val localCalendarStore: Lazy<LocalCalendarStore>,
+    private val localChangesCounter: LocalChangesCounter,
     private val logger: Logger,
     private val serviceRepository: DavServiceRepository,
     settings: SettingsManager,
@@ -102,9 +104,10 @@ class CollectionScreenViewModel @AssistedInject constructor(
         .stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
     /** Flow that provides the account associated with the current collection */
-    val account: Flow<Account?> = collection.filterNotNull().map { collection ->
-        val service = serviceRepository.get(collection.serviceId)
-        service?.let { accountRepository.fromName(it.accountName) }
+    val accountId: Flow<AccountId?> = collection.filterNotNull().map { collection ->
+        serviceRepository.get(collection.serviceId)?.let { service ->
+            accountRepository.getAccountIdFromService(service)
+        }
     }
 
 
@@ -138,8 +141,8 @@ class CollectionScreenViewModel @AssistedInject constructor(
     private val principalDao = db.principalDao()
     val owner: Flow<String?> = collection.map { collection ->
         collection?.ownerId?.let { ownerId ->
-            val principal = principalDao.getAsync(ownerId)
-            principal.displayName ?: principal.url.lastSegment
+            val principal = principalDao.get(ownerId)
+            principal.displayName ?: extractFileName(principal.url)
         }
     }
 
@@ -147,18 +150,18 @@ class CollectionScreenViewModel @AssistedInject constructor(
     val lastSynced = syncStatsRepository.getLastSyncedFlow(collectionId)
 
     /** The account's "past event time limit", or null if not set or not relevant for the collection. */
-    val pastEventTimeLimit = combine(collection.filterNotNull(), account.filterNotNull()) { collection, account ->
+    val pastEventTimeLimit = combine(collection.filterNotNull(), accountId.filterNotNull()) { collection, accountId ->
         if (collection.type == Collection.TYPE_CALENDAR) {
-            getTimeRangePastDays(account)
+            getTimeRangePastDays(accountId)
         } else  {
             // doesn't apply to address books
             null
         }
     }
 
-    private suspend fun getTimeRangePastDays(account: Account): Int? {
+    private suspend fun getTimeRangePastDays(accountId: AccountId): Int? {
         return withContext(ioDispatcher) {
-            val accountSettings = accountSettingsFactory.create(account)
+            val accountSettings = accountSettingsFactory.create(accountId)
             accountSettings.getTimeRangePastDays()
         }
     }
@@ -166,9 +169,9 @@ class CollectionScreenViewModel @AssistedInject constructor(
     @OptIn(ExperimentalCoroutinesApi::class)
     val localItemCounts: Flow<List<LocalItemsCount>> = combine(
         collection.filterNotNull(),
-        account.filterNotNull()
-    ) { collection, account ->
-        countLocalItemsFlow(collection, account)
+        accountId.filterNotNull()
+    ) { collection, accountId ->
+        countLocalItemsFlow(collection, accountId)
     }.flatMapLatest { it }
 
 
@@ -203,11 +206,46 @@ class CollectionScreenViewModel @AssistedInject constructor(
         }
     }
 
+    /** Request to turn off synchronization that waits for user confirmation */
+    var disableSyncRequest by mutableStateOf<DisableCollectionSyncRequest?>(null)
+        private set
+
+    /**
+     * Turns synchronization on, or asks for confirmation (see [disableSyncRequest]) before turning it off
+     * because that removes local data.
+     */
     fun setSync(sync: Boolean) {
         viewModelScope.launch {
-            collectionRepository.setSync(collectionId, sync)
+            if (sync) {
+                collectionRepository.setSync(collectionId, true)
+                collectionSelectedUseCase.get().handleWithDelay(collectionId)
+            } else {
+                val collection = collection.value ?: return@launch
+                val accountId = accountId.first() ?: return@launch
+                val request = DisableCollectionSyncRequest(
+                    collectionId = collectionId,
+                    title = collection.title()
+                )
+                disableSyncRequest = request
+
+                // show dialog immediately and count only once available (may take a while)
+                val unsyncedChanges = localChangesCounter.countUnsyncedChanges(accountId, collection)
+                if (disableSyncRequest === request)
+                    disableSyncRequest = request.copy(unsyncedChanges = unsyncedChanges)
+            }
+        }
+    }
+
+    fun confirmDisableSync() {
+        disableSyncRequest = null
+        viewModelScope.launch {
+            collectionRepository.setSync(collectionId, false)
             collectionSelectedUseCase.get().handleWithDelay(collectionId)
         }
+    }
+
+    fun dismissDisableSync() {
+        disableSyncRequest = null
     }
 
 
@@ -223,19 +261,19 @@ class CollectionScreenViewModel @AssistedInject constructor(
         val deleted: Int
     )
 
-    private fun countLocalItemsFlow(collection: Collection, account: Account): Flow<List<LocalItemsCount>> {
+    private fun countLocalItemsFlow(collection: Collection, accountId: AccountId): Flow<List<LocalItemsCount>> {
         // Build one flow per local data store relevant to this collection type (will later be combined).
         val storeFlows: List<Flow<LocalItemsCount?>> = when (collection.type) {
             Collection.TYPE_ADDRESSBOOK -> listOf(
                 observeLocalDataStore(
-                    account = account,
+                    accountId = accountId,
                     localDataStore = localAddressBookStore.get(),
                     watchUris = listOf(ContactsContract.RawContacts.CONTENT_URI)
                 )
             )
             Collection.TYPE_CALENDAR -> buildList {
                 add(observeLocalDataStore(
-                    account = account,
+                    accountId = accountId,
                     localDataStore = localCalendarStore.get(),
                     watchUris = listOf(
                         CalendarContract.Calendars.CONTENT_URI,
@@ -245,7 +283,7 @@ class CollectionScreenViewModel @AssistedInject constructor(
 
                 tasksAppManager.get().getDataStore()?.let { taskListStore ->
                     add(observeLocalDataStore(
-                        account = account,
+                        accountId = accountId,
                         localDataStore = taskListStore,
                         watchUris = listOf(TaskContract.getContentUri(taskListStore.authority))
                     ))
@@ -261,12 +299,12 @@ class CollectionScreenViewModel @AssistedInject constructor(
     }
 
     private fun observeLocalDataStore(
-        account: Account,
+        accountId: AccountId,
         localDataStore: LocalDataStore<*>,
         watchUris: List<Uri>
     ): Flow<LocalItemsCount?> = callbackFlow {
-        val client: ContentProviderClient = try {
-            localDataStore.acquireContentProvider()
+        val client = try {
+            localDataStore.acquireLocalStorageClient()
         } catch (e: SecurityException) {
             logger.log(Level.WARNING, "No permission to access data store", e)
             null
@@ -281,7 +319,7 @@ class CollectionScreenViewModel @AssistedInject constructor(
         }
 
         fun queryAndSend() {
-            val count = localDataStore.getByDbCollectionId(account, client, collectionId)?.let { store ->
+            val count = localDataStore.getByDbCollectionId(accountId, client, collectionId)?.let { store ->
                 LocalItemsCount(
                     contentProviderName = getProviderAppName(localDataStore.authority),
                     total = store.countAll(),

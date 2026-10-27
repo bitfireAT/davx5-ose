@@ -92,10 +92,10 @@ class PrincipalsRefresherTest {
         hiltRule.inject()
         client = HttpClient(buildMockEngine())
 
-        val serviceId = db.serviceDao().insertOrReplace(
+        val serviceId = db.serviceDao().insertOrReplaceBlocking(
             Service(id = 0, accountName = "test", type = Service.TYPE_CARDDAV, principal = null)
         )
-        service = db.serviceDao().get(serviceId)!!
+        service = db.serviceDao().getBlocking(serviceId)!!
     }
 
     @After
@@ -113,7 +113,7 @@ class PrincipalsRefresherTest {
                 null
             )
         )
-        db.collectionDao().insertOrUpdateByUrl(
+        db.collectionDao().insertOrUpdateByUrlBlocking(
             Collection(
                 0, service.id, null, principalId,
                 Collection.TYPE_ADDRESSBOOK,
@@ -138,7 +138,7 @@ class PrincipalsRefresherTest {
                 null
             )
         )
-        db.collectionDao().insertOrUpdateByUrl(
+        db.collectionDao().insertOrUpdateByUrlBlocking(
             Collection(
                 0, service.id, null, principalId,
                 Collection.TYPE_ADDRESSBOOK,

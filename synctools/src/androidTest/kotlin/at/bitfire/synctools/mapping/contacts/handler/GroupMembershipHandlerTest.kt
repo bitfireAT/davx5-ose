@@ -5,13 +5,13 @@
 package at.bitfire.synctools.mapping.contacts.handler
 
 import android.Manifest
-import android.content.ContentProviderClient
 import android.content.ContentValues
 import android.provider.ContactsContract
 import android.provider.ContactsContract.CommonDataKinds.GroupMembership
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
 import at.bitfire.synctools.mapping.contacts.Contact
+import at.bitfire.synctools.storage.LocalStorageClient
 import at.bitfire.synctools.storage.contacts.AddressContract
 import at.bitfire.synctools.storage.contacts.AndroidContact
 import at.bitfire.synctools.storage.contacts.TestAddressBook
@@ -27,7 +27,7 @@ class GroupMembershipHandlerTest {
 
     @Test
     fun testMembership_GroupsAsCategories() {
-        val addressBook = TestAddressBook.create(provider)
+        val addressBook = TestAddressBook.create(client)
         try {
             val groupId = addressBook.findOrCreateGroup("TEST GROUP")
 
@@ -46,7 +46,7 @@ class GroupMembershipHandlerTest {
 
     @Test
     fun testMembership_GroupsAsVCards() {
-        val addressBook = TestAddressBook.create(provider)
+        val addressBook = TestAddressBook.create(client)
         try {
             val contact = Contact()
             val androidContact = AndroidContact(addressBook, contact, null, null)
@@ -68,19 +68,20 @@ class GroupMembershipHandlerTest {
         @ClassRule
         val permissionRule = GrantPermissionRule.grant(Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS)!!
 
-        private lateinit var provider: ContentProviderClient
+        private lateinit var client: LocalStorageClient
 
         @BeforeClass
         @JvmStatic
         fun connect() {
             val context = InstrumentationRegistry.getInstrumentation().context
-            provider = context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)!!
+            val provider = context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)!!
+            client = LocalStorageClient(provider)
         }
 
         @AfterClass
         @JvmStatic
         fun disconnect() {
-            provider.close()
+            client.close()
         }
 
     }

@@ -45,7 +45,7 @@ class LocationHandlerTest {
         ))
         val result = VEvent()
         handler.process(entity, entity, result)
-        assertEquals("Two words", result.location.value)
+        assertEquals("Two words", result.location?.value)
     }
 
 }

@@ -52,7 +52,8 @@ import javax.inject.Singleton
     SyncStats::class,
     WebDavDocument::class,
     WebDavMount::class
-], exportSchema = true, version = 20, autoMigrations = [
+], exportSchema = true, version = 21, autoMigrations = [
+    AutoMigration(from = 20, to = 21),      // service: add accountId
     AutoMigration(from = 19, to = 20),      // add account, account_setting
     AutoMigration(from = 18, to = 19),      // collection: add pushRegisteredEndpoint
     AutoMigration(from = 17, to = 18, spec = AutoMigration18::class),
@@ -75,6 +76,7 @@ abstract class AppDatabase: RoomDatabase() {
         @Provides
         @Singleton
         fun appDatabase(
+            accountManager: AccountManager,
             autoMigrations: Set<@JvmSuppressWildcards AutoMigrationSpec>,
             @ApplicationContext context: Context,
             manualMigrations: Set<@JvmSuppressWildcards Migration>,
@@ -106,9 +108,10 @@ abstract class AppDatabase: RoomDatabase() {
                     }
 
                     // remove all accounts because they're unfortunately useless without database
-                    val am = AccountManager.get(context)
-                    for (account in am.getAccountsByType(context.getString(R.string.account_type)))
-                        am.removeAccountExplicitly(account)
+                    for (account in accountManager.getAccountsByType(context.getString(R.string.account_type)))
+                        accountManager.removeAccountExplicitly(account)
+                    for (account in accountManager.getAccountsByType(context.getString(R.string.account_type_db)))
+                        accountManager.removeAccountExplicitly(account)
                 }
             })
             .build()

@@ -4,6 +4,7 @@
 
 package at.bitfire.synctools.icalendar
 
+import at.bitfire.synctools.util.getTimeZoneOrThrow
 import net.fortuna.ical4j.model.ComponentList
 import net.fortuna.ical4j.model.TimeZoneRegistryFactory
 import net.fortuna.ical4j.model.component.VAlarm
@@ -27,12 +28,13 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.temporal.Temporal
+import kotlin.test.assertNotNull
 
 class ICalendarGeneratorTest {
 
     private val tzRegistry = TimeZoneRegistryFactory.getInstance().createRegistry()
-    private val tzBerlin = tzRegistry.getTimeZone("Europe/Berlin").toZoneId()
-    private val tzLondon = tzRegistry.getTimeZone("Europe/London").toZoneId()
+    private val tzBerlin = tzRegistry.getTimeZoneOrThrow("Europe/Berlin").toZoneId()
+    private val tzLondon = tzRegistry.getTimeZoneOrThrow("Europe/London").toZoneId()
 
     private val userAgent = ProdId("TestUA/1.0")
     private val writer = ICalendarGenerator()
@@ -66,25 +68,6 @@ class ICalendarGeneratorTest {
         assertEquals("BEGIN:VCALENDAR\r\n" +
                 "VERSION:2.0\r\n" +
                 "PRODID:TestUA/1.0\r\n" +
-                // main event
-                "BEGIN:VEVENT\r\n" +
-                "UID:SAMPLEUID\r\n" +
-                "DTSTART;TZID=Europe/Berlin:20190101T100000\r\n" +
-                "DTEND:20190101T160000Z\r\n" +
-                "DTSTAMP:20251028T185101Z\r\n" +
-                "RRULE:FREQ=DAILY;COUNT=5\r\n" +
-                "BEGIN:VALARM\r\n" +
-                "TRIGGER:-PT1H\r\n" +
-                "END:VALARM\r\n" +
-                "END:VEVENT\r\n" +
-                // exception
-                "BEGIN:VEVENT\r\n" +
-                "UID:SAMPLEUID\r\n" +
-                "RECURRENCE-ID;TZID=Europe/Berlin:20190102T100000\r\n" +
-                "DTSTART;TZID=Europe/London:20190101T110000\r\n" +
-                "DTEND:20190101T170000Z\r\n" +
-                "DTSTAMP:20251028T185101Z\r\n" +
-                "END:VEVENT\r\n" +
                 // time zone: Europe/Berlin
                 "BEGIN:VTIMEZONE\r\n" +
                 "TZID:Europe/Berlin\r\n" +
@@ -121,6 +104,25 @@ class ICalendarGeneratorTest {
                 "RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=-1SU\r\n" +
                 "END:DAYLIGHT\r\n" +
                 "END:VTIMEZONE\r\n" +
+                // main event
+                "BEGIN:VEVENT\r\n" +
+                "UID:SAMPLEUID\r\n" +
+                "DTSTART;TZID=Europe/Berlin:20190101T100000\r\n" +
+                "DTEND:20190101T160000Z\r\n" +
+                "DTSTAMP:20251028T185101Z\r\n" +
+                "RRULE:FREQ=DAILY;COUNT=5\r\n" +
+                "BEGIN:VALARM\r\n" +
+                "TRIGGER:-PT1H\r\n" +
+                "END:VALARM\r\n" +
+                "END:VEVENT\r\n" +
+                // exception
+                "BEGIN:VEVENT\r\n" +
+                "UID:SAMPLEUID\r\n" +
+                "RECURRENCE-ID;TZID=Europe/Berlin:20190102T100000\r\n" +
+                "DTSTART;TZID=Europe/London:20190101T110000\r\n" +
+                "DTEND:20190101T170000Z\r\n" +
+                "DTSTAMP:20251028T185101Z\r\n" +
+                "END:VEVENT\r\n" +
                 "END:VCALENDAR\r\n", iCal.toString())
     }
 
@@ -136,7 +138,7 @@ class ICalendarGeneratorTest {
         // Verify that ical4j returns a VTIMEZONE with the new Europe/Kyiv TZID (by alias)
         val tzReg = TimeZoneRegistryFactory.getInstance().createRegistry()
         // We call getTimeZone(Europe/Kiev), but we get VTIMEZONE(Europe/Kyiv):
-        assertEquals("Europe/Kyiv", tzReg.getTimeZone(tzKiev.id).id)
+        assertEquals("Europe/Kyiv", tzReg.getTimeZoneOrThrow(tzKiev.id).id)
 
         // Generate the iCalendar (must NOT map Europe/Kiev to Europe/Kyiv silently)
         val iCal = StringWriter()
@@ -156,15 +158,15 @@ class ICalendarGeneratorTest {
             "BEGIN:VCALENDAR\r\n" +
                     "VERSION:2.0\r\n" +
                     "PRODID:TestUA/1.0\r\n" +
+                    "BEGIN:VTIMEZONE\r\n" +
+                    ".*TZID:Europe/Kiev\r\n" +
+                    ".*END:VTIMEZONE\r\n" +
                     "BEGIN:VEVENT\r\n" +
                     "UID:KIEVTEST\r\n" +
                     "DTSTART;TZID=Europe/Kiev:20230101T120000\r\n" +
                     "DTEND;TZID=Europe/Kiev:20230101T140000\r\n" +
                     "DTSTAMP:20230101T120000Z\r\n" +
-                    "END:VEVENT\r\n" +
-                    "BEGIN:VTIMEZONE\r\n" +
-                    ".*TZID:Europe/Kiev\r\n" +
-                    ".*END:VTIMEZONE",
+                    "END:VEVENT",
             setOf(RegexOption.MULTILINE, RegexOption.DOT_MATCHES_ALL)
         )
         assertTrue(iCal.toString().contains(pattern))
@@ -175,8 +177,10 @@ class ICalendarGeneratorTest {
     fun `copyVTimeZone result properties can be added without modifying original`() {
         // Get a timezone from the registry
         val tzReg = TimeZoneRegistryFactory.getInstance().createRegistry()
-        val originalVTimeZone = tzReg.getTimeZone("Europe/Berlin").vTimeZone
+        val originalVTimeZone = tzReg.getTimeZoneOrThrow("Europe/Berlin").vTimeZone
         val originalVTZ = originalVTimeZone.toString()
+
+        assertNotNull(originalVTimeZone, "Failed to get VTIMEZONE for Europe/Berlin from registry")
 
         // Create a copy using the method
         val copiedVTimeZone = writer.copyVTimeZone(originalVTimeZone)

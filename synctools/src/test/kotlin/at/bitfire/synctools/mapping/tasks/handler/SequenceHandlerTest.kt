@@ -38,7 +38,7 @@ class SequenceHandlerTest {
 
         handler.process(from = input, main = input, to = task)
 
-        assertEquals(0, task.sequence.sequenceNo)
+        assertEquals(0, task.sequence?.sequenceNo)
     }
 
     @Test
@@ -48,6 +48,6 @@ class SequenceHandlerTest {
 
         handler.process(from = input, main = input, to = task)
 
-        assertEquals(3, task.sequence.sequenceNo)
+        assertEquals(3, task.sequence?.sequenceNo)
     }
 }

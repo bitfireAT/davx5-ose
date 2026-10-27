@@ -38,7 +38,7 @@ class DmfsTaskListTest(providerName: TaskProvider.ProviderName) :
             taskList.provider.client.query(
                 taskList.tasksPropertiesUri(), null,
                 "${TaskContract.Properties.TASK_ID}=?", arrayOf(childId.toString()),
-                null, null
+                null
             )!!.use { cursor ->
                 assertEquals(1, cursor.count)
                 cursor.moveToNext()
@@ -755,7 +755,7 @@ class DmfsTaskListTest(providerName: TaskProvider.ProviderName) :
         info.put(TaskLists.SYNC_ENABLED, 1)
         info.put(TaskLists.VISIBLE, 1)
 
-        val dmfsTaskListProvider = DmfsTaskListProvider(testAccount, provider, providerName)
+        val dmfsTaskListProvider = DmfsTaskListProvider(testAccount, client, providerName)
         return dmfsTaskListProvider.createAndGetTaskList(info)
     }
 

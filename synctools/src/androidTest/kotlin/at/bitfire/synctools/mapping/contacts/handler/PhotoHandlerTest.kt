@@ -5,7 +5,6 @@
 package at.bitfire.synctools.mapping.contacts.handler
 
 import android.Manifest
-import android.content.ContentProviderClient
 import android.content.ContentUris
 import android.content.ContentValues
 import android.provider.ContactsContract
@@ -15,9 +14,11 @@ import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
 import at.bitfire.synctools.mapping.contacts.Contact
 import at.bitfire.synctools.mapping.contacts.TestUtils
+import at.bitfire.synctools.storage.LocalStorageClient
 import at.bitfire.synctools.storage.contacts.AndroidAddressBook
 import at.bitfire.synctools.storage.contacts.AndroidContact
 import at.bitfire.synctools.storage.contacts.TestAddressBook
+import io.mockk.mockk
 import org.junit.AfterClass
 import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
@@ -39,24 +40,24 @@ class PhotoHandlerTest {
         val permissionRule = GrantPermissionRule.grant(Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS)!!
 
         val testContext = InstrumentationRegistry.getInstrumentation().context
-        private lateinit var provider: ContentProviderClient
+        private lateinit var client: LocalStorageClient
         private lateinit var addressBook: AndroidAddressBook
 
         @BeforeClass
         @JvmStatic
         fun connect() {
-            provider = testContext.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)!!
-            assertNotNull(provider)
+            val provider = testContext.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)!!
+            client = LocalStorageClient(provider)
+            assertNotNull(client)
 
-            addressBook = TestAddressBook.create(provider)
+            addressBook = TestAddressBook.create(client)
         }
 
         @AfterClass
         @JvmStatic
         fun disconnect() {
             TestAddressBook.remove(addressBook)
-            @Suppress("DEPRECATION")
-            provider.release()
+            client.close()
         }
     }
 
@@ -82,8 +83,9 @@ class PhotoHandlerTest {
 
     @Test
     fun testPhoto_Empty() {
+        val client = mockk<LocalStorageClient>(relaxed = true)
         val contact = Contact()
-        PhotoHandler(null).handle(ContentValues().apply {
+        PhotoHandler(client).handle(ContentValues().apply {
             putNull(Photo.PHOTO)
         }, contact)
         assertNull(contact.photo)
@@ -91,9 +93,10 @@ class PhotoHandlerTest {
 
     @Test
     fun testPhoto_Blob() {
+        val client = mockk<LocalStorageClient>(relaxed = true)
         val blob = TestUtils.resourceToByteArray("/small.jpg")
         val contact = Contact()
-        PhotoHandler(null).handle(ContentValues().apply {
+        PhotoHandler(client).handle(ContentValues().apply {
             put(Photo.PHOTO, blob)
         }, contact)
         assertEquals(blob, contact.photo)
@@ -111,7 +114,7 @@ class PhotoHandlerTest {
         val dataUri = ContentUris.withAppendedId(RawContacts.CONTENT_URI, rawContactId).buildUpon()
             .appendPath(RawContacts.Data.CONTENT_DIRECTORY)
             .build()
-        val thumbnail = provider.query(dataUri, arrayOf(Photo.PHOTO_FILE_ID, Photo.PHOTO),
+        val thumbnail = client.query(dataUri, arrayOf(Photo.PHOTO_FILE_ID, Photo.PHOTO),
             "${RawContacts.Data.MIMETYPE}=?", arrayOf(Photo.CONTENT_ITEM_TYPE),
             null
         )!!.use { cursor ->

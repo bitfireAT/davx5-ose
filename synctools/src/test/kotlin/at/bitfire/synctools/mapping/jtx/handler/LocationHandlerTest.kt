@@ -56,10 +56,10 @@ class LocationHandlerTest {
 
         handler.process(from = input, main = input, to = output)
 
-        assertEquals("Office", output.location.value)
+        assertEquals("Office", output.location?.value)
         assertEquals(
             "https://example.com/location",
-            output.location.getParameter<AltRep>(Parameter.ALTREP).getOrNull()?.value
+            output.location?.getParameter<AltRep>(Parameter.ALTREP)?.getOrNull()?.value
         )
     }
 

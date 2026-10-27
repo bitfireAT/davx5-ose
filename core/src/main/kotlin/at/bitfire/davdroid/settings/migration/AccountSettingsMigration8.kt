@@ -4,10 +4,12 @@
 
 package at.bitfire.davdroid.settings.migration
 
-import android.accounts.Account
 import android.content.ContentUris
 import android.content.Context
 import androidx.core.content.contentValuesOf
+import at.bitfire.davdroid.accounts.AccountId
+import at.bitfire.davdroid.accounts.AndroidAccountManager
+import at.bitfire.davdroid.settings.AccountSettingsStore
 import at.bitfire.synctools.storage.TaskProvider
 import at.techbee.jtx.JtxContract.asSyncAdapter
 import dagger.Binds
@@ -23,6 +25,7 @@ import javax.inject.Inject
 
 class AccountSettingsMigration8 @Inject constructor(
     @ApplicationContext private val context: Context,
+    private val androidAccountManager: AndroidAccountManager,
     private val logger: Logger
 ): AccountSettingsMigration {
 
@@ -30,7 +33,8 @@ class AccountSettingsMigration8 @Inject constructor(
      * There is a mistake in this method. [TaskContract.Tasks.SYNC_VERSION] is used to store the
      * SEQUENCE and should not be used for the eTag.
      */
-    override fun migrate(account: Account) {
+    override fun migrate(accountId: AccountId, store: AccountSettingsStore) {
+        val account = androidAccountManager.getAndroidAccount(accountId)
         val providerName = TaskProvider.ProviderName.OpenTasks
         TaskProvider.acquireRecentClient(context, providerName)?.use { client ->
             // ETag is now in sync_version instead of sync1

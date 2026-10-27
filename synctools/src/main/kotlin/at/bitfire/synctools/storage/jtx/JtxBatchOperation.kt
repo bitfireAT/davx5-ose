@@ -4,12 +4,12 @@
 
 package at.bitfire.synctools.storage.jtx
 
-import android.content.ContentProviderClient
 import at.bitfire.synctools.storage.BatchOperation
+import at.bitfire.synctools.storage.LocalStorageClient
 
 /**
  * [at.bitfire.synctools.storage.BatchOperation] for jtx Board
  */
 class JtxBatchOperation(
-    providerClient: ContentProviderClient
-): BatchOperation(providerClient, maxOperationsPerYieldPoint = null)
+    client: LocalStorageClient
+): BatchOperation(client, maxOperationsPerYieldPoint = null)

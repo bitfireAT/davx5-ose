@@ -12,9 +12,10 @@ import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.testing.TestListenableWorkerBuilder
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.TestUtils
+import at.bitfire.davdroid.accounts.LegacyAccount
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Service
-import at.bitfire.davdroid.resource.LocalAddressBook
+import at.bitfire.davdroid.resource.local.AddressBookAccountProperties
 import at.bitfire.davdroid.settings.SettingsManager
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -36,7 +37,13 @@ class AccountsCleanupWorkerTest {
     val hiltRule = HiltAndroidRule(this)
 
     @Inject
+    lateinit var accountManager: AccountManager
+
+    @Inject
     lateinit var accountsCleanupWorkerFactory: AccountsCleanupWorker.Factory
+
+    @Inject
+    lateinit var addressBookAccountProperties: AddressBookAccountProperties
 
     @Inject @ApplicationContext
     lateinit var context: Context
@@ -50,7 +57,6 @@ class AccountsCleanupWorkerTest {
     @Inject
     lateinit var workerFactory: HiltWorkerFactory
 
-    lateinit var accountManager: AccountManager
     lateinit var addressBookAccountType: String
     lateinit var addressBookAccount: Account
     lateinit var service: Service
@@ -60,7 +66,6 @@ class AccountsCleanupWorkerTest {
         hiltRule.inject()
         TestUtils.setUpWorkManager(context, workerFactory)
 
-        accountManager = AccountManager.get(context)
         service = createTestService()
 
         addressBookAccountType = context.getString(R.string.account_type_address_book)
@@ -77,8 +82,16 @@ class AccountsCleanupWorkerTest {
     @Test
     fun testCleanUpServices_noAccount() {
         // Insert service that reference to invalid account
-        db.serviceDao().insertOrReplace(Service(id = 1, accountName = "test", type = Service.TYPE_CALDAV, principal = null))
-        assertNotNull(db.serviceDao().get(1))
+        db.serviceDao()
+            .insertOrReplaceBlocking(
+                Service(
+                    id = 1,
+                    accountName = "test",
+                    type = Service.TYPE_CALDAV,
+                    principal = null
+                )
+            )
+        assertNotNull(db.serviceDao().getBlocking(1))
 
         // Create worker and run the method
         val worker = TestListenableWorkerBuilder<AccountsCleanupWorker>(context)
@@ -87,18 +100,34 @@ class AccountsCleanupWorkerTest {
         worker.cleanUpServices()
 
         // Verify that service is deleted
-        assertNull(db.serviceDao().get(1))
+        assertNull(db.serviceDao().getBlocking(1))
     }
 
     @Test
     fun testCleanUpServices_oneAccount() {
         TestAccount.provide { existingAccount ->
             // Insert services, one that reference the existing account and one that references an invalid account
-            db.serviceDao().insertOrReplace(Service(id = 1, accountName = existingAccount.name, type = Service.TYPE_CALDAV, principal = null))
-            assertNotNull(db.serviceDao().get(1))
+            db.serviceDao()
+                .insertOrReplaceBlocking(
+                    Service(
+                        id = 1,
+                        accountName = existingAccount.name,
+                        type = Service.TYPE_CALDAV,
+                        principal = null
+                    )
+                )
+            assertNotNull(db.serviceDao().getBlocking(1))
 
-            db.serviceDao().insertOrReplace(Service(id = 2, accountName = "not existing", type = Service.TYPE_CARDDAV, principal = null))
-            assertNotNull(db.serviceDao().get(2))
+            db.serviceDao()
+                .insertOrReplaceBlocking(
+                    Service(
+                        id = 2,
+                        accountName = "not existing",
+                        type = Service.TYPE_CARDDAV,
+                        principal = null
+                    )
+                )
+            assertNotNull(db.serviceDao().getBlocking(2))
 
             // Create worker and run the method
             val worker = TestListenableWorkerBuilder<AccountsCleanupWorker>(context)
@@ -107,8 +136,8 @@ class AccountsCleanupWorkerTest {
             worker.cleanUpServices()
 
             // Verify that one service is deleted and the other one is kept
-            assertNotNull(db.serviceDao().get(1))
-            assertNull(db.serviceDao().get(2))
+            assertNotNull(db.serviceDao().getBlocking(1))
+            assertNull(db.serviceDao().getBlocking(2))
         }
     }
 
@@ -133,11 +162,8 @@ class AccountsCleanupWorkerTest {
     fun testCleanUpAddressBooks_keepsAddressBookWithAccount() {
         TestAccount.provide { existingAccount ->
             // Create address book account _with_ corresponding account and verify
-            val userData = Bundle(2).apply {
-                putString(LocalAddressBook.USER_DATA_ACCOUNT_NAME, existingAccount.name)
-                putString(LocalAddressBook.USER_DATA_ACCOUNT_TYPE, existingAccount.type)
-            }
-            assertTrue(accountManager.addAccountExplicitly(addressBookAccount, null, userData))
+            assertTrue(accountManager.addAccountExplicitly(addressBookAccount, null, Bundle()))
+            addressBookAccountProperties.setAppAccount(addressBookAccount, LegacyAccount(existingAccount))
             assertEquals(listOf(addressBookAccount), accountManager.getAccountsByType(addressBookAccountType).toList())
 
             // Create worker and run the method
@@ -156,8 +182,8 @@ class AccountsCleanupWorkerTest {
 
     private fun createTestService(): Service {
         val service = Service(id=0, accountName="test", type=Service.TYPE_CARDDAV, principal = null)
-        val serviceId = db.serviceDao().insertOrReplace(service)
-        return db.serviceDao().get(serviceId)!!
+        val serviceId = db.serviceDao().insertOrReplaceBlocking(service)
+        return db.serviceDao().getBlocking(serviceId)!!
     }
 
 }

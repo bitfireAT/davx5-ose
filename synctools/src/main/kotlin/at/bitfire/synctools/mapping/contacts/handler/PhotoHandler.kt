@@ -4,7 +4,6 @@
 
 package at.bitfire.synctools.mapping.contacts.handler
 
-import android.content.ContentProviderClient
 import android.content.ContentUris
 import android.content.ContentValues
 import android.graphics.Bitmap
@@ -12,11 +11,12 @@ import android.graphics.BitmapFactory
 import android.provider.ContactsContract
 import android.provider.ContactsContract.CommonDataKinds.Photo
 import at.bitfire.synctools.mapping.contacts.Contact
+import at.bitfire.synctools.storage.LocalStorageClient
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.util.logging.Level
 
-class PhotoHandler(val provider: ContentProviderClient?): DataRowHandler() {
+class PhotoHandler(val client: LocalStorageClient): DataRowHandler() {
 
     companion object {
 
@@ -67,7 +67,7 @@ class PhotoHandler(val provider: ContentProviderClient?): DataRowHandler() {
         values.getAsLong(Photo.PHOTO_FILE_ID)?.let { photoId ->
             val photoUri = ContentUris.withAppendedId(ContactsContract.DisplayPhoto.CONTENT_URI, photoId)
             try {
-                provider?.openAssetFile(photoUri, "r")?.let { file ->
+                client.openAssetFile(photoUri, "r")?.let { file ->
                     file.createInputStream().use {
                         // Samsung Android 12 bug: they return a PNG image with MIME type image/jpeg
                         convertToJpeg(it.readBytes(), 75)?.let { jpeg ->

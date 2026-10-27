@@ -76,7 +76,7 @@ fun AboutApp(
         )
 
         PixelBoxes(
-            arrayOf(Color(0xFFFCF434), Color.White, Color(0xFF9C59D1), Color.Black),
+            arrayOf(Color(0xFFFCF434), Color(0xFFFFF8E7), Color(0xFF9C59D1), Color.Black),
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .padding(16.dp)

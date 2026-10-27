@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.repository
 
-import android.accounts.Account
 import android.content.Context
 import at.bitfire.dav4jvm.XmlUtils
 import at.bitfire.dav4jvm.XmlUtils.insertTag
@@ -17,7 +16,7 @@ import at.bitfire.dav4jvm.property.caldav.CalDAV
 import at.bitfire.dav4jvm.property.carddav.CardDAV
 import at.bitfire.dav4jvm.property.webdav.WebDAV
 import at.bitfire.davdroid.ProductIds
-import at.bitfire.davdroid.R
+import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.CollectionType
@@ -48,6 +47,7 @@ import javax.inject.Inject
  * Repository for managing collections.
  */
 class DavCollectionRepository @Inject constructor(
+    private val accountRepository: AccountRepository,
     @ApplicationContext private val context: Context,
     private val db: AppDatabase,
     private val logger: Logger,
@@ -95,7 +95,7 @@ class DavCollectionRepository @Inject constructor(
      * Creates address book collection on server and locally
      */
     suspend fun createAddressBook(
-        account: Account,
+        accountId: AccountId,
         homeSet: HomeSet,
         displayName: String,
         description: String?
@@ -108,7 +108,7 @@ class DavCollectionRepository @Inject constructor(
 
         // create collection on server
         createOnServer(
-            account = account,
+            accountId = accountId,
             url = url,
             method = "MKCOL",
             xmlBody = generateMkColXml(
@@ -127,14 +127,14 @@ class DavCollectionRepository @Inject constructor(
             displayName = displayName,
             description = description
         )
-        dao.insertAsync(collection)
+        dao.insert(collection)
     }
 
     /**
      * Create calendar collection on server and locally
      */
     suspend fun createCalendar(
-        account: Account,
+        accountId: AccountId,
         homeSet: HomeSet,
         color: Int?,
         displayName: String,
@@ -152,7 +152,7 @@ class DavCollectionRepository @Inject constructor(
 
         // create collection on server
         createOnServer(
-            account = account,
+            accountId = accountId,
             url = url,
             method = "MKCALENDAR",
             xmlBody = generateMkColXml(
@@ -181,7 +181,7 @@ class DavCollectionRepository @Inject constructor(
             supportsVTODO = supportVTODO,
             supportsVJOURNAL = supportVJOURNAL
         )
-        dao.insertAsync(collection)
+        dao.insert(collection)
 
         // Trigger service detection (because the collection may actually have other properties than the ones we have inserted).
         // Some servers are known to change the supported components (VEVENT, …) after creation.
@@ -191,10 +191,10 @@ class DavCollectionRepository @Inject constructor(
     /** Deletes the given collection from the server and the database. */
     suspend fun deleteRemote(collection: Collection) {
         val service = serviceRepository.get(collection.serviceId) ?: throw IllegalArgumentException("Service not found")
-        val account = Account(service.accountName, context.getString(R.string.account_type))
+        val accountId = accountRepository.getAccountIdFromService(service)
 
         httpClientBuilder
-            .fromAccountAsync(account)
+            .fromAccountAsync(accountId)
             .build()
             .use { httpClient ->
                 try {
@@ -219,22 +219,22 @@ class DavCollectionRepository @Inject constructor(
 
     suspend fun getSyncableByTopic(topic: String) = dao.getSyncableByPushTopic(topic)
 
-    fun get(id: Long) = dao.get(id)
-    suspend fun getAsync(id: Long) = dao.getAsync(id)
+    fun get(id: Long) = dao.getBlocking(id)
+    suspend fun getAsync(id: Long) = dao.get(id)
 
     fun getFlow(id: Long) = dao.getFlow(id)
 
     suspend fun getByService(serviceId: Long) = dao.getByService(serviceId)
 
-    fun getByServiceAndUrl(serviceId: Long, url: String) = dao.getByServiceAndUrl(serviceId, url)
+    fun getByServiceAndUrl(serviceId: Long, url: String) = dao.getByServiceAndUrlBlocking(serviceId, url)
 
-    fun getByServiceAndSync(serviceId: Long) = dao.getByServiceAndSync(serviceId)
+    fun getByServiceAndSync(serviceId: Long) = dao.getByServiceAndSyncBlocking(serviceId)
 
-    fun getSyncCalendars(serviceId: Long) = dao.getSyncCalendars(serviceId)
+    fun getSyncCalendars(serviceId: Long) = dao.getSyncCalendarsBlocking(serviceId)
 
-    fun getSyncJtxCollections(serviceId: Long) = dao.getSyncJtxCollections(serviceId)
+    fun getSyncJtxCollections(serviceId: Long) = dao.getSyncJtxCollectionsBlocking(serviceId)
 
-    fun getSyncTaskLists(serviceId: Long) = dao.getSyncTaskLists(serviceId)
+    fun getSyncTaskLists(serviceId: Long) = dao.getSyncTaskListsBlocking(serviceId)
 
     /** Returns all collections that are both selected for synchronization and push-capable. */
     suspend fun getPushCapableAndSyncable(serviceId: Long) = dao.getPushCapableSyncCollections(serviceId)
@@ -257,7 +257,7 @@ class DavCollectionRepository @Inject constructor(
     fun insertOrUpdateByUrlRememberSync(newCollection: Collection) {
         db.runInTransaction {
             // remember locally set flags
-            val oldCollection = dao.getByServiceAndUrl(newCollection.serviceId, newCollection.url.toString())
+            val oldCollection = dao.getByServiceAndUrlBlocking(newCollection.serviceId, newCollection.url.toString())
             val newCollectionWithFlags =
                 if (oldCollection != null)
                     newCollection.copy(sync = oldCollection.sync, forceReadOnly = oldCollection.forceReadOnly)
@@ -273,7 +273,7 @@ class DavCollectionRepository @Inject constructor(
      * Creates or updates the existing collection if it exists (URL)
      */
     fun insertOrUpdateByUrl(collection: Collection) {
-        dao.insertOrUpdateByUrl(collection)
+        dao.insertOrUpdateByUrlBlocking(collection)
     }
 
     /**
@@ -296,8 +296,8 @@ class DavCollectionRepository @Inject constructor(
     /**
      * Whether or not the local collection should be synced with the server
      */
-    suspend fun setSync(id: Long, forceReadOnly: Boolean) {
-        dao.updateSync(id, forceReadOnly)
+    suspend fun setSync(id: Long, sync: Boolean) {
+        dao.updateSync(id, sync)
     }
 
     /**
@@ -321,7 +321,7 @@ class DavCollectionRepository @Inject constructor(
      * Deletes the collection locally
      */
     fun delete(collection: Collection) {
-        dao.delete(collection)
+        dao.deleteBlocking(collection)
     }
 
 
@@ -332,14 +332,14 @@ class DavCollectionRepository @Inject constructor(
      *
      * Uses the provided HTTP method and XML body to perform a MKCOL request (collection creation).
      *
-     * @param account Account to use for authentication and server connection.
+     * @param accountId [AccountId] of the account to use for authentication and server connection.
      * @param url Target URL where the collection should be created.
      * @param method HTTP method to use for the MKCOL request (should be `MKCALENDAR` or `MKCOL`).
      * @param xmlBody XML body containing collection metadata (e.g., display name, properties).
      */
-    private suspend fun createOnServer(account: Account, url: Url, method: String, xmlBody: String) {
+    private suspend fun createOnServer(accountId: AccountId, url: Url, method: String, xmlBody: String) {
         httpClientBuilder
-            .fromAccountAsync(account)
+            .fromAccountAsync(accountId)
             .build()
             .use { httpClient ->
                 DavResource(httpClient, url).mkCol(

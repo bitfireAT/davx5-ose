@@ -8,4 +8,4 @@ import javax.inject.Qualifier
 
 @Retention(AnnotationRetention.RUNTIME)
 @Qualifier
-annotation class SyncTransferSemaphore
+annotation class SyncMultigetSemaphore

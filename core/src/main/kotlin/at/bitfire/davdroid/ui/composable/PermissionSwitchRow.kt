@@ -19,12 +19,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import at.bitfire.davdroid.permissions.RequiredPermission
+import at.bitfire.davdroid.permissions.rememberPermissionsState
 
 @Composable
 fun PermissionSwitchRow(
@@ -76,10 +77,9 @@ fun PermissionSwitchRow(
 }
 
 @Composable
-@OptIn(ExperimentalPermissionsApi::class)
 fun PermissionSwitchRow(
     text: String,
-    permissions: List<String>,
+    permissions: List<RequiredPermission>,
     summaryWhenGranted: String,
     summaryWhenNotGranted: String,
     modifier: Modifier = Modifier,
@@ -99,14 +99,15 @@ fun PermissionSwitchRow(
         return
     }
 
-    val state = rememberMultiplePermissionsState(permissions = permissions.toList())
+    val context = LocalContext.current
+    val state = rememberPermissionsState(permissions)
     PermissionSwitchRow(
         text = text,
         fontWeight = fontWeight,
         summaryWhenGranted = summaryWhenGranted,
         summaryWhenNotGranted = summaryWhenNotGranted,
         allPermissionsGranted = state.allPermissionsGranted,
-        onLaunchRequest = state::launchMultiplePermissionRequest,
+        onLaunchRequest = { state.launch(context) },
         modifier = modifier
     )
 }

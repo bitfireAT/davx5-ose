@@ -15,6 +15,7 @@ import net.fortuna.ical4j.model.PropertyContainer
 import net.fortuna.ical4j.model.PropertyList
 import net.fortuna.ical4j.model.TemporalAdapter
 import net.fortuna.ical4j.model.TimeZoneRegistryFactory
+import net.fortuna.ical4j.model.component.CalendarComponent
 import net.fortuna.ical4j.model.component.VEvent
 import net.fortuna.ical4j.model.component.VTimeZone
 import net.fortuna.ical4j.model.parameter.TzId
@@ -52,10 +53,11 @@ class ICalendarGenerator {
         // keep record of used timezone IDs and earliest DTSTART in order to be able to add VTIMEZONEs
         var earliestStart: Temporal? = null
         val usedTimezoneIds = mutableSetOf<String>()
+        val components = mutableSetOf<CalendarComponent>()
 
         // add main event
         if (event.main != null) {
-            ical += event.main
+            components += event.main
 
             earliestStart = event.main.dtStart<Temporal>()?.date
             usedTimezoneIds += timeZonesOf(event.main)
@@ -63,7 +65,7 @@ class ICalendarGenerator {
 
         // recurrence exceptions
         for (exception in event.exceptions) {
-            ical += exception
+            components += exception
 
             exception.dtStart<Temporal>()?.date?.let { start ->
                 if (earliestStart == null || TemporalAdapter.isBefore(start, earliestStart))
@@ -87,7 +89,7 @@ class ICalendarGenerator {
             name used by Android because if we would use the new TZ ID, it wouldn't be understood
             by Android (and thus downgraded to the system default timezone) if we get it back
             again from the server. */
-            val ical4jTzId = vTimeZone.timeZoneId.value
+            val ical4jTzId = vTimeZone.timeZoneId?.value
             if (ical4jTzId != tzId) {
                 logger.warning("Android timezone $tzId maps to ical4j $ical4jTzId. Using Android TZID.")
 
@@ -101,6 +103,11 @@ class ICalendarGenerator {
             val minifiedVTimeZone = VTimeZoneMinifier().minify(vTimeZone, earliestStart)
             ical += minifiedVTimeZone
         }
+
+        // Add all the components after the VTIMEZONEs, so that the VTIMEZONEs are always at the top of the iCalendar,
+        // and they can be used by single-pass parsers
+        for (component in components)
+            ical += component
 
         CalendarOutputter(false).output(ical, to)
     }

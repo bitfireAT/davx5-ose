@@ -5,7 +5,7 @@
 package at.bitfire.davdroid.sync
 
 import android.content.Context
-import at.bitfire.davdroid.resource.LocalResource
+import at.bitfire.davdroid.resource.local.LocalResource
 import java.util.Optional
 
 class LocalTestResource: LocalResource {
@@ -19,7 +19,7 @@ class LocalTestResource: LocalResource {
     var deleted = false
     var dirty = false
 
-    override fun clearDirty(fileName: Optional<String>, eTag: String?, scheduleTag: String?) {
+    override suspend fun clearDirty(fileName: Optional<String>, eTag: String?, scheduleTag: String?) {
         dirty = false
         if (fileName.isPresent)
             this.fileName = fileName.get()
@@ -27,15 +27,15 @@ class LocalTestResource: LocalResource {
         this.scheduleTag = scheduleTag
     }
 
-    override fun updateFlags(flags: Int) {
+    override suspend fun updateFlags(flags: Int) {
         this.flags = flags
     }
 
-    override fun updateUid(uid: String) { /* no-op */ }
-    override fun updateSequence(sequence: Int) = throw NotImplementedError()
+    override suspend fun updateUid(uid: String) { /* no-op */ }
+    override suspend fun updateSequence(sequence: Int) = throw NotImplementedError()
 
-    override fun deleteLocal() {}  // no-op: test callers handle deletion via the collection
-    override fun resetDeleted() = throw NotImplementedError()
+    override suspend fun deleteLocal() {}  // no-op: test callers handle deletion via the collection
+    override suspend fun resetDeleted() = throw NotImplementedError()
 
     override fun getDebugSummary() = "Test Resource"
 

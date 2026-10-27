@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.settings.migration
 
-import android.accounts.Account
 import android.content.ContentUris
 import android.content.Context
 import android.content.pm.PackageManager
@@ -12,6 +11,9 @@ import android.provider.CalendarContract
 import android.util.Base64
 import androidx.core.content.ContextCompat
 import androidx.core.content.contentValuesOf
+import at.bitfire.davdroid.accounts.AccountId
+import at.bitfire.davdroid.accounts.AndroidAccountManager
+import at.bitfire.davdroid.settings.AccountSettingsStore
 import at.bitfire.synctools.mapping.UnknownProperty
 import at.bitfire.synctools.storage.calendar.EventsContract
 import at.techbee.jtx.JtxContract.asSyncAdapter
@@ -36,11 +38,13 @@ import kotlin.use
  * convert legacy unknown properties to the current format.
  */
 class AccountSettingsMigration12 @Inject constructor(
+    private val androidAccountManager: AndroidAccountManager,
     @ApplicationContext private val context: Context,
     private val logger: Logger
 ): AccountSettingsMigration {
 
-    override fun migrate(account: Account) {
+    override fun migrate(accountId: AccountId, store: AccountSettingsStore) {
+        val account = androidAccountManager.getAndroidAccount(accountId)
         if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.WRITE_CALENDAR) == PackageManager.PERMISSION_GRANTED) {
             context.contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)?.use { provider ->
                 // Attention: CalendarProvider does NOT limit the results of the ExtendedProperties query

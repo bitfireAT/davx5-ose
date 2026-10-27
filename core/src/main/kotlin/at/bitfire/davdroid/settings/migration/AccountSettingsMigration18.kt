@@ -4,13 +4,14 @@
 
 package at.bitfire.davdroid.settings.migration
 
-import android.accounts.Account
 import android.accounts.AccountManager
 import android.content.Context
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.accounts.AccountId
+import at.bitfire.davdroid.accounts.AndroidAccountManager
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Service
-import at.bitfire.davdroid.resource.LocalAddressBook
+import at.bitfire.davdroid.settings.AccountSettingsStore
 import at.bitfire.synctools.util.setAndVerifyUserData
 import dagger.Binds
 import dagger.Module
@@ -33,28 +34,27 @@ import javax.inject.Inject
  * So this migration again assigns address book accounts to accounts.
  */
 class AccountSettingsMigration18 @Inject constructor(
+    private val accountManager: AccountManager,
+    private val androidAccountManager: AndroidAccountManager,
     @ApplicationContext private val context: Context,
     private val db: AppDatabase
 ): AccountSettingsMigration {
 
-    override fun migrate(account: Account) {
-        val accountManager = AccountManager.get(context)
-        db.serviceDao().getByAccountAndTypeBlocking(account.name, Service.TYPE_CARDDAV)?.let { service ->
+    override fun migrate(accountId: AccountId, store: AccountSettingsStore) {
+        val account = androidAccountManager.getAndroidAccount(accountId)
+        db.serviceDao().getByAccountIdAndTypeBlocking(accountId, Service.TYPE_CARDDAV)?.let { service ->
             db.collectionDao().getByServiceBlocking(service.id).forEach { collection ->
                 // Find associated address book account by collection ID (if it exists)
                 val addressBookAccount = accountManager
                     .getAccountsByType(context.getString(R.string.account_type_address_book))
-                    .firstOrNull {
-                        accountManager.getUserData(
-                            it,
-                            LocalAddressBook.USER_DATA_COLLECTION_ID
-                        ) == collection.id.toString()
+                    .firstOrNull { account ->
+                        accountManager.getUserData(account, USER_DATA_COLLECTION_ID) == collection.id.toString()
                     }
 
                 if (addressBookAccount != null) {
                     // (Re-)assign address book to account
-                    accountManager.setAndVerifyUserData(addressBookAccount, LocalAddressBook.USER_DATA_ACCOUNT_NAME, account.name)
-                    accountManager.setAndVerifyUserData(addressBookAccount, LocalAddressBook.USER_DATA_ACCOUNT_TYPE, account.type)
+                    accountManager.setAndVerifyUserData(addressBookAccount, USER_DATA_ACCOUNT_NAME, account.name)
+                    accountManager.setAndVerifyUserData(addressBookAccount, USER_DATA_ACCOUNT_TYPE, account.type)
                 }
             }
         }
@@ -71,4 +71,9 @@ class AccountSettingsMigration18 @Inject constructor(
         abstract fun provide(impl: AccountSettingsMigration18): AccountSettingsMigration
     }
 
+    companion object {
+        internal const val USER_DATA_ACCOUNT_NAME = "account_name"
+        internal const val USER_DATA_ACCOUNT_TYPE = "account_type"
+        internal const val USER_DATA_COLLECTION_ID = "collection_id"
+    }
 }

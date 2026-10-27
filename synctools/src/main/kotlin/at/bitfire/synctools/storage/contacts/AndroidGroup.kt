@@ -7,7 +7,6 @@ package at.bitfire.synctools.storage.contacts
 import android.content.ContentUris
 import android.content.ContentValues
 import android.net.Uri
-import android.os.RemoteException
 import android.provider.ContactsContract
 import android.provider.ContactsContract.CommonDataKinds.GroupMembership
 import android.provider.ContactsContract.Groups
@@ -69,14 +68,14 @@ class AndroidGroup(
      *
      * @throws IllegalArgumentException if group has not been saved yet
      * @throws FileNotFoundException when the group is not available (anymore)
-     * @throws RemoteException on contact provider errors
+     * @throws LocalStorageException on contact provider errors
      */
     fun getContact(): Contact {
         cachedContact?.let { return it }
 
         val id = requireNotNull(id)
         val contact = Contact()
-        addressBook.provider.query(
+        addressBook.client.query(
             ContentUris.withAppendedId(Groups.CONTENT_URI, id).asSyncAdapter(),
             arrayOf(AddressContract.GroupColumns.UID, Groups.TITLE, Groups.NOTES), null, null, null
         )?.use { cursor ->
@@ -90,7 +89,7 @@ class AndroidGroup(
         }
 
         // get all contacts which are member of the group
-        addressBook.provider.query(
+        addressBook.client.query(
             ContactsContract.Data.CONTENT_URI.asSyncAdapter(),
             arrayOf(Data.RAW_CONTACT_ID),
             GroupMembership.MIMETYPE + "=? AND " + GroupMembership.GROUP_ROW_ID + "=?",
@@ -101,7 +100,7 @@ class AndroidGroup(
                 logger.fine("Member ID: $contactId")
 
                 // get UID from the member
-                addressBook.provider.query(
+                addressBook.client.query(
                     ContentUris.withAppendedId(RawContacts.CONTENT_URI, contactId).asSyncAdapter(),
                     arrayOf(AddressContract.RawContactColumns.UID), null, null, null
                 )?.use { rawContactCursor ->
@@ -138,8 +137,7 @@ class AndroidGroup(
 
     /**
      * Creates a group with data taken from the constructor.
-     * @return number of affected rows
-     * @throws RemoteException on contact provider errors
+     * @return content provider URI of the newly added group
      * @throws LocalStorageException when the group can't be added
      */
     fun add(): Uri {
@@ -151,7 +149,7 @@ class AndroidGroup(
         )
         if (addressBook.readOnly)
             values.put(Groups.GROUP_IS_READ_ONLY, 1)
-        val uri = addressBook.provider.insert(addressBook.groupsSyncUri(), values)
+        val uri = addressBook.client.insert(addressBook.groupsSyncUri(), values)
             ?: throw LocalStorageException("Empty result from content provider when adding group")
         id = ContentUris.parseId(uri)
         return uri
@@ -161,21 +159,33 @@ class AndroidGroup(
      * Updates a group from a [Contact], which represents a vCard received from the
      * CardDAV server.
      * @param data data object to take group title, members etc. from
-     * @return number of affected rows
-     * @throws RemoteException on contact provider errors
+     * @return content provider URI of the updated group
+     * @throws LocalStorageException on contact provider errors
      */
     fun update(data: Contact): Uri {
         cachedContact = data
         return update(contentValues())
     }
 
+    /**
+     * Updates this group's main row with the given values.
+     *
+     * @throws LocalStorageException on contact provider errors
+     */
     fun update(values: ContentValues): Uri {
         val uri = groupSyncURI()
-        addressBook.provider.update(uri, values, null, null)
+        addressBook.client.update(uri, values, null, null)
         return uri
     }
 
-    fun delete() = addressBook.provider.delete(groupSyncURI(), null, null)
+    /**
+     * Deletes this group from the contacts provider.
+     *
+     * @throws LocalStorageException on contact provider errors
+     */
+    fun delete() {
+        addressBook.client.delete(groupSyncURI(), null, null)
+    }
 
     /**
      * Lists all members of this group.
@@ -184,7 +194,7 @@ class AndroidGroup(
     fun getMembers(): List<Long> {
         val id = requireNotNull(id)
         val members = LinkedList<Long>()
-        addressBook.provider.query(
+        addressBook.client.query(
             ContactsContract.Data.CONTENT_URI.asSyncAdapter(),
             arrayOf(Data.RAW_CONTACT_ID),
             "${GroupMembership.MIMETYPE}=? AND ${GroupMembership.GROUP_ROW_ID}=?",

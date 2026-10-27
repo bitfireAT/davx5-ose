@@ -4,24 +4,22 @@
 
 package at.bitfire.davdroid.ui.account
 
-import android.accounts.Account
 import android.content.Context
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
-import at.bitfire.davdroid.accounts.toAccountId
-import at.bitfire.davdroid.accounts.toAndroidAccount
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
+import at.bitfire.davdroid.resource.local.LocalChangesCounter
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.settings.AccountSettingsFactory
 import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.TasksAppManager
 import at.bitfire.davdroid.sync.account.InvalidAccountException
@@ -49,13 +47,14 @@ class AccountScreenViewModel @AssistedInject constructor(
     @Assisted val accountId: AccountId,
     private val accountRepository: AccountRepository,
     accountProgressUseCase: AccountProgressUseCase,
-    private val accountSettingsFactory: AccountSettings.Factory,
+    private val accountSettingsFactory: AccountSettingsFactory,
     private val collectionRepository: DavCollectionRepository,
     @ApplicationContext val context: Context,
     private val collectionSelectedUseCase: Lazy<CollectionSelectedUseCase>,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     getBindableHomesetsFromService: GetBindableHomeSetsFromServiceUseCase,
     getServiceCollectionPager: GetServiceCollectionPagerUseCase,
+    private val localChangesCounter: LocalChangesCounter,
     private val logger: Logger,
     serviceRepository: DavServiceRepository,
     private val syncWorkerManager: SyncWorkerManager,
@@ -72,15 +71,15 @@ class AccountScreenViewModel @AssistedInject constructor(
      */
     private val accountSettings: AccountSettings? by lazy {
         try {
-            accountSettingsFactory.create(accountId.toAndroidAccount())
+            accountSettingsFactory.create(accountId)
         } catch (_: InvalidAccountException) {
             null
         }
     }
 
     /** whether the account is invalid and the screen shall be closed */
-    val invalidAccount = accountRepository.getAllFlow().map { accounts ->
-        !accounts.contains(accountId.toAndroidAccount())
+    val invalidAccount = accountRepository.getAllFlow().map { accountIds ->
+        accountId !in accountIds
     }
 
     /**
@@ -205,11 +204,10 @@ class AccountScreenViewModel @AssistedInject constructor(
     fun renameAccount(newName: String) {
         viewModelScope.launch {
             try {
-                accountRepository.rename(accountId, newName)
+                val newAccountId = accountRepository.rename(accountId, newName)
 
                 // synchronize again
-                val newAccount = Account(newName, context.getString(R.string.account_type))
-                syncWorkerManager.enqueueOneTimeAllAuthorities(newAccount.toAccountId(), manual = true)
+                syncWorkerManager.enqueueOneTimeAllAuthorities(newAccountId, manual = true)
             } catch (e: Exception) {
                 logger.log(Level.SEVERE, "Couldn't rename account", e)
                 error = e.localizedMessage
@@ -217,11 +215,46 @@ class AccountScreenViewModel @AssistedInject constructor(
         }
     }
 
+    /** Request to turn off synchronization of a collection that waits for user confirmation */
+    var disableCollectionSyncRequest by mutableStateOf<DisableCollectionSyncRequest?>(null)
+        private set
+
+    /**
+     * Turns synchronization of a collection on, or asks for confirmation (see [disableCollectionSyncRequest])
+     * before turning it off because that removes local data.
+     */
     fun setCollectionSync(id: Long, sync: Boolean) {
         viewModelScope.launch {
-            collectionRepository.setSync(id, sync)
-            collectionSelectedUseCase.get().handleWithDelay(id)
+            if (sync) {
+                collectionRepository.setSync(id, true)
+                collectionSelectedUseCase.get().handleWithDelay(id)
+            } else {
+                val collection = collectionRepository.getAsync(id) ?: return@launch
+                val request = DisableCollectionSyncRequest(
+                    collectionId = id,
+                    title = collection.title()
+                )
+                disableCollectionSyncRequest = request
+
+                // show dialog immediately and count only once available (may take a while)
+                val unsyncedChanges = localChangesCounter.countUnsyncedChanges(accountId, collection)
+                if (disableCollectionSyncRequest === request)
+                    disableCollectionSyncRequest = request.copy(unsyncedChanges = unsyncedChanges)
+            }
         }
+    }
+
+    fun confirmDisableCollectionSync() {
+        val request = disableCollectionSyncRequest ?: return
+        disableCollectionSyncRequest = null
+        viewModelScope.launch {
+            collectionRepository.setSync(request.collectionId, false)
+            collectionSelectedUseCase.get().handleWithDelay(request.collectionId)
+        }
+    }
+
+    fun dismissDisableCollectionSync() {
+        disableCollectionSyncRequest = null
     }
 
     fun sync() {

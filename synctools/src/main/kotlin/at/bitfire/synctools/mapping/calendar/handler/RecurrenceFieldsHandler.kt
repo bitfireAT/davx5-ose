@@ -10,6 +10,7 @@ import at.bitfire.synctools.exception.InvalidLocalResourceException
 import at.bitfire.synctools.util.AndroidTimeUtils
 import at.bitfire.synctools.util.AndroidTimeUtils.toTimestamp
 import at.bitfire.synctools.util.RecurrenceUtils
+import net.fortuna.ical4j.model.ParameterList
 import net.fortuna.ical4j.model.component.VEvent
 import net.fortuna.ical4j.model.property.ExDate
 import net.fortuna.ical4j.model.property.ExRule
@@ -83,7 +84,7 @@ class RecurrenceFieldsHandler : AndroidEventEntityHandler {
         values.getAsString(Events.EXRULE)?.let { exRuleField ->
             try {
                 for (rule in exRuleField.split(RECURRENCE_RULE_SEPARATOR)) {
-                    val rule = ExRule<Temporal>(null, rule)
+                    val rule = ExRule<Temporal>(ParameterList(), rule)
 
                     // align RRULE UNTIL to DTSTART, if needed
                     rule.recur = RecurrenceUtils.alignUntil(rule.recur, startDate)

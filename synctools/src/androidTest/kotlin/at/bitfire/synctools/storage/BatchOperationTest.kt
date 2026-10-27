@@ -17,11 +17,12 @@ class BatchOperationTest {
     @Test
     fun testSplitLargeTransaction() {
         val provider = mockk<ContentProviderClient>(relaxed = true)
+        val client = LocalStorageClient(provider)
 
         val maxSize = 100
         every { provider.applyBatch(match { it.size > maxSize }) } throws TransactionTooLargeException()
 
-        val batch = BatchOperation(provider, null)
+        val batch = BatchOperation(client, null)
         repeat(4*maxSize) {
             batch += BatchOperation.CpoBuilder.newInsert("test://".toUri())
         }
@@ -36,10 +37,11 @@ class BatchOperationTest {
     @Test(expected = LocalStorageException::class)
     fun testSplitLargeTransaction_OneTooBigRow() {
         val provider = mockk<ContentProviderClient>()
+        val client = LocalStorageClient(provider)
 
         every { provider.applyBatch(any()) } throws TransactionTooLargeException()
 
-        val batch = BatchOperation(provider, null)
+        val batch = BatchOperation(client, null)
         batch += BatchOperation.CpoBuilder.newInsert("test://".toUri())
         batch.commit()
     }

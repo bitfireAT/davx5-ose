@@ -1,3 +1,4 @@
+### Organizational
 
 > [!IMPORTANT]
 > Please make sure an issue or discussion for this change **exists and was acknowledged** by the
@@ -5,11 +6,19 @@
 > and could be closed without merging — which would be a pity.
 > See [CONTRIBUTING.md](../CONTRIBUTING.md) for details.
 
-Delete this section and other repeating text (like the examples) after reading and before submitting the PR.
+- [ ] **An issue or discussion that proposes this change exists and was acknowledged by the core team.**
+  (The PR is still welcome otherwise, but could be closed at any time without much attention
+  when it doesn't fit.)
 
-The PR should be in _Draft_ state during development. Once finished, mark it as _Ready for review_ and assign a reviewer.
+**✨ AI contributions – only check if applicable:**
 
-See also: [Writing A Great Pull Request Description](https://www.pullrequest.com/blog/writing-a-great-pull-request-description/)
+- [ ] **This PR and its concept was mainly driven by a human.** This does not apply when an issue
+is just referenced/copied into an AI prompt and then the result is submitted as PR.
+
+PRs that are mainly driven by AI often have little worth, as everybody could just copy the issue
+into a prompt. The worth of a good PR often comes from the main idea, architectural decisions etc.
+behind it. **So while all PRs are welcome, such PRs may be reviewed with less human attention and closed
+at any time when they don't fit.**
 
 
 ### Purpose

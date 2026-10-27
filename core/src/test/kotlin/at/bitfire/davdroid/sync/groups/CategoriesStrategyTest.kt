@@ -4,8 +4,9 @@
 
 package at.bitfire.davdroid.sync.groups
 
-import at.bitfire.davdroid.resource.LocalAddressBook
-import at.bitfire.davdroid.resource.LocalGroup
+import at.bitfire.davdroid.resource.local.LocalAddressBook
+import at.bitfire.davdroid.resource.local.LocalGroup
+import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit4.MockKRule
@@ -60,7 +61,7 @@ class CategoriesStrategyTest {
         strategy.resolveLocalGroupChanges()
 
         verify { group.markMembersDirty() }
-        verify { group.clearDirty(Optional.empty(), null) }
+        coVerify { group.clearDirty(Optional.empty(), null) }
     }
 
 }

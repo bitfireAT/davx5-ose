@@ -1,0 +1,162 @@
+/*
+ * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
+ */
+
+package at.bitfire.davdroid.resource.local
+
+import android.content.ContentUris
+import android.content.ContentValues
+import android.content.Context
+import android.net.Uri
+import android.provider.ContactsContract
+import android.provider.ContactsContract.Groups
+import android.provider.ContactsContract.RawContacts
+import androidx.core.content.contentValuesOf
+import at.bitfire.synctools.mapping.contacts.Contact
+import at.bitfire.synctools.storage.BatchOperation
+import at.bitfire.synctools.storage.contacts.AddressContract.CachedGroupMembership
+import at.bitfire.synctools.storage.contacts.AddressContract.GroupColumns
+import at.bitfire.synctools.storage.contacts.AddressContract.asSyncAdapter
+import at.bitfire.synctools.storage.contacts.AndroidGroup
+import at.bitfire.synctools.storage.contacts.ContactsBatchOperation
+import com.google.common.base.MoreObjects
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.util.Optional
+
+class LocalGroup(
+    val androidGroup: AndroidGroup
+) : LocalAddress {
+
+    private val provider get() = androidGroup.addressBook.client
+
+    override val id: Long?
+        get() = androidGroup.id
+
+    override val fileName: String?
+        get() = androidGroup.fileName
+
+    override val eTag: String?
+        get() = androidGroup.eTag
+
+    override val flags: Int
+        get() = androidGroup.flags
+
+    override var scheduleTag: String?
+        get() = null
+        set(_) = throw NotImplementedError()
+
+
+    override suspend fun clearDirty(fileName: Optional<String>, eTag: String?, scheduleTag: String?) {
+        if (scheduleTag != null)
+            throw IllegalArgumentException("Contact groups must not have a Schedule-Tag")
+        val id = requireNotNull(id)
+
+        // update in content provider
+        val values = ContentValues(3)
+        if (fileName.isPresent)
+            values.put(GroupColumns.FILENAME, fileName.get())
+        values.putNull(GroupColumns.ETAG)     // don't save changed ETag but null, so that the group is downloaded again, so that pendingMembers is updated
+        values.put(Groups.DIRTY, 0)
+        withContext(Dispatchers.IO) {
+            androidGroup.update(values)
+        }
+
+        // update in-memory state
+        if (fileName.isPresent)
+            androidGroup.fileName = fileName.get()
+        androidGroup.eTag = null
+
+        // update cached group memberships
+        withContext(Dispatchers.IO) {
+            val batch = ContactsBatchOperation(provider)
+
+            // delete old cached group memberships
+            batch += BatchOperation.CpoBuilder
+                .newDelete(ContactsContract.Data.CONTENT_URI.asSyncAdapter())
+                .withSelection(
+                    CachedGroupMembership.MIMETYPE + "=? AND " + CachedGroupMembership.GROUP_ID + "=?",
+                    arrayOf(CachedGroupMembership.CONTENT_ITEM_TYPE, id.toString())
+                )
+
+            // insert updated cached group memberships
+            for (member in androidGroup.getMembers())
+                batch += BatchOperation.CpoBuilder
+                    .newInsert(ContactsContract.Data.CONTENT_URI.asSyncAdapter())
+                    .withValue(CachedGroupMembership.MIMETYPE, CachedGroupMembership.CONTENT_ITEM_TYPE)
+                    .withValue(CachedGroupMembership.RAW_CONTACT_ID, member)
+                    .withValue(CachedGroupMembership.GROUP_ID, id)
+
+            batch.commit()
+        }
+    }
+
+    /**
+     * Marks all members of the current group as dirty.
+     */
+    fun markMembersDirty() {
+        val batch = ContactsBatchOperation(provider)
+
+        for (member in androidGroup.getMembers())
+            batch += BatchOperation.CpoBuilder
+                .newUpdate(ContentUris.withAppendedId(RawContacts.CONTENT_URI, member).asSyncAdapter())
+                .withValue(RawContacts.DIRTY, 1)
+
+        batch.commit()
+    }
+
+    override fun update(data: Contact, fileName: String?, eTag: String?, scheduleTag: String?, flags: Int) {
+        androidGroup.fileName = fileName
+        androidGroup.eTag = eTag
+
+        // processes androidGroup.{fileName, eTag} and resets DIRTY flag
+        androidGroup.update(data)
+    }
+
+    override suspend fun updateFlags(flags: Int) {
+        val values = contentValuesOf(GroupColumns.FLAGS to flags)
+        withContext(Dispatchers.IO) {
+            androidGroup.update(values)
+        }
+        androidGroup.flags = flags
+    }
+
+    override suspend fun updateSequence(sequence: Int) = throw NotImplementedError()
+
+    override suspend fun updateUid(uid: String) {
+        val values = contentValuesOf(GroupColumns.UID to uid)
+        withContext(Dispatchers.IO) {
+            androidGroup.update(values)
+        }
+    }
+
+    override suspend fun deleteLocal() {
+        withContext(Dispatchers.IO) {
+            androidGroup.delete()
+        }
+    }
+
+    override suspend fun resetDeleted() {
+        withContext(Dispatchers.IO) {
+            androidGroup.update(contentValuesOf(Groups.DELETED to 0))
+        }
+    }
+
+    override fun getDebugSummary() =
+        MoreObjects.toStringHelper(this)
+            .add("id", id)
+            .add("fileName", fileName)
+            .add("eTag", eTag)
+            .add("flags", flags)
+            .add(
+                "contact",
+                try {
+                    androidGroup.getContact().toString()
+                } catch (e: Exception) {
+                    e
+                }
+            ).toString()
+
+    override fun getViewUri(context: Context): Uri? = null
+
+}

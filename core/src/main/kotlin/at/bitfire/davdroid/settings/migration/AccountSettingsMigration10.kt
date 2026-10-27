@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.settings.migration
 
-import android.accounts.Account
 import android.content.Context
 import android.content.pm.PackageManager
 import android.provider.CalendarContract
@@ -12,6 +11,9 @@ import android.provider.CalendarContract.Calendars
 import android.provider.CalendarContract.Reminders
 import androidx.core.content.ContextCompat
 import androidx.core.content.contentValuesOf
+import at.bitfire.davdroid.accounts.AccountId
+import at.bitfire.davdroid.accounts.AndroidAccountManager
+import at.bitfire.davdroid.settings.AccountSettingsStore
 import at.bitfire.synctools.storage.TaskProvider
 import at.bitfire.synctools.storage.tasks.DmfsTasksContract
 import at.techbee.jtx.JtxContract.asSyncAdapter
@@ -32,10 +34,12 @@ import javax.inject.Inject
  * Also update the allowed reminder types for calendars.
  */
 class AccountSettingsMigration10 @Inject constructor(
+    private val androidAccountManager: AndroidAccountManager,
     @ApplicationContext private val context: Context
 ): AccountSettingsMigration {
 
-    override fun migrate(account: Account) {
+    override fun migrate(accountId: AccountId, store: AccountSettingsStore) {
+        val account = androidAccountManager.getAndroidAccount(accountId)
         val providerName = TaskProvider.ProviderName.OpenTasks
         TaskProvider.acquireRecentClient(context, providerName)?.use { client ->
             val tasksUri = TaskContract.Tasks.getContentUri(providerName.authority)!!.asSyncAdapter(account)

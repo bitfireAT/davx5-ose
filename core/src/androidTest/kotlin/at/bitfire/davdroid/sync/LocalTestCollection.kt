@@ -4,16 +4,13 @@
 
 package at.bitfire.davdroid.sync
 
-import at.bitfire.davdroid.resource.LocalCollection
-import at.bitfire.davdroid.resource.SyncState
+import at.bitfire.davdroid.resource.local.LocalCollection
+import at.bitfire.davdroid.resource.local.SyncState
 import kotlinx.coroutines.flow.asFlow
 
 class LocalTestCollection(
     override val dbCollectionId: Long = 0L
 ): LocalCollection<LocalTestResource> {
-
-    override val tag = "LocalTestCollection"
-    override val title = "Local Test Collection"
 
     override var lastSyncState: SyncState? = null
 
@@ -27,10 +24,10 @@ class LocalTestCollection(
 
     override suspend fun findByName(name: String) = entries.firstOrNull { it.fileName == name }
 
-    override fun markNotDirty(flags: Int): Int {
+    override suspend fun markNotDirty(flags: Int): Int {
         var updated = 0
-        for (dirty in entries.filter { it.dirty }) {
-            dirty.flags = flags
+        for (notDirty in entries.filter { !it.dirty }) {
+            notDirty.flags = flags
             updated++
         }
         return updated
@@ -42,7 +39,7 @@ class LocalTestCollection(
         return numBefore - entries.size
     }
 
-    override fun forgetETags() {
+    override suspend fun forgetETags() {
     }
 
     override fun countAll() = entries.size

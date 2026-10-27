@@ -1,6 +1,5 @@
 
 # keep rules
--keep class at.bitfire.** { *; }        # all DAVx5 code is required
 -keep class org.xmlpull.** { *; }
 
 # Additional rules which are now required since missing classes can't be ignored in R8 anymore.

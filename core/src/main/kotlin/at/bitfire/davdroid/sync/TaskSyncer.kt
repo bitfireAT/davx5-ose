@@ -4,15 +4,14 @@
 
 package at.bitfire.davdroid.sync
 
-import android.accounts.Account
-import android.accounts.AccountManager
-import android.content.ContentProviderClient
-import android.os.Build
-import at.bitfire.davdroid.accounts.toAccountId
+import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
-import at.bitfire.davdroid.resource.LocalTaskList
-import at.bitfire.davdroid.resource.LocalTaskListStore
+import at.bitfire.davdroid.resource.local.LocalTaskList
+import at.bitfire.davdroid.resource.local.LocalTaskListStore
+import at.bitfire.davdroid.resource.remote.CalDavCollection
+import at.bitfire.davdroid.resource.remote.CalendarQueryFilter
+import at.bitfire.synctools.storage.LocalStorageClient
 import at.bitfire.synctools.storage.TaskProvider
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -23,7 +22,7 @@ import java.util.logging.Level
  * Sync logic for tasks in CalDAV collections ({@code VTODO}).
  */
 class TaskSyncer @AssistedInject constructor(
-    @Assisted account: Account,
+    @Assisted accountId: AccountId,
     @Assisted val providerName: TaskProvider.ProviderName,
     @Assisted resync: ResyncType?,
     @Assisted syncResult: SyncResult,
@@ -31,12 +30,12 @@ class TaskSyncer @AssistedInject constructor(
     localTaskListStoreFactory: LocalTaskListStore.Factory,
     private val tasksAppManager: dagger.Lazy<TasksAppManager>,
     private val tasksSyncManagerFactory: TasksSyncManager.Factory,
-) : Syncer<LocalTaskListStore, LocalTaskList>(account, resync, syncResult, settings) {
+) : Syncer<LocalTaskListStore, LocalTaskList>(accountId, resync, syncResult, settings) {
 
     @AssistedFactory
     interface Factory {
         fun create(
-            account: Account,
+            accountId: AccountId,
             providerName: TaskProvider.ProviderName,
             resyncType: ResyncType?,
             syncResult: SyncResult,
@@ -50,25 +49,19 @@ class TaskSyncer @AssistedInject constructor(
         get() = Service.TYPE_CALDAV
 
 
-    override fun prepare(provider: ContentProviderClient): Boolean {
+    override fun prepare(client: LocalStorageClient): Boolean {
         // Don't sync if task provider is too old
         try {
             TaskProvider.checkVersion(context, providerName)
         } catch (e: TaskProvider.ProviderTooOldException) {
             tasksAppManager.get().notifyProviderTooOld(e)
-            syncResult.contentProviderError = true
+            syncResult.hardError = true
             return false // Don't sync
         }
 
         // make sure account can be seen by task provider
-        if (Build.VERSION.SDK_INT >= 26) {
-            /* Warning: If setAccountVisibility is called, Android 12 broadcasts the
-               AccountManager.LOGIN_ACCOUNTS_CHANGED_ACTION Intent. This cancels running syncs
-               and starts them again! So make sure setAccountVisibility is only called when necessary. */
-            val am = AccountManager.get(context)
-            if (am.getAccountVisibility(account, providerName.packageName) != AccountManager.VISIBILITY_VISIBLE)
-                am.setAccountVisibility(account, providerName.packageName, AccountManager.VISIBILITY_VISIBLE)
-        }
+        androidAccountManager.ensureAccountVisibility(accountId, providerName.packageName)
+
         return true
     }
 
@@ -76,9 +69,9 @@ class TaskSyncer @AssistedInject constructor(
         collectionRepository.getSyncTaskLists(serviceId)
 
     override suspend fun syncCollection(
-        provider: ContentProviderClient,
+        client: LocalStorageClient,
         localCollection: LocalTaskList,
-        remoteCollection: Collection
+        remoteCollectionInfo: Collection
     ) {
         logger.log(
             Level.INFO,
@@ -87,13 +80,18 @@ class TaskSyncer @AssistedInject constructor(
         )
 
         val syncManager = tasksSyncManagerFactory.tasksSyncManager(
-            account.toAccountId(),
-            httpClient,
-            syncResult,
-            localCollection,
-            remoteCollection,
-            resync,
-            settings
+            accountId = accountId,
+            httpClient = httpClient,
+            syncResult = syncResult,
+            localCollection = localCollection,
+            collectionInfo = remoteCollectionInfo,
+            remoteCollection = CalDavCollection(
+                httpClient = httpClient,
+                url = remoteCollectionInfo.url,
+                filter = CalendarQueryFilter(components = listOf("VTODO"))
+            ),
+            resync = resync,
+            settings = settings
         )
         syncManager.performSync()
     }

@@ -27,10 +27,12 @@ import net.openid.appauth.AuthorizationService
 import java.util.Locale
 import java.util.logging.Level
 import java.util.logging.Logger
+import javax.inject.Provider
 
 @HiltViewModel(assistedFactory = GoogleLoginViewModel.Factory::class)
 class GoogleLoginViewModel @AssistedInject constructor(
     @Assisted val initialLoginInfo: LoginInfo,
+    private val accountManager: Provider<AccountManager>,
     private val authService: AuthorizationService,
     @ApplicationContext val context: Context,
     private val logger: Logger,
@@ -121,12 +123,10 @@ class GoogleLoginViewModel @AssistedInject constructor(
         uiState = uiState.copy(result = null)
     }
 
-    private fun findGoogleAccount(): String? {
-        val accountManager = AccountManager.get(context)
-        return accountManager
+    private fun findGoogleAccount(): String? =
+        accountManager.get()
             .getAccountsByType("com.google")
             .map { it.name }
             .firstOrNull()
-    }
 
 }

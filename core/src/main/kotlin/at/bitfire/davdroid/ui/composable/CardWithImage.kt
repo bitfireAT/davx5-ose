@@ -25,6 +25,8 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.fromHtml
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import at.bitfire.davdroid.R
@@ -38,6 +40,7 @@ fun CardWithImage(
     imageAlignment: Alignment = Alignment.Center,
     imageContentScale: ContentScale = ContentScale.Crop,
     message: String? = null,
+    annotatedMessage: AnnotatedString? = null,
     subtitle: String? = null,
     icon: ImageVector? = null,
     iconContentDescription: String? = null,
@@ -95,7 +98,15 @@ fun CardWithImage(
                         }
                     }
                 }
-                message?.let {
+                annotatedMessage?.let {
+                    Text(
+                        text = it,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 4.dp),
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                } ?: message?.let {
                     Text(
                         text = it,
                         modifier = Modifier
@@ -128,7 +139,7 @@ fun CardWithImage_Preview_WithIconAndSubtitleAndContent() {
         title = "Demo card",
         icon = Icons.Default.TabletAndroid,
         subtitle = "Subtitle",
-        message = "This is the message to be displayed under the title, but before the content."
+        annotatedMessage = AnnotatedString.fromHtml("This is the <b>message</b> to be displayed under the title, but before the content.")
     ) {
         Text("Content")
     }

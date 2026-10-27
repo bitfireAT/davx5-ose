@@ -75,7 +75,7 @@ class QueryChildDocumentsOperationTest {
     @After
     fun tearDown() {
         runBlocking {
-            db.webDavMountDao().deleteAsync(mount)
+            db.webDavMountDao().delete(mount)
         }
     }
 

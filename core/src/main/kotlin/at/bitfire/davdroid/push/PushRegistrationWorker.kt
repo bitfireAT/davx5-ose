@@ -6,8 +6,8 @@ package at.bitfire.davdroid.push
 
 import android.content.Context
 import androidx.hilt.work.HiltWorker
+import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import at.bitfire.davdroid.IoCoroutineWorker
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import java.util.logging.Logger
@@ -24,9 +24,9 @@ class PushRegistrationWorker @AssistedInject constructor(
     @Assisted workerParameters: WorkerParameters,
     private val logger: Logger,
     private val pushRegistrationManager: PushRegistrationManager
-) : IoCoroutineWorker(context, workerParameters) {
+) : CoroutineWorker(context, workerParameters) {
 
-    override suspend fun doIoWork(): Result {
+    override suspend fun doWork(): Result {
         logger.info("Running push registration worker")
 
         // update registrations for all services

@@ -11,6 +11,7 @@ import android.provider.ContactsContract
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
 import at.bitfire.synctools.storage.BatchOperation
+import at.bitfire.synctools.storage.LocalStorageClient
 import at.bitfire.synctools.storage.LocalStorageException
 import at.bitfire.synctools.test.BuildConfig
 import org.junit.After
@@ -29,11 +30,13 @@ class ContactsBatchOperationTest {
     private val testAccount = Account(javaClass.name, BuildConfig.APPLICATION_ID)
 
     lateinit var provider: ContentProviderClient
+    lateinit var client: LocalStorageClient
 
     @Before
     fun setUp() {
         provider = InstrumentationRegistry.getInstrumentation().targetContext.contentResolver
             .acquireContentProviderClient(ContactsContract.AUTHORITY)!!
+        client = LocalStorageClient(provider)
     }
 
     @After
@@ -50,7 +53,7 @@ class ContactsBatchOperationTest {
 
     @Test(expected = LocalStorageException::class)
     fun testContactsProvider_OperationsPerYieldPoint_500_WithoutMax() {
-        val batch = BatchOperation(provider, maxOperationsPerYieldPoint = null)
+        val batch = BatchOperation(client, maxOperationsPerYieldPoint = null)
 
         // 500 operations should fail with BatchOperation(maxOperationsPerYieldPoint = null) (max. 499)
         repeat(500) { idx ->
@@ -63,7 +66,7 @@ class ContactsBatchOperationTest {
 
     @Test
     fun testContactsProvider_OperationsPerYieldPoint_501() {
-        val batch = ContactsBatchOperation(provider)
+        val batch = ContactsBatchOperation(client)
 
         // 501 operations should succeed with ContactsBatchOperation
         repeat(501) { idx ->

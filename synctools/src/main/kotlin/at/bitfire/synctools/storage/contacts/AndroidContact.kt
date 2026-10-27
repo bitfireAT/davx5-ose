@@ -9,7 +9,6 @@ import android.content.ContentValues
 import android.content.EntityIterator
 import android.database.DatabaseUtils
 import android.net.Uri
-import android.os.RemoteException
 import android.provider.ContactsContract
 import android.provider.ContactsContract.CommonDataKinds.GroupMembership
 import android.provider.ContactsContract.RawContacts
@@ -94,7 +93,7 @@ class AndroidContact(
      *
      * @throws IllegalArgumentException if there's no [id] (usually because the contact has never been saved yet)
      * @throws FileNotFoundException when the contact is not available (anymore)
-     * @throws RemoteException on contact provider errors
+     * @throws LocalStorageException on contact provider errors
      */
     fun getContact(): Contact {
         // use cached version if available
@@ -104,7 +103,7 @@ class AndroidContact(
         var iter: EntityIterator? = null
         try {
             iter = RawContacts.newEntityIterator(
-                addressBook.provider.query(
+                addressBook.client.query(
                     ContactsContract.RawContactsEntity.CONTENT_URI.asSyncAdapter(),
                     null, RawContacts._ID + "=?", arrayOf(id.toString()), null
                 )
@@ -139,7 +138,7 @@ class AndroidContact(
 
 
     fun add(): Uri {
-        val provider = addressBook.provider
+        val provider = addressBook.client
         val batch = ContactsBatchOperation(provider)
 
         val builder = BatchOperation.CpoBuilder.newInsert(RawContacts.CONTENT_URI.asSyncAdapter())
@@ -161,7 +160,7 @@ class AndroidContact(
     fun update(data: Contact): Uri {
         setContact(data)
 
-        val provider = addressBook.provider
+        val provider = addressBook.client
         val batch = ContactsBatchOperation(provider)
         val uri = rawContactSyncURI()
         val builder = BatchOperation.CpoBuilder.newUpdate(uri)
@@ -178,7 +177,10 @@ class AndroidContact(
         }
         batch += BatchOperation.CpoBuilder
             .newDelete(dataSyncURI())
-            .withSelection(Data.RAW_CONTACT_ID + "=? AND ${Data.MIMETYPE} IN ($sqlTypesToRemove)", arrayOf(id!!.toString()))
+            .withSelection(
+                Data.RAW_CONTACT_ID + "=? AND ${Data.MIMETYPE} IN ($sqlTypesToRemove)",
+                arrayOf(id!!.toString())
+            )
 
         insertDataRows(batch)
         batch.commit()
@@ -191,11 +193,20 @@ class AndroidContact(
     /**
      * Deletes an existing contact from the contacts provider.
      *
-     * @return number of affected rows
-     *
-     * @throws RemoteException on contacts provider errors
+     * @throws LocalStorageException on contacts provider errors
      */
-    fun delete() = addressBook.provider.delete(rawContactSyncURI(), null, null)
+    fun delete() {
+        addressBook.client.delete(rawContactSyncURI(), null, null)
+    }
+
+    /**
+     * Updates this raw contact's main row with the given values.
+     *
+     * @throws LocalStorageException on contact provider errors
+     */
+    fun update(values: ContentValues) {
+        addressBook.client.update(rawContactSyncURI(), values, null, null)
+    }
 
 
     private fun buildContact(builder: BatchOperation.CpoBuilder, update: Boolean) {
@@ -220,7 +231,7 @@ class AndroidContact(
      *
      * @param  batch    batch operation used to insert the data rows
      *
-     * @throws RemoteException on contact provider errors
+     * @throws LocalStorageException on contact provider errors
      */
     private fun insertDataRows(batch: ContactsBatchOperation) {
         val contact = getContact()
@@ -263,7 +274,7 @@ class AndroidContact(
      * whether a membership has been deleted/added when a raw contact is dirty.
      * @return set of [GroupMembership.GROUP_ROW_ID] (may be empty)
      * @throws FileNotFoundException if the current contact can't be found
-     * @throws RemoteException on contacts provider errors
+     * @throws LocalStorageException on contacts provider errors
      */
     fun getCachedGroupMemberships(): Set<Long> {
         getContact()
@@ -274,7 +285,7 @@ class AndroidContact(
      * Returns the IDs of all groups the contact is member of.
      * @return set of [GroupMembership.GROUP_ROW_ID]s (may be empty)
      * @throws FileNotFoundException if the current contact can't be found
-     * @throws RemoteException on contacts provider errors
+     * @throws LocalStorageException on contacts provider errors
      */
     fun getGroupMemberships(): Set<Long> {
         getContact()

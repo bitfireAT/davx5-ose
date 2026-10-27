@@ -23,7 +23,6 @@ import androidx.work.WorkQuery
 import androidx.work.WorkRequest
 import androidx.work.await
 import at.bitfire.davdroid.accounts.AccountId
-import at.bitfire.davdroid.accounts.toAndroidAccount
 import at.bitfire.davdroid.push.PushNotificationManager
 import at.bitfire.davdroid.sync.ResyncType
 import at.bitfire.davdroid.sync.SyncDataType

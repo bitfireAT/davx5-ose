@@ -7,7 +7,6 @@ package at.bitfire.synctools.storage.tasks
 import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Entity
-import android.os.RemoteException
 import androidx.annotation.VisibleForTesting
 import androidx.core.content.contentValuesOf
 import at.bitfire.synctools.storage.BatchOperation.CpoBuilder
@@ -48,26 +47,22 @@ class DmfsRecurringTaskList(
      * @return ID of the resulting main task
      */
     fun addTaskAndExceptions(taskAndExceptions: TaskAndExceptions): Long {
-        try {
-            // validate / clean up input
-            val cleaned = cleanUp(taskAndExceptions, mainId = null)
+        // validate / clean up input
+        val cleaned = cleanUp(taskAndExceptions, mainId = null)
 
-            // add main task
-            val batch = TasksBatchOperation(taskList.client)
-            val idxMainTask = taskList.addTask(cleaned.main, batch)
+        // add main task
+        val batch = TasksBatchOperation(taskList.client)
+        val idxMainTask = taskList.addTask(cleaned.main, batch)
 
-            // add exceptions
-            for (exception in cleaned.exceptions)
-                taskList.addTask(exception, batch, idxOriginalInstanceId = idxMainTask)
+        // add exceptions
+        for (exception in cleaned.exceptions)
+            taskList.addTask(exception, batch, idxOriginalInstanceId = idxMainTask)
 
-            batch.commit()
+        batch.commit()
 
-            // main task was created as first row, return its insert result (= ID)
-            val uri = batch.getResult(idxMainTask)?.uri ?: throw LocalStorageException("Content provider returned null on insert")
-            return ContentUris.parseId(uri)
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't insert task/exceptions", e)
-        }
+        // main task was created as first row, return its insert result (= ID)
+        val uri = batch.getResult(idxMainTask)?.uri ?: throw LocalStorageException("Content provider returned null on insert")
+        return ContentUris.parseId(uri)
     }
 
     /**
@@ -131,26 +126,22 @@ class DmfsRecurringTaskList(
      * @param taskAndExceptions    new task (including exceptions)
      */
     fun updateTaskAndExceptions(id: Long, taskAndExceptions: TaskAndExceptions) {
-        try {
-            // validate / clean up input
-            val cleaned = cleanUp(taskAndExceptions, mainId = id)
+        // validate / clean up input
+        val cleaned = cleanUp(taskAndExceptions, mainId = id)
 
-            // remove old exceptions (because they may be invalid for the updated task)
-            val batch = TasksBatchOperation(taskList.client)
-            batch += CpoBuilder.newDelete(taskList.tasksUri())
-                .withSelection("${Tasks.ORIGINAL_INSTANCE_ID}=?", arrayOf(id.toString()))
+        // remove old exceptions (because they may be invalid for the updated task)
+        val batch = TasksBatchOperation(taskList.client)
+        batch += CpoBuilder.newDelete(taskList.tasksUri())
+            .withSelection("${Tasks.ORIGINAL_INSTANCE_ID}=?", arrayOf(id.toString()))
 
-            // update main task
-            taskList.updateTask(id, cleaned.main, batch)
+        // update main task
+        taskList.updateTask(id, cleaned.main, batch)
 
-            // add updated exceptions
-            for (exception in cleaned.exceptions)
-                taskList.addTask(exception, batch)
+        // add updated exceptions
+        for (exception in cleaned.exceptions)
+            taskList.addTask(exception, batch)
 
-            batch.commit()
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't update task/exceptions", e)
-        }
+        batch.commit()
     }
 
     /**
@@ -159,21 +150,17 @@ class DmfsRecurringTaskList(
      * @param id    ID of the task
      */
     fun deleteTaskAndExceptions(id: Long) {
-        try {
-            val batch = TasksBatchOperation(taskList.client)
+        val batch = TasksBatchOperation(taskList.client)
 
-            // delete main task
-            batch += CpoBuilder.newDelete(taskList.taskUri(id))
+        // delete main task
+        batch += CpoBuilder.newDelete(taskList.taskUri(id))
 
-            // delete exceptions, too (not automatically done by provider)
-            batch += CpoBuilder
-                .newDelete(taskList.tasksUri())
-                .withSelection("${Tasks.ORIGINAL_INSTANCE_ID}=?", arrayOf(id.toString()))
+        // delete exceptions, too (not automatically done by provider)
+        batch += CpoBuilder
+            .newDelete(taskList.tasksUri())
+            .withSelection("${Tasks.ORIGINAL_INSTANCE_ID}=?", arrayOf(id.toString()))
 
-            batch.commit()
-        } catch (e: RemoteException) {
-            throw LocalStorageException("Couldn't delete task $id", e)
-        }
+        batch.commit()
     }
 
 

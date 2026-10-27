@@ -66,7 +66,7 @@ class WebDavMountRepository @Inject constructor(
 
     suspend fun delete(mount: WebDavMount) {
         // remove mount from database
-        mountDao.deleteAsync(mount)
+        mountDao.delete(mount)
 
         // remove credentials, too
         CredentialsStore(context).setCredentials(mount.id, null)

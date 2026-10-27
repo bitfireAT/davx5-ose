@@ -7,11 +7,10 @@ package at.bitfire.davdroid.ui.account
 import android.content.Context
 import androidx.work.WorkInfo
 import at.bitfire.davdroid.accounts.AccountId
-import at.bitfire.davdroid.accounts.toAndroidAccount
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.sync.SyncDataType
-import at.bitfire.davdroid.sync.adapter.SyncFrameworkIntegration
+import at.bitfire.davdroid.sync.adapter.SyncPendingProvider
 import at.bitfire.davdroid.sync.worker.OneTimeSyncWorker
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -24,7 +23,7 @@ import javax.inject.Inject
 
 class AccountProgressUseCase @Inject constructor(
     @ApplicationContext val context: Context,
-    private val syncFramework: SyncFrameworkIntegration,
+    private val syncPendingProvider: SyncPendingProvider,
     private val syncWorkerManager: SyncWorkerManager
 ) {
 
@@ -38,7 +37,7 @@ class AccountProgressUseCase @Inject constructor(
     ): Flow<AccountProgress> {
         val serviceRefreshing = isServiceRefreshing(serviceFlow)
         val syncEnqueued = isSyncEnqueued(accountId, dataTypes)
-        val syncPending = syncFramework.isSyncPending(accountId.toAndroidAccount(), dataTypes)
+        val syncPending = syncPendingProvider.isSyncPending(accountId, dataTypes)
         val syncRunning = isSyncRunning(accountId, dataTypes)
 
         return combine(

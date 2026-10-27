@@ -36,8 +36,8 @@ class CollectionsWithoutHomeSetRefresherTest {
 
         private const val PATH_CARDDAV = "/carddav"
         private const val SUBPATH_PRINCIPAL = "/principal"
-        private const val SUBPATH_ADDRESSBOOK = "/addressbooks/my-contacts"
-        private const val SUBPATH_ADDRESSBOOK_INACCESSIBLE = "/addressbooks/inaccessible-contacts"
+        private const val SUBPATH_ADDRESSBOOK = "/addressbooks/my-contacts/"
+        private const val SUBPATH_ADDRESSBOOK_INACCESSIBLE = "/addressbooks/inaccessible-contacts/"
 
         val xmlHeaders = headersOf(HttpHeaders.ContentType, "application/xml; charset=UTF-8")
 
@@ -70,7 +70,7 @@ class CollectionsWithoutHomeSetRefresherTest {
         if (request.method.value != "PROPFIND")
             return@MockEngine respond("", HttpStatusCode.NotFound)
 
-        when (val path = request.url.encodedPath.trimEnd('/')) {
+        when (val path = request.url.encodedPath) {
             PATH_CARDDAV + SUBPATH_ADDRESSBOOK ->
                 respond(
                     multistatus(
@@ -91,10 +91,10 @@ class CollectionsWithoutHomeSetRefresherTest {
         hiltRule.inject()
         client = HttpClient(buildMockEngine())
 
-        val serviceId = db.serviceDao().insertOrReplace(
+        val serviceId = db.serviceDao().insertOrReplaceBlocking(
             Service(id = 0, accountName = "test", type = Service.TYPE_CARDDAV, principal = null)
         )
-        service = db.serviceDao().get(serviceId)!!
+        service = db.serviceDao().getBlocking(serviceId)!!
     }
 
     @After
@@ -107,11 +107,11 @@ class CollectionsWithoutHomeSetRefresherTest {
 
     @Test
     fun refreshCollectionsWithoutHomeSet_updatesExistingCollection() = runTest {
-        val collectionId = db.collectionDao().insertOrUpdateByUrl(
+        val collectionId = db.collectionDao().insertOrUpdateByUrlBlocking(
             Collection(
                 0, service.id, null, null,
                 Collection.TYPE_ADDRESSBOOK,
-                "$BASE_URL$PATH_CARDDAV$SUBPATH_ADDRESSBOOK/".toUrl()
+                "$BASE_URL$PATH_CARDDAV$SUBPATH_ADDRESSBOOK".toUrl()
             )
         )
 
@@ -122,17 +122,17 @@ class CollectionsWithoutHomeSetRefresherTest {
                 collectionId, service.id, null,
                 1, // will have gotten an owner too
                 Collection.TYPE_ADDRESSBOOK,
-                "$BASE_URL$PATH_CARDDAV$SUBPATH_ADDRESSBOOK/".toUrl(),
+                "$BASE_URL$PATH_CARDDAV$SUBPATH_ADDRESSBOOK".toUrl(),
                 displayName = "My Contacts",
                 description = "My Contacts Description"
             ),
-            db.collectionDao().get(collectionId)
+            db.collectionDao().getBlocking(collectionId)
         )
     }
 
     @Test
     fun refreshCollectionsWithoutHomeSet_deletesInaccessibleCollectionsWithoutHomeSet() = runTest {
-        val collectionId = db.collectionDao().insertOrUpdateByUrl(
+        val collectionId = db.collectionDao().insertOrUpdateByUrlBlocking(
             Collection(
                 0, service.id, null, null,
                 Collection.TYPE_ADDRESSBOOK,
@@ -142,16 +142,16 @@ class CollectionsWithoutHomeSetRefresherTest {
 
         refresherFactory.create(service, client).refreshCollectionsWithoutHomeSet()
 
-        assertEquals(null, db.collectionDao().get(collectionId))
+        assertEquals(null, db.collectionDao().getBlocking(collectionId))
     }
 
     @Test
     fun refreshCollectionsWithoutHomeSet_addsOwnerUrls() = runTest {
-        val collectionId = db.collectionDao().insertOrUpdateByUrl(
+        val collectionId = db.collectionDao().insertOrUpdateByUrlBlocking(
             Collection(
                 0, service.id, null, null,
                 Collection.TYPE_ADDRESSBOOK,
-                "$BASE_URL$PATH_CARDDAV$SUBPATH_ADDRESSBOOK/".toUrl()
+                "$BASE_URL$PATH_CARDDAV$SUBPATH_ADDRESSBOOK".toUrl()
             )
         )
 
@@ -164,7 +164,7 @@ class CollectionsWithoutHomeSetRefresherTest {
         assertEquals(null, principals[0].displayName)
         assertEquals(
             principals[0].id,
-            db.collectionDao().get(collectionId)!!.ownerId
+            db.collectionDao().getBlocking(collectionId)!!.ownerId
         )
     }
 

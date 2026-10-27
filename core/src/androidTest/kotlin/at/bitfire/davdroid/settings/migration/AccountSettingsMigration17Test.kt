@@ -9,16 +9,18 @@ import android.accounts.AccountManager
 import android.content.Context
 import androidx.test.rule.GrantPermissionRule
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.accounts.LegacyAccount
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
-import at.bitfire.davdroid.resource.LocalAddressBook
+import at.bitfire.davdroid.settings.AccountSettingsStore
 import at.bitfire.davdroid.sync.account.TestAccount
 import at.bitfire.davdroid.util.DavUtils.toUrl
 import at.bitfire.synctools.util.setAndVerifyUserData
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import io.mockk.mockk
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -28,6 +30,9 @@ import javax.inject.Inject
 
 @HiltAndroidTest
 class AccountSettingsMigration17Test {
+
+    @Inject
+    lateinit var accountManager: AccountManager
 
     @Inject @ApplicationContext
     lateinit var context: Context
@@ -55,24 +60,23 @@ class AccountSettingsMigration17Test {
     fun testMigrate_OldAddressBook_CollectionInDB() {
         val localAddressBookUserDataUrl = "url"
         TestAccount.provide(version = 16) { account ->
-            val accountManager = AccountManager.get(context)
             val addressBookAccountType = context.getString(R.string.account_type_address_book)
             var addressBookAccount = Account("Address Book", addressBookAccountType)
             assertTrue(accountManager.addAccountExplicitly(addressBookAccount, null, null))
 
             try {
                 // address book has account + URL
-                val url = "https://example.com/address-book"
+                val url = "https://example.com/address-book/"
                 accountManager.setAndVerifyUserData(addressBookAccount, "real_account_name", account.name)
                 accountManager.setAndVerifyUserData(addressBookAccount, localAddressBookUserDataUrl, url)
 
                 // and is known in database
-                db.serviceDao().insertOrReplace(
+                db.serviceDao().insertOrReplaceBlocking(
                     Service(
                         id = 1, accountName = account.name, type = Service.TYPE_CARDDAV, principal = null
                     )
                 )
-                db.collectionDao().insert(
+                db.collectionDao().insertBlocking(
                     Collection(
                         id = 100,
                         serviceId = 1,
@@ -81,9 +85,10 @@ class AccountSettingsMigration17Test {
                         displayName = "Some Address Book"
                     )
                 )
+                val store = mockk<AccountSettingsStore>()
 
                 // run migration
-                migration.migrate(account)
+                migration.migrate(LegacyAccount(account), store)
 
                 // migration renames address book, update account
                 addressBookAccount = accountManager.getAccountsByType(addressBookAccountType).filter {
@@ -92,7 +97,7 @@ class AccountSettingsMigration17Test {
                 assertEquals("Some Address Book (${account.name}) #100", addressBookAccount.name)
 
                 // ID is now assigned
-                assertEquals(100L, accountManager.getUserData(addressBookAccount, LocalAddressBook.USER_DATA_COLLECTION_ID)?.toLong())
+                assertEquals(100L, accountManager.getUserData(addressBookAccount, "collection_id")?.toLong())
             } finally {
                 accountManager.removeAccountExplicitly(addressBookAccount)
             }

@@ -22,6 +22,15 @@ By discussing your idea first, we can ensure alignment with the project's direct
 For everything else — new features, UI changes, non-trivial refactors — please comment
 an existing/new issue or discussion and wait for a green light before investing significant time.
 
+### ✨ AI-generated contributions
+
+We welcome all contributions, but **human-driven contributions are preferred over AI-generated ones**. 
+PRs that are mainly driven by AI (for example, when an issue is just referenced/copied into an AI 
+prompt and then the result is submitted as PR) often have little worth, as everybody could just 
+copy the issue into a prompt. The worth of a good PR often comes from the main idea, architectural 
+decisions, etc. behind it. Such PRs may be reviewed with less human attention and closed at any time 
+when they don't fit.
+
 ## Preferred flow of a change
 
 1. **Discussion**: Start or join a discussion or issue to propose your idea.
@@ -33,6 +42,13 @@ Use tools like GitHub Copilot for additional review (if applicable).
 7. **Team review**: A core team member will review your PR.
 8. **Merge**: Once approved, your contribution will be merged.
 9. If all goes well, your contribution will be shipped with the next release. 🚀
+
+
+# Translations
+
+We very happily accept contributions for translations. For that purpose, we use [the platform Weblate](https://hosted.weblate.org/engage/davx5/).
+
+[![Translation status](https://hosted.weblate.org/widget/davx5/open-graph.png)](https://hosted.weblate.org/engage/davx5/)
 
 
 # License and copyright

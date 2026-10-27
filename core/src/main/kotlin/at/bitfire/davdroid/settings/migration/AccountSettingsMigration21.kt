@@ -4,12 +4,14 @@
 
 package at.bitfire.davdroid.settings.migration
 
-import android.accounts.Account
 import android.content.ContentResolver
 import android.os.Build
 import android.os.Bundle
 import android.provider.ContactsContract
-import at.bitfire.davdroid.resource.LocalAddressBookStore
+import at.bitfire.davdroid.accounts.AccountId
+import at.bitfire.davdroid.accounts.AndroidAccountManager
+import at.bitfire.davdroid.resource.local.LocalAddressBookStore
+import at.bitfire.davdroid.settings.AccountSettingsStore
 import at.bitfire.davdroid.sync.SyncDataType
 import dagger.Binds
 import dagger.Module
@@ -31,6 +33,7 @@ import javax.inject.Inject
  * (+tasks) account syncs.
  */
 class AccountSettingsMigration21 @Inject constructor(
+    private val androidAccountManager: AndroidAccountManager,
     private val localAddressBookStore: LocalAddressBookStore,
     private val logger: Logger
 ): AccountSettingsMigration {
@@ -38,7 +41,8 @@ class AccountSettingsMigration21 @Inject constructor(
     /**
      * Cancel any possibly forever pending account syncs of the different authorities
      */
-    override fun migrate(account: Account) {
+    override fun migrate(accountId: AccountId, store: AccountSettingsStore) {
+        val account = androidAccountManager.getAndroidAccount(accountId)
         if (Build.VERSION.SDK_INT >= 34) {
             // Request new dummy syncs (yes, seems like this is needed)
             val extras = Bundle().apply {
@@ -59,7 +63,7 @@ class AccountSettingsMigration21 @Inject constructor(
             }
 
             // Request contacts sync (per address book account) and cancel all syncs address book account wide
-            val addressBookAccounts = localAddressBookStore.getAddressBookAccounts(account) + account
+            val addressBookAccounts = localAddressBookStore.getAddressBookAccounts(accountId) + account
             for (addressBookAccount in addressBookAccounts) {
                 ContentResolver.requestSync(addressBookAccount, ContactsContract.AUTHORITY, extras)
                 logger.info("Android 14+: Canceling all (possibly forever pending) sync adapter syncs for $addressBookAccount")

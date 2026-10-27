@@ -9,17 +9,18 @@ import android.os.Build
 import androidx.annotation.IntDef
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.work.CoroutineWorker
 import androidx.work.Data
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
-import at.bitfire.davdroid.IoCoroutineWorker
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
+import at.bitfire.davdroid.accounts.DbAccountId
 import at.bitfire.davdroid.accounts.LegacyAccount
-import at.bitfire.davdroid.accounts.toAndroidAccount
 import at.bitfire.davdroid.push.PushNotificationManager
-import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.repository.AccountRepository
+import at.bitfire.davdroid.settings.AccountSettingsFactory
 import at.bitfire.davdroid.sync.AddressBookSyncer
 import at.bitfire.davdroid.sync.CalendarSyncer
 import at.bitfire.davdroid.sync.JtxSyncer
@@ -32,6 +33,7 @@ import at.bitfire.davdroid.sync.SyncSettingsProvider
 import at.bitfire.davdroid.sync.TaskSyncer
 import at.bitfire.davdroid.sync.TasksAppManager
 import at.bitfire.davdroid.sync.account.InvalidAccountException
+import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.MAX_RUN_ATTEMPTS
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.NO_RESYNC
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.RESYNC_ENTRIES
 import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.RESYNC_LIST
@@ -39,19 +41,62 @@ import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.commonTag
 import at.bitfire.davdroid.ui.NotificationRegistry
 import at.bitfire.synctools.storage.TaskProvider
 import dagger.Lazy
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.delay
 import java.util.Collections
+import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.seconds
 
+/**
+ * Base class of the sync workers: takes the account and the data type to be synchronized from the input
+ * data, selects the matching [at.bitfire.davdroid.sync.Syncer] and runs it.
+ *
+ * ## Results reported to WorkManager
+ *
+ * WorkManager derives the state it records for a work from the [Result] we return, so we map the outcome
+ * of a sync run like this:
+ *
+ * - Sync ran without errors: [Result.success]
+ * - Sync was skipped, because another worker is already syncing the same data or because the sync
+ *   conditions are not met (anymore): [Result.success], too – skipping is not an error, the next sync run
+ *   will do the work.
+ * - Soft error (temporary problem, like a network error) with attempts left: [Result.retry], so that
+ *   WorkManager runs the work again later (at most [MAX_RUN_ATTEMPTS] retries after the initial run).
+ * - Soft error without attempts left: [Result.failure] and a notification, because we're giving up.
+ * - Hard error (the user has to take action, for instance fix their credentials): [Result.failure].
+ *   [at.bitfire.davdroid.sync.SyncManager] has already notified the user about the details.
+ * - The account doesn't exist (anymore), or there's no usable tasks provider: [Result.failure].
+ *
+ * Note that [Result.failure] also fails work that has been appended to this work – one-time syncs are
+ * enqueued with [androidx.work.ExistingWorkPolicy.APPEND_OR_REPLACE] – so a sync request that came in while
+ * this sync was running is dropped and has to be requested again.
+ *
+ * ## Cancellation
+ *
+ * A canceled sync is not mapped to a [Result] at all: the [CancellationException] is passed on to
+ * WorkManager, which then:
+ *
+ * - runs the work again if it has stopped the worker itself (constraints not met anymore, execution
+ *   timeout, quota, …),
+ * - leaves the work `CANCELLED` if the work has been canceled explicitly (like by
+ *   [SyncWorkerManager.cancelAllWork]), or
+ * - records the run as failed if something within the app has canceled the sync coroutine (periodic work
+ *   is simply run again in the next interval).
+ *
+ * That's why no sync code may swallow a [CancellationException].
+ */
 abstract class BaseSyncWorker(
     context: Context,
     private val workerParams: WorkerParameters
-) : IoCoroutineWorker(context, workerParams) {
+) : CoroutineWorker(context, workerParams) {
 
     @Inject
-    lateinit var accountSettingsFactory: AccountSettings.Factory
+    lateinit var accountRepository: AccountRepository
+
+    @Inject
+    lateinit var accountSettingsFactory: AccountSettingsFactory
 
     @Inject
     lateinit var addressBookSyncer: AddressBookSyncer.Factory
@@ -83,7 +128,7 @@ abstract class BaseSyncWorker(
     @Inject
     lateinit var taskSyncer: TaskSyncer.Factory
 
-    override suspend fun doIoWork(): Result {
+    override suspend fun doWork(): Result {
         val accountId = requireNotNull(inputData.getAccountId()) { "AccountId required" }
 
         val dataType = SyncDataType.valueOf(inputData.getString(INPUT_DATA_TYPE) ?: throw IllegalArgumentException("INPUT_SYNC_DATA_TYPE required"))
@@ -101,7 +146,7 @@ abstract class BaseSyncWorker(
 
         try {
             val accountSettings = try {
-                accountSettingsFactory.create(accountId.toAndroidAccount())
+                accountSettingsFactory.create(accountId)
             } catch (_: InvalidAccountException) {
                 val workId = workerParams.id
                 logger.warning("No valid account settings for account $accountId, cancelling worker $workId")
@@ -133,6 +178,12 @@ abstract class BaseSyncWorker(
 
             val settings = syncSettingsProvider.create(accountSettings)
             return doSyncWork(accountId, dataType, settings)
+
+        } catch (e: CancellationException) {
+            // Not an error: log it (so that it can be told apart from a failed sync) and pass it on to WorkManager.
+            logger.log(Level.INFO, "Sync was cancelled", e)
+            throw e
+
         } finally {
             logger.info("${javaClass.simpleName} finished for $syncTag")
             runningSyncs -= syncTag
@@ -158,19 +209,18 @@ abstract class BaseSyncWorker(
         val syncResult = SyncResult()
 
         // What are we going to sync? Select syncer based on authority
-        val account = accountId.toAndroidAccount()
         when (dataType) {
             SyncDataType.CONTACTS ->
-                addressBookSyncer.create(account, resyncType, syncFrameworkUpload, syncResult, settings)
+                addressBookSyncer.create(accountId, resyncType, syncFrameworkUpload, syncResult, settings)
             SyncDataType.EVENTS ->
-                calendarSyncer.create(account, resyncType, syncResult, settings)
+                calendarSyncer.create(accountId, resyncType, syncResult, settings)
             SyncDataType.TASKS -> {
                 when (val currentProvider = tasksAppManager.get().currentProvider()) {
                     TaskProvider.ProviderName.JtxBoard ->
-                        jtxSyncer.create(account, resyncType, syncResult, settings)
+                        jtxSyncer.create(accountId, resyncType, syncResult, settings)
                     TaskProvider.ProviderName.OpenTasks,
                     TaskProvider.ProviderName.TasksOrg ->
-                        taskSyncer.create(account, currentProvider, resyncType, syncResult, settings)
+                        taskSyncer.create(accountId, currentProvider, resyncType, syncResult, settings)
                     else -> {
                         logger.warning("No valid tasks provider found, aborting sync")
                         return Result.failure()
@@ -187,11 +237,11 @@ abstract class BaseSyncWorker(
             .putString("syncresult", syncResult.toString())
 
         // Check for errors
-        if (syncResult.hasError()) {
-            val softErrorNotificationTag = "${account.type}-${account.name}-$dataType"
+        if (syncResult.hasError) {
+            val softErrorNotificationTag = "$accountId-$dataType"
 
             // On soft errors the sync is retried a few times before considered failed
-            if (syncResult.hasSoftError()) {
+            if (syncResult.softError) {
                 logger.warning("Soft error while syncing: $syncResult")
                 if (runAttemptCount < MAX_RUN_ATTEMPTS) {
                     val blockDuration = syncResult.delayUntil - System.currentTimeMillis() / 1000
@@ -207,12 +257,13 @@ abstract class BaseSyncWorker(
                 }
 
                 logger.warning("Max retries on soft errors reached ($runAttemptCount of $MAX_RUN_ATTEMPTS). Treating as failed")
+                val accountName = accountRepository.getAccountName(accountId)
                 notificationRegistry.notifyIfPossible(NotificationRegistry.NOTIFY_SYNC_ERROR, tag = softErrorNotificationTag) {
                     NotificationCompat.Builder(applicationContext, notificationRegistry.CHANNEL_SYNC_IO_ERRORS)
                         .setSmallIcon(R.drawable.ic_sync_problem_notify)
-                        .setContentTitle(account.name)
+                        .setContentTitle(accountName)
                         .setContentText(applicationContext.getString(R.string.sync_error_retry_limit_reached))
-                        .setSubText(account.name)
+                        .setSubText(accountName)
                         .setOnlyAlertOnce(true)
                         .setPriority(NotificationCompat.PRIORITY_MIN)
                         .setCategory(NotificationCompat.CATEGORY_ERROR)
@@ -232,7 +283,7 @@ abstract class BaseSyncWorker(
 
             // On a hard error - fail with an error message
             // Note: SyncManager should have notified the user
-            if (syncResult.hasHardError()) {
+            if (syncResult.hardError) {
                 logger.warning("Hard error while syncing: $syncResult")
                 return Result.failure(output.build())
             }
@@ -285,6 +336,7 @@ abstract class BaseSyncWorker(
                     val account = accountId.androidAccount
                     "sync-$dataType ${account.type}/${account.name}"
                 }
+                is DbAccountId -> "sync-$dataType ${accountId.id}"
             }
         }
 

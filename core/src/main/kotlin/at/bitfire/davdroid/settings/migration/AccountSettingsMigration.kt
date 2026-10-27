@@ -4,8 +4,9 @@
 
 package at.bitfire.davdroid.settings.migration
 
-import android.accounts.Account
+import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.settings.AccountSettingsStore
 
 interface AccountSettingsMigration {
 
@@ -19,8 +20,9 @@ interface AccountSettingsMigration {
      * may change in future and it shouldn't be necessary to change migrations as well. So it's better to operate "low-level"
      * directly on the account user-data – which is also better testable.
      *
-     * @param   account          The account to migrate
+     * @param accountId [AccountId] of the account for which to migrate settings
+     * @param store The [AccountSettingsStore] containing the account settings to migrate
      */
-    fun migrate(account: Account)
+    fun migrate(accountId: AccountId, store: AccountSettingsStore)
 
 }

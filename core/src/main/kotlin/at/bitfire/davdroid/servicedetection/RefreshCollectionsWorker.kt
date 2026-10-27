@@ -11,6 +11,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.TaskStackBuilder
 import androidx.hilt.work.HiltWorker
+import androidx.work.CoroutineWorker
 import androidx.work.Data
 import androidx.work.ExistingWorkPolicy
 import androidx.work.ForegroundInfo
@@ -21,10 +22,7 @@ import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import at.bitfire.dav4jvm.ktor.exception.UnauthorizedException
-import at.bitfire.davdroid.IoCoroutineWorker
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.accounts.toAccountId
-import at.bitfire.davdroid.accounts.toAndroidAccount
 import at.bitfire.davdroid.network.HttpClientBuilder
 import at.bitfire.davdroid.push.PushRegistrationManager
 import at.bitfire.davdroid.repository.AccountRepository
@@ -73,7 +71,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
     private val pushRegistrationManager: PushRegistrationManager,
     private val serviceRefresherFactory: ServiceRefresher.Factory,
     private val serviceRepository: DavServiceRepository
-) : IoCoroutineWorker(appContext, workerParams) {
+) : CoroutineWorker(appContext, workerParams) {
 
     companion object {
 
@@ -137,14 +135,14 @@ class RefreshCollectionsWorker @AssistedInject constructor(
 
     private val serviceId: Long = inputData.getLong(ARG_SERVICE_ID, -1)
 
-    override suspend fun doIoWork(): Result {
+    override suspend fun doWork(): Result {
         val service = serviceRepository.get(serviceId)
         if (service == null) {
             logger.warning("Missing service with service ID: $serviceId")
             return Result.failure()
         }
 
-        val accountId = accountRepository.getAccountIdFromName(service.accountName)
+        val accountId = accountRepository.getAccountIdFromService(service)
         try {
             logger.log(Level.INFO, "Refreshing {0} collections of service #{1}", arrayOf(service.type, service))
 
@@ -154,7 +152,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
 
             // create authenticating HttpClient (credentials taken from account settings)
             httpClientBuilder
-                .fromAccount(accountId.toAndroidAccount())
+                .fromAccount(accountId)
                 .build()
                 .use { httpClient ->
                     val refresher = collectionsWithoutHomeSetRefresherFactory.create(service, httpClient)

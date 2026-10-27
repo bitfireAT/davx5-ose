@@ -42,13 +42,11 @@ fun LoginScreen(
         factory.create(initialLoginType, skipLoginTypePage, initialLoginInfo)
     }
 
-    // handle back/up navigation
+    // handle back/up navigation: both go a single step back in the login flow; they only differ
+    // in how they leave the login flow when there's no previous page anymore
     BackHandler {
-        model.navBack()
-    }
-    if (model.finish) {
-        onFinish(null)
-        return
+        if (!model.navBack())
+            onFinish(null)
     }
 
     // get specific help URL from current login type (may be null → show "tested with" page)
@@ -57,7 +55,10 @@ fun LoginScreen(
     LoginScreenContent(
         page = model.page,
         helpUri = loginType.helpUrl,
-        onNavUp = onNavUp,
+        onNavUp = {
+            if (!model.navBack())
+                onNavUp()
+        },
         onFinish = onFinish
     )
 }

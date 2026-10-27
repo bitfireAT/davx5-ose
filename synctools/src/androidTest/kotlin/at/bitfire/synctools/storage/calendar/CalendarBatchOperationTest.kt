@@ -6,11 +6,11 @@ package at.bitfire.synctools.storage.calendar
 
 import android.Manifest
 import android.accounts.Account
-import android.content.ContentProviderClient
 import android.provider.CalendarContract
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
 import at.bitfire.synctools.storage.BatchOperation
+import at.bitfire.synctools.storage.LocalStorageClient
 import at.bitfire.synctools.storage.calendar.EventsContract.asSyncAdapter
 import org.junit.After
 import org.junit.Before
@@ -24,29 +24,30 @@ class CalendarBatchOperationTest {
 
     private val testAccount = Account(javaClass.name, CalendarContract.ACCOUNT_TYPE_LOCAL)
 
-    private lateinit var provider: ContentProviderClient
+    private lateinit var client: LocalStorageClient
 
     @Before
     fun setUp() {
-        provider = InstrumentationRegistry.getInstrumentation().targetContext.contentResolver
+        val provider = InstrumentationRegistry.getInstrumentation().targetContext.contentResolver
             .acquireContentProviderClient(CalendarContract.AUTHORITY)!!
+        client = LocalStorageClient(provider)
     }
 
     @After
     fun tearDown() {
         // delete all events in test account
-        provider.delete(
+        client.delete(
             CalendarContract.Events.CONTENT_URI,
             "${CalendarContract.Events.ACCOUNT_TYPE}=? AND ${CalendarContract.Events.ACCOUNT_NAME}=?",
             arrayOf(testAccount.type, testAccount.name)
         )
-        provider.close()
+        client.close()
     }
 
 
     @Test
     fun testCalendarProvider_OperationsPerYieldPoint_501() {
-        val batch = CalendarBatchOperation(provider)
+        val batch = CalendarBatchOperation(client)
 
         // 501 operations should succeed with CalendarBatchOperation
         repeat(501) { idx ->

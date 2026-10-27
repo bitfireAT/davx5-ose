@@ -44,7 +44,7 @@ class CommonBuildConfigPlugin : Plugin<Project> {
                     configureCommonAndroid()
 
                     // only for Android applications
-                    defaultConfig.targetSdk = 36    // Android 16
+                    defaultConfig.targetSdk = 37    // Android 17
 
                     // take app version from dedicated object
                     defaultConfig.versionCode = AppVersion.CODE
@@ -86,16 +86,43 @@ class CommonBuildConfigPlugin : Plugin<Project> {
 
     /** Common configuration for all Android modules */
     private fun CommonExtension.configureCommonAndroid() {
-        compileSdk = 37     // Android 17
+        compileSdk {
+            // Android 17
+            version = release(37) {
+                // QPR 2
+                minorApiLevel = 2
+            }
+        }
         // see also synctools/robolectric.properties
+
+        // Enable BuildConfig to generate the IS_BETA flag
+        buildFeatures.buildConfig = true
 
         defaultConfig.apply {
             minSdk = 24     // Android 7
+
+            val isPreRelease = setOf("alpha", "beta", "rc").any { AppVersion.NAME.contains(it, ignoreCase = true) }
+            buildConfigField("boolean", "PRE_RELEASE", isPreRelease.toString())
         }
 
         // enable desugaring for Java 8 Time API etc.
         compileOptions.apply {
             isCoreLibraryDesugaringEnabled = true
+        }
+
+        testOptions.unitTests.all { test ->
+            // Robolectric on Java 17+ needs access to JDK internals [https://robolectric.org/getting-started/#running-with-java-17-and-higher]
+            test.jvmArgs(
+                "--add-opens=java.base/java.lang=ALL-UNNAMED",
+                "--add-opens=java.base/java.util=ALL-UNNAMED",
+                "--add-opens=java.base/java.io=ALL-UNNAMED",
+                "--add-opens=java.base/java.net=ALL-UNNAMED",
+                "--add-opens=java.base/java.security=ALL-UNNAMED",
+                "--add-opens=java.base/java.text=ALL-UNNAMED",
+                "--add-opens=java.base/jdk.internal.access=ALL-UNNAMED",
+                "--add-opens=java.desktop/java.awt.font=ALL-UNNAMED",
+                "--add-opens=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED"
+            )
         }
     }
 

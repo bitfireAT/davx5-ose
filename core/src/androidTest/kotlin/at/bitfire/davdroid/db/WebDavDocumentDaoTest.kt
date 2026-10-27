@@ -73,7 +73,7 @@ class WebDavDocumentDaoTest {
                 ), result.map { it.name })
             }
         } finally {
-            mountDao.deleteAsync(mount)
+            mountDao.delete(mount)
         }
     }
 

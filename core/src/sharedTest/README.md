@@ -1,0 +1,1 @@
+Code that is used from both the `test` and the `androidTest` source sets.

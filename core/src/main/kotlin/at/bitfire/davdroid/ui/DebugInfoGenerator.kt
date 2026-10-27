@@ -36,10 +36,12 @@ import androidx.work.WorkQuery
 import at.bitfire.dav4jvm.ktor.exception.DavException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
-import at.bitfire.davdroid.accounts.toAccountId
+import at.bitfire.davdroid.accounts.AndroidAccountManager
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.repository.AccountRepository
-import at.bitfire.davdroid.resource.LocalAddressBook
+import at.bitfire.davdroid.resource.local.LocalAddressBook
+import at.bitfire.davdroid.settings.AccountSettingsFactory
+import at.bitfire.davdroid.resource.local.AddressBookAccountProperties
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.sync.SyncDataType
@@ -70,8 +72,11 @@ import at.techbee.jtx.JtxContract.asSyncAdapter as asJtxSyncAdapter
 
 @WorkerThread
 class DebugInfoGenerator @Inject constructor(
+    private val accountManager: AccountManager,
     private val accountRepository: AccountRepository,
-    private val accountSettingsFactory: AccountSettings.Factory,
+    private val accountSettingsFactory: AccountSettingsFactory,
+    private val addressBookAccountProperties: AddressBookAccountProperties,
+    private val androidAccountManager: AndroidAccountManager,
     @ApplicationContext private val context: Context,
     private val db: AppDatabase,
     private val logger: Logger,
@@ -316,10 +321,9 @@ class DebugInfoGenerator @Inject constructor(
 
         // accounts
         writer.append("\nACCOUNTS")
-        val accountManager = AccountManager.get(context)
-        val accounts = accountRepository.getAllBlocking()
-        for (account in accounts)
-            dumpAccount(account, writer)
+        val accountIds = accountRepository.getAllBlocking()
+        for (accountId in accountIds)
+            dumpAccount(accountId, writer)
 
         val addressBookAccounts = accountManager.getAccountsByType(context.getString(R.string.account_type_address_book)).toMutableList()
         if (addressBookAccounts.isNotEmpty()) {
@@ -330,7 +334,7 @@ class DebugInfoGenerator @Inject constructor(
 
         // non-sync workers
         writer.append("OTHER WORKERS\n")
-        dumpOtherWorkers(accounts, writer)
+        dumpOtherWorkers(accountIds, writer)
 
         // database dump
         writer.append("\n\n\nDATABASE DUMP\n\n")
@@ -426,9 +430,11 @@ class DebugInfoGenerator @Inject constructor(
     /**
      * Appends relevant android account information the given writer.
      */
-    private fun dumpAccount(account: Account, writer: Writer) {
-        writer.append("\n\n - Account: ${account.name}\n")
-        val accountSettings = accountSettingsFactory.create(account)
+    private fun dumpAccount(accountId: AccountId, writer: Writer) {
+        val accountName = accountRepository.getAccountNameBlocking(accountId)
+        writer.append("\n\n - Account: ${accountName}\n")
+        val accountSettings = accountSettingsFactory.create(accountId)
+        val account = androidAccountManager.getAndroidAccount(accountId)
 
         writer.append(dumpAndroidAccount(account, AccountDumpInfo.caldavAccount(account)))
         try {
@@ -461,7 +467,7 @@ class DebugInfoGenerator @Inject constructor(
             )
 
             writer.append("\nSync workers:\n")
-            dumpSyncWorkers(account, writer)
+            dumpSyncWorkers(accountId, writer)
             writer.append("\n")
         } catch (e: InvalidAccountException) {
             writer.append("$e\n")
@@ -476,7 +482,7 @@ class DebugInfoGenerator @Inject constructor(
         writer.append("  * Address book: ${account.name}\n")
         val table = dumpAndroidAccount(account, AccountDumpInfo.addressBookAccount(account))
         writer.append(TextTable.indent(table, 4))
-            .append("Collection ID: ${accountManager.getUserData(account, LocalAddressBook.USER_DATA_COLLECTION_ID)}\n")
+            .append("Collection ID: ${addressBookAccountProperties.getCollectionId(account)}\n")
             .append("    Read-only: ${accountManager.getUserData(account, AndroidAddressBook.USER_DATA_READ_ONLY) ?: 0}\n\n")
     }
 
@@ -576,10 +582,10 @@ class DebugInfoGenerator @Inject constructor(
      * Note: WorkManager does not return worker names when queried, so we create them and ask
      * whether they exist one by one.
      */
-    private fun dumpSyncWorkers(account: Account, writer: Writer) {
+    private fun dumpSyncWorkers(accountId: AccountId, writer: Writer) {
         writer.append(workersInfoTable(
             WorkQuery.Builder.fromTags(
-                SyncDataType.entries.map { BaseSyncWorker.commonTag(account.toAccountId(), it) }
+                SyncDataType.entries.map { BaseSyncWorker.commonTag(accountId, it) }
             ).build(),
             mapOf(
                 1 to ("Data Type" to { workInfo: WorkInfo ->
@@ -604,12 +610,12 @@ class DebugInfoGenerator @Inject constructor(
      * Note: WorkManager does not return worker names when queried, so we create them and ask
      * whether they exist one by one.
      *
-     * @param accounts The list of accounts in the system. This is used for filtering account-dependent
+     * @param accountIds The list of [AccountId]s in the system. This is used for filtering account-dependent
      * workers.
      */
-    private fun dumpOtherWorkers(accounts: Array<Account>, writer: Writer) {
-        val syncWorkersTags = accounts.flatMap { account ->
-            SyncDataType.entries.map { BaseSyncWorker.commonTag(account.toAccountId(), it) }
+    private fun dumpOtherWorkers(accountIds: List<AccountId>, writer: Writer) {
+        val syncWorkersTags = accountIds.flatMap { accountId ->
+            SyncDataType.entries.map { BaseSyncWorker.commonTag(accountId, it) }
         }
 
         writer.append(workersInfoTable(

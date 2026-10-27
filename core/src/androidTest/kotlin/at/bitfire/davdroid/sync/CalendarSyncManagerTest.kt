@@ -5,8 +5,6 @@
 package at.bitfire.davdroid.sync
 
 import android.Manifest
-import android.accounts.Account
-import android.content.ContentProviderClient
 import android.content.Context
 import android.content.Entity
 import android.provider.CalendarContract
@@ -14,12 +12,14 @@ import android.provider.CalendarContract.Calendars
 import android.provider.CalendarContract.Events
 import androidx.core.content.contentValuesOf
 import androidx.test.rule.GrantPermissionRule
-import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.accounts.LegacyAccount
-import at.bitfire.davdroid.accounts.toAndroidAccount
-import at.bitfire.davdroid.resource.LocalCalendar
-import at.bitfire.davdroid.resource.LocalEvent
+import at.bitfire.davdroid.resource.local.LocalCalendar
+import at.bitfire.davdroid.resource.local.LocalEvent
+import at.bitfire.davdroid.resource.remote.CalDavCollection
+import at.bitfire.davdroid.resource.remote.CalendarQueryFilter
+import at.bitfire.davdroid.resource.remote.WebDavCollection
 import at.bitfire.davdroid.sync.account.TestAccount
+import at.bitfire.synctools.storage.LocalStorageClient
 import at.bitfire.synctools.storage.calendar.AndroidCalendar
 import at.bitfire.synctools.storage.calendar.AndroidCalendarProvider
 import at.bitfire.synctools.storage.calendar.EventAndExceptions
@@ -27,6 +27,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.ktor.client.engine.mock.toByteArray
+import io.ktor.http.Url
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import okio.Buffer
@@ -53,13 +54,10 @@ class CalendarSyncManagerTest {
     lateinit var context: Context
 
     @Inject
-    lateinit var localCalendarFactory: LocalCalendar.Factory
-
-    @Inject
     lateinit var syncManagerFactory: CalendarSyncManager.Factory
 
     lateinit var accountId: LegacyAccount
-    lateinit var providerClient: ContentProviderClient
+    lateinit var client: LocalStorageClient
     lateinit var androidCalendar: AndroidCalendar
     lateinit var localCalendar: LocalCalendar
 
@@ -68,20 +66,21 @@ class CalendarSyncManagerTest {
         hiltRule.inject()
 
         accountId = LegacyAccount(TestAccount.create())
-        providerClient = context.contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)!!
+        val provider = context.contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)!!
+        client = LocalStorageClient(provider)
 
         // create LocalCalendar
-        val androidCalendarProvider = AndroidCalendarProvider(accountId.toAndroidAccount(), providerClient)
+        val androidCalendarProvider = AndroidCalendarProvider(accountId.androidAccount, client)
         androidCalendar = androidCalendarProvider.createAndGetCalendar(contentValuesOf(
             Calendars.NAME to "Sample Calendar"
         ))
-        localCalendar = localCalendarFactory.create(androidCalendar)
+        localCalendar = LocalCalendar(androidCalendar)
     }
 
     @After
     fun tearDown() {
         localCalendar.androidCalendar.delete()
-        providerClient.close()
+        client.close()
         TestAccount.remove(accountId.androidAccount)
     }
 
@@ -99,7 +98,8 @@ class CalendarSyncManagerTest {
                 )),
                 exceptions = emptyList()
             )
-        ))
+        ), WebDavCollection.Capabilities()
+        )
 
         assertEquals("existing-uid.ics", result.suggestedFileName)
 
@@ -121,7 +121,8 @@ class CalendarSyncManagerTest {
                 )),
                 exceptions = emptyList()
             )
-        ))
+        ), WebDavCollection.Capabilities()
+        )
 
         assertTrue(result.suggestedFileName.matches(UUID_FILENAME_REGEX))
         val uuid = result.suggestedFileName.removeSuffix(".ics")
@@ -141,7 +142,12 @@ class CalendarSyncManagerTest {
         httpClient = mockk(),
         syncResult = mockk(),
         localCalendar = mockk(),
-        collection = mockk(),
+        collectionInfo = mockk(),
+        remoteCollection = CalDavCollection(
+            mockk(),
+            Url("https://example.com/dav/"),
+            CalendarQueryFilter(components = listOf("VEVENT"))
+        ),
         resync = mockk(),
         settings = SyncSettingsFixtures.default()
     )

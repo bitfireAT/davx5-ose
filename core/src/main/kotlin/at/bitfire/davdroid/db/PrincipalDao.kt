@@ -8,6 +8,7 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Update
 import io.ktor.http.Url
 
@@ -15,31 +16,31 @@ import io.ktor.http.Url
 interface PrincipalDao {
 
     @Query("SELECT * FROM principal WHERE id=:id")
-    fun get(id: Long): Principal
+    suspend fun get(id: Long): Principal
 
     @Query("SELECT * FROM principal WHERE id=:id")
-    suspend fun getAsync(id: Long): Principal
+    fun getBlocking(id: Long): Principal
 
     @Query("SELECT * FROM principal WHERE serviceId=:serviceId")
-    fun getByService(serviceId: Long): List<Principal>
+    suspend fun getByService(serviceId: Long): List<Principal>
 
     @Query("SELECT * FROM principal WHERE serviceId=:serviceId AND url=:url")
-    fun getByUrl(serviceId: Long, url: Url): Principal?
+    suspend fun getByUrl(serviceId: Long, url: Url): Principal?
 
     /**
      * Gets all principals who do not own any collections
      */
     @Query("SELECT * FROM principal WHERE principal.id NOT IN (SELECT ownerId FROM collection WHERE ownerId IS NOT NULL)")
-    fun getAllWithoutCollections(): List<Principal>
+    suspend fun getAllWithoutCollections(): List<Principal>
 
     @Insert
-    fun insert(principal: Principal): Long
+    suspend fun insert(principal: Principal): Long
 
     @Update
-    fun update(principal: Principal)
+    suspend fun update(principal: Principal)
 
     @Delete
-    fun delete(principal: Principal)
+    suspend fun delete(principal: Principal)
 
     /**
      * Inserts, updates or just gets existing principal if its display name has not
@@ -48,7 +49,8 @@ interface PrincipalDao {
      * @param principal Principal to be inserted or updated
      * @return ID of the newly inserted or already existing principal
      */
-    fun insertOrUpdate(serviceId: Long, principal: Principal): Long {
+    @Transaction
+    suspend fun insertOrUpdate(serviceId: Long, principal: Principal): Long {
         // Try to get existing principal by URL
         val oldPrincipal = getByUrl(serviceId, principal.url)
 

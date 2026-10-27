@@ -8,7 +8,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import at.bitfire.davdroid.util.DavUtils.lastSegment
+import at.bitfire.davdroid.util.DavUtils.extractCollectionName
 import io.ktor.http.Url
 
 @Entity(tableName = "homeset",
@@ -31,13 +31,19 @@ data class HomeSet(
      */
     val personal: Boolean,
 
+    /**
+     * URL of the home set - with trailing slash
+     */
     val url: Url,
 
     val privBind: Boolean = true,
 
     val displayName: String? = null
 ) {
+    init {
+        require(url.encodedPath.endsWith('/')) { "Not a collection URL (path does not end with a slash): $url" }
+    }
 
-    fun title() = displayName ?: url.lastSegment
+    fun title() = displayName ?: extractCollectionName(url)
 
 }

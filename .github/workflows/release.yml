@@ -21,11 +21,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/setup-java@v5
+        with:
+          submodules: recursive   # translations live in the l10n submodule
+      - uses: actions/setup-java@v6
         with:
           distribution: temurin
           java-version: ${{ env.java-version }}
-      - uses: gradle/actions/setup-gradle@v6
+      - uses: gradle/actions/setup-gradle@v6.4.0
         with:
           cache-encryption-key: ${{ secrets.gradle_encryption_key }}
 
@@ -42,9 +44,20 @@ jobs:
           ANDROID_KEY_PASSWORD: ${{ secrets.android_key_password }}
 
       - name: Create Github release
+        id: github-release
         uses: softprops/action-gh-release@v3
         with:
           prerelease: ${{ env.prerelease }}
           files: app-ose/build/outputs/apk/ose/release/*.apk
           fail_on_unmatched_files: true
           generate_release_notes: true
+
+      - name: Post release URL to Nextcloud Talk
+        continue-on-error: true
+        uses: bitfireAT/nextcloud-talk-api@v1
+        with:
+          server-url: ${{ secrets.nextcloud_server_url }}
+          user: ${{ secrets.nextcloud_user }}
+          app-password: ${{ secrets.nextcloud_app_password }}
+          room-token: ${{ secrets.nextcloud_room_token }}
+          message: 'DAVx⁵ ${{ github.ref_name }} released: ${{ steps.github-release.outputs.url }}'

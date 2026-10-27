@@ -57,6 +57,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
+import at.bitfire.davdroid.permissions.PermissionUtils
 import at.bitfire.davdroid.settings.AccountSettings.Companion.SYNC_INTERVAL_MANUALLY
 import at.bitfire.davdroid.settings.Credentials
 import at.bitfire.davdroid.ui.ExternalUris
@@ -67,7 +68,6 @@ import at.bitfire.davdroid.ui.composable.MultipleChoiceInputDialog
 import at.bitfire.davdroid.ui.composable.Setting
 import at.bitfire.davdroid.ui.composable.SettingsHeader
 import at.bitfire.davdroid.ui.composable.SwitchSetting
-import at.bitfire.davdroid.util.PermissionUtils
 import at.bitfire.synctools.util.SensitiveString.Companion.toSensitiveString
 import at.bitfire.synctools.vcard.GroupMethod
 import kotlinx.coroutines.launch
@@ -121,9 +121,7 @@ fun AccountSettingsScreen(
             credentials = uiState.credentials,
             onUpdateCredentials = model::updateCredentials,
             onAuthenticateOAuth = {
-                val request = model.newAuthorizationRequest()
-                if (request != null)
-                    authRequestContract.launch(request)
+                model.authenticateOAuth { request -> authRequestContract.launch(request) }
             },
             isCredentialsUpdateAllowed = uiState.allowCredentialsChange,
 

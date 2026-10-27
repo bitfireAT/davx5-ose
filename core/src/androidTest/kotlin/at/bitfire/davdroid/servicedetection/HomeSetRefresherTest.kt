@@ -42,9 +42,9 @@ class HomeSetRefresherTest {
         private const val PATH_CARDDAV = "/carddav"
 
         private const val SUBPATH_PRINCIPAL = "/principal"
-        private const val SUBPATH_ADDRESSBOOK_HOMESET_PERSONAL = "/addressbooks-homeset"
-        private const val SUBPATH_ADDRESSBOOK_HOMESET_EMPTY = "/addressbooks-homeset-empty"
-        private const val SUBPATH_ADDRESSBOOK = "/addressbooks/my-contacts"
+        private const val SUBPATH_ADDRESSBOOK_HOMESET_PERSONAL = "/addressbooks-homeset/"
+        private const val SUBPATH_ADDRESSBOOK_HOMESET_EMPTY = "/addressbooks-homeset-empty/"
+        private const val SUBPATH_ADDRESSBOOK = "/addressbooks/my-contacts/"
 
         val xmlHeaders = headersOf(HttpHeaders.ContentType, "application/xml; charset=UTF-8")
 
@@ -77,7 +77,7 @@ class HomeSetRefresherTest {
         if (request.method.value != "PROPFIND")
             return@MockEngine respond("", HttpStatusCode.NotFound)
 
-        val path = request.url.encodedPath.trimEnd('/')
+        val path = request.url.encodedPath
         val props = when (path) {
             PATH_CARDDAV + SUBPATH_ADDRESSBOOK_HOMESET_PERSONAL ->
                 "<resourcetype><collection/><CARD:addressbook/></resourcetype>" +
@@ -98,10 +98,10 @@ class HomeSetRefresherTest {
         hiltRule.inject()
         client = HttpClient(buildMockEngine())
 
-        val serviceId = db.serviceDao().insertOrReplace(
+        val serviceId = db.serviceDao().insertOrReplaceBlocking(
             Service(id = 0, accountName = "test", type = Service.TYPE_CARDDAV, principal = null)
         )
-        service = db.serviceDao().get(serviceId)!!
+        service = db.serviceDao().getBlocking(serviceId)!!
     }
 
     @After
@@ -114,7 +114,7 @@ class HomeSetRefresherTest {
 
     @Test
     fun refreshHomesetsAndTheirCollections_addsNewCollection() = runTest {
-        val homesetId = db.homeSetDao().insert(
+        val homesetId = db.homeSetDao().insertBlocking(
             HomeSet(id = 0, service.id, true, "$BASE_URL$PATH_CARDDAV$SUBPATH_ADDRESSBOOK_HOMESET_PERSONAL".toUrl())
         )
 
@@ -128,7 +128,7 @@ class HomeSetRefresherTest {
                 homesetId,
                 1, // will have gotten an owner too
                 Collection.TYPE_ADDRESSBOOK,
-                "$BASE_URL$PATH_CARDDAV$SUBPATH_ADDRESSBOOK/".toUrl(),
+                "$BASE_URL$PATH_CARDDAV$SUBPATH_ADDRESSBOOK".toUrl(),
                 displayName = "My Contacts",
                 description = "My Contacts Description"
             ),
@@ -138,14 +138,14 @@ class HomeSetRefresherTest {
 
     @Test
     fun refreshHomesetsAndTheirCollections_updatesExistingCollection() = runTest {
-        val collectionId = db.collectionDao().insertOrUpdateByUrl(
+        val collectionId = db.collectionDao().insertOrUpdateByUrlBlocking(
             Collection(
                 0,
                 service.id,
                 null,
                 null,
                 Collection.TYPE_ADDRESSBOOK,
-                "$BASE_URL$PATH_CARDDAV$SUBPATH_ADDRESSBOOK/".toUrl(),
+                "$BASE_URL$PATH_CARDDAV$SUBPATH_ADDRESSBOOK".toUrl(),
                 displayName = "My Contacts",
                 description = "My Contacts Description"
             )
@@ -160,24 +160,24 @@ class HomeSetRefresherTest {
                 null,
                 null,
                 Collection.TYPE_ADDRESSBOOK,
-                "$BASE_URL$PATH_CARDDAV$SUBPATH_ADDRESSBOOK/".toUrl(),
+                "$BASE_URL$PATH_CARDDAV$SUBPATH_ADDRESSBOOK".toUrl(),
                 displayName = "My Contacts",
                 description = "My Contacts Description"
             ),
-            db.collectionDao().get(collectionId)
+            db.collectionDao().getBlocking(collectionId)
         )
     }
 
     @Test
     fun refreshHomesetsAndTheirCollections_preservesCollectionFlags() = runTest {
-        val collectionId = db.collectionDao().insertOrUpdateByUrl(
+        val collectionId = db.collectionDao().insertOrUpdateByUrlBlocking(
             Collection(
                 0,
                 service.id,
                 null,
                 null,
                 Collection.TYPE_ADDRESSBOOK,
-                "$BASE_URL$PATH_CARDDAV$SUBPATH_ADDRESSBOOK/".toUrl(),
+                "$BASE_URL$PATH_CARDDAV$SUBPATH_ADDRESSBOOK".toUrl(),
                 displayName = "My Contacts",
                 description = "My Contacts Description",
                 forceReadOnly = true,
@@ -194,52 +194,52 @@ class HomeSetRefresherTest {
                 null,
                 null,
                 Collection.TYPE_ADDRESSBOOK,
-                "$BASE_URL$PATH_CARDDAV$SUBPATH_ADDRESSBOOK/".toUrl(),
+                "$BASE_URL$PATH_CARDDAV$SUBPATH_ADDRESSBOOK".toUrl(),
                 displayName = "My Contacts",
                 description = "My Contacts Description",
                 forceReadOnly = true,
                 sync = true
             ),
-            db.collectionDao().get(collectionId)
+            db.collectionDao().getBlocking(collectionId)
         )
     }
 
     @Test
     fun refreshHomesetsAndTheirCollections_marksRemovedCollectionsAsHomeless() = runTest {
-        val homesetId = db.homeSetDao().insert(
+        val homesetId = db.homeSetDao().insertBlocking(
             HomeSet(id = 0, service.id, true, "$BASE_URL$PATH_CARDDAV$SUBPATH_ADDRESSBOOK_HOMESET_EMPTY".toUrl())
         )
 
-        val collectionId = db.collectionDao().insertOrUpdateByUrl(
+        val collectionId = db.collectionDao().insertOrUpdateByUrlBlocking(
             Collection(
                 0,
                 service.id,
                 homesetId,
                 null,
                 Collection.TYPE_ADDRESSBOOK,
-                "$BASE_URL$PATH_CARDDAV$SUBPATH_ADDRESSBOOK/".toUrl()
+                "$BASE_URL$PATH_CARDDAV$SUBPATH_ADDRESSBOOK".toUrl()
             )
         )
 
         homeSetRefresherFactory.create(service, client).refreshHomesetsAndTheirCollections()
 
-        assertEquals(null, db.collectionDao().get(collectionId)!!.homeSetId)
+        assertEquals(null, db.collectionDao().getBlocking(collectionId)!!.homeSetId)
     }
 
     @Test
     fun refreshHomesetsAndTheirCollections_addsOwnerUrls() = runTest {
-        val homesetId = db.homeSetDao().insert(
+        val homesetId = db.homeSetDao().insertBlocking(
             HomeSet(id = 0, service.id, true, "$BASE_URL$PATH_CARDDAV$SUBPATH_ADDRESSBOOK_HOMESET_PERSONAL".toUrl())
         )
 
-        val collectionId = db.collectionDao().insertOrUpdateByUrl(
+        val collectionId = db.collectionDao().insertOrUpdateByUrlBlocking(
             Collection(
                 0,
                 service.id,
                 homesetId,
                 null,
                 Collection.TYPE_ADDRESSBOOK,
-                "$BASE_URL$PATH_CARDDAV$SUBPATH_ADDRESSBOOK/".toUrl()
+                "$BASE_URL$PATH_CARDDAV$SUBPATH_ADDRESSBOOK".toUrl()
             )
         )
 
@@ -252,7 +252,7 @@ class HomeSetRefresherTest {
         assertEquals(null, principals[0].displayName)
         assertEquals(
             principals[0].id,
-            db.collectionDao().get(collectionId)!!.ownerId
+            db.collectionDao().getBlocking(collectionId)!!.ownerId
         )
     }
 

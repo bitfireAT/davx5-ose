@@ -11,10 +11,17 @@ import android.content.SyncRequest
 import android.os.Bundle
 import android.provider.CalendarContract
 import androidx.test.filters.SdkSuppress
+import at.bitfire.davdroid.accounts.AccountId
+import at.bitfire.davdroid.accounts.AndroidAccountManager
+import at.bitfire.davdroid.accounts.LegacyAccount
+import at.bitfire.davdroid.settings.AccountSettingsStore
 import at.bitfire.davdroid.sync.account.TestAccount
 import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import io.mockk.every
+import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
@@ -37,6 +44,10 @@ class AccountSettingsMigration21Test {
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
 
+    @BindValue
+    @MockK
+    lateinit var androidAccountManager: AndroidAccountManager
+
     @Inject
     lateinit var migration: AccountSettingsMigration21
 
@@ -48,22 +59,29 @@ class AccountSettingsMigration21Test {
     lateinit var logger: Logger
 
     lateinit var account: Account
+    lateinit var accountId: AccountId
     val authority = CalendarContract.AUTHORITY
 
     private val inPendingState = MutableStateFlow(false)
     private var statusChangeListener: Any? = null
+
+    @MockK
+    private lateinit var store: AccountSettingsStore
 
     @Before
     fun setUp() {
         hiltRule.inject()
 
         account = TestAccount.create()
+        accountId = LegacyAccount(account)
 
         // Enable sync globally and for the test account
         ContentResolver.setIsSyncable(account, authority, 1)
 
         // Start hot flow
         registerSyncStateObserver()
+
+        every { androidAccountManager.getAndroidAccount(accountId) } returns account
     }
 
     @After
@@ -89,7 +107,7 @@ class AccountSettingsMigration21Test {
         Assume.assumeTrue(ContentResolver.isSyncPending(account, authority))
 
         // Run the migration which should cancel the forever pending sync for all accounts
-        migration.migrate(account)
+        migration.migrate(accountId, store)
 
         // Wait for the state to change (with timeout)
         withTimeout(10_000) {

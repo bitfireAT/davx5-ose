@@ -40,7 +40,7 @@ class CollectionSelectedUseCaseTest {
         id = 2,
         serviceId = 1,
         type = Collection.Companion.TYPE_CALENDAR,
-        url = "https://example.com".toUrl()
+        url = "https://example.com/calendar/".toUrl()
     )
 
     @Inject

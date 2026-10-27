@@ -4,10 +4,12 @@
 
 package at.bitfire.davdroid.settings.migration
 
-import android.accounts.Account
 import android.content.ContentResolver
+import at.bitfire.davdroid.accounts.AccountId
+import at.bitfire.davdroid.accounts.AndroidAccountManager
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Service
+import at.bitfire.davdroid.settings.AccountSettingsStore
 import at.bitfire.synctools.storage.TaskProvider
 import dagger.Binds
 import dagger.Module
@@ -23,12 +25,14 @@ import javax.inject.Inject
  * Disable it on those accounts for the future.
  */
 class AccountSettingsMigration9 @Inject constructor(
+    private val androidAccountManager: AndroidAccountManager,
     private val db: AppDatabase,
     private val logger: Logger
 ): AccountSettingsMigration {
 
-    override fun migrate(account: Account) {
-        val hasCalDAV = db.serviceDao().getByAccountAndTypeBlocking(account.name, Service.TYPE_CALDAV) != null
+    override fun migrate(accountId: AccountId, store: AccountSettingsStore) {
+        val hasCalDAV = db.serviceDao().getByAccountIdAndTypeBlocking(accountId, Service.TYPE_CALDAV) != null
+        val account = androidAccountManager.getAndroidAccount(accountId)
         if (!hasCalDAV && ContentResolver.getIsSyncable(account, TaskProvider.ProviderName.OpenTasks.authority) != 0) {
             logger.info("Disabling OpenTasks sync for $account")
             ContentResolver.setIsSyncable(account, TaskProvider.ProviderName.OpenTasks.authority, 0)

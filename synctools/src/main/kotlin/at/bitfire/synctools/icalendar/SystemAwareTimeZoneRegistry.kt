@@ -15,6 +15,7 @@ import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.zone.ZoneRules
 import java.util.logging.Logger
+import kotlin.jvm.optionals.getOrNull
 
 /**
  * A [TimeZoneRegistry] that uses system timezone IDs for all TZIDs recognised by [ZoneId.of],
@@ -105,13 +106,14 @@ class SystemAwareTimeZoneRegistry(
      * the chance of pool exhaustion during time zone registration.
      */
     private fun triggerGcBeforeZoneIdAllocation() {
-        if (ZoneRulesProviderImpl.INSTANCE.zoneIdPool.availableZoneIds() == 0) {
+        // IDE inspector fails because `java.time.zone.ZoneRulesProvider` is not available, but it's fixed with desugaring. Compile works well
+        val provider = ZoneRulesProviderImpl.getInstance().getOrNull() ?: return
+        if (provider.zoneIdPool.availableZoneIds() == 0) {
             // Trigger garbage collection in the hope that old TimeZoneRegistry instances will be freed and in turn
             // ZoneIdPool.cleanup() will be able to reclaim zone IDs that are no longer used.
             Runtime.getRuntime().gc()
         }
     }
-
 
     private companion object {
         val NON_EMPTY_ZONE_RULES: Map<String, ZoneRules> =

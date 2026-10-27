@@ -5,7 +5,6 @@
 package at.bitfire.synctools.storage.contacts
 
 import android.Manifest
-import android.content.ContentProviderClient
 import android.content.ContentValues
 import android.provider.ContactsContract
 import android.util.Base64
@@ -15,13 +14,13 @@ import androidx.test.rule.GrantPermissionRule
 import at.bitfire.synctools.mapping.contacts.Contact
 import at.bitfire.synctools.mapping.contacts.ContactReader
 import at.bitfire.synctools.mapping.contacts.LabeledProperty
+import at.bitfire.synctools.storage.LocalStorageClient
 import at.bitfire.synctools.storage.LocalStorageException
 import at.bitfire.synctools.vcard.VCardParser
 import at.bitfire.synctools.vcard.property.XAbDate
 import ezvcard.property.Birthday
 import ezvcard.property.Email
 import ezvcard.util.PartialDate
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.junit.AfterClass
 import org.junit.Assert.assertArrayEquals
@@ -41,25 +40,25 @@ class AndroidContactTest {
         @ClassRule
         val permissionRule = GrantPermissionRule.grant(Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS)!!
 
-        private lateinit var provider: ContentProviderClient
+        private lateinit var client: LocalStorageClient
         private lateinit var addressBook: AndroidAddressBook
 
         @BeforeClass
         @JvmStatic
         fun connect() {
             val context = InstrumentationRegistry.getInstrumentation().context
-            provider = context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)!!
-            assertNotNull(provider)
+            val provider = context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)!!
+            client = LocalStorageClient(provider)
+            assertNotNull(client)
 
-            addressBook = TestAddressBook.create(provider)
+            addressBook = TestAddressBook.create(client)
         }
 
         @AfterClass
         @JvmStatic
         fun disconnect() {
             TestAddressBook.remove(addressBook)
-            @Suppress("DEPRECATION")
-            provider.release()
+            client.close()
         }
     }
 
@@ -111,9 +110,9 @@ class AndroidContactTest {
                 "TEL;CELL=;PREF=:+12345\r\n" +
                 "EMAIL;PREF=invalid:test@example.com\r\n" +
                 "END:VCARD\r\n"
-        val contacts = parseVCards(vCard)
+        val contact = parseVCard(vCard)
 
-        val dbContact = AndroidContact(addressBook, contacts.first(), null, null)
+        val dbContact = AndroidContact(addressBook, contact, null, null)
         dbContact.add()
 
         val dbContact2 = addressBook.findContactById(dbContact.id!!)
@@ -170,11 +169,7 @@ class AndroidContactTest {
     }
 
 
-    private fun parseVCards(vCardStr: String): List<Contact> =
-        VCardParser().parse(StringReader(vCardStr)).map { vCard ->
-            runBlocking {
-                ContactReader(vCard).toContact()
-            }
-        }
+    private suspend fun parseVCard(vCardStr: String): Contact =
+        ContactReader(VCardParser().parse(StringReader(vCardStr))!!).toContact()
 
 }

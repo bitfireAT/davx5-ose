@@ -1,0 +1,255 @@
+/*
+ * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
+ */
+
+package at.bitfire.davdroid.resource.remote
+
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.mock.MockEngine
+import io.ktor.client.engine.mock.respond
+import io.ktor.client.engine.mock.toByteArray
+import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpStatusCode
+import io.ktor.http.Url
+import io.ktor.http.headersOf
+import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.test.runTest
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
+import org.junit.Test
+
+class CardDavCollectionTest {
+
+    private val url = Url("https://example.com/dav/contacts/")
+
+    @Test
+    fun `multiget() extracts address-data into MultiGetItem`() = runTest {
+        val engine = MockEngine { _ ->
+            respond(
+                """
+                <?xml version="1.0" encoding="utf-8"?>
+                <multistatus xmlns="DAV:" xmlns:CARD="urn:ietf:params:xml:ns:carddav">
+                  <response>
+                    <href>/dav/contacts/contact1.vcf</href>
+                    <propstat>
+                      <prop>
+                        <getetag>"contact-etag"</getetag>
+                        <CARD:address-data>BEGIN:VCARD
+                END:VCARD</CARD:address-data>
+                      </prop>
+                      <status>HTTP/1.1 200 OK</status>
+                    </propstat>
+                  </response>
+                </multistatus>
+                """.trimIndent(),
+                HttpStatusCode.MultiStatus,
+                headersOf(HttpHeaders.ContentType, "text/xml")
+            )
+        }
+
+        val collection = CardDavCollection(HttpClient(engine), url)
+
+        val items = collection.multiget(
+            listOf(Url("https://example.com/dav/contacts/contact1.vcf")),
+            WebDavCollection.Capabilities()
+        ).toList()
+
+        assertEquals(
+            listOf(
+                WebDavCollection.MultiGetItem(
+                    url = Url("https://example.com/dav/contacts/contact1.vcf"),
+                    eTag = "contact-etag",
+                    content = "BEGIN:VCARD\nEND:VCARD"
+                )
+            ),
+            items
+        )
+    }
+
+    @Test
+    fun `listFilteredMembers() sends a Depth 1 PROPFIND`() = runTest {
+        val engine = minimalMultiStatus()
+        CardDavCollection(HttpClient(engine), url).listFilteredMembers().toList()
+
+        val request = engine.requestHistory.last()
+        assertEquals("1", request.headers[HttpHeaders.Depth])
+    }
+
+    @Test
+    fun `listFilteredMembers() maps member responses to InternalMemberStates`() = runTest {
+        val engine = MockEngine { _ ->
+            respond(
+                """
+                <?xml version="1.0" encoding="utf-8"?>
+                <multistatus xmlns="DAV:">
+                  <response>
+                    <href>/dav/contacts/contact1.vcf</href>
+                    <propstat>
+                      <prop>
+                        <getetag>"contact-etag"</getetag>
+                      </prop>
+                      <status>HTTP/1.1 200 OK</status>
+                    </propstat>
+                  </response>
+                </multistatus>
+                """.trimIndent(),
+                HttpStatusCode.MultiStatus,
+                headersOf(HttpHeaders.ContentType, "text/xml")
+            )
+        }
+
+        val members = CardDavCollection(HttpClient(engine), url).listFilteredMembers().toList()
+
+        assertEquals(
+            listOf(InternalMemberState(Url("https://example.com/dav/contacts/contact1.vcf"), "contact-etag")),
+            members
+        )
+    }
+
+    @Test
+    fun `multiget() with supportsVCard4 requests vCard 4`() = runTest {
+        val engine = minimalMultiStatus()
+        CardDavCollection(HttpClient(engine), url).multiget(
+            listOf(Url("https://example.com/dav/contacts/contact1.vcf")),
+            WebDavCollection.Capabilities(supportsVCard4 = true)
+        ).toList()
+
+        val body = requestBody(engine)
+        assertTrue(body.contains("version=\"4.0\""))
+    }
+
+    @Test
+    fun `multiget() without supportsVCard4 doesn't request a specific version`() = runTest {
+        val engine = minimalMultiStatus()
+        CardDavCollection(HttpClient(engine), url).multiget(
+            listOf(Url("https://example.com/dav/contacts/contact1.vcf")),
+            WebDavCollection.Capabilities(supportsVCard4 = false)
+        ).toList()
+
+        val body = requestBody(engine)
+        assertTrue(body.contains("<CARD:address-data content-type=\"text/vcard\" />"))
+    }
+
+    @Test
+    fun `multiget() skips a member response that lacks address-data`() = runTest {
+        val engine = MockEngine { _ ->
+            respond(
+                """
+                <?xml version="1.0" encoding="utf-8"?>
+                <multistatus xmlns="DAV:" xmlns:CARD="urn:ietf:params:xml:ns:carddav">
+                  <response>
+                    <href>/dav/contacts/contact1.vcf</href>
+                    <propstat>
+                      <prop>
+                        <getetag>"contact1-etag"</getetag>
+                      </prop>
+                      <status>HTTP/1.1 200 OK</status>
+                    </propstat>
+                  </response>
+                  <response>
+                    <href>/dav/contacts/contact2.vcf</href>
+                    <propstat>
+                      <prop>
+                        <getetag>"contact2-etag"</getetag>
+                        <CARD:address-data>BEGIN:VCARD
+                END:VCARD</CARD:address-data>
+                      </prop>
+                      <status>HTTP/1.1 200 OK</status>
+                    </propstat>
+                  </response>
+                </multistatus>
+                """.trimIndent(),
+                HttpStatusCode.MultiStatus,
+                headersOf(HttpHeaders.ContentType, "text/xml")
+            )
+        }
+        val collection = CardDavCollection(HttpClient(engine), url)
+
+        val items = collection.multiget(
+            listOf(
+                Url("https://example.com/dav/contacts/contact1.vcf"),
+                Url("https://example.com/dav/contacts/contact2.vcf")
+            ),
+            WebDavCollection.Capabilities()
+        ).toList()
+
+        assertEquals(
+            listOf(
+                WebDavCollection.MultiGetItem(
+                    url = Url("https://example.com/dav/contacts/contact2.vcf"),
+                    eTag = "contact2-etag",
+                    content = "BEGIN:VCARD\nEND:VCARD"
+                )
+            ),
+            items
+        )
+    }
+
+    @Test
+    fun `multiget() skips a member response that lacks an ETag`() = runTest {
+        val engine = MockEngine { _ ->
+            respond(
+                """
+                <?xml version="1.0" encoding="utf-8"?>
+                <multistatus xmlns="DAV:" xmlns:CARD="urn:ietf:params:xml:ns:carddav">
+                  <response>
+                    <href>/dav/contacts/contact1.vcf</href>
+                    <propstat>
+                      <prop>
+                        <CARD:address-data>BEGIN:VCARD
+                END:VCARD</CARD:address-data>
+                      </prop>
+                      <status>HTTP/1.1 200 OK</status>
+                    </propstat>
+                  </response>
+                  <response>
+                    <href>/dav/contacts/contact2.vcf</href>
+                    <propstat>
+                      <prop>
+                        <getetag>"contact2-etag"</getetag>
+                        <CARD:address-data>BEGIN:VCARD
+                END:VCARD</CARD:address-data>
+                      </prop>
+                      <status>HTTP/1.1 200 OK</status>
+                    </propstat>
+                  </response>
+                </multistatus>
+                """.trimIndent(),
+                HttpStatusCode.MultiStatus,
+                headersOf(HttpHeaders.ContentType, "text/xml")
+            )
+        }
+        val collection = CardDavCollection(HttpClient(engine), url)
+
+        val items = collection.multiget(
+            listOf(
+                Url("https://example.com/dav/contacts/contact1.vcf"),
+                Url("https://example.com/dav/contacts/contact2.vcf")
+            ),
+            WebDavCollection.Capabilities()
+        ).toList()
+
+        assertEquals(
+            listOf(
+                WebDavCollection.MultiGetItem(
+                    url = Url("https://example.com/dav/contacts/contact2.vcf"),
+                    eTag = "contact2-etag",
+                    content = "BEGIN:VCARD\nEND:VCARD"
+                )
+            ),
+            items
+        )
+    }
+
+    private fun minimalMultiStatus() = MockEngine { _ ->
+        respond(
+            "<?xml version=\"1.0\" encoding=\"utf-8\"?><multistatus xmlns=\"DAV:\"/>",
+            HttpStatusCode.MultiStatus,
+            headersOf(HttpHeaders.ContentType, "text/xml")
+        )
+    }
+
+    private suspend fun requestBody(engine: MockEngine) =
+        engine.requestHistory.last().body.toByteArray().toString(Charsets.UTF_8)
+
+}

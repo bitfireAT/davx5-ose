@@ -10,10 +10,10 @@ import android.content.Context
 import androidx.hilt.work.HiltWorkerFactory
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.TestUtils
-import at.bitfire.davdroid.accounts.toAccountId
-import at.bitfire.davdroid.resource.LocalAddressBookStore
-import at.bitfire.davdroid.resource.LocalCalendarStore
-import at.bitfire.davdroid.resource.LocalDataStore
+import at.bitfire.davdroid.accounts.LegacyAccount
+import at.bitfire.davdroid.resource.local.LocalAddressBookStore
+import at.bitfire.davdroid.resource.local.LocalCalendarStore
+import at.bitfire.davdroid.resource.local.LocalDataStore
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.AutomaticSyncManager
 import at.bitfire.davdroid.sync.SyncDataType
@@ -59,6 +59,9 @@ class AccountRepositoryTest {
     // Real injections
 
     @Inject
+    lateinit var accountManager: AccountManager
+
+    @Inject
     @ApplicationContext
     lateinit var context: Context
 
@@ -91,9 +94,8 @@ class AccountRepositoryTest {
 
     // Account setup
     private val newName = "Renamed Account"
-    lateinit var am: AccountManager
     lateinit var accountType: String
-    lateinit var account: Account
+    lateinit var accountId: LegacyAccount
 
     @Before
     fun setUp() {
@@ -101,9 +103,8 @@ class AccountRepositoryTest {
         TestUtils.setUpWorkManager(context, workerFactory)
 
         // Account setup
-        am = AccountManager.get(context)
         accountType = context.getString(R.string.account_type)
-        account = TestAccount.create()
+        accountId = LegacyAccount(TestAccount.create())
 
         // AccountsCleanupWorker static mocking
         mockkObject(AccountsCleanupWorker)
@@ -112,8 +113,8 @@ class AccountRepositoryTest {
 
     @After
     fun tearDown() {
-        am.getAccountsByType(accountType).forEach { account ->
-            am.removeAccountExplicitly(account)
+        accountManager.getAccountsByType(accountType).forEach { account ->
+            accountManager.removeAccountExplicitly(account)
         }
 
         unmockkObject(AccountsCleanupWorker)
@@ -126,90 +127,89 @@ class AccountRepositoryTest {
     @Test(expected = IllegalArgumentException::class)
     fun testRename_checksForAlreadyExisting() = runTest {
         val existing = Account("Existing Account", accountType)
-        am.addAccountExplicitly(existing, null, null)
+        accountManager.addAccountExplicitly(existing, null, null)
 
-        accountRepository.rename(account.name, existing.name)
+        accountRepository.rename(accountId, existing.name)
     }
 
     @Test
     fun testRename_locksAccountsCleanup() = runTest {
-        accountRepository.rename(account.name, newName)
+        accountRepository.rename(accountId, newName)
 
         verify { AccountsCleanupWorker.lockAccountsCleanup() }
     }
 
     @Test
     fun testRename_renamesAccountInAndroid() = runTest {
-        accountRepository.rename(account.name, newName)
+        accountRepository.rename(accountId, newName)
 
-        val accountsAfter = am.getAccountsByType(accountType)
+        val accountsAfter = accountManager.getAccountsByType(accountType)
         assertTrue(accountsAfter.any { it.name == newName })
     }
 
     @Test
     fun testRename_cancelsRunningSynchronizationOfOldAccount() = runTest {
-        accountRepository.rename(account.name, newName)
+        accountRepository.rename(accountId, newName)
 
-        coVerify { syncWorkerManager.cancelAllWork(account.toAccountId()) }
+        coVerify { syncWorkerManager.cancelAllWork(accountId) }
     }
 
     @Test
     fun testRename_disablesPeriodicSyncsForOldAccount() = runTest {
-        accountRepository.rename(account.name, newName)
+        accountRepository.rename(accountId, newName)
 
         for (dataType in SyncDataType.entries)
             coVerify(exactly = 1) {
-                syncWorkerManager.disablePeriodic(account.toAccountId(), dataType)
+                syncWorkerManager.disablePeriodic(accountId, dataType)
             }
     }
 
     @Test
     fun testRename_updatesAccountNameReferencesInDatabase() = runTest {
-        accountRepository.rename(account.name, newName)
+        accountRepository.rename(accountId, newName)
 
-        coVerify { serviceRepository.renameAccount(account.name, newName) }
+        coVerify { serviceRepository.renameAccount(accountId.androidAccount.name, newName) }
     }
 
     @Test
     fun testRename_updatesAddressBooks() = runTest {
-        accountRepository.rename(account.name, newName)
+        accountRepository.rename(accountId, newName)
 
-        val newAccount = accountRepository.fromName(newName)
-        coVerify { localAddressBookStore.updateAccount(account, newAccount, any()) }
+        val newAccount = accountRepository.legacyAccountFromName(newName)
+        coVerify { localAddressBookStore.updateAccount(accountId.androidAccount, newAccount, any()) }
     }
 
     @Test
     fun testRename_updatesCalendarEvents() = runTest {
-        accountRepository.rename(account.name, newName)
+        accountRepository.rename(accountId, newName)
 
-        val newAccount = accountRepository.fromName(newName)
-        coVerify { localCalendarStore.updateAccount(account, newAccount, any()) }
+        val newAccount = accountRepository.legacyAccountFromName(newName)
+        coVerify { localCalendarStore.updateAccount(accountId.androidAccount, newAccount, any()) }
     }
 
     @Test
     fun testRename_updatesAccountNameOfLocalTasks() = runTest {
         val mockDataStore = mockk<LocalDataStore<*>>(relaxed = true)
         every { tasksAppManager.getDataStore() } returns mockDataStore
-        accountRepository.rename(account.name, newName)
+        accountRepository.rename(accountId, newName)
 
-        val newAccount = accountRepository.fromName(newName)
-        coVerify { mockDataStore.updateAccount(account, newAccount, any()) }
+        val newAccount = accountRepository.legacyAccountFromName(newName)
+        coVerify { mockDataStore.updateAccount(accountId.androidAccount, newAccount, any()) }
     }
 
     @Test
     fun testRename_updatesAutomaticSync() = runTest {
-        accountRepository.rename(account.name, newName)
+        val newAccountId = accountRepository.rename(accountId, newName)
 
-        val newAccountId = accountRepository.getAccountIdFromName(newName)
         coVerify { automaticSyncManager.updateAutomaticSync(newAccountId) }
     }
 
     @Test
     fun testRename_releasesAccountsCleanupWorkerMutex() = runTest {
-        accountRepository.rename(account.name, newName)
+        accountRepository.rename(accountId, newName)
 
         verify { AccountsCleanupWorker.lockAccountsCleanup() }
-        coVerify { serviceRepository.renameAccount(account.name, newName) }
+        coVerify { serviceRepository.renameAccount(accountId.androidAccount.name, newName) }
     }
 
 }

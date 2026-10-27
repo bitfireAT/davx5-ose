@@ -4,16 +4,16 @@
 
 package at.bitfire.davdroid.sync
 
-import android.accounts.Account
 import android.accounts.AccountManager
-import android.content.ContentProviderClient
 import android.provider.ContactsContract
-import at.bitfire.davdroid.accounts.toAccountId
+import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
-import at.bitfire.davdroid.resource.LocalAddressBook
-import at.bitfire.davdroid.resource.LocalAddressBookStore
+import at.bitfire.davdroid.resource.local.LocalAddressBook
+import at.bitfire.davdroid.resource.local.LocalAddressBookStore
+import at.bitfire.davdroid.resource.remote.CardDavCollection
+import at.bitfire.synctools.storage.LocalStorageClient
 import at.bitfire.synctools.storage.contacts.AddressContract.asSyncAdapter
 import at.bitfire.synctools.util.setAndVerifyUserData
 import dagger.assisted.Assisted
@@ -23,25 +23,27 @@ import io.ktor.client.HttpClient
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import java.util.logging.Level
+import javax.inject.Provider
 
 /**
  * Sync logic for address books
  */
 class AddressBookSyncer @AssistedInject constructor(
-    @Assisted account: Account,
+    @Assisted accountId: AccountId,
     @Assisted resync: ResyncType?,
     @Assisted val syncFrameworkUpload: Boolean,
     @Assisted syncResult: SyncResult,
     @Assisted settings: SyncSettings,
+    private val accountManager: Provider<AccountManager>,
     addressBookStore: LocalAddressBookStore,
     private val contactsSyncManagerFactory: ContactsSyncManager.Factory,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher
-) : Syncer<LocalAddressBookStore, LocalAddressBook>(account, resync, syncResult, settings) {
+) : Syncer<LocalAddressBookStore, LocalAddressBook>(accountId, resync, syncResult, settings) {
 
     @AssistedFactory
     interface Factory {
         fun create(
-            account: Account,
+            accountId: AccountId,
             resyncType: ResyncType?,
             syncFrameworkUpload: Boolean,
             syncResult: SyncResult,
@@ -59,90 +61,88 @@ class AddressBookSyncer @AssistedInject constructor(
         collectionRepository.getByServiceAndSync(serviceId)
 
     override suspend fun syncCollection(
-        provider: ContentProviderClient,
+        client: LocalStorageClient,
         localCollection: LocalAddressBook,
-        remoteCollection: Collection
+        remoteCollectionInfo: Collection
     ) {
         logger.log(Level.INFO, "Synchronizing address book: {0}", arrayOf(localCollection.addressBookAccount.name))
         syncAddressBook(
-            account = account,
+            accountId = accountId,
             addressBook = localCollection,
-            provideHttpClient = { httpClient },
-            provider = provider,
+            httpClient = httpClient,
+            client = client,
             syncResult = syncResult,
-            collection = remoteCollection
+            collection = remoteCollectionInfo
         )
     }
 
     /**
-     * Synchronizes an address book
+     * Synchronizes an address book.
+     *
+     * Sync errors of the address book contents are handled (logged, notified, recorded in [syncResult])
+     * by [SyncManager] itself. Everything it re-throws – as well as exceptions of
+     * [handleGroupMethodChange] – is passed on to [invoke], which classifies it.
      *
      * @param addressBook       local address book
-     * @param provideHttpClient returns HTTP client on demand
-     * @param provider          content provider to access android contacts
+     * @param httpClient        HTTP client to use for network requests
+     * @param client            [LocalStorageClient] to access android contacts
      * @param syncResult        stores hard and soft sync errors
      * @param collection        the database collection associated with this address book
      */
     private suspend fun syncAddressBook(
-        account: Account,
+        accountId: AccountId,
         addressBook: LocalAddressBook,
-        provideHttpClient: () -> HttpClient,
-        provider: ContentProviderClient,
+        httpClient: HttpClient,
+        client: LocalStorageClient,
         syncResult: SyncResult,
         collection: Collection
     ) {
-        try {
-            handleGroupMethodChange(account, addressBook, provider)
+        handleGroupMethodChange(addressBook, client)
 
-            val syncManager = contactsSyncManagerFactory.contactsSyncManager(
-                account.toAccountId(),
-                provideHttpClient(),
-                syncResult,
-                provider,
-                addressBook,
-                collection,
-                resync,
-                syncFrameworkUpload,
-                settings
-            )
-            syncManager.performSync()
-
-        } catch(e: Exception) {
-            logger.log(Level.SEVERE, "Couldn't sync contacts", e)
-        }
+        val syncManager = contactsSyncManagerFactory.contactsSyncManager(
+            accountId = accountId,
+            httpClient = httpClient,
+            syncResult = syncResult,
+            client = client,
+            localAddressBook = addressBook,
+            collectionInfo = collection,
+            remoteCollection = CardDavCollection(httpClient, collection.url),
+            resync = resync,
+            syncFrameworkUpload = syncFrameworkUpload,
+            settings = settings
+        )
+        syncManager.performSync()
 
         logger.info("Contacts sync complete")
     }
 
     private suspend fun handleGroupMethodChange(
-        account: Account,
         addressBook: LocalAddressBook,
-        provider: ContentProviderClient
+        client: LocalStorageClient
     ) {
         withContext(ioDispatcher) {
-            handleGroupMethodChangeBlocking(account, addressBook, provider)
+            handleGroupMethodChangeBlocking(addressBook, client)
         }
     }
 
     private fun handleGroupMethodChangeBlocking(
-        account: Account,
         addressBook: LocalAddressBook,
-        provider: ContentProviderClient
+        client: LocalStorageClient
     ) {
         val groupMethod = settings.groupMethod.name
 
-        val accountManager = AccountManager.get(context)
+        val accountManager = accountManager.get()
         accountManager.getUserData(addressBook.addressBookAccount, PREVIOUS_GROUP_METHOD)?.let { previousGroupMethod ->
             if (previousGroupMethod != groupMethod) {
                 logger.info("Group method changed, deleting all local contacts/groups")
 
                 // delete all local contacts and groups so that they will be downloaded again
-                provider.delete(
+                client.delete(
                     ContactsContract.RawContacts.CONTENT_URI.asSyncAdapter(addressBook.addressBookAccount),
                     null,
                     null
                 )
-                provider.delete(
+                client.delete(
                     ContactsContract.Groups.CONTENT_URI.asSyncAdapter(addressBook.addressBookAccount),
                     null,
                     null

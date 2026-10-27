@@ -118,7 +118,7 @@ class ServiceRefresher @AssistedInject constructor(
                         principal.location.resolve(homeSetHref)?.let { homesetUrl ->
                             val resolvedHomeSetUrl = homesetUrl.withTrailingSlash()
                             if (!alreadySavedHomeSets.contains(resolvedHomeSetUrl)) {
-                                homeSetRepository.insertOrUpdateByUrlBlocking(
+                                homeSetRepository.insertOrUpdateByUrl(
                                     // HomeSet is considered personal if this is the outer recursion call,
                                     // This is because we assume the first call to query the current-user-principal
                                     // Note: This is not be be confused with the DAV:owner attribute. Home sets can be owned by

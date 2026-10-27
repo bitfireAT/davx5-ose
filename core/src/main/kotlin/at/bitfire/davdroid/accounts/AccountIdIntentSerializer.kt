@@ -10,15 +10,22 @@ import android.accounts.Account as AndroidAccount
 
 object AccountIdIntentSerializer {
     fun addExtra(intent: Intent, key: String, accountId: AccountId) {
-        val value = when (accountId) {
-            is LegacyAccount -> accountId.androidAccount
+        when (accountId) {
+            is LegacyAccount -> intent.putExtra(key, accountId.androidAccount)
+            is DbAccountId -> intent.putExtra(key, accountId.id)
         }
-        intent.putExtra(key, value)
     }
-    
+
     fun fromIntent(intent: Intent, key: String): AccountId? {
-        return IntentCompat.getParcelableExtra(intent, key, AndroidAccount::class.java)?.let { androidAccount ->
-            LegacyAccount(androidAccount)
+        // Try getting the account as a Parcelable first
+        IntentCompat.getParcelableExtra(intent, key, AndroidAccount::class.java)?.let { androidAccount ->
+            return LegacyAccount(androidAccount)
         }
+        // If that fails, try getting it as a Long
+        intent.getLongExtra(key, 0L).takeIf { it > 0L }?.let { id ->
+            return DbAccountId(id)
+        }
+        // If none works, return null
+        return null
     }
 }
