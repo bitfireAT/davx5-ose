@@ -240,8 +240,8 @@ abstract class BaseSyncWorker(
         if (syncResult.hasError) {
             val softErrorNotificationTag = "$accountId-$dataType"
 
-            // On soft errors the sync is retried a few times before considered failed
-            if (syncResult.softError) {
+            // On soft errors the sync is retried a few times before considered failed (but not with rejected credentials)
+            if (syncResult.softError && !syncResult.authenticationFailed) {
                 logger.warning("Soft error while syncing: $syncResult")
                 if (runAttemptCount < MAX_RUN_ATTEMPTS) {
                     val blockDuration = syncResult.delayUntil - System.currentTimeMillis() / 1000
