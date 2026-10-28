@@ -11,6 +11,12 @@ plugins {
 android {
     namespace = "com.davx5.feature.preconfiguredsettings.shared"
     resourcePrefix = "preconfigured_settings_"
+
+    sourceSets {
+        getByName("main") {
+            res.directories += "$rootDir/l10n/translations/features/preconfigured-settings/shared/"
+        }
+    }
 }
 
 dependencies {
