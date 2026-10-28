@@ -99,6 +99,7 @@ aboutLibraries {
 dependencies {
     // gradle project dependencies
     implementation(project(":synctools"))
+    implementation(project(":features:preconfigured-settings:api"))
 
     // Kotlin / Android
     implementation(libs.kotlin.stdlib)
@@ -128,7 +129,6 @@ dependencies {
     implementation(libs.androidx.work.base)
 
     // Jetpack Compose
-    implementation(libs.compose.accompanist.permissions)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.material3.adaptive)
@@ -195,6 +195,7 @@ dependencies {
     androidTestImplementation(libs.ktor.client.mock)
     androidTestImplementation(libs.mockk.android)
     androidTestImplementation(testFixtures(project(":synctools")))
+    androidTestImplementation(project(":features:preconfigured-settings:external-scanner"))
 
     testImplementation(kotlin("test"))
     testImplementation(libs.bitfire.dav4jvm)

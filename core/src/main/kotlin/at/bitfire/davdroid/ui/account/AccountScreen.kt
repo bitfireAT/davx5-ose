@@ -2,7 +2,8 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  */
 
-import android.Manifest
+package at.bitfire.davdroid.ui.account
+
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.widget.Toast
@@ -83,19 +84,14 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.db.Collection
-import at.bitfire.davdroid.ui.PermissionsActivity
-import at.bitfire.davdroid.ui.account.AccountProgress
-import at.bitfire.davdroid.ui.account.AccountScreenViewModel
-import at.bitfire.davdroid.ui.account.CollectionsList
-import at.bitfire.davdroid.ui.account.DisableCollectionSyncDialog
-import at.bitfire.davdroid.ui.account.DisableCollectionSyncRequest
-import at.bitfire.davdroid.ui.account.RenameAccountDialog
+import at.bitfire.davdroid.permissions.PermissionUtils
+import at.bitfire.davdroid.permissions.PermissionUtils.requiredPermissions
+import at.bitfire.davdroid.permissions.RequiredPermission
+import at.bitfire.davdroid.permissions.rememberPermissionsState
 import at.bitfire.davdroid.ui.composable.ActionCard
 import at.bitfire.davdroid.ui.composable.AppTheme
 import at.bitfire.davdroid.ui.composable.ProgressBar
 import at.bitfire.synctools.storage.TaskProvider
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -417,7 +413,7 @@ fun AccountScreen(
                             when (index) {
                                 idxCardDav ->
                                     AccountScreen_ServiceTab(
-                                        requiredPermissions = listOf(Manifest.permission.WRITE_CONTACTS),
+                                        requiredPermissions = PermissionUtils.CONTACT_PERMISSIONS,
                                         progress = cardDavProgress,
                                         collections = addressBooks,
                                         onUpdateCollectionSync = onUpdateCollectionSync,
@@ -426,9 +422,9 @@ fun AccountScreen(
                                     )
 
                                 idxCalDav -> {
-                                    val permissions = mutableListOf(Manifest.permission.WRITE_CALENDAR)
+                                    val permissions = PermissionUtils.CALENDAR_PERMISSIONS.toMutableList()
                                     if (currentTasksProvider != null)
-                                        permissions += currentTasksProvider.permissions
+                                        permissions += currentTasksProvider.requiredPermissions()
                                     AccountScreen_ServiceTab(
                                         requiredPermissions = permissions,
                                         progress = calDavProgress,
@@ -468,7 +464,7 @@ fun AccountScreen(
                                         )
 
                                         AccountScreen_ServiceTab(
-                                            requiredPermissions = listOf(Manifest.permission.WRITE_CALENDAR),
+                                            requiredPermissions = PermissionUtils.CALENDAR_PERMISSIONS,
                                             progress = calDavProgress,
                                             collections = subscriptions,
                                             onSubscribe = onSubscribe,
@@ -689,10 +685,9 @@ fun AccountScreen_Actions(
         )
 }
 
-@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun AccountScreen_ServiceTab(
-    requiredPermissions: List<String>,
+    requiredPermissions: List<RequiredPermission>,
     progress: AccountProgress,
     collections: LazyPagingItems<Collection>?,
     onUpdateCollectionSync: (collectionId: Long, sync: Boolean) -> Unit = { _, _ -> },
@@ -722,15 +717,12 @@ fun AccountScreen_ServiceTab(
 
         // permissions warning
         if (!LocalInspectionMode.current) {
-            val permissionsState = rememberMultiplePermissionsState(requiredPermissions)
+            val permissionsState = rememberPermissionsState(requiredPermissions)
             if (!permissionsState.allPermissionsGranted)
                 ActionCard(
                     icon = Icons.Default.SyncProblem,
                     actionText = stringResource(R.string.account_manage_permissions),
-                    onAction = {
-                        val intent = Intent(context, PermissionsActivity::class.java)
-                        context.startActivity(intent)
-                    },
+                    onAction = { permissionsState.launch(context) },
                     modifier = Modifier.padding(8.dp)
                 ) {
                     Text(stringResource(R.string.account_missing_permissions))

@@ -28,12 +28,14 @@ import at.bitfire.davdroid.ui.composable.Assistant
 
 @Composable
 fun StandardLoginTypePage(
+    genericLoginTypes: List<LoginType>,
+    specificLoginTypes: List<LoginType>,
     selectedLoginType: LoginType,
     onSelectLoginType: (LoginType) -> Unit,
 
     @Suppress("unused")   // for build variants
     setInitialLoginInfo: (LoginInfo) -> Unit,
-    
+
     onContinue: () -> Unit = {}
 ) {
     Assistant(
@@ -50,7 +52,7 @@ fun StandardLoginTypePage(
 
             LoginDetailsHelpCard(screenName = "StandardLoginTypePage")
 
-            for (type in StandardLoginTypesProvider.genericLoginTypes)
+            for (type in genericLoginTypes)
                 LoginTypeSelector(
                     title = stringResource(type.title),
                     selected = type == selectedLoginType,
@@ -62,7 +64,7 @@ fun StandardLoginTypePage(
                 style = MaterialTheme.typography.headlineSmall,
                 modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
             )
-            for (type in StandardLoginTypesProvider.specificLoginTypes)
+            for (type in specificLoginTypes)
                 LoginTypeSelector(
                     title = stringResource(type.title),
                     selected = type == selectedLoginType,
@@ -118,7 +120,17 @@ fun LoginTypeSelector(
 @Preview
 fun StandardLoginTypePage_Preview() {
     StandardLoginTypePage(
-        selectedLoginType = StandardLoginTypesProvider.genericLoginTypes.first(),
+        genericLoginTypes = listOf(
+            UrlLogin,
+            EmailLogin,
+            AdvancedLogin
+        ),
+        specificLoginTypes = listOf(
+            FastmailLogin,
+            GoogleLogin,
+            NextcloudLogin
+        ),
+        selectedLoginType = UrlLogin,
         onSelectLoginType = {},
         setInitialLoginInfo = {},
         onContinue = {}
