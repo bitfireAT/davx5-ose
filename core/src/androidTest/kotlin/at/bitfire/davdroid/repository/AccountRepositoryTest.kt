@@ -10,10 +10,13 @@ import android.content.Context
 import androidx.hilt.work.HiltWorkerFactory
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.TestUtils
+import at.bitfire.davdroid.accounts.AndroidAccountManager
+import at.bitfire.davdroid.accounts.DbAccountId
 import at.bitfire.davdroid.accounts.LegacyAccount
 import at.bitfire.davdroid.resource.local.LocalAddressBookStore
 import at.bitfire.davdroid.resource.local.LocalCalendarStore
 import at.bitfire.davdroid.resource.local.LocalDataStore
+import at.bitfire.davdroid.servicedetection.DavResourceFinder
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.AutomaticSyncManager
 import at.bitfire.davdroid.sync.SyncDataType
@@ -21,6 +24,7 @@ import at.bitfire.davdroid.sync.TasksAppManager
 import at.bitfire.davdroid.sync.account.AccountsCleanupWorker
 import at.bitfire.davdroid.sync.account.TestAccount
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
+import at.bitfire.synctools.vcard.GroupMethod
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -34,6 +38,7 @@ import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.unmockkObject
 import io.mockk.verify
+import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.test.runTest
 import org.junit.After
@@ -113,12 +118,31 @@ class AccountRepositoryTest {
 
     @After
     fun tearDown() {
-        accountManager.getAccountsByType(accountType).forEach { account ->
-            accountManager.removeAccountExplicitly(account)
-        }
+        for (type in arrayOf(accountType, context.getString(R.string.account_type_db)))
+            accountManager.getAccountsByType(type).forEach { account ->
+                accountManager.removeAccountExplicitly(account)
+            }
 
         unmockkObject(AccountsCleanupWorker)
         clearAllMocks()
+    }
+
+
+    // testCreateDbAccount
+
+    @Test
+    fun testCreateDbAccount_createsLinkedAndroidAccount() = runTest {
+        val config = DavResourceFinder.Configuration(cardDAV = null, calDAV = null, encountered401 = false)
+
+        val created = accountRepository.createDbAccount("DB Account", null, config, GroupMethod.GROUP_VCARDS, null)
+
+        val dbAccountId = created as DbAccountId
+        val androidAccount = Account("DB Account", context.getString(R.string.account_type_db))
+        assertTrue(accountManager.getAccountsByType(androidAccount.type).contains(androidAccount))
+        assertEquals(
+            dbAccountId.id.toString(),
+            accountManager.getUserData(androidAccount, AndroidAccountManager.USER_DATA_ACCOUNT_ID)
+        )
     }
 
 

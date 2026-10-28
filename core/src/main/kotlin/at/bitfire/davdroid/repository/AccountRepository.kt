@@ -14,6 +14,7 @@ import at.bitfire.davdroid.FeatureFlags
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.accounts.AndroidAccountManager
+import at.bitfire.davdroid.accounts.AndroidAccountProvider
 import at.bitfire.davdroid.accounts.DbAccountId
 import at.bitfire.davdroid.accounts.LegacyAccount
 import at.bitfire.davdroid.db.AccountSetting
@@ -65,6 +66,7 @@ class AccountRepository @Inject constructor(
     private val accountManager: AccountManager,
     private val accountSettingsFactory: AccountSettingsFactory,
     private val androidAccountManager: AndroidAccountManager,
+    private val androidAccountProvider: AndroidAccountProvider,
     private val automaticSyncManager: Lazy<AutomaticSyncManager>,
     @ApplicationContext private val context: Context,
     private val collectionRepository: Lazy<DavCollectionRepository>,
@@ -194,17 +196,11 @@ class AccountRepository @Inject constructor(
             }
         }
 
-        val account = Account(accountName, dbAccountType)
-
-        // create Android account - extract the initial settings from the database and pass them to the Android account creation API
-        val userData = AccountSettings.initialUserData(credentials, preconfigurationUrl)
-        logger.log(Level.INFO, "Creating Android account {0} with initial config {1}", arrayOf(account, userData))
-
-        val accountCreated = withContext(ioDispatcher) {
-            androidAccountManager.createAccount(account, userData, credentials?.password)
-        }
-        if (!accountCreated) {
-            logger.log(Level.WARNING, "Failed to create Android account {0}", arrayOf(account))
+        // create linked Android account (settings are stored in the database, so no user data/password needed)
+        try {
+            androidAccountProvider.provide(accountId)
+        } catch (e: InvalidAccountException) {
+            logger.log(Level.WARNING, "Failed to create Android account for $accountId", e)
 
             // If the system account creation fails, we need to clean up the database account that was just created.
             dbAccountDao.delete(accountIdNumber)
