@@ -167,7 +167,7 @@ class AndroidCalendarProvider(
     fun readCalendarSyncState(id: Long): String? =
         client.query(calendarUri(id), arrayOf(COLUMN_CALENDAR_SYNC_STATE), null, null, null)?.use { cursor ->
             if (cursor.moveToNext())
-                return cursor.getString(0)
+                cursor.getString(0)
             else
                 null
         }
@@ -266,12 +266,23 @@ class AndroidCalendarProvider(
     companion object {
 
         /**
+         * Column to store the URL of the calendar. This is the same column that Google Calendar uses
+         * for the calendar URL, so that other apps can access the URL of DAVx⁵ calendars, too
+         * (for instance for de-duplication of collections).
+         *
+         * _Note: In previous versions, the per-calendar sync state was stored in this column;
+         * it is now stored in [COLUMN_CALENDAR_SYNC_STATE]._
+         */
+        const val COLUMN_CALENDAR_URL = Calendars.CAL_SYNC1
+
+        /**
          * Column to store per-calendar sync state as a [String].
          *
          * _Note: This is not to be confused with the totally unrelated [CalendarContract.SyncState]
-         * (which is per account, not per calendar)._
+         * (which is per account, not per calendar). Previously, the sync state was stored in
+         * [COLUMN_CALENDAR_URL] ([Calendars.CAL_SYNC1])._
          */
-        const val COLUMN_CALENDAR_SYNC_STATE = Calendars.CAL_SYNC1
+        const val COLUMN_CALENDAR_SYNC_STATE = Calendars.CAL_SYNC2
 
         /**
          * Not all calendar provider versions support recurring events up to the year 2074.

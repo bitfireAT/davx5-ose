@@ -21,7 +21,9 @@ import kotlinx.coroutines.withContext
 /**
  * Application-specific subclass of [AndroidCalendar] for local calendars.
  *
- * [Calendars._SYNC_ID] corresponds to the database collection ID ([at.bitfire.davdroid.db.Collection.id]).
+ * - [Calendars._SYNC_ID] corresponds to the database collection ID ([at.bitfire.davdroid.db.Collection.id]).
+ * - [at.bitfire.synctools.storage.calendar.AndroidCalendarProvider.COLUMN_CALENDAR_URL] contains the collection URL,
+ *   so that other apps can access it.
  */
 class LocalCalendar(
     internal val androidCalendar: AndroidCalendar
