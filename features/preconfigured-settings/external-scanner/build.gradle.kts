@@ -20,6 +20,12 @@ android {
     buildFeatures {
         compose = true
     }
+
+    sourceSets {
+        getByName("main") {
+            res.directories += "$rootDir/l10n/translations/features/preconfigured-settings/external-scanner/"
+        }
+    }
 }
 
 dependencies {
