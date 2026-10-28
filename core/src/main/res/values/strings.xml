@@ -83,6 +83,7 @@
     <string name="permissions_contacts_title">Contacts permissions</string>
     <string name="permissions_contacts_status_off">No contact sync (not recommended)</string>
     <string name="permissions_contacts_status_on">Contact sync possible</string>
+    <string name="permissions_contacts_manage_toast">Select %1$s and enable access</string>
     <string name="permissions_calendar_title">Calendar permissions</string>
     <string name="permissions_calendar_status_off">No calendar sync (not recommended)</string>
     <string name="permissions_calendar_status_on">Calendar sync possible</string>

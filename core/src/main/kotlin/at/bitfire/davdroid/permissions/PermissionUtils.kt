@@ -22,6 +22,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.getSystemService
 import androidx.core.location.LocationManagerCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import at.bitfire.davdroid.R
 import at.bitfire.davdroid.util.broadcastReceiverFlow
 import at.bitfire.synctools.storage.TaskProvider
 import kotlinx.coroutines.flow.Flow
@@ -41,7 +42,12 @@ object PermissionUtils {
         RequiredPermission(
             Manifest.permission.MANAGE_CONTACTS,
             isRuntime = false,
-            specialAccessIntent = { context ->
+            specialAccessOperation = RequiredPermission.SpecialAccessOperation(
+                message = { ctx ->
+                    val appName = ctx.getString(R.string.app_name)
+                    ctx.getString(R.string.permissions_contacts_manage_toast, appName)
+                }
+            ) { context ->
                 val uri = Uri.fromParts("package", context.packageName, null)
                 Intent(Settings.ACTION_MANAGE_CONTACTS, uri)
             }
