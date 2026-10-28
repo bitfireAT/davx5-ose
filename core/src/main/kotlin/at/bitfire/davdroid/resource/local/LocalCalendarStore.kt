@@ -128,21 +128,6 @@ class LocalCalendarStore @Inject constructor(
         val androidCalendar = localCollection.androidCalendar
         val provider = AndroidCalendarProvider(androidCalendar.account, client)
 
-        // Before the collection URL was stored in AndroidCalendarProvider.COLUMN_CALENDAR_URL, the sync state
-        // was stored in this column. Move it to the sync state column so that it isn't lost when the URL is
-        // written below.
-        client.query(
-            provider.calendarUri(androidCalendar.id),
-            arrayOf(AndroidCalendarProvider.COLUMN_CALENDAR_SYNC_STATE, AndroidCalendarProvider.COLUMN_CALENDAR_URL),
-            null, null, null
-        )?.use { cursor ->
-            if (cursor.moveToNext() && cursor.isNull(0)) {
-                val legacySyncState = cursor.getString(1)
-                if (legacySyncState != null && SyncState.fromString(legacySyncState) != null)
-                    values.put(AndroidCalendarProvider.COLUMN_CALENDAR_SYNC_STATE, legacySyncState)
-            }
-        }
-
         provider.updateCalendar(androidCalendar.id, values)
     }
 
