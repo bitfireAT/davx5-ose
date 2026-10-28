@@ -7,6 +7,7 @@ package at.bitfire.davdroid.servicedetection
 import at.bitfire.dav4jvm.ktor.DavResource
 import at.bitfire.dav4jvm.ktor.Response
 import at.bitfire.dav4jvm.ktor.exception.HttpException
+import at.bitfire.dav4jvm.ktor.exception.UnauthorizedException
 import at.bitfire.dav4jvm.ktor.resolve
 import at.bitfire.dav4jvm.ktor.responsesWithRelation
 import at.bitfire.dav4jvm.property.webdav.CurrentUserPrivilegeSet
@@ -105,9 +106,13 @@ class HomeSetRefresher @AssistedInject constructor(
                         localHomesetCollections.remove(collection.url)
                     }
             } catch (e: HttpException) {
-                // delete home set locally if it was not accessible (40x)
-                if (e.statusCode in arrayOf(403, 404, 410))
-                    homeSetRepository.delete(localHomeset)
+                when {
+                    e is UnauthorizedException ->
+                        throw e
+                    // delete home set locally if it was not accessible (40x)
+                    e.statusCode in arrayOf(403, 404, 410) ->
+                        homeSetRepository.delete(localHomeset)
+                }
             }
 
             // Mark leftover (not rediscovered) collections from queue as "without home-set" (remove association)

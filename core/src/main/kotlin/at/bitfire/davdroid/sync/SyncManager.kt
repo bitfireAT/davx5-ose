@@ -162,6 +162,8 @@ abstract class SyncManager<LocalType : LocalResource>(
             val (initialSyncState, capabilities) = collectionInfo.url.withExceptionContext {
                 remoteCollection.queryCapabilities()
             }
+            // credentials were accepted
+            syncExceptionHandler.dismissAuthenticationError()
             logger.info("Sync state = $initialSyncState, capabilities = $capabilities")
             var remoteSyncState = initialSyncState
 
@@ -201,6 +203,11 @@ abstract class SyncManager<LocalType : LocalResource>(
                 is SyncExceptionHandler.SyncErrorResult.SoftError -> {
                     syncResult.softError = true
                     result.delayUntil?.let { syncResult.delayUntil = it.epochSecond }
+                }
+
+                SyncExceptionHandler.SyncErrorResult.AuthenticationError -> {
+                    syncResult.authenticationFailed = true
+                    syncResult.hardError = true
                 }
 
                 SyncExceptionHandler.SyncErrorResult.HardError ->

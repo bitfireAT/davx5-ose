@@ -14,11 +14,12 @@ import android.provider.Settings
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.net.toUri
-import at.bitfire.dav4jvm.ktor.exception.UnauthorizedException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.resource.local.LocalResource
+import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.DebugInfoActivity
 import at.bitfire.davdroid.ui.NotificationRegistry
 import at.bitfire.davdroid.ui.account.AccountSettingsActivity
@@ -35,7 +36,8 @@ class SyncNotificationManager @AssistedInject constructor(
     private val accountRepository: AccountRepository,
     @ApplicationContext private val context: Context,
     private val logger: Logger,
-    private val notificationRegistry: NotificationRegistry
+    private val notificationRegistry: NotificationRegistry,
+    private val settingsManager: SettingsManager
 ) {
 
     @AssistedFactory
@@ -95,6 +97,51 @@ class SyncNotificationManager @AssistedInject constructor(
         dismissNotification(authority)
 
     /**
+     * Notifies the user that the server rejected the credentials of the account. Shown once per account
+     * (not per collection). Opens the account settings with the password dialog, unless credentials are locked.
+     *
+     * Use [dismissAuthenticationFailed] to dismiss the notification.
+     */
+    suspend fun notifyAuthenticationFailed() {
+        val accountName = accountRepository.getAccountName(accountId)
+        val canUpdateCredentials = AccountSettings.changingCredentialsAllowed(settingsManager)
+        notificationRegistry.notifyIfPossible(NotificationRegistry.NOTIFY_AUTHENTICATION_FAILED, tag = accountId.toString()) {
+            val message = context.getString(
+                if (canUpdateCredentials)
+                    R.string.sync_error_authentication_failed_update
+                else
+                    R.string.sync_error_authentication_failed_contact_admin
+            )
+            val contentIntent = AccountSettingsActivity.createIntent(context, accountId, editPassword = canUpdateCredentials)
+
+            // to make the PendingIntent unique per account
+            contentIntent.data = "davdroid:authentication/$accountId".toUri()
+
+            val builder = NotificationCompat.Builder(context, notificationRegistry.CHANNEL_SYNC_ERRORS)
+            builder.setSmallIcon(R.drawable.ic_sync_problem_notify)
+                .setContentTitle(context.getString(R.string.sync_error_authentication_failed_title))
+                .setContentText(message)
+                .setStyle(NotificationCompat.BigTextStyle(builder).bigText(message))
+                .setSubText(accountName)
+                .setOnlyAlertOnce(true)
+                .setContentIntent(
+                    TaskStackBuilder.create(context)
+                        .addNextIntentWithParentStack(contentIntent)
+                        .getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+                )
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setCategory(NotificationCompat.CATEGORY_ERROR)
+                .build()
+        }
+    }
+
+    /**
+     * Dismisses the notification shown by [notifyAuthenticationFailed].
+     */
+    fun dismissAuthenticationFailed() = NotificationManagerCompat.from(context)
+        .cancel(accountId.toString(), NotificationRegistry.NOTIFY_AUTHENTICATION_FAILED)
+
+    /**
      * Notifies the user that an exception occurred during synchronization. Includes the affected
      * local resource, its collection, the URL, the exception and a user message.
      *
@@ -119,12 +166,7 @@ class SyncNotificationManager @AssistedInject constructor(
     ) {
         val accountName = accountRepository.getAccountName(accountId)
         notificationRegistry.notifyIfPossible(NotificationRegistry.NOTIFY_SYNC_ERROR, tag = buildTag(collectionId)) {
-            val contentIntent: Intent
-            if (e is UnauthorizedException) {
-                contentIntent = AccountSettingsActivity.createIntent(context, accountId)
-            } else {
-                contentIntent = buildDebugInfoIntent(syncDataType, e, local, remote)
-            }
+            val contentIntent = buildDebugInfoIntent(syncDataType, e, local, remote)
 
             // to make the PendingIntent unique
             contentIntent.data = "davdroid:exception/${e.hashCode()}".toUri()

@@ -6,6 +6,7 @@ package at.bitfire.davdroid.servicedetection
 
 import at.bitfire.dav4jvm.ktor.DavResource
 import at.bitfire.dav4jvm.ktor.exception.HttpException
+import at.bitfire.dav4jvm.ktor.exception.UnauthorizedException
 import at.bitfire.dav4jvm.ktor.responses
 import at.bitfire.dav4jvm.property.webdav.WebDAV
 import at.bitfire.davdroid.db.AppDatabase
@@ -63,6 +64,8 @@ class PrincipalsRefresher @AssistedInject constructor(
                         }
                     }
             } catch (e: HttpException) {
+                if (e is UnauthorizedException)
+                    throw e
                 logger.info("Principal update failed with response code ${e.statusCode}. principalUrl=$principalUrl")
             }
         }

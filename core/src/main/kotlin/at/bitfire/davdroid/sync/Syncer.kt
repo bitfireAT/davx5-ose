@@ -219,6 +219,12 @@ abstract class Syncer<StoreType: LocalDataStore<CollectionType>, CollectionType:
         dbCollections: Map<Long, Collection>
     ) {
         for (localCollection in localCollections) {
+            // don't continue with rejected credentials (may trigger rate limiting)
+            if (syncResult.authenticationFailed) {
+                logger.warning("Authentication failed, skipping remaining collections")
+                break
+            }
+
             val dbCollection = dbCollections[localCollection.dbCollectionId] ?: continue
             syncCollection(client, localCollection, dbCollection)
         }

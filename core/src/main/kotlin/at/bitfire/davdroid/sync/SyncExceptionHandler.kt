@@ -58,9 +58,17 @@ class SyncExceptionHandler @AssistedInject constructor(
     fun dismissPreviousErrors(collectionId: Long) =
         syncNotificationManager.dismissCollectionError(collectionId)
 
+    /**
+     * Dismisses a previously shown "authentication failed" notification for the account.
+     */
+    fun dismissAuthenticationError() =
+        syncNotificationManager.dismissAuthenticationFailed()
+
 
     /** Outcome of [SyncExceptionHandler.handleException], returned to [SyncManager]. */
     sealed interface SyncErrorResult {
+        /** Credentials were rejected; syncing other collections of the account is pointless. */
+        data object AuthenticationError : SyncErrorResult
         data object HardError : SyncErrorResult
         data class SoftError(val delayUntil: Instant? = null) : SyncErrorResult
         data object NoError : SyncErrorResult
@@ -74,7 +82,7 @@ class SyncExceptionHandler @AssistedInject constructor(
      * @param local                 local resource that was being processed when the exception occurred, if any
      * @param remote                remote URL that was being processed when the exception occurred, if any
      *
-     * @return whether [exception] represents a hard error, soft error or no error
+     * @return whether [exception] represents an authentication error, hard error, soft error or no error
      *
      * @throws CancellationException if the sync was canceled
      * @throws DeadObjectException if the content provider process died (found anywhere in [exception]'s cause chain)
@@ -105,6 +113,12 @@ class SyncExceptionHandler @AssistedInject constructor(
                     )
                 }
                 SyncErrorResult.SoftError(action.delayUntil)
+            }
+
+            is SyncErrorAction.AuthenticationError -> {
+                logger.log(Level.SEVERE, action.logMessage, exception)
+                syncNotificationManager.notifyAuthenticationFailed()
+                SyncErrorResult.AuthenticationError
             }
 
             is SyncErrorAction.HardError -> {
@@ -140,6 +154,9 @@ class SyncExceptionHandler @AssistedInject constructor(
             val delayUntil: Instant? = null,
             val notifyMessage: String? = null
         ) : SyncErrorAction
+
+        /** Credentials were rejected: notify once per account, not per collection. */
+        data class AuthenticationError(val logMessage: String) : SyncErrorAction
 
         /** Non-recoverable error requiring the user's attention. */
         data class HardError(val logMessage: String, val notifyMessage: String) : SyncErrorAction
@@ -177,9 +194,8 @@ class SyncExceptionHandler @AssistedInject constructor(
             )
 
             // HTTP/DAV exceptions (again, check specialized classes before generic)
-            is UnauthorizedException -> SyncErrorAction.HardError(
-                logMessage = "Not authorized anymore",
-                notifyMessage = context.getString(R.string.sync_error_authentication_failed)
+            is UnauthorizedException -> SyncErrorAction.AuthenticationError(
+                logMessage = "Not authorized anymore"
             )
 
             is ServiceUnavailableException -> SyncErrorAction.SoftError(

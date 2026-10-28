@@ -170,6 +170,26 @@ class SyncerTest {
         coVerify(exactly = 1) { syncer.syncCollection(client, localCollection2, dbCollection2) }
     }
 
+    @Test
+    fun testSyncCollectionContents_authenticationFailed_skipsRemainingCollections() = runTest {
+        val dbCollection1 = mockk<Collection>()
+        val dbCollection2 = mockk<Collection>()
+        val dbCollections = mapOf(
+            0L to dbCollection1,
+            1L to dbCollection2
+        )
+        val localCollection1 = mockk<LocalTestCollection> { every { dbCollectionId } returns 0L }
+        val localCollection2 = mockk<LocalTestCollection> { every { dbCollectionId } returns 1L }
+        coEvery { syncer.syncCollection(client, localCollection1, any()) } answers {
+            syncResult.authenticationFailed = true
+        }
+
+        syncer.syncCollectionContents(client, listOf(localCollection1, localCollection2), dbCollections)
+
+        coVerify(exactly = 1) { syncer.syncCollection(client, localCollection1, dbCollection1) }
+        coVerify(exactly = 0) { syncer.syncCollection(client, localCollection2, any()) }
+    }
+
 
     @Test
     fun testInvoke_cancellation_isRethrown() = runTest {
