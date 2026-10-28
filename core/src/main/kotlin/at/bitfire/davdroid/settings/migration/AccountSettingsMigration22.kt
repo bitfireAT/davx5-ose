@@ -41,7 +41,7 @@ class AccountSettingsMigration22 @Inject constructor(
 
     @OpenForTesting
     internal fun migrateCalendars(account: Account) {
-        calendarStore.acquireLocalStorageClient()?.use { client ->
+        calendarStore.acquireLocalStorageClient(true)?.use { client ->
             val calendarProvider = AndroidCalendarProvider(account, client)
             for (calendar in calendarProvider.findCalendars()) {
                 val legacySyncState = client.query(
@@ -60,7 +60,7 @@ class AccountSettingsMigration22 @Inject constructor(
                     Calendars.CAL_SYNC2 to legacySyncState
                 ))
             }
-        }
+        } ?: throw IllegalStateException("Calendar provider is not available")
     }
 
 
