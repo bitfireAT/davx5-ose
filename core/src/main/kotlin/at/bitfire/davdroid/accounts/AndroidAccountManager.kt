@@ -9,33 +9,85 @@ import android.accounts.AccountManager
 import android.accounts.OnAccountsUpdateListener
 import android.content.Context
 import android.os.Build
+import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.sync.account.InvalidAccountException
+import at.bitfire.synctools.util.SensitiveString
+import at.bitfire.synctools.util.setAndVerifyUserData
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.flowOn
+import java.util.logging.Level
+import java.util.logging.Logger
 import javax.inject.Inject
 import javax.inject.Provider
 
 /**
- * A class to manage Android [Account]s.
+ * Creates, looks up and observes the Android [Account]s of DAVx⁵ (main and address book accounts).
  */
 class AndroidAccountManager @Inject constructor(
     private val accountManager: Provider<AccountManager>,
     @ApplicationContext context: Context,
     database: AppDatabase,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
+    private val logger: Logger
 ) {
     private val dbAccountType = context.getString(R.string.account_type_db)
 
     private val dbAccountDao = database.dbAccountDao()
+
+    /**
+     * Creates an Android account and makes sure the user data are set correctly.
+     *
+     * @return whether the account has been created; `false` also when Android denies creation with a [SecurityException]
+     */
+    fun createAccount(
+        account: Account,
+        userData: Map<String, String> = emptyMap(),
+        password: SensitiveString? = null
+    ): Boolean {
+        val userDataBundle = Bundle(userData.size).apply {
+            for ((key, value) in userData)
+                putString(key, value)
+        }
+
+        val manager = accountManager.get()
+        val created = try {
+            manager.addAccountExplicitly(account, password?.asString(), userDataBundle)
+        } catch (e: SecurityException) {
+            logger.log(Level.WARNING, "Account creation denied", e)
+            try {
+                val providers = manager.authenticatorTypes
+                    .filter { it.type == account.type }
+                    .map { it.packageName }
+                logger.warning(
+                    "Registered account providers: ${
+                        providers.joinToString()
+                            .ifEmpty { "unknown (none visible)" }
+                    }"
+                )
+            } catch (e: RuntimeException) {
+                // getAuthenticatorTypes() rethrows RemoteException as RuntimeException
+                logger.log(Level.WARNING, "Registered account providers unavailable", e)
+            }
+            return false
+        }
+        if (!created)
+            return false
+
+        // Android seems to lose the initial user data sometimes, so make sure that the values are set
+        for ((key, value) in userData)
+            manager.setAndVerifyUserData(account, key, value)
+
+        return true
+    }
 
     /**
      * Returns the Android [Account] for a given [AccountId].

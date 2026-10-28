@@ -13,6 +13,7 @@ import androidx.annotation.WorkerThread
 import at.bitfire.davdroid.FeatureFlags
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
+import at.bitfire.davdroid.accounts.AndroidAccountManager
 import at.bitfire.davdroid.accounts.DbAccountId
 import at.bitfire.davdroid.accounts.LegacyAccount
 import at.bitfire.davdroid.db.AccountSetting
@@ -36,7 +37,6 @@ import at.bitfire.davdroid.sync.TasksAppManager
 import at.bitfire.davdroid.sync.account.AccountsCleanupWorker
 import at.bitfire.davdroid.sync.account.InvalidAccountException
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
-import at.bitfire.synctools.util.AndroidAccountUtils
 import at.bitfire.synctools.vcard.GroupMethod
 import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -64,6 +64,7 @@ import javax.inject.Inject
 class AccountRepository @Inject constructor(
     private val accountManager: AccountManager,
     private val accountSettingsFactory: AccountSettingsFactory,
+    private val androidAccountManager: AndroidAccountManager,
     private val automaticSyncManager: Lazy<AutomaticSyncManager>,
     @ApplicationContext private val context: Context,
     private val collectionRepository: Lazy<DavCollectionRepository>,
@@ -200,7 +201,7 @@ class AccountRepository @Inject constructor(
         logger.log(Level.INFO, "Creating Android account {0} with initial config {1}", arrayOf(account, userData))
 
         val accountCreated = withContext(ioDispatcher) {
-            AndroidAccountUtils.createAccount(context, account, userData, credentials?.password)
+            androidAccountManager.createAccount(account, userData, credentials?.password)
         }
         if (!accountCreated) {
             logger.log(Level.WARNING, "Failed to create Android account {0}", arrayOf(account))
@@ -266,7 +267,7 @@ class AccountRepository @Inject constructor(
         val userData = AccountSettings.initialUserData(credentials, preconfigurationUrl)
         logger.log(Level.INFO, "Creating Android account {0} with initial config {1}", arrayOf(account, userData))
 
-        if (!AndroidAccountUtils.createAccount(context, account, userData, credentials?.password))
+        if (!androidAccountManager.createAccount(account, userData, credentials?.password))
             return null
 
         // add entries for account to database
