@@ -6,9 +6,6 @@ package at.bitfire.davdroid.settings
 import android.accounts.AccountManager
 import androidx.annotation.WorkerThread
 import at.bitfire.davdroid.accounts.AccountId
-import at.bitfire.davdroid.settings.AccountSettings.Companion.CREDENTIALS_LOCK
-import at.bitfire.davdroid.settings.AccountSettings.Companion.CREDENTIALS_LOCK_AT_LOGIN_AND_SETTINGS
-import at.bitfire.davdroid.settings.AccountSettings.Companion.initialUserData
 import at.bitfire.davdroid.settings.migration.AccountSettingsMigration
 import at.bitfire.davdroid.sync.AutomaticSyncManager
 import at.bitfire.davdroid.sync.SyncDataType
@@ -353,7 +350,7 @@ class AccountSettings @AssistedInject constructor(
          * determine whether a migration ([AccountSettingsMigration])
          * should be performed.
          */
-        const val CURRENT_VERSION = 21
+        const val CURRENT_VERSION = 22
         const val KEY_SETTINGS_VERSION = "version"
 
         const val KEY_SYNC_INTERVAL_ADDRESSBOOKS = "sync_interval_addressbooks"
