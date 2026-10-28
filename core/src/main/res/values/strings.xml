@@ -592,7 +592,9 @@
     <string name="sync_error_permissions_text">Additional permissions required</string>
     <string name="sync_error_tasks_too_old">%s too old</string>
     <string name="sync_error_tasks_required_version">Minimum required version: %1$s</string>
-    <string name="sync_error_authentication_failed">Authentication failed (check login credentials)</string>
+    <string name="sync_error_authentication_failed_title">Authentication failed</string>
+    <string name="sync_error_authentication_failed_update">The server rejected your login credentials. Tap to update them.</string>
+    <string name="sync_error_authentication_failed_contact_admin">The server rejected your login credentials. They are locked in the app, so please contact your administrator.</string>
     <string name="sync_error_io">Network or I/O error – %s</string>
     <string name="sync_error_http_dav">HTTP server error – %s</string>
     <string name="sync_error_local_storage">Local storage error – %s</string>

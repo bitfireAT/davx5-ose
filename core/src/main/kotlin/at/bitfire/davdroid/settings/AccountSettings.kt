@@ -133,10 +133,8 @@ class AccountSettings @AssistedInject constructor(
      * Returns whether users can modify credentials from the account settings screen.
      * Checks the value of [CREDENTIALS_LOCK] to be `0` or not equal to [CREDENTIALS_LOCK_AT_LOGIN_AND_SETTINGS].
      */
-    fun changingCredentialsAllowed(): Boolean {
-        val credentialsLock = settingsManager.getIntOrNull(CREDENTIALS_LOCK)
-        return credentialsLock == null || credentialsLock != CREDENTIALS_LOCK_AT_LOGIN_AND_SETTINGS
-    }
+    fun changingCredentialsAllowed(): Boolean =
+        changingCredentialsAllowed(settingsManager)
 
 
     // sync. settings
@@ -370,6 +368,12 @@ class AccountSettings @AssistedInject constructor(
         const val CREDENTIALS_LOCK_NO_LOCK = 0
         const val CREDENTIALS_LOCK_AT_LOGIN = 1
         const val CREDENTIALS_LOCK_AT_LOGIN_AND_SETTINGS = 2
+
+        /** See [AccountSettings.changingCredentialsAllowed]. */
+        fun changingCredentialsAllowed(settingsManager: SettingsManager): Boolean {
+            val credentialsLock = settingsManager.getIntOrNull(CREDENTIALS_LOCK)
+            return credentialsLock == null || credentialsLock != CREDENTIALS_LOCK_AT_LOGIN_AND_SETTINGS
+        }
 
         /** OAuth [AuthState] (serialized as JSON) */
         const val KEY_AUTH_STATE = "auth_state"

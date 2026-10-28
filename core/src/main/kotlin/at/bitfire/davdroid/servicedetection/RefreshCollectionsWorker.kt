@@ -28,10 +28,10 @@ import at.bitfire.davdroid.push.PushRegistrationManager
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker.Companion.ARG_SERVICE_ID
+import at.bitfire.davdroid.sync.SyncNotificationManager
 import at.bitfire.davdroid.sync.account.InvalidAccountException
 import at.bitfire.davdroid.ui.DebugInfoActivity
 import at.bitfire.davdroid.ui.NotificationRegistry
-import at.bitfire.davdroid.ui.account.AccountSettingsActivity
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.map
@@ -70,7 +70,8 @@ class RefreshCollectionsWorker @AssistedInject constructor(
     private val principalsRefresherFactory: PrincipalsRefresher.Factory,
     private val pushRegistrationManager: PushRegistrationManager,
     private val serviceRefresherFactory: ServiceRefresher.Factory,
-    private val serviceRepository: DavServiceRepository
+    private val serviceRepository: DavServiceRepository,
+    private val syncNotificationManagerFactory: SyncNotificationManager.Factory
 ) : CoroutineWorker(appContext, workerParams) {
 
     companion object {
@@ -181,14 +182,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
             return Result.failure()
         } catch (e: UnauthorizedException) {
             logger.log(Level.SEVERE, "Not authorized (anymore)", e)
-            // notify that we need to re-authenticate in the account settings
-            val settingsIntent = AccountSettingsActivity.createIntent(applicationContext, accountId)
-            val accountName = accountRepository.getAccountName(accountId)
-            notifyRefreshError(
-                accountName = accountName,
-                contentText = applicationContext.getString(R.string.sync_error_authentication_failed),
-                contentIntent = settingsIntent
-            )
+            syncNotificationManagerFactory.create(accountId).notifyAuthenticationFailed()
             return Result.failure()
         } catch(e: Exception) {
             logger.log(Level.SEVERE, "Couldn't refresh collection list", e)
@@ -206,6 +200,9 @@ class RefreshCollectionsWorker @AssistedInject constructor(
             )
             return Result.failure()
         }
+
+        // credentials were accepted
+        syncNotificationManagerFactory.create(accountId).dismissAuthenticationFailed()
 
         // update push registrations
         pushRegistrationManager.update(serviceId)

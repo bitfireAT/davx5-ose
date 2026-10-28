@@ -7,6 +7,7 @@ package at.bitfire.davdroid.servicedetection
 import at.bitfire.dav4jvm.Property
 import at.bitfire.dav4jvm.ktor.DavResource
 import at.bitfire.dav4jvm.ktor.exception.HttpException
+import at.bitfire.dav4jvm.ktor.exception.UnauthorizedException
 import at.bitfire.dav4jvm.ktor.parent
 import at.bitfire.dav4jvm.ktor.resolve
 import at.bitfire.dav4jvm.ktor.responses
@@ -161,7 +162,7 @@ class ServiceRefresher @AssistedInject constructor(
             }
 
         } catch (e: HttpException) {
-            if (e.isClientError)
+            if (e.isClientError && e !is UnauthorizedException)
                 logger.log(Level.INFO, "Ignoring Client Error 4xx while looking for ${service.type} home sets", e)
             else
                 throw e

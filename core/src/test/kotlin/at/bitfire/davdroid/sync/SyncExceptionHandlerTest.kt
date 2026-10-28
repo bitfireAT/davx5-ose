@@ -133,6 +133,27 @@ class SyncExceptionHandlerTest {
     }
 
     @Test
+    fun `handleException() notifies once per account and returns an authentication error`() = runTest {
+        val exception = httpException(HttpStatusCode.Unauthorized)
+
+        val result = handler().handleException(exception, collection, null, null)
+
+        assertEquals(SyncExceptionHandler.SyncErrorResult.AuthenticationError, result)
+        coVerify(exactly = 1) { syncNotificationManager.notifyAuthenticationFailed() }
+        coVerify(exactly = 0) {
+            syncNotificationManager.notifyException(
+                syncDataType = any(),
+                collectionId = any(),
+                message = any(),
+                title = any(),
+                e = any(),
+                local = any(),
+                remote = any()
+            )
+        }
+    }
+
+    @Test
     fun `handleException() notifies and returns a hard error`() = runTest {
         val exception = RuntimeException("boom")
 
@@ -203,12 +224,12 @@ class SyncExceptionHandlerTest {
     }
 
     @Test
-    fun `classifySyncException() treats UnauthorizedException as hard error`() = runTest {
+    fun `classifySyncException() treats UnauthorizedException as authentication error`() = runTest {
         val exception = httpException(HttpStatusCode.Unauthorized)
 
         val action = handler().classifySyncException(exception)
 
-        assertTrue(action is SyncExceptionHandler.SyncErrorAction.HardError)
+        assertTrue(action is SyncExceptionHandler.SyncErrorAction.AuthenticationError)
     }
 
     @Test
