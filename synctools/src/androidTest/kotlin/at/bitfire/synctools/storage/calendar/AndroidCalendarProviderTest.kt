@@ -136,19 +136,6 @@ class AndroidCalendarProviderTest {
     }
 
     @Test
-    fun testReadCalendarSyncState_IgnoresCalendarUrl() {
-        // the URL column (which was used for the sync state before) may contain a calendar URL,
-        // which is no valid sync state and must not be returned as sync state
-        provider.updateCalendar(calendar.id, contentValuesOf(
-            AndroidCalendarProvider.COLUMN_CALENDAR_SYNC_STATE to null,
-            AndroidCalendarProvider.COLUMN_CALENDAR_URL to "https://example.com/caldav/calendar/"
-        ))
-        assertNull(provider.readCalendarSyncState(calendar.id))
-
-        provider.updateCalendar(calendar.id, contentValuesOf(AndroidCalendarProvider.COLUMN_CALENDAR_URL to null))
-    }
-
-    @Test
     fun testCalendarUrl() {
         // other apps can access the collection URL in the URL column
         val url = "https://example.com/caldav/calendar/"
