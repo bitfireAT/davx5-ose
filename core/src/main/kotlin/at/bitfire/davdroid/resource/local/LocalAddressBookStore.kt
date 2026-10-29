@@ -28,7 +28,6 @@ import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.util.DavUtils.extractCollectionName
 import at.bitfire.synctools.storage.LocalStorageClient
-import at.bitfire.synctools.util.AndroidAccountUtils
 import com.google.common.base.CharMatcher
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
@@ -146,7 +145,7 @@ class LocalAddressBookStore @Inject constructor(
     internal fun createAddressBookAccount(accountId: AccountId, name: String, id: Long): Account? {
         // create address book account with reference to account, collection ID and URL
         val addressBookAccount = Account(name, context.getString(R.string.account_type_address_book))
-        if (!AndroidAccountUtils.createAccount(context, addressBookAccount)) {
+        if (!androidAccountManager.createAccount(addressBookAccount)) {
             logger.warning("Couldn't create address book account: $addressBookAccount")
             return null
         }

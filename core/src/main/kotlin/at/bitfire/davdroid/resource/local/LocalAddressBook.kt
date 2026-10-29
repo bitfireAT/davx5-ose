@@ -14,6 +14,7 @@ import android.provider.ContactsContract.RawContacts
 import androidx.annotation.OpenForTesting
 import androidx.core.content.contentValuesOf
 import at.bitfire.davdroid.accounts.AccountId
+import at.bitfire.davdroid.accounts.AndroidAccountManager
 import at.bitfire.davdroid.resource.workaround.ContactDirtyVerifier
 import at.bitfire.davdroid.settings.AccountSettingsFactory
 import at.bitfire.davdroid.sync.SyncDataType
@@ -28,7 +29,6 @@ import at.bitfire.synctools.storage.contacts.AndroidAddressBook
 import at.bitfire.synctools.storage.contacts.AndroidContact
 import at.bitfire.synctools.storage.contacts.AndroidGroup
 import at.bitfire.synctools.storage.contacts.ContactsBatchOperation
-import at.bitfire.synctools.util.AndroidAccountUtils
 import at.bitfire.synctools.vcard.GroupMethod
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -66,6 +66,7 @@ open class LocalAddressBook @AssistedInject constructor(
     private val accountManager: Provider<AccountManager>,
     private val accountSettingsFactory: AccountSettingsFactory,
     private val addressBookAccountProperties: AddressBookAccountProperties,
+    private val androidAccountManager: AndroidAccountManager,
     @ApplicationContext private val context: Context,
     internal val dirtyVerifier: Optional<ContactDirtyVerifier>,
     private val logger: Logger,
@@ -156,7 +157,7 @@ open class LocalAddressBook @AssistedInject constructor(
 
         // create new account
         val newAccount = Account(newName, oldAccount.type)
-        if (!AndroidAccountUtils.createAccount(context, newAccount, emptyMap()))
+        if (!androidAccountManager.createAccount(newAccount))
             return false
 
         // move contacts and groups to new account

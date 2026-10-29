@@ -10,7 +10,6 @@ import android.os.Build
 import androidx.test.platform.app.InstrumentationRegistry
 import at.bitfire.synctools.storage.TaskProvider
 import at.bitfire.synctools.test.R
-import at.bitfire.synctools.util.AndroidAccountUtils
 import org.junit.Assert.assertTrue
 
 object TestAccount {
@@ -29,10 +28,10 @@ object TestAccount {
      */
     fun create(accountName: String = "Synctools Test Account"): Account {
         val account = Account(accountName, accountType)
-        assertTrue(AndroidAccountUtils.createAccount(context, account, emptyMap()))
+        val manager = AccountManager.get(context)
+        assertTrue(manager.addAccountExplicitly(account, null, null))
 
         if (Build.VERSION.SDK_INT >= 26) {
-            val manager = AccountManager.get(context)
             for (providerName in TaskProvider.ProviderName.entries)
                 if (manager.getAccountVisibility(account, providerName.packageName) != AccountManager.VISIBILITY_VISIBLE)
                     manager.setAccountVisibility(account, providerName.packageName, AccountManager.VISIBILITY_VISIBLE)

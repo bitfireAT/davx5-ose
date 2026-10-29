@@ -101,6 +101,11 @@ class LocalAddressBookStoreTest {
                 AccountSettings.KEY_SETTINGS_VERSION
             )
         } returns AccountSettings.CURRENT_VERSION.toString()
+
+        // create real address book accounts, because AndroidAddressBook uses the real AccountManager
+        every { accountManager.addAccountExplicitly(any(), any(), any()) } answers {
+            AccountManager.get(context).addAccountExplicitly(firstArg(), secondArg(), thirdArg())
+        }
     }
 
     @After
