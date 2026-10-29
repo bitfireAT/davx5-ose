@@ -154,6 +154,7 @@ dependencies {
     }
 
     // third-party libs
+    implementation(libs.bundles.coil)
     implementation(libs.conscrypt)
     implementation(libs.dnsjava)
     implementation(libs.guava)

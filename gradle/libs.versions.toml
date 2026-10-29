@@ -23,6 +23,7 @@ androidx-work = "2.12.0"
 bitfire-cert4android = "5b8f57e778"
 bitfire-dav4jvm = "5.0.0"
 compose-bom = "2026.09.00"
+coil = "3.6.3"
 conscrypt = "2.8.0"
 dnsjava = "3.6.5"
 ezvcard = "0.12.2"
@@ -97,6 +98,8 @@ bitfire-cert4android = { module = "com.github.bitfireat:cert4android", version.r
 bitfire-dav4jvm = { module = "com.github.bitfireAT:dav4jvm", version.ref = "bitfire-dav4jvm" }
 commons-codec = { module = "commons-codec:commons-codec", version.ref = "commons-codec" }
 commons-lang = { module = "org.apache.commons:commons-lang3", version.ref = "commons-lang" }
+coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
+coil-ktor = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coil" }
 conscrypt = { module = "org.conscrypt:conscrypt-android", version.ref = "conscrypt" }
 dnsjava = { module = "dnsjava:dnsjava", version.ref = "dnsjava" }
 ezvcard = { module = "com.googlecode.ez-vcard:ez-vcard", version.ref = "ezvcard" }
@@ -131,6 +134,9 @@ slf4j-jdk = { module = "org.slf4j:slf4j-jdk14", version.ref = "slf4j" }
 spotbugs-annotations = { module = "com.github.spotbugs:spotbugs-annotations", version.ref = "spotbugs" }
 unifiedpush = { module = "org.unifiedpush.android:connector", version.ref = "unifiedpush" }
 unifiedpush-fcm = { module = "org.unifiedpush.android:embedded-fcm-distributor", version.ref = "unifiedpush-fcm" }
+
+[bundles]
+coil = ["coil-compose", "coil-ktor"]
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "android-agp" }
