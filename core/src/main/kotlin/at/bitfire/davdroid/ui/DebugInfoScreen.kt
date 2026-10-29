@@ -237,25 +237,6 @@ fun DebugInfoScreen(
                     modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
                 )
 
-                if (showDebugInfo)
-                    CardWithImage(
-                        image = painterResource(R.drawable.undraw_server_down),
-                        imageAlignment = BiasAlignment(0f, .7f),
-                        title = stringResource(R.string.debug_info_title),
-                        subtitle = stringResource(R.string.debug_info_subtitle),
-                        icon = Icons.Rounded.BugReport,
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
-                    ) {
-                        OutlinedButton(
-                            onClick = onViewDebugFile,
-                            modifier = Modifier.padding(bottom = 4.dp)
-                        ) {
-                            Text(
-                                stringResource(R.string.debug_info_view_details)
-                            )
-                        }
-                    }
-
                 if (localResource != null || remoteResource != null)
                     CardWithImage(
                         title = stringResource(R.string.debug_info_involved_caption),
@@ -263,32 +244,11 @@ fun DebugInfoScreen(
                         icon = Icons.Rounded.Adb,
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
                     ) {
-                        remoteResource?.let { remoteUrl ->
-                            Text(
-                                text = stringResource(R.string.debug_info_involved_remote),
-                                style = MaterialTheme.typography.bodyLarge
-                            )
-                            SelectionContainer {
-                                Text(
-                                    text = remoteUrl,
-                                    style = MaterialTheme.typography.bodySmall.copy(
-                                        fontFamily = FontFamily.Monospace
-                                    ),
-                                    modifier = Modifier.padding(bottom = 8.dp)
-                                )
-                            }
-                            OutlinedButton(
-                                onClick = onCopyRemoteUrl,
-                                modifier = Modifier.padding(end = 8.dp)
-                            ) {
-                                Text(stringResource(R.string.debug_info_copy_remote_url))
-                            }
-                        }
                         localResource?.let {
                             Text(
                                 text = stringResource(R.string.debug_info_involved_local),
                                 style = MaterialTheme.typography.bodyLarge,
-                                modifier = Modifier.padding(top = 12.dp)
+                                modifier = Modifier.padding(top = 4.dp)
                             )
                             Text(
                                 text = it,
@@ -307,6 +267,48 @@ fun DebugInfoScreen(
                                     stringResource(R.string.debug_info_view_local_resource)
                                 )
                             }
+
+                        remoteResource?.let { remoteUrl ->
+                            Text(
+                                text = stringResource(R.string.debug_info_involved_remote),
+                                style = MaterialTheme.typography.bodyLarge,
+                                modifier = Modifier.padding(top = 4.dp)
+                            )
+                            SelectionContainer {
+                                Text(
+                                    text = remoteUrl,
+                                    style = MaterialTheme.typography.bodySmall.copy(
+                                        fontFamily = FontFamily.Monospace
+                                    ),
+                                    modifier = Modifier.padding(bottom = 8.dp)
+                                )
+                            }
+                            OutlinedButton(
+                                onClick = onCopyRemoteUrl,
+                                modifier = Modifier.padding(bottom = 4.dp)
+                            ) {
+                                Text(stringResource(R.string.debug_info_copy_remote_url))
+                            }
+                        }
+                    }
+
+                if (showDebugInfo)
+                    CardWithImage(
+                        image = painterResource(R.drawable.undraw_server_down),
+                        imageAlignment = BiasAlignment(0f, .7f),
+                        title = stringResource(R.string.debug_info_title),
+                        subtitle = stringResource(R.string.debug_info_subtitle),
+                        icon = Icons.Rounded.BugReport,
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
+                    ) {
+                        OutlinedButton(
+                            onClick = onViewDebugFile,
+                            modifier = Modifier.padding(bottom = 4.dp)
+                        ) {
+                            Text(
+                                stringResource(R.string.debug_info_view_details)
+                            )
+                        }
                     }
 
                 if (hasLogFile) {
