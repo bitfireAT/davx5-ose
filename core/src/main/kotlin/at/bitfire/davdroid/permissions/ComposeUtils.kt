@@ -33,6 +33,10 @@ open class PermissionsStatus(
     ): PermissionsStatusWithLauncher {
         return PermissionsStatusWithActivityLauncher(permissions, granted, denied, launcher)
     }
+
+    fun withoutResultLauncher(): PermissionsStatusWithLauncher {
+        return PermissionsStatusWithActivityLauncher(permissions, granted, denied, null)
+    }
 }
 
 abstract class PermissionsStatusWithLauncher(
@@ -57,17 +61,16 @@ class PermissionsStatusWithActivityLauncher(
     permissions: List<RequiredPermission>,
     granted: List<RequiredPermission>,
     denied: List<RequiredPermission>,
-    private val launcher: ManagedActivityResultLauncher<Array<String>, Map<String, Boolean>>
+    private val launcher: ManagedActivityResultLauncher<Array<String>, Map<String, Boolean>>?
 ): PermissionsStatusWithLauncher(permissions, granted, denied) {
     override fun launch(context: Context) {
         val missingRuntimePermissions = denied.filter { it.isRuntime }
         val missingSpecialPermissions = denied.filter { it.isSpecialAccess }
         if (missingRuntimePermissions.isNotEmpty()) {
-            launcher.launch(missingRuntimePermissions.map { it.permission }.toTypedArray())
+            launcher?.launch(missingRuntimePermissions.map { it.permission }.toTypedArray())
             return
         }
-        val intent = missingSpecialPermissions.firstOrNull()?.specialAccessIntent?.invoke(context) ?: return
-        context.startActivity(intent)
+        missingSpecialPermissions.firstOrNull()?.specialAccessOperation?.launch(context)
     }
 }
 
@@ -86,9 +89,18 @@ fun rememberPermissionsState(permissions: List<RequiredPermission>): Permissions
     }
 
     var status by remember { mutableStateOf(calculateCurrentRequestStatus()) }
-    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
+    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { result ->
         // When we get a response from the permission request, refresh status
         status = calculateCurrentRequestStatus()
+
+        val allGranted = result.all { it.value }
+        val allPermissionsGranted = status.allPermissionsGranted
+        if (allGranted && !allPermissionsGranted) {
+            // All runtime permissions were accepted, but there are still some special permissions to be granted
+            // Launch the request for the next one, so that the granting process is smooth
+            // We don't need a result launcher since all runtime permissions are already granted
+            status.withoutResultLauncher().launch(context)
+        }
     }
 
     LifecycleResumeEffect(Unit) {
