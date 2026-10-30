@@ -180,7 +180,7 @@ class AndroidAccountManagerTest {
     }
 
     @Test
-    fun `createLinkedAccount() returns null when account already exists`() {
+    fun `createLinkedAccount() returns null when account with same name already exists`() {
         addAndroidAccount("Existing")
 
         val created = androidAccountManager().createLinkedAccount("Existing", 42)
