@@ -15,6 +15,7 @@ import android.os.Looper
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
+import at.bitfire.davdroid.resource.local.AddressBookAccountProperties
 import at.bitfire.davdroid.sync.account.InvalidAccountException
 import at.bitfire.synctools.util.SensitiveString
 import at.bitfire.synctools.util.setAndVerifyUserData
@@ -24,6 +25,7 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.withContext
 import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
@@ -34,11 +36,13 @@ import javax.inject.Provider
  */
 class AndroidAccountManager @Inject constructor(
     private val accountManager: Provider<AccountManager>,
+    private val addressBookAccountProperties: AddressBookAccountProperties,
     @ApplicationContext context: Context,
     database: AppDatabase,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val logger: Logger
 ) {
+    private val addressBookAccountType = context.getString(R.string.account_type_address_book)
     private val dbAccountType = context.getString(R.string.account_type_db)
 
     private val dbAccountDao = database.dbAccountDao()
@@ -90,7 +94,65 @@ class AndroidAccountManager @Inject constructor(
     }
 
     /**
+     * Creates an Android account that is linked to the DB account with ID [dbAccountId].
+     *
+     * @return the created account, or `null` if it couldn't be created (for instance because the name is taken)
+     */
+    fun createLinkedAccount(name: String, dbAccountId: Long): Account? {
+        val account = Account(name, dbAccountType)
+        return account.takeIf {
+            createAccount(account, mapOf(USER_DATA_ACCOUNT_ID to dbAccountId.toString()))
+        }
+    }
+
+    /**
+     * Returns the Android account (for DB accounts) with the given [name], regardless of whether it's linked.
+     */
+    fun findAccountByName(name: String): Account? =
+        accountManager.get().getAccountsByType(dbAccountType).firstOrNull { it.name == name }
+
+    /**
+     * Returns the Android account that is linked to the DB account with ID [dbAccountId].
+     */
+    fun findLinkedAccount(dbAccountId: Long): Account? =
+        accountManager.get().getAccountsByType(dbAccountType).firstOrNull { getLinkedDbAccountId(it) == dbAccountId }
+
+    /**
+     * Returns the ID of the DB account that [account] is linked to, or `null` if it's not linked.
+     */
+    fun getLinkedDbAccountId(account: Account): Long? =
+        accountManager.get().getUserData(account, USER_DATA_ACCOUNT_ID)?.toLongOrNull()
+
+    /**
+     * Links [account] to the DB account with ID [dbAccountId].
+     */
+    fun linkAccount(account: Account, dbAccountId: Long) {
+        accountManager.get().setAndVerifyUserData(account, USER_DATA_ACCOUNT_ID, dbAccountId.toString())
+    }
+
+    /**
+     * Removes all Android accounts of DB accounts, including their address book accounts. Legacy accounts
+     * and their address book accounts are not touched.
+     *
+     * Used when the database is (re)created: then the remaining accounts are orphaned and their links (DB IDs)
+     * could otherwise match new DB accounts.
+     */
+    fun removeAllForDbAccounts() {
+        val manager = accountManager.get()
+        val addressBookAccounts = manager.getAccountsByType(addressBookAccountType)
+            .filter { addressBookAccountProperties.getAppAccount(it) is DbAccountId }
+        for (account in addressBookAccounts + manager.getAccountsByType(dbAccountType)) {
+            logger.info("Removing Android account $account of DB account")
+            manager.removeAccountExplicitly(account)
+        }
+    }
+
+    /**
      * Returns the Android [Account] for a given [AccountId].
+     *
+     * For DB accounts, this is the linked Android account. If there's none (yet), an account with the DB account
+     * name is returned, which doesn't necessarily exist.
+     *
      * @return the Android account for the given [accountId]
      * @throws InvalidAccountException if the account does not exist
      */
@@ -98,12 +160,9 @@ class AndroidAccountManager @Inject constructor(
         return when (accountId) {
             is LegacyAccount -> accountId.androidAccount
             is DbAccountId -> {
-                // note: this currently depends on the account being created before. at some point, the system accounts
-                //       should be dynamically created, and this method should be able to create the account if it
-                //       doesn't exist yet. for now, we just throw an exception.
-                dbAccountDao.getBlocking(accountId.id)
-                    ?.let { Account(it.name, dbAccountType) }
-                    ?: throw InvalidAccountException(accountId)
+                val dbAccount = dbAccountDao.getBlocking(accountId.id) ?: throw InvalidAccountException(accountId)
+                // fallback: name that AndroidAccountProvider will use when creating the account
+                findLinkedAccount(accountId.id) ?: Account(dbAccount.name, dbAccountType)
             }
         }
     }
@@ -150,14 +209,16 @@ class AndroidAccountManager @Inject constructor(
     /**
      * Returns the [AccountId] for a given Android [Account].
      *
-     * @return the [DbAccountId] if [account] is a database account (looked up by name), or a [LegacyAccount]
-     *   otherwise. `null` if [account] is a database account that doesn't exist in the database.
+     * @return the [DbAccountId] if [account] is a database account (looked up by link, or by name if not validly linked),
+     *   or a [LegacyAccount] otherwise. `null` if [account] is a database account that doesn't exist in the database.
      */
     suspend fun getAccountId(account: Account): AccountId? {
-        return when (account.type) {
-            dbAccountType -> dbAccountDao.getFromName(account.name)?.let { DbAccountId(it.id) }
-            else -> LegacyAccount(account)
-        }
+        if (account.type != dbAccountType)
+            return LegacyAccount(account)
+
+        val linkedId = withContext(ioDispatcher) { getLinkedDbAccountId(account) }
+        val dbAccount = linkedId?.let { dbAccountDao.get(it) } ?: dbAccountDao.getFromName(account.name)
+        return dbAccount?.let { DbAccountId(it.id) }
     }
 
     /**
@@ -176,4 +237,12 @@ class AndroidAccountManager @Inject constructor(
             }
         }
     }
+
+    companion object {
+
+        /** User data key of Android accounts that references the linked DB account ID */
+        const val USER_DATA_ACCOUNT_ID = "account_id"
+
+    }
+
 }

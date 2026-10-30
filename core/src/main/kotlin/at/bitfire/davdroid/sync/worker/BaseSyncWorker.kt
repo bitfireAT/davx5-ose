@@ -16,6 +16,7 @@ import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
+import at.bitfire.davdroid.accounts.AndroidAccountProvider
 import at.bitfire.davdroid.accounts.DbAccountId
 import at.bitfire.davdroid.accounts.LegacyAccount
 import at.bitfire.davdroid.push.PushNotificationManager
@@ -102,6 +103,9 @@ abstract class BaseSyncWorker(
     lateinit var addressBookSyncer: AddressBookSyncer.Factory
 
     @Inject
+    lateinit var androidAccountProvider: AndroidAccountProvider
+
+    @Inject
     lateinit var calendarSyncer: CalendarSyncer.Factory
 
     @Inject
@@ -155,6 +159,14 @@ abstract class BaseSyncWorker(
                 val workManager = WorkManager.getInstance(applicationContext)
                 workManager.cancelWorkById(workId)
 
+                return Result.failure()
+            }
+
+            // make sure that the (linked) Android account exists, for instance after it has been removed in system settings
+            try {
+                androidAccountProvider.provide(accountId)
+            } catch (e: InvalidAccountException) {
+                logger.log(Level.WARNING, "Couldn't provide Android account for $accountId", e)
                 return Result.failure()
             }
 
