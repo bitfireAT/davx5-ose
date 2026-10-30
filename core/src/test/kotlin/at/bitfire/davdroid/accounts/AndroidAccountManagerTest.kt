@@ -12,6 +12,7 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.DbAccount
 import at.bitfire.davdroid.db.DbAccountDao
+import at.bitfire.davdroid.resource.local.AddressBookAccountProperties
 import at.bitfire.davdroid.sync.account.InvalidAccountException
 import at.bitfire.synctools.util.SensitiveString.Companion.toSensitiveString
 import io.mockk.coEvery
@@ -53,6 +54,7 @@ class AndroidAccountManagerTest {
 
     private fun androidAccountManager(manager: AccountManager = realManager) = AndroidAccountManager(
         accountManager = { manager },
+        addressBookAccountProperties = AddressBookAccountProperties(realManager, context),
         context = context,
         database = database,
         ioDispatcher = Dispatchers.IO,
@@ -67,10 +69,18 @@ class AndroidAccountManagerTest {
         return account
     }
 
+    private fun addAddressBookAccount(name: String, owner: AccountId): Account {
+        val account = Account(name, context.getString(R.string.account_type_address_book))
+        assertTrue(realManager.addAccountExplicitly(account, null, null))
+        AddressBookAccountProperties(realManager, context).setAppAccount(account, owner)
+        return account
+    }
+
     @After
     fun tearDown() {
-        for (account in realManager.getAccountsByType(dbAccountType))
-            realManager.removeAccountExplicitly(account)
+        for (type in arrayOf(R.string.account_type, R.string.account_type_address_book, R.string.account_type_db))
+            for (account in realManager.getAccountsByType(context.getString(type)))
+                realManager.removeAccountExplicitly(account)
     }
 
 
@@ -245,6 +255,34 @@ class AndroidAccountManagerTest {
         androidAccountManager().linkAccount(unlinked, 7)
 
         assertEquals("7", realManager.getUserData(unlinked, AndroidAccountManager.USER_DATA_ACCOUNT_ID))
+    }
+
+
+    @Test
+    fun `removeAllForDbAccounts() removes Android accounts and address book accounts of DB accounts`() {
+        val linked = addAndroidAccount("Linked", linkedId = 1)
+        val unlinked = addAndroidAccount("Unlinked")
+        val addressBook = addAddressBookAccount("Address book", DbAccountId(1))
+
+        androidAccountManager().removeAllForDbAccounts()
+
+        val remaining = realManager.accounts.toList()
+        assertFalse(remaining.contains(linked))
+        assertFalse(remaining.contains(unlinked))
+        assertFalse(remaining.contains(addressBook))
+    }
+
+    @Test
+    fun `removeAllForDbAccounts() keeps legacy accounts and their address book accounts`() {
+        val legacy = Account("Legacy", context.getString(R.string.account_type))
+        assertTrue(realManager.addAccountExplicitly(legacy, null, null))
+        val addressBook = addAddressBookAccount("Address book", LegacyAccount(legacy))
+
+        androidAccountManager().removeAllForDbAccounts()
+
+        val remaining = realManager.accounts.toList()
+        assertTrue(remaining.contains(legacy))
+        assertTrue(remaining.contains(addressBook))
     }
 
 
