@@ -15,6 +15,7 @@ import android.os.Looper
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
+import at.bitfire.davdroid.resource.local.AddressBookAccountProperties
 import at.bitfire.davdroid.sync.account.InvalidAccountException
 import at.bitfire.synctools.util.SensitiveString
 import at.bitfire.synctools.util.setAndVerifyUserData
@@ -35,11 +36,13 @@ import javax.inject.Provider
  */
 class AndroidAccountManager @Inject constructor(
     private val accountManager: Provider<AccountManager>,
+    private val addressBookAccountProperties: AddressBookAccountProperties,
     @ApplicationContext context: Context,
     database: AppDatabase,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val logger: Logger
 ) {
+    private val addressBookAccountType = context.getString(R.string.account_type_address_book)
     private val dbAccountType = context.getString(R.string.account_type_db)
 
     private val dbAccountDao = database.dbAccountDao()
@@ -125,6 +128,23 @@ class AndroidAccountManager @Inject constructor(
      */
     fun linkAccount(account: Account, dbAccountId: Long) {
         accountManager.get().setAndVerifyUserData(account, USER_DATA_ACCOUNT_ID, dbAccountId.toString())
+    }
+
+    /**
+     * Removes all Android accounts of DB accounts, including their address book accounts. Legacy accounts
+     * and their address book accounts are not touched.
+     *
+     * Used when the database is (re)created: then the remaining accounts are orphaned and their links (DB IDs)
+     * could otherwise match new DB accounts.
+     */
+    fun removeAllForDbAccounts() {
+        val manager = accountManager.get()
+        val addressBookAccounts = manager.getAccountsByType(addressBookAccountType)
+            .filter { addressBookAccountProperties.getAppAccount(it) is DbAccountId }
+        for (account in addressBookAccounts + manager.getAccountsByType(dbAccountType)) {
+            logger.info("Removing Android account $account of DB account")
+            manager.removeAccountExplicitly(account)
+        }
     }
 
     /**
