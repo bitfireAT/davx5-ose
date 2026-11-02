@@ -15,7 +15,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.rounded.BugReport
 import androidx.compose.material.icons.rounded.CloudOff
 import androidx.compose.material.icons.rounded.PrivacyTip
 import androidx.compose.material.icons.rounded.Share
@@ -263,21 +262,10 @@ fun DebugInfoScreen(
                 }
 
                 if (hasLogFile) {
-                    CardWithImage(
-                        title = stringResource(R.string.debug_info_logs_caption),
-                        subtitle = stringResource(R.string.debug_info_logs_subtitle),
-                        icon = Icons.Rounded.BugReport,
+                    DebugLogCard(
+                        onViewLogsFile,
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
-                    ) {
-                        OutlinedButton(
-                            onClick = onViewLogsFile,
-                            modifier = Modifier.padding(bottom = 4.dp)
-                        ) {
-                            Text(
-                                stringResource(R.string.debug_info_logs_view)
-                            )
-                        }
-                    }
+                    )
                 }
 
                 if (showDebugInfo) {
