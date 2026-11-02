@@ -188,6 +188,16 @@ class AndroidAccountManagerTest {
         assertNull(created)
     }
 
+    @Test
+    fun `createLinkedAccount() returns null when account with same linked ID already exists`() {
+        addAndroidAccount("Existing", linkedId = 42)
+
+        val created = androidAccountManager().createLinkedAccount("Different name", 42)
+
+        assertNull(created)
+        assertFalse(realManager.accounts.contains(Account("Different name", dbAccountType)))
+    }
+
 
     @Test
     fun `findAccountByName() returns Android account with name`() {

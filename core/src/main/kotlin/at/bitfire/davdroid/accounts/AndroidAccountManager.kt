@@ -98,9 +98,13 @@ class AndroidAccountManager @Inject constructor(
     /**
      * Creates an Android account that is linked to the DB account with ID [dbAccountId].
      *
-     * @return the created account, or `null` if it couldn't be created (for instance because the name is taken)
+     * @return the created account, or `null` if it couldn't be created (for instance because the name is taken
+     *   or there's already an account linked to [dbAccountId])
      */
     fun createLinkedAccount(name: String, dbAccountId: Long): Account? {
+        if (findLinkedAccount(dbAccountId) != null)
+            return null
+
         val account = Account(name, dbAccountType)
         return account.takeIf {
             createAccount(account, mapOf(USER_DATA_ACCOUNT_ID to dbAccountId.toString()))
