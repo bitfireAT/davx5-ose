@@ -370,59 +370,6 @@ fun DebugInfoScreen(
 }
 
 @Composable
-private fun FindHelpCard(modifier: Modifier = Modifier) {
-    val uriHandler = LocalUriHandler.current
-
-    CardWithImage(
-        title = stringResource(R.string.debug_info_find_help),
-        icon = Icons.AutoMirrored.Rounded.LiveHelp,
-        modifier = modifier
-    ) {
-        Text(
-            text = AnnotatedString.fromHtml(stringResource(R.string.debug_info_find_help_faq))
-        )
-        OutlinedButton(
-            onClick = { uriHandler.openUri("https://www.davx5.com/faq") },
-            modifier = Modifier.padding(bottom = 8.dp)
-        ) {
-            Text(stringResource(R.string.debug_info_find_help_faq_action))
-        }
-
-        Text(
-            text = AnnotatedString.fromHtml(stringResource(R.string.debug_info_find_help_discussions))
-        )
-        OutlinedButton(
-            onClick = { uriHandler.openUri("https://github.com/bitfireAT/davx5-ose/discussions") },
-            modifier = Modifier.padding(bottom = 8.dp)
-        ) {
-            Icon(Github, stringResource(R.string.debug_info_find_help_discussions_action))
-            Text(stringResource(R.string.debug_info_find_help_discussions_action), Modifier.padding(start = 4.dp))
-        }
-
-        Text(
-            text = AnnotatedString.fromHtml(stringResource(R.string.debug_info_find_help_issues))
-        )
-        OutlinedButton(
-            onClick = { uriHandler.openUri("https://github.com/bitfireAT/davx5-ose/issues") },
-            modifier = Modifier.padding(bottom = 8.dp)
-        ) {
-            Icon(Github, stringResource(R.string.debug_info_find_help_issues_action))
-            Text(stringResource(R.string.debug_info_find_help_issues_action), Modifier.padding(start = 4.dp))
-        }
-
-        Text(
-            text = AnnotatedString.fromHtml(stringResource(R.string.debug_info_find_help_manual))
-        )
-        OutlinedButton(
-            onClick = { uriHandler.openUri("https://manual.davx5.com/") },
-            modifier = Modifier.padding(bottom = 4.dp)
-        ) {
-            Text(stringResource(R.string.debug_info_find_help_manual_action))
-        }
-    }
-}
-
-@Composable
 private fun serverErrorMessage(domain: String?): AnnotatedString {
     val appName = stringResource(R.string.app_name).htmlEncode()
     val description = stringResource(R.string.debug_info_http_5xx_description).htmlEncode()
