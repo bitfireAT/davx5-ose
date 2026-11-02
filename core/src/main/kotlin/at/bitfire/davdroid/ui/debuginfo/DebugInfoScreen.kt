@@ -255,22 +255,12 @@ fun DebugInfoScreen(
                     modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
                 )
 
-                if (showDebugInfo)
-                    CardWithImage(
-                        title = stringResource(R.string.debug_info_title),
-                        subtitle = stringResource(R.string.debug_info_subtitle),
-                        icon = Icons.Rounded.BugReport,
+                if (showDebugInfo) {
+                    DebugInfoCard(
+                        onViewDebugFile,
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
-                    ) {
-                        OutlinedButton(
-                            onClick = onViewDebugFile,
-                            modifier = Modifier.padding(bottom = 4.dp)
-                        ) {
-                            Text(
-                                stringResource(R.string.debug_info_view_details)
-                            )
-                        }
-                    }
+                    )
+                }
 
                 if (hasLogFile) {
                     CardWithImage(
