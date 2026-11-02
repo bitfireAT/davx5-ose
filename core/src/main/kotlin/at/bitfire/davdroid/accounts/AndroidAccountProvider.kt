@@ -73,7 +73,7 @@ class AndroidAccountProvider @Inject constructor(
             ?: throw InvalidAccountException(accountId)
 
         // new Android account doesn't have the current sync framework settings yet
-        syncFrameworkSettingsUpdater.get().update(accountId, account)
+        syncFrameworkSettingsUpdater.get().update(accountId)
 
         return account
     }

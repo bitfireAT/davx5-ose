@@ -6,7 +6,6 @@ package at.bitfire.davdroid.sync
 
 import androidx.annotation.WorkerThread
 import at.bitfire.davdroid.accounts.AccountId
-import at.bitfire.davdroid.accounts.AndroidAccountManager
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.AccountSettingsFactory
@@ -27,7 +26,6 @@ import javax.inject.Inject
  */
 class AutomaticSyncManager @Inject constructor(
     private val accountSettingsFactory: AccountSettingsFactory,
-    private val androidAccountManager: AndroidAccountManager,
     private val syncFrameworkSettingsUpdater: SyncFrameworkSettingsUpdater,
     private val workerManager: SyncWorkerManager
 ) {
@@ -74,7 +72,7 @@ class AutomaticSyncManager @Inject constructor(
             workerManager.disablePeriodic(accountId, dataType)
 
         // 2. Update sync framework settings (address book accounts may exist without the main Android account).
-        syncFrameworkSettingsUpdater.update(accountId, androidAccountManager.findAndroidAccount(accountId), dataType)
+        syncFrameworkSettingsUpdater.update(accountId, dataType)
     }
 
 }

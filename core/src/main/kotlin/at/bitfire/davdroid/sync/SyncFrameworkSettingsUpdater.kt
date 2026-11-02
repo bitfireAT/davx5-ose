@@ -9,6 +9,7 @@ import android.provider.CalendarContract
 import android.provider.ContactsContract
 import androidx.annotation.WorkerThread
 import at.bitfire.davdroid.accounts.AccountId
+import at.bitfire.davdroid.accounts.AndroidAccountManager
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.repository.DavServiceRepository
 import at.bitfire.davdroid.resource.local.LocalAddressBookStore
@@ -26,6 +27,7 @@ import javax.inject.Provider
  */
 class SyncFrameworkSettingsUpdater @Inject constructor(
     private val accountSettingsFactory: AccountSettingsFactory,
+    private val androidAccountManager: AndroidAccountManager,
     private val localAddressBookStore: LocalAddressBookStore,
     private val serviceRepository: DavServiceRepository,
     private val syncFramework: SyncFrameworkIntegration,
@@ -54,19 +56,25 @@ class SyncFrameworkSettingsUpdater @Inject constructor(
     }
 
     /**
-     * Updates the sync framework settings of [account] for all data types.
+     * Updates the sync framework settings of the Android account of [accountId] (if it exists) and its
+     * address book accounts for all data types.
      */
     @WorkerThread
-    fun update(accountId: AccountId, account: Account) {
+    fun update(accountId: AccountId) {
+        val account = androidAccountManager.findAndroidAccount(accountId)
         for (dataType in SyncDataType.entries)
             update(accountId, account, dataType)
     }
 
     /**
-     * Updates the sync framework settings of [account] (if not `null`) and its address book accounts for the given data type.
+     * Like [update], but only for the given data type.
      */
     @WorkerThread
-    fun update(accountId: AccountId, account: Account?, dataType: SyncDataType) {
+    fun update(accountId: AccountId, dataType: SyncDataType) {
+        update(accountId, androidAccountManager.findAndroidAccount(accountId), dataType)
+    }
+
+    private fun update(accountId: AccountId, account: Account?, dataType: SyncDataType) {
         if (isAutomaticSyncPossible(accountId, dataType))
             enable(accountId, account, dataType)
         else

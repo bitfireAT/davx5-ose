@@ -111,7 +111,7 @@ class AndroidAccountProviderTest {
 
         provider.provide(DbAccountId(1))
 
-        verify(exactly = 0) { syncFrameworkSettingsUpdater.update(any(), any()) }
+        verify(exactly = 0) { syncFrameworkSettingsUpdater.update(any()) }
     }
 
     @Test
@@ -130,7 +130,7 @@ class AndroidAccountProviderTest {
 
         val result = provider.provide(DbAccountId(1))
 
-        verify { syncFrameworkSettingsUpdater.update(DbAccountId(1), result) }
+        verify { syncFrameworkSettingsUpdater.update(DbAccountId(1)) }
     }
 
     @Test
