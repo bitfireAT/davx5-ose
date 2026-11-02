@@ -12,12 +12,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.rounded.LiveHelp
-import androidx.compose.material.icons.rounded.Adb
 import androidx.compose.material.icons.rounded.BugReport
 import androidx.compose.material.icons.rounded.CloudOff
 import androidx.compose.material.icons.rounded.PrivacyTip
@@ -39,11 +36,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.fromHtml
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -59,7 +54,6 @@ import at.bitfire.davdroid.log.DebugDirectory
 import at.bitfire.davdroid.ui.composable.AppTheme
 import at.bitfire.davdroid.ui.composable.CardWithImage
 import at.bitfire.davdroid.ui.composable.ProgressBar
-import at.bitfire.davdroid.ui.icon.Github
 import java.io.File
 import java.io.IOError
 import java.io.IOException
@@ -243,60 +237,16 @@ fun DebugInfoScreen(
                     )
                 }
 
-                if (localResource != null || remoteResource != null)
-                    CardWithImage(
-                        title = stringResource(R.string.debug_info_involved_caption),
-                        subtitle = stringResource(R.string.debug_info_involved_subtitle),
-                        icon = Icons.Rounded.Adb,
+                if (localResource != null || remoteResource != null) {
+                    InvolvedResourcesCard(
+                        localResource,
+                        canViewResource,
+                        onViewLocalResource,
+                        remoteResource,
+                        onCopyRemoteUrl,
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
-                    ) {
-                        localResource?.let {
-                            Text(
-                                text = stringResource(R.string.debug_info_involved_local),
-                                style = MaterialTheme.typography.bodyLarge,
-                                modifier = Modifier.padding(top = 4.dp)
-                            )
-                            Text(
-                                text = it,
-                                style = MaterialTheme.typography.bodySmall.copy(
-                                    fontFamily = FontFamily.Monospace
-                                ),
-                                modifier = Modifier.padding(bottom = 8.dp)
-                            )
-                        }
-                        if (canViewResource)
-                            OutlinedButton(
-                                onClick = { onViewLocalResource() },
-                                modifier = Modifier.padding(bottom = 4.dp)
-                            ) {
-                                Text(
-                                    stringResource(R.string.debug_info_view_local_resource)
-                                )
-                            }
-
-                        remoteResource?.let { remoteUrl ->
-                            Text(
-                                text = stringResource(R.string.debug_info_involved_remote),
-                                style = MaterialTheme.typography.bodyLarge,
-                                modifier = Modifier.padding(top = 4.dp)
-                            )
-                            SelectionContainer {
-                                Text(
-                                    text = remoteUrl,
-                                    style = MaterialTheme.typography.bodySmall.copy(
-                                        fontFamily = FontFamily.Monospace
-                                    ),
-                                    modifier = Modifier.padding(bottom = 8.dp)
-                                )
-                            }
-                            OutlinedButton(
-                                onClick = onCopyRemoteUrl,
-                                modifier = Modifier.padding(bottom = 4.dp)
-                            ) {
-                                Text(stringResource(R.string.debug_info_copy_remote_url))
-                            }
-                        }
-                    }
+                    )
+                }
 
                 CardWithImage(
                     title = stringResource(R.string.debug_info_privacy_warning_title),
