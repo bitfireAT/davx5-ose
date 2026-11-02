@@ -7,7 +7,7 @@ package at.bitfire.davdroid.accounts
 import android.accounts.Account
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
-import at.bitfire.davdroid.sync.AutomaticSyncManager
+import at.bitfire.davdroid.sync.SyncFrameworkSettingsUpdater
 import at.bitfire.davdroid.sync.account.InvalidAccountException
 import dagger.Lazy
 import kotlinx.coroutines.CoroutineDispatcher
@@ -23,10 +23,10 @@ import javax.inject.Inject
  */
 class AndroidAccountProvider @Inject constructor(
     private val androidAccountManager: AndroidAccountManager,
-    private val automaticSyncManager: Lazy<AutomaticSyncManager>,
     db: AppDatabase,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
-    private val logger: Logger
+    private val logger: Logger,
+    private val syncFrameworkSettingsUpdater: Lazy<SyncFrameworkSettingsUpdater>
 ) {
 
     private val dbAccountDao = db.dbAccountDao()
@@ -78,7 +78,7 @@ class AndroidAccountProvider @Inject constructor(
         }
 
         // new/adopted Android account doesn't have the current sync framework settings yet
-        automaticSyncManager.get().updateAutomaticSync(accountId)
+        syncFrameworkSettingsUpdater.get().update(accountId, account)
 
         return account
     }

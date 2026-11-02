@@ -12,7 +12,7 @@ import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.DbAccount
 import at.bitfire.davdroid.db.DbAccountDao
 import at.bitfire.davdroid.resource.local.AddressBookAccountProperties
-import at.bitfire.davdroid.sync.AutomaticSyncManager
+import at.bitfire.davdroid.sync.SyncFrameworkSettingsUpdater
 import at.bitfire.davdroid.sync.account.InvalidAccountException
 import io.mockk.coEvery
 import io.mockk.every
@@ -45,8 +45,8 @@ class AndroidAccountProviderTest {
     private val database = mockk<AppDatabase> {
         every { dbAccountDao() } returns dbAccountDao
     }
-    private val automaticSyncManager = mockk<AutomaticSyncManager>(relaxed = true)
     private val logger = mockk<Logger>(relaxed = true)
+    private val syncFrameworkSettingsUpdater = mockk<SyncFrameworkSettingsUpdater>(relaxed = true)
 
     private val androidAccountManager = AndroidAccountManager(
         accountManager = { accountManager },
@@ -58,10 +58,10 @@ class AndroidAccountProviderTest {
     )
     private val provider = AndroidAccountProvider(
         androidAccountManager = androidAccountManager,
-        automaticSyncManager = { automaticSyncManager },
         db = database,
         ioDispatcher = Dispatchers.IO,
-        logger = logger
+        logger = logger,
+        syncFrameworkSettingsUpdater = { syncFrameworkSettingsUpdater }
     )
 
     private fun addDbAccount(id: Long, name: String) {
@@ -103,13 +103,13 @@ class AndroidAccountProviderTest {
     }
 
     @Test
-    fun `provide() doesn't update automatic sync when linked account exists`() = runTest {
+    fun `provide() doesn't update sync framework settings when linked account exists`() = runTest {
         addDbAccount(1, "DB Name")
         addAndroidAccount("Android Name", linkedId = 1)
 
         provider.provide(DbAccountId(1))
 
-        verify(exactly = 0) { automaticSyncManager.updateAutomaticSync(any()) }
+        verify(exactly = 0) { syncFrameworkSettingsUpdater.update(any(), any()) }
     }
 
     @Test
@@ -123,12 +123,12 @@ class AndroidAccountProviderTest {
     }
 
     @Test
-    fun `provide() updates automatic sync when account is created`() = runTest {
+    fun `provide() updates sync framework settings when account is created`() = runTest {
         addDbAccount(1, "DB Name")
 
-        provider.provide(DbAccountId(1))
+        val result = provider.provide(DbAccountId(1))
 
-        verify { automaticSyncManager.updateAutomaticSync(DbAccountId(1)) }
+        verify { syncFrameworkSettingsUpdater.update(DbAccountId(1), result) }
     }
 
     @Test
