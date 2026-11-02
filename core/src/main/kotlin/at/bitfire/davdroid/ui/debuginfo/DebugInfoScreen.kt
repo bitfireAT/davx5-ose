@@ -23,7 +23,6 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
@@ -269,23 +268,11 @@ fun DebugInfoScreen(
                 }
 
                 if (showDebugInfo) {
-                    CardWithImage(
-                        title = stringResource(R.string.debug_info_archive_caption),
-                        subtitle = stringResource(R.string.debug_info_archive_subtitle),
-                        message = stringResource(R.string.debug_info_archive_text),
-                        icon = Icons.Rounded.Share,
+                    DebugLogZipCard(
+                        onShareZip,
+                        zipProgress,
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
-                    ) {
-                        OutlinedButton(
-                            onClick = onShareZip,
-                            enabled = !zipProgress,
-                            modifier = Modifier.padding(bottom = 4.dp)
-                        ) {
-                            Text(
-                                stringResource(R.string.debug_info_archive_share)
-                            )
-                        }
-                    }
+                    )
                 }
 
                 FindHelpCard(modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp))
