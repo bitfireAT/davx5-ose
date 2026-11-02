@@ -79,10 +79,10 @@
             android:label="@string/app_settings_push_title"
             android:parentActivityName=".ui.AppSettingsActivity" />
         <activity
-            android:name=".ui.DebugInfoActivity"
+            android:name=".ui.debuginfo.DebugInfoActivity"
             android:parentActivityName=".ui.AppSettingsActivity"
             android:exported="false"
-                android:label="@string/debug_info_title" />
+            android:label="@string/debug_info_title" />
         <activity
             android:name=".ui.PermissionsActivity"
             android:label="@string/app_settings_security_app_permissions"

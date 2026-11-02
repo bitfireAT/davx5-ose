@@ -13,7 +13,7 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.TaskStackBuilder
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.AppSettingsActivity
-import at.bitfire.davdroid.ui.DebugInfoActivity
+import at.bitfire.davdroid.ui.debuginfo.DebugInfoActivity
 import at.bitfire.davdroid.ui.NotificationRegistry
 import at.bitfire.synctools.log.PlainTextFormatter
 import dagger.hilt.android.qualifiers.ApplicationContext

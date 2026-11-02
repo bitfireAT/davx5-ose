@@ -20,7 +20,7 @@ import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.resource.local.LocalResource
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.SettingsManager
-import at.bitfire.davdroid.ui.DebugInfoActivity
+import at.bitfire.davdroid.ui.debuginfo.DebugInfoActivity
 import at.bitfire.davdroid.ui.NotificationRegistry
 import at.bitfire.davdroid.ui.account.AccountSettingsActivity
 import dagger.assisted.Assisted

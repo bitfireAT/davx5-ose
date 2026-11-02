@@ -5,7 +5,7 @@
 package com.davx5.ose
 
 import android.content.Context
-import at.bitfire.davdroid.ui.DebugInfoActivity
+import at.bitfire.davdroid.ui.debuginfo.DebugInfoActivity
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

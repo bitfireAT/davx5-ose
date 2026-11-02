@@ -12,6 +12,7 @@ import android.provider.Settings
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toUri
+import at.bitfire.davdroid.ui.debuginfo.DebugInfoActivity
 import at.bitfire.davdroid.ui.push.PushSettingsActivity
 import dagger.hilt.android.AndroidEntryPoint
 

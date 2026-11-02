@@ -19,7 +19,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import at.bitfire.dav4jvm.ktor.exception.HttpException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
-import at.bitfire.davdroid.ui.DebugInfoActivity
+import at.bitfire.davdroid.ui.debuginfo.DebugInfoActivity
 import io.ktor.http.Url
 import java.io.IOException
 

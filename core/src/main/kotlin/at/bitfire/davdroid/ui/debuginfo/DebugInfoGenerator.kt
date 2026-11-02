@@ -2,7 +2,7 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  */
 
-package at.bitfire.davdroid.ui
+package at.bitfire.davdroid.ui.debuginfo
 
 import android.accounts.Account
 import android.accounts.AccountManager
@@ -39,10 +39,8 @@ import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.accounts.AndroidAccountManager
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.repository.AccountRepository
-import at.bitfire.davdroid.resource.local.LocalAddressBook
 import at.bitfire.davdroid.settings.AccountSettingsFactory
 import at.bitfire.davdroid.resource.local.AddressBookAccountProperties
-import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.account.InvalidAccountException

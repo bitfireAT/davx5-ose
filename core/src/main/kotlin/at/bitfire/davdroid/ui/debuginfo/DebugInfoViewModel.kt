@@ -2,7 +2,7 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  */
 
-package at.bitfire.davdroid.ui
+package at.bitfire.davdroid.ui.debuginfo
 
 import android.content.Context
 import androidx.compose.runtime.getValue
@@ -14,7 +14,7 @@ import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.log.DebugDirectory
 import at.bitfire.davdroid.log.LogFileHandler
-import at.bitfire.davdroid.ui.DebugInfoViewModel.Companion.FILE_DEBUG_INFO
+import at.bitfire.davdroid.ui.debuginfo.DebugInfoViewModel.Companion.FILE_DEBUG_INFO
 import com.google.common.io.ByteStreams
 import com.google.common.io.Files
 import dagger.assisted.Assisted
