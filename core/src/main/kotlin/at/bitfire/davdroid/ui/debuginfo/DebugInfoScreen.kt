@@ -109,27 +109,9 @@ fun DebugInfoScreen(
         showDebugInfo = debugInfo != null,
         zipProgress = zipInProgress,
         showModelCause = cause != null,
-        modelCauseTitle = when (cause) {
-            is HttpException -> stringResource(if (cause.isServerError) R.string.debug_info_server_error else R.string.debug_info_http_error)
-            is DavException -> stringResource(R.string.debug_info_webdav_error)
-            is IOException, is IOError -> stringResource(R.string.debug_info_io_error)
-            else -> cause?.let { it::class.java.simpleName }
-        } ?: "",
+        modelCauseTitle = buildCauseTitle(cause),
         modelCauseSubtitle = cause?.localizedMessage,
-        modelCauseMessage =
-            if (cause is HttpException)
-                when {
-                    cause.statusCode == 403 -> AnnotatedString(stringResource(R.string.debug_info_http_403_description))
-                    cause.statusCode == 404 -> AnnotatedString(stringResource(R.string.debug_info_http_404_description))
-                    cause.statusCode == 405 -> AnnotatedString(stringResource(R.string.debug_info_http_405_description))
-                    cause.isServerError -> {
-                        val domain = UrlUtils.hostToDomain(remoteResource?.toUrlOrNull()?.host)
-                        serverErrorMessage(domain)
-                    }
-                    else -> AnnotatedString(stringResource(R.string.debug_info_unexpected_error))
-                }
-            else
-                AnnotatedString(stringResource(R.string.debug_info_unexpected_error)),
+        modelCauseMessage = buildCauseMessage(cause, remoteResource),
         localResource = localResource,
         canViewResource = canViewResource,
         remoteResource = remoteResource,
@@ -281,6 +263,33 @@ fun DebugInfoScreen(
                 Spacer(modifier = Modifier.height(64.dp))
             }
         }
+    }
+}
+
+@Composable
+private fun buildCauseTitle(cause: Throwable?): String = when (cause) {
+    is HttpException if cause.isServerError -> stringResource(R.string.debug_info_server_error)
+    is HttpException -> stringResource(R.string.debug_info_http_error)
+    is DavException -> stringResource(R.string.debug_info_webdav_error)
+    is IOException, is IOError -> stringResource(R.string.debug_info_io_error)
+    else -> cause?.let { it::class.java.simpleName }.orEmpty()
+}
+
+@Composable
+private fun buildCauseMessage(cause: Throwable?, remoteResource: String?): AnnotatedString {
+    if (cause !is HttpException) {
+        return AnnotatedString(stringResource(R.string.debug_info_unexpected_error))
+    }
+
+    return when {
+        cause.statusCode == 403 -> AnnotatedString(stringResource(R.string.debug_info_http_403_description))
+        cause.statusCode == 404 -> AnnotatedString(stringResource(R.string.debug_info_http_404_description))
+        cause.statusCode == 405 -> AnnotatedString(stringResource(R.string.debug_info_http_405_description))
+        cause.isServerError -> {
+            val domain = UrlUtils.hostToDomain(remoteResource?.toUrlOrNull()?.host)
+            serverErrorMessage(domain)
+        }
+        else -> AnnotatedString(stringResource(R.string.debug_info_unexpected_error))
     }
 }
 
