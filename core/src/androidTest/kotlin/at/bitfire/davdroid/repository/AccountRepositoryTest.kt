@@ -10,8 +10,6 @@ import android.content.Context
 import androidx.hilt.work.HiltWorkerFactory
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.TestUtils
-import at.bitfire.davdroid.accounts.AndroidAccountManager
-import at.bitfire.davdroid.accounts.DbAccountId
 import at.bitfire.davdroid.accounts.LegacyAccount
 import at.bitfire.davdroid.resource.local.LocalAddressBookStore
 import at.bitfire.davdroid.resource.local.LocalCalendarStore
@@ -38,7 +36,6 @@ import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.unmockkObject
 import io.mockk.verify
-import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.test.runTest
 import org.junit.After
@@ -131,18 +128,12 @@ class AccountRepositoryTest {
     // testCreateDbAccount
 
     @Test
-    fun testCreateDbAccount_createsLinkedAndroidAccount() = runTest {
+    fun testCreateDbAccount_doesNotCreateAndroidAccount() = runTest {
         val config = DavResourceFinder.Configuration(cardDAV = null, calDAV = null, encountered401 = false)
 
-        val created = accountRepository.createDbAccount("DB Account", null, config, GroupMethod.GROUP_VCARDS, null)
+        accountRepository.createDbAccount("DB Account", null, config, GroupMethod.GROUP_VCARDS, null)
 
-        val dbAccountId = created as DbAccountId
-        val androidAccount = Account("DB Account", context.getString(R.string.account_type_db))
-        assertTrue(accountManager.getAccountsByType(androidAccount.type).contains(androidAccount))
-        assertEquals(
-            dbAccountId.id.toString(),
-            accountManager.getUserData(androidAccount, AndroidAccountManager.USER_DATA_ACCOUNT_ID)
-        )
+        assertTrue(accountManager.getAccountsByType(context.getString(R.string.account_type_db)).isEmpty())
     }
 
 

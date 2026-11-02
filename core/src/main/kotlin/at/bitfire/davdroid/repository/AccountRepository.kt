@@ -14,7 +14,6 @@ import at.bitfire.davdroid.FeatureFlags
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.accounts.AndroidAccountManager
-import at.bitfire.davdroid.accounts.AndroidAccountProvider
 import at.bitfire.davdroid.accounts.DbAccountId
 import at.bitfire.davdroid.accounts.LegacyAccount
 import at.bitfire.davdroid.db.AccountSetting
@@ -66,7 +65,6 @@ class AccountRepository @Inject constructor(
     private val accountManager: AccountManager,
     private val accountSettingsFactory: AccountSettingsFactory,
     private val androidAccountManager: AndroidAccountManager,
-    private val androidAccountProvider: AndroidAccountProvider,
     private val automaticSyncManager: Lazy<AutomaticSyncManager>,
     @ApplicationContext private val context: Context,
     private val collectionRepository: Lazy<DavCollectionRepository>,
@@ -194,18 +192,6 @@ class AccountRepository @Inject constructor(
             accountSettingsFactory.create(accountId).also {
                 it.putInitialSettings(credentials, preconfigurationUrl)
             }
-        }
-
-        // create linked Android account (settings are stored in the database, so no user data/password needed)
-        try {
-            androidAccountProvider.provide(accountId)
-        } catch (e: InvalidAccountException) {
-            logger.log(Level.WARNING, "Failed to create Android account for $accountId", e)
-
-            // If the system account creation fails, we need to clean up the database account that was just created.
-            dbAccountDao.delete(accountIdNumber)
-
-            return null
         }
 
         // add entries for account to database
