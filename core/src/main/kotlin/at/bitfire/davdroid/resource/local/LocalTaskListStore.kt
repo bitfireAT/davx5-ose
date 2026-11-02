@@ -121,7 +121,7 @@ class LocalTaskListStore @AssistedInject constructor(
     }
 
     override fun getAll(accountId: AccountId, client: LocalStorageClient): List<LocalTaskList> {
-        val account = androidAccountManager.getAndroidAccount(accountId)
+        val account = androidAccountManager.findAndroidAccount(accountId) ?: return emptyList()
         return DmfsTaskListProvider(account, client, providerName).findTaskLists()
             .map { taskList -> LocalTaskList(taskList) }
     }
@@ -131,7 +131,7 @@ class LocalTaskListStore @AssistedInject constructor(
         client: LocalStorageClient,
         dbCollectionId: Long
     ): LocalTaskList? {
-        val account = androidAccountManager.getAndroidAccount(accountId)
+        val account = androidAccountManager.findAndroidAccount(accountId) ?: return null
         return DmfsTaskListProvider(account, client, providerName)
             .findFirstTaskList("${TaskLists._SYNC_ID}=?", arrayOf(dbCollectionId.toString()))
             ?.let { taskList -> LocalTaskList(taskList) }

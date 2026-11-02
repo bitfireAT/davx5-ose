@@ -73,9 +73,10 @@ class AutomaticSyncManager @Inject constructor(
         else
             workerManager.disablePeriodic(accountId, dataType)
 
-        // 2. Update sync framework settings.
-        val account = androidAccountManager.getAndroidAccount(accountId)
-        syncFrameworkSettingsUpdater.update(accountId, account, dataType)
+        // 2. Update sync framework settings (if there's no Android account yet, AndroidAccountProvider will do it).
+        androidAccountManager.findAndroidAccount(accountId)?.let { account ->
+            syncFrameworkSettingsUpdater.update(accountId, account, dataType)
+        }
     }
 
 }

@@ -152,23 +152,31 @@ class AndroidAccountManager @Inject constructor(
     /**
      * Returns the Android [Account] for a given [AccountId].
      *
-     * For DB accounts, this is the linked Android account. If there's none (yet), an account with the DB account
-     * name is returned, which doesn't necessarily exist.
+     * For DB accounts, this is the linked Android account, which is only created on demand by [AndroidAccountProvider].
      *
-     * @return the Android account for the given [accountId]
-     * @throws InvalidAccountException if the account does not exist
+     * @return the Android account for the given [accountId], or `null` if the DB account or its linked Android
+     *   account doesn't exist
      */
     @WorkerThread
-    fun getAndroidAccount(accountId: AccountId): Account {
-        return when (accountId) {
+    fun findAndroidAccount(accountId: AccountId): Account? =
+        when (accountId) {
             is LegacyAccount -> accountId.androidAccount
-            is DbAccountId -> {
-                val dbAccount = dbAccountDao.getBlocking(accountId.id) ?: throw InvalidAccountException(accountId)
-                // fallback: name that AndroidAccountProvider will use when creating the account
-                findLinkedAccount(accountId.id) ?: Account(dbAccount.name, dbAccountType)
-            }
+            is DbAccountId ->
+                if (dbAccountDao.getBlocking(accountId.id) != null)
+                    findLinkedAccount(accountId.id)
+                else
+                    null
         }
-    }
+
+    /**
+     * Like [findAndroidAccount], but throws if there's no Android account.
+     *
+     * @return the Android account for the given [accountId]
+     * @throws InvalidAccountException if the DB account or its linked Android account doesn't exist
+     */
+    @WorkerThread
+    fun getAndroidAccount(accountId: AccountId): Account =
+        findAndroidAccount(accountId) ?: throw InvalidAccountException(accountId)
 
     /**
      * Returns a flow that updates automatically whenever the account with id [accountId] is updated.
@@ -192,12 +200,7 @@ class AndroidAccountManager @Inject constructor(
             accountManager.removeOnAccountsUpdatedListener(listener)
         }
     }.map { accounts ->
-        val account = try {
-            getAndroidAccount(accountId)
-        } catch (_: InvalidAccountException) {
-            // DB Account not found
-            return@map null
-        }
+        val account = findAndroidAccount(accountId) ?: return@map null
         // It's still possible that the account doesn't exist anymore; the list given by the account manager is authoritative
         account.takeIf { accounts.contains(it) }
     }.flowOn(ioDispatcher) // we access the database, so run the mapping in the io dispatcher

@@ -108,7 +108,7 @@ class LocalJtxCollectionStore @Inject constructor(
     }
 
     override fun getAll(accountId: AccountId, client: LocalStorageClient): List<LocalJtxCollection> {
-        val account = androidAccountManager.getAndroidAccount(accountId)
+        val account = androidAccountManager.findAndroidAccount(accountId) ?: return emptyList()
         return JtxCollectionProvider(account, client).findCollections().map { jtxCollection ->
             LocalJtxCollection(jtxCollection)
         }
@@ -119,7 +119,7 @@ class LocalJtxCollectionStore @Inject constructor(
         client: LocalStorageClient,
         dbCollectionId: Long
     ): LocalJtxCollection? {
-        val account = androidAccountManager.getAndroidAccount(accountId)
+        val account = androidAccountManager.findAndroidAccount(accountId) ?: return null
         return JtxCollectionProvider(account, client).findFirstCollection(
             "${JtxContract.JtxCollection.SYNC_ID}=?", arrayOf(dbCollectionId.toString())
         )?.let { jtxCollection -> LocalJtxCollection(jtxCollection) }

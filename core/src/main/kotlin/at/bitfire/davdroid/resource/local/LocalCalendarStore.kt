@@ -96,7 +96,7 @@ class LocalCalendarStore @Inject constructor(
     }
 
     override fun getAll(accountId: AccountId, client: LocalStorageClient): List<LocalCalendar> {
-        val account = androidAccountManager.getAndroidAccount(accountId)
+        val account = androidAccountManager.findAndroidAccount(accountId) ?: return emptyList()
         return AndroidCalendarProvider(account, client)
             .findCalendars("${Calendars.SYNC_EVENTS}!=0", null)
             .map { androidCalendar -> LocalCalendar(androidCalendar) }
@@ -107,7 +107,7 @@ class LocalCalendarStore @Inject constructor(
         client: LocalStorageClient,
         dbCollectionId: Long
     ): LocalCalendar? {
-        val account = androidAccountManager.getAndroidAccount(accountId)
+        val account = androidAccountManager.findAndroidAccount(accountId) ?: return null
         return AndroidCalendarProvider(account, client)
             .findFirstCalendar("${Calendars._SYNC_ID}=?", arrayOf(dbCollectionId.toString()))
             ?.let { androidCalendar -> LocalCalendar(androidCalendar) }
