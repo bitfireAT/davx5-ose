@@ -36,52 +36,72 @@ internal fun InvolvedResourcesCard(
         icon = Icons.Rounded.Adb,
         modifier = modifier
     ) {
-        localResource?.let {
-            Text(
-                text = stringResource(R.string.debug_info_involved_local),
-                style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier.padding(top = 4.dp)
-            )
-            Text(
-                text = it,
-                style = MaterialTheme.typography.bodySmall.copy(
-                    fontFamily = FontFamily.Monospace
-                ),
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
+        if (localResource != null) {
+            LocalResource(localResource, canViewResource, onViewLocalResource)
         }
-        if (canViewResource)
-            OutlinedButton(
-                onClick = { onViewLocalResource() },
-                modifier = Modifier.padding(bottom = 4.dp)
-            ) {
-                Text(
-                    stringResource(R.string.debug_info_view_local_resource)
-                )
-            }
 
-        remoteResource?.let { remoteUrl ->
-            Text(
-                text = stringResource(R.string.debug_info_involved_remote),
-                style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier.padding(top = 4.dp)
-            )
-            SelectionContainer {
-                Text(
-                    text = remoteUrl,
-                    style = MaterialTheme.typography.bodySmall.copy(
-                        fontFamily = FontFamily.Monospace
-                    ),
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
-            }
-            OutlinedButton(
-                onClick = onCopyRemoteUrl,
-                modifier = Modifier.padding(bottom = 4.dp)
-            ) {
-                Text(stringResource(R.string.debug_info_copy_remote_url))
-            }
+        if (remoteResource != null) {
+            RemoteResource(remoteResource, onCopyRemoteUrl)
         }
+    }
+}
+
+@Composable
+private fun LocalResource(
+    localResource: String,
+    canViewResource: Boolean,
+    onViewLocalResource: () -> Unit
+) {
+    Text(
+        text = stringResource(R.string.debug_info_involved_local),
+        style = MaterialTheme.typography.bodyLarge,
+        modifier = Modifier.padding(top = 4.dp)
+    )
+
+    Text(
+        text = localResource,
+        style = MaterialTheme.typography.bodySmall.copy(
+            fontFamily = FontFamily.Monospace
+        ),
+        modifier = Modifier.padding(bottom = 8.dp)
+    )
+
+    if (canViewResource) {
+        OutlinedButton(
+            onClick = { onViewLocalResource() },
+            modifier = Modifier.padding(bottom = 4.dp)
+        ) {
+            Text(stringResource(R.string.debug_info_view_local_resource))
+        }
+    }
+}
+
+@Composable
+private fun RemoteResource(
+    remoteResource: String,
+    onCopyRemoteUrl: () -> Unit
+) {
+    Text(
+        text = stringResource(R.string.debug_info_involved_remote),
+        style = MaterialTheme.typography.bodyLarge,
+        modifier = Modifier.padding(top = 4.dp)
+    )
+
+    SelectionContainer {
+        Text(
+            text = remoteResource,
+            style = MaterialTheme.typography.bodySmall.copy(
+                fontFamily = FontFamily.Monospace
+            ),
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+    }
+
+    OutlinedButton(
+        onClick = onCopyRemoteUrl,
+        modifier = Modifier.padding(bottom = 4.dp)
+    ) {
+        Text(stringResource(R.string.debug_info_copy_remote_url))
     }
 }
 
