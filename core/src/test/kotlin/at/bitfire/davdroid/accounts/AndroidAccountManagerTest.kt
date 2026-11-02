@@ -249,12 +249,29 @@ class AndroidAccountManagerTest {
 
 
     @Test
-    fun `linkAccount() links account to DB account`() {
+    fun `removeAccount() removes account and address book accounts of linked DB account`() {
+        val linked = addAndroidAccount("Linked", linkedId = 1)
+        val addressBook = addAddressBookAccount("Address book", DbAccountId(1))
+        val otherAddressBook = addAddressBookAccount("Other address book", DbAccountId(2))
+
+        androidAccountManager().removeAccount(linked)
+
+        val remaining = realManager.accounts.toList()
+        assertFalse(remaining.contains(linked))
+        assertFalse(remaining.contains(addressBook))
+        assertTrue(remaining.contains(otherAddressBook))
+    }
+
+    @Test
+    fun `removeAccount() removes unlinked account but no address book accounts`() {
         val unlinked = addAndroidAccount("Unlinked")
+        val addressBook = addAddressBookAccount("Address book", DbAccountId(1))
 
-        androidAccountManager().linkAccount(unlinked, 7)
+        androidAccountManager().removeAccount(unlinked)
 
-        assertEquals("7", realManager.getUserData(unlinked, AndroidAccountManager.USER_DATA_ACCOUNT_ID))
+        val remaining = realManager.accounts.toList()
+        assertFalse(remaining.contains(unlinked))
+        assertTrue(remaining.contains(addressBook))
     }
 
 

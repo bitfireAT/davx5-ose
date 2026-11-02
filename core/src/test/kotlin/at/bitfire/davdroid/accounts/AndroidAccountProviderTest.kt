@@ -22,6 +22,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -78,8 +79,9 @@ class AndroidAccountProviderTest {
 
     @After
     fun tearDown() {
-        for (account in accountManager.getAccountsByType(dbAccountType))
-            accountManager.removeAccountExplicitly(account)
+        for (type in arrayOf(dbAccountType, context.getString(R.string.account_type_address_book)))
+            for (account in accountManager.getAccountsByType(type))
+                accountManager.removeAccountExplicitly(account)
     }
 
 
@@ -132,25 +134,38 @@ class AndroidAccountProviderTest {
     }
 
     @Test
-    fun `provide() adopts unlinked account with same name`() = runTest {
+    fun `provide() replaces unlinked account with same name`() = runTest {
         addDbAccount(1, "DB Name")
-        val unlinked = addAndroidAccount("DB Name")
+        addAndroidAccount("DB Name")
 
         val result = provider.provide(DbAccountId(1))
 
-        assertEquals(unlinked, result)
+        assertEquals(Account("DB Name", dbAccountType), result)
         assertEquals(1L, androidAccountManager.getLinkedDbAccountId(result))
     }
 
     @Test
-    fun `provide() adopts account with same name that is linked to deleted DB account`() = runTest {
+    fun `provide() replaces account with same name that is linked to deleted DB account`() = runTest {
         addDbAccount(1, "DB Name")
-        val orphaned = addAndroidAccount("DB Name", linkedId = 99)
+        addAndroidAccount("DB Name", linkedId = 99)
 
         val result = provider.provide(DbAccountId(1))
 
-        assertEquals(orphaned, result)
+        assertEquals(Account("DB Name", dbAccountType), result)
         assertEquals(1L, androidAccountManager.getLinkedDbAccountId(result))
+    }
+
+    @Test
+    fun `provide() removes address book accounts of replaced account`() = runTest {
+        addDbAccount(1, "DB Name")
+        addAndroidAccount("DB Name", linkedId = 99)
+        val addressBook = Account("Address book", context.getString(R.string.account_type_address_book))
+        assertTrue(accountManager.addAccountExplicitly(addressBook, null, null))
+        AddressBookAccountProperties(accountManager, context).setAppAccount(addressBook, DbAccountId(99))
+
+        provider.provide(DbAccountId(1))
+
+        assertFalse(accountManager.accounts.contains(addressBook))
     }
 
     @Test

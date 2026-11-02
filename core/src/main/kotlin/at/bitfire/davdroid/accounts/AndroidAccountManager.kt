@@ -126,10 +126,22 @@ class AndroidAccountManager @Inject constructor(
         accountManager.get().getUserData(account, USER_DATA_ACCOUNT_ID)?.toLongOrNull()
 
     /**
-     * Links [account] to the DB account with ID [dbAccountId].
+     * Removes the Android account [account] of a DB account, including the address book accounts of the
+     * DB account it's linked to.
      */
-    fun linkAccount(account: Account, dbAccountId: Long) {
-        accountManager.get().setAndVerifyUserData(account, USER_DATA_ACCOUNT_ID, dbAccountId.toString())
+    fun removeAccount(account: Account) {
+        val manager = accountManager.get()
+        val linkedId = getLinkedDbAccountId(account)
+        val addressBookAccounts =
+            if (linkedId != null)
+                manager.getAccountsByType(addressBookAccountType)
+                    .filter { addressBookAccountProperties.getAppAccount(it) == DbAccountId(linkedId) }
+            else
+                emptyList()
+        for (accountToRemove in addressBookAccounts + account) {
+            logger.info("Removing Android account $accountToRemove")
+            manager.removeAccountExplicitly(accountToRemove)
+        }
     }
 
     /**

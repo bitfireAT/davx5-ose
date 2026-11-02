@@ -19,7 +19,7 @@ import javax.inject.Inject
 
 /**
  * Provides a ready-to-use Android [Account] for an [AccountId]. For DB accounts, the linked Android account
- * is created (or an orphaned one with the same name is adopted) when necessary.
+ * is created when necessary (replacing an orphaned one with the same name).
  */
 class AndroidAccountProvider @Inject constructor(
     private val androidAccountManager: AndroidAccountManager,
@@ -55,29 +55,24 @@ class AndroidAccountProvider @Inject constructor(
         androidAccountManager.findLinkedAccount(accountId.id)?.let { return it }
 
         val sameName = androidAccountManager.findAccountByName(dbAccount.name)
-        val sameNameLinkedId = sameName?.let { androidAccountManager.getLinkedDbAccountId(it) }
-        val account = when {
-            sameName == null -> {
-                logger.info("Creating Android account for $accountId")
-                androidAccountManager.createLinkedAccount(dbAccount.name, accountId.id)
-                    ?: throw InvalidAccountException(accountId)
-            }
-
-            // name is taken by an Android account that belongs to another (existing) DB account
-            sameNameLinkedId != null && dbAccountDao.get(sameNameLinkedId) != null -> {
+        if (sameName != null) {
+            val sameNameLinkedId = androidAccountManager.getLinkedDbAccountId(sameName)
+            if (sameNameLinkedId != null && dbAccountDao.get(sameNameLinkedId) != null) {
+                // name is taken by an Android account that belongs to another (existing) DB account
                 logger.warning("Android account $sameName is linked to another DB account")
                 throw InvalidAccountException(accountId)
             }
 
-            // orphaned (not linked or linked to a DB account that doesn't exist anymore) → adopt
-            else -> {
-                logger.info("Linking orphaned Android account $sameName to $accountId")
-                androidAccountManager.linkAccount(sameName, accountId.id)
-                sameName
-            }
+            // orphaned (not linked or linked to a DB account that doesn't exist anymore), may have unrelated local data
+            logger.info("Removing orphaned Android account $sameName")
+            androidAccountManager.removeAccount(sameName)
         }
 
-        // new/adopted Android account doesn't have the current sync framework settings yet
+        logger.info("Creating Android account for $accountId")
+        val account = androidAccountManager.createLinkedAccount(dbAccount.name, accountId.id)
+            ?: throw InvalidAccountException(accountId)
+
+        // new Android account doesn't have the current sync framework settings yet
         syncFrameworkSettingsUpdater.get().update(accountId, account)
 
         return account
