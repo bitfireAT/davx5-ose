@@ -50,7 +50,7 @@ class AutomaticSyncManager @Inject constructor(
      * Updates automatic synchronization of the given account and data type according to the account services and settings:
      *
      * 1. Enables/Disables periodic sync worker for the given data type with the interval from [AccountSettings].
-     * 2. Updates the sync framework settings of the Android account.
+     * 2. Updates the sync framework settings of the Android account (if it exists) and its address book accounts.
      *
      * If there's a [Service] for the given account and data type, automatic sync may be enabled if sync interval is set
      * in [AccountSettings].
@@ -73,10 +73,8 @@ class AutomaticSyncManager @Inject constructor(
         else
             workerManager.disablePeriodic(accountId, dataType)
 
-        // 2. Update sync framework settings (if there's no Android account yet, AndroidAccountProvider will do it).
-        androidAccountManager.findAndroidAccount(accountId)?.let { account ->
-            syncFrameworkSettingsUpdater.update(accountId, account, dataType)
-        }
+        // 2. Update sync framework settings (address book accounts may exist without the main Android account).
+        syncFrameworkSettingsUpdater.update(accountId, androidAccountManager.findAndroidAccount(accountId), dataType)
     }
 
 }

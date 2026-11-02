@@ -21,7 +21,8 @@ import javax.inject.Provider
  * Updates the sync framework settings (sync-ability and content-triggered sync) of an Android account
  * according to the account services and settings.
  *
- * This is the only part of automatic synchronization that depends on the Android account.
+ * This is the only part of automatic synchronization that depends on the Android account. Address book accounts
+ * are updated even when the main Android account doesn't exist (yet).
  */
 class SyncFrameworkSettingsUpdater @Inject constructor(
     private val accountSettingsFactory: AccountSettingsFactory,
@@ -62,29 +63,32 @@ class SyncFrameworkSettingsUpdater @Inject constructor(
     }
 
     /**
-     * Updates the sync framework settings of [account] for the given data type.
+     * Updates the sync framework settings of [account] (if not `null`) and its address book accounts for the given data type.
      */
     @WorkerThread
-    fun update(accountId: AccountId, account: Account, dataType: SyncDataType) {
+    fun update(accountId: AccountId, account: Account?, dataType: SyncDataType) {
         if (isAutomaticSyncPossible(accountId, dataType))
             enable(accountId, account, dataType)
         else
             disable(account, dataType)
     }
 
-    private fun disable(account: Account, dataType: SyncDataType) {
+    private fun disable(account: Account?, dataType: SyncDataType) {
+        if (account == null)
+            return
         for (authority in dataType.possibleAuthorities()) {
             syncFramework.disableSyncAbility(account, authority)
             // no need to disable content-triggered sync, as it can't be active when sync-ability is disabled
         }
     }
 
-    private fun enable(accountId: AccountId, account: Account, dataType: SyncDataType) {
+    private fun enable(accountId: AccountId, account: Account?, dataType: SyncDataType) {
         when (dataType) {
             SyncDataType.CONTACTS -> {
                 // Contact updates are handled by their respective address book accounts, so we must always
                 // disable the content-triggered sync for the main account.
-                syncFramework.disableSyncAbility(account, ContactsContract.AUTHORITY)
+                if (account != null)
+                    syncFramework.disableSyncAbility(account, ContactsContract.AUTHORITY)
 
                 // pass through request to update all existing address books
                 localAddressBookStore.acquireLocalStorageClient()?.use { client ->
@@ -92,8 +96,12 @@ class SyncFrameworkSettingsUpdater @Inject constructor(
                         addressBookAccount.updateSyncFrameworkSettings()
                 }
             }
-            SyncDataType.EVENTS -> enableAuthority(accountId, account, dataType, CalendarContract.AUTHORITY)
-            SyncDataType.TASKS -> enableAuthority(accountId, account, dataType, tasksAppManager.get().currentProvider()?.authority)
+            SyncDataType.EVENTS ->
+                if (account != null)
+                    enableAuthority(accountId, account, dataType, CalendarContract.AUTHORITY)
+            SyncDataType.TASKS ->
+                if (account != null)
+                    enableAuthority(accountId, account, dataType, tasksAppManager.get().currentProvider()?.authority)
         }
     }
 
