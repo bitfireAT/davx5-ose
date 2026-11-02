@@ -12,6 +12,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import androidx.annotation.WorkerThread
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
@@ -24,6 +25,7 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
@@ -94,6 +96,7 @@ class AndroidAccountManager @Inject constructor(
      * @return the Android account for the given [accountId]
      * @throws InvalidAccountException if the account does not exist
      */
+    @WorkerThread
     fun getAndroidAccount(accountId: AccountId): Account {
         return when (accountId) {
             is LegacyAccount -> accountId.androidAccount
@@ -119,33 +122,26 @@ class AndroidAccountManager @Inject constructor(
     ): Flow<Account?> = callbackFlow {
         val accountManager = accountManager.get()
 
+        // The listener runs on [handler] (main thread by default), so it must not access the database.
+        // It only forwards the accounts; they're processed below in the io dispatcher.
         val listener = OnAccountsUpdateListener { accounts ->
-            val account = try {
-                getAndroidAccount(accountId)
-            } catch (_: InvalidAccountException) {
-                // DB Account not found
-                null
-            }
-            // If account was not found, emit null
-            if (account == null) {
-                trySend(null)
-                return@OnAccountsUpdateListener
-            }
-            // Once here, it's still possible that the account doesn't exist anymore, check it
-            if (!accounts.contains(account)) {
-                // The updated accounts list that account manager gave us doesn't contain the account: it no longer exists
-                trySend(null)
-                return@OnAccountsUpdateListener
-            }
-            // Finally, the account does indeed exist, emit it
-            trySend(account)
+            trySend(accounts.toList())
         }
         accountManager.addOnAccountsUpdatedListener(listener, handler, true)
 
         awaitClose {
             accountManager.removeOnAccountsUpdatedListener(listener)
         }
-    }.flowOn(ioDispatcher) // we access the database, so the run the flow in the io dispatcher
+    }.map { accounts ->
+        val account = try {
+            getAndroidAccount(accountId)
+        } catch (_: InvalidAccountException) {
+            // DB Account not found
+            return@map null
+        }
+        // It's still possible that the account doesn't exist anymore; the list given by the account manager is authoritative
+        account.takeIf { accounts.contains(it) }
+    }.flowOn(ioDispatcher) // we access the database, so run the mapping in the io dispatcher
 
     /**
      * Returns the [AccountId] for a given Android [Account].
