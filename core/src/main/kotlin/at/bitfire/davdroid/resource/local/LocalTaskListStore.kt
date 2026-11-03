@@ -72,7 +72,7 @@ class LocalTaskListStore @AssistedInject constructor(
         val service = serviceDao.get(fromCollection.serviceId)
             ?: throw IllegalArgumentException("Couldn't fetch DB service from collection")
         val accountId = accountRepository.getAccountIdFromService(service)
-        val account = androidAccountManager.getAndroidAccount(accountId)
+        val account = androidAccountManager.getAndroidAccountOrThrow(accountId)
 
         logger.info("Adding local task list: $fromCollection")
         val dmfsTaskList = create(account, client, providerName, fromCollection)
@@ -121,7 +121,7 @@ class LocalTaskListStore @AssistedInject constructor(
     }
 
     override fun getAll(accountId: AccountId, client: LocalStorageClient): List<LocalTaskList> {
-        val account = androidAccountManager.findAndroidAccount(accountId) ?: return emptyList()
+        val account = androidAccountManager.getAndroidAccountOrThrow(accountId)
         return DmfsTaskListProvider(account, client, providerName).findTaskLists()
             .map { taskList -> LocalTaskList(taskList) }
     }
@@ -131,7 +131,7 @@ class LocalTaskListStore @AssistedInject constructor(
         client: LocalStorageClient,
         dbCollectionId: Long
     ): LocalTaskList? {
-        val account = androidAccountManager.findAndroidAccount(accountId) ?: return null
+        val account = androidAccountManager.getAndroidAccount(accountId) ?: return null
         return DmfsTaskListProvider(account, client, providerName)
             .findFirstTaskList("${TaskLists._SYNC_ID}=?", arrayOf(dbCollectionId.toString()))
             ?.let { taskList -> LocalTaskList(taskList) }

@@ -174,7 +174,7 @@ class AndroidAccountManager @Inject constructor(
      *   account doesn't exist
      */
     @WorkerThread
-    fun findAndroidAccount(accountId: AccountId): Account? =
+    fun getAndroidAccount(accountId: AccountId): Account? =
         when (accountId) {
             is LegacyAccount -> accountId.androidAccount
             is DbAccountId ->
@@ -185,14 +185,14 @@ class AndroidAccountManager @Inject constructor(
         }
 
     /**
-     * Like [findAndroidAccount], but throws if there's no Android account.
+     * Like [getAndroidAccount], but throws if there's no Android account.
      *
      * @return the Android account for the given [accountId]
      * @throws InvalidAccountException if the DB account or its linked Android account doesn't exist
      */
     @WorkerThread
-    fun getAndroidAccount(accountId: AccountId): Account =
-        findAndroidAccount(accountId) ?: throw InvalidAccountException(accountId)
+    fun getAndroidAccountOrThrow(accountId: AccountId): Account =
+        getAndroidAccount(accountId) ?: throw InvalidAccountException(accountId)
 
     /**
      * Returns a flow that updates automatically whenever the account with id [accountId] is updated.
@@ -216,7 +216,7 @@ class AndroidAccountManager @Inject constructor(
             accountManager.removeOnAccountsUpdatedListener(listener)
         }
     }.map { accounts ->
-        val account = findAndroidAccount(accountId) ?: return@map null
+        val account = getAndroidAccount(accountId) ?: return@map null
         // It's still possible that the account doesn't exist anymore; the list given by the account manager is authoritative
         account.takeIf { accounts.contains(it) }
     }.flowOn(ioDispatcher) // we access the database, so run the mapping in the io dispatcher
@@ -245,7 +245,7 @@ class AndroidAccountManager @Inject constructor(
             // AccountManager.LOGIN_ACCOUNTS_CHANGED_ACTION Intent. This cancels running syncs and starts them again!
             // So make sure setAccountVisibility is only called when necessary.
             val accountManager = accountManager.get()
-            val account = getAndroidAccount(accountId)
+            val account = getAndroidAccountOrThrow(accountId)
 
             if (accountManager.getAccountVisibility(account, packageName) != AccountManager.VISIBILITY_VISIBLE) {
                 accountManager.setAccountVisibility(account, packageName, AccountManager.VISIBILITY_VISIBLE)

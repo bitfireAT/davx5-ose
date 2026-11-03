@@ -35,7 +35,7 @@ class AccountSettingsMigration22 @Inject constructor(
 ): AccountSettingsMigration {
 
     override fun migrate(accountId: AccountId, store: AccountSettingsStore) {
-        val account = androidAccountManager.getAndroidAccount(accountId)
+        val account = androidAccountManager.getAndroidAccountOrThrow(accountId)
         migrateCalendars(account)
     }
 

@@ -64,7 +64,7 @@ class LocalCalendarStore @Inject constructor(
         val service = serviceRepository.get(fromCollection.serviceId)
             ?: throw IllegalArgumentException("Couldn't fetch DB service from collection")
         val accountId = accountRepository.getAccountIdFromService(service)
-        val account = androidAccountManager.getAndroidAccount(accountId)
+        val account = androidAccountManager.getAndroidAccountOrThrow(accountId)
 
         // If the collection doesn't have a color, use a default color.
         val collectionWithColor =
@@ -96,7 +96,7 @@ class LocalCalendarStore @Inject constructor(
     }
 
     override fun getAll(accountId: AccountId, client: LocalStorageClient): List<LocalCalendar> {
-        val account = androidAccountManager.findAndroidAccount(accountId) ?: return emptyList()
+        val account = androidAccountManager.getAndroidAccountOrThrow(accountId)
         return AndroidCalendarProvider(account, client)
             .findCalendars("${Calendars.SYNC_EVENTS}!=0", null)
             .map { androidCalendar -> LocalCalendar(androidCalendar) }
@@ -107,7 +107,7 @@ class LocalCalendarStore @Inject constructor(
         client: LocalStorageClient,
         dbCollectionId: Long
     ): LocalCalendar? {
-        val account = androidAccountManager.findAndroidAccount(accountId) ?: return null
+        val account = androidAccountManager.getAndroidAccount(accountId) ?: return null
         return AndroidCalendarProvider(account, client)
             .findFirstCalendar("${Calendars._SYNC_ID}=?", arrayOf(dbCollectionId.toString()))
             ?.let { androidCalendar -> LocalCalendar(androidCalendar) }

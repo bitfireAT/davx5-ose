@@ -60,19 +60,28 @@ class AutomaticSyncManager @Inject constructor(
     @WorkerThread
     fun updateAutomaticSync(accountId: AccountId, dataType: SyncDataType) {
         // 1. Update sync workers (needs already updated sync interval in AccountSettings).
-        val accountSettings =
-            if (syncFrameworkSettingsUpdater.isAutomaticSyncPossible(accountId, dataType))
-                accountSettingsFactory.create(accountId)
-            else
-                null
-        val syncInterval = accountSettings?.getSyncInterval(dataType)
-        if (accountSettings != null && syncInterval != null)
-            workerManager.enablePeriodic(accountId, dataType, syncInterval, accountSettings.getSyncWifiOnly())
-        else
-            workerManager.disablePeriodic(accountId, dataType)
+        updatePeriodicSyncWorker(accountId, dataType)
 
         // 2. Update sync framework settings (address book accounts may exist without the main Android account).
         syncFrameworkSettingsUpdater.update(accountId, dataType)
+    }
+
+    /**
+     * Enables the periodic sync worker for the given account and data type with the interval from [AccountSettings],
+     * or disables it when automatic sync isn't possible or there's no sync interval.
+     */
+    private fun updatePeriodicSyncWorker(accountId: AccountId, dataType: SyncDataType) {
+        if (syncFrameworkSettingsUpdater.isAutomaticSyncPossible(accountId, dataType)) {
+            val accountSettings = accountSettingsFactory.create(accountId)
+            val syncInterval = accountSettings.getSyncInterval(dataType)
+            if (syncInterval != null) {
+                workerManager.enablePeriodic(accountId, dataType, syncInterval, accountSettings.getSyncWifiOnly())
+            } else {
+                workerManager.disablePeriodic(accountId, dataType)
+            }
+        } else {
+            workerManager.disablePeriodic(accountId, dataType)
+        }
     }
 
 }

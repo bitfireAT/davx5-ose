@@ -314,46 +314,6 @@ class AndroidAccountManagerTest {
 
 
     @Test
-    fun `findAndroidAccount() returns Android account of legacy account`() {
-        val legacy = Account("Legacy", context.getString(R.string.account_type))
-
-        val result = androidAccountManager().findAndroidAccount(LegacyAccount(legacy))
-
-        assertEquals(legacy, result)
-    }
-
-    @Test
-    fun `findAndroidAccount() returns linked account of DB account`() {
-        every { dbAccountDao.getBlocking(3) } returns DbAccount(3, "DB Name")
-        val linked = addAndroidAccount("Android Name", linkedId = 3)
-
-        val result = androidAccountManager().findAndroidAccount(DbAccountId(3))
-
-        assertEquals(linked, result)
-    }
-
-    @Test
-    fun `findAndroidAccount() returns null when there is no linked account`() {
-        every { dbAccountDao.getBlocking(3) } returns DbAccount(3, "DB Name")
-        addAndroidAccount("DB Name")
-
-        val result = androidAccountManager().findAndroidAccount(DbAccountId(3))
-
-        assertNull(result)
-    }
-
-    @Test
-    fun `findAndroidAccount() returns null when DB account does not exist`() {
-        every { dbAccountDao.getBlocking(3) } returns null
-        addAndroidAccount("Android Name", linkedId = 3)
-
-        val result = androidAccountManager().findAndroidAccount(DbAccountId(3))
-
-        assertNull(result)
-    }
-
-
-    @Test
     fun `getAndroidAccount() returns Android account of legacy account`() {
         val legacy = Account("Legacy", context.getString(R.string.account_type))
 
@@ -373,20 +333,60 @@ class AndroidAccountManagerTest {
     }
 
     @Test
-    fun `getAndroidAccount() throws InvalidAccountException when there is no linked account`() {
+    fun `getAndroidAccount() returns null when there is no linked account`() {
+        every { dbAccountDao.getBlocking(3) } returns DbAccount(3, "DB Name")
+        addAndroidAccount("DB Name")
+
+        val result = androidAccountManager().getAndroidAccount(DbAccountId(3))
+
+        assertNull(result)
+    }
+
+    @Test
+    fun `getAndroidAccount() returns null when DB account does not exist`() {
+        every { dbAccountDao.getBlocking(3) } returns null
+        addAndroidAccount("Android Name", linkedId = 3)
+
+        val result = androidAccountManager().getAndroidAccount(DbAccountId(3))
+
+        assertNull(result)
+    }
+
+
+    @Test
+    fun `getAndroidAccountOrThrow() returns Android account of legacy account`() {
+        val legacy = Account("Legacy", context.getString(R.string.account_type))
+
+        val result = androidAccountManager().getAndroidAccountOrThrow(LegacyAccount(legacy))
+
+        assertEquals(legacy, result)
+    }
+
+    @Test
+    fun `getAndroidAccountOrThrow() returns linked account of DB account`() {
+        every { dbAccountDao.getBlocking(3) } returns DbAccount(3, "DB Name")
+        val linked = addAndroidAccount("Android Name", linkedId = 3)
+
+        val result = androidAccountManager().getAndroidAccountOrThrow(DbAccountId(3))
+
+        assertEquals(linked, result)
+    }
+
+    @Test
+    fun `getAndroidAccountOrThrow() throws InvalidAccountException when there is no linked account`() {
         every { dbAccountDao.getBlocking(3) } returns DbAccount(3, "DB Name")
 
         assertThrows(InvalidAccountException::class.java) {
-            androidAccountManager().getAndroidAccount(DbAccountId(3))
+            androidAccountManager().getAndroidAccountOrThrow(DbAccountId(3))
         }
     }
 
     @Test
-    fun `getAndroidAccount() throws InvalidAccountException when DB account does not exist`() {
+    fun `getAndroidAccountOrThrow() throws InvalidAccountException when DB account does not exist`() {
         every { dbAccountDao.getBlocking(3) } returns null
 
         assertThrows(InvalidAccountException::class.java) {
-            androidAccountManager().getAndroidAccount(DbAccountId(3))
+            androidAccountManager().getAndroidAccountOrThrow(DbAccountId(3))
         }
     }
 

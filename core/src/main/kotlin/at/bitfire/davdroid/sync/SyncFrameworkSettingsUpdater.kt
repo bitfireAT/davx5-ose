@@ -61,7 +61,7 @@ class SyncFrameworkSettingsUpdater @Inject constructor(
      */
     @WorkerThread
     fun update(accountId: AccountId) {
-        val account = androidAccountManager.findAndroidAccount(accountId)
+        val account = androidAccountManager.getAndroidAccount(accountId)
         for (dataType in SyncDataType.entries)
             update(accountId, account, dataType)
     }
@@ -71,7 +71,7 @@ class SyncFrameworkSettingsUpdater @Inject constructor(
      */
     @WorkerThread
     fun update(accountId: AccountId, dataType: SyncDataType) {
-        update(accountId, androidAccountManager.findAndroidAccount(accountId), dataType)
+        update(accountId, androidAccountManager.getAndroidAccount(accountId), dataType)
     }
 
     private fun update(accountId: AccountId, account: Account?, dataType: SyncDataType) {

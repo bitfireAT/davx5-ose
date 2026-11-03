@@ -40,7 +40,7 @@ class SyncFrameworkSettingsUpdaterTest {
         every { create(accountId) } returns accountSettings
     }
     private val androidAccountManager = mockk<AndroidAccountManager> {
-        every { findAndroidAccount(accountId) } returns account
+        every { getAndroidAccount(accountId) } returns account
     }
     private val addressBook = mockk<LocalAddressBook>(relaxed = true)
     private val localAddressBookStore = mockk<LocalAddressBookStore> {
@@ -65,7 +65,7 @@ class SyncFrameworkSettingsUpdaterTest {
     fun `update() looks up the Android account and updates all data types`() {
         updater.update(accountId)
 
-        verify(exactly = 1) { androidAccountManager.findAndroidAccount(accountId) }
+        verify(exactly = 1) { androidAccountManager.getAndroidAccount(accountId) }
         verify { syncFramework.disableSyncAbility(account, ContactsContract.AUTHORITY) }
         verify { syncFramework.enableSyncOnContentChange(account, CalendarContract.AUTHORITY) }
     }
@@ -80,7 +80,7 @@ class SyncFrameworkSettingsUpdaterTest {
 
     @Test
     fun `update() for contacts without main account still updates address books`() {
-        every { androidAccountManager.findAndroidAccount(accountId) } returns null
+        every { androidAccountManager.getAndroidAccount(accountId) } returns null
 
         updater.update(accountId, SyncDataType.CONTACTS)
 
@@ -90,7 +90,7 @@ class SyncFrameworkSettingsUpdaterTest {
 
     @Test
     fun `update() for events without main account does nothing`() {
-        every { androidAccountManager.findAndroidAccount(accountId) } returns null
+        every { androidAccountManager.getAndroidAccount(accountId) } returns null
 
         updater.update(accountId, SyncDataType.EVENTS)
 

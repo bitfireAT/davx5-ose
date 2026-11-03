@@ -434,7 +434,7 @@ class DebugInfoGenerator @Inject constructor(
         val accountName = accountRepository.getAccountNameBlocking(accountId)
         writer.append("\n\n - Account: ${accountName}\n")
         val accountSettings = accountSettingsFactory.create(accountId)
-        val account = androidAccountManager.findAndroidAccount(accountId)
+        val account = androidAccountManager.getAndroidAccount(accountId)
 
         if (account != null)
             writer.append(dumpAndroidAccount(account, AccountDumpInfo.caldavAccount(account)))
