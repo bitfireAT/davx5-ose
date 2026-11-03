@@ -31,7 +31,7 @@ class AccountSettingsMigration7 @Inject constructor(
     }
 
     private fun addCalendarColors(accountId: AccountId) {
-        val account = accountAccountManager.getAndroidAccount(accountId)
+        val account = accountAccountManager.getAndroidAccountOrThrow(accountId)
         context.contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)
             ?.let { provider -> LocalStorageClient(provider) }
             ?.use { client ->

@@ -47,7 +47,7 @@ class AccountSettingsMigration17 @Inject constructor(
 ): AccountSettingsMigration {
 
     override fun migrate(accountId: AccountId, store: AccountSettingsStore) {
-        val account = androidAccountManager.getAndroidAccount(accountId)
+        val account = androidAccountManager.getAndroidAccountOrThrow(accountId)
         val addressBookAccountType = context.getString(R.string.account_type_address_book)
         try {
             context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)

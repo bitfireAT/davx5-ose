@@ -194,24 +194,6 @@ class AccountRepository @Inject constructor(
             }
         }
 
-        val account = Account(accountName, dbAccountType)
-
-        // create Android account - extract the initial settings from the database and pass them to the Android account creation API
-        val userData = AccountSettings.initialUserData(credentials, preconfigurationUrl)
-        logger.log(Level.INFO, "Creating Android account {0} with initial config {1}", arrayOf(account, userData))
-
-        val accountCreated = withContext(ioDispatcher) {
-            androidAccountManager.createAccount(account, userData, credentials?.password)
-        }
-        if (!accountCreated) {
-            logger.log(Level.WARNING, "Failed to create Android account {0}", arrayOf(account))
-
-            // If the system account creation fails, we need to clean up the database account that was just created.
-            dbAccountDao.delete(accountIdNumber)
-
-            return null
-        }
-
         // add entries for account to database
         logger.log(Level.INFO, "Writing account configuration to database: {0}", arrayOf(config))
         try {

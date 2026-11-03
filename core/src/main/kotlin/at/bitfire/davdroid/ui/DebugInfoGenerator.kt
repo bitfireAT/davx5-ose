@@ -436,7 +436,10 @@ class DebugInfoGenerator @Inject constructor(
         val accountSettings = accountSettingsFactory.create(accountId)
         val account = androidAccountManager.getAndroidAccount(accountId)
 
-        writer.append(dumpAndroidAccount(account, AccountDumpInfo.caldavAccount(account)))
+        if (account != null)
+            writer.append(dumpAndroidAccount(account, AccountDumpInfo.caldavAccount(account)))
+        else
+            writer.append("  No Android account (yet)\n")
         try {
             val credentials = accountSettings.credentials()
             val authStr = mutableListOf<String>()

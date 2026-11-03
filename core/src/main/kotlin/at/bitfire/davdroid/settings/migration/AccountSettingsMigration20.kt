@@ -50,7 +50,7 @@ class AccountSettingsMigration20 @Inject constructor(
 ) : AccountSettingsMigration {
 
     override fun migrate(accountId: AccountId, store: AccountSettingsStore) {
-        val account = androidAccountManager.getAndroidAccount(accountId)
+        val account = androidAccountManager.getAndroidAccountOrThrow(accountId)
         serviceRepository.getByAccountIdAndTypeBlocking(accountId, Service.TYPE_CARDDAV)?.let { cardDavService ->
             migrateAddressBooks(accountId, cardDavService.id)
         }

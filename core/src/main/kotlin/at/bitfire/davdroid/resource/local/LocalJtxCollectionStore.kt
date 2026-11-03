@@ -61,7 +61,7 @@ class LocalJtxCollectionStore @Inject constructor(
         val service = serviceDao.get(fromCollection.serviceId)
             ?: throw IllegalArgumentException("Couldn't fetch DB service from collection")
         val accountId = accountRepository.getAccountIdFromService(service)
-        val account = androidAccountManager.getAndroidAccount(accountId)
+        val account = androidAccountManager.getAndroidAccountOrThrow(accountId)
 
         // If the collection doesn't have a color, use a default color.
         val collectionWithColor =
@@ -108,7 +108,7 @@ class LocalJtxCollectionStore @Inject constructor(
     }
 
     override fun getAll(accountId: AccountId, client: LocalStorageClient): List<LocalJtxCollection> {
-        val account = androidAccountManager.getAndroidAccount(accountId)
+        val account = androidAccountManager.getAndroidAccountOrThrow(accountId)
         return JtxCollectionProvider(account, client).findCollections().map { jtxCollection ->
             LocalJtxCollection(jtxCollection)
         }
@@ -119,7 +119,7 @@ class LocalJtxCollectionStore @Inject constructor(
         client: LocalStorageClient,
         dbCollectionId: Long
     ): LocalJtxCollection? {
-        val account = androidAccountManager.getAndroidAccount(accountId)
+        val account = androidAccountManager.getAndroidAccount(accountId) ?: return null
         return JtxCollectionProvider(account, client).findFirstCollection(
             "${JtxContract.JtxCollection.SYNC_ID}=?", arrayOf(dbCollectionId.toString())
         )?.let { jtxCollection -> LocalJtxCollection(jtxCollection) }

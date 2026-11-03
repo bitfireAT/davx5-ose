@@ -56,6 +56,7 @@ interface LocalDataStore<T: LocalCollection<*>> {
      * @param client the [LocalStorageClient]
      *
      * @return a list of all local collections
+     * @throws at.bitfire.davdroid.sync.account.InvalidAccountException if the required Android account doesn't exist
      */
     fun getAll(accountId: AccountId, client: LocalStorageClient): List<T>
 
@@ -66,7 +67,8 @@ interface LocalDataStore<T: LocalCollection<*>> {
      * @param client The [LocalStorageClient] used to access the data store.
      * @param dbCollectionId The database collection ID which the requested local collection corresponds to.
      *
-     * @return The local collection with the specified DB collection ID, or `null` if not found.
+     * @return The local collection with the specified DB collection ID, or `null` if not found (also when the
+     * Android account doesn't exist yet).
      */
     @WorkerThread
     fun getByDbCollectionId(accountId: AccountId, client: LocalStorageClient, dbCollectionId: Long): T?

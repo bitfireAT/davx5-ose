@@ -32,7 +32,7 @@ class AccountSettingsMigration14 @Inject constructor(
 ): AccountSettingsMigration {
 
     override fun migrate(accountId: AccountId, store: AccountSettingsStore) {
-        val account = androidAccountManager.getAndroidAccount(accountId)
+        val account = androidAccountManager.getAndroidAccountOrThrow(accountId)
         // Cancel any potentially running syncs for this account (sync framework)
         ContentResolver.cancelSync(account, null)
 
