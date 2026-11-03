@@ -2,7 +2,7 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  */
 
-package at.bitfire.davdroid.ui
+package at.bitfire.davdroid.ui.debuginfo
 
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -266,7 +266,7 @@ class DebugInfoActivity: AppCompatActivity() {
         /** [Uri] of local resource related to the problem (as [android.os.Parcelable]) */
         internal const val EXTRA_LOCAL_RESOURCE_URI = "localResourceUri"
 
-        /** file name (not path) of a log file inside [at.bitfire.davdroid.log.DebugDirectory] ([String]) */
+        /** file name (not path) of a log file inside [DebugDirectory] ([String]) */
         private const val EXTRA_DEBUG_LOG_FILE = "debugLogFile"
 
         /** URL of remote resource related to the problem (plain-text [String]) */

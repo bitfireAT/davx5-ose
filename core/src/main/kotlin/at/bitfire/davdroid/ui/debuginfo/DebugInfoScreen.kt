@@ -2,7 +2,7 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  */
 
-package at.bitfire.davdroid.ui
+package at.bitfire.davdroid.ui.debuginfo
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
@@ -12,13 +12,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.rounded.LiveHelp
-import androidx.compose.material.icons.rounded.Adb
-import androidx.compose.material.icons.rounded.BugReport
 import androidx.compose.material.icons.rounded.CloudOff
 import androidx.compose.material.icons.rounded.PrivacyTip
 import androidx.compose.material.icons.rounded.Share
@@ -27,7 +23,6 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
@@ -39,11 +34,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.fromHtml
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -59,7 +52,6 @@ import at.bitfire.davdroid.log.DebugDirectory
 import at.bitfire.davdroid.ui.composable.AppTheme
 import at.bitfire.davdroid.ui.composable.CardWithImage
 import at.bitfire.davdroid.ui.composable.ProgressBar
-import at.bitfire.davdroid.ui.icon.Github
 import java.io.File
 import java.io.IOError
 import java.io.IOException
@@ -117,27 +109,9 @@ fun DebugInfoScreen(
         showDebugInfo = debugInfo != null,
         zipProgress = zipInProgress,
         showModelCause = cause != null,
-        modelCauseTitle = when (cause) {
-            is HttpException -> stringResource(if (cause.isServerError) R.string.debug_info_server_error else R.string.debug_info_http_error)
-            is DavException -> stringResource(R.string.debug_info_webdav_error)
-            is IOException, is IOError -> stringResource(R.string.debug_info_io_error)
-            else -> cause?.let { it::class.java.simpleName }
-        } ?: "",
+        modelCauseTitle = buildCauseTitle(cause),
         modelCauseSubtitle = cause?.localizedMessage,
-        modelCauseMessage =
-            if (cause is HttpException)
-                when {
-                    cause.statusCode == 403 -> AnnotatedString(stringResource(R.string.debug_info_http_403_description))
-                    cause.statusCode == 404 -> AnnotatedString(stringResource(R.string.debug_info_http_404_description))
-                    cause.statusCode == 405 -> AnnotatedString(stringResource(R.string.debug_info_http_405_description))
-                    cause.isServerError -> {
-                        val domain = UrlUtils.hostToDomain(remoteResource?.toUrlOrNull()?.host)
-                        serverErrorMessage(domain)
-                    }
-                    else -> AnnotatedString(stringResource(R.string.debug_info_unexpected_error))
-                }
-            else
-                AnnotatedString(stringResource(R.string.debug_info_unexpected_error)),
+        modelCauseMessage = buildCauseMessage(cause, remoteResource),
         localResource = localResource,
         canViewResource = canViewResource,
         remoteResource = remoteResource,
@@ -243,60 +217,16 @@ fun DebugInfoScreen(
                     )
                 }
 
-                if (localResource != null || remoteResource != null)
-                    CardWithImage(
-                        title = stringResource(R.string.debug_info_involved_caption),
-                        subtitle = stringResource(R.string.debug_info_involved_subtitle),
-                        icon = Icons.Rounded.Adb,
+                if (localResource != null || remoteResource != null) {
+                    InvolvedResourcesCard(
+                        localResource,
+                        canViewResource,
+                        onViewLocalResource,
+                        remoteResource,
+                        onCopyRemoteUrl,
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
-                    ) {
-                        localResource?.let {
-                            Text(
-                                text = stringResource(R.string.debug_info_involved_local),
-                                style = MaterialTheme.typography.bodyLarge,
-                                modifier = Modifier.padding(top = 4.dp)
-                            )
-                            Text(
-                                text = it,
-                                style = MaterialTheme.typography.bodySmall.copy(
-                                    fontFamily = FontFamily.Monospace
-                                ),
-                                modifier = Modifier.padding(bottom = 8.dp)
-                            )
-                        }
-                        if (canViewResource)
-                            OutlinedButton(
-                                onClick = { onViewLocalResource() },
-                                modifier = Modifier.padding(bottom = 4.dp)
-                            ) {
-                                Text(
-                                    stringResource(R.string.debug_info_view_local_resource)
-                                )
-                            }
-
-                        remoteResource?.let { remoteUrl ->
-                            Text(
-                                text = stringResource(R.string.debug_info_involved_remote),
-                                style = MaterialTheme.typography.bodyLarge,
-                                modifier = Modifier.padding(top = 4.dp)
-                            )
-                            SelectionContainer {
-                                Text(
-                                    text = remoteUrl,
-                                    style = MaterialTheme.typography.bodySmall.copy(
-                                        fontFamily = FontFamily.Monospace
-                                    ),
-                                    modifier = Modifier.padding(bottom = 8.dp)
-                                )
-                            }
-                            OutlinedButton(
-                                onClick = onCopyRemoteUrl,
-                                modifier = Modifier.padding(bottom = 4.dp)
-                            ) {
-                                Text(stringResource(R.string.debug_info_copy_remote_url))
-                            }
-                        }
-                    }
+                    )
+                }
 
                 CardWithImage(
                     title = stringResource(R.string.debug_info_privacy_warning_title),
@@ -305,59 +235,26 @@ fun DebugInfoScreen(
                     modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
                 )
 
-                if (showDebugInfo)
-                    CardWithImage(
-                        title = stringResource(R.string.debug_info_title),
-                        subtitle = stringResource(R.string.debug_info_subtitle),
-                        icon = Icons.Rounded.BugReport,
+                if (showDebugInfo) {
+                    DebugInfoCard(
+                        onViewDebugFile,
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
-                    ) {
-                        OutlinedButton(
-                            onClick = onViewDebugFile,
-                            modifier = Modifier.padding(bottom = 4.dp)
-                        ) {
-                            Text(
-                                stringResource(R.string.debug_info_view_details)
-                            )
-                        }
-                    }
+                    )
+                }
 
                 if (hasLogFile) {
-                    CardWithImage(
-                        title = stringResource(R.string.debug_info_logs_caption),
-                        subtitle = stringResource(R.string.debug_info_logs_subtitle),
-                        icon = Icons.Rounded.BugReport,
+                    DebugLogCard(
+                        onViewLogsFile,
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
-                    ) {
-                        OutlinedButton(
-                            onClick = onViewLogsFile,
-                            modifier = Modifier.padding(bottom = 4.dp)
-                        ) {
-                            Text(
-                                stringResource(R.string.debug_info_logs_view)
-                            )
-                        }
-                    }
+                    )
                 }
 
                 if (showDebugInfo) {
-                    CardWithImage(
-                        title = stringResource(R.string.debug_info_archive_caption),
-                        subtitle = stringResource(R.string.debug_info_archive_subtitle),
-                        message = stringResource(R.string.debug_info_archive_text),
-                        icon = Icons.Rounded.Share,
+                    DebugLogZipCard(
+                        onShareZip,
+                        zipProgress,
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
-                    ) {
-                        OutlinedButton(
-                            onClick = onShareZip,
-                            enabled = !zipProgress,
-                            modifier = Modifier.padding(bottom = 4.dp)
-                        ) {
-                            Text(
-                                stringResource(R.string.debug_info_archive_share)
-                            )
-                        }
-                    }
+                    )
                 }
 
                 FindHelpCard(modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp))
@@ -370,55 +267,29 @@ fun DebugInfoScreen(
 }
 
 @Composable
-private fun FindHelpCard(modifier: Modifier = Modifier) {
-    val uriHandler = LocalUriHandler.current
+private fun buildCauseTitle(cause: Throwable?): String = when (cause) {
+    is HttpException if cause.isServerError -> stringResource(R.string.debug_info_server_error)
+    is HttpException -> stringResource(R.string.debug_info_http_error)
+    is DavException -> stringResource(R.string.debug_info_webdav_error)
+    is IOException, is IOError -> stringResource(R.string.debug_info_io_error)
+    else -> cause?.let { it::class.java.simpleName }.orEmpty()
+}
 
-    CardWithImage(
-        title = stringResource(R.string.debug_info_find_help),
-        icon = Icons.AutoMirrored.Rounded.LiveHelp,
-        modifier = modifier
-    ) {
-        Text(
-            text = AnnotatedString.fromHtml(stringResource(R.string.debug_info_find_help_faq))
-        )
-        OutlinedButton(
-            onClick = { uriHandler.openUri("https://www.davx5.com/faq") },
-            modifier = Modifier.padding(bottom = 8.dp)
-        ) {
-            Text(stringResource(R.string.debug_info_find_help_faq_action))
-        }
+@Composable
+private fun buildCauseMessage(cause: Throwable?, remoteResource: String?): AnnotatedString {
+    if (cause !is HttpException) {
+        return AnnotatedString(stringResource(R.string.debug_info_unexpected_error))
+    }
 
-        Text(
-            text = AnnotatedString.fromHtml(stringResource(R.string.debug_info_find_help_discussions))
-        )
-        OutlinedButton(
-            onClick = { uriHandler.openUri("https://github.com/bitfireAT/davx5-ose/discussions") },
-            modifier = Modifier.padding(bottom = 8.dp)
-        ) {
-            Icon(Github, stringResource(R.string.debug_info_find_help_discussions_action))
-            Text(stringResource(R.string.debug_info_find_help_discussions_action), Modifier.padding(start = 4.dp))
+    return when {
+        cause.statusCode == 403 -> AnnotatedString(stringResource(R.string.debug_info_http_403_description))
+        cause.statusCode == 404 -> AnnotatedString(stringResource(R.string.debug_info_http_404_description))
+        cause.statusCode == 405 -> AnnotatedString(stringResource(R.string.debug_info_http_405_description))
+        cause.isServerError -> {
+            val domain = UrlUtils.hostToDomain(remoteResource?.toUrlOrNull()?.host)
+            serverErrorMessage(domain)
         }
-
-        Text(
-            text = AnnotatedString.fromHtml(stringResource(R.string.debug_info_find_help_issues))
-        )
-        OutlinedButton(
-            onClick = { uriHandler.openUri("https://github.com/bitfireAT/davx5-ose/issues") },
-            modifier = Modifier.padding(bottom = 8.dp)
-        ) {
-            Icon(Github, stringResource(R.string.debug_info_find_help_issues_action))
-            Text(stringResource(R.string.debug_info_find_help_issues_action), Modifier.padding(start = 4.dp))
-        }
-
-        Text(
-            text = AnnotatedString.fromHtml(stringResource(R.string.debug_info_find_help_manual))
-        )
-        OutlinedButton(
-            onClick = { uriHandler.openUri("https://manual.davx5.com/") },
-            modifier = Modifier.padding(bottom = 4.dp)
-        ) {
-            Text(stringResource(R.string.debug_info_find_help_manual_action))
-        }
+        else -> AnnotatedString(stringResource(R.string.debug_info_unexpected_error))
     }
 }
 
