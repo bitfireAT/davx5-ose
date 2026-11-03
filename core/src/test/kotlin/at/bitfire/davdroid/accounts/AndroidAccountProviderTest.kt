@@ -6,17 +6,22 @@ package at.bitfire.davdroid.accounts
 
 import android.accounts.Account
 import android.accounts.AccountManager
+import android.accounts.AccountManagerFuture
 import android.content.Context
+import android.os.Bundle
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.DbAccount
 import at.bitfire.davdroid.db.DbAccountDao
 import at.bitfire.davdroid.resource.local.AddressBookAccountProperties
+import at.bitfire.davdroid.resource.local.LocalCalendarStore
 import at.bitfire.davdroid.sync.SyncFrameworkSettingsUpdater
+import at.bitfire.davdroid.sync.TasksAppManager
 import at.bitfire.davdroid.sync.account.InvalidAccountException
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.spyk
 import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.runTest
@@ -57,12 +62,31 @@ class AndroidAccountProviderTest {
         ioDispatcher = Dispatchers.IO,
         logger = logger
     )
+    private val localCalendarStore = mockk<LocalCalendarStore>(relaxed = true)
+    private val tasksAppManager = mockk<TasksAppManager>(relaxed = true)
+
+    /** Robolectric doesn't implement [AccountManager.renameAccount], so emulate it (keeping user data) */
+    private val renamingAccountManager = spyk(accountManager) {
+        every { renameAccount(any(), any(), any(), any()) } answers {
+            val old = firstArg<Account>()
+            val newName = secondArg<String>()
+            val newAccount = Account(newName, old.type)
+            val linkedId = accountManager.getUserData(old, AndroidAccountManager.USER_DATA_ACCOUNT_ID)
+            accountManager.removeAccountExplicitly(old)
+            val userData = linkedId?.let { Bundle().apply { putString(AndroidAccountManager.USER_DATA_ACCOUNT_ID, it) } }
+            accountManager.addAccountExplicitly(newAccount, null, userData)
+            mockk<AccountManagerFuture<Account>> { every { result } returns newAccount }
+        }
+    }
     private val provider = AndroidAccountProvider(
+        accountManager = renamingAccountManager,
         androidAccountManager = androidAccountManager,
         db = database,
         ioDispatcher = Dispatchers.IO,
+        localCalendarStore = { localCalendarStore },
         logger = logger,
-        syncFrameworkSettingsUpdater = { syncFrameworkSettingsUpdater }
+        syncFrameworkSettingsUpdater = { syncFrameworkSettingsUpdater },
+        tasksAppManager = { tasksAppManager }
     )
 
     private fun addDbAccount(id: Long, name: String) {
@@ -97,7 +121,7 @@ class AndroidAccountProviderTest {
     @Test
     fun `provide() returns linked account`() = runTest {
         addDbAccount(1, "DB Name")
-        val linked = addAndroidAccount("Android Name", linkedId = 1)
+        val linked = addAndroidAccount("DB Name", linkedId = 1)
 
         val result = provider.provide(DbAccountId(1))
 
@@ -107,7 +131,7 @@ class AndroidAccountProviderTest {
     @Test
     fun `provide() doesn't update sync framework settings when linked account exists`() = runTest {
         addDbAccount(1, "DB Name")
-        addAndroidAccount("Android Name", linkedId = 1)
+        addAndroidAccount("DB Name", linkedId = 1)
 
         provider.provide(DbAccountId(1))
 
@@ -184,6 +208,56 @@ class AndroidAccountProviderTest {
         assertFailsWith<InvalidAccountException> {
             provider.provide(DbAccountId(1))
         }
+    }
+
+
+    // rename
+
+    @Test
+    fun `provide() renames linked account when DB name differs`() = runTest {
+        addDbAccount(1, "New Name")
+        addAndroidAccount("Old Name", linkedId = 1)
+
+        val result = provider.provide(DbAccountId(1))
+
+        assertEquals(Account("New Name", dbAccountType), result)
+        assertEquals(1L, androidAccountManager.getLinkedDbAccountId(result))
+        assertEquals(listOf(result), accountManager.getAccountsByType(dbAccountType).toList())
+    }
+
+    @Test
+    fun `provide() updates sync framework settings when account is renamed`() = runTest {
+        addDbAccount(1, "New Name")
+        addAndroidAccount("Old Name", linkedId = 1)
+
+        provider.provide(DbAccountId(1))
+
+        verify { syncFrameworkSettingsUpdater.update(DbAccountId(1)) }
+    }
+
+    @Test
+    fun `provide() replaces orphaned account with new name when renaming`() = runTest {
+        addDbAccount(1, "New Name")
+        addAndroidAccount("Old Name", linkedId = 1)
+        addAndroidAccount("New Name", linkedId = 99)
+
+        val result = provider.provide(DbAccountId(1))
+
+        assertEquals(Account("New Name", dbAccountType), result)
+        assertEquals(1L, androidAccountManager.getLinkedDbAccountId(result))
+    }
+
+    @Test
+    fun `provide() doesn't rename when new name is used by account linked to other DB account`() = runTest {
+        addDbAccount(1, "New Name")
+        addDbAccount(2, "Other")
+        val old = addAndroidAccount("Old Name", linkedId = 1)
+        addAndroidAccount("New Name", linkedId = 2)
+
+        assertFailsWith<InvalidAccountException> {
+            provider.provide(DbAccountId(1))
+        }
+        assertTrue(accountManager.getAccountsByType(dbAccountType).contains(old))
     }
 
 }
