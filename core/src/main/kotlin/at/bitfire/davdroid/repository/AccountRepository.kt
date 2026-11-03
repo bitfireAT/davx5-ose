@@ -299,11 +299,7 @@ class AccountRepository @Inject constructor(
             accountManager.removeAccountExplicitly(androidAccount)
 
             // delete address books (= address book accounts)
-            serviceRepository.getByAccountIdAndType(accountId, Service.TYPE_CARDDAV)?.let { service ->
-                collectionRepository.get().getByService(service.id).forEach { collection ->
-                    localAddressBookStore.get().deleteByCollectionId(collection.id)
-                }
-            }
+            localAddressBookStore.get().deleteByAccountId(accountId)
 
             // delete service from database
             serviceRepository.deleteByAccount(accountId)
