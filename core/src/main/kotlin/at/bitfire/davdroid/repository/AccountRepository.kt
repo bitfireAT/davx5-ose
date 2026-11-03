@@ -285,17 +285,17 @@ class AccountRepository @Inject constructor(
         return LegacyAccount(account)
     }
 
-    suspend fun delete(accountId: AccountId): Boolean {
+    suspend fun delete(accountId: AccountId) {
         val androidAccount = when(accountId) {
             is LegacyAccount -> accountId.androidAccount
             is DbAccountId -> {
-                val dbAccount = dbAccountDao.get(accountId.id) ?: return false
+                val dbAccount = dbAccountDao.get(accountId.id) ?: return
                 Account(dbAccount.name, dbAccountType)
             }
         }
 
         // remove account directly (bypassing the authenticator, which is our own)
-        val deletedSystemAccount = try {
+        try {
             accountManager.removeAccountExplicitly(androidAccount)
 
             // delete address books (= address book accounts)
@@ -303,29 +303,19 @@ class AccountRepository @Inject constructor(
 
             // delete service from database
             serviceRepository.deleteByAccount(accountId)
-
-            true
         } catch (e: Exception) {
             logger.log(Level.WARNING, "Couldn't remove system account $accountId", e)
-            false
         }
 
         // delete database account if it is a DbAccountId
-        val deletedDatabaseAccount = try {
+        try {
             if (accountId is DbAccountId) {
                 // delete account from database if it is a DbAccountId
                 dbAccountDao.delete(accountId.id)
             }
-            true
         } catch (e: Exception) {
             logger.log(Level.WARNING, "Couldn't remove database account $accountId", e)
-            false
         }
-
-        // We run both requests in different try/catch blocks to ensure that we attempt to delete both the system
-        // account and the database account, even if one of them fails.
-        // We return true only if both deletions were successful.
-        return deletedSystemAccount && deletedDatabaseAccount
     }
 
     /**
