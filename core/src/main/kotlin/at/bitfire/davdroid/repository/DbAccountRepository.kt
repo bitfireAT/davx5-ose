@@ -4,11 +4,8 @@
 
 package at.bitfire.davdroid.repository
 
-import android.accounts.Account
-import android.accounts.AccountManager
 import android.content.Context
 import android.database.sqlite.SQLiteConstraintException
-import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.accounts.DbAccountId
 import at.bitfire.davdroid.db.AccountSetting
@@ -39,7 +36,6 @@ import java.util.logging.Logger
 import javax.inject.Inject
 
 internal class DbAccountRepository @Inject constructor(
-    private val accountManager: AccountManager,
     private val accountSettingsFactory: AccountSettingsFactory,
     private val automaticSyncManager: Lazy<AutomaticSyncManager>,
     @ApplicationContext private val context: Context,
@@ -51,7 +47,6 @@ internal class DbAccountRepository @Inject constructor(
     private val serviceRepository: DavServiceRepository,
     db: AppDatabase
 ) {
-    private val dbAccountType = context.getString(R.string.account_type_db)
 
     private val dbAccountDao = db.dbAccountDao()
     private val accountSettingDao = db.accountSettingDao()
@@ -152,23 +147,16 @@ internal class DbAccountRepository @Inject constructor(
     }
 
     suspend fun delete(accountId: DbAccountId) {
-        val dbAccount = dbAccountDao.get(accountId.id) ?: return
-        val androidAccount = Account(dbAccount.name, dbAccountType)
-
+        // delete address books (= address book accounts)
         try {
-            // remove account directly (bypassing the authenticator, which is our own)
-            accountManager.removeAccountExplicitly(androidAccount)
-
-            // delete address books (= address book accounts)
-            localAddressBookStore.get().deleteByAccountId(accountId)
-
-            // delete service from database
-            serviceRepository.deleteByAccount(accountId)
+            withContext(ioDispatcher) {
+                localAddressBookStore.get().deleteByAccountId(accountId)
+            }
         } catch (e: Exception) {
-            logger.log(Level.WARNING, "Couldn't remove system account $accountId", e)
+            logger.log(Level.WARNING, "Couldn't remove address book accounts for $accountId", e)
         }
 
-        // delete database account
+        // delete database account (including services)
         try {
             dbAccountDao.delete(accountId.id)
         } catch (e: Exception) {
