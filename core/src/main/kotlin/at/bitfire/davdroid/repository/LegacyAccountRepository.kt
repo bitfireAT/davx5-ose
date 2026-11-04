@@ -8,7 +8,6 @@ import android.accounts.Account
 import android.accounts.AccountManager
 import android.accounts.OnAccountsUpdateListener
 import android.content.Context
-import androidx.annotation.WorkerThread
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.accounts.AndroidAccountManager
@@ -82,8 +81,7 @@ internal class LegacyAccountRepository @Inject constructor(
         }
     }.distinctUntilChanged()
 
-    @WorkerThread
-    fun create(
+    fun createBlocking(
         accountName: String,
         credentials: Credentials?,
         config: DavResourceFinder.Configuration,

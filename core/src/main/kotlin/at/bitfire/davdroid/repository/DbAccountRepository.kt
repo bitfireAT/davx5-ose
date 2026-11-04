@@ -8,7 +8,6 @@ import android.accounts.Account
 import android.accounts.AccountManager
 import android.content.Context
 import android.database.sqlite.SQLiteConstraintException
-import androidx.annotation.WorkerThread
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.accounts.DbAccountId
@@ -62,7 +61,6 @@ internal class DbAccountRepository @Inject constructor(
             ?: throw NoSuchElementException("No account found with id ${accountId.id}")
     }
 
-    @WorkerThread
     fun getAccountNameBlocking(accountId: DbAccountId): String {
         return dbAccountDao.getBlocking(accountId.id)?.name
             ?: throw NoSuchElementException("No account found with id ${accountId.id}")

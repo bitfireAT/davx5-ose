@@ -142,7 +142,7 @@ class AccountRepository @Inject internal constructor(
             dbAccountRepository.create(accountName, credentials, config, groupMethod, preconfigurationUrl)
         } else {
             withContext(ioDispatcher) {
-                legacyAccountRepository.create(accountName, credentials, config, groupMethod, preconfigurationUrl)
+                legacyAccountRepository.createBlocking(accountName, credentials, config, groupMethod, preconfigurationUrl)
             }
         }
     }
