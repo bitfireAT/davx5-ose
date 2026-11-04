@@ -290,7 +290,7 @@ class AndroidAccountManagerTest {
         val linked = addAndroidAccount("Linked", linkedId = 1)
         val addressBook = addAddressBookAccount("Address book", DbAccountId(1))
 
-        androidAccountManager().removeOrphanedForDbAccounts(listOf(DbAccount(2, "Linked")))
+        androidAccountManager().removeOrphanedForDbAccounts { listOf(DbAccount(2, "Linked")) }
 
         val remaining = realManager.accounts.toList()
         assertFalse(remaining.contains(linked))
@@ -302,7 +302,7 @@ class AndroidAccountManagerTest {
         val linked = addAndroidAccount("Android Name", linkedId = 1)
         val addressBook = addAddressBookAccount("Address book", DbAccountId(1))
 
-        androidAccountManager().removeOrphanedForDbAccounts(listOf(DbAccount(1, "DB Name")))
+        androidAccountManager().removeOrphanedForDbAccounts { listOf(DbAccount(1, "DB Name")) }
 
         val remaining = realManager.accounts.toList()
         assertTrue(remaining.contains(linked))
@@ -313,7 +313,7 @@ class AndroidAccountManagerTest {
     fun `removeOrphanedForDbAccounts() removes unlinked account without DB account of same name`() {
         val unlinked = addAndroidAccount("Unlinked")
 
-        androidAccountManager().removeOrphanedForDbAccounts(listOf(DbAccount(1, "Other")))
+        androidAccountManager().removeOrphanedForDbAccounts { listOf(DbAccount(1, "Other")) }
 
         assertFalse(realManager.accounts.contains(unlinked))
     }
@@ -322,7 +322,7 @@ class AndroidAccountManagerTest {
     fun `removeOrphanedForDbAccounts() keeps unlinked account with DB account of same name`() {
         val unlinked = addAndroidAccount("Unlinked")
 
-        androidAccountManager().removeOrphanedForDbAccounts(listOf(DbAccount(1, "Unlinked")))
+        androidAccountManager().removeOrphanedForDbAccounts { listOf(DbAccount(1, "Unlinked")) }
 
         assertTrue(realManager.accounts.contains(unlinked))
     }
@@ -333,11 +333,23 @@ class AndroidAccountManagerTest {
         assertTrue(realManager.addAccountExplicitly(legacy, null, null))
         val addressBook = addAddressBookAccount("Address book", LegacyAccount(legacy))
 
-        androidAccountManager().removeOrphanedForDbAccounts(emptyList())
+        androidAccountManager().removeOrphanedForDbAccounts { emptyList() }
 
         val remaining = realManager.accounts.toList()
         assertTrue(remaining.contains(legacy))
         assertTrue(remaining.contains(addressBook))
+    }
+
+    @Test
+    fun `removeOrphanedForDbAccounts() keeps account that is created while loading DB accounts`() {
+        var created: Account? = null
+
+        androidAccountManager().removeOrphanedForDbAccounts {
+            created = addAndroidAccount("Created concurrently", linkedId = 1)
+            emptyList()
+        }
+
+        assertTrue(realManager.accounts.contains(created))
     }
 
 

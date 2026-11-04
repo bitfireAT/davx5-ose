@@ -79,7 +79,7 @@ class AccountsCleanupWorker @AssistedInject constructor(
      */
     @VisibleForTesting
     internal fun cleanUpDbAndroidAccounts() {
-        androidAccountManager.removeOrphanedForDbAccounts(db.dbAccountDao().getAllBlocking())
+        androidAccountManager.removeOrphanedForDbAccounts { db.dbAccountDao().getAllBlocking() }
     }
 
     /**
