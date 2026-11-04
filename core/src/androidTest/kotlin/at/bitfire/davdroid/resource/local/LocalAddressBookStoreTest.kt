@@ -58,7 +58,7 @@ class LocalAddressBookStoreTest {
     lateinit var accountManager: AccountManager
 
     @BindValue @MockK(relaxed = true)
-    lateinit var addressBookAccountProperties: AddressBookAccountProperties
+    lateinit var addressBookAccountManager: AddressBookAccountManager
 
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
@@ -208,7 +208,7 @@ class LocalAddressBookStoreTest {
     fun test_getAll_differentAccount() {
         every { accountManager.getAccountsByType(any()) } returns arrayOf(addressBookAccount)
         val unrelatedAccount = Account("Another Unrelated Account", accountId.androidAccount.type)
-        every { addressBookAccountProperties.getAppAccount(addressBookAccount) } returns LegacyAccount(unrelatedAccount)
+        every { addressBookAccountManager.getAppAccount(addressBookAccount) } returns LegacyAccount(unrelatedAccount)
         val result = localAddressBookStore.getAll(accountId, client)
         assertTrue(result.isEmpty())
     }
@@ -216,7 +216,7 @@ class LocalAddressBookStoreTest {
     @Test
     fun test_getAll_sameAccount() {
         every { accountManager.getAccountsByType(any()) } returns arrayOf(addressBookAccount)
-        every { addressBookAccountProperties.getAppAccount(addressBookAccount) } returns accountId
+        every { addressBookAccountManager.getAppAccount(addressBookAccount) } returns accountId
         val result = localAddressBookStore.getAll(accountId, client)
         assertEquals(1, result.size)
         assertEquals(addressBookAccount, result.first().addressBookAccount)

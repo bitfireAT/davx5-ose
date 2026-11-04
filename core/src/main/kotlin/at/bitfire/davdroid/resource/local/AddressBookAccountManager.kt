@@ -18,7 +18,7 @@ import javax.inject.Inject
 /**
  * Deals with reading and writing user data of an address book account.
  */
-class AddressBookAccountProperties @Inject constructor(
+class AddressBookAccountManager @Inject constructor(
     private val accountManager: AccountManager,
     @ApplicationContext private val context: Context
 ) {

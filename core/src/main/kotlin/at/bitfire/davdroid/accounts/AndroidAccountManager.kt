@@ -17,7 +17,7 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.DbAccount
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
-import at.bitfire.davdroid.resource.local.AddressBookAccountProperties
+import at.bitfire.davdroid.resource.local.AddressBookAccountManager
 import at.bitfire.davdroid.sync.account.InvalidAccountException
 import at.bitfire.synctools.util.SensitiveString
 import at.bitfire.synctools.util.setAndVerifyUserData
@@ -39,7 +39,7 @@ import javax.inject.Provider
  */
 class AndroidAccountManager @Inject constructor(
     private val accountManager: Provider<AccountManager>,
-    private val addressBookAccountProperties: AddressBookAccountProperties,
+    private val addressBookAccountManager: AddressBookAccountManager,
     @ApplicationContext context: Context,
     database: AppDatabase,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
@@ -142,7 +142,7 @@ class AndroidAccountManager @Inject constructor(
         val addressBookAccounts =
             if (linkedId != null)
                 manager.getAccountsByType(addressBookAccountType)
-                    .filter { addressBookAccountProperties.getAppAccount(it) == DbAccountId(linkedId) }
+                    .filter { addressBookAccountManager.getAppAccount(it) == DbAccountId(linkedId) }
             else
                 emptyList()
         for (accountToRemove in addressBookAccounts + account) {
@@ -170,7 +170,7 @@ class AndroidAccountManager @Inject constructor(
         val existingNames = dbAccounts.map { it.name }.toSet()
 
         val orphanedAddressBookAccounts = addressBookAccounts.filter { account ->
-            when (val owner = addressBookAccountProperties.getAppAccount(account)) {
+            when (val owner = addressBookAccountManager.getAppAccount(account)) {
                 is DbAccountId -> owner.id !in existingIds
                 else -> false   // address book of a legacy account
             }

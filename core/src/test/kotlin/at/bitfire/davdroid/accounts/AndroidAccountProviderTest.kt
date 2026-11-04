@@ -11,7 +11,7 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.DbAccount
 import at.bitfire.davdroid.db.DbAccountDao
-import at.bitfire.davdroid.resource.local.AddressBookAccountProperties
+import at.bitfire.davdroid.resource.local.AddressBookAccountManager
 import at.bitfire.davdroid.sync.SyncFrameworkSettingsUpdater
 import at.bitfire.davdroid.sync.account.InvalidAccountException
 import io.mockk.coEvery
@@ -51,7 +51,7 @@ class AndroidAccountProviderTest {
 
     private val androidAccountManager = AndroidAccountManager(
         accountManager = { accountManager },
-        addressBookAccountProperties = AddressBookAccountProperties(accountManager, context),
+        addressBookAccountManager = AddressBookAccountManager(accountManager, context),
         context = context,
         database = database,
         ioDispatcher = Dispatchers.IO,
@@ -161,7 +161,7 @@ class AndroidAccountProviderTest {
         addAndroidAccount("DB Name", linkedId = 99)
         val addressBook = Account("Address book", context.getString(R.string.account_type_address_book))
         assertTrue(accountManager.addAccountExplicitly(addressBook, null, null))
-        AddressBookAccountProperties(accountManager, context).setAppAccount(addressBook, DbAccountId(99))
+        AddressBookAccountManager(accountManager, context).setAppAccount(addressBook, DbAccountId(99))
 
         provider.provide(DbAccountId(1))
 

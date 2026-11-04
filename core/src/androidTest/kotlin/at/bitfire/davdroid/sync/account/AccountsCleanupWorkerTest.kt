@@ -17,7 +17,7 @@ import at.bitfire.davdroid.accounts.LegacyAccount
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.DbAccount
 import at.bitfire.davdroid.db.Service
-import at.bitfire.davdroid.resource.local.AddressBookAccountProperties
+import at.bitfire.davdroid.resource.local.AddressBookAccountManager
 import at.bitfire.davdroid.settings.SettingsManager
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -46,7 +46,7 @@ class AccountsCleanupWorkerTest {
     lateinit var accountsCleanupWorkerFactory: AccountsCleanupWorker.Factory
 
     @Inject
-    lateinit var addressBookAccountProperties: AddressBookAccountProperties
+    lateinit var addressBookAccountManager: AddressBookAccountManager
 
     @Inject @ApplicationContext
     lateinit var context: Context
@@ -198,7 +198,7 @@ class AccountsCleanupWorkerTest {
         TestAccount.provide { existingAccount ->
             // Create address book account _with_ corresponding account and verify
             assertTrue(accountManager.addAccountExplicitly(addressBookAccount, null, Bundle()))
-            addressBookAccountProperties.setAppAccount(addressBookAccount, LegacyAccount(existingAccount))
+            addressBookAccountManager.setAppAccount(addressBookAccount, LegacyAccount(existingAccount))
             assertEquals(listOf(addressBookAccount), accountManager.getAccountsByType(addressBookAccountType).toList())
 
             // Create worker and run the method

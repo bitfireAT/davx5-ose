@@ -43,7 +43,7 @@ class LocalAddressBookStore @Inject constructor(
     private val accountManager: Provider<AccountManager>,
     private val accountRepository: AccountRepository,
     private val accountSettingsFactory: AccountSettingsFactory,
-    private val addressBookAccountProperties: AddressBookAccountProperties,
+    private val addressBookAccountManager: AddressBookAccountManager,
     private val androidAccountManager: AndroidAccountManager,
     @ApplicationContext private val context: Context,
     private val localAddressBookFactory: LocalAddressBook.Factory,
@@ -150,8 +150,8 @@ class LocalAddressBookStore @Inject constructor(
             return null
         }
 
-        addressBookAccountProperties.setAppAccount(addressBookAccount, accountId)
-        addressBookAccountProperties.setCollectionId(addressBookAccount, id)
+        addressBookAccountManager.setAppAccount(addressBookAccount, accountId)
+        addressBookAccountManager.setCollectionId(addressBookAccount, id)
 
         return addressBookAccount
     }
@@ -190,8 +190,8 @@ class LocalAddressBookStore @Inject constructor(
         }
 
         // Update the account user data
-        addressBookAccountProperties.setAppAccount(currentAccount, accountId)
-        addressBookAccountProperties.setCollectionId(currentAccount, fromCollection.id)
+        addressBookAccountManager.setAppAccount(currentAccount, accountId)
+        addressBookAccountManager.setCollectionId(currentAccount, fromCollection.id)
 
         // Set contacts provider settings
         localCollection.settings = contactsProviderSettings
@@ -223,10 +223,10 @@ class LocalAddressBookStore @Inject constructor(
 
         accountManager.get().getAccountsByType(context.getString(R.string.account_type_address_book))
             .filter { addressBookAccount ->
-                addressBookAccountProperties.getAppAccount(addressBookAccount) == oldAccountId
+                addressBookAccountManager.getAppAccount(addressBookAccount) == oldAccountId
             }
             .forEach { addressBookAccount ->
-                addressBookAccountProperties.setAppAccount(addressBookAccount, newAccountId)
+                addressBookAccountManager.setAppAccount(addressBookAccount, newAccountId)
             }
     }
 
@@ -242,7 +242,7 @@ class LocalAddressBookStore @Inject constructor(
         accountManager.getAccountsByType(context.getString(R.string.account_type_address_book))
             .asSequence()
             .filter { addressBookAccount ->
-                addressBookAccountProperties.getAppAccount(addressBookAccount) == accountId
+                addressBookAccountManager.getAppAccount(addressBookAccount) == accountId
             }
             .forEach { addressBookAccount ->
                 accountManager.removeAccountExplicitly(addressBookAccount)
@@ -258,7 +258,7 @@ class LocalAddressBookStore @Inject constructor(
     fun getAddressBookAccounts(accountId: AccountId): List<Account> =
         accountManager.get().getAccountsByType(context.getString(R.string.account_type_address_book))
             .filter { addressBookAccount ->
-                addressBookAccountProperties.getAppAccount(addressBookAccount) == accountId
+                addressBookAccountManager.getAppAccount(addressBookAccount) == accountId
             }
 
     /**

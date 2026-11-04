@@ -21,7 +21,7 @@ import at.bitfire.davdroid.accounts.AndroidAccountManager
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavCollectionRepository
 import at.bitfire.davdroid.repository.DavServiceRepository
-import at.bitfire.davdroid.resource.local.AddressBookAccountProperties
+import at.bitfire.davdroid.resource.local.AddressBookAccountManager
 import at.bitfire.davdroid.settings.AccountSettingsFactory
 import at.bitfire.davdroid.sync.SyncConditions
 import at.bitfire.davdroid.sync.SyncDataType
@@ -54,7 +54,7 @@ import kotlin.time.Duration.Companion.minutes
 class SyncAdapterImpl @Inject constructor(
     private val accountRepository: AccountRepository,
     private val accountSettingsFactory: AccountSettingsFactory,
-    private val addressBookAccountProperties: AddressBookAccountProperties,
+    private val addressBookAccountManager: AddressBookAccountManager,
     private val androidAccountManager: AndroidAccountManager,
     private val collectionRepository: DavCollectionRepository,
     private val serviceRepository: DavServiceRepository,
@@ -147,7 +147,7 @@ class SyncAdapterImpl @Inject constructor(
      */
     private suspend fun getAccountId(accountOrAddressBookAccount: Account): AccountId? {
         return if (accountOrAddressBookAccount.type == context.getString(R.string.account_type_address_book)) {
-            addressBookAccountProperties.getCollectionId(accountOrAddressBookAccount)?.let { collectionId ->
+            addressBookAccountManager.getCollectionId(accountOrAddressBookAccount)?.let { collectionId ->
                 collectionRepository.getAsync(collectionId)?.let { collection ->
                     serviceRepository.get(collection.serviceId)?.let { service ->
                         accountRepository.getAccountIdFromService(service)
