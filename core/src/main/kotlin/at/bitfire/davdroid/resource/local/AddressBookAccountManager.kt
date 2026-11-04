@@ -130,6 +130,13 @@ class AddressBookAccountManager @Inject constructor(
     }
 
     /**
+     * Returns all address book accounts.
+     */
+    fun getAll(): List<Account> {
+        return accountManager.getAccountsByType(addressBookAccountType).toList()
+    }
+
+    /**
      * Returns all address book accounts that belong to the given app account.
      */
     fun getAllByAccountId(accountId: AccountId): List<Account> {

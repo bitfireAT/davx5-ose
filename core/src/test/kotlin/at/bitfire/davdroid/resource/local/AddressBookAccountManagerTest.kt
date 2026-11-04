@@ -108,6 +108,19 @@ class AddressBookAccountManagerTest {
     }
 
     @Test
+    fun `getAll() should return all accounts`() {
+        val accountId1 = DbAccountId(1)
+        val accountId2 = DbAccountId(2)
+        val account1 = createAccount(accountId = accountId1, name = "test1", collectionId = 1)
+        val account2 = createAccount(accountId = accountId1, name = "test2", collectionId = 2)
+        val account3 = createAccount(accountId = accountId2, name = "test3", collectionId = 3)
+
+        val accounts = addressBookAccountManager.getAll()
+
+        assertEquals(setOf(account1, account2, account3), accounts.toSet())
+    }
+
+    @Test
     fun `getAllByAccountId() should only return accounts linked to specified app account`() {
         val accountId1 = DbAccountId(1)
         val accountId2 = DbAccountId(2)

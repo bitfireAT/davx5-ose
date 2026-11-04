@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.sync.account
 
-import android.accounts.AccountManager
 import android.content.Context
 import androidx.annotation.VisibleForTesting
 import androidx.hilt.work.HiltWorker
@@ -14,7 +13,6 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.Worker
 import androidx.work.WorkerParameters
-import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AndroidAccountManager
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.repository.AccountRepository
@@ -30,7 +28,6 @@ import java.util.logging.Logger
 class AccountsCleanupWorker @AssistedInject constructor(
     @Assisted val context: Context,
     @Assisted workerParameters: WorkerParameters,
-    private val accountManager: AccountManager,
     private val accountRepository: AccountRepository,
     private val addressBookAccountManager: AddressBookAccountManager,
     private val androidAccountManager: AndroidAccountManager,
@@ -88,12 +85,12 @@ class AccountsCleanupWorker @AssistedInject constructor(
     @VisibleForTesting
     internal fun cleanUpAddressBooks() {
         val accountIds = accountRepository.getAllBlocking().toSet()
-        for (addressBookAccount in accountManager.getAccountsByType(context.getString(R.string.account_type_address_book))) {
+        for (addressBookAccount in addressBookAccountManager.getAll()) {
             val accountId = addressBookAccountManager.getAppAccount(addressBookAccount)
             if (accountId !in accountIds) {
                 // If no valid account exists for this address book, we can delete it
                 logger.info("Deleting address book account without valid account: $addressBookAccount")
-                accountManager.removeAccountExplicitly(addressBookAccount)
+                addressBookAccountManager.delete(addressBookAccount)
             }
         }
     }
