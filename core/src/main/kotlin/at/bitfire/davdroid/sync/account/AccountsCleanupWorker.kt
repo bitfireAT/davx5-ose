@@ -15,6 +15,7 @@ import androidx.work.WorkManager
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.accounts.AndroidAccountManager
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.resource.local.AddressBookAccountProperties
@@ -32,6 +33,7 @@ class AccountsCleanupWorker @AssistedInject constructor(
     private val accountManager: AccountManager,
     private val accountRepository: AccountRepository,
     private val addressBookAccountProperties: AddressBookAccountProperties,
+    private val androidAccountManager: AndroidAccountManager,
     private val db: AppDatabase,
     private val logger: Logger
 ): Worker(context, workerParameters) {
@@ -46,6 +48,7 @@ class AccountsCleanupWorker @AssistedInject constructor(
         lockAccountsCleanup()
         try {
             cleanUpServices()
+            cleanUpDbAndroidAccounts()
             cleanUpAddressBooks()
         } finally {
             unlockAccountsCleanup()
@@ -58,9 +61,8 @@ class AccountsCleanupWorker @AssistedInject constructor(
      */
     @VisibleForTesting
     internal fun cleanUpServices() {
-        // Later, accounts which are not in the DB should be deleted here
-
-        // Delete orphaned services in DB – only necessary as long as accounts are implemented as system accounts (not in DB)
+        // Delete orphaned services in DB – only necessary as long as accounts are implemented as system accounts
+        // (LegacyAccount, not in DB)
         val accountIds = accountRepository.getAllBlocking()
         logger.info("Cleaning up accounts. Currently existing accounts: ${accountIds.joinToString()}")
         val serviceDao = db.serviceDao()
@@ -70,6 +72,14 @@ class AccountsCleanupWorker @AssistedInject constructor(
             val accountNames = accountIds.map { accountId -> accountRepository.getAccountNameBlocking(accountId) }
             serviceDao.deleteExceptAccountsBlocking(accountNames)
         }
+    }
+
+    /**
+     * Deletes Android accounts (and their address book accounts) of DB accounts that don't exist anymore.
+     */
+    @VisibleForTesting
+    internal fun cleanUpDbAndroidAccounts() {
+        androidAccountManager.removeOrphanedForDbAccounts(db.dbAccountDao().getAllBlocking())
     }
 
     /**
