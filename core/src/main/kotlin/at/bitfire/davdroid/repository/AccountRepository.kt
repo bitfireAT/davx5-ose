@@ -29,6 +29,7 @@ import at.bitfire.davdroid.sync.worker.SyncWorkerManager
 import at.bitfire.synctools.vcard.GroupMethod
 import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -36,9 +37,11 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
 import org.jetbrains.annotations.TestOnly
+import java.util.concurrent.CopyOnWriteArraySet
 import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
+import javax.inject.Singleton
 
 /**
  * Repository for managing CalDAV/CardDAV accounts.
@@ -46,6 +49,7 @@ import javax.inject.Inject
  * *Note:* This class is not related to address book accounts, which are managed by
  * [at.bitfire.davdroid.resource.local.LocalAddressBook].
  */
+@Singleton
 class AccountRepository @Inject internal constructor(
     private val accountManager: AccountManager,
     private val automaticSyncManager: Lazy<AutomaticSyncManager>,
@@ -68,6 +72,8 @@ class AccountRepository @Inject internal constructor(
     private val accountRenameFlow = MutableSharedFlow<AccountRename>()
 
     private val dbAccountDao = db.dbAccountDao()
+
+    private val onBeforeDeleteListeners = CopyOnWriteArraySet<OnBeforeDeleteListener>()
 
     fun getAccountNameFlow(accountId: AccountId): Flow<String> {
         return flow {
@@ -148,9 +154,29 @@ class AccountRepository @Inject internal constructor(
     }
 
     suspend fun delete(accountId: AccountId) {
+        withContext(ioDispatcher) {
+            notifyOnBeforeDeleteListeners(accountId)
+        }
+
         when (accountId) {
             is LegacyAccount -> legacyAccountRepository.delete(accountId)
             is DbAccountId -> dbAccountRepository.delete(accountId)
+        }
+    }
+
+    private fun notifyOnBeforeDeleteListeners(accountId: AccountId) {
+        for (listener in onBeforeDeleteListeners) {
+            try {
+                listener.onBeforeDelete(accountId)
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                logger.log(
+                    Level.SEVERE,
+                    "Exception in OnBeforeDeleteListener implementation: ${listener::class.qualifiedName}",
+                    e
+                )
+            }
         }
     }
 
@@ -333,4 +359,12 @@ class AccountRepository @Inject internal constructor(
     // helpers
 
     private data class AccountRename(val oldName: String, val newName: String)
+
+    fun addOnBeforeDeleteListener(listener: OnBeforeDeleteListener) {
+        onBeforeDeleteListeners.add(listener)
+    }
+
+    fun removeOnBeforeDeleteListener(listener: OnBeforeDeleteListener) {
+        onBeforeDeleteListeners.remove(listener)
+    }
 }

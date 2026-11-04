@@ -10,10 +10,12 @@ import android.content.Context
 import androidx.hilt.work.HiltWorkerFactory
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.TestUtils
+import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.accounts.LegacyAccount
 import at.bitfire.davdroid.resource.local.LocalAddressBookStore
 import at.bitfire.davdroid.resource.local.LocalCalendarStore
 import at.bitfire.davdroid.resource.local.LocalDataStore
+import at.bitfire.davdroid.servicedetection.DavResourceFinder
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.AutomaticSyncManager
 import at.bitfire.davdroid.sync.SyncDataType
@@ -21,6 +23,7 @@ import at.bitfire.davdroid.sync.TasksAppManager
 import at.bitfire.davdroid.sync.account.AccountsCleanupWorker
 import at.bitfire.davdroid.sync.account.TestAccount
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
+import at.bitfire.synctools.vcard.GroupMethod
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -213,4 +216,56 @@ class AccountRepositoryTest {
         coVerify { serviceRepository.renameAccount(accountId.androidAccount.name, newName) }
     }
 
+    @Test
+    fun delete_should_delete_account() = runTest {
+        val accountId = createAccount()
+
+        accountRepository.delete(accountId)
+
+        assertTrue(accountId !in accountRepository.getAllBlocking())
+    }
+
+    @Test
+    fun delete_calls_OnBeforeDeleteListeners_before_deleting_the_account() = runTest {
+        val accountId = createAccount()
+        var listenerCalled = false
+        accountRepository.addOnBeforeDeleteListener { accountId ->
+            assertTrue(accountId in accountRepository.getAllBlocking())
+            listenerCalled = true
+        }
+
+        accountRepository.delete(accountId)
+
+        assertTrue(listenerCalled)
+        assertTrue(accountId !in accountRepository.getAllBlocking())
+    }
+
+    @Test
+    fun exception_in_OnBeforeDeleteListener_should_be_caught() = runTest {
+        val accountId = createAccount()
+        var listenerCalled = false
+        accountRepository.addOnBeforeDeleteListener {
+            listenerCalled = true
+            error("Exception")
+        }
+
+        accountRepository.delete(accountId)
+
+        assertTrue(listenerCalled)
+        assertTrue(accountId !in accountRepository.getAllBlocking())
+    }
+
+    private suspend fun createAccount(): AccountId {
+        return accountRepository.create(
+            accountName = "name",
+            credentials = null,
+            config = DavResourceFinder.Configuration(
+                cardDAV = null,
+                calDAV = null,
+                encountered401 = false,
+            ),
+            groupMethod = GroupMethod.GROUP_VCARDS,
+            preconfigurationUrl = null,
+        )!!
+    }
 }
