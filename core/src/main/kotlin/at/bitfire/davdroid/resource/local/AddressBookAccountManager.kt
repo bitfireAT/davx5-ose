@@ -247,6 +247,24 @@ class AddressBookAccountManager @Inject constructor(
         accountManager.setAndVerifyUserData(account, USER_DATA_COLLECTION_ID, collectionId?.toString())
     }
 
+    /**
+     * Get a named property for the given address book account.
+     */
+    fun getProperty(account: Account, key: String): String? {
+        requireAddressBookAccount(account)
+
+        return accountManager.getUserData(account, key)
+    }
+
+    /**
+     * Set a named property for the given address book account.
+     */
+    fun setProperty(account: Account, key: String, value: String?) {
+        requireAddressBookAccount(account)
+
+        accountManager.setAndVerifyUserData(account, key, value)
+    }
+
     private fun requireAddressBookAccount(account: Account) {
         require(account.type == addressBookAccountType) { "Account.type needs to be $addressBookAccountType" }
     }

@@ -21,6 +21,7 @@ import org.robolectric.annotation.ConscryptMode
 import java.util.logging.Logger
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 
 private const val ACCOUNT_TYPE = "at.bitfire.davdroid.address_book"
 
@@ -167,6 +168,38 @@ class AddressBookAccountManagerTest {
 
             assertEquals(listOf(account2), awaitItem())
         }
+    }
+
+    @Test
+    fun `setProperty() then getProperty()`() {
+        val key = "key"
+        val value = "value"
+        val account = createAccount(accountId = DbAccountId(1), name = "test", collectionId = 1)
+        addressBookAccountManager.setProperty(account, key, value)
+
+        val result = addressBookAccountManager.getProperty(account, key)
+
+        assertEquals(value, result)
+    }
+
+    @Test
+    fun `setProperty() overwriting a value`() {
+        val key = "key"
+        val account = createAccount(accountId = DbAccountId(1), name = "test", collectionId = 1)
+        addressBookAccountManager.setProperty(account, key, value = "oldValue")
+
+        addressBookAccountManager.setProperty(account, key, "newValue")
+
+        assertEquals("newValue", addressBookAccountManager.getProperty(account, key))
+    }
+
+    @Test
+    fun `getProperty() should return null when property does not exist`() {
+        val account = createAccount(accountId = DbAccountId(1), name = "test", collectionId = 1)
+
+        val result = addressBookAccountManager.getProperty(account, "non-existent")
+
+        assertNull(result)
     }
 
     private fun createAccount(accountId: AccountId, name: String, collectionId: Long): Account {
