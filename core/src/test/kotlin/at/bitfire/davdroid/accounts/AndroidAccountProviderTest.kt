@@ -49,9 +49,10 @@ class AndroidAccountProviderTest {
     private val logger = mockk<Logger>(relaxed = true)
     private val syncFrameworkSettingsUpdater = mockk<SyncFrameworkSettingsUpdater>(relaxed = true)
 
+    private val addressBookAccountManager = AddressBookAccountManager(accountManager, context, Dispatchers.IO, logger)
     private val androidAccountManager = AndroidAccountManager(
         accountManager = { accountManager },
-        addressBookAccountManager = AddressBookAccountManager(accountManager, context),
+        addressBookAccountManager = addressBookAccountManager,
         context = context,
         database = database,
         ioDispatcher = Dispatchers.IO,
@@ -161,7 +162,7 @@ class AndroidAccountProviderTest {
         addAndroidAccount("DB Name", linkedId = 99)
         val addressBook = Account("Address book", context.getString(R.string.account_type_address_book))
         assertTrue(accountManager.addAccountExplicitly(addressBook, null, null))
-        AddressBookAccountManager(accountManager, context).setAppAccount(addressBook, DbAccountId(99))
+        addressBookAccountManager.setAppAccount(addressBook, DbAccountId(99))
 
         provider.provide(DbAccountId(1))
 

@@ -54,7 +54,7 @@ class AndroidAccountManagerTest {
 
     private fun androidAccountManager(manager: AccountManager = realManager) = AndroidAccountManager(
         accountManager = { manager },
-        addressBookAccountManager = AddressBookAccountManager(realManager, context),
+        addressBookAccountManager = AddressBookAccountManager(realManager, context, Dispatchers.IO, logger),
         context = context,
         database = database,
         ioDispatcher = Dispatchers.IO,
@@ -72,7 +72,7 @@ class AndroidAccountManagerTest {
     private fun addAddressBookAccount(name: String, owner: AccountId): Account {
         val account = Account(name, context.getString(R.string.account_type_address_book))
         assertTrue(realManager.addAccountExplicitly(account, null, null))
-        AddressBookAccountManager(realManager, context).setAppAccount(account, owner)
+        AddressBookAccountManager(realManager, context, Dispatchers.IO, logger).setAppAccount(account, owner)
         return account
     }
 

@@ -205,6 +205,7 @@ dependencies {
     testImplementation(libs.ktor.client.mock)
     testImplementation(libs.mockk)
     testImplementation(libs.robolectric)
+    testImplementation(libs.turbine)
     testImplementation(testFixtures(project(":synctools")))
 }
 

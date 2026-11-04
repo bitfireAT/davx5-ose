@@ -8,26 +8,21 @@ import android.accounts.Account
 import android.accounts.AccountManager
 import android.content.Context
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.accounts.DbAccountId
 import at.bitfire.davdroid.accounts.LegacyAccount
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
-import at.bitfire.davdroid.di.AndroidServicesModule
-import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.account.TestAccount
 import at.bitfire.davdroid.util.DavUtils.toUrl
 import at.bitfire.synctools.storage.LocalStorageClient
 import dagger.hilt.android.qualifiers.ApplicationContext
-import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import dagger.hilt.android.testing.UninstallModules
 import io.mockk.every
-import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit4.MockKRule
 import io.mockk.mockk
-import io.mockk.mockkObject
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -39,7 +34,6 @@ import org.junit.Test
 import javax.inject.Inject
 
 @HiltAndroidTest
-@UninstallModules(AndroidServicesModule::class)
 class LocalAddressBookStoreTest {
 
     @Inject @ApplicationContext
@@ -54,10 +48,10 @@ class LocalAddressBookStoreTest {
     @RelaxedMockK
     lateinit var client: LocalStorageClient
 
-    @BindValue @MockK(relaxed = true)
+    @Inject
     lateinit var accountManager: AccountManager
 
-    @BindValue @MockK(relaxed = true)
+    @Inject
     lateinit var addressBookAccountManager: AddressBookAccountManager
 
     @get:Rule
@@ -90,22 +84,6 @@ class LocalAddressBookStoreTest {
             "MrRobert@example.com",
             addressBookAccountType
         )
-
-        // AccountSettings (created internally by LocalAddressBookStore) also uses the shared accountManager mock.
-        // Relaxed mocks default String? results to "" instead of null, so stub null explicitly before overriding
-        // the one key (settings version) that must have a real value to avoid running migrations.
-        every { accountManager.getUserData(any(), any()) } returns null
-        every {
-            accountManager.getUserData(
-                any(),
-                AccountSettings.KEY_SETTINGS_VERSION
-            )
-        } returns AccountSettings.CURRENT_VERSION.toString()
-
-        // create real address book accounts, because AndroidAddressBook uses the real AccountManager
-        every { accountManager.addAccountExplicitly(any(), any(), any()) } answers {
-            AccountManager.get(context).addAccountExplicitly(firstArg(), secondArg(), thirdArg())
-        }
     }
 
     @After
@@ -161,21 +139,6 @@ class LocalAddressBookStoreTest {
         assertEquals("funnyfriends #1", localAddressBookStore.accountName(collection))
     }
 
-
-    @Test
-    fun test_create_createAccountReturnsNull() = runTest {
-        val collection = mockk<Collection>(relaxed = true) {
-            every { serviceId } returns service.id
-            every { id } returns 1
-            every { url } returns "https://example.com/addressbook/funnyfriends/".toUrl()
-        }
-
-        mockkObject(localAddressBookStore)
-        every { localAddressBookStore.createAddressBookAccount(any(), any(), any()) } returns null
-
-        assertEquals(null, localAddressBookStore.create(client, collection))
-    }
-
     @Test
     fun test_create_ReadOnly() = runTest {
         val collection = mockk<Collection>(relaxed = true) {
@@ -206,18 +169,19 @@ class LocalAddressBookStoreTest {
 
     @Test
     fun test_getAll_differentAccount() {
-        every { accountManager.getAccountsByType(any()) } returns arrayOf(addressBookAccount)
-        val unrelatedAccount = Account("Another Unrelated Account", accountId.androidAccount.type)
-        every { addressBookAccountManager.getAppAccount(addressBookAccount) } returns LegacyAccount(unrelatedAccount)
+        addressBookAccountManager.create(DbAccountId(23), "unrelated", 2L)
+
         val result = localAddressBookStore.getAll(accountId, client)
+
         assertTrue(result.isEmpty())
     }
 
     @Test
     fun test_getAll_sameAccount() {
-        every { accountManager.getAccountsByType(any()) } returns arrayOf(addressBookAccount)
-        every { addressBookAccountManager.getAppAccount(addressBookAccount) } returns accountId
+        addressBookAccountManager.create(accountId, addressBookAccount.name, collectionId = 1)
+
         val result = localAddressBookStore.getAll(accountId, client)
+
         assertEquals(1, result.size)
         assertEquals(addressBookAccount, result.first().addressBookAccount)
     }
@@ -241,7 +205,6 @@ class LocalAddressBookStoreTest {
     // helpers
 
     private fun removeAddressBooks() {
-        val accountManager = AccountManager.get(context)
         accountManager.getAccountsByType(addressBookAccountType).forEach {
             accountManager.removeAccountExplicitly(it)
         }
