@@ -72,11 +72,11 @@ class AccountsCleanupWorker @AssistedInject constructor(
     }
 
     /**
-     * Deletes Android accounts (and their address book accounts) of DB accounts that don't exist anymore.
+     * Deletes Android accounts of DB accounts that don't exist anymore.
      */
     @VisibleForTesting
     internal fun cleanUpDbAndroidAccounts() {
-        androidAccountManager.removeOrphanedForDbAccounts { db.dbAccountDao().getAllBlocking() }
+        androidAccountManager.removeOrphanedForDbAccounts()
     }
 
     /**

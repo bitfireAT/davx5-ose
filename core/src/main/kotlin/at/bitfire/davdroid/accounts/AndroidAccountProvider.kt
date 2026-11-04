@@ -7,6 +7,7 @@ package at.bitfire.davdroid.accounts
 import android.accounts.Account
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
+import at.bitfire.davdroid.resource.local.AddressBookAccountManager
 import at.bitfire.davdroid.sync.SyncFrameworkSettingsUpdater
 import at.bitfire.davdroid.sync.account.InvalidAccountException
 import dagger.Lazy
@@ -22,6 +23,7 @@ import javax.inject.Inject
  * is created when necessary (replacing an orphaned one with the same name).
  */
 class AndroidAccountProvider @Inject constructor(
+    private val addressBookAccountManager: AddressBookAccountManager,
     private val androidAccountManager: AndroidAccountManager,
     db: AppDatabase,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
@@ -65,6 +67,9 @@ class AndroidAccountProvider @Inject constructor(
 
             // orphaned (not linked or linked to a DB account that doesn't exist anymore), may have unrelated local data
             logger.info("Removing orphaned Android account $sameName")
+            if (sameNameLinkedId != null) {
+                addressBookAccountManager.deleteByAccountId(DbAccountId(sameNameLinkedId))
+            }
             androidAccountManager.removeAccount(sameName)
         }
 

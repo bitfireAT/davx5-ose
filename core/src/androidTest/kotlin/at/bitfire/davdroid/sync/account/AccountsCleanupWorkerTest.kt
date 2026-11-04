@@ -13,6 +13,7 @@ import androidx.work.testing.TestListenableWorkerBuilder
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.TestUtils
 import at.bitfire.davdroid.accounts.AndroidAccountManager
+import at.bitfire.davdroid.accounts.DbAccountId
 import at.bitfire.davdroid.accounts.LegacyAccount
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.DbAccount
@@ -80,6 +81,7 @@ class AccountsCleanupWorkerTest {
     @After
     fun tearDown() {
         // Remove the account here in any case; Nice to have when the test fails
+        db.dbAccountDao().deleteAllBlocking()
         accountManager.removeAccountExplicitly(addressBookAccount)
         accountManager.removeAccountExplicitly(dbAndroidAccount)
     }
@@ -191,6 +193,38 @@ class AccountsCleanupWorkerTest {
 
         // Verify account was deleted
         assertTrue(accountManager.getAccountsByType(addressBookAccountType).isEmpty())
+    }
+
+    @Test
+    fun testCleanUpAddressBooks_deletesAddressBookLinkingNonExistentDbAccount() {
+        // Create address book account linking a non-existent DB account
+        addressBookAccountManager.create(DbAccountId(23), addressBookAccount.name, collectionId = 1)
+
+        // Create worker and run the method
+        val worker = TestListenableWorkerBuilder<AccountsCleanupWorker>(context)
+            .setWorkerFactory(workerFactory)
+            .build()
+        worker.cleanUpAddressBooks()
+
+        // Verify account was deleted
+        assertTrue(accountManager.getAccountsByType(addressBookAccountType).isEmpty())
+    }
+
+    @Test
+    fun testCleanUpAddressBooks_keepsAddressBookWithDbAccount() {
+        val dbAccountId = db.dbAccountDao().insertBlocking(DbAccount(name = dbAndroidAccount.name))
+        assertTrue(accountManager.addAccountExplicitly(dbAndroidAccount, null, null))
+        accountManager.setUserData(dbAndroidAccount, AndroidAccountManager.USER_DATA_ACCOUNT_ID, dbAccountId.toString())
+        addressBookAccountManager.create(DbAccountId(dbAccountId), addressBookAccount.name, collectionId = 1)
+
+        // Create worker and run the method
+        val worker = TestListenableWorkerBuilder<AccountsCleanupWorker>(context)
+            .setWorkerFactory(workerFactory)
+            .build()
+        worker.cleanUpAddressBooks()
+
+        // Verify account was _not_ deleted
+        assertEquals(listOf(addressBookAccount), accountManager.getAccountsByType(addressBookAccountType).toList())
     }
 
     @Test

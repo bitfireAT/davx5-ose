@@ -114,6 +114,20 @@ class AddressBookAccountManager @Inject constructor(
     }
 
     /**
+     * Deletes all address book accounts linked to a database account.
+     *
+     * Used when the database is (re)created: then the remaining accounts are orphaned and their links (DB IDs)
+     * could otherwise match new DB accounts.
+     */
+    fun deleteAllLinkingDbAccount() {
+        for (account in accountManager.getAccountsByType(addressBookAccountType)) {
+            if (getAppAccount(account) is DbAccountId) {
+                delete(account)
+            }
+        }
+    }
+
+    /**
      * Updates address book accounts which are linked to [oldAccountId] to be linked to [newAccountId] instead.
      */
     fun updateAppAccount(oldAccountId: AccountId, newAccountId: AccountId) {

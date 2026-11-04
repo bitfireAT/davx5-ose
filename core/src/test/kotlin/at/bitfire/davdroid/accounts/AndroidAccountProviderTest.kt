@@ -52,13 +52,13 @@ class AndroidAccountProviderTest {
     private val addressBookAccountManager = AddressBookAccountManager(accountManager, context, Dispatchers.IO, logger)
     private val androidAccountManager = AndroidAccountManager(
         accountManager = { accountManager },
-        addressBookAccountManager = addressBookAccountManager,
         context = context,
         database = database,
         ioDispatcher = Dispatchers.IO,
         logger = logger
     )
     private val provider = AndroidAccountProvider(
+        addressBookAccountManager = addressBookAccountManager,
         androidAccountManager = androidAccountManager,
         db = database,
         ioDispatcher = Dispatchers.IO,
