@@ -134,7 +134,9 @@ internal class LegacyAccountRepository @Inject constructor(
 
         try {
             // remove account directly (bypassing the authenticator, which is our own)
-            accountManager.removeAccountExplicitly(androidAccount)
+            withContext(ioDispatcher) {
+                accountManager.removeAccountExplicitly(androidAccount)
+            }
 
             // delete service from database
             serviceRepository.deleteByAccount(accountId)
