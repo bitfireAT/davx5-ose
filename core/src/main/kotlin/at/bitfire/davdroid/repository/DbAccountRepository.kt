@@ -15,7 +15,6 @@ import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.db.ServiceType
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
-import at.bitfire.davdroid.resource.local.LocalAddressBookStore
 import at.bitfire.davdroid.servicedetection.DavResourceFinder
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.settings.AccountSettings
@@ -42,7 +41,6 @@ internal class DbAccountRepository @Inject constructor(
     private val collectionRepository: Lazy<DavCollectionRepository>,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val homeSetRepository: DavHomeSetRepository,
-    private val localAddressBookStore: Lazy<LocalAddressBookStore>,
     private val logger: Logger,
     private val serviceRepository: DavServiceRepository,
     db: AppDatabase
@@ -147,16 +145,6 @@ internal class DbAccountRepository @Inject constructor(
     }
 
     suspend fun delete(accountId: DbAccountId) {
-        // delete address books (= address book accounts)
-        try {
-            withContext(ioDispatcher) {
-                localAddressBookStore.get().deleteByAccountId(accountId)
-            }
-        } catch (e: Exception) {
-            logger.log(Level.WARNING, "Couldn't remove address book accounts for $accountId", e)
-        }
-
-        // delete database account (including services)
         try {
             dbAccountDao.delete(accountId.id)
         } catch (e: Exception) {
