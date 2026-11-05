@@ -12,8 +12,10 @@ import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.testing.TestListenableWorkerBuilder
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.TestUtils
+import at.bitfire.davdroid.accounts.AndroidAccountManager
 import at.bitfire.davdroid.accounts.LegacyAccount
 import at.bitfire.davdroid.db.AppDatabase
+import at.bitfire.davdroid.db.DbAccount
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.resource.local.AddressBookAccountProperties
 import at.bitfire.davdroid.settings.SettingsManager
@@ -22,6 +24,7 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
@@ -59,6 +62,7 @@ class AccountsCleanupWorkerTest {
 
     lateinit var addressBookAccountType: String
     lateinit var addressBookAccount: Account
+    lateinit var dbAndroidAccount: Account
     lateinit var service: Service
 
     @Before
@@ -70,12 +74,14 @@ class AccountsCleanupWorkerTest {
 
         addressBookAccountType = context.getString(R.string.account_type_address_book)
         addressBookAccount = Account("Fancy address book account", addressBookAccountType)
+        dbAndroidAccount = Account("Fancy DB account", context.getString(R.string.account_type_db))
     }
 
     @After
     fun tearDown() {
         // Remove the account here in any case; Nice to have when the test fails
         accountManager.removeAccountExplicitly(addressBookAccount)
+        accountManager.removeAccountExplicitly(dbAndroidAccount)
     }
 
 
@@ -139,6 +145,35 @@ class AccountsCleanupWorkerTest {
             assertNotNull(db.serviceDao().getBlocking(1))
             assertNull(db.serviceDao().getBlocking(2))
         }
+    }
+
+
+    @Test
+    fun testCleanUpDbAndroidAccounts_removesOrphaned() {
+        // Create Android account linked to a DB account that doesn't exist
+        assertTrue(accountManager.addAccountExplicitly(dbAndroidAccount, null, null))
+        accountManager.setUserData(dbAndroidAccount, AndroidAccountManager.USER_DATA_ACCOUNT_ID, "999")
+
+        val worker = TestListenableWorkerBuilder<AccountsCleanupWorker>(context)
+            .setWorkerFactory(workerFactory)
+            .build()
+        worker.cleanUpDbAndroidAccounts()
+
+        assertFalse(accountManager.accounts.contains(dbAndroidAccount))
+    }
+
+    @Test
+    fun testCleanUpDbAndroidAccounts_keepsLinked() {
+        val dbAccountId = db.dbAccountDao().insertBlocking(DbAccount(name = dbAndroidAccount.name))
+        assertTrue(accountManager.addAccountExplicitly(dbAndroidAccount, null, null))
+        accountManager.setUserData(dbAndroidAccount, AndroidAccountManager.USER_DATA_ACCOUNT_ID, dbAccountId.toString())
+
+        val worker = TestListenableWorkerBuilder<AccountsCleanupWorker>(context)
+            .setWorkerFactory(workerFactory)
+            .build()
+        worker.cleanUpDbAndroidAccounts()
+
+        assertTrue(accountManager.accounts.contains(dbAndroidAccount))
     }
 
 
