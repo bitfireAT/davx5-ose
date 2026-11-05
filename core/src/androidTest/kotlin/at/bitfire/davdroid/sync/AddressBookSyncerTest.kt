@@ -4,9 +4,9 @@
 
 package at.bitfire.davdroid.sync
 
-import android.accounts.AccountManager
 import android.os.DeadObjectException
 import at.bitfire.davdroid.db.Collection
+import at.bitfire.davdroid.resource.local.AddressBookAccountManager
 import at.bitfire.davdroid.resource.local.LocalAddressBook
 import at.bitfire.synctools.storage.LocalStorageClient
 import at.bitfire.synctools.storage.LocalStorageException
@@ -32,7 +32,7 @@ class AddressBookSyncerTest {
     val mockkRule = MockKRule(this)
 
     @RelaxedMockK
-    lateinit var accountManager: AccountManager
+    lateinit var addressBookAccountManager: AddressBookAccountManager
 
     @RelaxedMockK
     lateinit var logger: Logger
@@ -60,7 +60,7 @@ class AddressBookSyncerTest {
             syncFrameworkUpload = false,
             syncResult = syncResult,
             settings = settings,
-            accountManager = { accountManager },
+            addressBookAccountManager = { addressBookAccountManager },
             addressBookStore = mockk(relaxed = true),
             contactsSyncManagerFactory = contactsSyncManagerFactory,
             ioDispatcher = Dispatchers.Unconfined
@@ -70,7 +70,7 @@ class AddressBookSyncerTest {
         }
 
         // group method hasn't changed, so that handleGroupMethodChange() doesn't do anything
-        every { accountManager.getUserData(any(), any()) } returns settings.groupMethod.name
+        every { addressBookAccountManager.getProperty(any(), any()) } returns settings.groupMethod.name
 
         every {
             contactsSyncManagerFactory.contactsSyncManager(

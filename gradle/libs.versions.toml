@@ -44,6 +44,7 @@ robolectric = "4.17"
 room = "2.8.5"
 slf4j = "2.0.20"
 spotbugs = "4.10.5"
+turbine = "1.2.1"
 unifiedpush = "3.3.5"
 unifiedpush-fcm = "3.1.0"
 
@@ -132,6 +133,7 @@ openid-appauth = { module = "net.openid:appauth", version.ref = "openid-appauth"
 robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
 slf4j-jdk = { module = "org.slf4j:slf4j-jdk14", version.ref = "slf4j" }
 spotbugs-annotations = { module = "com.github.spotbugs:spotbugs-annotations", version.ref = "spotbugs" }
+turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 unifiedpush = { module = "org.unifiedpush.android:connector", version.ref = "unifiedpush" }
 unifiedpush-fcm = { module = "org.unifiedpush.android:embedded-fcm-distributor", version.ref = "unifiedpush-fcm" }
 

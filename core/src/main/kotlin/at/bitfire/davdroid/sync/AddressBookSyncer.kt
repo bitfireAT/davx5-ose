@@ -4,18 +4,17 @@
 
 package at.bitfire.davdroid.sync
 
-import android.accounts.AccountManager
 import android.provider.ContactsContract
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
+import at.bitfire.davdroid.resource.local.AddressBookAccountManager
 import at.bitfire.davdroid.resource.local.LocalAddressBook
 import at.bitfire.davdroid.resource.local.LocalAddressBookStore
 import at.bitfire.davdroid.resource.remote.CardDavCollection
 import at.bitfire.synctools.storage.LocalStorageClient
 import at.bitfire.synctools.storage.contacts.AddressContract.asSyncAdapter
-import at.bitfire.synctools.util.setAndVerifyUserData
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -34,7 +33,7 @@ class AddressBookSyncer @AssistedInject constructor(
     @Assisted val syncFrameworkUpload: Boolean,
     @Assisted syncResult: SyncResult,
     @Assisted settings: SyncSettings,
-    private val accountManager: Provider<AccountManager>,
+    private val addressBookAccountManager: Provider<AddressBookAccountManager>,
     addressBookStore: LocalAddressBookStore,
     private val contactsSyncManagerFactory: ContactsSyncManager.Factory,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher
@@ -131,19 +130,20 @@ class AddressBookSyncer @AssistedInject constructor(
     ) {
         val groupMethod = settings.groupMethod.name
 
-        val accountManager = accountManager.get()
-        accountManager.getUserData(addressBook.addressBookAccount, PREVIOUS_GROUP_METHOD)?.let { previousGroupMethod ->
+        val addressBookAccount = addressBook.addressBookAccount
+        val addressBookAccountManager = addressBookAccountManager.get()
+        addressBookAccountManager.getProperty(addressBookAccount, PREVIOUS_GROUP_METHOD)?.let { previousGroupMethod ->
             if (previousGroupMethod != groupMethod) {
                 logger.info("Group method changed, deleting all local contacts/groups")
 
                 // delete all local contacts and groups so that they will be downloaded again
                 client.delete(
-                    ContactsContract.RawContacts.CONTENT_URI.asSyncAdapter(addressBook.addressBookAccount),
+                    ContactsContract.RawContacts.CONTENT_URI.asSyncAdapter(addressBookAccount),
                     null,
                     null
                 )
                 client.delete(
-                    ContactsContract.Groups.CONTENT_URI.asSyncAdapter(addressBook.addressBookAccount),
+                    ContactsContract.Groups.CONTENT_URI.asSyncAdapter(addressBookAccount),
                     null,
                     null
                 )
@@ -152,7 +152,7 @@ class AddressBookSyncer @AssistedInject constructor(
                 addressBook.syncState = null
             }
         }
-        accountManager.setAndVerifyUserData(addressBook.addressBookAccount, PREVIOUS_GROUP_METHOD, groupMethod)
+        addressBookAccountManager.setProperty(addressBookAccount, PREVIOUS_GROUP_METHOD, groupMethod)
     }
 
 

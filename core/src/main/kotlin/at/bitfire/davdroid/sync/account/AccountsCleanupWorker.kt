@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.sync.account
 
-import android.accounts.AccountManager
 import android.content.Context
 import androidx.annotation.VisibleForTesting
 import androidx.hilt.work.HiltWorker
@@ -14,11 +13,10 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.Worker
 import androidx.work.WorkerParameters
-import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AndroidAccountManager
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.repository.AccountRepository
-import at.bitfire.davdroid.resource.local.AddressBookAccountProperties
+import at.bitfire.davdroid.resource.local.AddressBookAccountManager
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -30,9 +28,8 @@ import java.util.logging.Logger
 class AccountsCleanupWorker @AssistedInject constructor(
     @Assisted val context: Context,
     @Assisted workerParameters: WorkerParameters,
-    private val accountManager: AccountManager,
     private val accountRepository: AccountRepository,
-    private val addressBookAccountProperties: AddressBookAccountProperties,
+    private val addressBookAccountManager: AddressBookAccountManager,
     private val androidAccountManager: AndroidAccountManager,
     private val db: AppDatabase,
     private val logger: Logger
@@ -75,11 +72,11 @@ class AccountsCleanupWorker @AssistedInject constructor(
     }
 
     /**
-     * Deletes Android accounts (and their address book accounts) of DB accounts that don't exist anymore.
+     * Deletes Android accounts of DB accounts that don't exist anymore.
      */
     @VisibleForTesting
     internal fun cleanUpDbAndroidAccounts() {
-        androidAccountManager.removeOrphanedForDbAccounts { db.dbAccountDao().getAllBlocking() }
+        androidAccountManager.removeOrphanedForDbAccounts()
     }
 
     /**
@@ -88,12 +85,12 @@ class AccountsCleanupWorker @AssistedInject constructor(
     @VisibleForTesting
     internal fun cleanUpAddressBooks() {
         val accountIds = accountRepository.getAllBlocking().toSet()
-        for (addressBookAccount in accountManager.getAccountsByType(context.getString(R.string.account_type_address_book))) {
-            val accountId = addressBookAccountProperties.getAppAccount(addressBookAccount)
+        for (addressBookAccount in addressBookAccountManager.getAll()) {
+            val accountId = addressBookAccountManager.getAppAccount(addressBookAccount)
             if (accountId !in accountIds) {
                 // If no valid account exists for this address book, we can delete it
                 logger.info("Deleting address book account without valid account: $addressBookAccount")
-                accountManager.removeAccountExplicitly(addressBookAccount)
+                addressBookAccountManager.delete(addressBookAccount)
             }
         }
     }
