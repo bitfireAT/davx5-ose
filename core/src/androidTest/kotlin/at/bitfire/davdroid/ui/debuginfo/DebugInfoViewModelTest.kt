@@ -126,7 +126,7 @@ class DebugInfoViewModelTest {
         advanceUntilIdle()
 
         assertNull(model.uiState.remoteResourceFile)
-        assertEquals(context.getString(R.string.debug_info_can_not_view_resource), model.uiState.error)
+        assertEquals(context.getString(R.string.debug_info_can_not_download_resource), model.uiState.error)
         assertFalse(model.uiState.remoteResourceInProgress)
     }
 

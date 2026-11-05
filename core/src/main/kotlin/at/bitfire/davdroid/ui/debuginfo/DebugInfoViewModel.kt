@@ -210,7 +210,7 @@ class DebugInfoViewModel @AssistedInject constructor(
                     file.writeBytes(data)
                     uiState.copy(remoteResourceFile = file)
                 } else
-                    uiState.copy(error = context.getString(R.string.debug_info_can_not_view_resource))
+                    uiState.copy(error = context.getString(R.string.debug_info_can_not_download_resource))
             } catch (e: Exception) {
                 logger.log(Level.WARNING, "Couldn't save remote resource", e)
                 uiState = uiState.copy(error = e.localizedMessage)
