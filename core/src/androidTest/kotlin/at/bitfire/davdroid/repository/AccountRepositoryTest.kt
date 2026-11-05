@@ -14,7 +14,6 @@ import at.bitfire.davdroid.accounts.LegacyAccount
 import at.bitfire.davdroid.resource.local.LocalAddressBookStore
 import at.bitfire.davdroid.resource.local.LocalCalendarStore
 import at.bitfire.davdroid.resource.local.LocalDataStore
-import at.bitfire.davdroid.servicedetection.DavResourceFinder
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.AutomaticSyncManager
 import at.bitfire.davdroid.sync.SyncDataType
@@ -22,7 +21,6 @@ import at.bitfire.davdroid.sync.TasksAppManager
 import at.bitfire.davdroid.sync.account.AccountsCleanupWorker
 import at.bitfire.davdroid.sync.account.TestAccount
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
-import at.bitfire.synctools.vcard.GroupMethod
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -122,18 +120,6 @@ class AccountRepositoryTest {
 
         unmockkObject(AccountsCleanupWorker)
         clearAllMocks()
-    }
-
-
-    // testCreateDbAccount
-
-    @Test
-    fun testCreateDbAccount_doesNotCreateAndroidAccount() = runTest {
-        val config = DavResourceFinder.Configuration(cardDAV = null, calDAV = null, encountered401 = false)
-
-        accountRepository.createDbAccount("DB Account", null, config, GroupMethod.GROUP_VCARDS, null)
-
-        assertTrue(accountManager.getAccountsByType(context.getString(R.string.account_type_db)).isEmpty())
     }
 
 

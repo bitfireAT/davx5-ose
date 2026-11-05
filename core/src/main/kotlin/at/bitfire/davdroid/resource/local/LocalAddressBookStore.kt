@@ -235,17 +235,18 @@ class LocalAddressBookStore @Inject constructor(
     }
 
     /**
-     * Deletes a [LocalAddressBook] based on its corresponding database collection.
-     *
-     * @param id    [Collection.id] to look for
+     * Deletes all [LocalAddressBook]s connected to an app account.
      */
-    fun deleteByCollectionId(id: Long) {
+    fun deleteByAccountId(accountId: AccountId) {
         val accountManager = accountManager.get()
-        val addressBookAccount = accountManager.getAccountsByType(context.getString(R.string.account_type_address_book)).firstOrNull { account ->
-            addressBookAccountProperties.getCollectionId(account) == id
-        }
-        if (addressBookAccount != null)
-            accountManager.removeAccountExplicitly(addressBookAccount)
+        accountManager.getAccountsByType(context.getString(R.string.account_type_address_book))
+            .asSequence()
+            .filter { addressBookAccount ->
+                addressBookAccountProperties.getAppAccount(addressBookAccount) == accountId
+            }
+            .forEach { addressBookAccount ->
+                accountManager.removeAccountExplicitly(addressBookAccount)
+            }
     }
 
     /**

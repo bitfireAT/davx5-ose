@@ -6,30 +6,19 @@ package at.bitfire.davdroid.repository
 
 import android.accounts.Account
 import android.accounts.AccountManager
-import android.accounts.OnAccountsUpdateListener
 import android.content.Context
-import android.database.sqlite.SQLiteConstraintException
 import androidx.annotation.WorkerThread
 import at.bitfire.davdroid.FeatureFlags
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
-import at.bitfire.davdroid.accounts.AndroidAccountManager
 import at.bitfire.davdroid.accounts.DbAccountId
 import at.bitfire.davdroid.accounts.LegacyAccount
-import at.bitfire.davdroid.db.AccountSetting
 import at.bitfire.davdroid.db.AppDatabase
-import at.bitfire.davdroid.db.DbAccount
-import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.db.Service
-import at.bitfire.davdroid.db.ServiceType
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.resource.local.LocalAddressBookStore
 import at.bitfire.davdroid.resource.local.LocalCalendarStore
 import at.bitfire.davdroid.servicedetection.DavResourceFinder
-import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
-import at.bitfire.davdroid.settings.AccountSettings
-import at.bitfire.davdroid.settings.AccountSettings.Companion.KEY_SETTINGS_VERSION
-import at.bitfire.davdroid.settings.AccountSettingsFactory
 import at.bitfire.davdroid.settings.Credentials
 import at.bitfire.davdroid.sync.AutomaticSyncManager
 import at.bitfire.davdroid.sync.SyncDataType
@@ -41,14 +30,10 @@ import at.bitfire.synctools.vcard.GroupMethod
 import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import org.jetbrains.annotations.TestOnly
 import java.util.logging.Level
@@ -59,17 +44,15 @@ import javax.inject.Inject
  * Repository for managing CalDAV/CardDAV accounts.
  *
  * *Note:* This class is not related to address book accounts, which are managed by
- * [at.bitfire.davdroid.resource.LocalAddressBook].
+ * [at.bitfire.davdroid.resource.local.LocalAddressBook].
  */
-class AccountRepository @Inject constructor(
+class AccountRepository @Inject internal constructor(
     private val accountManager: AccountManager,
-    private val accountSettingsFactory: AccountSettingsFactory,
-    private val androidAccountManager: AndroidAccountManager,
     private val automaticSyncManager: Lazy<AutomaticSyncManager>,
     @ApplicationContext private val context: Context,
-    private val collectionRepository: Lazy<DavCollectionRepository>,
+    private val dbAccountRepository: DbAccountRepository,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
-    private val homeSetRepository: DavHomeSetRepository,
+    private val legacyAccountRepository: LegacyAccountRepository,
     private val localCalendarStore: Lazy<LocalCalendarStore>,
     private val localAddressBookStore: Lazy<LocalAddressBookStore>,
     private val logger: Logger,
@@ -85,8 +68,6 @@ class AccountRepository @Inject constructor(
     private val accountRenameFlow = MutableSharedFlow<AccountRename>()
 
     private val dbAccountDao = db.dbAccountDao()
-
-    private val accountSettingDao = db.accountSettingDao()
 
     fun getAccountNameFlow(accountId: AccountId): Flow<String> {
         return flow {
@@ -108,8 +89,8 @@ class AccountRepository @Inject constructor(
      */
     suspend fun getAccountName(accountId: AccountId): String {
         return when (accountId) {
-            is LegacyAccount -> accountId.androidAccount.name
-            is DbAccountId -> dbAccountDao.get(accountId.id)?.name ?: throw NoSuchElementException("No account found with id ${accountId.id}")
+            is LegacyAccount -> legacyAccountRepository.getAccountName(accountId)
+            is DbAccountId -> dbAccountRepository.getAccountName(accountId)
         }
     }
 
@@ -120,8 +101,8 @@ class AccountRepository @Inject constructor(
     @WorkerThread
     fun getAccountNameBlocking(accountId: AccountId): String {
         return when (accountId) {
-            is LegacyAccount -> accountId.androidAccount.name
-            is DbAccountId -> dbAccountDao.getBlocking(accountId.id)?.name ?: throw NoSuchElementException("No account found with id ${accountId.id}")
+            is LegacyAccount -> legacyAccountRepository.getAccountName(accountId)
+            is DbAccountId -> dbAccountRepository.getAccountNameBlocking(accountId)
         }
     }
 
@@ -158,178 +139,19 @@ class AccountRepository @Inject constructor(
         }
 
         return if (FeatureFlags.useNewAccountSystem) {
-            createDbAccount(accountName, credentials, config, groupMethod, preconfigurationUrl)
-        } else withContext(ioDispatcher) {
-            createLegacyBlocking(accountName, credentials, config, groupMethod, preconfigurationUrl)
-        }
-    }
-
-    suspend fun createDbAccount(
-        accountName: String,
-        credentials: Credentials?,
-        config: DavResourceFinder.Configuration,
-        groupMethod: GroupMethod,
-        preconfigurationUrl: String?,
-    ): AccountId? {
-        // create the account into the database
-        val accountIdNumber = try {
-            dbAccountDao.insert(DbAccount(name = accountName))
-        } catch (e: SQLiteConstraintException) {
-            // account with this name already exists, show a warning and return null
-            logger.log(Level.WARNING, "Account with name $accountName already exists", e)
-            return null
-        }
-        val accountId = DbAccountId(accountIdNumber)
-
-        // Insert the account settings version into the database.
-        // Migration runs when initializing the account settings, so it's required to determine that no migration is required to proceed.
-        accountSettingDao.insert(
-            AccountSetting(accountId = accountIdNumber, key = KEY_SETTINGS_VERSION, value = AccountSettings.CURRENT_VERSION.toString())
-        )
-
-        // insert the initial account settings into the database
-        val accountSettings = withContext(ioDispatcher) {
-            accountSettingsFactory.create(accountId).also {
-                it.putInitialSettings(credentials, preconfigurationUrl)
-            }
-        }
-
-        // add entries for account to database
-        logger.log(Level.INFO, "Writing account configuration to database: {0}", arrayOf(config))
-        try {
-            if (config.cardDAV != null) {
-                // insert CardDAV service
-                val id = withContext(ioDispatcher) {
-                    insertService(accountId, accountName, Service.TYPE_CARDDAV, config.cardDAV)
-                }
-
-                // set initial CardDAV account settings and set sync intervals (enables automatic sync)
-                withContext(ioDispatcher) {
-                    accountSettings.setGroupMethod(groupMethod)
-                }
-
-                // start CardDAV service detection (refresh collections)
-                RefreshCollectionsWorker.enqueue(context, id)
-            }
-
-            if (config.calDAV != null) {
-                // insert CalDAV service
-                val id = withContext(ioDispatcher) {
-                    insertService(accountId, accountName, Service.TYPE_CALDAV, config.calDAV)
-                }
-
-                // start CalDAV service detection (refresh collections)
-                RefreshCollectionsWorker.enqueue(context, id)
-            }
-
-            // set up automatic sync (processes inserted services)
+            dbAccountRepository.create(accountName, credentials, config, groupMethod, preconfigurationUrl)
+        } else {
             withContext(ioDispatcher) {
-                automaticSyncManager.get().updateAutomaticSync(accountId)
+                legacyAccountRepository.createBlocking(accountName, credentials, config, groupMethod, preconfigurationUrl)
             }
-
-        } catch (e: InvalidAccountException) {
-            logger.log(Level.SEVERE, "Couldn't access account settings", e)
-            return null
         }
-        return accountId
     }
 
-    @WorkerThread
-    fun createLegacyBlocking(
-        accountName: String,
-        credentials: Credentials?,
-        config: DavResourceFinder.Configuration,
-        groupMethod: GroupMethod,
-        preconfigurationUrl: String?,
-    ): LegacyAccount? {
-        val account = Account(accountName, legacyAccountType)
-        val accountId = LegacyAccount(account)
-
-        // create Android account
-        val userData = AccountSettings.initialUserData(credentials, preconfigurationUrl)
-        logger.log(Level.INFO, "Creating Android account {0} with initial config {1}", arrayOf(account, userData))
-
-        if (!androidAccountManager.createAccount(account, userData, credentials?.password))
-            return null
-
-        // add entries for account to database
-        logger.log(Level.INFO, "Writing account configuration to database: {0}", arrayOf(config))
-        try {
-            if (config.cardDAV != null) {
-                // insert CardDAV service
-                val id = insertService(accountId, accountName, Service.TYPE_CARDDAV, config.cardDAV)
-
-                // set initial CardDAV account settings and set sync intervals (enables automatic sync)
-                val accountSettings = accountSettingsFactory.create(accountId)
-                accountSettings.setGroupMethod(groupMethod)
-
-                // start CardDAV service detection (refresh collections)
-                RefreshCollectionsWorker.enqueue(context, id)
-            }
-
-            if (config.calDAV != null) {
-                // insert CalDAV service
-                val id = insertService(accountId, accountName, Service.TYPE_CALDAV, config.calDAV)
-
-                // start CalDAV service detection (refresh collections)
-                RefreshCollectionsWorker.enqueue(context, id)
-            }
-
-            // set up automatic sync (processes inserted services)
-            automaticSyncManager.get().updateAutomaticSync(accountId)
-
-        } catch (e: InvalidAccountException) {
-            logger.log(Level.SEVERE, "Couldn't access account settings", e)
-            return null
+    suspend fun delete(accountId: AccountId) {
+        when (accountId) {
+            is LegacyAccount -> legacyAccountRepository.delete(accountId)
+            is DbAccountId -> dbAccountRepository.delete(accountId)
         }
-        return LegacyAccount(account)
-    }
-
-    suspend fun delete(accountId: AccountId): Boolean {
-        val androidAccount = when(accountId) {
-            is LegacyAccount -> accountId.androidAccount
-            is DbAccountId -> {
-                val dbAccount = dbAccountDao.get(accountId.id) ?: return false
-                Account(dbAccount.name, dbAccountType)
-            }
-        }
-
-        // remove account directly (bypassing the authenticator, which is our own)
-        val deletedSystemAccount = try {
-            accountManager.removeAccountExplicitly(androidAccount)
-
-            // delete address books (= address book accounts)
-            serviceRepository.getByAccountIdAndType(accountId, Service.TYPE_CARDDAV)?.let { service ->
-                collectionRepository.get().getByService(service.id).forEach { collection ->
-                    localAddressBookStore.get().deleteByCollectionId(collection.id)
-                }
-            }
-
-            // delete service from database
-            serviceRepository.deleteByAccount(accountId)
-
-            true
-        } catch (e: Exception) {
-            logger.log(Level.WARNING, "Couldn't remove system account $accountId", e)
-            false
-        }
-
-        // delete database account if it is a DbAccountId
-        val deletedDatabaseAccount = try {
-            if (accountId is DbAccountId) {
-                // delete account from database if it is a DbAccountId
-                dbAccountDao.delete(accountId.id)
-            }
-            true
-        } catch (e: Exception) {
-            logger.log(Level.WARNING, "Couldn't remove database account $accountId", e)
-            false
-        }
-
-        // We run both requests in different try/catch blocks to ensure that we attempt to delete both the system
-        // account and the database account, even if one of them fails.
-        // We return true only if both deletions were successful.
-        return deletedSystemAccount && deletedDatabaseAccount
     }
 
     /**
@@ -340,25 +162,9 @@ class AccountRepository @Inject constructor(
      *
      * @return true if the account exists, false otherwise
      */
-    suspend fun exists(accountName: String): Boolean =
-        if (accountName.isEmpty())
-            false
-        else {
-            // Check if the account exists in the account manager (legacy)
-            val isLegacyAccount = withContext(ioDispatcher) {
-                accountManager
-                    .getAccountsByType(legacyAccountType)
-                    .any { it.name == accountName }
-            }
-            if (isLegacyAccount) return true
-
-            // If it doesn't, check if it exists in the database (new account system)
-            val isDbAccount = dbAccountDao.getFromName(accountName) != null
-            if (isDbAccount) return true
-
-            // If it doesn't exist in either, return false
-            return false
-        }
+    suspend fun exists(accountName: String): Boolean {
+        return legacyAccountRepository.exists(accountName) || dbAccountRepository.exists(accountName)
+    }
 
     /**
      * Returns a legacy Android [Account] for a given account name.
@@ -394,37 +200,19 @@ class AccountRepository @Inject constructor(
     }
 
     fun getAllBlocking(): List<AccountId> {
-        val dbAccounts = dbAccountDao.getAllBlocking()
-        val systemAccounts = accountManager.getAccountsByType(legacyAccountType)
-
-        return systemAccounts.map { LegacyAccount(it) } + dbAccounts.map { DbAccountId(it.id) }
+        return legacyAccountRepository.getAllBlocking() + dbAccountRepository.getAllBlocking()
     }
-
-    fun getAllLegacyAccountFlow() = callbackFlow {
-        val listener = OnAccountsUpdateListener { accounts ->
-            val accountIds = accounts
-                .filter { it.type == legacyAccountType }
-                .map { LegacyAccount(it) }
-                .toSet()
-
-            trySend(accountIds)
-        }
-        withContext(ioDispatcher) {  // causes disk I/O
-            accountManager.addOnAccountsUpdatedListener(listener, null, true)
-        }
-
-        awaitClose {
-            accountManager.removeOnAccountsUpdatedListener(listener)
-        }
-    }.distinctUntilChanged()
-
-    fun getAllDbAccountFlow() = dbAccountDao.getAllFlow().map { list -> list.map { DbAccountId(it.id) } }
 
     /**
      * Returns a flow of all accounts, both legacy and database accounts.
      */
-    fun getAllFlow() = combine(getAllLegacyAccountFlow(), getAllDbAccountFlow()) { legacyAccounts, dbAccounts ->
-        legacyAccounts + dbAccounts
+    fun getAllFlow(): Flow<Set<AccountId>> {
+        return combine(
+            legacyAccountRepository.getAllFlow(),
+            dbAccountRepository.getAllFlow()
+        ) { legacyAccounts, dbAccounts ->
+            legacyAccounts + dbAccounts
+        }
     }
 
     /**
@@ -543,31 +331,6 @@ class AccountRepository @Inject constructor(
 
 
     // helpers
-
-    private fun insertService(
-        accountId: AccountId,
-        accountName: String,
-        @ServiceType type: String,
-        info: DavResourceFinder.Configuration.ServiceInfo
-    ): Long {
-        // insert service
-        val service = when(accountId) {
-            is LegacyAccount -> Service(0, accountName, null, type, info.principal)
-            is DbAccountId -> Service(0, null, accountId.id, type, info.principal)
-        }
-        val serviceId = serviceRepository.insertOrReplaceBlocking(service)
-
-        // insert home sets
-        for (homeSet in info.homeSets)
-            homeSetRepository.insertOrUpdateByUrlBlocking(HomeSet(0, serviceId, true, homeSet))
-
-        // insert collections
-        for (collection in info.collections.values) {
-            collectionRepository.get().insertOrUpdateByUrl(collection.copy(serviceId = serviceId))
-        }
-
-        return serviceId
-    }
 
     private data class AccountRename(val oldName: String, val newName: String)
 }
