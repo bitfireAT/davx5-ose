@@ -239,10 +239,10 @@ fun DebugInfoScreen(
                         onViewLocalResource,
                         remoteResource,
                         onCopyRemoteUrl,
-                        canViewRemoteResource,
-                        remoteResourceInProgress,
-                        onViewRemoteResource,
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp),
+                        canViewRemoteResource = canViewRemoteResource,
+                        remoteResourceInProgress = remoteResourceInProgress,
+                        onViewRemoteResource = onViewRemoteResource
                     )
                 }
 

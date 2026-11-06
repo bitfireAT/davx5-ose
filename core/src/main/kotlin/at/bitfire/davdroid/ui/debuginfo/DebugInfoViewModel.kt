@@ -26,6 +26,7 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import io.ktor.http.URLProtocol
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
 import java.io.File
@@ -70,7 +71,7 @@ class DebugInfoViewModel @AssistedInject constructor(
     private val remoteResourceUrl = details.remoteResource?.toUrlOrNull()
         ?.takeIf { url ->
             details.accountId != null &&
-                    url.protocol.name in arrayOf("http", "https") &&
+                    url.protocol in arrayOf(URLProtocol.HTTP, URLProtocol.HTTPS) &&
                     !url.encodedPath.endsWith('/')
         }
     val canViewRemoteResource = remoteResourceUrl != null

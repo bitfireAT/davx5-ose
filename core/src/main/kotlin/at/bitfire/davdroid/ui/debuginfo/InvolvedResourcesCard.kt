@@ -29,10 +29,10 @@ internal fun InvolvedResourcesCard(
     onViewLocalResource: () -> Unit,
     remoteResource: String?,
     onCopyRemoteUrl: () -> Unit,
+    modifier: Modifier = Modifier,
     canViewRemoteResource: Boolean = false,
     remoteResourceInProgress: Boolean = false,
-    onViewRemoteResource: () -> Unit = {},
-    modifier: Modifier = Modifier
+    onViewRemoteResource: () -> Unit = {}
 ) {
     CardWithImage(
         title = stringResource(R.string.debug_info_involved_caption),
