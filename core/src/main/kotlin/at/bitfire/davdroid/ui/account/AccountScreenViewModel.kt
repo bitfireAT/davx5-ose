@@ -111,6 +111,7 @@ class AccountScreenViewModel @AssistedInject constructor(
     }
 
     val accountName = accountRepository.getAccountNameFlow(accountId)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
 
     init {
         viewModelScope.launch {
