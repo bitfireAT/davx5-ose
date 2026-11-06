@@ -63,7 +63,6 @@ class AccountRepository @Inject internal constructor(
 ) {
 
     private val legacyAccountType = context.getString(R.string.account_type)
-    private val dbAccountType = context.getString(R.string.account_type_db)
 
     private val accountRenameFlow = MutableSharedFlow<AccountRename>()
 
