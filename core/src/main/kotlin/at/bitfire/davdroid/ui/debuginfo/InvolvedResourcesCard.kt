@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid.ui.debuginfo
 
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
@@ -28,7 +29,10 @@ internal fun InvolvedResourcesCard(
     onViewLocalResource: () -> Unit,
     remoteResource: String?,
     onCopyRemoteUrl: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    canViewRemoteResource: Boolean = false,
+    remoteResourceInProgress: Boolean = false,
+    onViewRemoteResource: () -> Unit = {}
 ) {
     CardWithImage(
         title = stringResource(R.string.debug_info_involved_caption),
@@ -41,7 +45,13 @@ internal fun InvolvedResourcesCard(
         }
 
         if (remoteResource != null) {
-            RemoteResource(remoteResource, onCopyRemoteUrl)
+            RemoteResource(
+                remoteResource,
+                onCopyRemoteUrl,
+                canViewRemoteResource,
+                remoteResourceInProgress,
+                onViewRemoteResource
+            )
         }
     }
 }
@@ -79,7 +89,10 @@ private fun LocalResource(
 @Composable
 private fun RemoteResource(
     remoteResource: String,
-    onCopyRemoteUrl: () -> Unit
+    onCopyRemoteUrl: () -> Unit,
+    canViewRemoteResource: Boolean,
+    remoteResourceInProgress: Boolean,
+    onViewRemoteResource: () -> Unit
 ) {
     Text(
         text = stringResource(R.string.debug_info_involved_remote),
@@ -97,11 +110,22 @@ private fun RemoteResource(
         )
     }
 
-    OutlinedButton(
-        onClick = onCopyRemoteUrl,
-        modifier = Modifier.padding(bottom = 4.dp)
-    ) {
-        Text(stringResource(R.string.debug_info_copy_remote_url))
+    Row(modifier = Modifier.padding(bottom = 4.dp)) {
+        OutlinedButton(
+            onClick = onCopyRemoteUrl,
+            modifier = Modifier.padding(end = 8.dp)
+        ) {
+            Text(stringResource(R.string.debug_info_copy_remote_url))
+        }
+
+        if (canViewRemoteResource) {
+            OutlinedButton(
+                onClick = onViewRemoteResource,
+                enabled = !remoteResourceInProgress
+            ) {
+                Text(stringResource(R.string.debug_info_view_remote_resource))
+            }
+        }
     }
 }
 
@@ -115,6 +139,7 @@ fun InvolvedResourcesCard_Preview() {
             onViewLocalResource = {},
             remoteResource = "https://domain.example/resource",
             onCopyRemoteUrl = {},
+            canViewRemoteResource = true,
             modifier = Modifier.padding(16.dp)
         )
     }

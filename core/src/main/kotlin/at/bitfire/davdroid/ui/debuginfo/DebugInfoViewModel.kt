@@ -10,11 +10,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import at.bitfire.dav4jvm.ktor.toUrlOrNull
+import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.log.DebugDirectory
 import at.bitfire.davdroid.log.LogFileHandler
+import at.bitfire.davdroid.sync.ResourceRetriever
 import at.bitfire.davdroid.ui.debuginfo.DebugInfoViewModel.Companion.FILE_DEBUG_INFO
+import at.bitfire.davdroid.ui.debuginfo.DebugInfoViewModel.Companion.FILE_REMOTE_RESOURCE
 import com.google.common.io.ByteStreams
 import com.google.common.io.Files
 import dagger.assisted.Assisted
@@ -22,6 +26,7 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import io.ktor.http.URLProtocol
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
 import java.io.File
@@ -37,7 +42,8 @@ class DebugInfoViewModel @AssistedInject constructor(
     private val debugDirectory: DebugDirectory,
     private val debugInfoGenerator: DebugInfoGenerator,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
-    private val logger: Logger
+    private val logger: Logger,
+    private val resourceRetrieverFactory: ResourceRetriever.Factory
 ) : ViewModel() {
 
     data class DebugInfoDetails(
@@ -61,10 +67,21 @@ class DebugInfoViewModel @AssistedInject constructor(
     val logFile: File? = debugDirectory.resolve(details.debugLogFileName ?: LogFileHandler.LOG_FILE_NAME)
         ?.takeIf { it.canRead() }
 
+    // remote resource can only be downloaded with account credentials and when it's not a collection
+    private val remoteResourceUrl = details.remoteResource?.toUrlOrNull()
+        ?.takeIf { url ->
+            details.accountId != null &&
+                    url.protocol in arrayOf(URLProtocol.HTTP, URLProtocol.HTTPS) &&
+                    !url.encodedPath.endsWith('/')
+        }
+    val canViewRemoteResource = remoteResourceUrl != null
+
     data class UiState(
         val debugInfo: File? = null,
         val zipFile: File? = null,
         val zipInProgress: Boolean = false,
+        val remoteResourceFile: File? = null,
+        val remoteResourceInProgress: Boolean = false,
         val error: String? = null
     )
 
@@ -77,6 +94,10 @@ class DebugInfoViewModel @AssistedInject constructor(
 
     fun resetZipFile() {
         uiState = uiState.copy(zipFile = null)
+    }
+
+    fun resetRemoteResourceFile() {
+        uiState = uiState.copy(remoteResourceFile = null)
     }
 
     init {
@@ -169,9 +190,41 @@ class DebugInfoViewModel @AssistedInject constructor(
         }
     }
 
+    /**
+     * Downloads the remote resource (using the account credentials) to [FILE_REMOTE_RESOURCE]
+     * in [DebugDirectory] so that it can be viewed.
+     */
+    fun downloadRemoteResource() {
+        val accountId = details.accountId ?: return
+        val url = remoteResourceUrl ?: return
+        if (uiState.remoteResourceInProgress)
+            return
+        uiState = uiState.copy(remoteResourceInProgress = true)
+
+        viewModelScope.launch(ioDispatcher) {
+            try {
+                val data = resourceRetrieverFactory
+                    .create(accountId, originalHost = url.host)
+                    .retrieve(url.toString())
+                uiState = if (data != null) {
+                    val file = File(debugDirectory.getOrCreate(), FILE_REMOTE_RESOURCE)
+                    file.writeBytes(data)
+                    uiState.copy(remoteResourceFile = file)
+                } else
+                    uiState.copy(error = context.getString(R.string.debug_info_can_not_download_resource))
+            } catch (e: Exception) {
+                logger.log(Level.WARNING, "Couldn't save remote resource", e)
+                uiState = uiState.copy(error = e.localizedMessage)
+            } finally {
+                uiState = uiState.copy(remoteResourceInProgress = false)
+            }
+        }
+    }
+
 
     companion object {
         private const val FILE_DEBUG_INFO = "debug-info.txt"
+        private const val FILE_REMOTE_RESOURCE = "remote-resource.txt"
     }
 
 }
