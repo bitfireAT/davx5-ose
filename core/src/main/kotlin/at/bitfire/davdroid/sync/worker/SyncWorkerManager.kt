@@ -280,11 +280,17 @@ class SyncWorkerManager @Inject constructor(
     /**
      * Stops running sync workers and removes pending sync workers from queue, for all authorities.
      */
-    fun cancelAllWork(accountId: AccountId) {
+    suspend fun cancelAllWork(accountId: AccountId) {
         val workManager = WorkManager.getInstance(context)
-        for (dataType in SyncDataType.entries) {
-            workManager.cancelUniqueWork(OneTimeSyncWorker.workerName(accountId, dataType))
-            workManager.cancelUniqueWork(PeriodicSyncWorker.workerName(accountId, dataType))
+        val operations = buildList {
+            for (dataType in SyncDataType.entries) {
+                add(workManager.cancelUniqueWork(OneTimeSyncWorker.workerName(accountId, dataType)))
+                add(workManager.cancelUniqueWork(PeriodicSyncWorker.workerName(accountId, dataType)))
+            }
+        }
+
+        for (operation in operations) {
+            operation.await()
         }
     }
 

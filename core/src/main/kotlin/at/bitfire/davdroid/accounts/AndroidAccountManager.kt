@@ -139,6 +139,16 @@ class AndroidAccountManager @Inject constructor(
     }
 
     /**
+     * Removes the Android account associated with the given app account.
+     */
+    fun removeAccount(accountId: AccountId) {
+        val androidAccount = getAndroidAccount(accountId)
+        if (androidAccount != null) {
+            removeAccount(androidAccount)
+        }
+    }
+
+    /**
      * Deletes Android accounts of DB accounts that don't exist anymore. Legacy accounts are not touched.
      */
     fun removeOrphanedForDbAccounts() {
