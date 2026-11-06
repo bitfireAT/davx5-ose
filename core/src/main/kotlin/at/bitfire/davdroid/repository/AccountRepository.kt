@@ -152,11 +152,11 @@ class AccountRepository @Inject internal constructor(
     }
 
     suspend fun delete(accountId: AccountId) {
+        syncWorkerManager.get().cancelAllWork(accountId)
+
         withContext(ioDispatcher) {
             notifyOnBeforeDeleteListeners(accountId)
         }
-
-        syncWorkerManager.get().cancelAllWork(accountId)
 
         when (accountId) {
             is LegacyAccount -> legacyAccountRepository.delete(accountId)
