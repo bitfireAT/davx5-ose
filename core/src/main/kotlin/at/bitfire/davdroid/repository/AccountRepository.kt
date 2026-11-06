@@ -5,12 +5,12 @@
 package at.bitfire.davdroid.repository
 
 import android.accounts.Account
-import android.accounts.AccountManager
 import android.content.Context
 import androidx.annotation.WorkerThread
 import at.bitfire.davdroid.FeatureFlags
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
+import at.bitfire.davdroid.accounts.AndroidAccountManager
 import at.bitfire.davdroid.accounts.DbAccountId
 import at.bitfire.davdroid.accounts.LegacyAccount
 import at.bitfire.davdroid.db.AppDatabase
@@ -47,7 +47,7 @@ import javax.inject.Inject
  * [at.bitfire.davdroid.resource.local.LocalAddressBook].
  */
 class AccountRepository @Inject internal constructor(
-    private val accountManager: AccountManager,
+    private val androidAccountManager: AndroidAccountManager,
     private val automaticSyncManager: Lazy<AutomaticSyncManager>,
     @ApplicationContext private val context: Context,
     private val dbAccountRepository: DbAccountRepository,
@@ -63,7 +63,6 @@ class AccountRepository @Inject internal constructor(
 ) {
 
     private val legacyAccountType = context.getString(R.string.account_type)
-    private val dbAccountType = context.getString(R.string.account_type_db)
 
     private val accountRenameFlow = MutableSharedFlow<AccountRename>()
 
@@ -230,17 +229,10 @@ class AccountRepository @Inject internal constructor(
      * @throws IllegalArgumentException if the new account name already exists
      * @throws Exception (or sub-classes) on other errors
      */
-    suspend fun rename(oldName: String, oldAccountId: AccountId, newName: String): AccountId = withContext(ioDispatcher) {
-        // system accounts and database accounts have different account types
-        val accountType = if (oldAccountId is LegacyAccount) legacyAccountType else dbAccountType
-
-        val oldAccount = Account(oldName, accountType)
-        val newAccount = Account(newName, accountType)
-        val newAccountId: AccountId = when (oldAccountId) {
-            is LegacyAccount -> LegacyAccount(newAccount)
-            // DbAccountId only contains an id and not the name, so we can just return the oldAccountId since the id does not change
-            is DbAccountId -> oldAccountId
-        }
+    private suspend fun renameLegacyAccount(oldName: String, oldAccountId: LegacyAccount, newName: String): AccountId = withContext(ioDispatcher) {
+        val oldAccount = Account(oldName, legacyAccountType)
+        val newAccount = Account(newName, legacyAccountType)
+        val newAccountId: AccountId = LegacyAccount(newAccount)
 
         // check whether new account name already exists
         if (exists(newName))
@@ -257,18 +249,8 @@ class AccountRepository @Inject internal constructor(
             3. Now the services would be renamed, but they're not here anymore. */
             AccountsCleanupWorker.lockAccountsCleanup()
 
-            // rename account (also moves AccountSettings if the account is a LegacyAccount)
-            val future = accountManager.renameAccount(oldAccount, newName, null, null)
-
-            // wait for operation to complete (blocks calling thread)
-            val newNameFromApi: Account = future.result
-            if (newNameFromApi.name != newName)
-                throw IllegalStateException("renameAccount returned ${newNameFromApi.name} instead of $newName")
-
-            if (oldAccountId is DbAccountId) {
-                // update account name in database after renaming the Android account
-                dbAccountDao.rename(oldAccountId.id, newName)
-            }
+            // rename account (also moves AccountSettings)
+            androidAccountManager.renameAccount(oldAccount, newName)
 
             accountRenameFlow.emit(AccountRename(oldAccount.name, newName))
             
@@ -319,13 +301,33 @@ class AccountRepository @Inject internal constructor(
         newAccountId
     }
 
+    /**
+     * Renames a database account. Only the name in the database is updated; the linked Android account
+     * (and its local data) is renamed by [at.bitfire.davdroid.accounts.AndroidAccountProvider] the next
+     * time it provides the account (usually during the next sync).
+     *
+     * @throws NoSuchElementException if the account does not exist
+     * @throws IllegalArgumentException if the new account name is blank or already exists
+     */
+    private suspend fun renameDbAccount(accountId: DbAccountId, newName: String): AccountId = withContext(ioDispatcher) {
+        val dbAccount = dbAccountDao.get(accountId.id) ?: throw NoSuchElementException("No account found with id ${accountId.id}")
+
+        // Android can't use blank account names
+        require(newName.isNotBlank()) { "Account name must not be blank" }
+
+        // Make sure an account does not already exist with that name
+        require(!exists(newName)) { "Account with name \"$newName\" already exists" }
+
+        dbAccountDao.rename(accountId.id, newName)
+        accountRenameFlow.emit(AccountRename(dbAccount.name, newName))
+
+        accountId
+    }
+
     suspend fun rename(accountId: AccountId, newName: String): AccountId {
         return when (accountId) {
-            is LegacyAccount -> rename(accountId.androidAccount.name, accountId, newName)
-            is DbAccountId -> {
-                val dbAccount = dbAccountDao.get(accountId.id) ?: throw NoSuchElementException("No account found with id ${accountId.id}")
-                rename(dbAccount.name, accountId, newName)
-            }
+            is LegacyAccount -> renameLegacyAccount(accountId.androidAccount.name, accountId, newName)
+            is DbAccountId -> renameDbAccount(accountId, newName)
         }
     }
 

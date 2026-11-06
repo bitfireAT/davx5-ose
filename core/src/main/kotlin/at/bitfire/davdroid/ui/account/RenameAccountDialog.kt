@@ -78,7 +78,7 @@ fun RenameAccountDialog(
                 onClick = {
                     onRenameAccount(accountName.text)
                 },
-                enabled = oldName != accountName.text
+                enabled = accountName.text.isNotBlank() && oldName != accountName.text
             ) {
                 Text(stringResource(R.string.account_rename_rename))
             }
