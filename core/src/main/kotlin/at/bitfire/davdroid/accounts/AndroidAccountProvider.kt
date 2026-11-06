@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.accounts
 
 import android.accounts.Account
+import at.bitfire.davdroid.accounts.AndroidAccountProvider.Companion.provideMutex
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.resource.local.AddressBookAccountManager
@@ -45,8 +46,15 @@ class AndroidAccountProvider @Inject constructor(
     /**
      * Returns the Android account for [accountId], creating/linking it for DB accounts if needed.
      *
-     * @throws InvalidAccountException if the DB account doesn't exist or no Android account can be provided
-     * @throws AccountOperationFailedException if the DB account could not be provided for any reason
+     * Calls are serialized, so only one account is provided/renamed at a time.
+     *
+     * @return the Android account (for legacy accounts, the account itself)
+     *
+     * @throws InvalidAccountException if the DB account doesn't exist, its name is used by an Android account of
+     * another DB account, or the Android account can't be created
+     * @throws AccountOperationFailedException if the account could not be provided for any other reason
+     * (for instance because the linked Android account couldn't be renamed, or its new name is still used by
+     * the Android account of another DB account that can't be renamed out of the way)
      */
     suspend fun provide(accountId: AccountId): Account =
         when (accountId) {
@@ -57,10 +65,29 @@ class AndroidAccountProvider @Inject constructor(
     private suspend fun provideForDbAccount(accountId: DbAccountId): Account = withContext(ioDispatcher) {
         // serialize so that parallel syncs of the same account don't try to create the Android account twice
         provideMutex.withLock {
-            provideForDbAccountLocked(accountId)
+            try {
+                provideForDbAccountLocked(accountId)
+            } catch (e: Exception) {
+                // only AccountOperationFailedException (and subclasses) may leave this class; cancellation must pass
+                when (e) {
+                    is CancellationException,
+                    is AccountOperationFailedException -> throw e
+                    else -> throw AccountOperationFailedException("Couldn't provide Android account for $accountId", e)
+                }
+            }
         }
     }
 
+    /**
+     * Does the actual work of [provide] for DB accounts. Must be called while holding [provideMutex].
+     *
+     * - If the DB account has a linked Android account, it's renamed if its name differs from the DB account name.
+     * - Otherwise, a new linked Android account is created (replacing an orphaned one with the same name).
+     *
+     * @throws InvalidAccountException see [provide]
+     * @throws AccountOperationFailedException see [provide]
+     * @throws Exception unexpected exceptions are wrapped by [provideForDbAccount]
+     */
     private suspend fun provideForDbAccountLocked(accountId: DbAccountId): Account {
         val dbAccount = dbAccountDao.get(accountId.id) ?: throw InvalidAccountException(accountId)
 
@@ -103,8 +130,26 @@ class AndroidAccountProvider @Inject constructor(
      * account name of the local calendars and tasks. Address book accounts reference the DB account by ID,
      * so they don't have to be updated.
      *
-     * @throws IllegalArgumentException if the new name is taken by an Android account of another (existing) DB account
-     * @throws IllegalStateException if the rename could not be done for any other reason.
+     * If the new name is still used by the Android account of another DB account that was renamed in the database
+     * but not on the system yet, that account is renamed first. Rename cycles (for instance swapped names) are
+     * resolved by moving one account to a temporary name. If the new name is used by an orphaned Android account,
+     * that account is removed.
+     *
+     * Must be called while holding [provideMutex].
+     *
+     * @param accountId     DB account the Android account is linked to
+     * @param account       current Android account
+     * @param newName       name the Android account shall get
+     * @param inProgress    IDs of the DB accounts whose rename is already in progress further up the call stack
+     *                      (used to detect rename cycles)
+     *
+     * @return the renamed Android account
+     *
+     * @throws AccountOperationFailedException if the Android account could not be renamed, or the new name is used
+     * by an Android account of another DB account whose DB name is the same as its Android account name
+     * (so it can't be renamed out of the way)
+     *
+     * Failures of updating local calendars/tasks and the sync framework settings are logged and ignored.
      */
     private suspend fun rename(
         accountId: DbAccountId,
