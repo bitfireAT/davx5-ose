@@ -319,11 +319,10 @@ class AccountRepository @Inject internal constructor(
         val dbAccount = dbAccountDao.get(accountId.id) ?: throw NoSuchElementException("No account found with id ${accountId.id}")
 
         // Android can't use blank account names
-        if (newName.isBlank())
-            throw IllegalArgumentException("Account name must not be blank")
+        require(newName.isNotBlank()) { "Account name must not be blank" }
 
-        if (exists(newName))
-            throw IllegalArgumentException("Account with name \"$newName\" already exists")
+        // Make sure an account does not already exist with that name
+        require(!exists(newName)) { "Account with name \"$newName\" already exists" }
 
         dbAccountDao.rename(accountId.id, newName)
         accountRenameFlow.emit(AccountRename(dbAccount.name, newName))
