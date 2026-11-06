@@ -120,7 +120,7 @@ class AndroidAccountProvider @Inject constructor(
             ?: throw InvalidAccountException(accountId)
 
         // new Android account doesn't have the current sync framework settings yet
-        syncFrameworkSettingsUpdater.get().update(accountId)
+        updateSyncFrameworkSettings(accountId)
 
         return account
     }
@@ -225,9 +225,22 @@ class AndroidAccountProvider @Inject constructor(
         }
 
         // renamed Android account doesn't have the current sync framework settings anymore
-        syncFrameworkSettingsUpdater.get().update(accountId)
+        updateSyncFrameworkSettings(accountId)
 
         return newAccount
+    }
+
+    /**
+     * Updates the sync framework settings of the Android account of [accountId]. Failures are only logged,
+     * because the settings can be derived again later and mustn't make an otherwise finished
+     * creation/rename fail.
+     */
+    private fun updateSyncFrameworkSettings(accountId: DbAccountId) {
+        try {
+            syncFrameworkSettingsUpdater.get().update(accountId)
+        } catch (e: Exception) {
+            logger.log(Level.WARNING, "Couldn't update sync framework settings for $accountId", e)
+        }
     }
 
 

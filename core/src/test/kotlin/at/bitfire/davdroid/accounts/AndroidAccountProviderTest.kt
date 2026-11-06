@@ -6,6 +6,7 @@ package at.bitfire.davdroid.accounts
 
 import android.accounts.Account
 import android.accounts.AccountManager
+import android.accounts.AccountManagerCallback
 import android.accounts.AccountManagerFuture
 import android.content.Context
 import android.os.Bundle
@@ -13,10 +14,11 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.DbAccount
 import at.bitfire.davdroid.db.DbAccountDao
-import at.bitfire.davdroid.resource.local.LocalCalendarStore
 import at.bitfire.davdroid.resource.local.AddressBookAccountManager
+import at.bitfire.davdroid.resource.local.LocalCalendarStore
 import at.bitfire.davdroid.sync.SyncFrameworkSettingsUpdater
 import at.bitfire.davdroid.sync.TasksAppManager
+import at.bitfire.davdroid.sync.account.AccountOperationFailedException
 import at.bitfire.davdroid.sync.account.InvalidAccountException
 import io.mockk.coEvery
 import io.mockk.every
@@ -54,17 +56,6 @@ class AndroidAccountProviderTest {
     private val logger = mockk<Logger>(relaxed = true)
     private val syncFrameworkSettingsUpdater = mockk<SyncFrameworkSettingsUpdater>(relaxed = true)
 
-    private val addressBookAccountManager = AddressBookAccountManager(accountManager, context, Dispatchers.IO, logger)
-    private val androidAccountManager = AndroidAccountManager(
-        accountManager = { accountManager },
-        context = context,
-        database = database,
-        ioDispatcher = Dispatchers.IO,
-        logger = logger
-    )
-    private val localCalendarStore = mockk<LocalCalendarStore>(relaxed = true)
-    private val tasksAppManager = mockk<TasksAppManager>(relaxed = true)
-
     /** Robolectric doesn't implement [AccountManager.renameAccount], so emulate it (keeping user data) */
     private val renamingAccountManager = spyk(accountManager) {
         every { renameAccount(any(), any(), any(), any()) } answers {
@@ -75,11 +66,24 @@ class AndroidAccountProviderTest {
             accountManager.removeAccountExplicitly(old)
             val userData = linkedId?.let { Bundle().apply { putString(AndroidAccountManager.USER_DATA_ACCOUNT_ID, it) } }
             accountManager.addAccountExplicitly(newAccount, null, userData)
-            mockk<AccountManagerFuture<Account>> { every { result } returns newAccount }
+            val future = mockk<AccountManagerFuture<Account>> { every { result } returns newAccount }
+            // AndroidAccountManager.renameAccount waits for the callback
+            thirdArg<AccountManagerCallback<Account>?>()?.run(future)
+            future
         }
     }
+    private val addressBookAccountManager = AddressBookAccountManager(accountManager, context, Dispatchers.IO, logger)
+    private val androidAccountManager = AndroidAccountManager(
+        accountManager = { renamingAccountManager },
+        context = context,
+        database = database,
+        ioDispatcher = Dispatchers.IO,
+        logger = logger
+    )
+    private val localCalendarStore = mockk<LocalCalendarStore>(relaxed = true)
+    private val tasksAppManager = mockk<TasksAppManager>(relaxed = true)
+
     private val provider = AndroidAccountProvider(
-        accountManager = renamingAccountManager,
         addressBookAccountManager = addressBookAccountManager,
         androidAccountManager = androidAccountManager,
         db = database,
@@ -249,16 +253,67 @@ class AndroidAccountProviderTest {
     }
 
     @Test
-    fun `provide() doesn't rename when new name is used by account linked to other DB account`() = runTest {
+    fun `provide() renames other account out of the way when new name is still its Android name`() = runTest {
         addDbAccount(1, "New Name")
         addDbAccount(2, "Other")
+        addAndroidAccount("Old Name", linkedId = 1)
+        addAndroidAccount("New Name", linkedId = 2)     // DB account 2 was renamed, Android account not yet
+
+        val result = provider.provide(DbAccountId(1))
+
+        assertEquals(Account("New Name", dbAccountType), result)
+        assertEquals(1L, androidAccountManager.getLinkedDbAccountId(result))
+        val other = Account("Other", dbAccountType)
+        assertEquals(2L, androidAccountManager.getLinkedDbAccountId(other))
+    }
+
+    @Test
+    fun `provide() resolves swapped names of two accounts`() = runTest {
+        addDbAccount(1, "B")
+        addDbAccount(2, "A")
+        addAndroidAccount("A", linkedId = 1)
+        addAndroidAccount("B", linkedId = 2)
+
+        val result = provider.provide(DbAccountId(1))
+
+        assertEquals(Account("B", dbAccountType), result)
+        assertEquals(1L, androidAccountManager.getLinkedDbAccountId(result))
+        assertEquals(2L, androidAccountManager.getLinkedDbAccountId(Account("A", dbAccountType)))
+        assertEquals(2, accountManager.getAccountsByType(dbAccountType).size)
+    }
+
+    @Test
+    fun `provide() throws AccountOperationFailedException when new name is used by other DB account with same name`() = runTest {
+        addDbAccount(1, "New Name")
+        addDbAccount(2, "New Name")
         val old = addAndroidAccount("Old Name", linkedId = 1)
         addAndroidAccount("New Name", linkedId = 2)
 
-        assertFailsWith<InvalidAccountException> {
+        assertFailsWith<AccountOperationFailedException> {
             provider.provide(DbAccountId(1))
         }
         assertTrue(accountManager.getAccountsByType(dbAccountType).contains(old))
+    }
+
+    @Test
+    fun `provide() doesn't fail when updating sync framework settings fails`() = runTest {
+        addDbAccount(1, "New Name")
+        addAndroidAccount("Old Name", linkedId = 1)
+        every { syncFrameworkSettingsUpdater.update(any()) } throws RuntimeException("test")
+
+        val result = provider.provide(DbAccountId(1))
+
+        assertEquals(Account("New Name", dbAccountType), result)
+    }
+
+    @Test
+    fun `provide() wraps unexpected exceptions in AccountOperationFailedException`() = runTest {
+        addDbAccount(1, "DB Name")
+        coEvery { dbAccountDao.get(1) } throws IllegalStateException("test")
+
+        assertFailsWith<AccountOperationFailedException> {
+            provider.provide(DbAccountId(1))
+        }
     }
 
 }
