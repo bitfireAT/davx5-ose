@@ -158,12 +158,12 @@ class AccountRepository @Inject internal constructor(
             notifyOnBeforeDeleteListeners(accountId)
         }
 
+        syncWorkerManager.get().cancelAllWork(accountId)
+
         when (accountId) {
             is LegacyAccount -> legacyAccountRepository.delete(accountId)
             is DbAccountId -> dbAccountRepository.delete(accountId)
         }
-
-        syncWorkerManager.get().cancelAllWork(accountId)
     }
 
     private fun notifyOnBeforeDeleteListeners(accountId: AccountId) {
