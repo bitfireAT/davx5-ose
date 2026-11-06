@@ -313,10 +313,14 @@ class AccountRepository @Inject internal constructor(
      * time it provides the account (usually during the next sync).
      *
      * @throws NoSuchElementException if the account does not exist
-     * @throws IllegalArgumentException if the new account name already exists
+     * @throws IllegalArgumentException if the new account name is blank or already exists
      */
     private suspend fun renameDbAccount(accountId: DbAccountId, newName: String): AccountId = withContext(ioDispatcher) {
         val dbAccount = dbAccountDao.get(accountId.id) ?: throw NoSuchElementException("No account found with id ${accountId.id}")
+
+        // Android can't use blank account names
+        if (newName.isBlank())
+            throw IllegalArgumentException("Account name must not be blank")
 
         if (exists(newName))
             throw IllegalArgumentException("Account with name \"$newName\" already exists")
