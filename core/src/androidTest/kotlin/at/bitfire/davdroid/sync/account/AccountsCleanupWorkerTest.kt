@@ -12,16 +12,20 @@ import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.testing.TestListenableWorkerBuilder
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.TestUtils
+import at.bitfire.davdroid.accounts.AndroidAccountManager
+import at.bitfire.davdroid.accounts.DbAccountId
 import at.bitfire.davdroid.accounts.LegacyAccount
 import at.bitfire.davdroid.db.AppDatabase
+import at.bitfire.davdroid.db.DbAccount
 import at.bitfire.davdroid.db.Service
-import at.bitfire.davdroid.resource.local.AddressBookAccountProperties
+import at.bitfire.davdroid.resource.local.AddressBookAccountManager
 import at.bitfire.davdroid.settings.SettingsManager
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
@@ -43,7 +47,7 @@ class AccountsCleanupWorkerTest {
     lateinit var accountsCleanupWorkerFactory: AccountsCleanupWorker.Factory
 
     @Inject
-    lateinit var addressBookAccountProperties: AddressBookAccountProperties
+    lateinit var addressBookAccountManager: AddressBookAccountManager
 
     @Inject @ApplicationContext
     lateinit var context: Context
@@ -59,6 +63,7 @@ class AccountsCleanupWorkerTest {
 
     lateinit var addressBookAccountType: String
     lateinit var addressBookAccount: Account
+    lateinit var dbAndroidAccount: Account
     lateinit var service: Service
 
     @Before
@@ -70,12 +75,15 @@ class AccountsCleanupWorkerTest {
 
         addressBookAccountType = context.getString(R.string.account_type_address_book)
         addressBookAccount = Account("Fancy address book account", addressBookAccountType)
+        dbAndroidAccount = Account("Fancy DB account", context.getString(R.string.account_type_db))
     }
 
     @After
     fun tearDown() {
         // Remove the account here in any case; Nice to have when the test fails
+        db.dbAccountDao().deleteAllBlocking()
         accountManager.removeAccountExplicitly(addressBookAccount)
+        accountManager.removeAccountExplicitly(dbAndroidAccount)
     }
 
 
@@ -143,6 +151,35 @@ class AccountsCleanupWorkerTest {
 
 
     @Test
+    fun testCleanUpDbAndroidAccounts_removesOrphaned() {
+        // Create Android account linked to a DB account that doesn't exist
+        assertTrue(accountManager.addAccountExplicitly(dbAndroidAccount, null, null))
+        accountManager.setUserData(dbAndroidAccount, AndroidAccountManager.USER_DATA_ACCOUNT_ID, "999")
+
+        val worker = TestListenableWorkerBuilder<AccountsCleanupWorker>(context)
+            .setWorkerFactory(workerFactory)
+            .build()
+        worker.cleanUpDbAndroidAccounts()
+
+        assertFalse(accountManager.accounts.contains(dbAndroidAccount))
+    }
+
+    @Test
+    fun testCleanUpDbAndroidAccounts_keepsLinked() {
+        val dbAccountId = db.dbAccountDao().insertBlocking(DbAccount(name = dbAndroidAccount.name))
+        assertTrue(accountManager.addAccountExplicitly(dbAndroidAccount, null, null))
+        accountManager.setUserData(dbAndroidAccount, AndroidAccountManager.USER_DATA_ACCOUNT_ID, dbAccountId.toString())
+
+        val worker = TestListenableWorkerBuilder<AccountsCleanupWorker>(context)
+            .setWorkerFactory(workerFactory)
+            .build()
+        worker.cleanUpDbAndroidAccounts()
+
+        assertTrue(accountManager.accounts.contains(dbAndroidAccount))
+    }
+
+
+    @Test
     fun testCleanUpAddressBooks_deletesAddressBookWithoutAccount() {
         // Create address book account without corresponding account
         assertTrue(accountManager.addAccountExplicitly(addressBookAccount, null, null))
@@ -159,11 +196,43 @@ class AccountsCleanupWorkerTest {
     }
 
     @Test
+    fun testCleanUpAddressBooks_deletesAddressBookLinkingNonExistentDbAccount() {
+        // Create address book account linking a non-existent DB account
+        addressBookAccountManager.create(DbAccountId(23), addressBookAccount.name, collectionId = 1)
+
+        // Create worker and run the method
+        val worker = TestListenableWorkerBuilder<AccountsCleanupWorker>(context)
+            .setWorkerFactory(workerFactory)
+            .build()
+        worker.cleanUpAddressBooks()
+
+        // Verify account was deleted
+        assertTrue(accountManager.getAccountsByType(addressBookAccountType).isEmpty())
+    }
+
+    @Test
+    fun testCleanUpAddressBooks_keepsAddressBookWithDbAccount() {
+        val dbAccountId = db.dbAccountDao().insertBlocking(DbAccount(name = dbAndroidAccount.name))
+        assertTrue(accountManager.addAccountExplicitly(dbAndroidAccount, null, null))
+        accountManager.setUserData(dbAndroidAccount, AndroidAccountManager.USER_DATA_ACCOUNT_ID, dbAccountId.toString())
+        addressBookAccountManager.create(DbAccountId(dbAccountId), addressBookAccount.name, collectionId = 1)
+
+        // Create worker and run the method
+        val worker = TestListenableWorkerBuilder<AccountsCleanupWorker>(context)
+            .setWorkerFactory(workerFactory)
+            .build()
+        worker.cleanUpAddressBooks()
+
+        // Verify account was _not_ deleted
+        assertEquals(listOf(addressBookAccount), accountManager.getAccountsByType(addressBookAccountType).toList())
+    }
+
+    @Test
     fun testCleanUpAddressBooks_keepsAddressBookWithAccount() {
         TestAccount.provide { existingAccount ->
             // Create address book account _with_ corresponding account and verify
             assertTrue(accountManager.addAccountExplicitly(addressBookAccount, null, Bundle()))
-            addressBookAccountProperties.setAppAccount(addressBookAccount, LegacyAccount(existingAccount))
+            addressBookAccountManager.setAppAccount(addressBookAccount, LegacyAccount(existingAccount))
             assertEquals(listOf(addressBookAccount), accountManager.getAccountsByType(addressBookAccountType).toList())
 
             // Create worker and run the method

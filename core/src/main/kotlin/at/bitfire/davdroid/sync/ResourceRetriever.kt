@@ -64,19 +64,15 @@ class ResourceRetriever @AssistedInject constructor(
                 "data" ->
                     DataUri.parse(url).data
 
-                "http", "https" -> {
-                    val httpClient = httpClient ?: httpClientBuilder
-                        .fromAccount(accountId, authDomain = originalHost)
-                        .followRedirects(true)
-                        .build()
-                    val response = httpClient.get(url)
-                    if (response.status.isSuccess())
-                        response.bodyAsBytes()
-                    else {
-                        logger.warning("Couldn't download external resource (${response.status})")
-                        null
-                    }
-                }
+                "http", "https" ->
+                    if (httpClient != null)
+                        download(httpClient, url)
+                    else
+                        httpClientBuilder
+                            .fromAccount(accountId, authDomain = originalHost)
+                            .followRedirects(true)
+                            .build()
+                            .use { download(it, url) }
 
                 else ->
                     null
@@ -85,5 +81,15 @@ class ResourceRetriever @AssistedInject constructor(
             logger.log(Level.SEVERE, "Couldn't retrieve resource", e)
             null
         }
+
+    private suspend fun download(@WillNotClose httpClient: HttpClient, url: String): ByteArray? {
+        val response = httpClient.get(url)
+        return if (response.status.isSuccess())
+            response.bodyAsBytes()
+        else {
+            logger.warning("Couldn't download external resource (${response.status})")
+            null
+        }
+    }
 
 }

@@ -541,9 +541,11 @@
     <string name="debug_info_logs_view">View logs</string>
     <string name="debug_info_copy_remote_url">Copy URL</string>
     <string name="debug_info_view_local_resource">View</string>
+    <string name="debug_info_view_remote_resource">View</string>
     <string name="debug_info_privacy_warning_title">Privacy notice</string>
     <string name="debug_info_privacy_warning_description">Logs and debug info may contain private information. Please be aware of this when sharing publicly.</string>
     <string name="debug_info_can_not_view_resource">Unable to view resource</string>
+    <string name="debug_info_can_not_download_resource">Unable to download resource</string>
     <string name="debug_info_find_help">Find help online</string>
     <string name="debug_info_find_help_faq">Find answers to &lt;b>common questions&lt;/b></string>
     <string name="debug_info_find_help_faq_action">Show FAQ on website</string>

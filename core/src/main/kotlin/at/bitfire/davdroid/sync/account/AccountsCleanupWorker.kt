@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.sync.account
 
-import android.accounts.AccountManager
 import android.content.Context
 import androidx.annotation.VisibleForTesting
 import androidx.hilt.work.HiltWorker
@@ -14,10 +13,10 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.Worker
 import androidx.work.WorkerParameters
-import at.bitfire.davdroid.R
+import at.bitfire.davdroid.accounts.AndroidAccountManager
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.repository.AccountRepository
-import at.bitfire.davdroid.resource.local.AddressBookAccountProperties
+import at.bitfire.davdroid.resource.local.AddressBookAccountManager
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -29,9 +28,9 @@ import java.util.logging.Logger
 class AccountsCleanupWorker @AssistedInject constructor(
     @Assisted val context: Context,
     @Assisted workerParameters: WorkerParameters,
-    private val accountManager: AccountManager,
     private val accountRepository: AccountRepository,
-    private val addressBookAccountProperties: AddressBookAccountProperties,
+    private val addressBookAccountManager: AddressBookAccountManager,
+    private val androidAccountManager: AndroidAccountManager,
     private val db: AppDatabase,
     private val logger: Logger
 ): Worker(context, workerParameters) {
@@ -46,6 +45,7 @@ class AccountsCleanupWorker @AssistedInject constructor(
         lockAccountsCleanup()
         try {
             cleanUpServices()
+            cleanUpDbAndroidAccounts()
             cleanUpAddressBooks()
         } finally {
             unlockAccountsCleanup()
@@ -58,9 +58,8 @@ class AccountsCleanupWorker @AssistedInject constructor(
      */
     @VisibleForTesting
     internal fun cleanUpServices() {
-        // Later, accounts which are not in the DB should be deleted here
-
-        // Delete orphaned services in DB – only necessary as long as accounts are implemented as system accounts (not in DB)
+        // Delete orphaned services in DB – only necessary as long as accounts are implemented as system accounts
+        // (LegacyAccount, not in DB)
         val accountIds = accountRepository.getAllBlocking()
         logger.info("Cleaning up accounts. Currently existing accounts: ${accountIds.joinToString()}")
         val serviceDao = db.serviceDao()
@@ -73,17 +72,25 @@ class AccountsCleanupWorker @AssistedInject constructor(
     }
 
     /**
+     * Deletes Android accounts of DB accounts that don't exist anymore.
+     */
+    @VisibleForTesting
+    internal fun cleanUpDbAndroidAccounts() {
+        androidAccountManager.removeOrphanedForDbAccounts()
+    }
+
+    /**
      * Deletes address book accounts which are not assigned to a valid account.
      */
     @VisibleForTesting
     internal fun cleanUpAddressBooks() {
         val accountIds = accountRepository.getAllBlocking().toSet()
-        for (addressBookAccount in accountManager.getAccountsByType(context.getString(R.string.account_type_address_book))) {
-            val accountId = addressBookAccountProperties.getAppAccount(addressBookAccount)
+        for (addressBookAccount in addressBookAccountManager.getAll()) {
+            val accountId = addressBookAccountManager.getAppAccount(addressBookAccount)
             if (accountId !in accountIds) {
                 // If no valid account exists for this address book, we can delete it
                 logger.info("Deleting address book account without valid account: $addressBookAccount")
-                accountManager.removeAccountExplicitly(addressBookAccount)
+                addressBookAccountManager.delete(addressBookAccount)
             }
         }
     }

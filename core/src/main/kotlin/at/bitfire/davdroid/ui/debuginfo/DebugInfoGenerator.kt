@@ -5,7 +5,6 @@
 package at.bitfire.davdroid.ui.debuginfo
 
 import android.accounts.Account
-import android.accounts.AccountManager
 import android.app.ActivityManager
 import android.app.usage.UsageStatsManager
 import android.content.ContentUris
@@ -34,13 +33,12 @@ import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.WorkQuery
 import at.bitfire.dav4jvm.ktor.exception.DavException
-import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.accounts.AndroidAccountManager
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.settings.AccountSettingsFactory
-import at.bitfire.davdroid.resource.local.AddressBookAccountProperties
+import at.bitfire.davdroid.resource.local.AddressBookAccountManager
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.sync.SyncDataType
 import at.bitfire.davdroid.sync.account.InvalidAccountException
@@ -70,10 +68,9 @@ import at.techbee.jtx.JtxContract.asSyncAdapter as asJtxSyncAdapter
 
 @WorkerThread
 class DebugInfoGenerator @Inject constructor(
-    private val accountManager: AccountManager,
     private val accountRepository: AccountRepository,
     private val accountSettingsFactory: AccountSettingsFactory,
-    private val addressBookAccountProperties: AddressBookAccountProperties,
+    private val addressBookAccountManager: AddressBookAccountManager,
     private val androidAccountManager: AndroidAccountManager,
     @ApplicationContext private val context: Context,
     private val db: AppDatabase,
@@ -323,11 +320,11 @@ class DebugInfoGenerator @Inject constructor(
         for (accountId in accountIds)
             dumpAccount(accountId, writer)
 
-        val addressBookAccounts = accountManager.getAccountsByType(context.getString(R.string.account_type_address_book)).toMutableList()
+        val addressBookAccounts = addressBookAccountManager.getAll()
         if (addressBookAccounts.isNotEmpty()) {
             writer.append("ADDRESS BOOK ACCOUNTS\n\n")
             for (account in addressBookAccounts)
-                dumpAddressBookAccount(account, accountManager, writer)
+                dumpAddressBookAccount(account, writer)
         }
 
         // non-sync workers
@@ -479,12 +476,12 @@ class DebugInfoGenerator @Inject constructor(
     /**
      * Appends relevant address book type android account information to the given writer.
      */
-    private fun dumpAddressBookAccount(account: Account, accountManager: AccountManager, writer: Writer) {
+    private fun dumpAddressBookAccount(account: Account, writer: Writer) {
         writer.append("  * Address book: ${account.name}\n")
         val table = dumpAndroidAccount(account, AccountDumpInfo.addressBookAccount(account))
         writer.append(TextTable.indent(table, 4))
-            .append("Collection ID: ${addressBookAccountProperties.getCollectionId(account)}\n")
-            .append("    Read-only: ${accountManager.getUserData(account, AndroidAddressBook.USER_DATA_READ_ONLY) ?: 0}\n\n")
+            .append("Collection ID: ${addressBookAccountManager.getCollectionId(account)}\n")
+            .append("    Read-only: ${addressBookAccountManager.getProperty(account, AndroidAddressBook.USER_DATA_READ_ONLY) ?: 0}\n\n")
     }
 
     /**

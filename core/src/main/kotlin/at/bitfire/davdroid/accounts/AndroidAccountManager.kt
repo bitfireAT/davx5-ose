@@ -15,8 +15,8 @@ import android.os.Looper
 import androidx.annotation.WorkerThread
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
+import at.bitfire.davdroid.db.DbAccount
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
-import at.bitfire.davdroid.resource.local.AddressBookAccountProperties
 import at.bitfire.davdroid.sync.account.InvalidAccountException
 import at.bitfire.synctools.util.SensitiveString
 import at.bitfire.synctools.util.setAndVerifyUserData
@@ -28,23 +28,22 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
+import org.jetbrains.annotations.VisibleForTesting
 import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
 import javax.inject.Provider
 
 /**
- * Creates, looks up and observes the Android [Account]s of DAVx⁵ (main and address book accounts).
+ * Creates, looks up and observes the Android [Account]s of DAVx⁵ main accounts.
  */
 class AndroidAccountManager @Inject constructor(
     private val accountManager: Provider<AccountManager>,
-    private val addressBookAccountProperties: AddressBookAccountProperties,
     @ApplicationContext context: Context,
     database: AppDatabase,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val logger: Logger
 ) {
-    private val addressBookAccountType = context.getString(R.string.account_type_address_book)
     private val dbAccountType = context.getString(R.string.account_type_db)
 
     private val dbAccountDao = database.dbAccountDao()
@@ -98,6 +97,8 @@ class AndroidAccountManager @Inject constructor(
     /**
      * Creates an Android account that is linked to the DB account with ID [dbAccountId].
      *
+     * Must only be called for existing DB accounts, otherwise [removeOrphanedForDbAccounts] may remove the new account.
+     *
      * @return the created account, or `null` if it couldn't be created (for instance because the name is taken
      *   or there's already an account linked to [dbAccountId])
      */
@@ -130,40 +131,58 @@ class AndroidAccountManager @Inject constructor(
         accountManager.get().getUserData(account, USER_DATA_ACCOUNT_ID)?.toLongOrNull()
 
     /**
-     * Removes the Android account [account] of a DB account, including the address book accounts of the
-     * DB account it's linked to.
+     * Removes the given Android account.
      */
     fun removeAccount(account: Account) {
+        logger.info("Removing Android account $account")
+        accountManager.get().removeAccountExplicitly(account)
+    }
+
+    /**
+     * Deletes Android accounts of DB accounts that don't exist anymore. Legacy accounts are not touched.
+     */
+    fun removeOrphanedForDbAccounts() {
+        removeAllForDbAccountsExceptFor { dbAccountDao.getAllBlocking() }
+    }
+
+    /**
+     * Removes Android accounts of DB accounts that don't belong to one of the DB accounts returned by [accountsToKeep].
+     * Linked accounts are matched by ID, unlinked ones by name. Legacy accounts are not touched.
+     */
+    @VisibleForTesting
+    internal fun removeAllForDbAccountsExceptFor(accountsToKeep: () -> List<DbAccount>) {
         val manager = accountManager.get()
-        val linkedId = getLinkedDbAccountId(account)
-        val addressBookAccounts =
-            if (linkedId != null)
-                manager.getAccountsByType(addressBookAccountType)
-                    .filter { addressBookAccountProperties.getAppAccount(it) == DbAccountId(linkedId) }
-            else
-                emptyList()
-        for (accountToRemove in addressBookAccounts + account) {
-            logger.info("Removing Android account $accountToRemove")
-            manager.removeAccountExplicitly(accountToRemove)
+
+        // Android accounts are read before DB accounts: an Android account is only ever created after its DB account,
+        // so every Android account we see also shows up in the DB accounts read afterwards. We do this to avoid
+        // removing valid android accounts which may be created by the user while cleanup runs.
+        val accounts = manager.getAccountsByType(dbAccountType)
+
+        val dbAccounts = accountsToKeep()
+        val existingIds = dbAccounts.map { it.id }.toSet()
+        val existingNames = dbAccounts.map { it.name }.toSet()
+
+        val orphanedAccounts = accounts.filter { account ->
+            when (val linkedId = getLinkedDbAccountId(account)) {
+                // not linked yet: orphaned when no DB account has its name (otherwise it's still being set up)
+                null -> account.name !in existingNames
+                else -> linkedId !in existingIds
+            }
+        }
+
+        for (account in orphanedAccounts) {
+            logger.info("Removing orphaned Android account $account of DB account")
+            manager.removeAccountExplicitly(account)
         }
     }
 
     /**
-     * Removes all Android accounts of DB accounts, including their address book accounts. Legacy accounts
-     * and their address book accounts are not touched.
+     * Removes all Android accounts of DB accounts, including their address book accounts.
      *
-     * Used when the database is (re)created: then the remaining accounts are orphaned and their links (DB IDs)
-     * could otherwise match new DB accounts.
+     * Used when the database is (re)created, because otherwise the links (autogenerated DB row IDs) could match new DB
+     * accounts.
      */
-    fun removeAllForDbAccounts() {
-        val manager = accountManager.get()
-        val addressBookAccounts = manager.getAccountsByType(addressBookAccountType)
-            .filter { addressBookAccountProperties.getAppAccount(it) is DbAccountId }
-        for (account in addressBookAccounts + manager.getAccountsByType(dbAccountType)) {
-            logger.info("Removing Android account $account of DB account")
-            manager.removeAccountExplicitly(account)
-        }
-    }
+    fun removeAllForDbAccounts() = removeAllForDbAccountsExceptFor { emptyList() }
 
     /**
      * Returns the Android [Account] for a given [AccountId].

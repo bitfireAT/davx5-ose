@@ -9,6 +9,7 @@ import android.accounts.AccountManager
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.resource.local.LocalCalendarStore
+import at.bitfire.davdroid.resource.local.AddressBookAccountManager
 import at.bitfire.davdroid.sync.SyncFrameworkSettingsUpdater
 import at.bitfire.davdroid.sync.TasksAppManager
 import at.bitfire.davdroid.sync.account.InvalidAccountException
@@ -28,6 +29,7 @@ import javax.inject.Inject
  */
 class AndroidAccountProvider @Inject constructor(
     private val accountManager: AccountManager,
+    private val addressBookAccountManager: AddressBookAccountManager,
     private val androidAccountManager: AndroidAccountManager,
     db: AppDatabase,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
@@ -78,6 +80,9 @@ class AndroidAccountProvider @Inject constructor(
 
             // orphaned (not linked or linked to a DB account that doesn't exist anymore), may have unrelated local data
             logger.info("Removing orphaned Android account $sameName")
+            if (sameNameLinkedId != null) {
+                addressBookAccountManager.deleteByAccountId(DbAccountId(sameNameLinkedId))
+            }
             androidAccountManager.removeAccount(sameName)
         }
 

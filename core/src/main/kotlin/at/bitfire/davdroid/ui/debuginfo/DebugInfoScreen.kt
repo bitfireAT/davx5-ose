@@ -93,6 +93,7 @@ fun DebugInfoScreen(
     val debugInfo = uiState.debugInfo
     val zipInProgress = uiState.zipInProgress
     val zipFile = uiState.zipFile
+    val remoteResourceFile = uiState.remoteResourceFile
     val error = uiState.error
 
     // Share zip file card, once successfully generated
@@ -100,6 +101,14 @@ fun DebugInfoScreen(
         zipFile?.let { file ->
             onShareZipFile(file)
             model.resetZipFile()
+        }
+    }
+
+    // View remote resource, once successfully downloaded
+    LaunchedEffect(remoteResourceFile) {
+        remoteResourceFile?.let { file ->
+            onViewFile(file)
+            model.resetRemoteResourceFile()
         }
     }
 
@@ -115,11 +124,14 @@ fun DebugInfoScreen(
         localResource = localResource,
         canViewResource = canViewResource,
         remoteResource = remoteResource,
+        canViewRemoteResource = model.canViewRemoteResource,
+        remoteResourceInProgress = uiState.remoteResourceInProgress,
         hasLogFile = logFile != null,
         onShareZip = { model.generateZip() },
         onViewLogsFile = { logFile?.let { onViewFile(it) } },
         onViewDebugFile = { debugInfo?.let { onViewFile(it) } },
         onCopyRemoteUrl = onCopyRemoteUrl,
+        onViewRemoteResource = model::downloadRemoteResource,
         onViewLocalResource = onViewLocalResource,
         onNavUp = onNavUp
     )
@@ -139,11 +151,14 @@ fun DebugInfoScreen(
     localResource: String?,
     canViewResource: Boolean,
     remoteResource: String?,
+    canViewRemoteResource: Boolean = false,
+    remoteResourceInProgress: Boolean = false,
     hasLogFile: Boolean,
     onShareZip: () -> Unit = {},
     onViewLogsFile: () -> Unit = {},
     onViewDebugFile: () -> Unit = {},
     onCopyRemoteUrl: () -> Unit = {},
+    onViewRemoteResource: () -> Unit = {},
     onViewLocalResource: () -> Unit = {},
     onNavUp: () -> Unit = {}
 ) {
@@ -194,7 +209,7 @@ fun DebugInfoScreen(
                     .padding(paddingValues)
                     .verticalScroll(rememberScrollState())
             ) {
-                if (!showDebugInfo || zipProgress)
+                if (!showDebugInfo || zipProgress || remoteResourceInProgress)
                     ProgressBar()
 
                 Image(
@@ -224,7 +239,10 @@ fun DebugInfoScreen(
                         onViewLocalResource,
                         remoteResource,
                         onCopyRemoteUrl,
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp),
+                        canViewRemoteResource = canViewRemoteResource,
+                        remoteResourceInProgress = remoteResourceInProgress,
+                        onViewRemoteResource = onViewRemoteResource
                     )
                 }
 
@@ -319,6 +337,7 @@ fun DebugInfoScreen_Preview() {
         localResource = "local-resource-string",
         canViewResource = true,
         remoteResource = "remote-resource-string",
+        canViewRemoteResource = true,
         hasLogFile = true
     )
 }
