@@ -12,6 +12,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import androidx.annotation.Size
 import androidx.annotation.WorkerThread
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
@@ -27,12 +28,15 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import org.jetbrains.annotations.VisibleForTesting
 import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
 import javax.inject.Provider
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 
 /**
  * Creates, looks up and observes the Android [Account]s of DAVx⁵ main accounts.
@@ -268,6 +272,55 @@ class AndroidAccountManager @Inject constructor(
 
             if (accountManager.getAccountVisibility(account, packageName) != AccountManager.VISIBILITY_VISIBLE) {
                 accountManager.setAccountVisibility(account, packageName, AccountManager.VISIBILITY_VISIBLE)
+            }
+        }
+    }
+
+    /**
+     * Uses Android's AccountManager to rename the given [account] to the desired [newName] for suspending calls.
+     *
+     * This method
+     * - Is no-op if [newName] matches the [account] name.
+     * - Does not check if an account already exists with that name.
+     *
+     * @param account The account to rename.
+     * @param newName The new name to set for [account]. Must not be blank.
+     *
+     * @throws IllegalArgumentException If [newName] is blank.
+     * @throws IllegalStateException If the operation failed for any reason.
+     */
+    suspend fun renameAccount(account: Account, @Size(min = 1) newName: String): Account {
+        require(newName.isNotBlank()) { "New account name must not be blank." }
+
+        if (account.name == newName) {
+            // Names already match, no need to rename
+            return account
+        }
+
+        return suspendCancellableCoroutine { cont ->
+            val future = accountManager.get().renameAccount(
+                account,
+                newName,
+                { future ->
+                    if (!cont.isActive) {
+                        // The suspend operation was canceled, already handled, ignore
+                        return@renameAccount
+                    }
+                    // If not canceled, fetch the result, and pass it
+                    try {
+                        val newAccount: Account? = future.result
+                        check(newAccount != null) { "AccountManager returned a null account when renaming." }
+                        check(newAccount.name == newName) { "The rename operation failed. An account with that name may already exist." }
+                        cont.resume(newAccount)
+                    } catch (e: Exception) {
+                        cont.resumeWithException(e)
+                    }
+                },
+                null
+            )
+
+            cont.invokeOnCancellation {
+                future.cancel(true)
             }
         }
     }

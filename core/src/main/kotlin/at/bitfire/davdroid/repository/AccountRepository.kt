@@ -5,12 +5,12 @@
 package at.bitfire.davdroid.repository
 
 import android.accounts.Account
-import android.accounts.AccountManager
 import android.content.Context
 import androidx.annotation.WorkerThread
 import at.bitfire.davdroid.FeatureFlags
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
+import at.bitfire.davdroid.accounts.AndroidAccountManager
 import at.bitfire.davdroid.accounts.DbAccountId
 import at.bitfire.davdroid.accounts.LegacyAccount
 import at.bitfire.davdroid.db.AppDatabase
@@ -47,7 +47,7 @@ import javax.inject.Inject
  * [at.bitfire.davdroid.resource.local.LocalAddressBook].
  */
 class AccountRepository @Inject internal constructor(
-    private val accountManager: AccountManager,
+    private val androidAccountManager: AndroidAccountManager,
     private val automaticSyncManager: Lazy<AutomaticSyncManager>,
     @ApplicationContext private val context: Context,
     private val dbAccountRepository: DbAccountRepository,
@@ -250,12 +250,7 @@ class AccountRepository @Inject internal constructor(
             AccountsCleanupWorker.lockAccountsCleanup()
 
             // rename account (also moves AccountSettings)
-            val future = accountManager.renameAccount(oldAccount, newName, null, null)
-
-            // wait for operation to complete (blocks calling thread)
-            val newNameFromApi: Account = future.result
-            if (newNameFromApi.name != newName)
-                throw IllegalStateException("renameAccount returned ${newNameFromApi.name} instead of $newName")
+            androidAccountManager.renameAccount(oldAccount, newName)
 
             accountRenameFlow.emit(AccountRename(oldAccount.name, newName))
             

@@ -8,8 +8,8 @@ import android.accounts.Account
 import android.accounts.AccountManager
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
-import at.bitfire.davdroid.resource.local.LocalCalendarStore
 import at.bitfire.davdroid.resource.local.AddressBookAccountManager
+import at.bitfire.davdroid.resource.local.LocalCalendarStore
 import at.bitfire.davdroid.sync.SyncFrameworkSettingsUpdater
 import at.bitfire.davdroid.sync.TasksAppManager
 import at.bitfire.davdroid.sync.account.InvalidAccountException
@@ -120,7 +120,7 @@ class AndroidAccountProvider @Inject constructor(
         logger.info("Renaming Android account $account to $newName")
         val newAccount = try {
             // user data (including the link to the DB account) is kept
-            accountManager.renameAccount(account, newName, null, null).result
+            androidAccountManager.renameAccount(account, newName)
         } catch (e: Exception) {
             logger.log(Level.WARNING, "Couldn't rename Android account $account", e)
             throw InvalidAccountException(accountId)
