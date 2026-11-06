@@ -5,7 +5,6 @@
 package at.bitfire.davdroid.accounts
 
 import android.accounts.Account
-import android.accounts.AccountManager
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.resource.local.AddressBookAccountManager
@@ -28,7 +27,6 @@ import javax.inject.Inject
  * DB account has changed.
  */
 class AndroidAccountProvider @Inject constructor(
-    private val accountManager: AccountManager,
     private val addressBookAccountManager: AddressBookAccountManager,
     private val androidAccountManager: AndroidAccountManager,
     db: AppDatabase,
@@ -101,18 +99,21 @@ class AndroidAccountProvider @Inject constructor(
      * account name of the local calendars and tasks. Address book accounts reference the DB account by ID,
      * so they don't have to be updated.
      *
-     * @throws InvalidAccountException if the new name is taken by an Android account of another (existing) DB account
+     * @throws IllegalArgumentException if the new name is taken by an Android account of another (existing) DB account
      */
     private suspend fun rename(accountId: DbAccountId, account: Account, newName: String): Account {
+        // Find an account with the desired name
         val sameName = androidAccountManager.findAccountByName(newName)
         if (sameName != null) {
+            // If it exists, check whether it's linked to another db account
             val sameNameLinkedId = androidAccountManager.getLinkedDbAccountId(sameName)
             if (sameNameLinkedId != null && sameNameLinkedId != accountId.id && dbAccountDao.get(sameNameLinkedId) != null) {
-                logger.warning("Can't rename $account to $newName: name is used by Android account linked to another DB account")
-                throw InvalidAccountException(accountId)
+                // Edge case, should not happen, because DB account names are unique, but handle it just in case.
+                throw IllegalArgumentException("Can't rename $account to $newName because the name is already in use by another DB account.")
             }
 
-            // orphaned (not linked or linked to a DB account that doesn't exist anymore)
+            // If it's not linked to an existing db account, but the system account does actually exist, that means that
+            // it has been left orphaned, so we can just remove it, and replace it with our new account.
             logger.info("Removing orphaned Android account $sameName")
             androidAccountManager.removeAccount(sameName)
         }
@@ -120,14 +121,11 @@ class AndroidAccountProvider @Inject constructor(
         logger.info("Renaming Android account $account to $newName")
         val newAccount = try {
             // user data (including the link to the DB account) is kept
+            // renameAccount already verifies that the name was changed correctly (new account name matches newName)
             androidAccountManager.renameAccount(account, newName)
         } catch (e: Exception) {
-            logger.log(Level.WARNING, "Couldn't rename Android account $account", e)
-            throw InvalidAccountException(accountId)
+            throw IllegalStateException("Could not rename Android account: $account", e)
         }
-        // Make sure the account was renamed correctly
-        if (newAccount.name != newName)
-            throw InvalidAccountException(accountId)
 
         try {
             val store = localCalendarStore.get()
