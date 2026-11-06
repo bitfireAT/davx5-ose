@@ -4,8 +4,6 @@
 
 package at.bitfire.davdroid.di
 
-import at.bitfire.davdroid.accounts.AndroidAccountRemoverSetup
-import at.bitfire.davdroid.resource.local.AddressBookAccountRemoverSetup
 import at.bitfire.davdroid.startup.AppCompatThemeSetup
 import at.bitfire.davdroid.startup.CrashHandlerSetup
 import at.bitfire.davdroid.startup.DynamicShortcutsAction
@@ -46,13 +44,5 @@ interface StartupActionsModule {
     @Binds
     @IntoSet
     fun tasksAppWatcher(impl: TasksAppWatcher): StartupAction
-
-    @Binds
-    @IntoSet
-    fun androidAccountRemoverSetup(impl: AndroidAccountRemoverSetup): StartupAction
-
-    @Binds
-    @IntoSet
-    fun addressBookAccountRemoverSetup(impl: AddressBookAccountRemoverSetup): StartupAction
 
 }

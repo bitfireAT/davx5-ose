@@ -37,7 +37,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
 import org.jetbrains.annotations.TestOnly
-import java.util.concurrent.CopyOnWriteArraySet
 import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
@@ -60,6 +59,7 @@ class AccountRepository @Inject internal constructor(
     private val localCalendarStore: Lazy<LocalCalendarStore>,
     private val localAddressBookStore: Lazy<LocalAddressBookStore>,
     private val logger: Logger,
+    private val onBeforeDeleteListeners: Set<@JvmSuppressWildcards OnBeforeDeleteListener>,
     private val serviceRepository: DavServiceRepository,
     private val syncWorkerManager: Lazy<SyncWorkerManager>,
     private val tasksAppManager: Lazy<TasksAppManager>,
@@ -72,8 +72,6 @@ class AccountRepository @Inject internal constructor(
     private val accountRenameFlow = MutableSharedFlow<AccountRename>()
 
     private val dbAccountDao = db.dbAccountDao()
-
-    private val onBeforeDeleteListeners = CopyOnWriteArraySet<OnBeforeDeleteListener>()
 
     fun getAccountNameFlow(accountId: AccountId): Flow<String> {
         return flow {
@@ -361,12 +359,4 @@ class AccountRepository @Inject internal constructor(
     // helpers
 
     private data class AccountRename(val oldName: String, val newName: String)
-
-    fun addOnBeforeDeleteListener(listener: OnBeforeDeleteListener) {
-        onBeforeDeleteListeners.add(listener)
-    }
-
-    fun removeOnBeforeDeleteListener(listener: OnBeforeDeleteListener) {
-        onBeforeDeleteListeners.remove(listener)
-    }
 }

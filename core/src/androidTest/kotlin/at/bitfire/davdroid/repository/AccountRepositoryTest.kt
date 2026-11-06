@@ -12,6 +12,7 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.TestUtils
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.accounts.LegacyAccount
+import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.resource.local.LocalAddressBookStore
 import at.bitfire.davdroid.resource.local.LocalCalendarStore
 import at.bitfire.davdroid.resource.local.LocalDataStore
@@ -38,11 +39,13 @@ import io.mockk.mockkObject
 import io.mockk.unmockkObject
 import io.mockk.verify
 import junit.framework.TestCase.assertTrue
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import java.util.logging.Logger
 import javax.inject.Inject
 
 @HiltAndroidTest
@@ -70,6 +73,18 @@ class AccountRepositoryTest {
 
     @Inject
     lateinit var accountSettingsFactory: AccountSettings.Factory
+
+    @Inject
+    internal lateinit var appDatabase: AppDatabase
+
+    @Inject
+    internal lateinit var dbAccountRepository: DbAccountRepository
+
+    @Inject
+    internal lateinit var legacyAccountRepository: LegacyAccountRepository
+
+    @Inject
+    internal lateinit var logger: Logger
 
     @Inject
     lateinit var workerFactory: HiltWorkerFactory
@@ -229,10 +244,11 @@ class AccountRepositoryTest {
     fun delete_calls_OnBeforeDeleteListeners_before_deleting_the_account() = runTest {
         val accountId = createAccount()
         var listenerCalled = false
-        accountRepository.addOnBeforeDeleteListener { accountId ->
+        val listener = OnBeforeDeleteListener { accountId ->
             assertTrue(accountId in accountRepository.getAllBlocking())
             listenerCalled = true
         }
+        val accountRepository = createAccountRepository(listener)
 
         accountRepository.delete(accountId)
 
@@ -244,10 +260,11 @@ class AccountRepositoryTest {
     fun exception_in_OnBeforeDeleteListener_should_be_caught() = runTest {
         val accountId = createAccount()
         var listenerCalled = false
-        accountRepository.addOnBeforeDeleteListener {
+        val listener = OnBeforeDeleteListener {
             listenerCalled = true
             error("Exception")
         }
+        val accountRepository = createAccountRepository(listener)
 
         accountRepository.delete(accountId)
 
@@ -267,5 +284,24 @@ class AccountRepositoryTest {
             groupMethod = GroupMethod.GROUP_VCARDS,
             preconfigurationUrl = null,
         )!!
+    }
+
+    private fun createAccountRepository(listener: OnBeforeDeleteListener): AccountRepository {
+        return AccountRepository(
+            accountManager = accountManager,
+            automaticSyncManager = { automaticSyncManager },
+            context = context,
+            db = appDatabase,
+            dbAccountRepository = dbAccountRepository,
+            ioDispatcher = Dispatchers.IO,
+            legacyAccountRepository = legacyAccountRepository,
+            localCalendarStore = { localCalendarStore },
+            localAddressBookStore = { localAddressBookStore },
+            logger = logger,
+            onBeforeDeleteListeners = setOf(listener),
+            serviceRepository = serviceRepository,
+            syncWorkerManager = { syncWorkerManager },
+            tasksAppManager = { tasksAppManager },
+        )
     }
 }

@@ -7,10 +7,7 @@ package at.bitfire.davdroid.repository
 import at.bitfire.davdroid.accounts.AccountId
 
 /**
- * Interface that is used to be notified when an app account is about to be deleted.
- *
- * @see AccountRepository.addOnBeforeDeleteListener
- * @see AccountRepository.removeOnBeforeDeleteListener
+ * Interface that is used to be notified when an app account is about to be deleted via [AccountRepository].
  */
 fun interface OnBeforeDeleteListener {
     /**
