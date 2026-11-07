@@ -17,6 +17,7 @@ import at.bitfire.davdroid.sync.account.InvalidAccountException
 import dagger.Lazy
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
@@ -135,7 +136,8 @@ class AndroidAccountProvider @Inject constructor(
      * resolved by moving one account to a temporary name. If the new name is used by an orphaned Android account,
      * that account is removed.
      *
-     * Must be called while holding [provideMutex].
+     * Must be called while holding [provideMutex]. Renaming the Android account and moving the local data
+     * is not cancellable, so cancellation can't leave the data under the old account name.
      *
      * @param accountId     DB account the Android account is linked to
      * @param account       current Android account
@@ -195,39 +197,44 @@ class AndroidAccountProvider @Inject constructor(
         // A nested call (cycle breaking) may have renamed our own Android account in the meantime
         val account = androidAccountManager.findLinkedAccount(accountId.id) ?: account
 
-        logger.info("Renaming Android account $account to $newName")
-        val newAccount = try {
-            // user data (including the link to the DB account) is kept
-            // renameAccount already verifies that the name was changed correctly (new account name matches newName)
-            androidAccountManager.renameAccount(account, newName)
-        } catch (e: Exception) {
-            if (e is CancellationException) throw e
-            if (e is AccountOperationFailedException) throw e
-            throw AccountOperationFailedException("Could not rename Android account: $account", e)
-        }
-
-        try {
-            val store = localCalendarStore.get()
-            store.acquireLocalStorageClient(true)?.use { client ->
-                store.updateAccount(account, newAccount, client)
+        /* Renaming the Android account and moving the local data must not be separated by a cancellation:
+        if the system rename was committed, but the data wasn't moved, the names would match on the next call
+        and the data would stay under the old account name forever. */
+        return withContext(NonCancellable) {
+            logger.info("Renaming Android account $account to $newName")
+            val newAccount = try {
+                // user data (including the link to the DB account) is kept
+                // renameAccount already verifies that the name was changed correctly (new account name matches newName)
+                androidAccountManager.renameAccount(account, newName)
+            } catch (e: Exception) {
+                if (e is CancellationException) throw e
+                if (e is AccountOperationFailedException) throw e
+                throw AccountOperationFailedException("Could not rename Android account: $account", e)
             }
-        } catch (e: Exception) {
-            logger.log(Level.WARNING, "Couldn't change calendars to renamed account", e)
-        }
 
-        try {
-            val store = tasksAppManager.get().getDataStore()
-            store?.acquireLocalStorageClient(true)?.use { client ->
-                store.updateAccount(account, newAccount, client)
+            try {
+                val store = localCalendarStore.get()
+                store.acquireLocalStorageClient(true)?.use { client ->
+                    store.updateAccount(account, newAccount, client)
+                }
+            } catch (e: Exception) {
+                logger.log(Level.WARNING, "Couldn't change calendars to renamed account", e)
             }
-        } catch (e: Exception) {
-            logger.log(Level.WARNING, "Couldn't change task lists to renamed account", e)
+
+            try {
+                val store = tasksAppManager.get().getDataStore()
+                store?.acquireLocalStorageClient(true)?.use { client ->
+                    store.updateAccount(account, newAccount, client)
+                }
+            } catch (e: Exception) {
+                logger.log(Level.WARNING, "Couldn't change task lists to renamed account", e)
+            }
+
+            // renamed Android account doesn't have the current sync framework settings anymore
+            updateSyncFrameworkSettings(accountId)
+
+            newAccount
         }
-
-        // renamed Android account doesn't have the current sync framework settings anymore
-        updateSyncFrameworkSettings(accountId)
-
-        return newAccount
     }
 
     /**
