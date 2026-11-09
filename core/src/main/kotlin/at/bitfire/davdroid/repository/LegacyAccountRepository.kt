@@ -16,7 +16,6 @@ import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.db.ServiceType
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
-import at.bitfire.davdroid.resource.local.LocalAddressBookStore
 import at.bitfire.davdroid.servicedetection.DavResourceFinder
 import at.bitfire.davdroid.servicedetection.DavResourceFinder.Configuration.ServiceInfo
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
@@ -46,7 +45,6 @@ internal class LegacyAccountRepository @Inject constructor(
     private val collectionRepository: Lazy<DavCollectionRepository>,
     private val homeSetRepository: DavHomeSetRepository,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
-    private val localAddressBookStore: Lazy<LocalAddressBookStore>,
     private val logger: Logger,
     private val serviceRepository: DavServiceRepository,
 ) {
@@ -136,10 +134,9 @@ internal class LegacyAccountRepository @Inject constructor(
 
         try {
             // remove account directly (bypassing the authenticator, which is our own)
-            accountManager.removeAccountExplicitly(androidAccount)
-
-            // delete address books (= address book accounts)
-            localAddressBookStore.get().deleteByAccountId(accountId)
+            withContext(ioDispatcher) {
+                accountManager.removeAccountExplicitly(androidAccount)
+            }
 
             // delete service from database
             serviceRepository.deleteByAccount(accountId)

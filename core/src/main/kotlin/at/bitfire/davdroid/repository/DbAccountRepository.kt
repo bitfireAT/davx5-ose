@@ -4,11 +4,8 @@
 
 package at.bitfire.davdroid.repository
 
-import android.accounts.Account
-import android.accounts.AccountManager
 import android.content.Context
 import android.database.sqlite.SQLiteConstraintException
-import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.accounts.DbAccountId
 import at.bitfire.davdroid.db.AccountSetting
@@ -18,7 +15,6 @@ import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.db.ServiceType
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
-import at.bitfire.davdroid.resource.local.LocalAddressBookStore
 import at.bitfire.davdroid.servicedetection.DavResourceFinder
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.settings.AccountSettings
@@ -39,19 +35,16 @@ import java.util.logging.Logger
 import javax.inject.Inject
 
 internal class DbAccountRepository @Inject constructor(
-    private val accountManager: AccountManager,
     private val accountSettingsFactory: AccountSettingsFactory,
     private val automaticSyncManager: Lazy<AutomaticSyncManager>,
     @ApplicationContext private val context: Context,
     private val collectionRepository: Lazy<DavCollectionRepository>,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val homeSetRepository: DavHomeSetRepository,
-    private val localAddressBookStore: Lazy<LocalAddressBookStore>,
     private val logger: Logger,
     private val serviceRepository: DavServiceRepository,
     db: AppDatabase
 ) {
-    private val dbAccountType = context.getString(R.string.account_type_db)
 
     private val dbAccountDao = db.dbAccountDao()
     private val accountSettingDao = db.accountSettingDao()
@@ -152,23 +145,6 @@ internal class DbAccountRepository @Inject constructor(
     }
 
     suspend fun delete(accountId: DbAccountId) {
-        val dbAccount = dbAccountDao.get(accountId.id) ?: return
-        val androidAccount = Account(dbAccount.name, dbAccountType)
-
-        try {
-            // remove account directly (bypassing the authenticator, which is our own)
-            accountManager.removeAccountExplicitly(androidAccount)
-
-            // delete address books (= address book accounts)
-            localAddressBookStore.get().deleteByAccountId(accountId)
-
-            // delete service from database
-            serviceRepository.deleteByAccount(accountId)
-        } catch (e: Exception) {
-            logger.log(Level.WARNING, "Couldn't remove system account $accountId", e)
-        }
-
-        // delete database account
         try {
             dbAccountDao.delete(accountId.id)
         } catch (e: Exception) {

@@ -12,6 +12,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.db.Collection
+import at.bitfire.davdroid.di.qualifier.ApplicationScope
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.repository.DavCollectionRepository
@@ -31,6 +32,7 @@ import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -48,6 +50,7 @@ class AccountScreenViewModel @AssistedInject constructor(
     private val accountRepository: AccountRepository,
     accountProgressUseCase: AccountProgressUseCase,
     private val accountSettingsFactory: AccountSettingsFactory,
+    @ApplicationScope private val appScope: CoroutineScope,
     private val collectionRepository: DavCollectionRepository,
     @ApplicationContext val context: Context,
     private val collectionSelectedUseCase: Lazy<CollectionSelectedUseCase>,
@@ -182,7 +185,7 @@ class AccountScreenViewModel @AssistedInject constructor(
 
     /** Deletes the account from the system (won't touch collections on the server). */
     fun deleteAccount() {
-        viewModelScope.launch {
+        appScope.launch {
             accountRepository.delete(accountId)
         }
     }
