@@ -7,6 +7,7 @@ package at.bitfire.davdroid.accounts
 import android.accounts.Account
 import at.bitfire.davdroid.accounts.AndroidAccountProvider.Companion.provideMutex
 import at.bitfire.davdroid.db.AppDatabase
+import at.bitfire.davdroid.db.DbAccount
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.resource.local.AddressBookAccountManager
 import at.bitfire.davdroid.resource.local.LocalCalendarStore
@@ -51,10 +52,9 @@ class AndroidAccountProvider @Inject constructor(
      *
      * @return the Android account (for legacy accounts, the account itself)
      *
-     * @throws InvalidAccountException if the DB account doesn't exist, its name is used by an Android account of
-     * another DB account, or the Android account can't be created
+     * @throws InvalidAccountException if the DB account doesn't exist or the Android account can't be created
      * @throws AccountOperationFailedException if the account could not be provided for any other reason
-     * (for instance because the linked Android account couldn't be renamed, or its new name is still used by
+     * (for instance because the linked Android account couldn't be renamed, or its name is still used by
      * the Android account of another DB account that can't be renamed out of the way)
      */
     suspend fun provide(accountId: AccountId): Account =
@@ -83,7 +83,8 @@ class AndroidAccountProvider @Inject constructor(
      * Does the actual work of [provide] for DB accounts. Must be called while holding [provideMutex].
      *
      * - If the DB account has a linked Android account, it's renamed if its name differs from the DB account name.
-     * - Otherwise, a new linked Android account is created (replacing an orphaned one with the same name).
+     * - Otherwise, a new linked Android account is created (replacing an orphaned one with the same name, and
+     *   moving the Android account of another DB account that still has that name out of the way).
      *
      * @throws InvalidAccountException see [provide]
      * @throws AccountOperationFailedException see [provide]
@@ -102,18 +103,19 @@ class AndroidAccountProvider @Inject constructor(
         val sameName = androidAccountManager.findAccountByName(dbAccount.name)
         if (sameName != null) {
             val sameNameLinkedId = androidAccountManager.getLinkedDbAccountId(sameName)
-            if (sameNameLinkedId != null && dbAccountDao.get(sameNameLinkedId) != null) {
-                // name is taken by an Android account that belongs to another (existing) DB account
-                logger.warning("Android account $sameName is linked to another DB account")
-                throw InvalidAccountException(accountId)
+            val otherDbAccount = sameNameLinkedId?.let { dbAccountDao.get(it) }
+            if (otherDbAccount != null) {
+                // name is still used by the Android account of another existing DB account (that was renamed
+                // in the database, but not on the system yet), so move that one out of the way
+                moveOtherAccountAside(sameName, otherDbAccount, dbAccount.name, emptySet())
+            } else {
+                // orphaned (not linked or linked to a DB account that doesn't exist anymore), may have unrelated local data
+                logger.info("Removing orphaned Android account $sameName")
+                if (sameNameLinkedId != null) {
+                    addressBookAccountManager.deleteByAccountId(DbAccountId(sameNameLinkedId))
+                }
+                androidAccountManager.removeAccount(sameName)
             }
-
-            // orphaned (not linked or linked to a DB account that doesn't exist anymore), may have unrelated local data
-            logger.info("Removing orphaned Android account $sameName")
-            if (sameNameLinkedId != null) {
-                addressBookAccountManager.deleteByAccountId(DbAccountId(sameNameLinkedId))
-            }
-            androidAccountManager.removeAccount(sameName)
         }
 
         logger.info("Creating Android account for $accountId")
@@ -169,23 +171,7 @@ class AndroidAccountProvider @Inject constructor(
                 ?.let { dbAccountDao.get(it) }
 
             if (otherDbAccount != null) {
-                // Edge case: DB account names are unique, but if DB accounts were renamed without any provide in
-                // the middle, the Android accounts are not renamed yet, so the name may still be in use there.
-                if (sameName.name == otherDbAccount.name)
-                    throw AccountOperationFailedException("Can't rename $account to $newName because the name is already in use by another DB account.")
-
-                val otherId = DbAccountId(otherDbAccount.id)
-                if (otherDbAccount.id in inProgress) {
-                    // Rename cycle (for instance two accounts that swapped their names): the other account is
-                    // already being renamed further up in the call stack and is waiting for our name.
-                    // Move it to a temporary name to break the cycle; the outer call will give it its final name.
-                    val tempName = "${otherDbAccount.name}-renaming-${UUID.randomUUID()}"
-                    logger.info("Rename cycle detected, temporarily renaming $sameName to $tempName")
-                    rename(otherId, sameName, tempName, inProgress + accountId.id)
-                } else {
-                    // Free up the name by renaming the other account to its current DB name first
-                    rename(otherId, sameName, otherDbAccount.name, inProgress + accountId.id)
-                }
+                moveOtherAccountAside(sameName, otherDbAccount, newName, inProgress + accountId.id)
             } else {
                 // If it's not linked to an existing db account, but the system account does actually exist, that means that
                 // it has been left orphaned, so we can just remove it, and replace it with our new account.
@@ -234,6 +220,49 @@ class AndroidAccountProvider @Inject constructor(
             updateSyncFrameworkSettings(accountId)
 
             newAccount
+        }
+    }
+
+    /**
+     * Frees the Android account name [wantedName] for another DB account. Edge case: DB account names are unique,
+     * but if DB accounts were renamed without any provide in the middle, the Android accounts are not renamed yet,
+     * so a name may still be in use by the Android account of another DB account.
+     *
+     * The Android account [holder] (linked to [holderDbAccount]) is renamed to the current DB name of its DB account.
+     * Rename cycles (for instance two accounts that swapped their names) are resolved by moving the account to a
+     * temporary name.
+     *
+     * Must be called while holding [provideMutex].
+     *
+     * @param holder            Android account that currently uses [wantedName]
+     * @param holderDbAccount   DB account [holder] is linked to
+     * @param wantedName        name that shall be freed
+     * @param inProgress        IDs of the DB accounts whose rename is already in progress further up the call stack
+     *                          (including the one that wants [wantedName] if it has an Android account)
+     *
+     * @throws AccountOperationFailedException if the DB name of [holderDbAccount] is [wantedName] too (so [holder] can't
+     * be renamed out of the way), or the rename fails
+     */
+    private suspend fun moveOtherAccountAside(
+        holder: Account,
+        holderDbAccount: DbAccount,
+        wantedName: String,
+        inProgress: Set<Long>
+    ) {
+        if (holder.name == holderDbAccount.name)
+            throw AccountOperationFailedException("Can't use name $wantedName because it's already in use by another DB account.")
+
+        val holderId = DbAccountId(holderDbAccount.id)
+        if (holderDbAccount.id in inProgress) {
+            // Rename cycle: the holder is already being renamed further up in the call stack and is waiting for
+            // the name of the account that is calling us. Move it to a temporary name to break the cycle;
+            // the outer call will give it its final name.
+            val tempName = "${holderDbAccount.name}-renaming-${UUID.randomUUID()}"
+            logger.info("Rename cycle detected, temporarily renaming $holder to $tempName")
+            rename(holderId, holder, tempName, inProgress)
+        } else {
+            // Free up the name by renaming the holder to its current DB name first
+            rename(holderId, holder, holderDbAccount.name, inProgress)
         }
     }
 

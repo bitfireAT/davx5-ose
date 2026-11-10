@@ -198,14 +198,29 @@ class AndroidAccountProviderTest {
     }
 
     @Test
-    fun `provide() throws InvalidAccountException when account with same name is linked to other DB account`() = runTest {
-        addDbAccount(1, "DB Name")
-        addDbAccount(2, "Other DB Name")
-        addAndroidAccount("DB Name", linkedId = 2)
+    fun `provide() renames account with same name out of the way when it belongs to renamed DB account`() = runTest {
+        addDbAccount(1, "Old Name")
+        addDbAccount(2, "New Name")      // DB account 2 was renamed from "Old Name", Android account not yet
+        addAndroidAccount("Old Name", linkedId = 2)
 
-        assertFailsWith<InvalidAccountException> {
+        val result = provider.provide(DbAccountId(1))
+
+        assertEquals(Account("Old Name", dbAccountType), result)
+        assertEquals(1L, androidAccountManager.getLinkedDbAccountId(result))
+        assertEquals(2L, androidAccountManager.getLinkedDbAccountId(Account("New Name", dbAccountType)))
+        assertEquals(2, accountManager.getAccountsByType(dbAccountType).size)
+    }
+
+    @Test
+    fun `provide() throws AccountOperationFailedException when account with same name belongs to DB account with same name`() = runTest {
+        addDbAccount(1, "DB Name")
+        addDbAccount(2, "DB Name")
+        val other = addAndroidAccount("DB Name", linkedId = 2)
+
+        assertFailsWith<AccountOperationFailedException> {
             provider.provide(DbAccountId(1))
         }
+        assertEquals(listOf(other), accountManager.getAccountsByType(dbAccountType).toList())
     }
 
     @Test
