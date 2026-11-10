@@ -33,12 +33,8 @@ import at.bitfire.davdroid.sync.SyncSettings
 import at.bitfire.davdroid.sync.SyncSettingsProvider
 import at.bitfire.davdroid.sync.TaskSyncer
 import at.bitfire.davdroid.sync.TasksAppManager
+import at.bitfire.davdroid.sync.account.AccountOperationFailedException
 import at.bitfire.davdroid.sync.account.InvalidAccountException
-import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.MAX_RUN_ATTEMPTS
-import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.NO_RESYNC
-import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.RESYNC_ENTRIES
-import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.RESYNC_LIST
-import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.commonTag
 import at.bitfire.davdroid.ui.NotificationRegistry
 import at.bitfire.synctools.storage.TaskProvider
 import dagger.Lazy
@@ -165,7 +161,7 @@ abstract class BaseSyncWorker(
             // make sure that the (linked) Android account exists, for instance after it has been removed in system settings
             try {
                 androidAccountProvider.provide(accountId)
-            } catch (e: InvalidAccountException) {
+            } catch (e: AccountOperationFailedException) {
                 logger.log(Level.WARNING, "Couldn't provide Android account for $accountId", e)
                 return Result.failure()
             }
