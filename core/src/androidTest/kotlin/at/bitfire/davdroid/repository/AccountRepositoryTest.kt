@@ -11,6 +11,7 @@ import androidx.hilt.work.HiltWorkerFactory
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.TestUtils
 import at.bitfire.davdroid.accounts.AccountId
+import at.bitfire.davdroid.accounts.AndroidAccountManager
 import at.bitfire.davdroid.accounts.LegacyAccount
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.resource.local.LocalAddressBookStore
@@ -66,6 +67,9 @@ class AccountRepositoryTest {
 
     @Inject
     lateinit var accountManager: AccountManager
+
+    @Inject
+    lateinit var androidAccountManager: AndroidAccountManager
 
     @Inject
     @ApplicationContext
@@ -288,7 +292,7 @@ class AccountRepositoryTest {
 
     private fun createAccountRepository(listener: OnBeforeDeleteListener): AccountRepository {
         return AccountRepository(
-            accountManager = accountManager,
+            androidAccountManager = androidAccountManager,
             automaticSyncManager = { automaticSyncManager },
             context = context,
             db = appDatabase,
