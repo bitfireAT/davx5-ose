@@ -6,10 +6,7 @@ package at.bitfire.davdroid.accounts
 
 import android.accounts.Account
 import android.accounts.AccountManager
-import android.accounts.AccountManagerCallback
-import android.accounts.AccountManagerFuture
 import android.content.Context
-import android.os.Bundle
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.DbAccount
@@ -23,7 +20,6 @@ import at.bitfire.davdroid.sync.account.InvalidAccountException
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.spyk
 import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.runTest
@@ -56,25 +52,9 @@ class AndroidAccountProviderTest {
     private val logger = mockk<Logger>(relaxed = true)
     private val syncFrameworkSettingsUpdater = mockk<SyncFrameworkSettingsUpdater>(relaxed = true)
 
-    /** Robolectric doesn't implement [AccountManager.renameAccount], so emulate it (keeping user data) */
-    private val renamingAccountManager = spyk(accountManager) {
-        every { renameAccount(any(), any(), any(), any()) } answers {
-            val old = firstArg<Account>()
-            val newName = secondArg<String>()
-            val newAccount = Account(newName, old.type)
-            val linkedId = accountManager.getUserData(old, AndroidAccountManager.USER_DATA_ACCOUNT_ID)
-            accountManager.removeAccountExplicitly(old)
-            val userData = linkedId?.let { Bundle().apply { putString(AndroidAccountManager.USER_DATA_ACCOUNT_ID, it) } }
-            accountManager.addAccountExplicitly(newAccount, null, userData)
-            val future = mockk<AccountManagerFuture<Account>> { every { result } returns newAccount }
-            // AndroidAccountManager.renameAccount waits for the callback
-            thirdArg<AccountManagerCallback<Account>?>()?.run(future)
-            future
-        }
-    }
     private val addressBookAccountManager = AddressBookAccountManager(accountManager, context, Dispatchers.IO, logger)
     private val androidAccountManager = AndroidAccountManager(
-        accountManager = { renamingAccountManager },
+        accountManager = { accountManager },
         context = context,
         database = database,
         ioDispatcher = Dispatchers.IO,

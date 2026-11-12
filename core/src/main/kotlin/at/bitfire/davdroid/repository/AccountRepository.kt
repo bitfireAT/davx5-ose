@@ -276,7 +276,37 @@ class AccountRepository @Inject internal constructor(
             AccountsCleanupWorker.lockAccountsCleanup()
 
             // rename account (also moves AccountSettings)
-            androidAccountManager.renameAccount(oldAccount, newName)
+            androidAccountManager.renameWithData(oldAccount, newName) {
+                // update account name references in database
+                serviceRepository.renameAccount(oldName, newName)
+
+                try {
+                    // update address books
+                    localAddressBookStore.get().updateAccount(oldAccount, newAccount, null)
+                } catch (e: Exception) {
+                    logger.log(Level.WARNING, "Couldn't change address books to renamed account", e)
+                }
+
+                try {
+                    // update calendar events
+                    val store = localCalendarStore.get()
+                    store.acquireLocalStorageClient(true)?.use { client ->
+                        store.updateAccount(oldAccount, newAccount, client)
+                    }
+                } catch (e: Exception) {
+                    logger.log(Level.WARNING, "Couldn't change calendars to renamed account", e)
+                }
+
+                try {
+                    // update account_name of local tasks
+                    val store = tasksAppManager.get().getDataStore()
+                    store?.acquireLocalStorageClient(true)?.use { client ->
+                        store.updateAccount(oldAccount, newAccount, client)
+                    }
+                } catch (e: Exception) {
+                    logger.log(Level.WARNING, "Couldn't change task lists to renamed account", e)
+                }
+            }
 
             accountRenameFlow.emit(AccountRename(oldAccount.name, newName))
             
@@ -286,36 +316,6 @@ class AccountRepository @Inject internal constructor(
             // disable periodic syncs for old account
             for (dataType in SyncDataType.entries)
                 syncWorkerManager.get().disablePeriodic(oldAccountId, dataType)
-
-            // update account name references in database
-            serviceRepository.renameAccount(oldName, newName)
-
-            try {
-                // update address books
-                localAddressBookStore.get().updateAccount(oldAccount, newAccount, null)
-            } catch (e: Exception) {
-                logger.log(Level.WARNING, "Couldn't change address books to renamed account", e)
-            }
-
-            try {
-                // update calendar events
-                val store = localCalendarStore.get()
-                store.acquireLocalStorageClient(true)?.use { client ->
-                    store.updateAccount(oldAccount, newAccount, client)
-                }
-            } catch (e: Exception) {
-                logger.log(Level.WARNING, "Couldn't change calendars to renamed account", e)
-            }
-
-            try {
-                // update account_name of local tasks
-                val store = tasksAppManager.get().getDataStore()
-                store?.acquireLocalStorageClient(true)?.use { client ->
-                    store.updateAccount(oldAccount, newAccount, client)
-                }
-            } catch (e: Exception) {
-                logger.log(Level.WARNING, "Couldn't change task lists to renamed account", e)
-            }
 
             // update automatic sync
             automaticSyncManager.get().updateAutomaticSync(newAccountId)

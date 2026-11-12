@@ -12,31 +12,31 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import androidx.annotation.Size
 import androidx.annotation.WorkerThread
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.DbAccount
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
+import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.sync.account.AccountOperationFailedException
 import at.bitfire.davdroid.sync.account.InvalidAccountException
 import at.bitfire.synctools.util.SensitiveString
+import at.bitfire.synctools.util.SensitiveString.Companion.toSensitiveString
 import at.bitfire.synctools.util.setAndVerifyUserData
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import org.jetbrains.annotations.VisibleForTesting
 import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
 import javax.inject.Provider
-import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
 
 /**
  * Creates, looks up and observes the Android [Account]s of DAVx⁵ main accounts.
@@ -287,52 +287,63 @@ class AndroidAccountManager @Inject constructor(
     }
 
     /**
-     * Uses Android's AccountManager to rename the given [account] to the desired [newName] for suspending calls.
+     * Renames an account by adding the new one, copying its data, and removing the old one.
      *
-     * This method
-     * - Is no-op if [newName] matches the [account] name.
-     * - Does not check if an account already exists with that name.
+     * **Important:** Only [AccountSettings.userDataKeys] and [USER_DATA_ACCOUNT_ID] is copied from user data.
      *
-     * @param account The account to rename.
-     * @param newName The new name to set for [account]. Must not be blank.
-     *
-     * @throws IllegalArgumentException If [newName] is blank.
-     * @throws IllegalStateException If the operation failed for any reason.
+     * @param oldAccount The account to rename.
+     * @param newName The new name to set to the account.
+     * @param onUpdate Called before removing the old account. You may perform any extra copying operations between the
+     * accounts here, before the old one is gone.
      */
-    suspend fun renameAccount(account: Account, @Size(min = 1) newName: String): Account {
+    suspend fun renameWithData(
+        oldAccount: Account,
+        newName: String,
+        onUpdate: suspend (newAccount: Account) -> Unit
+    ): Account = withContext(ioDispatcher + NonCancellable) {
         require(newName.isNotBlank()) { "New account name must not be blank." }
 
-        if (account.name == newName) {
+        if (oldAccount.name == newName) {
             // Names already match, no need to rename
-            return account
+            return@withContext oldAccount
         }
 
-        return suspendCancellableCoroutine { cont ->
-            val future = accountManager.get().renameAccount(
-                account,
-                newName,
-                { future ->
-                    if (!cont.isActive) {
-                        // The suspend operation was canceled, already handled, ignore
-                        return@renameAccount
-                    }
-                    // If not canceled, fetch the result, and pass it
-                    try {
-                        val newAccount: Account? = future.result
-                        check(newAccount != null) { "AccountManager returned a null account when renaming." }
-                        check(newAccount.name == newName) { "The rename operation failed. An account with that name may already exist." }
-                        cont.resume(newAccount)
-                    } catch (e: Exception) {
-                        cont.resumeWithException(e)
-                    }
-                },
-                null
-            )
+        val accountManager = accountManager.get()
 
-            cont.invokeOnCancellation {
-                future.cancel(true)
+        // First, check if the account already exists
+        val existingAccount = accountManager.getAccountsByType(oldAccount.type).find { it.name == newName }
+        if (existingAccount != null) {
+            // An account already exists with the desired name
+            throw IllegalStateException("An account already exists with name \"$newName\"")
+        }
+
+        val newAccount = Account(newName, oldAccount.type)
+
+        // First, to create the new account, fetch the data from the old account
+        val oldPassword = accountManager.getPassword(oldAccount)
+        val userDataKeys = AccountSettings.userDataKeys + USER_DATA_ACCOUNT_ID
+        val oldUserData = userDataKeys.mapNotNull { key -> accountManager.getUserData(oldAccount, key)?.let { key to it } }.toMap()
+        if (!createAccount(newAccount, oldUserData, oldPassword.toSensitiveString())) {
+            throw AccountOperationFailedException("New account could not be created.")
+        }
+
+        try {
+            // onUpdate is now called, so that the caller can do all the movements required through the accounts
+            onUpdate(newAccount)
+        } catch (e: Exception) {
+            // onUpdate failed, rollback
+            if (!accountManager.removeAccountExplicitly(newAccount)) {
+                throw AccountOperationFailedException("Could not remove account after failure on onUpdate.", e)
             }
+            throw e
         }
+
+        // When done, delete the old account
+        if (!accountManager.removeAccountExplicitly(oldAccount)) {
+            throw AccountOperationFailedException("Old account could not be deleted.")
+        }
+
+        newAccount
     }
 
     companion object {

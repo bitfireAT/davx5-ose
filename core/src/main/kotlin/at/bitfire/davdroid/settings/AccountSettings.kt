@@ -418,6 +418,27 @@ class AccountSettings @AssistedInject constructor(
         "1"                             show only personal collections */
         const val KEY_SHOW_ONLY_PERSONAL = "show_only_personal"
 
+        val userDataKeys = setOf(
+            KEY_SETTINGS_VERSION,
+
+            KEY_USERNAME,
+            KEY_CERTIFICATE_ALIAS,
+            KEY_AUTH_STATE,
+            KEY_PRECONFIGURATION_URL,
+
+            KEY_WIFI_ONLY,
+            KEY_WIFI_ONLY_SSIDS,
+            KEY_IGNORE_VPNS,
+            KEY_TIME_RANGE_PAST_DAYS,
+            KEY_DEFAULT_ALARM,
+            KEY_MANAGE_CALENDAR_COLORS,
+            KEY_EVENT_COLORS,
+            KEY_CONTACT_GROUP_METHOD,
+            KEY_SHOW_ONLY_PERSONAL,
+
+            KEY_SYNC_INTERVAL_ADDRESSBOOKS, KEY_SYNC_INTERVAL_CALENDARS, KEY_SYNC_INTERVAL_TASKS
+        )
+
         internal const val SYNC_INTERVAL_MANUALLY = -1L
 
         /** Static property to remember which AccountSettings updates/migrations are currently running */
