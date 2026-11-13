@@ -35,7 +35,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
-import org.robolectric.annotation.ConscryptMode
 import java.io.IOException
 import java.security.cert.CertificateException
 import java.util.concurrent.CancellationException
@@ -43,7 +42,6 @@ import java.util.logging.Logger
 import javax.net.ssl.SSLHandshakeException
 
 @RunWith(RobolectricTestRunner::class)
-@ConscryptMode(ConscryptMode.Mode.OFF)
 class SyncExceptionHandlerTest {
 
     @get:Rule

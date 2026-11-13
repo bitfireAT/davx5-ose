@@ -102,6 +102,7 @@ commons-lang = { module = "org.apache.commons:commons-lang3", version.ref = "com
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 coil-ktor = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coil" }
 conscrypt = { module = "org.conscrypt:conscrypt-android", version.ref = "conscrypt" }
+conscrypt-openjdk-uber = { module = "org.conscrypt:conscrypt-openjdk-uber", version.ref = "conscrypt" }
 dnsjava = { module = "dnsjava:dnsjava", version.ref = "dnsjava" }
 ezvcard = { module = "com.googlecode.ez-vcard:ez-vcard", version.ref = "ezvcard" }
 guava = { module = "com.google.guava:guava", version.ref = "guava" }
