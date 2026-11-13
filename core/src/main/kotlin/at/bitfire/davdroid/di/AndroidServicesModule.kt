@@ -6,6 +6,7 @@ package at.bitfire.davdroid.di
 
 import android.accounts.AccountManager
 import android.content.Context
+import androidx.credentials.CredentialManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -25,5 +26,9 @@ object AndroidServicesModule {
     @Provides
     fun accountManager(@ApplicationContext context: Context): AccountManager =
         AccountManager.get(context)
+
+    @Provides
+    fun credentialManager(@ApplicationContext context: Context): CredentialManager =
+        CredentialManager.create(context)
 
 }

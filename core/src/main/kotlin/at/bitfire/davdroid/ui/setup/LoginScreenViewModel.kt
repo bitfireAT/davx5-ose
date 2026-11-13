@@ -4,10 +4,16 @@
 
 package at.bitfire.davdroid.ui.setup
 
+import android.app.Activity
 import android.content.Context
+import android.content.MutableContextWrapper
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.credentials.CreatePasswordRequest
+import androidx.credentials.CredentialManager
+import androidx.credentials.exceptions.CreateCredentialCancellationException
+import androidx.credentials.exceptions.CreateCredentialException
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.accounts.AccountId
@@ -55,7 +61,8 @@ class LoginScreenViewModel @AssistedInject constructor(
     val loginTypesProvider: LoginTypesProvider,
     private val resourceFinderFactory: DavResourceFinder.Factory,
     settingsManager: SettingsManager,
-    private val loginValidator: Optional<LoginValidator>
+    private val loginValidator: Optional<LoginValidator>,
+    private val credentialManager: CredentialManager
 ) : ViewModel() {
 
     @AssistedFactory
@@ -85,7 +92,7 @@ class LoginScreenViewModel @AssistedInject constructor(
 
     // navigation events
 
-    fun navToNextPage() {
+    fun navToNextPage(activity: Activity?) {
         when (page) {
             Page.LoginType -> {
                 // continue to login details
@@ -100,7 +107,7 @@ class LoginScreenViewModel @AssistedInject constructor(
                 loginInfo = loginDetailsUiState.loginInfo
                 page = Page.DetectResources
 
-                detectResources()
+                detectResources(activity)
             }
 
             Page.DetectResources -> {
@@ -215,7 +222,7 @@ class LoginScreenViewModel @AssistedInject constructor(
     private var foundConfig: DavResourceFinder.Configuration? = null
     private var detectResourcesJob: Job? = null
 
-    private fun detectResources() {
+    private fun detectResources(activity: Activity?) {
         val baseUri = loginInfo.baseUri ?: return
         detectResourcesUiState = detectResourcesUiState.copy(loading = true)
         detectResourcesJob = viewModelScope.launch {
@@ -228,7 +235,28 @@ class LoginScreenViewModel @AssistedInject constructor(
                 val (result, logFile) = findConfiguration(baseUri)
                 if (result.calDAV != null || result.cardDAV != null) {
                     foundConfig = result
-                    navToNextPage()
+
+                    // Offer the password manager to store the credentials, if they are username+password
+                    // other login methods cannot be stored in the password manager
+                    loginInfo.credentials?.let { credentials ->
+                        activity ?: return@let
+                        val username = credentials.username?.let { "$it@$baseUri" } ?: return@let
+                        val password = credentials.password?.asString() ?: return@let
+                        try {
+                            credentialManager.createCredential(
+                                context = MutableContextWrapper(activity), // must be an Activity context
+                                request = CreatePasswordRequest(id = username, password = password)
+                            )
+                        } catch (_: CreateCredentialCancellationException) {
+                            // the user dismissed the save prompt
+                            logger.fine("User rejected storing the password in the password manager")
+                        } catch (e: CreateCredentialException) {
+                            // no provider available or another error
+                            logger.warning("There's no password manager to store the credentials into, or something went wrong: $e")
+                        }
+                    }
+
+                    navToNextPage(activity)
                 } else {
                     foundConfig = null
                     detectResourcesUiState = detectResourcesUiState.copy(

@@ -10,6 +10,7 @@ androidx-appcompat = "1.8.0"
 androidx-arch = "2.2.0"
 androidx-browser = "1.10.0"
 androidx-core = "1.19.1"
+androidx-credentials = "1.7.0-alpha03"
 androidx-hilt = "1.4.0"
 androidx-lifecycle = "2.11.0"
 androidx-paging = "3.5.3"
@@ -71,6 +72,7 @@ androidx-compose-materialIconsExtended = { module = "androidx.compose.material:m
 androidx-compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
 androidx-compose-ui-toolingPreview = { module = "androidx.compose.ui:ui-tooling-preview" }
 androidx-core = { module = "androidx.core:core-ktx", version.ref = "androidx-core" }
+androidx-credentials = { module = "androidx.credentials:credentials", version.ref = "androidx-credentials" }
 androidx-glance-base = { module = "androidx.glance:glance-appwidget", version.ref = "glance" }
 androidx-glance-material3 = { module = "androidx.glance:glance-material3", version.ref = "glance" }
 androidx-hilt-compiler = { module = "androidx.hilt:hilt-compiler", version.ref = "androidx-hilt" }
