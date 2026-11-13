@@ -69,6 +69,9 @@ internal class DbAccountRepository @Inject constructor(
         }
     }
 
+    fun getAllWithNamesFlow(): Flow<List<DbAccount>> =
+        dbAccountDao.getAllFlow()
+
     suspend fun create(
         accountName: String,
         credentials: Credentials?,
