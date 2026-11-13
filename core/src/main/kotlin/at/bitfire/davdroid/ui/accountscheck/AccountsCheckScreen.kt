@@ -27,6 +27,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.text.HtmlCompat
@@ -36,6 +37,7 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.ExternalUris
 import at.bitfire.davdroid.ui.UiUtils.toAnnotatedString
 import at.bitfire.davdroid.ui.composable.AppTheme
+import at.bitfire.davdroid.ui.composable.ProgressBar
 
 @Composable
 fun AccountsCheckScreen(
@@ -115,9 +117,23 @@ private fun AccountsStatus(accounts: List<AccountStatus>?) {
         modifier = Modifier.padding(bottom = 8.dp)
     )
 
-    if (accounts != null)
-        for (account in accounts)
-            AccountStatusItem(account)
+    when {
+        accounts == null ->
+            ProgressBar(Modifier.fillMaxWidth())
+        accounts.isEmpty() ->
+            Text(
+                text = stringResource(R.string.accounts_check_empty),
+                style = MaterialTheme.typography.bodyLarge,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 32.dp)
+            )
+        else -> {
+            for (account in accounts)
+                AccountStatusItem(account)
+        }
+    }
 }
 
 @Composable
@@ -166,6 +182,15 @@ fun AccountsCheckScreen_Preview() {
             AccountStatus.Linked("linked@example.com"),
             AccountStatus.Legacy("legacy@example.com")
         ),
+        onNavUp = {}
+    )
+}
+
+@Composable
+@Preview
+fun AccountsCheckScreen_Preview_Empty() {
+    AccountsCheckScreen(
+        accounts = emptyList(),
         onNavUp = {}
     )
 }
