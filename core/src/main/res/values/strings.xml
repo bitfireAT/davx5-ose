@@ -260,6 +260,10 @@
     <string name="app_settings_push_select_default_distributor_description">There are multiple UnifiedPush Distributor Apps installed. You can set a system-wide default here, so other UnifiedPush-enabled apps don\'t have to ask which one to use.</string>
     <string name="app_settings_push_select_default_distributor_action">Set default</string>
 
+    <!-- AccountsCheckActivity -->
+    <string name="accounts_check_title">Check and repair accounts</string>
+    <string name="accounts_check_summary">Shows the status of Android accounts</string>
+
     <!-- AccountScreen -->
     <string name="account_invalid_account">Account has been removed</string>
     <string name="account_carddav">CardDAV</string>

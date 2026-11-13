@@ -91,6 +91,10 @@
             android:name=".ui.TasksActivity"
             android:label="@string/intro_tasks_title"
             android:parentActivityName=".ui.AppSettingsActivity" />
+        <activity
+            android:name=".ui.accountscheck.AccountsCheckActivity"
+            android:label="@string/accounts_check_title"
+            android:parentActivityName=".ui.AppSettingsActivity" />
 
         <activity
             android:name=".ui.setup.LoginActivity"
