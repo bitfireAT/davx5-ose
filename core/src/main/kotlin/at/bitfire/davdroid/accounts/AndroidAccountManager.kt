@@ -263,14 +263,15 @@ class AndroidAccountManager @Inject constructor(
         awaitClose {
             accountManager.removeOnAccountsUpdatedListener(listener)
         }
-    }.conflate().distinctUntilChanged().map { accounts ->
+    }.conflate().map { accounts ->
         accounts.map { account ->
             if (account.type == legacyAccountType)
                 AndroidAccountInfo(account, isLegacy = true)
             else
                 AndroidAccountInfo(account, isLegacy = false, linkedDbAccountId = getLinkedDbAccountId(account))
         }
-    }.flowOn(ioDispatcher)     // registering the listener and reading user data cause I/O
+    }.distinctUntilChanged()
+        .flowOn(ioDispatcher)     // registering the listener and reading user data cause I/O
 
     /**
      * Returns the [AccountId] for a given Android [Account].
