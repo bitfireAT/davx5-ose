@@ -19,6 +19,7 @@ import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.resource.local.LocalAddressBookStore
 import at.bitfire.davdroid.resource.local.LocalCalendarStore
 import at.bitfire.davdroid.servicedetection.DavResourceFinder
+import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Credentials
 import at.bitfire.davdroid.sync.AutomaticSyncManager
 import at.bitfire.davdroid.sync.SyncDataType
@@ -257,8 +258,6 @@ class AccountRepository @Inject internal constructor(
      */
     private suspend fun renameLegacyAccount(oldName: String, oldAccountId: LegacyAccount, newName: String): AccountId = withContext(ioDispatcher) {
         val oldAccount = Account(oldName, legacyAccountType)
-        val newAccount = Account(newName, legacyAccountType)
-        val newAccountId: AccountId = LegacyAccount(newAccount)
 
         // check whether new account name already exists
         if (exists(newName))
@@ -276,7 +275,11 @@ class AccountRepository @Inject internal constructor(
             AccountsCleanupWorker.lockAccountsCleanup()
 
             // rename account (also moves AccountSettings)
-            androidAccountManager.renameWithData(oldAccount, newName) {
+            val newAccount = androidAccountManager.renameWithData(oldAccount, newName) { newAccount ->
+                // Copy user data to the new account
+                val userData = androidAccountManager.getUserData(oldAccount, AccountSettings.userDataKeys)
+                androidAccountManager.setUserData(newAccount, userData)
+
                 // update account name references in database
                 serviceRepository.renameAccount(oldName, newName)
 
@@ -317,14 +320,14 @@ class AccountRepository @Inject internal constructor(
             for (dataType in SyncDataType.entries)
                 syncWorkerManager.get().disablePeriodic(oldAccountId, dataType)
 
-            // update automatic sync
-            automaticSyncManager.get().updateAutomaticSync(newAccountId)
+            LegacyAccount(newAccount).also { newAccountId ->
+                // update automatic sync
+                automaticSyncManager.get().updateAutomaticSync(newAccountId)
+            }
         } finally {
             // release AccountsCleanupWorker mutex at the end of this async coroutine
             AccountsCleanupWorker.unlockAccountsCleanup()
         }
-
-        newAccountId
     }
 
     /**

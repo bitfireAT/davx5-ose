@@ -17,7 +17,6 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.DbAccount
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
-import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.sync.account.AccountOperationFailedException
 import at.bitfire.davdroid.sync.account.InvalidAccountException
 import at.bitfire.synctools.util.SensitiveString
@@ -133,6 +132,36 @@ class AndroidAccountManager @Inject constructor(
      */
     fun getLinkedDbAccountId(account: Account): Long? =
         accountManager.get().getUserData(account, USER_DATA_ACCOUNT_ID)?.toLongOrNull()
+
+    /**
+     * Sets the ID of the DB account that [account] is linked to.
+     */
+    fun setLinkedDbAccountId(account: Account, accountId: Long) =
+        accountManager.get().setAndVerifyUserData(account, USER_DATA_ACCOUNT_ID, accountId.toString())
+
+    /**
+     * Gets all the given [keys] from [account]'s user data.
+     * Non-present or `null` keys are not included in the result, so keys of the returned map may not include all [keys].
+     */
+    fun getUserData(account: Account, keys: Set<String>): Map<String, String> {
+        val accountManager = accountManager.get()
+        return keys.mapNotNull { key -> accountManager.getUserData(account, key)?.let { key to it } }
+            .toMap()
+    }
+
+    /**
+     * Sets all the values in [data] as user data for [account].
+     *
+     * This function is a temporary addition until we get rid of legacy accounts. User data should be manipulated by
+     * specific functions (such as [setLinkedDbAccountId]) instead of broadly modifying it.
+     */
+    @Deprecated("User data should not be manipulated directly")
+    fun setUserData(account: Account, data: Map<String, String>) {
+        val accountManager = accountManager.get()
+        for ((key, value) in data) {
+            accountManager.setAndVerifyUserData(account, key, value)
+        }
+    }
 
     /**
      * Removes the given Android account.
@@ -289,7 +318,7 @@ class AndroidAccountManager @Inject constructor(
     /**
      * Renames an account by adding the new one, copying its data, and removing the old one.
      *
-     * **Important:** Only [AccountSettings.userDataKeys] and [USER_DATA_ACCOUNT_ID] is copied from user data.
+     * **Important:** User data is not copied over to the new account. It's responsibility of the caller to copy it in [onUpdate].
      *
      * @param oldAccount The account to rename.
      * @param newName The new name to set to the account.
@@ -321,9 +350,7 @@ class AndroidAccountManager @Inject constructor(
 
         // First, to create the new account, fetch the data from the old account
         val oldPassword: String? = accountManager.getPassword(oldAccount)
-        val userDataKeys = AccountSettings.userDataKeys + USER_DATA_ACCOUNT_ID
-        val oldUserData = userDataKeys.mapNotNull { key -> accountManager.getUserData(oldAccount, key)?.let { key to it } }.toMap()
-        if (!createAccount(newAccount, oldUserData, oldPassword?.toSensitiveString())) {
+        if (!createAccount(newAccount, password = oldPassword?.toSensitiveString())) {
             throw AccountOperationFailedException("New account could not be created.")
         }
 

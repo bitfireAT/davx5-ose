@@ -190,6 +190,9 @@ class AndroidAccountProvider @Inject constructor(
             logger.info("Renaming Android account $account to $newName")
             try {
                 androidAccountManager.renameWithData(account, newName) { newAccount ->
+                    // Set the linked db account id in the new account
+                    androidAccountManager.setLinkedDbAccountId(newAccount, accountId.id)
+
                     try {
                         val store = localCalendarStore.get()
                         store.acquireLocalStorageClient(true)?.use { client ->
