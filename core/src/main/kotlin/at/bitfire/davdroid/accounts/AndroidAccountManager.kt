@@ -17,11 +17,14 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.DbAccount
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
+import at.bitfire.davdroid.sync.account.AccountOperationFailedException
 import at.bitfire.davdroid.sync.account.InvalidAccountException
 import at.bitfire.synctools.util.SensitiveString
+import at.bitfire.synctools.util.SensitiveString.Companion.toSensitiveString
 import at.bitfire.synctools.util.setAndVerifyUserData
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -129,6 +132,36 @@ class AndroidAccountManager @Inject constructor(
      */
     fun getLinkedDbAccountId(account: Account): Long? =
         accountManager.get().getUserData(account, USER_DATA_ACCOUNT_ID)?.toLongOrNull()
+
+    /**
+     * Sets the ID of the DB account that [account] is linked to.
+     */
+    fun setLinkedDbAccountId(account: Account, accountId: Long) =
+        accountManager.get().setAndVerifyUserData(account, USER_DATA_ACCOUNT_ID, accountId.toString())
+
+    /**
+     * Gets all the given [keys] from [account]'s user data.
+     * Non-present or `null` keys are not included in the result, so keys of the returned map may not include all [keys].
+     */
+    fun getUserData(account: Account, keys: Set<String>): Map<String, String> {
+        val accountManager = accountManager.get()
+        return keys.mapNotNull { key -> accountManager.getUserData(account, key)?.let { key to it } }
+            .toMap()
+    }
+
+    /**
+     * Sets all the values in [data] as user data for [account].
+     *
+     * This function is a temporary addition until we get rid of legacy accounts. User data should be manipulated by
+     * specific functions (such as [setLinkedDbAccountId]) instead of broadly modifying it.
+     */
+    @Deprecated("User data should not be manipulated directly")
+    fun setUserData(account: Account, data: Map<String, String>) {
+        val accountManager = accountManager.get()
+        for ((key, value) in data) {
+            accountManager.setAndVerifyUserData(account, key, value)
+        }
+    }
 
     /**
      * Removes the given Android account.
@@ -280,6 +313,64 @@ class AndroidAccountManager @Inject constructor(
                 accountManager.setAccountVisibility(account, packageName, AccountManager.VISIBILITY_VISIBLE)
             }
         }
+    }
+
+    /**
+     * Renames an account by adding the new one, copying its data, and removing the old one.
+     *
+     * **Important:** User data is not copied over to the new account. It's responsibility of the caller to copy it in [onUpdate].
+     *
+     * @param oldAccount The account to rename.
+     * @param newName The new name to set to the account.
+     * @param onUpdate Called before removing the old account. You may perform any extra copying operations between the
+     * accounts here, before the old one is gone.
+     */
+    suspend fun renameWithData(
+        oldAccount: Account,
+        newName: String,
+        onUpdate: suspend (newAccount: Account) -> Unit
+    ): Account = withContext(ioDispatcher + NonCancellable) {
+        require(newName.isNotBlank()) { "New account name must not be blank." }
+
+        if (oldAccount.name == newName) {
+            // Names already match, no need to rename
+            return@withContext oldAccount
+        }
+
+        val accountManager = accountManager.get()
+
+        // First, check if the account already exists
+        val existingAccount = accountManager.getAccountsByType(oldAccount.type).find { it.name == newName }
+        if (existingAccount != null) {
+            // An account already exists with the desired name
+            throw IllegalStateException("An account already exists with name \"$newName\"")
+        }
+
+        val newAccount = Account(newName, oldAccount.type)
+
+        // First, to create the new account, fetch the data from the old account
+        val oldPassword: String? = accountManager.getPassword(oldAccount)
+        if (!createAccount(newAccount, password = oldPassword?.toSensitiveString())) {
+            throw AccountOperationFailedException("New account could not be created.")
+        }
+
+        try {
+            // onUpdate is now called, so that the caller can do all the movements required through the accounts
+            onUpdate(newAccount)
+        } catch (e: Exception) {
+            // onUpdate failed, rollback
+            if (!accountManager.removeAccountExplicitly(newAccount)) {
+                throw AccountOperationFailedException("Could not remove account after failure on onUpdate.", e)
+            }
+            throw e
+        }
+
+        // When done, delete the old account
+        if (!accountManager.removeAccountExplicitly(oldAccount)) {
+            throw AccountOperationFailedException("Old account could not be deleted.")
+        }
+
+        newAccount
     }
 
     companion object {

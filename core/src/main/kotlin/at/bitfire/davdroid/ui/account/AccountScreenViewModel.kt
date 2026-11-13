@@ -114,6 +114,7 @@ class AccountScreenViewModel @AssistedInject constructor(
     }
 
     val accountName = accountRepository.getAccountNameFlow(accountId)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
 
     init {
         viewModelScope.launch {
@@ -205,6 +206,9 @@ class AccountScreenViewModel @AssistedInject constructor(
      * @param newName new account name
      */
     fun renameAccount(newName: String) {
+        // Ignore the call if the new name is blank.
+        if (newName.isBlank()) return
+
         viewModelScope.launch {
             try {
                 val newAccountId = accountRepository.rename(accountId, newName)
