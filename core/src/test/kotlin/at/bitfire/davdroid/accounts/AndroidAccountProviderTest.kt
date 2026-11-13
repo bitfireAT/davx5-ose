@@ -28,12 +28,10 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
-import org.robolectric.annotation.ConscryptMode
 import java.util.logging.Logger
 import kotlin.test.assertFailsWith
 
 @RunWith(RobolectricTestRunner::class)
-@ConscryptMode(ConscryptMode.Mode.OFF)      // required because main project uses Conscrypt, but unit tests do not
 class AndroidAccountProviderTest {
 
     private val context: Context = RuntimeEnvironment.getApplication()

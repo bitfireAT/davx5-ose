@@ -17,7 +17,6 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import org.robolectric.annotation.ConscryptMode
 import kotlin.test.assertFails
 import kotlin.test.assertFailsWith
 import kotlin.test.assertSame
@@ -26,7 +25,6 @@ private val URI = Uri.parse("dummy:")
 private val CONTENT_VALUES = ContentValues()
 
 @RunWith(RobolectricTestRunner::class)
-@ConscryptMode(ConscryptMode.Mode.OFF)      // required because main project uses Conscrypt, but unit tests do not
 class LocalStorageClientTest {
 
     private val provider: ContentProviderClient = mockk()

@@ -200,6 +200,7 @@ dependencies {
 
     testImplementation(kotlin("test"))
     testImplementation(libs.bitfire.dav4jvm)
+    testImplementation(libs.conscrypt.openjdk.uber)
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.ktor.client.mock)

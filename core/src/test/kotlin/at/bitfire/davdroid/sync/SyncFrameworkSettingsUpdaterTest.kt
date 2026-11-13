@@ -24,10 +24,8 @@ import io.mockk.verify
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import org.robolectric.annotation.ConscryptMode
 
 @RunWith(RobolectricTestRunner::class)
-@ConscryptMode(ConscryptMode.Mode.OFF)      // required because main project uses Conscrypt, but unit tests do not
 class SyncFrameworkSettingsUpdaterTest {
 
     private val accountId = DbAccountId(1)
