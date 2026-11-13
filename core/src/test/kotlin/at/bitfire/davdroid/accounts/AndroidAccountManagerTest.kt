@@ -8,6 +8,7 @@ import android.accounts.Account
 import android.accounts.AccountManager
 import android.accounts.AuthenticatorDescription
 import android.content.Context
+import app.cash.turbine.test
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.DbAccount
@@ -62,6 +63,12 @@ class AndroidAccountManagerTest {
         assertTrue(realManager.addAccountExplicitly(account, null, null))
         if (linkedId != null)
             realManager.setUserData(account, AndroidAccountManager.USER_DATA_ACCOUNT_ID, linkedId.toString())
+        return account
+    }
+
+    private fun addLegacyAccount(name: String): Account {
+        val account = Account(name, context.getString(R.string.account_type))
+        assertTrue(realManager.addAccountExplicitly(account, null, null))
         return account
     }
 
@@ -438,6 +445,57 @@ class AndroidAccountManagerTest {
 
 
     @Test
+    fun `getAllFlow() returns Android accounts of legacy and DB accounts with linked DB account IDs`() = runTest {
+        val legacy = addLegacyAccount("Legacy")
+        val linked = addAndroidAccount("Linked", linkedId = 3)
+        val unlinked = addAndroidAccount("Unlinked")
+        val addressBook = Account("Address book", context.getString(R.string.account_type_address_book))
+        assertTrue(realManager.addAccountExplicitly(addressBook, null, null))
+
+        androidAccountManager().getAllFlow().test {
+            assertEquals(
+                setOf(
+                    AndroidAccountInfo(legacy, isLegacy = true),
+                    AndroidAccountInfo(linked, isLegacy = false, linkedDbAccountId = 3),
+                    AndroidAccountInfo(unlinked, isLegacy = false)
+                ),
+                awaitItem().toSet()
+            )
+        }
+    }
+
+    @Test
+    fun `getAllFlow() emits again when an account is added`() = runTest {
+        val first = addLegacyAccount("First")
+
+        androidAccountManager().getAllFlow().test {
+            assertEquals(listOf(AndroidAccountInfo(first, isLegacy = true)), awaitItem())
+
+            val second = addLegacyAccount("Second")
+
+            assertEquals(
+                setOf(AndroidAccountInfo(first, isLegacy = true), AndroidAccountInfo(second, isLegacy = true)),
+                awaitItem().toSet()
+            )
+        }
+    }
+
+    @Test
+    fun `getAllFlow() emits again when an account is removed`() = runTest {
+        val first = addLegacyAccount("First")
+        val second = addLegacyAccount("Second")
+
+        androidAccountManager().getAllFlow().test {
+            assertEquals(2, awaitItem().size)
+
+            realManager.removeAccountExplicitly(second)
+
+            assertEquals(listOf(AndroidAccountInfo(first, isLegacy = true)), awaitItem())
+        }
+    }
+
+
+    @Test
     fun `getAccountId() returns LegacyAccount for legacy account`() = runTest {
         val legacy = Account("Legacy", context.getString(R.string.account_type))
 
@@ -486,6 +544,43 @@ class AndroidAccountManagerTest {
         val result = androidAccountManager().getAccountId(unlinked)
 
         assertEquals(DbAccountId(4), result)
+    }
+
+
+    @Test
+    fun `isOrphaned() returns false for linked account when DB account with linked ID exists`() {
+        val dbAccounts = listOf(DbAccount(1, "Other name"))
+
+        val result = AndroidAccountManager.isOrphaned("Name", linkedDbAccountId = 1, dbAccounts)
+
+        assertFalse(result)
+    }
+
+    @Test
+    fun `isOrphaned() returns true for linked account when no DB account with linked ID exists`() {
+        val dbAccounts = listOf(DbAccount(1, "Name"))
+
+        val result = AndroidAccountManager.isOrphaned("Name", linkedDbAccountId = 2, dbAccounts)
+
+        assertTrue(result)
+    }
+
+    @Test
+    fun `isOrphaned() returns false for unlinked account when DB account with same name exists`() {
+        val dbAccounts = listOf(DbAccount(1, "Name"))
+
+        val result = AndroidAccountManager.isOrphaned("Name", linkedDbAccountId = null, dbAccounts)
+
+        assertFalse(result)
+    }
+
+    @Test
+    fun `isOrphaned() returns true for unlinked account when no DB account with same name exists`() {
+        val dbAccounts = listOf(DbAccount(1, "Other name"))
+
+        val result = AndroidAccountManager.isOrphaned("Name", linkedDbAccountId = null, dbAccounts)
+
+        assertTrue(result)
     }
 
 }
