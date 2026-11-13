@@ -69,24 +69,45 @@ class AndroidAccountManagerTest {
     }
 
     @Test
-    fun testRenameWithData_KeepsUserData() = runTest {
-        // use a key from userDataKeys so it gets copied
+    fun testRenameWithData_DoesNotCopyUserData() = runTest {
         accountManager.setUserData(account, AccountSettings.KEY_WIFI_ONLY, "1")
+        accountManager.setUserData(account, "unknown_key", "value")
 
         val renamed = androidAccountManager.renameWithData(account, "AndroidAccountManagerTest renamed") { }
+        currentAccount = renamed
+
+        // copying user data is the responsibility of the caller (onUpdate)
+        assertNull(accountManager.getUserData(renamed, AccountSettings.KEY_WIFI_ONLY))
+        assertNull(accountManager.getUserData(renamed, "unknown_key"))
+    }
+
+    @Test
+    fun testRenameWithData_UserDataCopiedInOnUpdateIsKept() = runTest {
+        accountManager.setUserData(account, AccountSettings.KEY_WIFI_ONLY, "1")
+
+        val renamed = androidAccountManager.renameWithData(account, "AndroidAccountManagerTest renamed") { newAccount ->
+            val data = androidAccountManager.getUserData(account, AccountSettings.userDataKeys)
+            androidAccountManager.setUserData(newAccount, data)
+        }
         currentAccount = renamed
 
         assertEquals("1", accountManager.getUserData(renamed, AccountSettings.KEY_WIFI_ONLY))
     }
 
     @Test
-    fun testRenameWithData_DoesNotCopyUnknownUserData() = runTest {
-        accountManager.setUserData(account, "unknown_key", "value")
+    fun testGetUserData_OmitsMissingKeys() {
+        accountManager.setUserData(account, AccountSettings.KEY_WIFI_ONLY, "1")
 
-        val renamed = androidAccountManager.renameWithData(account, "AndroidAccountManagerTest renamed") { }
-        currentAccount = renamed
+        val result = androidAccountManager.getUserData(account, setOf(AccountSettings.KEY_WIFI_ONLY, "missing"))
 
-        assertNull(accountManager.getUserData(renamed, "unknown_key"))
+        assertEquals(mapOf(AccountSettings.KEY_WIFI_ONLY to "1"), result)
+    }
+
+    @Test
+    fun testSetLinkedDbAccountId() {
+        androidAccountManager.setLinkedDbAccountId(account, 42L)
+
+        assertEquals(42L, androidAccountManager.getLinkedDbAccountId(account))
     }
 
     @Test
