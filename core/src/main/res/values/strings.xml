@@ -263,6 +263,8 @@
     <!-- AccountsCheckActivity -->
     <string name="accounts_check_title">Check and repair accounts</string>
     <string name="accounts_check_summary">Shows the status of Android accounts</string>
+    <string name="accounts_check_android_accounts">Android accounts</string>
+    <string name="accounts_check_explanation"><![CDATA[%1$s uses Android accounts to make your contacts, calendars and tasks available to other apps. Every app account of %1$s has an Android account that links to it. Accounts that were created with older versions of %1$s are legacy accounts that only consist of an Android account. <a href=\"%2$s\">The manual</a> explains every status and how to export your data.]]></string>
 
     <!-- AccountScreen -->
     <string name="account_invalid_account">Account has been removed</string>
