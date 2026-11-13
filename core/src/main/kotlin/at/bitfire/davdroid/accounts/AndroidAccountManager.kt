@@ -320,10 +320,10 @@ class AndroidAccountManager @Inject constructor(
         val newAccount = Account(newName, oldAccount.type)
 
         // First, to create the new account, fetch the data from the old account
-        val oldPassword = accountManager.getPassword(oldAccount)
+        val oldPassword: String? = accountManager.getPassword(oldAccount)
         val userDataKeys = AccountSettings.userDataKeys + USER_DATA_ACCOUNT_ID
         val oldUserData = userDataKeys.mapNotNull { key -> accountManager.getUserData(oldAccount, key)?.let { key to it } }.toMap()
-        if (!createAccount(newAccount, oldUserData, oldPassword.toSensitiveString())) {
+        if (!createAccount(newAccount, oldUserData, oldPassword?.toSensitiveString())) {
             throw AccountOperationFailedException("New account could not be created.")
         }
 
