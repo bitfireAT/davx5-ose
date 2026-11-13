@@ -240,7 +240,7 @@ class LoginScreenViewModel @AssistedInject constructor(
                     // other login methods cannot be stored in the password manager
                     loginInfo.credentials?.let { credentials ->
                         activity ?: return@let
-                        val username = credentials.username?.let { "$it@$baseUri" } ?: return@let
+                        val username = credentials.username ?: return@let
                         val password = credentials.password?.asString() ?: return@let
                         try {
                             credentialManager.createCredential(
