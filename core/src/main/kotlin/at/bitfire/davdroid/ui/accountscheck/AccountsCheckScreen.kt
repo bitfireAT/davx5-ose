@@ -13,6 +13,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -126,6 +127,8 @@ private fun AccountStatusItem(status: AccountStatus) {
             stringResource(R.string.accounts_check_legacy_account) to MaterialTheme.colorScheme.secondary
         is AccountStatus.Linked ->
             stringResource(R.string.accounts_check_links_to_db_account) to MaterialTheme.colorScheme.primary
+        is AccountStatus.MissingDbAccount ->
+            stringResource(R.string.accounts_check_missing_db_account) to MaterialTheme.colorScheme.error
     }
 
     Row(
@@ -134,9 +137,9 @@ private fun AccountStatusItem(status: AccountStatus) {
             .padding(vertical = 8.dp)
     ) {
         Icon(
-            imageVector = Icons.Default.Check,
+            imageVector = if (status.isProblem) Icons.Default.Warning else Icons.Default.Check,
             contentDescription = null,
-            tint = MaterialTheme.colorScheme.primary,
+            tint = if (status.isProblem) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
             modifier = Modifier.padding(end = 16.dp)
         )
 
@@ -159,6 +162,7 @@ private fun AccountStatusItem(status: AccountStatus) {
 fun AccountsCheckScreen_Preview() {
     AccountsCheckScreen(
         accounts = listOf(
+            AccountStatus.MissingDbAccount("orphan@example.com"),
             AccountStatus.Linked("linked@example.com"),
             AccountStatus.Legacy("legacy@example.com")
         ),

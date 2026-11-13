@@ -40,14 +40,17 @@ class AccountsCheckViewModel @Inject internal constructor(
             androidAccounts: List<AndroidAccountInfo>,
             dbAccounts: List<DbAccount>
         ): List<AccountStatus> =
-            androidAccounts.mapNotNull { androidAccount ->
+            androidAccounts.map { androidAccount ->
                 val name = androidAccount.account.name
                 when {
                     androidAccount.isLegacy -> AccountStatus.Legacy(name)
-                    isOrphaned(name, androidAccount.linkedDbAccountId, dbAccounts) -> null
+                    isOrphaned(name, androidAccount.linkedDbAccountId, dbAccounts) -> AccountStatus.MissingDbAccount(name)
                     else -> AccountStatus.Linked(name)
                 }
-            }.sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.name })
+            }.sortedWith(
+                compareByDescending<AccountStatus> { it.isProblem }
+                    .thenBy(String.CASE_INSENSITIVE_ORDER) { it.name }
+            )
 
     }
 

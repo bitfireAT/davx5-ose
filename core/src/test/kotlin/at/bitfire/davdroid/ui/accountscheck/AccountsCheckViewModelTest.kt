@@ -46,13 +46,38 @@ class AccountsCheckViewModelTest {
     }
 
     @Test
-    fun `toAccountStatuses() sorts accounts by name`() {
-        val androidAccounts = listOf(legacyAccount("c"), dbTypeAccount("B", linkedId = 1), legacyAccount("a"))
+    fun `toAccountStatuses() returns account that links to non-existing DB account as missing DB account`() {
+        val linked = dbTypeAccount("Linked", linkedId = 2)
+        val dbAccounts = listOf(DbAccount(id = 1, name = "Linked"))
+
+        val result = toAccountStatuses(listOf(linked), dbAccounts)
+
+        assertEquals(listOf(AccountStatus.MissingDbAccount("Linked")), result)
+    }
+
+    @Test
+    fun `toAccountStatuses() returns unlinked account without DB account of the same name as missing DB account`() {
+        val unlinked = dbTypeAccount("Unlinked")
+        val dbAccounts = listOf(DbAccount(id = 1, name = "Other name"))
+
+        val result = toAccountStatuses(listOf(unlinked), dbAccounts)
+
+        assertEquals(listOf(AccountStatus.MissingDbAccount("Unlinked")), result)
+    }
+
+    @Test
+    fun `toAccountStatuses() sorts problems first, then by name`() {
+        val androidAccounts = listOf(
+            legacyAccount("c"),
+            dbTypeAccount("B", linkedId = 1),
+            dbTypeAccount("e", linkedId = 2),
+            legacyAccount("a")
+        )
         val dbAccounts = listOf(DbAccount(id = 1, name = "B"))
 
         val result = toAccountStatuses(androidAccounts, dbAccounts)
 
-        assertEquals(listOf("a", "B", "c"), result.map { it.name })
+        assertEquals(listOf("e", "a", "B", "c"), result.map { it.name })
     }
 
 
