@@ -53,6 +53,9 @@ include(":features:feature-flags:template:api")
 include(":features:feature-flags:template:complex")
 include(":features:feature-flags:template:experimental")
 
+include(":features:feature-flags:new-account-system:api")
+include(":features:feature-flags:new-account-system:experimental")
+
 include(":features:preconfigured-settings:api")
 include(":features:preconfigured-settings:shared")
 include(":features:preconfigured-settings:external-scanner")
