@@ -25,9 +25,12 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.autofill.ContentType
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentType
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -42,6 +45,7 @@ fun EditTextInputDialog(
     inputLabel: String? = null,
     passwordField: Boolean = false,
     keyboardType: KeyboardType = if (passwordField) KeyboardType.Password else KeyboardType.Text,
+    contentType: ContentType? = null,
     onValueEntered: (String) -> Unit = {},
     onDismiss: () -> Unit = {},
 ) {
@@ -66,6 +70,9 @@ fun EditTextInputDialog(
                     password = state,
                     labelText = inputLabel,
                     modifier = Modifier.focusRequester(focusRequester)
+                        .semantics {
+                            contentType?.let { this.contentType = it }
+                        }
                 )
             else
                 TextField(
@@ -82,6 +89,9 @@ fun EditTextInputDialog(
                         }
                     },
                     modifier = Modifier.focusRequester(focusRequester)
+                        .semantics {
+                            contentType?.let { this.contentType = it }
+                        }
                 )
             LaunchedEffect(Unit) {
                 focusRequester.requestFocus()
