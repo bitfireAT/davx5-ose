@@ -28,7 +28,7 @@ class AccountsCheckViewModel @Inject internal constructor(
     /** status of all accounts (updated live); `null` while loading */
     val accounts: StateFlow<List<AccountStatus>?> = combine(
         androidAccountManager.getAllFlow(),
-        dbAccountRepository.getAllWithNamesFlow(),
+        dbAccountRepository.getAllDbAccountsFlow(),
         ::toAccountStatuses
     ).stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
 
