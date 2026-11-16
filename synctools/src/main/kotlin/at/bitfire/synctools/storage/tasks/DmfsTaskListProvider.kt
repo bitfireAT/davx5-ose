@@ -13,6 +13,7 @@ import at.bitfire.synctools.storage.TaskProvider
 import at.bitfire.synctools.storage.tasks.DmfsTasksContract.asSyncAdapter
 import at.bitfire.synctools.storage.toContentValues
 import org.dmfs.tasks.contract.TaskContract
+import org.dmfs.tasks.contract.TaskContract.TaskLists
 import java.util.LinkedList
 import java.util.logging.Level
 import java.util.logging.Logger
@@ -155,5 +156,16 @@ class DmfsTaskListProvider(
 
     internal fun taskListUri(id: Long) =
         ContentUris.withAppendedId(taskListsUri, id)
+
+
+    companion object {
+        /**
+         * Follows the convention established by calendar in [at.bitfire.synctools.storage.calendar.AndroidCalendarProvider.COLUMN_CALENDAR_URL],
+         * which itself follows the convention from Google Calendar that uses the `SYNC1` column for the calendar URL.
+         *
+         * This is exposed so that other apps can access the URL of DAVx⁵ task lists.
+         */
+        const val COLUMN_TASK_LIST_URL = TaskLists.SYNC1
+    }
 
 }

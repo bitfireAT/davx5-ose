@@ -106,6 +106,7 @@ class LocalTaskListStore @AssistedInject constructor(
     private fun valuesFromCollectionInfo(info: Collection, withColor: Boolean): ContentValues {
         val values = ContentValues(3)
         values.put(TaskLists._SYNC_ID, info.id.toString())
+        values.put(DmfsTaskListProvider.COLUMN_TASK_LIST_URL, info.url.toString())
         values.put(TaskLists.LIST_NAME,
             if (info.displayName.isNullOrBlank()) extractCollectionName(info.url) else info.displayName)
 
