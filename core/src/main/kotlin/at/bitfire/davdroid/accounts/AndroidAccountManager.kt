@@ -263,14 +263,16 @@ class AndroidAccountManager @Inject constructor(
         awaitClose {
             accountManager.removeOnAccountsUpdatedListener(listener)
         }
-    }.conflate().map { accounts ->
-        accounts.map { account ->
-            if (account.type == legacyAccountType)
-                AndroidAccountInfo(account, isLegacy = true)
-            else
-                AndroidAccountInfo(account, isLegacy = false, linkedDbAccountId = getLinkedDbAccountId(account))
+    }.conflate()    // only the latest account list is relevant
+        .map { accounts ->
+            accounts.map { account ->
+                if (account.type == legacyAccountType)
+                    AndroidAccountInfo(account, isLegacy = true)
+                else
+                    AndroidAccountInfo(account, isLegacy = false, linkedDbAccountId = getLinkedDbAccountId(account))
+            }
         }
-    }.distinctUntilChanged()
+        .distinctUntilChanged()     // after mapping, because a removed and re-created account with the same name can have another linked ID
         .flowOn(ioDispatcher)     // registering the listener and reading user data cause I/O
 
     /**
