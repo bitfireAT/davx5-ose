@@ -5,11 +5,13 @@
 package at.bitfire.davdroid.ui.accountscheck
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
@@ -70,17 +72,19 @@ fun AccountsCheckScreen(
                 )
             }
         ) { padding ->
-            Column(
-                Modifier
-                    .padding(padding)
-                    .verticalScroll(rememberScrollState())
-                    .padding(16.dp)
+            LazyColumn(
+                modifier = Modifier.padding(padding),
+                contentPadding = PaddingValues(16.dp)
             ) {
-                Explanation()
+                item {
+                    Explanation()
+                }
 
-                HorizontalDivider(Modifier.padding(vertical = 16.dp))
+                item {
+                    HorizontalDivider(Modifier.padding(vertical = 16.dp))
+                }
 
-                AccountsStatus(accounts)
+                accountsStatus(accounts)
             }
         }
     }
@@ -88,39 +92,43 @@ fun AccountsCheckScreen(
 
 @Composable
 private fun Explanation() {
-    Text(
-        text = stringResource(R.string.accounts_check_android_accounts),
-        style = MaterialTheme.typography.headlineSmall,
-        modifier = Modifier.padding(bottom = 8.dp)
-    )
+    Column {
+        Text(
+            text = stringResource(R.string.accounts_check_android_accounts),
+            style = MaterialTheme.typography.headlineSmall,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
 
-    val manualUrl = remember {
-        ExternalUris.Manual.baseUrl.buildUpon()
-            .appendPath(ExternalUris.Manual.PATH_ACCOUNTS_COLLECTIONS)
-            .build()
-            .toString()
+        val manualUrl = remember {
+            ExternalUris.Manual.baseUrl.buildUpon()
+                .appendPath(ExternalUris.Manual.PATH_ACCOUNTS_COLLECTIONS)
+                .build()
+                .toString()
+        }
+        Text(
+            text = HtmlCompat.fromHtml(
+                stringResource(R.string.accounts_check_explanation, stringResource(R.string.app_name), manualUrl),
+                HtmlCompat.FROM_HTML_MODE_COMPACT
+            ).toAnnotatedString(),
+            style = MaterialTheme.typography.bodyMedium
+        )
     }
-    Text(
-        text = HtmlCompat.fromHtml(
-            stringResource(R.string.accounts_check_explanation, stringResource(R.string.app_name), manualUrl),
-            HtmlCompat.FROM_HTML_MODE_COMPACT
-        ).toAnnotatedString(),
-        style = MaterialTheme.typography.bodyMedium
-    )
 }
 
-@Composable
-private fun AccountsStatus(accounts: List<AccountStatus>?) {
-    Text(
-        text = stringResource(R.string.accounts_check_status),
-        style = MaterialTheme.typography.titleMedium,
-        modifier = Modifier.padding(bottom = 8.dp)
-    )
+private fun LazyListScope.accountsStatus(accounts: List<AccountStatus>?) {
+    item {
+        Text(
+            text = stringResource(R.string.accounts_check_status),
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+    }
 
     when {
-        accounts == null ->
+        accounts == null -> item {
             ProgressBar(Modifier.fillMaxWidth())
-        accounts.isEmpty() ->
+        }
+        accounts.isEmpty() -> item {
             Text(
                 text = stringResource(R.string.accounts_check_empty),
                 style = MaterialTheme.typography.bodyLarge,
@@ -129,10 +137,12 @@ private fun AccountsStatus(accounts: List<AccountStatus>?) {
                     .fillMaxWidth()
                     .padding(vertical = 32.dp)
             )
-        else -> {
-            for (account in accounts)
-                AccountStatusItem(account)
         }
+        else ->
+            // no keys: a legacy and a DB account can have the same name
+            items(accounts) { account ->
+                AccountStatusItem(account)
+            }
     }
 }
 
