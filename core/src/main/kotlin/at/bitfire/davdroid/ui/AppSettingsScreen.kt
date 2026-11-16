@@ -18,6 +18,7 @@ import androidx.compose.material.icons.automirrored.filled.Help
 import androidx.compose.material.icons.filled.Adb
 import androidx.compose.material.icons.filled.BugReport
 import androidx.compose.material.icons.filled.InvertColors
+import androidx.compose.material.icons.filled.ManageAccounts
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.SyncProblem
 import androidx.compose.material.icons.filled.Warning
@@ -74,6 +75,7 @@ fun AppSettingsScreen(
     onShowNotificationSettings: () -> Unit,
     onNavTasksScreen: () -> Unit,
     onNavPushSettings:() -> Unit,
+    onNavAccountsCheck: () -> Unit,
     onNavUp: () -> Unit,
     model: AppSettingsViewModel = viewModel()
 ) {
@@ -108,12 +110,13 @@ fun AppSettingsScreen(
             onThemeSelected = model::updateTheme,
             onResetHints = model::resetHints,
 
-            // Integration (Tasks and Push)
+            // Integration (Tasks, Push and accounts)
             tasksAppName = model.tasksAppName.collectAsStateWithLifecycle(null).value ?: stringResource(R.string.app_settings_tasks_provider_none),
             tasksAppIcon = model.tasksAppIcon.collectAsStateWithLifecycle(null).value,
             onNavTasksScreen = onNavTasksScreen,
             pushSummary = model.pushSummary.collectAsState().value,
-            onNavPushSettings = onNavPushSettings
+            onNavPushSettings = onNavPushSettings,
+            onNavAccountsCheck = onNavAccountsCheck
         )
     }
 }
@@ -155,6 +158,7 @@ fun AppSettingsScreen(
     onNavTasksScreen: () -> Unit,
     pushSummary: PushSummary,
     onNavPushSettings:() -> Unit,
+    onNavAccountsCheck: () -> Unit,
 
     onShowNotificationSettings: () -> Unit,
     onNavUp: () -> Unit
@@ -243,7 +247,8 @@ fun AppSettingsScreen(
                     tasksAppIcon = tasksAppIcon,
                     onNavTasksScreen = onNavTasksScreen,
                     pushSummary = pushSummary,
-                    onNavPushSettings = onNavPushSettings
+                    onNavPushSettings = onNavPushSettings,
+                    onNavAccountsCheck = onNavAccountsCheck
                 )
             }
         }
@@ -284,7 +289,8 @@ fun AppSettingsScreen_Preview() {
                 appIcon = ContextCompat.getDrawable(LocalContext.current, R.drawable.product_logomark_cloud_messaging_full_color)
             ),
             onNavTasksScreen = {},
-            onNavPushSettings = {}
+            onNavPushSettings = {},
+            onNavAccountsCheck = {}
         )
     }
 }
@@ -547,7 +553,8 @@ fun AppSettings_Integration(
     tasksAppIcon: Drawable? = null,
     onNavTasksScreen: () -> Unit = {},
     pushSummary: PushSummary,
-    onNavPushSettings: () -> Unit
+    onNavPushSettings: () -> Unit,
+    onNavAccountsCheck: () -> Unit
 ) {
     SettingsHeader(divider = true) {
         Text(stringResource(R.string.app_settings_integration))
@@ -566,6 +573,13 @@ fun AppSettings_Integration(
     )
 
     PushSetting(pushSummary, onNavPushSettings)
+
+    Setting(
+        icon = Icons.Default.ManageAccounts,
+        name = stringResource(R.string.accounts_check_title),
+        summary = stringResource(R.string.accounts_check_summary),
+        onClick = onNavAccountsCheck
+    )
 }
 
 @Composable
