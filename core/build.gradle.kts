@@ -199,6 +199,7 @@ dependencies {
     androidTestImplementation(project(":features:preconfigured-settings:external-scanner"))
 
     testImplementation(kotlin("test"))
+    testImplementation(libs.assertk)
     testImplementation(libs.bitfire.dav4jvm)
     testImplementation(libs.conscrypt.openjdk.uber)
     testImplementation(libs.junit)
