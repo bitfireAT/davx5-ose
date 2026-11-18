@@ -7,12 +7,16 @@ package at.bitfire.davdroid.repository
 import android.accounts.Account
 import android.accounts.AccountManager
 import android.content.Context
+import androidx.core.os.bundleOf
 import androidx.hilt.work.HiltWorkerFactory
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.TestUtils
 import at.bitfire.davdroid.accounts.AccountId
+import at.bitfire.davdroid.accounts.AndroidAccountManager
+import at.bitfire.davdroid.accounts.DbAccountId
 import at.bitfire.davdroid.accounts.LegacyAccount
 import at.bitfire.davdroid.db.AppDatabase
+import at.bitfire.davdroid.db.DbAccount
 import at.bitfire.davdroid.resource.local.LocalAddressBookStore
 import at.bitfire.davdroid.resource.local.LocalCalendarStore
 import at.bitfire.davdroid.resource.local.LocalDataStore
@@ -38,6 +42,7 @@ import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.unmockkObject
 import io.mockk.verify
+import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.runTest
@@ -164,6 +169,25 @@ class AccountRepositoryTest {
 
         val accountsAfter = accountManager.getAccountsByType(accountType)
         assertTrue(accountsAfter.any { it.name == newName })
+    }
+
+    @Test
+    fun testRename_keepsOrphanedAndroidAccountWithNewName() = runTest {
+        val dbAccountType = context.getString(R.string.account_type_db)
+        val dbAccountId = appDatabase.dbAccountDao().insert(DbAccount(name = "DB Account"))
+        accountManager.addAccountExplicitly(
+            Account("DB Account", dbAccountType),
+            null,
+            bundleOf(AndroidAccountManager.USER_DATA_ACCOUNT_ID to dbAccountId.toString())
+        )
+        val orphan = Account(newName, dbAccountType)
+        accountManager.addAccountExplicitly(orphan, null, bundleOf(AndroidAccountManager.USER_DATA_ACCOUNT_ID to "999"))
+
+        val result = runCatching { accountRepository.rename(DbAccountId(dbAccountId), newName) }
+
+        assertTrue(result.isFailure)
+        assertTrue(accountManager.accounts.contains(orphan))
+        assertEquals("999", accountManager.getUserData(orphan, AndroidAccountManager.USER_DATA_ACCOUNT_ID))
     }
 
     @Test

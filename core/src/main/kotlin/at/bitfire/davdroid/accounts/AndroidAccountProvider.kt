@@ -7,7 +7,6 @@ package at.bitfire.davdroid.accounts
 import android.accounts.Account
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
-import at.bitfire.davdroid.resource.local.AddressBookAccountManager
 import at.bitfire.davdroid.sync.SyncFrameworkSettingsUpdater
 import at.bitfire.davdroid.sync.account.InvalidAccountException
 import dagger.Lazy
@@ -20,10 +19,9 @@ import javax.inject.Inject
 
 /**
  * Provides a ready-to-use Android [Account] for an [AccountId]. For DB accounts, the linked Android account
- * is created when necessary (replacing an orphaned one with the same name).
+ * is created when necessary.
  */
 class AndroidAccountProvider @Inject constructor(
-    private val addressBookAccountManager: AddressBookAccountManager,
     private val androidAccountManager: AndroidAccountManager,
     db: AppDatabase,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
@@ -58,19 +56,14 @@ class AndroidAccountProvider @Inject constructor(
 
         val sameName = androidAccountManager.findAccountByName(dbAccount.name)
         if (sameName != null) {
+            // name is taken; an orphaned account may have unsynced local data, so only the user may delete it
             val sameNameLinkedId = androidAccountManager.getLinkedDbAccountId(sameName)
-            if (sameNameLinkedId != null && dbAccountDao.get(sameNameLinkedId) != null) {
-                // name is taken by an Android account that belongs to another (existing) DB account
+            if (sameNameLinkedId != null && dbAccountDao.get(sameNameLinkedId) != null)
                 logger.warning("Android account $sameName is linked to another DB account")
-                throw InvalidAccountException(accountId)
-            }
-
-            // orphaned (not linked or linked to a DB account that doesn't exist anymore), may have unrelated local data
-            logger.info("Removing orphaned Android account $sameName")
-            if (sameNameLinkedId != null) {
-                addressBookAccountManager.deleteByAccountId(DbAccountId(sameNameLinkedId))
-            }
-            androidAccountManager.removeAccount(sameName)
+            else
+                logger.warning("Android account $sameName is orphaned")
+            // TODO: add notification which takes the user to the "Check and repair accounts" screen (#3025)
+            throw InvalidAccountException(accountId)
         }
 
         logger.info("Creating Android account for $accountId")

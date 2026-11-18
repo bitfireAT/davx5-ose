@@ -13,7 +13,6 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.Worker
 import androidx.work.WorkerParameters
-import at.bitfire.davdroid.accounts.AndroidAccountManager
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.resource.local.AddressBookAccountManager
@@ -30,7 +29,6 @@ class AccountsCleanupWorker @AssistedInject constructor(
     @Assisted workerParameters: WorkerParameters,
     private val accountRepository: AccountRepository,
     private val addressBookAccountManager: AddressBookAccountManager,
-    private val androidAccountManager: AndroidAccountManager,
     private val db: AppDatabase,
     private val logger: Logger
 ): Worker(context, workerParameters) {
@@ -45,7 +43,6 @@ class AccountsCleanupWorker @AssistedInject constructor(
         lockAccountsCleanup()
         try {
             cleanUpServices()
-            cleanUpDbAndroidAccounts()
             cleanUpAddressBooks()
         } finally {
             unlockAccountsCleanup()
@@ -69,14 +66,6 @@ class AccountsCleanupWorker @AssistedInject constructor(
             val accountNames = accountIds.map { accountId -> accountRepository.getAccountNameBlocking(accountId) }
             serviceDao.deleteExceptAccountsBlocking(accountNames)
         }
-    }
-
-    /**
-     * Deletes Android accounts of DB accounts that don't exist anymore.
-     */
-    @VisibleForTesting
-    internal fun cleanUpDbAndroidAccounts() {
-        androidAccountManager.removeOrphanedForDbAccounts()
     }
 
     /**

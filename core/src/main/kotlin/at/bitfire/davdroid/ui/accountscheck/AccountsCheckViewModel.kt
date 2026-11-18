@@ -44,7 +44,7 @@ class AccountsCheckViewModel @Inject internal constructor(
                 val name = androidAccount.account.name
                 when {
                     androidAccount.isLegacy -> AccountStatus.Legacy(name)
-                    isOrphaned(name, androidAccount.linkedDbAccountId, dbAccounts) -> AccountStatus.MissingDbAccount(name)
+                    isOrphaned(androidAccount.linkedDbAccountId, dbAccounts) -> AccountStatus.MissingDbAccount(name)
                     else -> AccountStatus.Linked(name)
                 }
             }.sortedWith(

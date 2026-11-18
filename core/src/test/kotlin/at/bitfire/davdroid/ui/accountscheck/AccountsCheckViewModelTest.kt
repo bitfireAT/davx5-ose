@@ -36,16 +36,6 @@ class AccountsCheckViewModelTest {
     }
 
     @Test
-    fun `toAccountStatuses() returns unlinked account as linked when DB account has the same name`() {
-        val unlinked = dbTypeAccount("Unlinked")
-        val dbAccounts = listOf(DbAccount(id = 1, name = "Unlinked"))
-
-        val result = toAccountStatuses(listOf(unlinked), dbAccounts)
-
-        assertEquals(listOf(AccountStatus.Linked("Unlinked")), result)
-    }
-
-    @Test
     fun `toAccountStatuses() returns account that links to non-existing DB account as missing DB account`() {
         val linked = dbTypeAccount("Linked", linkedId = 2)
         val dbAccounts = listOf(DbAccount(id = 1, name = "Linked"))
@@ -56,9 +46,9 @@ class AccountsCheckViewModelTest {
     }
 
     @Test
-    fun `toAccountStatuses() returns unlinked account without DB account of the same name as missing DB account`() {
+    fun `toAccountStatuses() returns unlinked account as missing DB account, also when DB account has the same name`() {
         val unlinked = dbTypeAccount("Unlinked")
-        val dbAccounts = listOf(DbAccount(id = 1, name = "Other name"))
+        val dbAccounts = listOf(DbAccount(id = 1, name = "Unlinked"))
 
         val result = toAccountStatuses(listOf(unlinked), dbAccounts)
 
