@@ -56,23 +56,18 @@ private fun DefaultExperimentalSettingsUi_Preview() {
     }
 }
 
-private val experimentalSetting1 = object : ExperimentalSetting {
-    @Composable
-    override fun Show() {
-        SwitchSetting(
-            checked = true,
-            name = "Feature name",
-            summaryOn = "Do fancy new thing"
-        )
-    }
+private val experimentalSetting1 = ExperimentalSetting {
+    SwitchSetting(
+        checked = true,
+        name = "Feature name",
+        summaryOn = "Do fancy new thing"
+    )
 }
-private val experimentalSetting2 = object : ExperimentalSetting {
-    @Composable
-    override fun Show() {
-        SwitchSetting(
-            checked = false,
-            name = "Another experimental feature",
-            summaryOn = "Are you brave enough to enable this?"
-        )
-    }
+
+private val experimentalSetting2 = ExperimentalSetting {
+    SwitchSetting(
+        checked = false,
+        name = "Another experimental feature",
+        summaryOn = "Are you brave enough to enable this?"
+    )
 }

@@ -20,5 +20,5 @@ abstract class ExperimentalSettingsUiModule {
     abstract fun experimentalSettingsUi(impl: DefaultExperimentalSettingsUi): ExperimentalSettingsUi
 
     @Multibinds
-    abstract fun experimentalSetting(): Set<ExperimentalSetting>
+    abstract fun experimentalSettings(): Set<ExperimentalSetting>
 }

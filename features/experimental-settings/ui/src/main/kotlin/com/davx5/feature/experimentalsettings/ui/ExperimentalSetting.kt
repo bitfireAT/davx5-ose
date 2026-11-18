@@ -6,7 +6,7 @@ package com.davx5.feature.experimentalsettings.ui
 
 import androidx.compose.runtime.Composable
 
-interface ExperimentalSetting {
+fun interface ExperimentalSetting {
     @Composable
     fun Show()
 }

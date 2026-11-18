@@ -7,6 +7,7 @@ package com.davx5.feature.featureflags.shared
 import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.res.stringResource
 import at.bitfire.davdroid.ui.composable.SwitchSetting
 import com.davx5.feature.experimentalsettings.ui.ExperimentalSetting
@@ -24,10 +25,10 @@ abstract class FeatureFlagExperimentalSetting(
 
     @Composable
     override fun Show() {
-        val isFeatureEnabled = featureFlag.isEnabledFlow.collectAsState(featureFlag.isEnabled)
+        val isFeatureEnabled by featureFlag.isEnabledFlow.collectAsState(featureFlag.isEnabled)
 
         SwitchSetting(
-            checked = isFeatureEnabled.value,
+            checked = isFeatureEnabled,
             name = stringResource(settingName),
             summaryOn = summaryOn?.let { stringResource(it) },
             summaryOff = summaryOff?.let { stringResource(it) },
