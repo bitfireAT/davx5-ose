@@ -4,6 +4,8 @@
 
 package at.bitfire.davdroid.ui.accountscheck
 
+import android.accounts.Account
+import android.text.TextUtils
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -15,18 +17,27 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -49,6 +60,7 @@ fun AccountsCheckScreen(
     val accounts by model.accounts.collectAsStateWithLifecycle()
     AccountsCheckScreen(
         accounts = accounts,
+        onDeleteAndroidAccount = model::deleteAndroidAccount,
         onNavUp = onNavUp
     )
 }
@@ -57,9 +69,22 @@ fun AccountsCheckScreen(
 @Composable
 fun AccountsCheckScreen(
     accounts: List<AccountStatus>?,
+    onDeleteAndroidAccount: (Account) -> Unit = {},
     onNavUp: () -> Unit
 ) {
     AppTheme {
+        var accountToDelete by rememberSaveable { mutableStateOf<Account?>(null) }
+        accountToDelete?.let { account ->
+            DeleteAndroidAccountDialog(
+                accountName = account.name,
+                onConfirm = {
+                    onDeleteAndroidAccount(account)
+                    accountToDelete = null
+                },
+                onDismiss = { accountToDelete = null }
+            )
+        }
+
         Scaffold(
             topBar = {
                 TopAppBar(
@@ -84,7 +109,7 @@ fun AccountsCheckScreen(
                     HorizontalDivider(Modifier.padding(vertical = 16.dp))
                 }
 
-                accountsStatus(accounts)
+                accountsStatus(accounts, onRequestDelete = { accountToDelete = it.account })
             }
         }
     }
@@ -115,7 +140,10 @@ private fun Explanation() {
     }
 }
 
-private fun LazyListScope.accountsStatus(accounts: List<AccountStatus>?) {
+private fun LazyListScope.accountsStatus(
+    accounts: List<AccountStatus>?,
+    onRequestDelete: (AccountStatus.MissingDbAccount) -> Unit
+) {
     item {
         Text(
             text = stringResource(R.string.accounts_check_status),
@@ -141,13 +169,16 @@ private fun LazyListScope.accountsStatus(accounts: List<AccountStatus>?) {
         else ->
             // no keys: a legacy and a DB account can have the same name
             items(accounts) { account ->
-                AccountStatusItem(account)
+                AccountStatusItem(account, onRequestDelete)
             }
     }
 }
 
 @Composable
-private fun AccountStatusItem(status: AccountStatus) {
+private fun AccountStatusItem(
+    status: AccountStatus,
+    onRequestDelete: (AccountStatus.MissingDbAccount) -> Unit
+) {
     val (description, descriptionColor) = when (status) {
         is AccountStatus.Legacy ->
             stringResource(R.string.accounts_check_legacy_account) to MaterialTheme.colorScheme.secondary
@@ -157,30 +188,93 @@ private fun AccountStatusItem(status: AccountStatus) {
             stringResource(R.string.accounts_check_missing_db_account) to MaterialTheme.colorScheme.error
     }
 
-    Row(
+    Column(
         Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp)
     ) {
-        Icon(
-            imageVector = if (status.isProblem) Icons.Default.Warning else Icons.Default.Check,
-            contentDescription = null,
-            tint = if (status.isProblem) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
-            modifier = Modifier.padding(end = 16.dp)
-        )
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Icon(
+                imageVector = if (status.isProblem) Icons.Default.Warning else Icons.Default.Check,
+                contentDescription = null,
+                tint = if (status.isProblem) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
+                modifier = Modifier.padding(end = ICON_TEXT_GAP)
+            )
 
-        Column {
-            Text(
-                text = status.name,
-                style = MaterialTheme.typography.titleMedium
-            )
-            Text(
-                text = description,
-                style = MaterialTheme.typography.bodyMedium,
-                color = descriptionColor
-            )
+            Column {
+                Text(
+                    text = status.name,
+                    style = MaterialTheme.typography.titleMedium
+                )
+                Text(
+                    text = description,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = descriptionColor
+                )
+            }
         }
+
+        if (status is AccountStatus.MissingDbAccount)
+            Button(
+                onClick = { onRequestDelete(status) },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.error,
+                    contentColor = MaterialTheme.colorScheme.onError
+                ),
+                modifier = Modifier.padding(start = ICON_SIZE + ICON_TEXT_GAP, top = 8.dp)
+            ) {
+                Text(stringResource(R.string.dialog_delete))
+            }
     }
+}
+
+private val ICON_SIZE = 24.dp
+private val ICON_TEXT_GAP = 16.dp
+
+/**
+ * Asks the user to confirm deleting an orphaned Android account, which removes its local data.
+ */
+@Composable
+fun DeleteAndroidAccountDialog(
+    accountName: String,
+    onConfirm: () -> Unit = {},
+    onDismiss: () -> Unit = {}
+) {
+    AlertDialog(
+        icon = {
+            Icon(Icons.Default.Delete, contentDescription = null)
+        },
+        title = {
+            Text(stringResource(R.string.accounts_check_delete_title))
+        },
+        text = {
+            // TODO: link to manual page about backups (doesn't exist yet)
+            val backupUrl = remember { ExternalUris.Manual.baseUrl.toString() }
+            Text(
+                HtmlCompat.fromHtml(
+                    stringResource(R.string.accounts_check_delete_text, TextUtils.htmlEncode(accountName), backupUrl),
+                    HtmlCompat.FROM_HTML_MODE_COMPACT
+                ).toAnnotatedString()
+            )
+        },
+        confirmButton = {
+            Button(
+                onClick = onConfirm,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.error,
+                    contentColor = MaterialTheme.colorScheme.onError
+                )
+            ) {
+                Text(stringResource(R.string.dialog_delete))
+            }
+        },
+        dismissButton = {
+            OutlinedButton(onClick = onDismiss) {
+                Text(stringResource(android.R.string.cancel))
+            }
+        },
+        onDismissRequest = onDismiss
+    )
 }
 
 @Composable
@@ -188,12 +282,22 @@ private fun AccountStatusItem(status: AccountStatus) {
 fun AccountsCheckScreen_Preview() {
     AccountsCheckScreen(
         accounts = listOf(
-            AccountStatus.MissingDbAccount("orphan@example.com"),
+            AccountStatus.MissingDbAccount(Account("orphan@example.com", "type")),
             AccountStatus.Linked("linked@example.com"),
             AccountStatus.Legacy("legacy@example.com")
         ),
         onNavUp = {}
     )
+}
+
+@Composable
+@Preview
+fun DeleteAndroidAccountDialog_Preview() {
+    AppTheme {
+        DeleteAndroidAccountDialog(
+            accountName = "orphan@example.com"
+        )
+    }
 }
 
 @Composable
