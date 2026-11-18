@@ -8,7 +8,7 @@ import android.accounts.Account
 import android.accounts.AccountManager
 import android.content.Context
 import androidx.annotation.WorkerThread
-import at.bitfire.davdroid.FeatureFlags
+import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.accounts.DbAccountId
@@ -142,7 +142,7 @@ class AccountRepository @Inject internal constructor(
             return null
         }
 
-        return if (FeatureFlags.useNewAccountSystem) {
+        return if (BuildConfig.DEBUG) {
             dbAccountRepository.create(accountName, credentials, config, groupMethod, preconfigurationUrl)
         } else {
             withContext(ioDispatcher) {
