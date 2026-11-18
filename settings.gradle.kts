@@ -42,6 +42,12 @@ include(":app-ose")
 include(":core")
 include(":synctools")
 
+include(":features:feature-flags:api")
+
+include(":features:feature-flags:template:always-on")
+include(":features:feature-flags:template:api")
+include(":features:feature-flags:template:complex")
+
 include(":features:preconfigured-settings:api")
 include(":features:preconfigured-settings:shared")
 include(":features:preconfigured-settings:external-scanner")
