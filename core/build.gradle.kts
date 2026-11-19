@@ -99,6 +99,7 @@ aboutLibraries {
 dependencies {
     // gradle project dependencies
     implementation(project(":synctools"))
+    implementation(project(":features:feature-flags:api"))
     implementation(project(":features:preconfigured-settings:api"))
 
     // Kotlin / Android
