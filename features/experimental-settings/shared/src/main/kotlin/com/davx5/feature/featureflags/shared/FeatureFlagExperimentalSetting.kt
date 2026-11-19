@@ -11,17 +11,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.res.stringResource
 import at.bitfire.davdroid.ui.composable.SwitchSetting
 import com.davx5.feature.experimentalsettings.ui.ExperimentalSetting
-import com.davx5.feature.featureflags.api.FeatureFlagsProvider
-import com.davx5.feature.featureflags.api.FeatureName
 
 abstract class FeatureFlagExperimentalSetting(
-    featureFlagsProvider: FeatureFlagsProvider,
-    featureName: FeatureName,
+    private val featureFlag: MutableFeatureFlag,
     @StringRes private val settingName: Int,
     @StringRes private val summaryOn: Int?,
     @StringRes private val summaryOff: Int?,
 ) : ExperimentalSetting {
-    private val featureFlag = featureFlagsProvider.getFeatureFlag(featureName) as MutableFeatureFlag
 
     @Composable
     override fun Show() {
