@@ -633,4 +633,9 @@
 
     <!-- cert4android -->
 
+    <!-- Experimental setting: new account system -->
+    <string name="new_account_system_setting_name">New account system</string>
+    <string name="new_account_system_setting_summary_on">New accounts are created in database (experimental)</string>
+    <string name="new_account_system_setting_summary_off">New accounts are created as Android accounts (legacy)</string>
+
 </resources>
