@@ -64,10 +64,12 @@ import at.bitfire.davdroid.ui.composable.MultipleChoiceInputDialog
 import at.bitfire.davdroid.ui.composable.Setting
 import at.bitfire.davdroid.ui.composable.SettingsHeader
 import at.bitfire.davdroid.ui.composable.SwitchSetting
+import com.davx5.feature.experimentalsettings.api.ExperimentalSettingsUi
 import kotlinx.coroutines.launch
 
 @Composable
 fun AppSettingsScreen(
+    experimentalSettingsUi: ExperimentalSettingsUi?,
     onNavDebugInfo: () -> Unit,
     onExemptFromBatterySaving: () -> Unit,
     onBatterySavingSettings: () -> Unit,
@@ -81,6 +83,7 @@ fun AppSettingsScreen(
 ) {
     AppTheme {
         AppSettingsScreen(
+            experimentalSettingsUi = experimentalSettingsUi,
             onNavDebugInfo = onNavDebugInfo,
             verboseLogging = model.verboseLogging().collectAsStateWithLifecycle(false).value,
             onUpdateVerboseLogging = model::updateVerboseLogging,
@@ -125,6 +128,7 @@ fun AppSettingsScreen(
 @SuppressLint("BatteryLife")
 @Composable
 fun AppSettingsScreen(
+    experimentalSettingsUi: ExperimentalSettingsUi?,
     onNavDebugInfo: () -> Unit,
     verboseLogging: Boolean,
     onUpdateVerboseLogging: (Boolean) -> Unit,
@@ -250,6 +254,8 @@ fun AppSettingsScreen(
                     onNavPushSettings = onNavPushSettings,
                     onNavAccountsCheck = onNavAccountsCheck
                 )
+
+                experimentalSettingsUi?.Show()
             }
         }
     }
@@ -260,6 +266,7 @@ fun AppSettingsScreen(
 fun AppSettingsScreen_Preview() {
     AppTheme {
         AppSettingsScreen(
+            experimentalSettingsUi = null,
             onNavDebugInfo = {},
             verboseLogging = true,
             batterySavingExempted = true,

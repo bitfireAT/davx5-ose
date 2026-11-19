@@ -42,11 +42,16 @@ include(":app-ose")
 include(":core")
 include(":synctools")
 
+include(":features:experimental-settings:api")
+include(":features:experimental-settings:shared")
+include(":features:experimental-settings:ui")
+
 include(":features:feature-flags:api")
 
 include(":features:feature-flags:template:always-on")
 include(":features:feature-flags:template:api")
 include(":features:feature-flags:template:complex")
+include(":features:feature-flags:template:experimental")
 
 include(":features:preconfigured-settings:api")
 include(":features:preconfigured-settings:shared")
