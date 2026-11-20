@@ -173,15 +173,8 @@ class AccountRepositoryTest {
 
     @Test
     fun testRename_keepsOrphanedAndroidAccountWithNewName() = runTest {
-        val dbAccountType = context.getString(R.string.account_type_db)
-        val dbAccountId = appDatabase.dbAccountDao().insert(DbAccount(name = "DB Account"))
-        accountManager.addAccountExplicitly(
-            Account("DB Account", dbAccountType),
-            null,
-            bundleOf(AndroidAccountManager.USER_DATA_ACCOUNT_ID to dbAccountId.toString())
-        )
-        val orphan = Account(newName, dbAccountType)
-        accountManager.addAccountExplicitly(orphan, null, bundleOf(AndroidAccountManager.USER_DATA_ACCOUNT_ID to "999"))
+        val dbAccountId = createDbAccountWithLinkedAndroidAccount(name = "DB Account")
+        val orphan = createLinkedAndroidAccount(name = newName, dbAccountId = 999L)
 
         val result = runCatching { accountRepository.rename(DbAccountId(dbAccountId), newName) }
 
@@ -308,6 +301,22 @@ class AccountRepositoryTest {
             groupMethod = GroupMethod.GROUP_VCARDS,
             preconfigurationUrl = null,
         )!!
+    }
+
+    private suspend fun createDbAccountWithLinkedAndroidAccount(name: String): Long {
+        val dbAccountId = appDatabase.dbAccountDao().insert(DbAccount(name = name))
+        createLinkedAndroidAccount(name, dbAccountId)
+        return dbAccountId
+    }
+
+    private fun createLinkedAndroidAccount(name: String, dbAccountId: Long): Account {
+        val account = Account(name, context.getString(R.string.account_type_db))
+        accountManager.addAccountExplicitly(
+            account,
+            null,
+            bundleOf(AndroidAccountManager.USER_DATA_ACCOUNT_ID to dbAccountId.toString())
+        )
+        return account
     }
 
     private fun createAccountRepository(listener: OnBeforeDeleteListener): AccountRepository {
