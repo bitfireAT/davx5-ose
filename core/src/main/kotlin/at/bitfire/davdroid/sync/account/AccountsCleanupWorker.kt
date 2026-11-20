@@ -15,7 +15,6 @@ import androidx.work.Worker
 import androidx.work.WorkerParameters
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.repository.AccountRepository
-import at.bitfire.davdroid.resource.local.AddressBookAccountManager
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -28,7 +27,6 @@ class AccountsCleanupWorker @AssistedInject constructor(
     @Assisted val context: Context,
     @Assisted workerParameters: WorkerParameters,
     private val accountRepository: AccountRepository,
-    private val addressBookAccountManager: AddressBookAccountManager,
     private val db: AppDatabase,
     private val logger: Logger
 ): Worker(context, workerParameters) {
@@ -43,7 +41,6 @@ class AccountsCleanupWorker @AssistedInject constructor(
         lockAccountsCleanup()
         try {
             cleanUpServices()
-            cleanUpAddressBooks()
         } finally {
             unlockAccountsCleanup()
         }
@@ -65,22 +62,6 @@ class AccountsCleanupWorker @AssistedInject constructor(
         } else {
             val accountNames = accountIds.map { accountId -> accountRepository.getAccountNameBlocking(accountId) }
             serviceDao.deleteExceptAccountsBlocking(accountNames)
-        }
-    }
-
-    /**
-     * Deletes address book accounts which are not assigned to a valid account.
-     */
-    @VisibleForTesting
-    internal fun cleanUpAddressBooks() {
-        val accountIds = accountRepository.getAllBlocking().toSet()
-        for (addressBookAccount in addressBookAccountManager.getAll()) {
-            val accountId = addressBookAccountManager.getAppAccount(addressBookAccount)
-            if (accountId !in accountIds) {
-                // If no valid account exists for this address book, we can delete it
-                logger.info("Deleting address book account without valid account: $addressBookAccount")
-                addressBookAccountManager.delete(addressBookAccount)
-            }
         }
     }
 
