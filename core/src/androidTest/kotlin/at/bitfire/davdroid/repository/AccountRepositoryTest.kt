@@ -26,6 +26,7 @@ import at.bitfire.davdroid.sync.account.AccountsCleanupWorker
 import at.bitfire.davdroid.sync.account.TestAccount
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
 import at.bitfire.synctools.vcard.GroupMethod
+import com.davx5.feature.featureflags.api.FeatureFlagsProvider
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -83,6 +84,9 @@ class AccountRepositoryTest {
 
     @Inject
     internal lateinit var dbAccountRepository: DbAccountRepository
+
+    @Inject
+    internal lateinit var featureFlagProvider: FeatureFlagsProvider
 
     @Inject
     internal lateinit var legacyAccountRepository: LegacyAccountRepository
@@ -297,6 +301,7 @@ class AccountRepositoryTest {
             context = context,
             db = appDatabase,
             dbAccountRepository = dbAccountRepository,
+            featureFlagsProvider = featureFlagProvider,
             ioDispatcher = Dispatchers.IO,
             legacyAccountRepository = legacyAccountRepository,
             localCalendarStore = { localCalendarStore },

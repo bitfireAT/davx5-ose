@@ -28,6 +28,8 @@ import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.conflate
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
@@ -48,6 +50,7 @@ class AndroidAccountManager @Inject constructor(
     private val logger: Logger
 ) {
     private val dbAccountType = context.getString(R.string.account_type_db)
+    private val legacyAccountType = context.getString(R.string.account_type)
 
     private val dbAccountDao = database.dbAccountDao()
 
@@ -202,15 +205,8 @@ class AndroidAccountManager @Inject constructor(
         val accounts = manager.getAccountsByType(dbAccountType)
 
         val dbAccounts = accountsToKeep()
-        val existingIds = dbAccounts.map { it.id }.toSet()
-        val existingNames = dbAccounts.map { it.name }.toSet()
-
         val orphanedAccounts = accounts.filter { account ->
-            when (val linkedId = getLinkedDbAccountId(account)) {
-                // not linked yet: orphaned when no DB account has its name (otherwise it's still being set up)
-                null -> account.name !in existingNames
-                else -> linkedId !in existingIds
-            }
+            isOrphaned(account.name, getLinkedDbAccountId(account), dbAccounts)
         }
 
         for (account in orphanedAccounts) {
@@ -282,6 +278,35 @@ class AndroidAccountManager @Inject constructor(
         // It's still possible that the account doesn't exist anymore; the list given by the account manager is authoritative
         account.takeIf { accounts.contains(it) }
     }.flowOn(ioDispatcher) // we access the database, so run the mapping in the io dispatcher
+
+    /**
+     * Observes the Android accounts of legacy accounts and DB accounts, without address book accounts.
+     *
+     * @return flow that emits again when Android accounts are added, removed or renamed
+     */
+    fun getAllFlow(): Flow<List<AndroidAccountInfo>> = callbackFlow {
+        val accountManager = accountManager.get()
+
+        // The listener runs on the main thread, so it only forwards the accounts.
+        val listener = OnAccountsUpdateListener { accounts ->
+            trySend(accounts.filter { it.type == legacyAccountType || it.type == dbAccountType })
+        }
+        accountManager.addOnAccountsUpdatedListener(listener, null, true)
+
+        awaitClose {
+            accountManager.removeOnAccountsUpdatedListener(listener)
+        }
+    }.conflate()    // only the latest account list is relevant
+        .map { accounts ->
+            accounts.map { account ->
+                if (account.type == legacyAccountType)
+                    AndroidAccountInfo(account, isLegacy = true)
+                else
+                    AndroidAccountInfo(account, isLegacy = false, linkedDbAccountId = getLinkedDbAccountId(account))
+            }
+        }
+        .distinctUntilChanged()     // after mapping, because a removed and re-created account with the same name can have another linked ID
+        .flowOn(ioDispatcher)     // registering the listener and reading user data cause I/O
 
     /**
      * Returns the [AccountId] for a given Android [Account].
@@ -377,6 +402,17 @@ class AndroidAccountManager @Inject constructor(
 
         /** User data key of Android accounts that references the linked DB account ID */
         const val USER_DATA_ACCOUNT_ID = "account_id"
+
+        /**
+         * Whether the Android account of a DB account is orphaned, i.e. doesn't belong to one of [dbAccounts].
+         * Linked accounts are matched by ID. Unlinked ones by name, because they're still being set up when a DB
+         * account with their name exists.
+         */
+        fun isOrphaned(accountName: String, linkedDbAccountId: Long?, dbAccounts: List<DbAccount>): Boolean =
+            when (linkedDbAccountId) {
+                null -> dbAccounts.none { it.name == accountName }
+                else -> dbAccounts.none { it.id == linkedDbAccountId }
+            }
 
     }
 

@@ -99,6 +99,9 @@ aboutLibraries {
 dependencies {
     // gradle project dependencies
     implementation(project(":synctools"))
+    implementation(project(":features:feature-flags:api"))
+    implementation(project(":features:feature-flags:new-account-system:api"))
+    implementation(project(":features:experimental-settings:api"))
     implementation(project(":features:preconfigured-settings:api"))
 
     // Kotlin / Android
@@ -199,6 +202,7 @@ dependencies {
     androidTestImplementation(project(":features:preconfigured-settings:external-scanner"))
 
     testImplementation(kotlin("test"))
+    testImplementation(libs.assertk)
     testImplementation(libs.bitfire.dav4jvm)
     testImplementation(libs.conscrypt.openjdk.uber)
     testImplementation(libs.junit)

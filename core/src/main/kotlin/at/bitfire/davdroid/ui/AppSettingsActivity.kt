@@ -12,12 +12,19 @@ import android.provider.Settings
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toUri
+import at.bitfire.davdroid.ui.accountscheck.AccountsCheckActivity
 import at.bitfire.davdroid.ui.debuginfo.DebugInfoActivity
 import at.bitfire.davdroid.ui.push.PushSettingsActivity
+import com.davx5.feature.experimentalsettings.api.ExperimentalSettingsUi
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.Optional
+import javax.inject.Inject
+import kotlin.jvm.optionals.getOrNull
 
 @AndroidEntryPoint
 class AppSettingsActivity: AppCompatActivity() {
+
+    @Inject lateinit var experimentalSettingsUi: Optional<ExperimentalSettingsUi>
 
     @SuppressLint("BatteryLife")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -25,6 +32,7 @@ class AppSettingsActivity: AppCompatActivity() {
 
         setContent {
             AppSettingsScreen(
+                experimentalSettingsUi = experimentalSettingsUi.getOrNull(),
                 onNavDebugInfo = {
                     startActivity(Intent(this, DebugInfoActivity::class.java))
                 },
@@ -55,6 +63,9 @@ class AppSettingsActivity: AppCompatActivity() {
                 },
                 onNavPushSettings = {
                     startActivity(Intent(this, PushSettingsActivity::class.java))
+                },
+                onNavAccountsCheck = {
+                    startActivity(Intent(this, AccountsCheckActivity::class.java))
                 },
                 onNavUp = ::onSupportNavigateUp
             )

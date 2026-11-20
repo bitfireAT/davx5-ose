@@ -7,7 +7,6 @@ package at.bitfire.davdroid.repository
 import android.accounts.Account
 import android.content.Context
 import androidx.annotation.WorkerThread
-import at.bitfire.davdroid.FeatureFlags
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.accounts.AndroidAccountManager
@@ -28,6 +27,9 @@ import at.bitfire.davdroid.sync.account.AccountsCleanupWorker
 import at.bitfire.davdroid.sync.account.InvalidAccountException
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
 import at.bitfire.synctools.vcard.GroupMethod
+import com.davx5.feature.featureflags.api.FeatureFlags
+import com.davx5.feature.featureflags.api.FeatureFlagsProvider
+import com.davx5.feature.featureflags.newaccountsystem.api.NewAccountSystem
 import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CancellationException
@@ -55,6 +57,7 @@ class AccountRepository @Inject internal constructor(
     private val automaticSyncManager: Lazy<AutomaticSyncManager>,
     @ApplicationContext private val context: Context,
     private val dbAccountRepository: DbAccountRepository,
+    private val featureFlagsProvider: FeatureFlagsProvider,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val legacyAccountRepository: LegacyAccountRepository,
     private val localCalendarStore: Lazy<LocalCalendarStore>,
@@ -142,7 +145,7 @@ class AccountRepository @Inject internal constructor(
             return null
         }
 
-        return if (FeatureFlags.useNewAccountSystem) {
+        return if (featureFlagsProvider.getFeatureFlag(FeatureFlags.NewAccountSystem).isEnabled) {
             dbAccountRepository.create(accountName, credentials, config, groupMethod, preconfigurationUrl)
         } else {
             withContext(ioDispatcher) {

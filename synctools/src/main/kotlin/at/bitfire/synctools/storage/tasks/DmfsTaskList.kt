@@ -29,6 +29,8 @@ import java.util.logging.Logger
  * Represents a locally stored task list, containing [DmfsTask]s (tasks).
  * Communicates with tasks.org-compatible content providers (currently tasks.org and OpenTasks) to store the tasks.
  *
+ * - [DmfsTaskListProvider.COLUMN_TASK_LIST_URL] contains the collection URL so that other apps can access it.
+ *
  * Note: When loading tasks with properties, this implementation explicitly loads properties via separate
  * queries rather than using the `LOAD_PROPERTIES` parameter. This is because the left-join result from
  * `LOAD_PROPERTIES` is error-prone to process (interleaved task and property rows).
