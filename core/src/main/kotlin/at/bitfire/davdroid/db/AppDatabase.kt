@@ -24,11 +24,9 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.migration.AutoMigration12
 import at.bitfire.davdroid.db.migration.AutoMigration16
 import at.bitfire.davdroid.db.migration.AutoMigration18
-import at.bitfire.davdroid.resource.local.AddressBookAccountManager
 import at.bitfire.davdroid.ui.AccountsActivity
 import at.bitfire.davdroid.ui.NotificationRegistry
 import at.bitfire.davdroid.util.TextTable
-import dagger.Lazy
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -79,7 +77,6 @@ abstract class AppDatabase: RoomDatabase() {
         @Singleton
         fun appDatabase(
             accountManager: AccountManager,
-            addressBookAccountManager: Lazy<AddressBookAccountManager>,
             autoMigrations: Set<@JvmSuppressWildcards AutoMigrationSpec>,
             @ApplicationContext context: Context,
             manualMigrations: Set<@JvmSuppressWildcards Migration>,
@@ -93,11 +90,6 @@ abstract class AppDatabase: RoomDatabase() {
             }
             .fallbackToDestructiveMigration(dropAllTables = true)   // as a last fallback, recreate database instead of crashing
             .addCallback(object: Callback() {
-                override fun onCreate(db: SupportSQLiteDatabase) {
-                    // address book accounts that survived (e.g. app data cleared) could link to new DB accounts with the same ID
-                    addressBookAccountManager.get().deleteAllLinkingDbAccount()
-                }
-
                 override fun onDestructiveMigration(db: SupportSQLiteDatabase) {
                     notificationRegistry.notifyIfPossible(NotificationRegistry.NOTIFY_DATABASE_CORRUPTED) {
                         val launcherIntent = Intent(context, AccountsActivity::class.java)
