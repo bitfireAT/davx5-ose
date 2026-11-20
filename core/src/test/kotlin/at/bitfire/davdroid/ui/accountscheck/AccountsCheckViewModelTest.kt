@@ -5,18 +5,22 @@
 package at.bitfire.davdroid.ui.accountscheck
 
 import android.accounts.Account
+import app.cash.turbine.test
 import at.bitfire.davdroid.accounts.AndroidAccountInfo
 import at.bitfire.davdroid.accounts.AndroidAccountManager
 import at.bitfire.davdroid.db.DbAccount
 import at.bitfire.davdroid.repository.DbAccountRepository
-import at.bitfire.davdroid.ui.accountscheck.AccountsCheckViewModel.Companion.toAccountStatuses
+import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -30,11 +34,13 @@ class AccountsCheckViewModelTest {
 
     private val testDispatcher = UnconfinedTestDispatcher()
 
+    private val androidAccounts = MutableStateFlow<List<AndroidAccountInfo>>(emptyList())
     private val androidAccountManager = mockk<AndroidAccountManager>(relaxed = true) {
-        every { getAllFlow() } returns emptyFlow()
+        every { getAllFlow() } returns androidAccounts
     }
+    private val dbAccounts = MutableStateFlow<List<DbAccount>>(emptyList())
     private val dbAccountRepository = mockk<DbAccountRepository> {
-        every { getAllDbAccountsFlow() } returns emptyFlow()
+        every { getAllDbAccountsFlow() } returns dbAccounts
     }
 
     private val orphan = Account("Orphan", "db")
@@ -58,65 +64,83 @@ class AccountsCheckViewModelTest {
 
 
     @Test
-    fun `deleteAndroidAccount() removes Android account`() {
-        model.deleteAndroidAccount(orphan)
+    fun `accounts returns legacy account`() = runTest(testDispatcher) {
+        androidAccounts.value = listOf(legacyAccount("Legacy"))
 
-        verify { androidAccountManager.removeAccount(orphan) }
-    }
-
-
-    @Test
-    fun `toAccountStatuses() returns legacy account`() {
-        val legacy = legacyAccount("Legacy")
-
-        val result = toAccountStatuses(listOf(legacy), emptyList())
-
-        assertEquals(listOf(AccountStatus.Legacy("Legacy")), result)
+        model.accounts.filterNotNull().test {
+            assertEquals(listOf(AccountStatus.Legacy("Legacy")), awaitItem())
+        }
     }
 
     @Test
-    fun `toAccountStatuses() returns account that links to DB account`() {
-        val linked = dbTypeAccount("Linked", linkedId = 1)
-        val dbAccounts = listOf(DbAccount(id = 1, name = "DB account name"))
+    fun `accounts returns account that links to existing DB account`() = runTest(testDispatcher) {
+        coEvery { androidAccountManager.isOrphaned(1) } returns false
+        androidAccounts.value = listOf(dbTypeAccount("Linked", linkedId = 1))
 
-        val result = toAccountStatuses(listOf(linked), dbAccounts)
-
-        assertEquals(listOf(AccountStatus.Linked("Linked")), result)
+        model.accounts.filterNotNull().test {
+            assertEquals(listOf(AccountStatus.Linked("Linked")), awaitItem())
+        }
     }
 
     @Test
-    fun `toAccountStatuses() returns account that links to non-existing DB account as missing DB account`() {
-        val linked = dbTypeAccount("Linked", linkedId = 2)
-        val dbAccounts = listOf(DbAccount(id = 1, name = "Linked"))
-
-        val result = toAccountStatuses(listOf(linked), dbAccounts)
-
-        assertEquals(listOf(AccountStatus.MissingDbAccount(linked.account)), result)
-    }
-
-    @Test
-    fun `toAccountStatuses() returns unlinked account as missing DB account, also when DB account has the same name`() {
+    fun `accounts returns orphaned account as missing DB account`() = runTest(testDispatcher) {
         val unlinked = dbTypeAccount("Unlinked")
-        val dbAccounts = listOf(DbAccount(id = 1, name = "Unlinked"))
+        coEvery { androidAccountManager.isOrphaned(null) } returns true
+        androidAccounts.value = listOf(unlinked)
 
-        val result = toAccountStatuses(listOf(unlinked), dbAccounts)
-
-        assertEquals(listOf(AccountStatus.MissingDbAccount(unlinked.account)), result)
+        model.accounts.filterNotNull().test {
+            assertEquals(listOf(AccountStatus.MissingDbAccount(unlinked.account)), awaitItem())
+        }
     }
 
     @Test
-    fun `toAccountStatuses() sorts problems first, then by name`() {
-        val androidAccounts = listOf(
+    fun `accounts sorts problems first, then by name`() = runTest(testDispatcher) {
+        coEvery { androidAccountManager.isOrphaned(1) } returns false
+        coEvery { androidAccountManager.isOrphaned(2) } returns true
+        androidAccounts.value = listOf(
             legacyAccount("c"),
             dbTypeAccount("B", linkedId = 1),
             dbTypeAccount("e", linkedId = 2),
             legacyAccount("a")
         )
-        val dbAccounts = listOf(DbAccount(id = 1, name = "B"))
 
-        val result = toAccountStatuses(androidAccounts, dbAccounts)
+        model.accounts.filterNotNull().test {
+            assertEquals(listOf("e", "a", "B", "c"), awaitItem().map { it.name })
+        }
+    }
 
-        assertEquals(listOf("e", "a", "B", "c"), result.map { it.name })
+    @Test
+    fun `accounts updates when Android accounts change`() = runTest(testDispatcher) {
+        model.accounts.filterNotNull().test {
+            assertEquals(emptyList<AccountStatus>(), awaitItem())
+
+            androidAccounts.value = listOf(legacyAccount("New"))
+
+            assertEquals(listOf(AccountStatus.Legacy("New")), awaitItem())
+        }
+    }
+
+    @Test
+    fun `accounts updates when DB accounts change`() = runTest(testDispatcher) {
+        val linked = dbTypeAccount("Linked", linkedId = 1)
+        coEvery { androidAccountManager.isOrphaned(1) } returns true
+        androidAccounts.value = listOf(linked)
+
+        model.accounts.filterNotNull().test {
+            assertEquals(listOf(AccountStatus.MissingDbAccount(linked.account)), awaitItem())
+
+            coEvery { androidAccountManager.isOrphaned(1) } returns false
+            dbAccounts.value = listOf(DbAccount(id = 1, name = "Linked"))
+
+            assertEquals(listOf(AccountStatus.Linked("Linked")), awaitItem())
+        }
+    }
+
+    @Test
+    fun `deleteAndroidAccount() removes Android account`() {
+        model.deleteAndroidAccount(orphan)
+
+        verify { androidAccountManager.removeAccount(orphan) }
     }
 
 

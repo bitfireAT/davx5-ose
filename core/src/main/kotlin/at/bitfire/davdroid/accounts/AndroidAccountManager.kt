@@ -15,7 +15,6 @@ import android.os.Looper
 import androidx.annotation.WorkerThread
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
-import at.bitfire.davdroid.db.DbAccount
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.sync.account.InvalidAccountException
 import at.bitfire.synctools.util.SensitiveString
@@ -129,6 +128,12 @@ class AndroidAccountManager @Inject constructor(
      */
     fun getLinkedDbAccountId(account: Account): Long? =
         accountManager.get().getUserData(account, USER_DATA_ACCOUNT_ID)?.toLongOrNull()
+
+    /**
+     * Whether an Android account with the link [linkedDbAccountId] is orphaned, i.e. not linked to an existing DB account.
+     */
+    suspend fun isOrphaned(linkedDbAccountId: Long?): Boolean =
+        linkedDbAccountId == null || dbAccountDao.get(linkedDbAccountId) == null
 
     /**
      * Removes the given Android account.
@@ -269,12 +274,6 @@ class AndroidAccountManager @Inject constructor(
 
         /** User data key of Android accounts that references the linked DB account ID */
         const val USER_DATA_ACCOUNT_ID = "account_id"
-
-        /**
-         * Whether the Android account of a DB account is orphaned, i.e. not linked to one of [dbAccounts].
-         */
-        fun isOrphaned(linkedDbAccountId: Long?, dbAccounts: List<DbAccount>): Boolean =
-            linkedDbAccountId == null || dbAccounts.none { it.id == linkedDbAccountId }
 
     }
 
