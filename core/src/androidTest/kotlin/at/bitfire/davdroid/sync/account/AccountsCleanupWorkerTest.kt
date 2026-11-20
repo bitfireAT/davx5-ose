@@ -88,6 +88,21 @@ class AccountsCleanupWorkerTest {
 
 
     @Test
+    fun testDoWork_keepsOrphanedDbAndroidAccount() {
+        // Android account linked to a DB account that doesn't exist; may have unsynced data, so only the user may delete it
+        assertTrue(accountManager.addAccountExplicitly(dbAndroidAccount, null, null))
+        accountManager.setUserData(dbAndroidAccount, AndroidAccountManager.USER_DATA_ACCOUNT_ID, "999")
+
+        val worker = TestListenableWorkerBuilder<AccountsCleanupWorker>(context)
+            .setWorkerFactory(workerFactory)
+            .build()
+        worker.doWork()
+
+        assertTrue(accountManager.accounts.contains(dbAndroidAccount))
+    }
+
+
+    @Test
     fun testCleanUpServices_noAccount() {
         // Insert service that reference to invalid account
         db.serviceDao()
@@ -147,35 +162,6 @@ class AccountsCleanupWorkerTest {
             assertNotNull(db.serviceDao().getBlocking(1))
             assertNull(db.serviceDao().getBlocking(2))
         }
-    }
-
-
-    @Test
-    fun testCleanUpDbAndroidAccounts_removesOrphaned() {
-        // Create Android account linked to a DB account that doesn't exist
-        assertTrue(accountManager.addAccountExplicitly(dbAndroidAccount, null, null))
-        accountManager.setUserData(dbAndroidAccount, AndroidAccountManager.USER_DATA_ACCOUNT_ID, "999")
-
-        val worker = TestListenableWorkerBuilder<AccountsCleanupWorker>(context)
-            .setWorkerFactory(workerFactory)
-            .build()
-        worker.cleanUpDbAndroidAccounts()
-
-        assertFalse(accountManager.accounts.contains(dbAndroidAccount))
-    }
-
-    @Test
-    fun testCleanUpDbAndroidAccounts_keepsLinked() {
-        val dbAccountId = db.dbAccountDao().insertBlocking(DbAccount(name = dbAndroidAccount.name))
-        assertTrue(accountManager.addAccountExplicitly(dbAndroidAccount, null, null))
-        accountManager.setUserData(dbAndroidAccount, AndroidAccountManager.USER_DATA_ACCOUNT_ID, dbAccountId.toString())
-
-        val worker = TestListenableWorkerBuilder<AccountsCleanupWorker>(context)
-            .setWorkerFactory(workerFactory)
-            .build()
-        worker.cleanUpDbAndroidAccounts()
-
-        assertTrue(accountManager.accounts.contains(dbAndroidAccount))
     }
 
 

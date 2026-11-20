@@ -4,18 +4,13 @@
 
 package at.bitfire.davdroid.ui.accountscheck
 
+import android.accounts.Account
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListScope
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -26,10 +21,12 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.text.HtmlCompat
@@ -39,7 +36,6 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.ExternalUris
 import at.bitfire.davdroid.ui.UiUtils.toAnnotatedString
 import at.bitfire.davdroid.ui.composable.AppTheme
-import at.bitfire.davdroid.ui.composable.ProgressBar
 
 @Composable
 fun AccountsCheckScreen(
@@ -49,6 +45,7 @@ fun AccountsCheckScreen(
     val accounts by model.accounts.collectAsStateWithLifecycle()
     AccountsCheckScreen(
         accounts = accounts,
+        onDeleteAndroidAccount = model::deleteAndroidAccount,
         onNavUp = onNavUp
     )
 }
@@ -57,9 +54,22 @@ fun AccountsCheckScreen(
 @Composable
 fun AccountsCheckScreen(
     accounts: List<AccountStatus>?,
+    onDeleteAndroidAccount: (Account) -> Unit = {},
     onNavUp: () -> Unit
 ) {
     AppTheme {
+        var accountToDelete by rememberSaveable { mutableStateOf<Account?>(null) }
+        accountToDelete?.let { account ->
+            DeleteAndroidAccountDialog(
+                accountName = account.name,
+                onConfirm = {
+                    onDeleteAndroidAccount(account)
+                    accountToDelete = null
+                },
+                onDismiss = { accountToDelete = null }
+            )
+        }
+
         Scaffold(
             topBar = {
                 TopAppBar(
@@ -84,7 +94,7 @@ fun AccountsCheckScreen(
                     HorizontalDivider(Modifier.padding(vertical = 16.dp))
                 }
 
-                accountsStatus(accounts)
+                accountsStatus(accounts, onRequestDelete = { accountToDelete = it.account })
             }
         }
     }
@@ -115,80 +125,12 @@ private fun Explanation() {
     }
 }
 
-private fun LazyListScope.accountsStatus(accounts: List<AccountStatus>?) {
-    item {
-        Text(
-            text = stringResource(R.string.accounts_check_status),
-            style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
-    }
-
-    when {
-        accounts == null -> item {
-            ProgressBar(Modifier.fillMaxWidth())
-        }
-        accounts.isEmpty() -> item {
-            Text(
-                text = stringResource(R.string.accounts_check_empty),
-                style = MaterialTheme.typography.bodyLarge,
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 32.dp)
-            )
-        }
-        else ->
-            // no keys: a legacy and a DB account can have the same name
-            items(accounts) { account ->
-                AccountStatusItem(account)
-            }
-    }
-}
-
-@Composable
-private fun AccountStatusItem(status: AccountStatus) {
-    val (description, descriptionColor) = when (status) {
-        is AccountStatus.Legacy ->
-            stringResource(R.string.accounts_check_legacy_account) to MaterialTheme.colorScheme.secondary
-        is AccountStatus.Linked ->
-            stringResource(R.string.accounts_check_links_to_db_account) to MaterialTheme.colorScheme.primary
-        is AccountStatus.MissingDbAccount ->
-            stringResource(R.string.accounts_check_missing_db_account) to MaterialTheme.colorScheme.error
-    }
-
-    Row(
-        Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp)
-    ) {
-        Icon(
-            imageVector = if (status.isProblem) Icons.Default.Warning else Icons.Default.Check,
-            contentDescription = null,
-            tint = if (status.isProblem) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
-            modifier = Modifier.padding(end = 16.dp)
-        )
-
-        Column {
-            Text(
-                text = status.name,
-                style = MaterialTheme.typography.titleMedium
-            )
-            Text(
-                text = description,
-                style = MaterialTheme.typography.bodyMedium,
-                color = descriptionColor
-            )
-        }
-    }
-}
-
 @Composable
 @Preview
 fun AccountsCheckScreen_Preview() {
     AccountsCheckScreen(
         accounts = listOf(
-            AccountStatus.MissingDbAccount("orphan@example.com"),
+            AccountStatus.MissingDbAccount(Account("orphan@example.com", "type")),
             AccountStatus.Linked("linked@example.com"),
             AccountStatus.Legacy("legacy@example.com")
         ),

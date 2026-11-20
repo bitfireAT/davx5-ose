@@ -4,54 +4,51 @@
 
 package at.bitfire.davdroid.ui.accountscheck
 
-import androidx.annotation.VisibleForTesting
+import android.accounts.Account
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import at.bitfire.davdroid.accounts.AndroidAccountInfo
 import at.bitfire.davdroid.accounts.AndroidAccountManager
-import at.bitfire.davdroid.accounts.AndroidAccountManager.Companion.isOrphaned
-import at.bitfire.davdroid.db.DbAccount
+import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.repository.DbAccountRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class AccountsCheckViewModel @Inject internal constructor(
-    androidAccountManager: AndroidAccountManager,
-    dbAccountRepository: DbAccountRepository
+    private val androidAccountManager: AndroidAccountManager,
+    dbAccountRepository: DbAccountRepository,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ): ViewModel() {
 
     /** status of all accounts (updated live); `null` while loading */
     val accounts: StateFlow<List<AccountStatus>?> = combine(
         androidAccountManager.getAllFlow(),
-        dbAccountRepository.getAllDbAccountsFlow(),
-        ::toAccountStatuses
-    ).stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
+        dbAccountRepository.getAllDbAccountsFlow()  // only to check again when DB accounts change
+    ) { androidAccounts, _ ->
+        androidAccounts.map { androidAccount ->
+            val name = androidAccount.account.name
+            when {
+                androidAccount.isLegacy -> AccountStatus.Legacy(name)
+                androidAccountManager.isOrphaned(androidAccount.linkedDbAccountId) -> AccountStatus.MissingDbAccount(androidAccount.account)
+                else -> AccountStatus.Linked(name)
+            }
+        }.sortedWith(
+            compareByDescending<AccountStatus> { it.isProblem }
+                .thenBy(String.CASE_INSENSITIVE_ORDER) { it.name }
+        )
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
 
-
-    companion object {
-
-        @VisibleForTesting
-        internal fun toAccountStatuses(
-            androidAccounts: List<AndroidAccountInfo>,
-            dbAccounts: List<DbAccount>
-        ): List<AccountStatus> =
-            androidAccounts.map { androidAccount ->
-                val name = androidAccount.account.name
-                when {
-                    androidAccount.isLegacy -> AccountStatus.Legacy(name)
-                    isOrphaned(name, androidAccount.linkedDbAccountId, dbAccounts) -> AccountStatus.MissingDbAccount(name)
-                    else -> AccountStatus.Linked(name)
-                }
-            }.sortedWith(
-                compareByDescending<AccountStatus> { it.isProblem }
-                    .thenBy(String.CASE_INSENSITIVE_ORDER) { it.name }
-            )
-
+    /** Deletes the given (orphaned) Android account. [accounts] updates automatically. */
+    fun deleteAndroidAccount(account: Account) {
+        viewModelScope.launch(ioDispatcher) {
+            androidAccountManager.removeAccount(account)
+        }
     }
 
 }
