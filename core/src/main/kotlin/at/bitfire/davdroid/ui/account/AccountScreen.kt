@@ -12,7 +12,6 @@ import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.SharedTransitionScope
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -111,7 +110,7 @@ fun AccountScreen(
         }
     )
 
-    val accountName by model.accountName.collectAsState("")
+    val accountName by model.accountName.collectAsState()
     val cardDavService by model.cardDavSvc.collectAsStateWithLifecycle()
     val addressBooks = model.addressBooks.collectAsLazyPagingItems()
 
@@ -122,7 +121,7 @@ fun AccountScreen(
 
     val context = LocalContext.current
     AccountScreen(
-        accountName = accountName,
+        accountName = accountName ?: "",
         error = model.error,
         onResetError = model::resetError,
         invalidAccount = model.invalidAccount.collectAsStateWithLifecycle(false).value,
@@ -176,7 +175,7 @@ fun AccountScreen(
     )
 }
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AccountScreen(
     accountName: String,

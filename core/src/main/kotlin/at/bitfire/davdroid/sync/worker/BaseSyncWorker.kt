@@ -33,12 +33,8 @@ import at.bitfire.davdroid.sync.SyncSettings
 import at.bitfire.davdroid.sync.SyncSettingsProvider
 import at.bitfire.davdroid.sync.TaskSyncer
 import at.bitfire.davdroid.sync.TasksAppManager
+import at.bitfire.davdroid.sync.account.AccountOperationFailedException
 import at.bitfire.davdroid.sync.account.InvalidAccountException
-import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.MAX_RUN_ATTEMPTS
-import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.NO_RESYNC
-import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.RESYNC_ENTRIES
-import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.RESYNC_LIST
-import at.bitfire.davdroid.sync.worker.BaseSyncWorker.Companion.commonTag
 import at.bitfire.davdroid.ui.NotificationRegistry
 import at.bitfire.synctools.storage.TaskProvider
 import dagger.Lazy
@@ -165,10 +161,27 @@ abstract class BaseSyncWorker(
             // make sure that the (linked) Android account exists, for instance after it has been removed in system settings
             try {
                 androidAccountProvider.provide(accountId)
-            } catch (e: InvalidAccountException) {
+            } catch (e: AccountOperationFailedException) {
                 logger.log(Level.WARNING, "Couldn't provide Android account for $accountId", e)
+
+                // tell the user, otherwise all syncs of this account would fail silently
+                val accountName = accountRepository.getAccountName(accountId)
+                notificationRegistry.notifyIfPossible(NotificationRegistry.NOTIFY_SYNC_ERROR, tag = "$accountId-account") {
+                    NotificationCompat.Builder(applicationContext, notificationRegistry.CHANNEL_SYNC_ERRORS)
+                        .setSmallIcon(R.drawable.ic_sync_problem_notify)
+                        .setContentTitle(accountName)
+                        .setContentText(applicationContext.getString(R.string.sync_error_account_unavailable))
+                        .setSubText(accountName)
+                        .setOnlyAlertOnce(true)
+                        .setCategory(NotificationCompat.CATEGORY_ERROR)
+                        .build()
+                }
                 return Result.failure()
             }
+
+            // account is available (again), so dismiss a previous "account unavailable" notification
+            NotificationManagerCompat.from(applicationContext)
+                .cancel("$accountId-account", NotificationRegistry.NOTIFY_SYNC_ERROR)
 
             if (inputData.getBoolean(INPUT_MANUAL, false))
                 logger.info("Manual sync, skipping network checks")
