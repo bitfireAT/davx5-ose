@@ -9,6 +9,7 @@ import at.bitfire.synctools.icalendar.validation.ICalPreprocessor
 import at.bitfire.synctools.util.getTimeZoneOrThrow
 import net.fortuna.ical4j.data.CalendarBuilder
 import net.fortuna.ical4j.data.CalendarOutputter
+import net.fortuna.ical4j.data.ParserException
 import net.fortuna.ical4j.model.Calendar
 import net.fortuna.ical4j.model.Component
 import net.fortuna.ical4j.model.Parameter
@@ -32,6 +33,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
+import org.junit.Assert.fail
 import org.junit.Assume.assumeTrue
 import org.junit.Test
 import java.io.StringReader
@@ -138,14 +140,14 @@ class Ical4jTest {
         assertEquals("P1DT1H4M", TemporalAmountAdapter.parse("P1DT1H4M").toString())
     }
 
-    @Test
+    @Test(expected = AssertionError::class)
     fun `TemporalAmountAdapter months`() {
         // https://github.com/ical4j/ical4j/issues/419
         // A month usually doesn't have 4 weeks = 4*7 days = 28 days (except February in non-leap years).
         assertNotEquals("P4W", TemporalAmountAdapter(Period.ofMonths(1)).toString())
     }
 
-    @Test
+    @Test(expected = AssertionError::class)
     fun `TemporalAmountAdapter year`() {
         // https://github.com/ical4j/ical4j/issues/419
         // A year has 365 or 366 days, but never 52 weeks = 52*7 days = 364 days.
@@ -368,8 +370,12 @@ class Ical4jTest {
             """.trimIndent()
         )
 
-        // must not throw
-        CalendarBuilder(defaultTimeZoneRegistry).build(reader)
+        try {
+            CalendarBuilder(defaultTimeZoneRegistry).build(reader)
+            fail("Skipping empty timezones workaround can be removed from SystemAwareTimeZoneRegistry")
+        } catch (e: ParserException) {
+            assertTrue(e.cause is NullPointerException)
+        }
     }
 
     @Test

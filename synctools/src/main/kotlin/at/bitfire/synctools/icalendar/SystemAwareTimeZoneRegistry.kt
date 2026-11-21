@@ -9,6 +9,7 @@ import net.fortuna.ical4j.model.TimeZone
 import net.fortuna.ical4j.model.TimeZoneRegistry
 import net.fortuna.ical4j.model.TimeZoneRegistryFactory
 import net.fortuna.ical4j.model.ZoneRulesProviderImpl
+import net.fortuna.ical4j.model.component.Observance
 import java.time.DateTimeException
 import java.time.ZoneId
 import java.time.ZoneOffset
@@ -20,7 +21,8 @@ import kotlin.jvm.optionals.getOrNull
  * A [TimeZoneRegistry] that uses system timezone IDs for all TZIDs recognised by [ZoneId.of],
  * ignoring any VTIMEZONE component provided alongside such a TZID.
  *
- * Also contains a workaround for:
+ * Also contains workarounds for:
+ * - https://github.com/bitfireAT/davx5-ose/issues/2248 – NPE when receiving calendar event with invalid VTIMEZONE
  * - https://github.com/bitfireAT/davx5/issues/914 – ZoneIdPool exhaustion during timezone registration.
  *
  * If more workarounds are to be added, the class should probably be split into one for the core
@@ -45,11 +47,18 @@ class SystemAwareTimeZoneRegistry(
      * - If the TZID is known to the system (like `Europe/Berlin`), registration is skipped
      *   so that [getZoneId] returns the system [ZoneId] directly without allocating an
      *   `ical4j-local-*` pool slot.
+     * - If the VTIMEZONE has no STANDARD or DAYLIGHT observances, it is invalid and ignored.
      */
     override fun register(timeZone: TimeZone, update: Boolean) {
         // Note: ZoneId.of() is case-sensitive, so we can query available zone IDs directly
         if (ZoneId.getAvailableZoneIds().contains(timeZone.id)) {
             logger.fine("Skipping VTIMEZONE registration for system-known TZID: ${timeZone.id}")
+            return
+        }
+
+        // Don't register empty (and thus invalid) VTIMEZONEs
+        if (isEmptyTimeZone(timeZone)) {
+            logger.warning("Ignoring invalid VTIMEZONE with TZID: ${timeZone.id}")
             return
         }
 
@@ -78,6 +87,19 @@ class SystemAwareTimeZoneRegistry(
             timeZoneRegistry.getZoneId(tzId)
         }
 
+
+    /**
+     * Checks if the given time zone has no STANDARD or DAYLIGHT observances.
+     *
+     * @param timeZone The time zone to check.
+     * @return true if the time zone has no observances, false otherwise.
+     */
+    private fun isEmptyTimeZone(timeZone: TimeZone): Boolean {
+        val vTimeZone = timeZone.vTimeZone
+        val standardObservances = vTimeZone.getComponents<Observance>(Observance.STANDARD)
+        val daylightObservances = vTimeZone.getComponents<Observance>(Observance.DAYLIGHT)
+        return standardObservances.isEmpty() && daylightObservances.isEmpty()
+    }
 
     /**
      * Workaround for https://github.com/bitfireAT/davx5/issues/914 that reduces
