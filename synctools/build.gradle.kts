@@ -93,7 +93,7 @@ dependencies {
     implementation(libs.kotlinx.coroutines)
 
     // ical4j/ez-vcard
-    api(libs.ical4j)
+    api(libs.ical4j.fork)
     implementation(libs.slf4j.jdk)       // ical4j uses slf4j, this module uses java.util.Logger
     api(libs.ezvcard)
 
