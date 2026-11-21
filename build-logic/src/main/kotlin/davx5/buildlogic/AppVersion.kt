@@ -27,7 +27,7 @@ package davx5.buildlogic
  */
 object AppVersion {
 
-    const val CODE: Int = 405220002
+    const val CODE: Int = 405220003
     const val NAME: String = "4.5.22-rc.2"
 
 }
