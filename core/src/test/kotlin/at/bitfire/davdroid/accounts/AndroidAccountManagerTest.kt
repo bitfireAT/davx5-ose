@@ -255,6 +255,32 @@ class AndroidAccountManagerTest {
 
 
     @Test
+    fun `isOrphaned() returns false when DB account with linked ID exists`() = runTest {
+        coEvery { dbAccountDao.get(1) } returns DbAccount(1, "Name")
+
+        val result = androidAccountManager().isOrphaned(linkedDbAccountId = 1)
+
+        assertFalse(result)
+    }
+
+    @Test
+    fun `isOrphaned() returns true when no DB account with linked ID exists`() = runTest {
+        coEvery { dbAccountDao.get(2) } returns null
+
+        val result = androidAccountManager().isOrphaned(linkedDbAccountId = 2)
+
+        assertTrue(result)
+    }
+
+    @Test
+    fun `isOrphaned() returns true for unlinked account`() = runTest {
+        val result = androidAccountManager().isOrphaned(linkedDbAccountId = null)
+
+        assertTrue(result)
+    }
+
+
+    @Test
     fun `removeAccount() removes account`() {
         val linked = addAndroidAccount("Linked", linkedId = 1)
 
@@ -272,97 +298,6 @@ class AndroidAccountManagerTest {
 
         val remaining = realManager.accounts.toList()
         assertFalse(remaining.contains(unlinked))
-    }
-
-
-    @Test
-    fun `removeOrphanedForDbAccounts() removes account linked to missing DB account`() {
-        every { dbAccountDao.getAllBlocking() } returns listOf(DbAccount(2, "Linked"))
-        val linked = addAndroidAccount("Linked", linkedId = 1)
-
-        androidAccountManager().removeOrphanedForDbAccounts()
-
-        val remaining = realManager.accounts.toList()
-        assertFalse(remaining.contains(linked))
-    }
-
-    @Test
-    fun `removeOrphanedForDbAccounts() keeps account linked to existing DB account`() {
-        every { dbAccountDao.getAllBlocking() } returns listOf(DbAccount(1, "DB Name"))
-        val linked = addAndroidAccount("Android Name", linkedId = 1)
-
-        androidAccountManager().removeOrphanedForDbAccounts()
-
-        val remaining = realManager.accounts.toList()
-        assertTrue(remaining.contains(linked))
-    }
-
-    @Test
-    fun `removeOrphanedForDbAccounts() removes unlinked account without DB account of same name`() {
-        every { dbAccountDao.getAllBlocking() } returns listOf(DbAccount(1, "Other"))
-        val unlinked = addAndroidAccount("Unlinked")
-
-        androidAccountManager().removeOrphanedForDbAccounts()
-
-        assertFalse(realManager.accounts.contains(unlinked))
-    }
-
-    @Test
-    fun `removeOrphanedForDbAccounts() keeps unlinked account with DB account of same name`() {
-        every { dbAccountDao.getAllBlocking() } returns listOf(DbAccount(1, "Unlinked"))
-        val unlinked = addAndroidAccount("Unlinked")
-
-        androidAccountManager().removeOrphanedForDbAccounts()
-
-        assertTrue(realManager.accounts.contains(unlinked))
-    }
-
-    @Test
-    fun `removeOrphanedForDbAccounts() keeps legacy accounts`() {
-        every { dbAccountDao.getAllBlocking() } returns emptyList()
-        val legacy = Account("Legacy", context.getString(R.string.account_type))
-        assertTrue(realManager.addAccountExplicitly(legacy, null, null))
-
-        androidAccountManager().removeOrphanedForDbAccounts()
-
-        val remaining = realManager.accounts.toList()
-        assertTrue(remaining.contains(legacy))
-    }
-
-    @Test
-    fun `removeOrphanedForDbAccounts() keeps account that is created while loading DB accounts`() {
-        var created: Account? = null
-
-        androidAccountManager().removeAllForDbAccountsExceptFor {
-            created = addAndroidAccount("Created concurrently", linkedId = 1)
-            emptyList()
-        }
-
-        assertTrue(realManager.accounts.contains(created))
-    }
-
-
-    @Test
-    fun `removeAllForDbAccounts() removes Android accounts of DB accounts`() {
-        val linked = addAndroidAccount("Linked", linkedId = 1)
-        val unlinked = addAndroidAccount("Unlinked")
-
-        androidAccountManager().removeAllForDbAccounts()
-
-        val remaining = realManager.accounts.toList()
-        assertFalse(remaining.contains(linked))
-        assertFalse(remaining.contains(unlinked))
-    }
-
-    @Test
-    fun `removeAllForDbAccounts() keeps legacy accounts`() {
-        val legacy = Account("Legacy", context.getString(R.string.account_type))
-        assertTrue(realManager.addAccountExplicitly(legacy, null, null))
-
-        androidAccountManager().removeAllForDbAccounts()
-
-        val remaining = realManager.accounts.toList()
-        assertTrue(remaining.contains(legacy))
     }
 
 
@@ -544,43 +479,6 @@ class AndroidAccountManagerTest {
         val result = androidAccountManager().getAccountId(unlinked)
 
         assertEquals(DbAccountId(4), result)
-    }
-
-
-    @Test
-    fun `isOrphaned() returns false for linked account when DB account with linked ID exists`() {
-        val dbAccounts = listOf(DbAccount(1, "Other name"))
-
-        val result = AndroidAccountManager.isOrphaned("Name", linkedDbAccountId = 1, dbAccounts)
-
-        assertFalse(result)
-    }
-
-    @Test
-    fun `isOrphaned() returns true for linked account when no DB account with linked ID exists`() {
-        val dbAccounts = listOf(DbAccount(1, "Name"))
-
-        val result = AndroidAccountManager.isOrphaned("Name", linkedDbAccountId = 2, dbAccounts)
-
-        assertTrue(result)
-    }
-
-    @Test
-    fun `isOrphaned() returns false for unlinked account when DB account with same name exists`() {
-        val dbAccounts = listOf(DbAccount(1, "Name"))
-
-        val result = AndroidAccountManager.isOrphaned("Name", linkedDbAccountId = null, dbAccounts)
-
-        assertFalse(result)
-    }
-
-    @Test
-    fun `isOrphaned() returns true for unlinked account when no DB account with same name exists`() {
-        val dbAccounts = listOf(DbAccount(1, "Other name"))
-
-        val result = AndroidAccountManager.isOrphaned("Name", linkedDbAccountId = null, dbAccounts)
-
-        assertTrue(result)
     }
 
 }

@@ -4,6 +4,8 @@
 
 package at.bitfire.davdroid.ui.accountscheck
 
+import android.accounts.Account
+
 /**
  * Status of a DAVx⁵ account, as shown in "Check and repair accounts".
  */
@@ -28,9 +30,12 @@ sealed interface AccountStatus {
         override val name: String
     ): AccountStatus
 
-    /** Android account that links to a DB account that doesn't exist */
+    /** Android account that doesn't link to an existing DB account */
     data class MissingDbAccount(
+        val account: Account
+    ): AccountStatus {
         override val name: String
-    ): AccountStatus
+            get() = account.name
+    }
 
 }

@@ -272,6 +272,8 @@
     <string name="accounts_check_links_to_db_account">(links to app account)</string>
     <string name="accounts_check_missing_db_account">Links to non-existing app account</string>
     <string name="accounts_check_empty">No Android accounts found.</string>
+    <string name="accounts_check_delete_title">Delete Android account?</string>
+    <string name="accounts_check_delete_text"><![CDATA[Local data of the Android account %1$s (for instance calendars and task lists) will be removed from this device. Make sure that you have a <a href=\"%2$s\">backup</a> of data you still need.]]></string>
 
     <!-- AccountScreen -->
     <string name="account_invalid_account">Account has been removed</string>

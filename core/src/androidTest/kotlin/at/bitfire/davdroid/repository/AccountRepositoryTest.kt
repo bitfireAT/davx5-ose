@@ -7,12 +7,16 @@ package at.bitfire.davdroid.repository
 import android.accounts.Account
 import android.accounts.AccountManager
 import android.content.Context
+import androidx.core.os.bundleOf
 import androidx.hilt.work.HiltWorkerFactory
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.TestUtils
 import at.bitfire.davdroid.accounts.AccountId
+import at.bitfire.davdroid.accounts.AndroidAccountManager
+import at.bitfire.davdroid.accounts.DbAccountId
 import at.bitfire.davdroid.accounts.LegacyAccount
 import at.bitfire.davdroid.db.AppDatabase
+import at.bitfire.davdroid.db.DbAccount
 import at.bitfire.davdroid.resource.local.LocalAddressBookStore
 import at.bitfire.davdroid.resource.local.LocalCalendarStore
 import at.bitfire.davdroid.resource.local.LocalDataStore
@@ -39,6 +43,7 @@ import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.unmockkObject
 import io.mockk.verify
+import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.runTest
@@ -171,6 +176,18 @@ class AccountRepositoryTest {
     }
 
     @Test
+    fun testRename_keepsOrphanedAndroidAccountWithNewName() = runTest {
+        val dbAccountId = createDbAccountWithLinkedAndroidAccount(name = "DB Account")
+        val orphan = createLinkedAndroidAccount(name = newName, dbAccountId = 999L)
+
+        val result = runCatching { accountRepository.rename(DbAccountId(dbAccountId), newName) }
+
+        assertTrue(result.isFailure)
+        assertTrue(accountManager.accounts.contains(orphan))
+        assertEquals("999", accountManager.getUserData(orphan, AndroidAccountManager.USER_DATA_ACCOUNT_ID))
+    }
+
+    @Test
     fun testRename_cancelsRunningSynchronizationOfOldAccount() = runTest {
         accountRepository.rename(accountId, newName)
 
@@ -288,6 +305,22 @@ class AccountRepositoryTest {
             groupMethod = GroupMethod.GROUP_VCARDS,
             preconfigurationUrl = null,
         )!!
+    }
+
+    private suspend fun createDbAccountWithLinkedAndroidAccount(name: String): Long {
+        val dbAccountId = appDatabase.dbAccountDao().insert(DbAccount(name = name))
+        createLinkedAndroidAccount(name, dbAccountId)
+        return dbAccountId
+    }
+
+    private fun createLinkedAndroidAccount(name: String, dbAccountId: Long): Account {
+        val account = Account(name, context.getString(R.string.account_type_db))
+        accountManager.addAccountExplicitly(
+            account,
+            null,
+            bundleOf(AndroidAccountManager.USER_DATA_ACCOUNT_ID to dbAccountId.toString())
+        )
+        return account
     }
 
     private fun createAccountRepository(listener: OnBeforeDeleteListener): AccountRepository {
