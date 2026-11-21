@@ -45,7 +45,6 @@ import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import java.time.temporal.Temporal
-import kotlin.test.assertNotNull
 
 class Ical4jTest {
 
