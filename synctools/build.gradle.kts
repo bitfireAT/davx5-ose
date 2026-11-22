@@ -85,7 +85,6 @@ android {
 
 dependencies {
     implementation(libs.kotlin.stdlib)
-    coreLibraryDesugaring(libs.android.desugaring)
 
     implementation(libs.androidx.annotation)
     implementation(libs.androidx.core)

@@ -1,4 +1,6 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+/*
+ * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
+ */
 
 /*
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
@@ -33,7 +35,6 @@ dependencies {
     api(project(":features:preconfigured-settings:api"))
     implementation(project(":features:preconfigured-settings:shared"))
 
-    coreLibraryDesugaring(libs.android.desugaring)
 
     implementation(libs.hilt.android.base)
     ksp(libs.androidx.hilt.compiler)
