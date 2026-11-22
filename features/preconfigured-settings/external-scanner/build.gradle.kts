@@ -2,10 +2,6 @@
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
  */
 
-/*
- * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
- */
-
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.compose.compiler)
