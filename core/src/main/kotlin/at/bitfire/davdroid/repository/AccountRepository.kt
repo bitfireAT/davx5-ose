@@ -339,7 +339,7 @@ class AccountRepository @Inject internal constructor(
      * time it provides the account (usually during the next sync).
      *
      * @throws NoSuchElementException if the account does not exist
-     * @throws IllegalArgumentException if the new account name is blank or already exists
+     * @throws IllegalArgumentException if the new account name is blank, already exists, or is used by an orphaned Android account
      */
     private suspend fun renameDbAccount(accountId: DbAccountId, newName: String): AccountId = withContext(ioDispatcher) {
         val dbAccount = dbAccountDao.get(accountId.id) ?: throw NoSuchElementException("No account found with id ${accountId.id}")
@@ -349,6 +349,14 @@ class AccountRepository @Inject internal constructor(
 
         // Make sure an account does not already exist with that name
         require(!exists(newName)) { "Account with name \"$newName\" already exists" }
+
+        // An orphaned Android account may have unsynced local data, so it must not be replaced; only the user may delete it
+        androidAccountManager.findAccountByName(newName)?.let { sameName ->
+            val linkedId = androidAccountManager.getLinkedDbAccountId(sameName)
+            require(linkedId == accountId.id || !androidAccountManager.isOrphaned(linkedId)) {
+                "Orphaned Android account with name \"$newName\" already exists"
+            }
+        }
 
         dbAccountDao.rename(accountId.id, newName)
         accountRenameFlow.emit(AccountRename(dbAccount.name, newName))
