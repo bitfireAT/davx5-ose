@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.ui.setup
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -23,7 +24,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -44,6 +47,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
+import at.bitfire.davdroid.ui.accountscheck.AccountsCheckActivity
 import at.bitfire.davdroid.ui.composable.Assistant
 import at.bitfire.synctools.vcard.GroupMethod
 
@@ -62,6 +66,20 @@ fun AccountDetailsPage(
         if (uiState.couldNotCreateAccount) {
             snackbarHostState.showSnackbar(context.getString(R.string.login_account_not_added))
             model.resetCouldNotCreateAccount()
+        }
+    }
+
+    @SuppressLint("LocalContextGetResourceValueCall")
+    LaunchedEffect(uiState.androidAccountNameTaken) {
+        if (uiState.androidAccountNameTaken) {
+            if (snackbarHostState.showSnackbar(
+                    message = context.getString(R.string.accounts_check_android_account_name_taken),
+                    actionLabel = context.getString(R.string.accounts_check_title),
+                    duration = SnackbarDuration.Long
+                ) == SnackbarResult.ActionPerformed
+            )
+                context.startActivity(Intent(context, AccountsCheckActivity::class.java))
+            model.resetAndroidAccountNameTaken()
         }
     }
 

@@ -85,6 +85,7 @@ import at.bitfire.davdroid.permissions.PermissionUtils
 import at.bitfire.davdroid.permissions.PermissionUtils.requiredPermissions
 import at.bitfire.davdroid.permissions.RequiredPermission
 import at.bitfire.davdroid.permissions.rememberPermissionsState
+import at.bitfire.davdroid.ui.accountscheck.AccountsCheckActivity
 import at.bitfire.davdroid.ui.composable.ActionCard
 import at.bitfire.davdroid.ui.composable.AppTheme
 import at.bitfire.davdroid.ui.composable.ProgressBar
@@ -122,6 +123,8 @@ fun AccountScreen(
         accountName = accountName ?: "",
         error = model.error,
         onResetError = model::resetError,
+        showAccountsCheckHint = model.showAccountsCheckHint,
+        onResetAccountsCheckHint = model::resetAccountsCheckHint,
         invalidAccount = model.invalidAccount.collectAsStateWithLifecycle(false).value,
         showOnlyPersonal = model.showOnlyPersonal.collectAsStateWithLifecycle().value,
         showOnlyPersonalLocked = model.showOnlyPersonalLocked.collectAsStateWithLifecycle().value,
@@ -178,6 +181,8 @@ fun AccountScreen(
     accountName: String,
     error: String? = null,
     onResetError: () -> Unit = {},
+    showAccountsCheckHint: Boolean = false,
+    onResetAccountsCheckHint: () -> Unit = {},
     invalidAccount: Boolean = false,
     showOnlyPersonal: Boolean = false,
     showOnlyPersonalLocked: Boolean = false,
@@ -237,6 +242,20 @@ fun AccountScreen(
                     snackbarHostState.showSnackbar(error)
                     onResetError()
                 }
+        }
+
+        @SuppressLint("LocalContextGetResourceValueCall")
+        LaunchedEffect(showAccountsCheckHint) {
+            if (showAccountsCheckHint) {
+                if (snackbarHostState.showSnackbar(
+                        message = context.getString(R.string.accounts_check_android_account_name_taken),
+                        actionLabel = context.getString(R.string.accounts_check_title),
+                        duration = SnackbarDuration.Long
+                    ) == SnackbarResult.ActionPerformed
+                )
+                    context.startActivity(Intent(context, AccountsCheckActivity::class.java))
+                onResetAccountsCheckHint()
+            }
         }
 
         var isRefreshing by remember { mutableStateOf(false) }
