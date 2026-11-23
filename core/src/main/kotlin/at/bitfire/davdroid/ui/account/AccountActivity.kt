@@ -21,6 +21,7 @@ import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.accounts.AccountIdIntentSerializer
 import at.bitfire.davdroid.accounts.AndroidAccountManager
 import at.bitfire.davdroid.ui.AccountsActivity
+import at.bitfire.davdroid.ui.accountscheck.AccountsCheckActivity
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.logging.Logger
 import javax.inject.Inject
@@ -50,10 +51,11 @@ class AccountActivity : AppCompatActivity() {
 
             LaunchedEffect(Unit) {
                 val accountId = loadAccountId()
-                if (accountId != null) {
-                    mutableAccountId = accountId
-                } else {
-                    redirectToAccountsOverview()
+                when {
+                    accountId != null -> mutableAccountId = accountId
+                    // Android account without DB account (orphaned), for instance from "Remove account" in Android settings
+                    intent.hasExtra(EXTRA_ACCOUNT) -> redirectToAccountsCheck()
+                    else -> redirectToAccountsOverview()
                 }
             }
 
@@ -94,6 +96,11 @@ class AccountActivity : AppCompatActivity() {
         finish()
     }
 
+    private fun redirectToAccountsCheck() {
+        startActivity(Intent(this, AccountsCheckActivity::class.java))
+        finish()
+    }
+
     // TODO: Move this functionality to AccountScreenViewModel the next time it is refactored.
     private suspend fun loadAccountId(): AccountId? {
         return extractAccountIdFromExtra() ?: fetchAccountIdForAndroidAccount()
@@ -122,6 +129,12 @@ class AccountActivity : AppCompatActivity() {
         fun createIntent(context: Context, accountId: AccountId): Intent {
             return Intent(context, AccountActivity::class.java).apply {
                 AccountIdIntentSerializer.addExtra(this, EXTRA_ACCOUNT_ID, accountId)
+            }
+        }
+
+        fun createIntent(context: Context, account: Account): Intent {
+            return Intent(context, AccountActivity::class.java).apply {
+                putExtra(EXTRA_ACCOUNT, account)
             }
         }
         
