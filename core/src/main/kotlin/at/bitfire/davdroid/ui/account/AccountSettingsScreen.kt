@@ -26,7 +26,6 @@ import androidx.compose.material.icons.filled.Password
 import androidx.compose.material.icons.filled.SyncProblem
 import androidx.compose.material.icons.filled.Wifi
 import androidx.compose.material.icons.outlined.Task
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -145,7 +144,6 @@ fun AccountSettingsScreen(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AccountSettingsScreen(
     onNavUp: () -> Unit,
