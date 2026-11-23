@@ -11,7 +11,6 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.DbAccount
 import at.bitfire.davdroid.db.DbAccountDao
-import at.bitfire.davdroid.resource.local.AddressBookAccountManager
 import at.bitfire.davdroid.resource.local.LocalCalendarStore
 import at.bitfire.davdroid.sync.SyncFrameworkSettingsUpdater
 import at.bitfire.davdroid.sync.TasksAppManager
@@ -25,7 +24,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -50,7 +49,6 @@ class AndroidAccountProviderTest {
     private val logger = mockk<Logger>(relaxed = true)
     private val syncFrameworkSettingsUpdater = mockk<SyncFrameworkSettingsUpdater>(relaxed = true)
 
-    private val addressBookAccountManager = AddressBookAccountManager(accountManager, context, Dispatchers.IO, logger)
     private val androidAccountManager = AndroidAccountManager(
         accountManager = { accountManager },
         context = context,
@@ -62,7 +60,6 @@ class AndroidAccountProviderTest {
     private val tasksAppManager = mockk<TasksAppManager>(relaxed = true)
 
     private val provider = AndroidAccountProvider(
-        addressBookAccountManager = addressBookAccountManager,
         androidAccountManager = androidAccountManager,
         db = database,
         ioDispatcher = Dispatchers.IO,
@@ -141,38 +138,42 @@ class AndroidAccountProviderTest {
     }
 
     @Test
-    fun `provide() replaces unlinked account with same name`() = runTest {
+    fun `provide() throws InvalidAccountException and keeps unlinked account with same name`() = runTest {
         addDbAccount(1, "DB Name")
-        addAndroidAccount("DB Name")
+        val unlinked = addAndroidAccount("DB Name")
+
+        assertFailsWith<InvalidAccountException> {
+            provider.provide(DbAccountId(1))
+        }
+        assertTrue(accountManager.accounts.contains(unlinked))
+        assertNull(androidAccountManager.getLinkedDbAccountId(unlinked))
+    }
+
+    @Test
+    fun `provide() throws InvalidAccountException and keeps account with same name that is linked to deleted DB account`() = runTest {
+        addDbAccount(1, "DB Name")
+        val orphan = addAndroidAccount("DB Name", linkedId = 99)
+
+        assertFailsWith<InvalidAccountException> {
+            provider.provide(DbAccountId(1))
+        }
+        assertTrue(accountManager.accounts.contains(orphan))
+        assertEquals(99L, androidAccountManager.getLinkedDbAccountId(orphan))
+    }
+
+    @Test
+    fun `provide() creates linked account after account with same name has been removed`() = runTest {
+        addDbAccount(1, "DB Name")
+        val orphan = addAndroidAccount("DB Name", linkedId = 99)
+        assertFailsWith<InvalidAccountException> {
+            provider.provide(DbAccountId(1))
+        }
+        androidAccountManager.removeAccount(orphan)
 
         val result = provider.provide(DbAccountId(1))
 
         assertEquals(Account("DB Name", dbAccountType), result)
         assertEquals(1L, androidAccountManager.getLinkedDbAccountId(result))
-    }
-
-    @Test
-    fun `provide() replaces account with same name that is linked to deleted DB account`() = runTest {
-        addDbAccount(1, "DB Name")
-        addAndroidAccount("DB Name", linkedId = 99)
-
-        val result = provider.provide(DbAccountId(1))
-
-        assertEquals(Account("DB Name", dbAccountType), result)
-        assertEquals(1L, androidAccountManager.getLinkedDbAccountId(result))
-    }
-
-    @Test
-    fun `provide() removes address book accounts of replaced account`() = runTest {
-        addDbAccount(1, "DB Name")
-        addAndroidAccount("DB Name", linkedId = 99)
-        val addressBook = Account("Address book", context.getString(R.string.account_type_address_book))
-        assertTrue(accountManager.addAccountExplicitly(addressBook, null, null))
-        addressBookAccountManager.setAppAccount(addressBook, DbAccountId(99))
-
-        provider.provide(DbAccountId(1))
-
-        assertFalse(accountManager.accounts.contains(addressBook))
     }
 
     @Test

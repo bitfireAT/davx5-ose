@@ -9,7 +9,6 @@ import at.bitfire.davdroid.accounts.AndroidAccountProvider.Companion.provideMute
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.DbAccount
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
-import at.bitfire.davdroid.resource.local.AddressBookAccountManager
 import at.bitfire.davdroid.resource.local.LocalCalendarStore
 import at.bitfire.davdroid.sync.SyncFrameworkSettingsUpdater
 import at.bitfire.davdroid.sync.TasksAppManager
@@ -29,11 +28,10 @@ import javax.inject.Inject
 
 /**
  * Provides a ready-to-use Android [Account] for an [AccountId]. For DB accounts, the linked Android account
- * is created when necessary (replacing an orphaned one with the same name) and renamed when the name of the
- * DB account has changed.
+ * is created when necessary (without replacing an orphaned account with the same name, which may have unsynced
+ * local data) and renamed when the name of the DB account has changed.
  */
 class AndroidAccountProvider @Inject constructor(
-    private val addressBookAccountManager: AddressBookAccountManager,
     private val androidAccountManager: AndroidAccountManager,
     db: AppDatabase,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
@@ -83,8 +81,9 @@ class AndroidAccountProvider @Inject constructor(
      * Does the actual work of [provide] for DB accounts. Must be called while holding [provideMutex].
      *
      * - If the DB account has a linked Android account, it's renamed if its name differs from the DB account name.
-     * - Otherwise, a new linked Android account is created (replacing an orphaned one with the same name, and
-     *   moving the Android account of another DB account that still has that name out of the way).
+     * - Otherwise, a new linked Android account is created (moving the Android account of another DB account
+     *   that still has that name out of the way). If the name is used by an orphaned Android account,
+     *   [InvalidAccountException] is thrown.
      *
      * @throws InvalidAccountException see [provide]
      * @throws AccountOperationFailedException see [provide]
@@ -102,6 +101,7 @@ class AndroidAccountProvider @Inject constructor(
 
         val sameName = androidAccountManager.findAccountByName(dbAccount.name)
         if (sameName != null) {
+            // name is taken; an orphaned account may have unsynced local data, so only the user may delete it
             val sameNameLinkedId = androidAccountManager.getLinkedDbAccountId(sameName)
             val otherDbAccount = sameNameLinkedId?.let { dbAccountDao.get(it) }
             if (otherDbAccount != null) {
@@ -109,12 +109,9 @@ class AndroidAccountProvider @Inject constructor(
                 // in the database, but not on the system yet), so move that one out of the way
                 moveOtherAccountAside(sameName, otherDbAccount, dbAccount.name, emptySet())
             } else {
-                // orphaned (not linked or linked to a DB account that doesn't exist anymore), may have unrelated local data
-                logger.info("Removing orphaned Android account $sameName")
-                if (sameNameLinkedId != null) {
-                    addressBookAccountManager.deleteByAccountId(DbAccountId(sameNameLinkedId))
-                }
-                androidAccountManager.removeAccount(sameName)
+                logger.warning("Android account $sameName is orphaned")
+                // TODO: add notification which takes the user to the "Check and repair accounts" screen (#3025)
+                throw InvalidAccountException(accountId)
             }
         }
 
