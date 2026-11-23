@@ -58,7 +58,11 @@ class AccountsCheckViewModelTest {
 
         // real IO dispatcher because the injected test dispatcher doesn't run without advancing its scheduler
         val androidAccountManager = AndroidAccountManager({ accountManager }, context, db, Dispatchers.IO, logger)
-        model = AccountsCheckViewModel(androidAccountManager, dbAccountRepository, Dispatchers.IO)
+        model = AccountsCheckViewModel(
+            accountStatuses = AccountStatusesUseCase(androidAccountManager, dbAccountRepository),
+            androidAccountManager = androidAccountManager,
+            ioDispatcher = Dispatchers.IO
+        )
     }
 
     @After

@@ -51,8 +51,8 @@ class AccountsCheckViewModelTest {
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
         model = AccountsCheckViewModel(
+            accountStatuses = AccountStatusesUseCase(androidAccountManager, dbAccountRepository),
             androidAccountManager = androidAccountManager,
-            dbAccountRepository = dbAccountRepository,
             ioDispatcher = testDispatcher
         )
     }
