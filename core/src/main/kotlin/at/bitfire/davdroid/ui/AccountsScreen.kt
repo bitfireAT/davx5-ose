@@ -24,6 +24,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.BatterySaver
 import androidx.compose.material.icons.filled.DataSaverOn
 import androidx.compose.material.icons.filled.Lan
+import androidx.compose.material.icons.filled.ManageAccounts
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.NotificationsOff
 import androidx.compose.material.icons.filled.SignalCellularOff
@@ -91,6 +92,7 @@ fun AccountsScreen(
     onAddAccount: () -> Unit,
     onShowAccount: (AccountId) -> Unit,
     onManagePermissions: () -> Unit,
+    onAccountsCheck: () -> Unit,
     model: AccountsViewModel = hiltViewModel(
         creationCallback = { factory: AccountsViewModel.Factory ->
             factory.create(initialSyncAccounts)
@@ -121,6 +123,8 @@ fun AccountsScreen(
         onAddAccount = onAddAccount,
         onShowAccount = onShowAccount,
         onManagePermissions = onManagePermissions,
+        accountsProblem = model.accountsProblem.collectAsStateWithLifecycle(false).value,
+        onAccountsCheck = onAccountsCheck,
         internetUnavailable = !model.networkAvailable.collectAsStateWithLifecycle(false).value,
         batterySaverActive = model.batterySaverActive.collectAsStateWithLifecycle(false).value,
         dataSaverActive = model.dataSaverEnabled.collectAsStateWithLifecycle(false).value,
@@ -141,6 +145,8 @@ fun AccountsScreen(
     onAddAccount: () -> Unit = {},
     onShowAccount: (AccountId) -> Unit = {},
     onManagePermissions: () -> Unit = {},
+    accountsProblem: Boolean = false,
+    onAccountsCheck: () -> Unit = {},
     internetUnavailable: Boolean = false,
     batterySaverActive: Boolean = false,
     dataSaverActive: Boolean = false,
@@ -268,6 +274,8 @@ fun AccountsScreen(
                             // Warnings show as action cards
                             val context = LocalContext.current
                             SyncWarnings(
+                                accountsProblem = accountsProblem,
+                                onAccountsCheck = onAccountsCheck,
                                 notificationsWarning = notificationsPermissionState?.allPermissionsGranted == false,
                                 localNetworkWarning = localNetworkPermissionState?.allPermissionsGranted == false,
                                 onManagePermissions = onManagePermissions,
@@ -502,6 +510,8 @@ fun AccountList_Preview_Syncing() {
 
 @Composable
 fun SyncWarnings(
+    accountsProblem: Boolean = true,
+    onAccountsCheck: () -> Unit = {},
     notificationsWarning: Boolean = true,
     localNetworkWarning: Boolean = true,
     onManagePermissions: () -> Unit = {},
@@ -518,6 +528,16 @@ fun SyncWarnings(
     onManageApps: () -> Unit = {}
 ) {
     Column(Modifier.padding(horizontal = 8.dp)) {
+        if (accountsProblem)
+            ActionCard(
+                icon = Icons.Default.ManageAccounts,
+                actionText = stringResource(R.string.accounts_check_title),
+                onAction = onAccountsCheck,
+                modifier = Modifier.padding(vertical = 4.dp)
+            ) {
+                Text(stringResource(R.string.accounts_check_problems))
+            }
+
         if (notificationsWarning)
             ActionCard(
                 icon = Icons.Default.NotificationsOff,

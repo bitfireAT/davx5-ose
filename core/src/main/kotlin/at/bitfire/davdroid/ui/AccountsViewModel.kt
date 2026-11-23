@@ -34,6 +34,7 @@ import at.bitfire.davdroid.sync.worker.BaseSyncWorker
 import at.bitfire.davdroid.sync.worker.OneTimeSyncWorker
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
 import at.bitfire.davdroid.ui.account.AccountProgress
+import at.bitfire.davdroid.ui.accountscheck.AccountStatusesUseCase
 import at.bitfire.davdroid.ui.composable.FlavorComposable
 import at.bitfire.davdroid.ui.intro.IntroPage
 import at.bitfire.davdroid.ui.intro.IntroPageFactory
@@ -63,6 +64,7 @@ import java.util.logging.Logger
 class AccountsViewModel @AssistedInject constructor(
     @Assisted private val syncAccountsOnInit: Boolean,
     private val accountRepository: AccountRepository,
+    accountStatuses: AccountStatusesUseCase,
     val composableItems: Set<@JvmSuppressWildcards FlavorComposable>,
     @ApplicationContext private val context: Context,
     private val db: AppDatabase,
@@ -104,6 +106,11 @@ class AccountsViewModel @AssistedInject constructor(
             FABStyle.Standard
     }
     val showSyncAll: Flow<Boolean> = accountIds.map { it.isNotEmpty() }
+
+    /** whether "Check and repair accounts" shows a problem */
+    val accountsProblem: Flow<Boolean> = accountStatuses().map { statuses ->
+        statuses.any { it.isProblem }
+    }
 
     private val workManager = WorkManager.getInstance(context)
     private val runningWorkers = workManager.getWorkInfosFlow(WorkQuery.fromStates(WorkInfo.State.ENQUEUED, WorkInfo.State.RUNNING))
