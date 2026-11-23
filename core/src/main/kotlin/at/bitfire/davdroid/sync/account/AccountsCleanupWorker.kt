@@ -16,9 +16,13 @@ import androidx.work.WorkerParameters
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.resource.local.AddressBookAccountManager
+import at.bitfire.davdroid.ui.NotificationRegistry
+import at.bitfire.davdroid.ui.accountscheck.AccountStatusesUseCase
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 import java.time.Duration
 import java.util.concurrent.Semaphore
 import java.util.logging.Logger
@@ -28,9 +32,11 @@ class AccountsCleanupWorker @AssistedInject constructor(
     @Assisted val context: Context,
     @Assisted workerParameters: WorkerParameters,
     private val accountRepository: AccountRepository,
+    private val accountStatuses: AccountStatusesUseCase,
     private val addressBookAccountManager: AddressBookAccountManager,
     private val db: AppDatabase,
-    private val logger: Logger
+    private val logger: Logger,
+    private val notificationRegistry: NotificationRegistry
 ): Worker(context, workerParameters) {
 
     @AssistedFactory
@@ -47,6 +53,9 @@ class AccountsCleanupWorker @AssistedInject constructor(
         } finally {
             unlockAccountsCleanup()
         }
+
+        notifyAboutAccountProblems()
+
         return Result.success()
     }
 
@@ -82,6 +91,20 @@ class AccountsCleanupWorker @AssistedInject constructor(
                 addressBookAccountManager.delete(addressBookAccount)
             }
         }
+    }
+
+
+    /**
+     * Shows a notification when there are account problems, as orphaned Android accounts are not cleaned up automatically.
+     * Removes it when there are no problems (anymore).
+     */
+    @VisibleForTesting
+    internal fun notifyAboutAccountProblems() {
+        val statuses = runBlocking { accountStatuses().first() }
+        if (statuses.any { it.isProblem })
+            notificationRegistry.notifyAccountsCheck()
+        else
+            notificationRegistry.cancelAccountsCheck()
     }
 
 

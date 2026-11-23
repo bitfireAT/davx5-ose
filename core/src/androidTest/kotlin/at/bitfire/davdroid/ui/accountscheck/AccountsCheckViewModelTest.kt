@@ -11,6 +11,7 @@ import at.bitfire.davdroid.accounts.AndroidAccountManager
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.repository.DbAccountRepository
 import at.bitfire.davdroid.sync.account.TestAccount
+import at.bitfire.davdroid.ui.NotificationRegistry
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -50,6 +51,9 @@ class AccountsCheckViewModelTest {
     @Inject
     lateinit var logger: Logger
 
+    @Inject
+    lateinit var notificationRegistry: NotificationRegistry
+
     lateinit var model: AccountsCheckViewModel
 
     @Before
@@ -61,7 +65,8 @@ class AccountsCheckViewModelTest {
         model = AccountsCheckViewModel(
             accountStatuses = AccountStatusesUseCase(androidAccountManager, dbAccountRepository),
             androidAccountManager = androidAccountManager,
-            ioDispatcher = Dispatchers.IO
+            ioDispatcher = Dispatchers.IO,
+            notificationRegistry = notificationRegistry
         )
     }
 

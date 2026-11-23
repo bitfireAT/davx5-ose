@@ -14,6 +14,7 @@ import at.bitfire.davdroid.sync.SyncFrameworkSettingsUpdater
 import at.bitfire.davdroid.sync.TasksAppManager
 import at.bitfire.davdroid.sync.account.AccountOperationFailedException
 import at.bitfire.davdroid.sync.account.InvalidAccountException
+import at.bitfire.davdroid.ui.NotificationRegistry
 import dagger.Lazy
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
@@ -37,6 +38,7 @@ class AndroidAccountProvider @Inject constructor(
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val localCalendarStore: Lazy<LocalCalendarStore>,
     private val logger: Logger,
+    private val notificationRegistry: NotificationRegistry,
     private val syncFrameworkSettingsUpdater: Lazy<SyncFrameworkSettingsUpdater>,
     private val tasksAppManager: Lazy<TasksAppManager>
 ) {
@@ -110,7 +112,7 @@ class AndroidAccountProvider @Inject constructor(
                 moveOtherAccountAside(sameName, otherDbAccount, dbAccount.name, emptySet())
             } else {
                 logger.warning("Android account $sameName is orphaned")
-                // TODO: add notification which takes the user to the "Check and repair accounts" screen (#3025)
+                notificationRegistry.notifyAccountsCheck()
                 throw InvalidAccountException(accountId)
             }
         }

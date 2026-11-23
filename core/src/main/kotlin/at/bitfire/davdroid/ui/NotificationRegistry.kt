@@ -20,6 +20,7 @@ import androidx.core.app.TaskStackBuilder
 import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.ui.accountscheck.AccountsCheckActivity
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.util.logging.Logger
 import javax.inject.Inject
@@ -52,6 +53,7 @@ class NotificationRegistry @Inject constructor(
         const val NOTIFY_TASKS_PROVIDER_TOO_OLD = 20
         const val NOTIFY_PERMISSIONS = 21
         const val NOTIFY_SELECT_PUSH_DISTRIBUTOR = 22
+        const val NOTIFY_ACCOUNTS_CHECK = 23
 
         /**
          * Used in build variants when a [at.bitfire.davdroid.sync.SyncValidator]
@@ -170,6 +172,31 @@ class NotificationRegistry @Inject constructor(
     }
 
     // specific common notifications
+
+    /**
+     * Shows a notification about account problems that leads to "Check and repair accounts".
+     */
+    fun notifyAccountsCheck() {
+        notifyIfPossible(NOTIFY_ACCOUNTS_CHECK) {
+            NotificationCompat.Builder(context, CHANNEL_USER_INTERACTION)
+                .setSmallIcon(R.drawable.ic_warning_notify)
+                .setContentTitle(context.getString(R.string.accounts_check_title))
+                .setContentText(context.getString(R.string.accounts_check_problems))
+                .setContentIntent(
+                    TaskStackBuilder.create(context)
+                        .addNextIntentWithParentStack(Intent(context, AccountsCheckActivity::class.java))
+                        .getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+                )
+                .setOnlyAlertOnce(true)
+                .setAutoCancel(true)
+                .build()
+        }
+    }
+
+    /** Removes the notification of [notifyAccountsCheck] (when there are no account problems anymore). */
+    fun cancelAccountsCheck() {
+        NotificationManagerCompat.from(context).cancel(NOTIFY_ACCOUNTS_CHECK)
+    }
 
     /**
      * Shows a notification about missing permissions.

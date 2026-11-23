@@ -20,9 +20,18 @@ import at.bitfire.davdroid.db.DbAccount
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.resource.local.AddressBookAccountManager
 import at.bitfire.davdroid.settings.SettingsManager
+import at.bitfire.davdroid.ui.NotificationRegistry
+import at.bitfire.davdroid.ui.accountscheck.AccountStatus
+import at.bitfire.davdroid.ui.accountscheck.AccountStatusesUseCase
 import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import io.mockk.every
+import io.mockk.impl.annotations.MockK
+import io.mockk.junit4.MockKRule
+import io.mockk.verify
+import kotlinx.coroutines.flow.flowOf
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -39,6 +48,9 @@ class AccountsCleanupWorkerTest {
 
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
+
+    @get:Rule
+    val mockKRule = MockKRule(this)
 
     @Inject
     lateinit var accountManager: AccountManager
@@ -61,6 +73,13 @@ class AccountsCleanupWorkerTest {
     @Inject
     lateinit var workerFactory: HiltWorkerFactory
 
+    // the real one doesn't emit with the injected test IO dispatcher
+    @BindValue @MockK
+    lateinit var accountStatuses: AccountStatusesUseCase
+
+    @BindValue @MockK(relaxed = true)
+    lateinit var notificationRegistry: NotificationRegistry
+
     lateinit var addressBookAccountType: String
     lateinit var addressBookAccount: Account
     lateinit var dbAndroidAccount: Account
@@ -68,6 +87,7 @@ class AccountsCleanupWorkerTest {
 
     @Before
     fun setUp() {
+        every { accountStatuses() } returns flowOf(emptyList())
         hiltRule.inject()
         TestUtils.setUpWorkManager(context, workerFactory)
 
@@ -99,6 +119,42 @@ class AccountsCleanupWorkerTest {
         worker.doWork()
 
         assertTrue(accountManager.accounts.contains(dbAndroidAccount))
+    }
+
+    @Test
+    fun testDoWork_notifiesAboutAccountProblems() {
+        every { accountStatuses() } returns flowOf(listOf(AccountStatus.MissingDbAccount(dbAndroidAccount)))
+
+        val worker = TestListenableWorkerBuilder<AccountsCleanupWorker>(context)
+            .setWorkerFactory(workerFactory)
+            .build()
+        worker.doWork()
+
+        verify { notificationRegistry.notifyAccountsCheck() }
+    }
+
+    @Test
+    fun testDoWork_doesntNotifyWithoutAccountProblems() {
+        every { accountStatuses() } returns flowOf(listOf(AccountStatus.Linked("Linked")))
+
+        val worker = TestListenableWorkerBuilder<AccountsCleanupWorker>(context)
+            .setWorkerFactory(workerFactory)
+            .build()
+        worker.doWork()
+
+        verify(exactly = 0) { notificationRegistry.notifyAccountsCheck() }
+    }
+
+    @Test
+    fun testDoWork_cancelsNotificationWithoutAccountProblems() {
+        every { accountStatuses() } returns flowOf(listOf(AccountStatus.Linked("Linked")))
+        val worker = TestListenableWorkerBuilder<AccountsCleanupWorker>(context)
+            .setWorkerFactory(workerFactory)
+            .build()
+
+        worker.doWork()
+
+        verify { notificationRegistry.cancelAccountsCheck() }
     }
 
 
