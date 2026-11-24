@@ -77,10 +77,9 @@ data class WebDavDocument(
 
         val bundle = Bundle().apply {
             putString(Document.COLUMN_DOCUMENT_ID, id.toString())
-            putString(Document.COLUMN_DISPLAY_NAME, name)
+            putString(Document.COLUMN_DISPLAY_NAME, displayName ?: name)
         }
 
-        displayName?.let { bundle.putString(Document.COLUMN_SUMMARY, it) }
         size?.let { bundle.putLong(Document.COLUMN_SIZE, it) }
         lastModified?.let { bundle.putLong(Document.COLUMN_LAST_MODIFIED, it) }
 

@@ -164,7 +164,7 @@ class QueryChildDocumentsOperation @Inject constructor(
                         val updatedResource = resource.copy(
                             isDirectory = response[ResourceType::class.java]?.types?.contains(WebDAV.Collection)
                                 ?: resource.isDirectory,
-                            displayName = response[DisplayName::class.java]?.displayName,
+                            displayName = response[DisplayName::class.java]?.displayName?.takeIf { it.isNotBlank() },
                             mimeType = response[GetContentType::class.java]?.type?.toContentTypeOrNull(),
                             eTag = response[GetETag::class.java]?.takeIf { !it.weak }?.eTag,
                             lastModified = response[GetLastModified::class.java]?.lastModified?.toEpochMilli(),

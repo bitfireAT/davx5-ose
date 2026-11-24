@@ -30,6 +30,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -167,6 +168,18 @@ class QueryChildDocumentsOperationTest {
         assertEquals("childTwo.txt", db.webDavDocumentDao().getChildren(parent2Id)[0].name)
     }
 
+    @Test
+    fun testDoQueryChildren_blankDisplayName_storedAsNull() = runTest {
+        val parentId = db.webDavDocumentDao().insert(WebDavDocument(0, mount.id, rootDocument.id, "parent3", true))
+        val parent = db.webDavDocumentDao().get(parentId)!!
+
+        operation.queryChildren(parent)
+
+        val child = db.webDavDocumentDao().getChildren(parentId).single()
+        assertEquals("blank.txt", child.name)
+        assertNull(child.displayName)
+    }
+
 
     // mock engine
 
@@ -200,6 +213,9 @@ class QueryChildDocumentsOperationTest {
             ),
             "$PATH_WEBDAV_ROOT/parent2" to listOf(
                 Resource("childTwo.txt", "<displayname>childTwo.txt</displayname>")
+            ),
+            "$PATH_WEBDAV_ROOT/parent3" to listOf(
+                Resource("blank.txt", "<displayname> </displayname>")
             )
         )
 
