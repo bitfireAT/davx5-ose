@@ -13,6 +13,7 @@ import com.android.build.api.variant.LibraryAndroidComponentsExtension
 import com.android.build.api.variant.ResValue
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.artifacts.VersionCatalogsExtension
 import org.gradle.api.plugins.ExtensionContainer
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.plugins.PluginManager
@@ -104,6 +105,12 @@ class CommonBuildConfigPlugin : Plugin<Project> {
     ) {
         withPlugin(pluginId) {
             configureAndroid()
+
+            // Add the core library desugaring dependency (enabled in configureCommonAndroid)
+            val desugaring = project.extensions.getByType(VersionCatalogsExtension::class.java)
+                .named("libs").findLibrary("android-desugaring")
+                .orElseThrow { IllegalStateException("Missing android-desugaring in version catalog") }
+            project.dependencies.add("coreLibraryDesugaring", desugaring)
 
             // Set Java toolchain version
             val javaExtension = extensions.findByType(JavaPluginExtension::class.java)

@@ -58,6 +58,8 @@ commons-lang = { strictly = "3.15.0" }
 
 [libraries]
 android-agp = { module = "com.android.tools.build:gradle", version.ref = "android-agp" }
+# Included automatically by CommonBuildConfigPlugin on all modules
+#noinspection UnusedVersionCatalogEntry
 android-desugaring = { module = "com.android.tools:desugar_jdk_libs_nio", version.ref = "android-desugaring" }
 androidx-annotation = { module = "androidx.annotation:annotation", version.ref = "androidx-annotation" }
 androidx-annotation-experimental = { module = "androidx.annotation:annotation-experimental", version.ref = "androidx-annotation-experimental" }
