@@ -77,4 +77,23 @@ class WebDavDocumentDaoTest {
         }
     }
 
+    @Test
+    fun testGetChildren_defaultOrder_sortsByShownName() = runTest {
+        val dao = db.webDavDocumentDao()
+        val mount = WebDavMount(id = 1, name = "Test", url = "https://example.com/".toUrl())
+        db.webDavMountDao().insert(mount)
+        val root = WebDavDocument(id = 1, mountId = mount.id, parentId = null, name = "Root Document")
+        dao.insertOrReplace(root)
+        dao.insertOrReplace(WebDavDocument(mountId = mount.id, parentId = root.id, name = "a", displayName = "Zebra"))
+        dao.insertOrReplace(WebDavDocument(mountId = mount.id, parentId = root.id, name = "Mouse"))
+        dao.insertOrReplace(WebDavDocument(mountId = mount.id, parentId = root.id, name = "z", displayName = "Cat"))
+        try {
+            val result = dao.getChildren(root.id)
+
+            assertEquals(listOf("z", "Mouse", "a"), result.map { it.name })
+        } finally {
+            db.webDavMountDao().delete(mount)
+        }
+    }
+
 }
