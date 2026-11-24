@@ -73,8 +73,15 @@ class RenameDocumentOperation @Inject constructor(
                 .flatMap { it.propstat }
             propStats.isNotEmpty() && propStats.all { it.status.isSuccess() }
         } catch (e: DavException) {
-            logger.log(Level.FINE, "Couldn't set DAV:displayname, falling back to MOVE", e)
-            false
+            when {
+                // 2xx without Multi-Status body: property was set
+                e !is HttpException && e.statusCode in 200..299 ->
+                    true
+                else -> {
+                    logger.log(Level.FINE, "Couldn't set DAV:displayname, falling back to MOVE", e)
+                    false
+                }
+            }
         }
 
     private suspend fun move(httpClient: HttpClient, doc: WebDavDocument, displayName: String) {

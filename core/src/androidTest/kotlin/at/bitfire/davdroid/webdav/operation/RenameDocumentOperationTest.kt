@@ -167,7 +167,7 @@ class RenameDocumentOperationTest {
     }
 
     @Test
-    fun testRename_proppatchNoMultistatus_fallsBackToMove() = runTest {
+    fun testRename_proppatchNoMultistatus_treatsAsSuccess() = runTest {
         val docId = insertDocument(name = "g5d5q4edj00n", displayName = "Upload", isDirectory = true)
         responder = { request ->
             when (request.method.value) {
@@ -178,8 +178,10 @@ class RenameDocumentOperationTest {
 
         operation(docId.toString(), "Photos")
 
-        assertEquals(listOf("PROPPATCH", "MOVE"), requests.map { it.method })
-        assertEquals("Photos", db.webDavDocumentDao().get(docId)!!.name)
+        assertEquals(listOf("PROPPATCH"), requests.map { it.method })
+        val doc = db.webDavDocumentDao().get(docId)!!
+        assertEquals("g5d5q4edj00n", doc.name)
+        assertEquals("Photos", doc.displayName)
     }
 
     @Test
