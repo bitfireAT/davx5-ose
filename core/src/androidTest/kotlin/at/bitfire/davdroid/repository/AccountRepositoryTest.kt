@@ -74,6 +74,9 @@ class AccountRepositoryTest {
     lateinit var accountManager: AccountManager
 
     @Inject
+    lateinit var androidAccountManager: AndroidAccountManager
+
+    @Inject
     @ApplicationContext
     lateinit var context: Context
 
@@ -325,7 +328,7 @@ class AccountRepositoryTest {
 
     private fun createAccountRepository(listener: OnBeforeDeleteListener): AccountRepository {
         return AccountRepository(
-            accountManager = accountManager,
+            androidAccountManager = androidAccountManager,
             automaticSyncManager = { automaticSyncManager },
             context = context,
             db = appDatabase,
