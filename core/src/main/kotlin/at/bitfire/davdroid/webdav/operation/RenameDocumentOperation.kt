@@ -8,7 +8,6 @@ import android.content.Context
 import at.bitfire.dav4jvm.ktor.DavResource
 import at.bitfire.dav4jvm.ktor.exception.DavException
 import at.bitfire.dav4jvm.ktor.exception.HttpException
-import at.bitfire.dav4jvm.ktor.responses
 import at.bitfire.dav4jvm.property.webdav.WebDAV
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.WebDavDocument
@@ -18,9 +17,10 @@ import at.bitfire.davdroid.webdav.DocumentProviderUtils.displayNameToMemberName
 import at.bitfire.davdroid.webdav.throwForDocumentProvider
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.ktor.client.HttpClient
+import io.ktor.http.HttpStatusCode
 import io.ktor.http.URLBuilder
 import io.ktor.http.isSuccess
-import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.flow.collect
 import java.io.FileNotFoundException
 import java.util.logging.Level
 import java.util.logging.Logger
@@ -62,26 +62,20 @@ class RenameDocumentOperation @Inject constructor(
     /**
      * Sets `DAV:displayname` of the given document.
      *
-     * @return whether the server confirmed the change
+     * @return whether the server answered with a 2xx status (property statuses of a 207 response are not evaluated)
      */
     private suspend fun setDisplayName(httpClient: HttpClient, doc: WebDavDocument, displayName: String): Boolean =
         try {
-            val propStats = DavResource(httpClient, doc.toKtorUrl(db))
+            DavResource(httpClient, doc.toKtorUrl(db))
                 .proppatch(mapOf(WebDAV.DisplayName to displayName), emptyList())
-                .responses()
-                .toList()
-                .flatMap { it.propstat }
-            propStats.isNotEmpty() && propStats.all { it.status.isSuccess() }
+                .collect()
+            true
         } catch (e: DavException) {
-            when {
-                // 2xx without Multi-Status body: property was set
-                e !is HttpException && e.statusCode in 200..299 ->
-                    true
-                else -> {
-                    logger.log(Level.FINE, "Couldn't set DAV:displayname, falling back to MOVE", e)
-                    false
-                }
-            }
+            // dav4jvm also throws for 2xx responses other than 207 Multi-Status
+            val success = e.statusCode?.let { HttpStatusCode.fromValue(it).isSuccess() } == true
+            if (!success)
+                logger.log(Level.FINE, "Couldn't set DAV:displayname, falling back to MOVE", e)
+            success
         }
 
     private suspend fun move(httpClient: HttpClient, doc: WebDavDocument, displayName: String) {
