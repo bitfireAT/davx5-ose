@@ -190,6 +190,7 @@ class RenameDocumentOperationTest {
         assertThrows(FileNotFoundException::class.java) {
             runBlocking { operation(docId.toString(), "Photos") }
         }
+        assertEquals(listOf("PROPPATCH", "MOVE"), requests.map { it.method })
     }
 
 

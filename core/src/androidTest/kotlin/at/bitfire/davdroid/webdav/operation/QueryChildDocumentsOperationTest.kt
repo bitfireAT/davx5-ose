@@ -180,6 +180,16 @@ class QueryChildDocumentsOperationTest {
         assertNull(child.displayName)
     }
 
+    @Test
+    fun testDoQueryChildren_displayNameWithSurroundingWhitespace_trimmed() = runTest {
+        val parentId = db.webDavDocumentDao().insert(WebDavDocument(0, mount.id, rootDocument.id, "parent4", true))
+        val parent = db.webDavDocumentDao().get(parentId)!!
+
+        operation.queryChildren(parent)
+
+        assertEquals("Spaced", db.webDavDocumentDao().getChildren(parentId).single().displayName)
+    }
+
 
     // mock engine
 
@@ -216,6 +226,9 @@ class QueryChildDocumentsOperationTest {
             ),
             "$PATH_WEBDAV_ROOT/parent3" to listOf(
                 Resource("blank.txt", "<displayname> </displayname>")
+            ),
+            "$PATH_WEBDAV_ROOT/parent4" to listOf(
+                Resource("spaced.txt", "<displayname> Spaced </displayname>")
             )
         )
 

@@ -29,6 +29,7 @@ import at.bitfire.davdroid.di.qualifier.ApplicationScope
 import at.bitfire.davdroid.webdav.DavHttpClientBuilder
 import at.bitfire.davdroid.webdav.DocumentSortByMapper
 import at.bitfire.davdroid.webdav.DocumentsCursor
+import at.bitfire.synctools.util.trimToNull
 import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
@@ -164,7 +165,7 @@ class QueryChildDocumentsOperation @Inject constructor(
                         val updatedResource = resource.copy(
                             isDirectory = response[ResourceType::class.java]?.types?.contains(WebDAV.Collection)
                                 ?: resource.isDirectory,
-                            displayName = response[DisplayName::class.java]?.displayName?.takeIf { it.isNotBlank() },
+                            displayName = response[DisplayName::class.java]?.displayName.trimToNull(),
                             mimeType = response[GetContentType::class.java]?.type?.toContentTypeOrNull(),
                             eTag = response[GetETag::class.java]?.takeIf { !it.weak }?.eTag,
                             lastModified = response[GetLastModified::class.java]?.lastModified?.toEpochMilli(),
