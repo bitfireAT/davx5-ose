@@ -274,16 +274,15 @@ class AndroidAccountManager @Inject constructor(
     /**
      * Returns the [AccountId] for a given Android [Account].
      *
-     * @return the [DbAccountId] if [account] is a database account (looked up by link, or by name if not validly linked),
-     *   or a [LegacyAccount] otherwise. `null` if [account] is a database account that doesn't exist in the database.
+     * @return the [DbAccountId] of the linked DB account, or a [LegacyAccount] for legacy accounts.
+     *   `null` if [account] is not linked to an existing DB account (orphaned).
      */
     suspend fun getAccountId(account: Account): AccountId? {
         if (account.type != dbAccountType)
             return LegacyAccount(account)
 
-        val linkedId = withContext(ioDispatcher) { getLinkedDbAccountId(account) }
-        val dbAccount = linkedId?.let { dbAccountDao.get(it) } ?: dbAccountDao.getFromName(account.name)
-        return dbAccount?.let { DbAccountId(it.id) }
+        val linkedId = withContext(ioDispatcher) { getLinkedDbAccountId(account) } ?: return null
+        return dbAccountDao.get(linkedId)?.let { DbAccountId(it.id) }
     }
 
     /**
