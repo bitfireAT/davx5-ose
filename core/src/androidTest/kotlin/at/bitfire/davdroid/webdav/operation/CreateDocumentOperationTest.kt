@@ -111,9 +111,10 @@ class CreateDocumentOperationTest {
         handler = { respond("", HttpStatusCode.BadGateway) }
         val root = db.webDavDocumentDao().getOrCreateRoot(mount)
 
-        assertThrows(HttpException::class.java) {
+        val e = assertThrows(HttpException::class.java) {
             runBlocking { operation(root.id.toString(), "text/plain", "file.txt") }
         }
+        assertEquals(502, e.statusCode)
     }
 
 }
