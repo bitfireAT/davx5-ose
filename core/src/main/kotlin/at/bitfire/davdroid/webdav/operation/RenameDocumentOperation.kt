@@ -6,6 +6,7 @@ package at.bitfire.davdroid.webdav.operation
 
 import android.content.Context
 import at.bitfire.dav4jvm.ktor.DavResource
+import at.bitfire.dav4jvm.ktor.allSuccessful
 import at.bitfire.dav4jvm.ktor.exception.DavException
 import at.bitfire.dav4jvm.ktor.exception.HttpException
 import at.bitfire.dav4jvm.property.webdav.WebDAV
@@ -17,10 +18,7 @@ import at.bitfire.davdroid.webdav.DocumentProviderUtils.displayNameToMemberName
 import at.bitfire.davdroid.webdav.throwForDocumentProvider
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.ktor.client.HttpClient
-import io.ktor.http.HttpStatusCode
 import io.ktor.http.URLBuilder
-import io.ktor.http.isSuccess
-import kotlinx.coroutines.flow.collect
 import java.io.FileNotFoundException
 import java.util.logging.Level
 import java.util.logging.Logger
@@ -62,20 +60,16 @@ class RenameDocumentOperation @Inject constructor(
     /**
      * Sets `DAV:displayname` of the given document.
      *
-     * @return whether the server answered with a 2xx status (property statuses of a 207 response are not evaluated)
+     * @return whether the server confirmed the change
      */
     private suspend fun setDisplayName(httpClient: HttpClient, doc: WebDavDocument, displayName: String): Boolean =
         try {
             DavResource(httpClient, doc.toKtorUrl(db))
                 .proppatch(mapOf(WebDAV.DisplayName to displayName), emptyList())
-                .collect()
-            true
+                .allSuccessful()
         } catch (e: DavException) {
-            // dav4jvm also throws for 2xx responses other than 207 Multi-Status
-            val success = e.statusCode?.let { HttpStatusCode.fromValue(it).isSuccess() } == true
-            if (!success)
-                logger.log(Level.FINE, "Couldn't set DAV:displayname, falling back to MOVE", e)
-            success
+            logger.log(Level.FINE, "Couldn't set DAV:displayname, falling back to MOVE", e)
+            false
         }
 
     private suspend fun move(httpClient: HttpClient, doc: WebDavDocument, displayName: String) {

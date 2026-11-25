@@ -167,6 +167,24 @@ class RenameDocumentOperationTest {
     }
 
     @Test
+    fun testRename_proppatchPropstatForbidden_fallsBackToMove() = runTest {
+        val docId = insertDocument(name = "g5d5q4edj00n", displayName = "Upload", isDirectory = true)
+        responder = { request ->
+            when (request.method.value) {
+                "PROPPATCH" -> respondProppatch(request, HttpStatusCode.Forbidden)
+                else -> respond("", HttpStatusCode.Created)
+            }
+        }
+
+        operation(docId.toString(), "Photos")
+
+        assertEquals(listOf("PROPPATCH", "MOVE"), requests.map { it.method })
+        val doc = db.webDavDocumentDao().get(docId)!!
+        assertEquals("Photos", doc.name)
+        assertNull(doc.displayName)
+    }
+
+    @Test
     fun testRename_proppatchNoMultistatus_treatsAsSuccess() = runTest {
         val docId = insertDocument(name = "g5d5q4edj00n", displayName = "Upload", isDirectory = true)
         responder = { request ->
@@ -203,10 +221,10 @@ class RenameDocumentOperationTest {
             WebDavDocument(mountId = mount.id, parentId = root.id, name = name, isDirectory = isDirectory, displayName = displayName)
         )
 
-    private fun MockRequestHandleScope.respondProppatch(request: HttpRequestData) =
+    private fun MockRequestHandleScope.respondProppatch(request: HttpRequestData, status: HttpStatusCode = HttpStatusCode.OK) =
         respond(
             "<multistatus xmlns='DAV:'><response><href>${request.url.encodedPath}</href>" +
-                    "<propstat><prop><displayname/></prop><status>HTTP/1.1 200 OK</status></propstat>" +
+                    "<propstat><prop><displayname/></prop><status>HTTP/1.1 ${status.value} ${status.description}</status></propstat>" +
                     "</response></multistatus>",
             HttpStatusCode.MultiStatus,
             headersOf(HttpHeaders.ContentType, ContentType.Application.Xml.withCharset(Charsets.UTF_8).toString())
