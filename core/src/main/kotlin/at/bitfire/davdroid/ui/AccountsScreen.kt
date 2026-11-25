@@ -21,10 +21,10 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Android
 import androidx.compose.material.icons.filled.BatterySaver
 import androidx.compose.material.icons.filled.DataSaverOn
 import androidx.compose.material.icons.filled.Lan
-import androidx.compose.material.icons.filled.ManageAccounts
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.NotificationsOff
 import androidx.compose.material.icons.filled.SignalCellularOff
@@ -531,7 +531,7 @@ fun SyncWarnings(
     Column(Modifier.padding(horizontal = 8.dp)) {
         if (problemAccountsCount > 0)
             ActionCard(
-                icon = Icons.Default.ManageAccounts,
+                icon = Icons.Default.Android,
                 actionText = stringResource(R.string.accounts_check_action),
                 onAction = onAccountsCheck,
                 modifier = Modifier.padding(vertical = 4.dp)
