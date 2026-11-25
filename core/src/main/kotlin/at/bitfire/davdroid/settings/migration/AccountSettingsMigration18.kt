@@ -58,8 +58,6 @@ class AccountSettingsMigration18 @Inject constructor(
                 }
             }
         }
-
-        // Address books without an assigned account will be removed by AccountsCleanupWorker
     }
 
 
