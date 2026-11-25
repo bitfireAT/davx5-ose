@@ -7,14 +7,13 @@ package at.bitfire.davdroid.webdav.operation
 import android.content.Context
 import android.provider.DocumentsContract.Document
 import at.bitfire.dav4jvm.ktor.DavResource
-import at.bitfire.dav4jvm.ktor.exception.HttpException
+import at.bitfire.dav4jvm.ktor.exception.PreconditionFailedException
 import at.bitfire.dav4jvm.ktor.toContentTypeOrNull
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.WebDavDocument
 import at.bitfire.davdroid.webdav.DavHttpClientBuilder
 import at.bitfire.davdroid.webdav.DocumentProviderUtils
 import at.bitfire.davdroid.webdav.DocumentProviderUtils.displayNameToMemberName
-import at.bitfire.davdroid.webdav.throwForDocumentProvider
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.ktor.client.utils.EmptyContent
 import io.ktor.http.HttpHeaders
@@ -75,8 +74,8 @@ class CreateDocumentOperation @Inject constructor(
                     DocumentProviderUtils.notifyFolderChanged(context, parentDocumentId)
 
                     return docId.toString()
-                } catch (e: HttpException) {
-                    e.throwForDocumentProvider(context, ignorePreconditionFailed = true)
+                } catch (_: PreconditionFailedException) {
+                    // name already taken, try next one
                 }
             }
         }
