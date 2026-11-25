@@ -174,13 +174,13 @@ class NotificationRegistry @Inject constructor(
     // specific common notifications
 
     /**
-     * Shows a notification about account problems that leads to "Check and repair accounts".
+     * Shows a notification about account problems that leads to the "Android accounts" view.
      */
     fun notifyAccountsCheck() {
         notifyIfPossible(NOTIFY_ACCOUNTS_CHECK) {
             NotificationCompat.Builder(context, CHANNEL_USER_INTERACTION)
                 .setSmallIcon(R.drawable.ic_warning_notify)
-                .setContentTitle(context.getString(R.string.accounts_check_title))
+                .setContentTitle(context.getString(R.string.accounts_check_action))
                 .setContentText(context.getString(R.string.accounts_check_problems))
                 .setContentIntent(
                     TaskStackBuilder.create(context)

@@ -176,7 +176,7 @@ class AccountScreenViewModel @AssistedInject constructor(
     fun resetError() { error = null }
 
 
-    /** whether to hint to "Check and repair accounts" because the new name is taken by an Android account */
+    /** whether to hint to the "Android accounts" view because the new name is taken by an Android account */
     var showAccountsCheckHint by mutableStateOf(false)
         private set
 

@@ -74,7 +74,7 @@ fun AccountDetailsPage(
         if (uiState.androidAccountNameTaken) {
             if (snackbarHostState.showSnackbar(
                     message = context.getString(R.string.accounts_check_android_account_name_taken),
-                    actionLabel = context.getString(R.string.accounts_check_title),
+                    actionLabel = context.getString(R.string.accounts_check_show),
                     duration = SnackbarDuration.Long
                 ) == SnackbarResult.ActionPerformed
             )

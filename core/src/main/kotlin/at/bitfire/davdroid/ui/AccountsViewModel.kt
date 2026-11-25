@@ -107,9 +107,9 @@ class AccountsViewModel @AssistedInject constructor(
     }
     val showSyncAll: Flow<Boolean> = accountIds.map { it.isNotEmpty() }
 
-    /** whether "Check and repair accounts" shows a problem */
-    val accountsProblem: Flow<Boolean> = accountStatuses().map { statuses ->
-        statuses.any { it.isProblem }
+    /** number of accounts with a problem in the "Android accounts" view */
+    val problemAccountsCount: Flow<Int> = accountStatuses().map { statuses ->
+        statuses.count { it.isProblem }
     }
 
     private val workManager = WorkManager.getInstance(context)

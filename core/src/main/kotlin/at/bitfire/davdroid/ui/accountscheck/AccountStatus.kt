@@ -7,7 +7,7 @@ package at.bitfire.davdroid.ui.accountscheck
 import android.accounts.Account
 
 /**
- * Status of a DAVx⁵ account, as shown in "Check and repair accounts".
+ * Status of a DAVx⁵ account, as shown in the "Android accounts" view.
  */
 sealed interface AccountStatus {
 
