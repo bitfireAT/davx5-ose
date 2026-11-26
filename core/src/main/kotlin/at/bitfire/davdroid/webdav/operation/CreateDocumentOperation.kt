@@ -17,8 +17,6 @@ import at.bitfire.davdroid.webdav.DocumentProviderUtils.displayNameToMemberName
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.ktor.client.utils.EmptyContent
 import io.ktor.http.HttpHeaders
-import io.ktor.http.URLBuilder
-import io.ktor.http.appendPathSegments
 import io.ktor.http.headersOf
 import java.io.FileNotFoundException
 import java.util.logging.Logger
@@ -39,11 +37,15 @@ class CreateDocumentOperation @Inject constructor(
         val createDirectory = mimeType == Document.MIME_TYPE_DIR
 
         var docId: Long?
-        val parentUrl = parent.toKtorUrl(db)
         davClientBuilder.build(parent.mountId).use { client ->
             for (attempt in 0..DocumentProviderUtils.MAX_DISPLAYNAME_TO_MEMBERNAME_ATTEMPTS) {
                 val newName = displayNameToMemberName(displayName, attempt)
-                val newLocation = URLBuilder(parentUrl).appendPathSegments(newName).build()
+                val newLocation = WebDavDocument(
+                    mountId = parent.mountId,
+                    parentId = parent.id,
+                    name = newName,
+                    isDirectory = createDirectory
+                ).toKtorUrl(db)
                 val doc = DavResource(client, newLocation)
                 try {
                     if (createDirectory)

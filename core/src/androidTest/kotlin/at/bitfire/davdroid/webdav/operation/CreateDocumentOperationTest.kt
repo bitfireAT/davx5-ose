@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid.webdav.operation
 
+import android.provider.DocumentsContract.Document
 import at.bitfire.dav4jvm.ktor.exception.HttpException
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.WebDavMount
@@ -115,6 +116,38 @@ class CreateDocumentOperationTest {
             runBlocking { operation(root.id.toString(), "text/plain", "file.txt") }
         }
         assertEquals(502, e.statusCode)
+    }
+
+    @Test
+    fun testCreate_folder_usesTrailingSlash() = runTest {
+        val requests = mutableListOf<HttpRequestData>()
+        handler = { request ->
+            requests += request
+            respond("", HttpStatusCode.Created)
+        }
+        val root = db.webDavDocumentDao().getOrCreateRoot(mount)
+
+        operation(root.id.toString(), Document.MIME_TYPE_DIR, "dir")
+
+        val mkCol = requests.single()
+        assertEquals("MKCOL", mkCol.method.value)
+        assertEquals("https://mock.example.com/webdav/dir/", mkCol.url.toString())
+    }
+
+    @Test
+    fun testCreate_file_noTrailingSlash() = runTest {
+        val requests = mutableListOf<HttpRequestData>()
+        handler = { request ->
+            requests += request
+            respond("", HttpStatusCode.Created)
+        }
+        val root = db.webDavDocumentDao().getOrCreateRoot(mount)
+
+        operation(root.id.toString(), "text/plain", "file.txt")
+
+        val put = requests.single()
+        assertEquals("PUT", put.method.value)
+        assertEquals("https://mock.example.com/webdav/file.txt", put.url.toString())
     }
 
 }
