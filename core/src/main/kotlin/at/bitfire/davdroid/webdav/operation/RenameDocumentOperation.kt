@@ -32,9 +32,9 @@ class RenameDocumentOperation @Inject constructor(
         davClientBuilder
             .build(doc.mountId)
             .use { httpClient ->
+                val oldUrl = doc.toKtorUrl(db)
                 for (attempt in 0..DocumentProviderUtils.MAX_DISPLAYNAME_TO_MEMBERNAME_ATTEMPTS) {
                     val newName = displayNameToMemberName(displayName, attempt)
-                    val oldUrl = doc.toKtorUrl(db)
                     val newLocation = doc.copy(name = newName).toKtorUrl(db)
                     try {
                         val dav = DavResource(httpClient, oldUrl)

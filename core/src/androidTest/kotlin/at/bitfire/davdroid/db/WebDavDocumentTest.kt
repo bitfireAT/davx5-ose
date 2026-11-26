@@ -7,9 +7,7 @@ package at.bitfire.davdroid.db
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.ktor.http.Url
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
-import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
@@ -26,17 +24,10 @@ class WebDavDocumentTest {
     lateinit var db: AppDatabase
 
     private val documentDao by lazy { db.webDavDocumentDao() }
-    private val mounts = mutableListOf<WebDavMount>()
 
     @Before
     fun setUp() {
         hiltRule.inject()
-    }
-
-    @After
-    fun tearDown() = runBlocking {
-        for (mount in mounts)
-            db.webDavMountDao().delete(mount)
     }
 
 
@@ -126,7 +117,7 @@ class WebDavDocumentTest {
     private suspend fun insertMount(url: String): WebDavMount {
         val mountDao = db.webDavMountDao()
         val id = mountDao.insert(WebDavMount(name = "Test Mount", url = Url(url)))
-        return mountDao.getById(id).also { mounts += it }
+        return mountDao.getById(id)
     }
 
     private suspend fun insertDocument(parent: WebDavDocument, name: String, isDirectory: Boolean): WebDavDocument {

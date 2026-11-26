@@ -13,6 +13,7 @@ import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import at.bitfire.dav4jvm.ktor.toContentTypeOrNull
+import at.bitfire.dav4jvm.ktor.withTrailingSlash
 import at.bitfire.davdroid.util.DavUtils.MEDIA_TYPE_OCTET_STREAM
 import at.bitfire.davdroid.webdav.DocumentState
 import io.ktor.http.ContentType
@@ -128,13 +129,15 @@ data class WebDavDocument(
             doc = db.webDavDocumentDao().get(doc.parentId) ?: throw FileNotFoundException()
         }
 
-        // folders get a trailing slash
-        if (isDirectory)
-            segments += ""
-
-        return URLBuilder(mount.url)
+        val url = URLBuilder(mount.url)
             .appendPathSegments(segments)
             .build()
+
+        // folders get a trailing slash
+        return if (isDirectory)
+            url.withTrailingSlash()
+        else
+            url
     }
 
 

@@ -39,14 +39,15 @@ class CreateDocumentOperation @Inject constructor(
         var docId: Long?
         davClientBuilder.build(parent.mountId).use { client ->
             for (attempt in 0..DocumentProviderUtils.MAX_DISPLAYNAME_TO_MEMBERNAME_ATTEMPTS) {
-                val newName = displayNameToMemberName(displayName, attempt)
-                val newLocation = WebDavDocument(
+                val newDoc = WebDavDocument(
                     mountId = parent.mountId,
                     parentId = parent.id,
-                    name = newName,
-                    isDirectory = createDirectory
-                ).toKtorUrl(db)
-                val doc = DavResource(client, newLocation)
+                    name = displayNameToMemberName(displayName, attempt),
+                    isDirectory = createDirectory,
+                    mimeType = mimeType.toContentTypeOrNull(),
+                    size = if (createDirectory) null else 0
+                )
+                val doc = DavResource(client, newDoc.toKtorUrl(db))
                 try {
                     if (createDirectory)
                         doc.mkCol(null) {
@@ -60,18 +61,7 @@ class CreateDocumentOperation @Inject constructor(
                             // document successfully created
                         }
 
-                    docId = documentDao.insertOrReplace(
-                        WebDavDocument(
-                            mountId = parent.mountId,
-                            parentId = parent.id,
-                            name = newName,
-                            isDirectory = createDirectory,
-                            mimeType = mimeType.toContentTypeOrNull(),
-                            eTag = null,
-                            lastModified = null,
-                            size = if (createDirectory) null else 0
-                        )
-                    )
+                    docId = documentDao.insertOrReplace(newDoc)
 
                     DocumentProviderUtils.notifyFolderChanged(context, parentDocumentId)
 
