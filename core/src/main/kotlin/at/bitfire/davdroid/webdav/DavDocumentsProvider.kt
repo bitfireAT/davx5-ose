@@ -4,9 +4,18 @@
 
 package at.bitfire.davdroid.webdav
 
+import android.app.AuthenticationRequiredException
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
 import android.graphics.Point
+import android.os.Build
 import android.os.CancellationSignal
+import android.os.OperationCanceledException
 import android.provider.DocumentsProvider
+import androidx.core.app.TaskStackBuilder
+import at.bitfire.dav4jvm.ktor.exception.UnauthorizedException
+import at.bitfire.davdroid.ui.webdav.WebdavMountsActivity
 import at.bitfire.davdroid.webdav.operation.CopyDocumentOperation
 import at.bitfire.davdroid.webdav.operation.CreateDocumentOperation
 import at.bitfire.davdroid.webdav.operation.DeleteDocumentOperation
@@ -23,6 +32,10 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.runBlocking
+import java.io.FileNotFoundException
+import java.util.concurrent.CancellationException
+import java.util.logging.Level
+import java.util.logging.Logger
 
 /**
  * Provides functionality on WebDav documents.
@@ -34,7 +47,8 @@ import kotlinx.coroutines.runBlocking
  * is created by Android when it's first accessed and then stays in memory until the process
  * is killed.
  *
- * As a ContentProvider, this class is responsible for bridging its blocking API to the suspending operations.
+ * As a ContentProvider, this class is responsible for bridging its blocking API to the suspending operations
+ * (see [runOperation]).
  */
 class DavDocumentsProvider : DocumentsProvider() {
 
@@ -45,6 +59,7 @@ class DavDocumentsProvider : DocumentsProvider() {
         fun createDocumentOperation(): CreateDocumentOperation
         fun deleteDocumentOperation(): DeleteDocumentOperation
         fun isChildDocumentOperation(): IsChildDocumentOperation
+        fun logger(): Logger
         fun moveDocumentOperation(): MoveDocumentOperation
         fun openDocumentOperation(): OpenDocumentOperation
         fun openDocumentThumbnailOperation(): OpenDocumentThumbnailOperation
@@ -64,30 +79,51 @@ class DavDocumentsProvider : DocumentsProvider() {
     /* Note: shutdown() is NOT called automatically by Android; a content provider lives until
     the process is killed. */
 
+    /**
+     * Runs an operation blocking and converts thrown exceptions with [toDocumentsProviderException] so that
+     * they can be passed over IPC. Converted exceptions are logged because their stack trace doesn't reach the caller.
+     *
+     * See also the "throws" declarations for the methods in [DocumentsProvider].
+     *
+     * @return result of [block]
+     */
+    private fun <T> runOperation(block: suspend () -> T): T =
+        runBlocking {
+            try {
+                block()
+            } catch (e: Exception) {
+                // IPC can only send some exception types back to the calling app
+                val exForIpc = e.toDocumentsProviderException(context!!)
+                if (exForIpc !== e)
+                    entryPoint.logger().log(Level.WARNING, "WebDAV operation failed", e)
+                throw exForIpc
+            }
+        }
+
 
     /*** query ***/
 
-    override fun queryRoots(projection: Array<out String>?) = runBlocking {
+    override fun queryRoots(projection: Array<out String>?) = runOperation {
         entryPoint.queryRootsOperation().invoke(projection)
     }
 
-    override fun queryDocument(documentId: String, projection: Array<out String>?) = runBlocking {
+    override fun queryDocument(documentId: String, projection: Array<out String>?) = runOperation {
         entryPoint.queryDocumentOperation().invoke(documentId, projection)
     }
 
     override fun queryChildDocuments(parentDocumentId: String, projection: Array<out String>?, sortOrder: String?) =
-        runBlocking {
-        entryPoint.queryChildDocumentsOperation().invoke(parentDocumentId, projection, sortOrder)
+        runOperation {
+            entryPoint.queryChildDocumentsOperation().invoke(parentDocumentId, projection, sortOrder)
         }
 
-    override fun isChildDocument(parentDocumentId: String, documentId: String) = runBlocking {
+    override fun isChildDocument(parentDocumentId: String, documentId: String) = runOperation {
         entryPoint.isChildDocumentOperation().invoke(parentDocumentId, documentId)
     }
 
 
     /*** copy/create/delete/move/rename ***/
 
-    override fun copyDocument(sourceDocumentId: String, targetParentDocumentId: String) = runBlocking {
+    override fun copyDocument(sourceDocumentId: String, targetParentDocumentId: String) = runOperation {
         entryPoint.copyDocumentOperation().invoke(sourceDocumentId, targetParentDocumentId)
     }
 
@@ -95,11 +131,11 @@ class DavDocumentsProvider : DocumentsProvider() {
         parentDocumentId: String,
         mimeType: String,
         displayName: String
-    ): String? = runBlocking {
+    ): String? = runOperation {
         entryPoint.createDocumentOperation().invoke(parentDocumentId, mimeType, displayName)
     }
 
-    override fun deleteDocument(documentId: String) = runBlocking {
+    override fun deleteDocument(documentId: String) = runOperation {
         entryPoint.deleteDocumentOperation().invoke(documentId)
     }
 
@@ -107,23 +143,65 @@ class DavDocumentsProvider : DocumentsProvider() {
         sourceDocumentId: String,
         sourceParentDocumentId: String,
         targetParentDocumentId: String
-    ) = runBlocking {
+    ) = runOperation {
         entryPoint.moveDocumentOperation().invoke(sourceDocumentId, sourceParentDocumentId, targetParentDocumentId)
     }
 
-    override fun renameDocument(documentId: String, displayName: String): String? = runBlocking {
+    override fun renameDocument(documentId: String, displayName: String): String? = runOperation {
         entryPoint.renameDocumentOperation().invoke(documentId, displayName)
     }
 
 
     /*** read/write ***/
 
-    override fun openDocument(documentId: String, mode: String, signal: CancellationSignal?) = runBlocking {
+    override fun openDocument(documentId: String, mode: String, signal: CancellationSignal?) = runOperation {
         entryPoint.openDocumentOperation().invoke(documentId, mode, signal)
     }
 
-    override fun openDocumentThumbnail(documentId: String, sizeHint: Point, signal: CancellationSignal?) = runBlocking {
+    override fun openDocumentThumbnail(documentId: String, sizeHint: Point, signal: CancellationSignal?) = runOperation {
         entryPoint.openDocumentThumbnailOperation().invoke(documentId, sizeHint, signal)
     }
 
 }
+
+/**
+ * Converts an exception into one that IPC can send back to the calling app. Only the types
+ * handled by [android.database.DatabaseUtils.writeExceptionToParcel] (content providers, e.g. [FileNotFoundException])
+ * and [android.os.Parcel.writeException] can be sent.
+ *
+ * Converting exceptions into a [FileNotFoundException] seems to be common practice, for instance in the
+ * "Create a custom document provider" guide (`openDocument()`) and the `MyCloudProvider` of android/storage-samples.
+ *
+ * Note that for queries and thumbnails, [android.provider.DocumentsProvider] itself catches [FileNotFoundException]
+ * and returns `null` to the caller.
+ *
+ * @return exception to throw from a `DocumentsProvider` method
+ */
+internal fun Exception.toDocumentsProviderException(context: Context): Exception =
+    when {
+        // must come before IllegalStateException, which it extends
+        this is CancellationException ->
+            OperationCanceledException(message)
+
+        this is UnauthorizedException && Build.VERSION.SDK_INT >= 26 ->
+            AuthenticationRequiredException(
+                this,
+                TaskStackBuilder.create(context)
+                    .addNextIntentWithParentStack(Intent(context, WebdavMountsActivity::class.java))
+                    .getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+            )
+
+        this is FileNotFoundException ||
+        this is OperationCanceledException ||
+        this is SecurityException ||
+        this is IllegalArgumentException ||
+        this is IllegalStateException ||
+        this is UnsupportedOperationException ->
+            this
+
+        else ->
+            FileNotFoundException(message ?: javaClass.simpleName).apply {
+                initCause(this@toDocumentsProviderException)
+            }
+    }
+

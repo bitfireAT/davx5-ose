@@ -6,12 +6,10 @@ package at.bitfire.davdroid.webdav.operation
 
 import android.content.Context
 import at.bitfire.dav4jvm.ktor.DavResource
-import at.bitfire.dav4jvm.ktor.exception.HttpException
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.WebDavDocument
 import at.bitfire.davdroid.webdav.DavHttpClientBuilder
 import at.bitfire.davdroid.webdav.DocumentProviderUtils
-import at.bitfire.davdroid.webdav.throwForDocumentProvider
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.ktor.http.URLBuilder
 import io.ktor.http.appendPathSegments
@@ -45,12 +43,8 @@ class CopyDocumentOperation @Inject constructor(
                     .appendPathSegments(name)
                     .build()
 
-                try {
-                    dav.copy(dstUrl, false) {
-                        // successfully copied
-                    }
-                } catch (e: HttpException) {
-                    e.throwForDocumentProvider(context)
+                dav.copy(dstUrl, false) {
+                    // successfully copied
                 }
             }
 

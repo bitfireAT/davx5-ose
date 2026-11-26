@@ -6,11 +6,9 @@ package at.bitfire.davdroid.webdav.operation
 
 import android.content.Context
 import at.bitfire.dav4jvm.ktor.DavResource
-import at.bitfire.dav4jvm.ktor.exception.HttpException
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.webdav.DavHttpClientBuilder
 import at.bitfire.davdroid.webdav.DocumentProviderUtils
-import at.bitfire.davdroid.webdav.throwForDocumentProvider
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.ktor.http.URLBuilder
 import io.ktor.http.appendPathSegments
@@ -47,18 +45,14 @@ class MoveDocumentOperation @Inject constructor(
                     .build()
 
                 val dav = DavResource(httpClient, doc.toKtorUrl(db))
-                try {
-                    dav.move(newLocation, false) {
-                        // successfully moved
-                    }
-
-                    documentDao.update(doc.copy(parentId = dstParent.id))
-
-                    DocumentProviderUtils.notifyFolderChanged(context, sourceParentDocumentId)
-                    DocumentProviderUtils.notifyFolderChanged(context, targetParentDocumentId)
-                } catch (e: HttpException) {
-                    e.throwForDocumentProvider(context)
+                dav.move(newLocation, false) {
+                    // successfully moved
                 }
+
+                documentDao.update(doc.copy(parentId = dstParent.id))
+
+                DocumentProviderUtils.notifyFolderChanged(context, sourceParentDocumentId)
+                DocumentProviderUtils.notifyFolderChanged(context, targetParentDocumentId)
             }
 
         return doc.id.toString()
