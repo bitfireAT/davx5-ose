@@ -12,7 +12,6 @@ import at.bitfire.davdroid.webdav.DavHttpClientBuilder
 import at.bitfire.davdroid.webdav.DocumentProviderUtils
 import at.bitfire.davdroid.webdav.DocumentProviderUtils.displayNameToMemberName
 import dagger.hilt.android.qualifiers.ApplicationContext
-import io.ktor.http.URLBuilder
 import java.io.FileNotFoundException
 import java.util.logging.Logger
 import javax.inject.Inject
@@ -36,11 +35,7 @@ class RenameDocumentOperation @Inject constructor(
                 for (attempt in 0..DocumentProviderUtils.MAX_DISPLAYNAME_TO_MEMBERNAME_ATTEMPTS) {
                     val newName = displayNameToMemberName(displayName, attempt)
                     val oldUrl = doc.toKtorUrl(db)
-                    val newLocation = URLBuilder(oldUrl)
-                        .apply {
-                        // Remove the last path segment (current file name) and add the new name
-                        pathSegments = pathSegments.dropLast(1) + newName
-                    }.build()
+                    val newLocation = doc.copy(name = newName).toKtorUrl(db)
                     try {
                         val dav = DavResource(httpClient, oldUrl)
                         dav.move(newLocation, false) {

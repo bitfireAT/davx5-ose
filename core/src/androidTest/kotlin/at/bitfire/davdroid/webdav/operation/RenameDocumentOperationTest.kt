@@ -15,6 +15,7 @@ import dagger.hilt.android.testing.HiltAndroidTest
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
+import io.ktor.client.request.HttpRequestData
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.Url
 import io.mockk.coEvery
@@ -44,7 +45,10 @@ class RenameDocumentOperationTest {
     @Inject
     lateinit var operation: RenameDocumentOperation
 
+    private val requests = mutableListOf<HttpRequestData>()
+
     private val mockEngine = MockEngine { request ->
+        requests += request
         val destination = request.headers["Destination"].orEmpty()
         when {
             !request.method.value.equals("MOVE", ignoreCase = true) -> respond("", HttpStatusCode.NotFound)
@@ -87,6 +91,19 @@ class RenameDocumentOperationTest {
         operation(docId.toString(), "new.txt")
 
         assertEquals("new_1.txt", documentDao.get(docId)!!.name)
+    }
+
+    @Test
+    fun testRename_folder_usesTrailingSlashes() = runTest {
+        val documentDao = db.webDavDocumentDao()
+        val root = documentDao.getOrCreateRoot(mount)
+        val docId = documentDao.insert(WebDavDocument(0, mount.id, root.id, "old", true))
+
+        operation(docId.toString(), "new")
+
+        val move = requests.single()
+        assertEquals("https://mock.example.com/webdav/old/", move.url.toString())
+        assertEquals("https://mock.example.com/webdav/new/", move.headers["Destination"])
     }
 
 }
