@@ -15,6 +15,7 @@ import dagger.hilt.android.testing.HiltAndroidTest
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
+import io.ktor.client.request.HttpRequestData
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.Url
 import io.mockk.coEvery
@@ -44,7 +45,10 @@ class MoveDocumentOperationTest {
     @Inject
     lateinit var operation: MoveDocumentOperation
 
+    private val requests = mutableListOf<HttpRequestData>()
+
     private val mockEngine = MockEngine { request ->
+        requests += request
         when {
             request.method.value.equals("MOVE", ignoreCase = true) -> respond("", HttpStatusCode.NoContent)
             else -> respond("", HttpStatusCode.NotFound)
@@ -102,6 +106,36 @@ class MoveDocumentOperationTest {
         val movedDoc = documentDao.get(newId.toLong())
         assertEquals(destinationParent.id, movedDoc!!.parentId)
         assertEquals(sourceFile.name, movedDoc.name)
+    }
+
+    @Test
+    fun testMove_folder_usesTrailingSlashes() = runTest {
+        val documentDao = db.webDavDocumentDao()
+        val root = documentDao.getOrCreateRoot(mount)
+        val sourceParentId = documentDao.insert(WebDavDocument(0, mount.id, root.id, "source", true))
+        val folderId = documentDao.insert(WebDavDocument(0, mount.id, sourceParentId, "folder", true))
+        val destinationParentId = documentDao.insert(WebDavDocument(0, mount.id, root.id, "destination", true))
+
+        operation(folderId.toString(), sourceParentId.toString(), destinationParentId.toString())
+
+        val move = requests.single()
+        assertEquals("https://mock.example.com/webdav/source/folder/", move.url.toString())
+        assertEquals("https://mock.example.com/webdav/destination/folder/", move.headers["Destination"])
+    }
+
+    @Test
+    fun testMove_file_noTrailingSlash() = runTest {
+        val documentDao = db.webDavDocumentDao()
+        val root = documentDao.getOrCreateRoot(mount)
+        val sourceParentId = documentDao.insert(WebDavDocument(0, mount.id, root.id, "source", true))
+        val fileId = documentDao.insert(WebDavDocument(0, mount.id, sourceParentId, "file.txt", false))
+        val destinationParentId = documentDao.insert(WebDavDocument(0, mount.id, root.id, "destination", true))
+
+        operation(fileId.toString(), sourceParentId.toString(), destinationParentId.toString())
+
+        val move = requests.single()
+        assertEquals("https://mock.example.com/webdav/source/file.txt", move.url.toString())
+        assertEquals("https://mock.example.com/webdav/destination/file.txt", move.headers["Destination"])
     }
 
 }

@@ -11,8 +11,6 @@ import at.bitfire.davdroid.db.WebDavDocument
 import at.bitfire.davdroid.webdav.DavHttpClientBuilder
 import at.bitfire.davdroid.webdav.DocumentProviderUtils
 import dagger.hilt.android.qualifiers.ApplicationContext
-import io.ktor.http.URLBuilder
-import io.ktor.http.appendPathSegments
 import java.io.FileNotFoundException
 import java.util.logging.Logger
 import javax.inject.Inject
@@ -39,9 +37,7 @@ class CopyDocumentOperation @Inject constructor(
             .build(srcDoc.mountId)
             .use { httpClient ->
                 val dav = DavResource(httpClient, srcDoc.toKtorUrl(db))
-                val dstUrl = URLBuilder(dstFolder.toKtorUrl(db))
-                    .appendPathSegments(name)
-                    .build()
+                val dstUrl = srcDoc.copy(parentId = dstFolder.id).toKtorUrl(db)
 
                 dav.copy(dstUrl, false) {
                     // successfully copied
