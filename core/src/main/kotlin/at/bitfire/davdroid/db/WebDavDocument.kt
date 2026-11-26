@@ -112,21 +112,29 @@ data class WebDavDocument(
         return bundle
     }
 
+    /**
+     * Builds the URL of this document. Folders get a trailing slash (RFC 4918 §5.2).
+     *
+     * @return URL of this document
+     * @throws FileNotFoundException if a parent document doesn't exist (anymore)
+     */
     suspend fun toKtorUrl(db: AppDatabase): Url {
         val mount = db.webDavMountDao().getById(mountId)
 
-        val segments = mutableListOf(name)
-        var parentIter = parentId
-        while (parentIter != null) {
-            val parent = db.webDavDocumentDao().get(parentIter) ?: throw FileNotFoundException()
-            segments += parent.name
-            parentIter = parent.parentId
+        val segments = ArrayDeque<String>()
+        var doc = this
+        while (doc.parentId != null) {     // root document adds no segment
+            segments.addFirst(doc.name)    // prepend segment
+            doc = db.webDavDocumentDao().get(doc.parentId) ?: throw FileNotFoundException()
         }
 
-        val builder = URLBuilder(mount.url)
-        for (segment in segments.reversed())
-            builder.appendPathSegments(segment)
-        return builder.build()
+        // folders get a trailing slash
+        if (isDirectory)
+            segments += ""
+
+        return URLBuilder(mount.url)
+            .appendPathSegments(segments)
+            .build()
     }
 
 
