@@ -9,10 +9,8 @@ import android.content.Intent
 import android.widget.Toast
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibilityScope
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.SharedTransitionScope
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -38,7 +36,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -111,7 +108,7 @@ fun AccountScreen(
         }
     )
 
-    val accountName by model.accountName.collectAsState("")
+    val accountName by model.accountName.collectAsState()
     val cardDavService by model.cardDavSvc.collectAsStateWithLifecycle()
     val addressBooks = model.addressBooks.collectAsLazyPagingItems()
 
@@ -122,7 +119,7 @@ fun AccountScreen(
 
     val context = LocalContext.current
     AccountScreen(
-        accountName = accountName,
+        accountName = accountName ?: "",
         error = model.error,
         onResetError = model::resetError,
         invalidAccount = model.invalidAccount.collectAsStateWithLifecycle(false).value,
@@ -176,7 +173,6 @@ fun AccountScreen(
     )
 }
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
 fun AccountScreen(
     accountName: String,
@@ -482,7 +478,6 @@ fun AccountScreen(
 }
 
 @Composable
-@OptIn(ExperimentalSharedTransitionApi::class)
 fun AccountScreen_Tab(
     selected: Boolean,
     showIcon: Boolean,

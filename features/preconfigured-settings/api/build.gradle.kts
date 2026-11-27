@@ -12,7 +12,6 @@ android {
 }
 
 dependencies {
-    coreLibraryDesugaring(libs.android.desugaring)
 
     implementation(libs.hilt.android.base)
 }

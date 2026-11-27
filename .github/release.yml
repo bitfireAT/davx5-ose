@@ -3,6 +3,9 @@ changelog:
     labels:
       - ignore-for-release
   categories:
+    - title: 🔔 Breaking changes
+      labels:
+        - migration
     - title: ✨ New features
       labels:
         - pr-feature

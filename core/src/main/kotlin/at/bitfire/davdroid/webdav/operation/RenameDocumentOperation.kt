@@ -6,12 +6,11 @@ package at.bitfire.davdroid.webdav.operation
 
 import android.content.Context
 import at.bitfire.dav4jvm.ktor.DavResource
-import at.bitfire.dav4jvm.ktor.exception.HttpException
+import at.bitfire.dav4jvm.ktor.exception.PreconditionFailedException
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.webdav.DavHttpClientBuilder
 import at.bitfire.davdroid.webdav.DocumentProviderUtils
 import at.bitfire.davdroid.webdav.DocumentProviderUtils.displayNameToMemberName
-import at.bitfire.davdroid.webdav.throwForDocumentProvider
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.ktor.http.URLBuilder
 import java.io.FileNotFoundException
@@ -52,8 +51,8 @@ class RenameDocumentOperation @Inject constructor(
                         DocumentProviderUtils.notifyFolderChanged(context, doc.parentId)
 
                         return doc.id.toString()
-                    } catch (e: HttpException) {
-                        e.throwForDocumentProvider(context, true)
+                    } catch (_: PreconditionFailedException) {
+                        // name already taken, try next one
                     }
                 }
             }

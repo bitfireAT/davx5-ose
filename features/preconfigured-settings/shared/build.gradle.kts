@@ -23,7 +23,6 @@ dependencies {
     implementation(project(":core"))
     implementation(project(":synctools"))
 
-    coreLibraryDesugaring(libs.android.desugaring)
 
     implementation(libs.androidx.annotation)
     implementation(libs.ktor.serialization.kotlinx.json)

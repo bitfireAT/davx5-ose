@@ -9,8 +9,6 @@
 
     <string name="account_invalid">Account does not exist (anymore)</string>
     <string name="account_type" translatable="false">bitfire.at.davdroid</string>
-    <!-- The account type for accounts stored in the database -->
-    <string name="account_type_db" translatable="false">at.bitfire.davx5</string>
     <string name="account_type_address_book" translatable="false">at.bitfire.davdroid.address_book</string>
     <string name="account_title_address_book">DAVx⁵ Address book</string>
     <string name="account_prefs_use_app">Don\'t change the account here! Directly use the app to manage accounts instead.</string>
@@ -261,6 +259,21 @@
     <string name="app_settings_push_capability_some">Only some of your sync enabled server collections currently support WebDAV-Push.</string>
     <string name="app_settings_push_select_default_distributor_description">There are multiple UnifiedPush Distributor Apps installed. You can set a system-wide default here, so other UnifiedPush-enabled apps don\'t have to ask which one to use.</string>
     <string name="app_settings_push_select_default_distributor_action">Set default</string>
+
+    <string name="app_settings_experimental_title">Experimental</string>
+
+    <!-- AccountsCheckActivity -->
+    <string name="accounts_check_title">Check and repair accounts</string>
+    <string name="accounts_check_summary">Shows the status of Android accounts</string>
+    <string name="accounts_check_android_accounts">Android accounts</string>
+    <string name="accounts_check_explanation"><![CDATA[%1$s uses Android accounts to make your contacts, calendars and tasks available to other apps. As soon as an app account is synchronized, %1$s creates an Android account that links to it. Accounts that were created with older versions of %1$s are legacy accounts that only consist of an Android account. <a href=\"%2$s\">The manual</a> explains every status and how to export your data.]]></string>
+    <string name="accounts_check_status">Android accounts status</string>
+    <string name="accounts_check_legacy_account">(legacy account)</string>
+    <string name="accounts_check_links_to_db_account">(links to app account)</string>
+    <string name="accounts_check_missing_db_account">Links to non-existing app account</string>
+    <string name="accounts_check_empty">No Android accounts found.</string>
+    <string name="accounts_check_delete_title">Delete Android account?</string>
+    <string name="accounts_check_delete_text"><![CDATA[Local data of the Android account %1$s (for instance calendars and task lists) will be removed from this device. Make sure that you have a <a href=\"%2$s\">backup</a> of data you still need.]]></string>
 
     <!-- AccountScreen -->
     <string name="account_invalid_account">Account has been removed</string>
@@ -601,6 +614,7 @@
     <string name="sync_error_io">Network or I/O error – %s</string>
     <string name="sync_error_http_dav">HTTP server error – %s</string>
     <string name="sync_error_local_storage">Local storage error – %s</string>
+    <string name="sync_error_account_unavailable">Couldn\'t prepare the account for synchronization</string>
     <string name="sync_error_retry_limit_reached">Soft error (max retries reached)</string>
     <string name="sync_invalid_contact">Received invalid contact from server</string>
     <string name="sync_invalid_event">Received invalid event from server</string>
@@ -621,5 +635,10 @@
     <string name="widget_sync_description">Tap to run synchronization manually.</string>
 
     <!-- cert4android -->
+
+    <!-- Experimental setting: new account system -->
+    <string name="new_account_system_setting_name">New account system</string>
+    <string name="new_account_system_setting_summary_on">New accounts are created in database (experimental)</string>
+    <string name="new_account_system_setting_summary_off">New accounts are created as Android accounts (legacy)</string>
 
 </resources>

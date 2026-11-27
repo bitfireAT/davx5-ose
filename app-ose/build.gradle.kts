@@ -102,12 +102,12 @@ android {
 dependencies {
     // include core subproject (manages its own dependencies itself, however from same version catalog)
     implementation(project(":core"))
+    implementation(project(":features:feature-flags:new-account-system:experimental"))
     implementation(project(":features:preconfigured-settings:external-scanner"))
 
     // Kotlin / Android
     implementation(libs.kotlin.stdlib)
     implementation(libs.kotlinx.coroutines)
-    coreLibraryDesugaring(libs.android.desugaring)
 
     // Hilt
     implementation(libs.hilt.android.base)

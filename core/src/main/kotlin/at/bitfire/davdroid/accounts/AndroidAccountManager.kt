@@ -15,20 +15,23 @@ import android.os.Looper
 import androidx.annotation.WorkerThread
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
-import at.bitfire.davdroid.db.DbAccount
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
+import at.bitfire.davdroid.sync.account.AccountOperationFailedException
 import at.bitfire.davdroid.sync.account.InvalidAccountException
 import at.bitfire.synctools.util.SensitiveString
+import at.bitfire.synctools.util.SensitiveString.Companion.toSensitiveString
 import at.bitfire.synctools.util.setAndVerifyUserData
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.conflate
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
-import org.jetbrains.annotations.VisibleForTesting
 import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
@@ -45,6 +48,7 @@ class AndroidAccountManager @Inject constructor(
     private val logger: Logger
 ) {
     private val dbAccountType = context.getString(R.string.account_type_db)
+    private val legacyAccountType = context.getString(R.string.account_type)
 
     private val dbAccountDao = database.dbAccountDao()
 
@@ -97,8 +101,6 @@ class AndroidAccountManager @Inject constructor(
     /**
      * Creates an Android account that is linked to the DB account with ID [dbAccountId].
      *
-     * Must only be called for existing DB accounts, otherwise [removeOrphanedForDbAccounts] may remove the new account.
-     *
      * @return the created account, or `null` if it couldn't be created (for instance because the name is taken
      *   or there's already an account linked to [dbAccountId])
      */
@@ -131,6 +133,42 @@ class AndroidAccountManager @Inject constructor(
         accountManager.get().getUserData(account, USER_DATA_ACCOUNT_ID)?.toLongOrNull()
 
     /**
+     * Sets the ID of the DB account that [account] is linked to.
+     */
+    fun setLinkedDbAccountId(account: Account, accountId: Long) =
+        accountManager.get().setAndVerifyUserData(account, USER_DATA_ACCOUNT_ID, accountId.toString())
+
+    /**
+     * Gets all the given [keys] from [account]'s user data.
+     * Non-present or `null` keys are not included in the result, so keys of the returned map may not include all [keys].
+     */
+    fun getUserData(account: Account, keys: Set<String>): Map<String, String> {
+        val accountManager = accountManager.get()
+        return keys.mapNotNull { key -> accountManager.getUserData(account, key)?.let { key to it } }
+            .toMap()
+    }
+
+    /**
+     * Sets all the values in [data] as user data for [account].
+     *
+     * This function is a temporary addition until we get rid of legacy accounts. User data should be manipulated by
+     * specific functions (such as [setLinkedDbAccountId]) instead of broadly modifying it.
+     */
+    @Deprecated("User data should not be manipulated directly")
+    fun setUserData(account: Account, data: Map<String, String>) {
+        val accountManager = accountManager.get()
+        for ((key, value) in data) {
+            accountManager.setAndVerifyUserData(account, key, value)
+        }
+    }
+
+    /**
+     * Whether an Android account with the link [linkedDbAccountId] is orphaned, i.e. not linked to an existing DB account.
+     */
+    suspend fun isOrphaned(linkedDbAccountId: Long?): Boolean =
+        linkedDbAccountId == null || dbAccountDao.get(linkedDbAccountId) == null
+
+    /**
      * Removes the given Android account.
      */
     fun removeAccount(account: Account) {
@@ -147,52 +185,6 @@ class AndroidAccountManager @Inject constructor(
             removeAccount(androidAccount)
         }
     }
-
-    /**
-     * Deletes Android accounts of DB accounts that don't exist anymore. Legacy accounts are not touched.
-     */
-    fun removeOrphanedForDbAccounts() {
-        removeAllForDbAccountsExceptFor { dbAccountDao.getAllBlocking() }
-    }
-
-    /**
-     * Removes Android accounts of DB accounts that don't belong to one of the DB accounts returned by [accountsToKeep].
-     * Linked accounts are matched by ID, unlinked ones by name. Legacy accounts are not touched.
-     */
-    @VisibleForTesting
-    internal fun removeAllForDbAccountsExceptFor(accountsToKeep: () -> List<DbAccount>) {
-        val manager = accountManager.get()
-
-        // Android accounts are read before DB accounts: an Android account is only ever created after its DB account,
-        // so every Android account we see also shows up in the DB accounts read afterwards. We do this to avoid
-        // removing valid android accounts which may be created by the user while cleanup runs.
-        val accounts = manager.getAccountsByType(dbAccountType)
-
-        val dbAccounts = accountsToKeep()
-        val existingIds = dbAccounts.map { it.id }.toSet()
-        val existingNames = dbAccounts.map { it.name }.toSet()
-
-        val orphanedAccounts = accounts.filter { account ->
-            when (val linkedId = getLinkedDbAccountId(account)) {
-                // not linked yet: orphaned when no DB account has its name (otherwise it's still being set up)
-                null -> account.name !in existingNames
-                else -> linkedId !in existingIds
-            }
-        }
-
-        for (account in orphanedAccounts) {
-            logger.info("Removing orphaned Android account $account of DB account")
-            manager.removeAccountExplicitly(account)
-        }
-    }
-
-    /**
-     * Removes all Android accounts of DB accounts, including their address book accounts.
-     *
-     * Used when the database is (re)created, because otherwise the links (autogenerated DB row IDs) could match new DB
-     * accounts.
-     */
-    fun removeAllForDbAccounts() = removeAllForDbAccountsExceptFor { emptyList() }
 
     /**
      * Returns the Android [Account] for a given [AccountId].
@@ -251,18 +243,46 @@ class AndroidAccountManager @Inject constructor(
     }.flowOn(ioDispatcher) // we access the database, so run the mapping in the io dispatcher
 
     /**
+     * Observes the Android accounts of legacy accounts and DB accounts, without address book accounts.
+     *
+     * @return flow that emits again when Android accounts are added, removed or renamed
+     */
+    fun getAllFlow(): Flow<List<AndroidAccountInfo>> = callbackFlow {
+        val accountManager = accountManager.get()
+
+        // The listener runs on the main thread, so it only forwards the accounts.
+        val listener = OnAccountsUpdateListener { accounts ->
+            trySend(accounts.filter { it.type == legacyAccountType || it.type == dbAccountType })
+        }
+        accountManager.addOnAccountsUpdatedListener(listener, null, true)
+
+        awaitClose {
+            accountManager.removeOnAccountsUpdatedListener(listener)
+        }
+    }.conflate()    // only the latest account list is relevant
+        .map { accounts ->
+            accounts.map { account ->
+                if (account.type == legacyAccountType)
+                    AndroidAccountInfo(account, isLegacy = true)
+                else
+                    AndroidAccountInfo(account, isLegacy = false, linkedDbAccountId = getLinkedDbAccountId(account))
+            }
+        }
+        .distinctUntilChanged()     // after mapping, because a removed and re-created account with the same name can have another linked ID
+        .flowOn(ioDispatcher)     // registering the listener and reading user data cause I/O
+
+    /**
      * Returns the [AccountId] for a given Android [Account].
      *
-     * @return the [DbAccountId] if [account] is a database account (looked up by link, or by name if not validly linked),
-     *   or a [LegacyAccount] otherwise. `null` if [account] is a database account that doesn't exist in the database.
+     * @return the [DbAccountId] of the linked DB account, or a [LegacyAccount] for legacy accounts.
+     *   `null` if [account] is not linked to an existing DB account (orphaned).
      */
     suspend fun getAccountId(account: Account): AccountId? {
         if (account.type != dbAccountType)
             return LegacyAccount(account)
 
-        val linkedId = withContext(ioDispatcher) { getLinkedDbAccountId(account) }
-        val dbAccount = linkedId?.let { dbAccountDao.get(it) } ?: dbAccountDao.getFromName(account.name)
-        return dbAccount?.let { DbAccountId(it.id) }
+        val linkedId = withContext(ioDispatcher) { getLinkedDbAccountId(account) } ?: return null
+        return dbAccountDao.get(linkedId)?.let { DbAccountId(it.id) }
     }
 
     /**
@@ -280,6 +300,64 @@ class AndroidAccountManager @Inject constructor(
                 accountManager.setAccountVisibility(account, packageName, AccountManager.VISIBILITY_VISIBLE)
             }
         }
+    }
+
+    /**
+     * Renames an account by adding the new one, copying its data, and removing the old one.
+     *
+     * **Important:** User data is not copied over to the new account. It's responsibility of the caller to copy it in [onUpdate].
+     *
+     * @param oldAccount The account to rename.
+     * @param newName The new name to set to the account.
+     * @param onUpdate Called before removing the old account. You may perform any extra copying operations between the
+     * accounts here, before the old one is gone.
+     */
+    suspend fun renameWithData(
+        oldAccount: Account,
+        newName: String,
+        onUpdate: suspend (newAccount: Account) -> Unit
+    ): Account = withContext(ioDispatcher + NonCancellable) {
+        require(newName.isNotBlank()) { "New account name must not be blank." }
+
+        if (oldAccount.name == newName) {
+            // Names already match, no need to rename
+            return@withContext oldAccount
+        }
+
+        val accountManager = accountManager.get()
+
+        // First, check if the account already exists
+        val existingAccount = accountManager.getAccountsByType(oldAccount.type).find { it.name == newName }
+        if (existingAccount != null) {
+            // An account already exists with the desired name
+            throw IllegalStateException("An account already exists with name \"$newName\"")
+        }
+
+        val newAccount = Account(newName, oldAccount.type)
+
+        // First, to create the new account, fetch the data from the old account
+        val oldPassword: String? = accountManager.getPassword(oldAccount)
+        if (!createAccount(newAccount, password = oldPassword?.toSensitiveString())) {
+            throw AccountOperationFailedException("New account could not be created.")
+        }
+
+        try {
+            // onUpdate is now called, so that the caller can do all the movements required through the accounts
+            onUpdate(newAccount)
+        } catch (e: Exception) {
+            // onUpdate failed, rollback
+            if (!accountManager.removeAccountExplicitly(newAccount)) {
+                throw AccountOperationFailedException("Could not remove account after failure on onUpdate.", e)
+            }
+            throw e
+        }
+
+        // When done, delete the old account
+        if (!accountManager.removeAccountExplicitly(oldAccount)) {
+            throw AccountOperationFailedException("Old account could not be deleted.")
+        }
+
+        newAccount
     }
 
     companion object {

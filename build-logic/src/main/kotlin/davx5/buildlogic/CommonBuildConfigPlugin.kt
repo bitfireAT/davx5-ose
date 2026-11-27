@@ -7,8 +7,13 @@ package davx5.buildlogic
 import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.api.dsl.CommonExtension
 import com.android.build.api.dsl.LibraryExtension
+import com.android.build.api.variant.AndroidComponentsExtension
+import com.android.build.api.variant.ApplicationAndroidComponentsExtension
+import com.android.build.api.variant.LibraryAndroidComponentsExtension
+import com.android.build.api.variant.ResValue
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.artifacts.VersionCatalogsExtension
 import org.gradle.api.plugins.ExtensionContainer
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.plugins.PluginManager
@@ -50,6 +55,12 @@ class CommonBuildConfigPlugin : Plugin<Project> {
                     defaultConfig.versionCode = AppVersion.CODE
                     defaultConfig.versionName = AppVersion.NAME
                 }
+
+                // Derive the DB account type from the (variant-specific) application ID, so that variants
+                // and clones don't share the same account type. Overrides the library default.
+                extensions.configure<ApplicationAndroidComponentsExtension> {
+                    configureDbAccountTypeResource()
+                }
             }
 
             // 2. Apply common Android library configuration
@@ -63,7 +74,25 @@ class CommonBuildConfigPlugin : Plugin<Project> {
                     // for every Android module
                     configureCommonAndroid()
                 }
+
+                // Default DB account type, so that libraries (core) can reference it. The application
+                // module overrides them with values derived from the actual application ID.
+                extensions.configure<LibraryAndroidComponentsExtension> {
+                    configureDbAccountTypeResource()
+                }
             }
+        }
+    }
+
+    /**
+     * Creates the string resource `account_type_db` as: `<package id>.account` on all variants.
+     */
+    private fun AndroidComponentsExtension<*, *, *>.configureDbAccountTypeResource() {
+        onVariants { variant ->
+            variant.resValues.put(
+                variant.makeResValueKey("string", "account_type_db"),
+                variant.namespace.map { ResValue("$it.account", "The account type used by DB accounts") }
+            )
         }
     }
 
@@ -76,6 +105,12 @@ class CommonBuildConfigPlugin : Plugin<Project> {
     ) {
         withPlugin(pluginId) {
             configureAndroid()
+
+            // Add the core library desugaring dependency (enabled in configureCommonAndroid)
+            val desugaring = project.extensions.getByType(VersionCatalogsExtension::class.java)
+                .named("libs").findLibrary("android-desugaring")
+                .orElseThrow { IllegalStateException("Missing android-desugaring in version catalog") }
+            project.dependencies.add("coreLibraryDesugaring", desugaring)
 
             // Set Java toolchain version
             val javaExtension = extensions.findByType(JavaPluginExtension::class.java)
@@ -97,6 +132,9 @@ class CommonBuildConfigPlugin : Plugin<Project> {
 
         // Enable BuildConfig to generate the IS_BETA flag
         buildFeatures.buildConfig = true
+
+        // For dynamically adding string resources from here
+        buildFeatures.resValues = true
 
         defaultConfig.apply {
             minSdk = 24     // Android 7

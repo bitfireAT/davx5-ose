@@ -194,6 +194,24 @@ class DmfsTaskListProviderTest(providerName: TaskProvider.ProviderName) :
     }
 
     @Test
+    fun testTaskListUrl() {
+        // other apps can access the collection URL in the URL column
+        val url = "https://example.com/caldav/tasks/"
+        val taskList = createTaskList(
+            contentValuesOf(
+                TaskLists.LIST_NAME to "URL Test List",
+                DmfsTaskListProvider.COLUMN_TASK_LIST_URL to url
+            )
+        )
+        try {
+            val row = dmfsTaskListProvider.getTaskListRow(taskList.id, arrayOf(DmfsTaskListProvider.COLUMN_TASK_LIST_URL))
+            assertEquals(url, row?.getAsString(DmfsTaskListProvider.COLUMN_TASK_LIST_URL))
+        } finally {
+            taskList.delete()
+        }
+    }
+
+    @Test
     fun testDeleteTaskList() {
         val id = dmfsTaskListProvider.createTaskList(
             contentValuesOf(

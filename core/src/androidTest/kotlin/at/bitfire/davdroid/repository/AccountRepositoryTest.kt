@@ -7,12 +7,16 @@ package at.bitfire.davdroid.repository
 import android.accounts.Account
 import android.accounts.AccountManager
 import android.content.Context
+import androidx.core.os.bundleOf
 import androidx.hilt.work.HiltWorkerFactory
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.TestUtils
 import at.bitfire.davdroid.accounts.AccountId
+import at.bitfire.davdroid.accounts.AndroidAccountManager
+import at.bitfire.davdroid.accounts.DbAccountId
 import at.bitfire.davdroid.accounts.LegacyAccount
 import at.bitfire.davdroid.db.AppDatabase
+import at.bitfire.davdroid.db.DbAccount
 import at.bitfire.davdroid.resource.local.LocalAddressBookStore
 import at.bitfire.davdroid.resource.local.LocalCalendarStore
 import at.bitfire.davdroid.resource.local.LocalDataStore
@@ -25,6 +29,7 @@ import at.bitfire.davdroid.sync.account.AccountsCleanupWorker
 import at.bitfire.davdroid.sync.account.TestAccount
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
 import at.bitfire.synctools.vcard.GroupMethod
+import com.davx5.feature.featureflags.api.FeatureFlagsProvider
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -38,6 +43,7 @@ import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.unmockkObject
 import io.mockk.verify
+import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.runTest
@@ -68,6 +74,9 @@ class AccountRepositoryTest {
     lateinit var accountManager: AccountManager
 
     @Inject
+    lateinit var androidAccountManager: AndroidAccountManager
+
+    @Inject
     @ApplicationContext
     lateinit var context: Context
 
@@ -79,6 +88,9 @@ class AccountRepositoryTest {
 
     @Inject
     internal lateinit var dbAccountRepository: DbAccountRepository
+
+    @Inject
+    internal lateinit var featureFlagProvider: FeatureFlagsProvider
 
     @Inject
     internal lateinit var legacyAccountRepository: LegacyAccountRepository
@@ -164,6 +176,18 @@ class AccountRepositoryTest {
 
         val accountsAfter = accountManager.getAccountsByType(accountType)
         assertTrue(accountsAfter.any { it.name == newName })
+    }
+
+    @Test
+    fun testRename_keepsOrphanedAndroidAccountWithNewName() = runTest {
+        val dbAccountId = createDbAccountWithLinkedAndroidAccount(name = "DB Account")
+        val orphan = createLinkedAndroidAccount(name = newName, dbAccountId = 999L)
+
+        val result = runCatching { accountRepository.rename(DbAccountId(dbAccountId), newName) }
+
+        assertTrue(result.isFailure)
+        assertTrue(accountManager.accounts.contains(orphan))
+        assertEquals("999", accountManager.getUserData(orphan, AndroidAccountManager.USER_DATA_ACCOUNT_ID))
     }
 
     @Test
@@ -286,13 +310,30 @@ class AccountRepositoryTest {
         )!!
     }
 
+    private suspend fun createDbAccountWithLinkedAndroidAccount(name: String): Long {
+        val dbAccountId = appDatabase.dbAccountDao().insert(DbAccount(name = name))
+        createLinkedAndroidAccount(name, dbAccountId)
+        return dbAccountId
+    }
+
+    private fun createLinkedAndroidAccount(name: String, dbAccountId: Long): Account {
+        val account = Account(name, context.getString(R.string.account_type_db))
+        accountManager.addAccountExplicitly(
+            account,
+            null,
+            bundleOf(AndroidAccountManager.USER_DATA_ACCOUNT_ID to dbAccountId.toString())
+        )
+        return account
+    }
+
     private fun createAccountRepository(listener: OnBeforeDeleteListener): AccountRepository {
         return AccountRepository(
-            accountManager = accountManager,
+            androidAccountManager = androidAccountManager,
             automaticSyncManager = { automaticSyncManager },
             context = context,
             db = appDatabase,
             dbAccountRepository = dbAccountRepository,
+            featureFlagsProvider = featureFlagProvider,
             ioDispatcher = Dispatchers.IO,
             legacyAccountRepository = legacyAccountRepository,
             localCalendarStore = { localCalendarStore },
