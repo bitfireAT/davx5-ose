@@ -22,6 +22,7 @@ class WebDavMountRepository @Inject constructor(
     @ApplicationContext private val context: Context,
     private val db: AppDatabase,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
+    private val credentialsStore: CredentialsStore,
     private val webDavUrlChecker: WebDavUrlChecker
 ) {
 
@@ -55,7 +56,6 @@ class WebDavMountRepository @Inject constructor(
         val id = db.webDavMountDao().insert(mount)
 
         // store credentials
-        val credentialsStore = CredentialsStore(context)
         credentialsStore.setCredentials(id, credentials)
 
         // notify content URI listeners
@@ -69,7 +69,7 @@ class WebDavMountRepository @Inject constructor(
         mountDao.delete(mount)
 
         // remove credentials, too
-        CredentialsStore(context).setCredentials(mount.id, null)
+        credentialsStore.setCredentials(mount.id, null)
 
         // notify content URI listeners
         DocumentProviderUtils.notifyMountsChanged(context)
