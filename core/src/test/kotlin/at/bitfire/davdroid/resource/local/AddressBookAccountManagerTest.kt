@@ -9,6 +9,7 @@ import android.accounts.AccountManager
 import app.cash.turbine.test
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.accounts.DbAccountId
+import at.bitfire.davdroid.accounts.LegacyAccount
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.runTest
 import org.junit.After
@@ -77,6 +78,21 @@ class AddressBookAccountManagerTest {
         addressBookAccountManager.deleteByAccountId(accountId1)
 
         assertEquals(listOf(account3), getAllAddressBookAccounts())
+    }
+
+    @Test
+    fun `deleteAllLinkingDbAccount() should delete all accounts linked to a DB account`() {
+        val account1 = createAccount(
+            accountId = LegacyAccount(Account("irrelevant", "irrelevant")),
+            name = "test1",
+            collectionId = 1
+        )
+        createAccount(accountId = DbAccountId(2), name = "test2", collectionId = 2)
+        createAccount(accountId = DbAccountId(3), name = "test3", collectionId = 3)
+
+        addressBookAccountManager.deleteAllLinkingDbAccount()
+
+        assertEquals(listOf(account1), getAllAddressBookAccounts())
     }
 
     @Test
