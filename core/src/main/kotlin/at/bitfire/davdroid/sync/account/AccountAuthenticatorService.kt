@@ -44,7 +44,7 @@ open class AccountAuthenticatorService: Service() {
         // removal from Android settings would also remove local data, so lead the user to the account in DAVx⁵ instead, so they learn how to do a backup first
         override fun getAccountRemovalAllowed(response: AccountAuthenticatorResponse?, account: Account) =
             Bundle().apply {
-                putParcelable(AccountManager.KEY_INTENT, AccountActivity.createIntent(context, account))
+                putParcelable(AccountManager.KEY_INTENT, AccountActivity.createDeleteAccountIntent(context, account))
             }
 
         override fun editProperties(response: AccountAuthenticatorResponse?, accountType: String?) = null

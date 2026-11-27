@@ -63,6 +63,7 @@ class AccountActivity : AppCompatActivity() {
             if (accountId != null) {
                 AccountScreen(
                     accountId = accountId,
+                    initialShowDeleteAccountDialog = intent.getBooleanExtra(EXTRA_DELETE_ACCOUNT, false),
                     onAccountSettings = {
                         val intent = AccountSettingsActivity.createIntent(this, accountId)
                         startActivity(intent, null)
@@ -125,6 +126,7 @@ class AccountActivity : AppCompatActivity() {
     companion object {
         private const val EXTRA_ACCOUNT = "account"
         private const val EXTRA_ACCOUNT_ID = "accountId"
+        private const val EXTRA_DELETE_ACCOUNT = "deleteAccount"
 
         fun createIntent(context: Context, accountId: AccountId): Intent {
             return Intent(context, AccountActivity::class.java).apply {
@@ -132,9 +134,11 @@ class AccountActivity : AppCompatActivity() {
             }
         }
 
-        fun createIntent(context: Context, account: Account): Intent {
+        /** Opens [account] with the "Delete account" dialog, for instance on "Remove account" in Android settings. */
+        fun createDeleteAccountIntent(context: Context, account: Account): Intent {
             return Intent(context, AccountActivity::class.java).apply {
                 putExtra(EXTRA_ACCOUNT, account)
+                putExtra(EXTRA_DELETE_ACCOUNT, true)
             }
         }
         

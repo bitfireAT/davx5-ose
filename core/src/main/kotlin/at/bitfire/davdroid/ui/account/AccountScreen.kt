@@ -97,6 +97,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun AccountScreen(
     accountId: AccountId,
+    initialShowDeleteAccountDialog: Boolean,
     onAccountSettings: () -> Unit,
     onCreateAddressBook: () -> Unit,
     onCreateCalendar: () -> Unit,
@@ -171,6 +172,7 @@ fun AccountScreen(
         onCreateAddressBook = onCreateAddressBook,
         onCreateCalendar = onCreateCalendar,
         onRenameAccount = model::renameAccount,
+        initialShowDeleteAccountDialog = initialShowDeleteAccountDialog,
         onDeleteAccount = model::deleteAccount,
         onNavUp = onNavUp,
         onFinish = onFinish
@@ -213,6 +215,7 @@ fun AccountScreen(
     onCreateAddressBook: () -> Unit = {},
     onCreateCalendar: () -> Unit = {},
     onRenameAccount: (newName: String) -> Unit = {},
+    initialShowDeleteAccountDialog: Boolean = false,
     onDeleteAccount: () -> Unit = {},
     onNavUp: () -> Unit = {},
     onFinish: () -> Unit = {}
@@ -313,6 +316,7 @@ fun AccountScreen(
                             idxCardDav = idxCardDav,
                             idxCalDav = idxCalDav,
                             onRenameAccount = onRenameAccount,
+                            initialShowDeleteAccountDialog = initialShowDeleteAccountDialog,
                             onDeleteAccount = onDeleteAccount,
                             onAccountSettings = onAccountSettings
                         )
@@ -559,10 +563,12 @@ fun AccountScreen_Actions(
     idxCardDav: Int?,
     idxCalDav: Int?,
     onRenameAccount: (newName: String) -> Unit,
+    initialShowDeleteAccountDialog: Boolean,
     onDeleteAccount: () -> Unit,
     onAccountSettings: () -> Unit
 ) {
-    var showDeleteAccountDialog by rememberSaveable { mutableStateOf(false) }
+    // saveable, so that the dialog isn't shown again from the intent after rotation
+    var showDeleteAccountDialog by rememberSaveable { mutableStateOf(initialShowDeleteAccountDialog) }
     var showRenameAccountDialog by remember { mutableStateOf(false) }
 
     var overflowOpen by remember { mutableStateOf(false) }
