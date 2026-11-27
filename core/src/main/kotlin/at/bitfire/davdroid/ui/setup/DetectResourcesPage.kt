@@ -5,6 +5,7 @@
 package at.bitfire.davdroid.ui.setup
 
 import android.content.Intent
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -23,6 +24,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -36,7 +38,6 @@ import androidx.core.text.HtmlCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.DebugDirectory
-import at.bitfire.davdroid.ui.debuginfo.DebugInfoActivity
 import at.bitfire.davdroid.ui.ExternalUris
 import at.bitfire.davdroid.ui.ExternalUris.withStatParams
 import at.bitfire.davdroid.ui.UiUtils.toAnnotatedString
@@ -44,12 +45,23 @@ import at.bitfire.davdroid.ui.composable.ActionCard
 import at.bitfire.davdroid.ui.composable.IconCard
 import at.bitfire.davdroid.ui.composable.ProgressBar
 import at.bitfire.davdroid.ui.composable.appPasswordHelpUrl
+import at.bitfire.davdroid.ui.debuginfo.DebugInfoActivity
 
 @Composable
 fun DetectResourcesPage(
     model: LoginScreenViewModel = viewModel()
 ) {
+    val activity = LocalActivity.current
     val uiState = model.detectResourcesUiState
+
+    // Offer to store the credentials; restarts with the new Activity if it's recreated (e.g. rotation)
+    LaunchedEffect(uiState.credentialsToSave, activity) {
+        if (uiState.credentialsToSave != null) {
+            activity?.let { model.saveCredentials(it) }
+            model.onCredentialsHandled()
+        }
+    }
+
     DetectResourcesPageContent(
         loading = uiState.loading,
         foundNothing = uiState.foundNothing,
