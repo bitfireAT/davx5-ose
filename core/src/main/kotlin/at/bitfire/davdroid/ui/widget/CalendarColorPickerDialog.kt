@@ -7,7 +7,9 @@ package at.bitfire.davdroid.ui.widget
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.FlexBox
+import androidx.compose.foundation.layout.FlexDirection
+import androidx.compose.foundation.layout.FlexWrap
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -40,19 +42,24 @@ fun CalendarColorPickerDialog(
 
     Dialog(onDismissRequest = onDismiss) {
         Card(Modifier.verticalScroll(rememberScrollState())) {
-            FlowRow(Modifier.padding(8.dp)) {
+            FlexBox(
+                modifier = Modifier.padding(8.dp),
+                config = {
+                    direction(FlexDirection.Row)
+                    gap(2.dp)
+                    wrap(FlexWrap.Wrap)
+                }
+            ) {
                 for (color in colors) {
-                    Box(Modifier.padding(2.dp)) {
-                        Box(Modifier
-                            .background(color = Color(color.argb), shape = CircleShape)
-                            .clickable { onSelectColor(color.argb) }
-                            .size(32.dp)
-                            .padding(8.dp)
-                            .semantics {
-                                contentDescription = color.name
-                            }
-                        )
-                    }
+                    Box(Modifier
+                        .background(color = Color(color.argb), shape = CircleShape)
+                        .clickable { onSelectColor(color.argb) }
+                        .size(32.dp)
+                        .padding(8.dp)
+                        .semantics {
+                            contentDescription = color.name
+                        }
+                    )
                 }
             }
         }
