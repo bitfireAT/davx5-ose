@@ -24,6 +24,7 @@ import at.bitfire.davdroid.network.HttpClientBuilder
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.servicedetection.DavResourceFinder
 import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.settings.Credentials
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.util.DavUtils.toUrlOrNull
 import at.bitfire.synctools.vcard.GroupMethod
@@ -92,7 +93,7 @@ class LoginScreenViewModel @AssistedInject constructor(
 
     // navigation events
 
-    fun navToNextPage(activity: Activity?) {
+    fun navToNextPage() {
         when (page) {
             Page.LoginType -> {
                 // continue to login details
@@ -107,7 +108,7 @@ class LoginScreenViewModel @AssistedInject constructor(
                 loginInfo = loginDetailsUiState.loginInfo
                 page = Page.DetectResources
 
-                detectResources(activity)
+                detectResources()
             }
 
             Page.DetectResources -> {
@@ -213,7 +214,9 @@ class LoginScreenViewModel @AssistedInject constructor(
         val foundNothing: Boolean = false,
         val encountered401: Boolean = false,
         val loginValidationFailed: Boolean = false,
-        val debugLogFileName: DebugDirectory.FileName? = null
+        val debugLogFileName: DebugDirectory.FileName? = null,
+        /** Credentials the UI should offer to store in the password manager before continuing (see [onCredentialsHandled]). */
+        val credentialsToSave: Credentials? = null
     )
 
     var detectResourcesUiState by mutableStateOf(DetectResourcesUiState())
@@ -222,7 +225,7 @@ class LoginScreenViewModel @AssistedInject constructor(
     private var foundConfig: DavResourceFinder.Configuration? = null
     private var detectResourcesJob: Job? = null
 
-    private fun detectResources(activity: Activity?) {
+    private fun detectResources() {
         val baseUri = loginInfo.baseUri ?: return
         detectResourcesUiState = detectResourcesUiState.copy(loading = true)
         detectResourcesJob = viewModelScope.launch {
@@ -237,27 +240,14 @@ class LoginScreenViewModel @AssistedInject constructor(
                     foundConfig = result
 
                     // Offer the password manager to store the credentials, if they are username+password
-                    // other login methods cannot be stored in the password manager
-                    // (only with the platform Credential Manager; older versions use the autofill save prompt)
-                    loginInfo.credentials?.takeIf { useCredentialManager }?.let { credentials ->
-                        activity ?: return@let
-                        val username = credentials.username ?: return@let
-                        val password = credentials.password?.asString() ?: return@let
-                        try {
-                            credentialManager.createCredential(
-                                context = MutableContextWrapper(activity), // must be an Activity context
-                                request = CreatePasswordRequest(id = username, password = password)
-                            )
-                        } catch (_: CreateCredentialCancellationException) {
-                            // the user dismissed the save prompt
-                            logger.fine("User rejected storing the password in the password manager")
-                        } catch (e: CreateCredentialException) {
-                            // no provider available or another error
-                            logger.warning("There's no password manager to store the credentials into, or something went wrong: $e")
-                        }
-                    }
-
-                    navToNextPage(activity)
+                    // (other login methods can't be stored). The UI does that with its current Activity
+                    // and then calls onCredentialsHandled(), so that no Activity is held here.
+                    // Only with the platform Credential Manager; older versions use the autofill save prompt.
+                    val credentials = loginInfo.credentials
+                    if (useCredentialManager && credentials?.username != null && credentials.password != null)
+                        detectResourcesUiState = detectResourcesUiState.copy(credentialsToSave = credentials)
+                    else
+                        navToNextPage()
                 } else {
                     foundConfig = null
                     detectResourcesUiState = detectResourcesUiState.copy(
@@ -273,6 +263,41 @@ class LoginScreenViewModel @AssistedInject constructor(
                 logger.log(Level.SEVERE, "Couldn't run service detection", e)
             }
         }
+    }
+
+    /**
+     * Offers to store [DetectResourcesUiState.credentialsToSave] in the password manager.
+     *
+     * Needs an Activity context to show the prompt. It's only passed for the duration of this call,
+     * so the caller should run it in a scope that's cancelled with the Activity (e.g. `LaunchedEffect`).
+     */
+    suspend fun saveCredentials(activity: Activity) {
+        val credentials = detectResourcesUiState.credentialsToSave ?: return
+        val username = credentials.username ?: return
+        val password = credentials.password?.asString() ?: return
+        try {
+            credentialManager.createCredential(
+                context = MutableContextWrapper(activity),
+                request = CreatePasswordRequest(id = username, password = password)
+            )
+        } catch (_: CreateCredentialCancellationException) {
+            // the user dismissed the save prompt
+            logger.fine("User rejected storing the password in the password manager")
+        } catch (e: CreateCredentialException) {
+            // no provider available or another error
+            logger.warning("There's no password manager to store the credentials into, or something went wrong: $e")
+        }
+    }
+
+    /**
+     * Called when the UI is done offering to store the credentials (whatever the result was).
+     * Continues to the next page.
+     */
+    fun onCredentialsHandled() {
+        if (detectResourcesUiState.credentialsToSave == null)
+            return
+        detectResourcesUiState = detectResourcesUiState.copy(credentialsToSave = null)
+        navToNextPage()
     }
 
     /**
