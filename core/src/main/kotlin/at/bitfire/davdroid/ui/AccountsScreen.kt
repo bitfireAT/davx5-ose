@@ -124,7 +124,7 @@ fun AccountsScreen(
         onAddAccount = onAddAccount,
         onShowAccount = onShowAccount,
         onManagePermissions = onManagePermissions,
-        problemAccountsCount = model.problemAccountsCount.collectAsStateWithLifecycle(0).value,
+        problemAccountsCount = model.problemAccountsCount.collectAsStateWithLifecycle().value,
         onAccountsCheck = onAccountsCheck,
         internetUnavailable = !model.networkAvailable.collectAsStateWithLifecycle(false).value,
         batterySaverActive = model.batterySaverActive.collectAsStateWithLifecycle(false).value,

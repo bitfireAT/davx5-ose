@@ -49,6 +49,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
@@ -56,6 +58,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.text.Collator
 import java.util.logging.Logger
@@ -108,9 +111,9 @@ class AccountsViewModel @AssistedInject constructor(
     val showSyncAll: Flow<Boolean> = accountIds.map { it.isNotEmpty() }
 
     /** number of accounts with a problem in the "Android accounts" view */
-    val problemAccountsCount: Flow<Int> = accountStatuses().map { statuses ->
-        statuses.count { it.isProblem }
-    }
+    val problemAccountsCount: StateFlow<Int> = accountStatuses()
+        .map { statuses -> statuses.count { it.isProblem } }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0)
 
     private val workManager = WorkManager.getInstance(context)
     private val runningWorkers = workManager.getWorkInfosFlow(WorkQuery.fromStates(WorkInfo.State.ENQUEUED, WorkInfo.State.RUNNING))
