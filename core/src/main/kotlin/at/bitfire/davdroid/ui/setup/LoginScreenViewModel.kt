@@ -17,7 +17,6 @@ import androidx.credentials.exceptions.CreateCredentialException
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.accounts.AccountId
-import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.log.DebugDirectory
 import at.bitfire.davdroid.log.FileLoggerFactory
 import at.bitfire.davdroid.network.HttpClientBuilder
@@ -33,7 +32,6 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -57,7 +55,6 @@ class LoginScreenViewModel @AssistedInject constructor(
     @ApplicationContext val context: Context,
     private val debugDirectory: DebugDirectory,
     private val httpClientBuilder: HttpClientBuilder,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val logger: Logger,
     val loginTypesProvider: LoginTypesProvider,
     private val resourceFinderFactory: DavResourceFinder.Factory,
