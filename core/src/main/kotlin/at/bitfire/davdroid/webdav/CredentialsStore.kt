@@ -31,17 +31,27 @@ class CredentialsStore @Inject constructor(
     private val serializerFactory: CredentialsSerializer.Factory
 ) {
 
+    /** Set if the storage couldn't be updated to [CURRENT_VERSION]. Credentials that haven't been migrated are then not available. */
+    private var updateFailure: Throwable? = null
+
     private val prefs by lazy {
-        context.getSharedPreferences(PREF_FILE_NAME, Context.MODE_PRIVATE).also(::update)
+        context.getSharedPreferences(PREF_FILE_NAME, Context.MODE_PRIVATE).also {
+            updateFailure = update(it)
+        }
     }
 
     /**
      * @return the stored credentials, or `null` if there are none for the given mount
      *
-     * @throws CredentialsUnreadableException if credentials are stored, but can't be read (decryption failed / corrupt data)
+     * @throws CredentialsUnreadableException if credentials are stored, but can't be read (decryption failed / corrupt data),
+     * or if there's no entry and the storage couldn't be updated (so the credentials may be in the old storage and not be available yet)
      */
     fun getCredentials(mountId: Long): Credentials? {
-        val json = prefs.getString(key(mountId), null) ?: return null
+        val json = prefs.getString(key(mountId), null)
+        if (json == null) {
+            updateFailure?.let { throw CredentialsUnreadableException(mountId, it) }
+            return null
+        }
         return try {
             Json.decodeFromString(serializerFactory.create(mountId), json)
         } catch (e: Exception) {
@@ -67,7 +77,12 @@ class CredentialsStore @Inject constructor(
 
     // update from previous storage versions
 
-    private fun update(prefs: SharedPreferences) {
+    /**
+     * Runs the migrations that are needed to get the storage to [CURRENT_VERSION].
+     *
+     * @return `null` if the storage is up to date, or the reason why it couldn't be updated
+     */
+    private fun update(prefs: SharedPreferences): Throwable? {
         // synchronize because migrations must only be run one time
         synchronized(updateLock) {
             val baseVersion = prefs.getInt(KEY_VERSION, 0)
@@ -78,7 +93,7 @@ class CredentialsStore @Inject constructor(
                 val migration = migrations[toVersion]
                 if (migration == null) {
                     logger.severe("No CredentialsStore migration $fromVersion → $toVersion")
-                    return
+                    return IllegalStateException("No CredentialsStore migration $fromVersion → $toVersion")
                 }
 
                 try {
@@ -87,9 +102,10 @@ class CredentialsStore @Inject constructor(
                     logger.info("WebDAV credentials storage update to $toVersion successful")
                 } catch (e: Exception) {
                     logger.log(Level.SEVERE, "Couldn't run CredentialsStore migration $fromVersion → $toVersion", e)
-                    return
+                    return e
                 }
             }
+            return null
         }
     }
 
