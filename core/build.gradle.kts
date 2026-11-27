@@ -171,6 +171,7 @@ dependencies {
     implementation(libs.mikepenz.aboutLibraries.m3)
     implementation(libs.okhttp.base)
     implementation(libs.openid.appauth)
+    implementation(libs.tink)
     implementation(libs.unifiedpush) {
         // UnifiedPush connector seems to be using a workaround by importing this library.
         // Will be removed after https://github.com/tink-crypto/tink-java-apps/pull/5 is merged.
