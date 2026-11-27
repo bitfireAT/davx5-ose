@@ -4,20 +4,26 @@
 
 package at.bitfire.davdroid.ui.setup
 
+import android.app.Activity
 import android.content.Context
+import android.content.MutableContextWrapper
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.credentials.CreatePasswordRequest
+import androidx.credentials.CredentialManager
+import androidx.credentials.exceptions.CreateCredentialCancellationException
+import androidx.credentials.exceptions.CreateCredentialException
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.accounts.AccountId
-import at.bitfire.davdroid.di.qualifier.IoDispatcher
 import at.bitfire.davdroid.log.DebugDirectory
 import at.bitfire.davdroid.log.FileLoggerFactory
 import at.bitfire.davdroid.network.HttpClientBuilder
 import at.bitfire.davdroid.repository.AccountRepository
 import at.bitfire.davdroid.servicedetection.DavResourceFinder
 import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.settings.Credentials
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.util.DavUtils.toUrlOrNull
 import at.bitfire.synctools.vcard.GroupMethod
@@ -26,7 +32,6 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -50,12 +55,12 @@ class LoginScreenViewModel @AssistedInject constructor(
     @ApplicationContext val context: Context,
     private val debugDirectory: DebugDirectory,
     private val httpClientBuilder: HttpClientBuilder,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val logger: Logger,
     val loginTypesProvider: LoginTypesProvider,
     private val resourceFinderFactory: DavResourceFinder.Factory,
     settingsManager: SettingsManager,
-    private val loginValidator: Optional<LoginValidator>
+    private val loginValidator: Optional<LoginValidator>,
+    private val credentialManager: CredentialManager
 ) : ViewModel() {
 
     @AssistedFactory
@@ -206,7 +211,9 @@ class LoginScreenViewModel @AssistedInject constructor(
         val foundNothing: Boolean = false,
         val encountered401: Boolean = false,
         val loginValidationFailed: Boolean = false,
-        val debugLogFileName: DebugDirectory.FileName? = null
+        val debugLogFileName: DebugDirectory.FileName? = null,
+        /** Credentials the UI should offer to store in the password manager before continuing (see [onCredentialsHandled]). */
+        val credentialsToSave: Credentials? = null
     )
 
     var detectResourcesUiState by mutableStateOf(DetectResourcesUiState())
@@ -228,7 +235,16 @@ class LoginScreenViewModel @AssistedInject constructor(
                 val (result, logFile) = findConfiguration(baseUri)
                 if (result.calDAV != null || result.cardDAV != null) {
                     foundConfig = result
-                    navToNextPage()
+
+                    // Offer the password manager to store the credentials, if they are username+password
+                    // (other login methods can't be stored). The UI does that with its current Activity
+                    // and then calls onCredentialsHandled(), so that no Activity is held here.
+                    // Only with the platform Credential Manager; older versions use the autofill save prompt.
+                    val credentials = loginInfo.credentials
+                    if (useCredentialManager && credentials?.username != null && credentials.password != null)
+                        detectResourcesUiState = detectResourcesUiState.copy(credentialsToSave = credentials)
+                    else
+                        navToNextPage()
                 } else {
                     foundConfig = null
                     detectResourcesUiState = detectResourcesUiState.copy(
@@ -244,6 +260,41 @@ class LoginScreenViewModel @AssistedInject constructor(
                 logger.log(Level.SEVERE, "Couldn't run service detection", e)
             }
         }
+    }
+
+    /**
+     * Offers to store [DetectResourcesUiState.credentialsToSave] in the password manager.
+     *
+     * Needs an Activity context to show the prompt. It's only passed for the duration of this call,
+     * so the caller should run it in a scope that's cancelled with the Activity (e.g. `LaunchedEffect`).
+     */
+    suspend fun saveCredentials(activity: Activity) {
+        val credentials = detectResourcesUiState.credentialsToSave ?: return
+        val username = credentials.username ?: return
+        val password = credentials.password?.asString() ?: return
+        try {
+            credentialManager.createCredential(
+                context = MutableContextWrapper(activity),
+                request = CreatePasswordRequest(id = username, password = password)
+            )
+        } catch (_: CreateCredentialCancellationException) {
+            // the user dismissed the save prompt
+            logger.fine("User rejected storing the password in the password manager")
+        } catch (e: CreateCredentialException) {
+            // no provider available or another error
+            logger.warning("There's no password manager to store the credentials into, or something went wrong: $e")
+        }
+    }
+
+    /**
+     * Called when the UI is done offering to store the credentials (whatever the result was).
+     * Continues to the next page.
+     */
+    fun onCredentialsHandled() {
+        if (detectResourcesUiState.credentialsToSave == null)
+            return
+        detectResourcesUiState = detectResourcesUiState.copy(credentialsToSave = null)
+        navToNextPage()
     }
 
     /**
