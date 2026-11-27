@@ -17,8 +17,6 @@ import at.bitfire.davdroid.webdav.DocumentProviderUtils.displayNameToMemberName
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.ktor.client.utils.EmptyContent
 import io.ktor.http.HttpHeaders
-import io.ktor.http.URLBuilder
-import io.ktor.http.appendPathSegments
 import io.ktor.http.headersOf
 import java.io.FileNotFoundException
 import java.util.logging.Logger
@@ -39,12 +37,17 @@ class CreateDocumentOperation @Inject constructor(
         val createDirectory = mimeType == Document.MIME_TYPE_DIR
 
         var docId: Long?
-        val parentUrl = parent.toKtorUrl(db)
         davClientBuilder.build(parent.mountId).use { client ->
             for (attempt in 0..DocumentProviderUtils.MAX_DISPLAYNAME_TO_MEMBERNAME_ATTEMPTS) {
-                val newName = displayNameToMemberName(displayName, attempt)
-                val newLocation = URLBuilder(parentUrl).appendPathSegments(newName).build()
-                val doc = DavResource(client, newLocation)
+                val newDoc = WebDavDocument(
+                    mountId = parent.mountId,
+                    parentId = parent.id,
+                    name = displayNameToMemberName(displayName, attempt),
+                    isDirectory = createDirectory,
+                    mimeType = mimeType.toContentTypeOrNull(),
+                    size = if (createDirectory) null else 0
+                )
+                val doc = DavResource(client, newDoc.toKtorUrl(db))
                 try {
                     if (createDirectory)
                         doc.mkCol(null) {
@@ -58,18 +61,7 @@ class CreateDocumentOperation @Inject constructor(
                             // document successfully created
                         }
 
-                    docId = documentDao.insertOrReplace(
-                        WebDavDocument(
-                            mountId = parent.mountId,
-                            parentId = parent.id,
-                            name = newName,
-                            isDirectory = createDirectory,
-                            mimeType = mimeType.toContentTypeOrNull(),
-                            eTag = null,
-                            lastModified = null,
-                            size = if (createDirectory) null else 0
-                        )
-                    )
+                    docId = documentDao.insertOrReplace(newDoc)
 
                     DocumentProviderUtils.notifyFolderChanged(context, parentDocumentId)
 

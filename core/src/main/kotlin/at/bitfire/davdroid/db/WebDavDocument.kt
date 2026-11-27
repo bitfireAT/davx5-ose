@@ -13,6 +13,7 @@ import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import at.bitfire.dav4jvm.ktor.toContentTypeOrNull
+import at.bitfire.dav4jvm.ktor.withTrailingSlash
 import at.bitfire.davdroid.util.DavUtils.MEDIA_TYPE_OCTET_STREAM
 import at.bitfire.davdroid.webdav.DocumentState
 import io.ktor.http.ContentType
@@ -112,21 +113,31 @@ data class WebDavDocument(
         return bundle
     }
 
+    /**
+     * Builds the URL of this document. Folders get a trailing slash (RFC 4918 §5.2).
+     *
+     * @return URL of this document
+     * @throws FileNotFoundException if a parent document doesn't exist (anymore)
+     */
     suspend fun toKtorUrl(db: AppDatabase): Url {
         val mount = db.webDavMountDao().getById(mountId)
 
-        val segments = mutableListOf(name)
-        var parentIter = parentId
-        while (parentIter != null) {
-            val parent = db.webDavDocumentDao().get(parentIter) ?: throw FileNotFoundException()
-            segments += parent.name
-            parentIter = parent.parentId
+        val segments = ArrayDeque<String>()
+        var doc = this
+        while (doc.parentId != null) {     // root document adds no segment
+            segments.addFirst(doc.name)    // prepend segment
+            doc = db.webDavDocumentDao().get(doc.parentId) ?: throw FileNotFoundException()
         }
 
-        val builder = URLBuilder(mount.url)
-        for (segment in segments.reversed())
-            builder.appendPathSegments(segment)
-        return builder.build()
+        val url = URLBuilder(mount.url)
+            .appendPathSegments(segments)
+            .build()
+
+        // folders get a trailing slash
+        return if (isDirectory)
+            url.withTrailingSlash()
+        else
+            url
     }
 
 
