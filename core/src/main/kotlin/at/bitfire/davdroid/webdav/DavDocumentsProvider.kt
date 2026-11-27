@@ -183,7 +183,8 @@ internal fun Exception.toDocumentsProviderException(context: Context): Exception
         this is CancellationException ->
             OperationCanceledException(message)
 
-        this is UnauthorizedException && Build.VERSION.SDK_INT >= 26 ->
+        // credentials are missing or unreadable → user has to (re-)enter them
+        (this is UnauthorizedException || this is CredentialsUnreadableException) && Build.VERSION.SDK_INT >= 26 ->
             AuthenticationRequiredException(
                 this,
                 TaskStackBuilder.create(context)

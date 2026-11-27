@@ -14,6 +14,7 @@ import at.bitfire.davdroid.settings.Credentials
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.ktor.http.Url
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -53,10 +54,17 @@ class WebDavMountRepository @Inject constructor(
             url = webdavUrl,
             name = displayName
         )
-        val id = db.webDavMountDao().insert(mount)
+        val id = mountDao.insert(mount)
 
-        // store credentials
-        credentialsStore.setCredentials(id, credentials)
+        // store credentials; don't leave a mount without its credentials behind if that fails
+        try {
+            credentialsStore.setCredentials(id, credentials)
+        } catch (e: Exception) {
+            withContext(NonCancellable) {
+                mountDao.delete(mount.copy(id = id))
+            }
+            throw e
+        }
 
         // notify content URI listeners
         DocumentProviderUtils.notifyMountsChanged(context)

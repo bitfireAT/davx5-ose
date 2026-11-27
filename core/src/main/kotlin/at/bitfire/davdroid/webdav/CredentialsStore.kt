@@ -35,16 +35,26 @@ class CredentialsStore @Inject constructor(
         context.getSharedPreferences(PREF_FILE_NAME, Context.MODE_PRIVATE).also(::update)
     }
 
+    /**
+     * @return the stored credentials, or `null` if there are none for the given mount
+     *
+     * @throws CredentialsUnreadableException if credentials are stored, but can't be read (decryption failed / corrupt data)
+     */
     fun getCredentials(mountId: Long): Credentials? {
         val json = prefs.getString(key(mountId), null) ?: return null
         return try {
             Json.decodeFromString(serializerFactory.create(mountId), json)
         } catch (e: Exception) {
             logger.log(Level.WARNING, "Couldn't read credentials of WebDAV mount $mountId", e)
-            null
+            throw CredentialsUnreadableException(mountId, e)
         }
     }
 
+    /**
+     * Stores (or, when [credentials] is `null`, removes) the credentials of a mount.
+     *
+     * @throws Exception if the credentials can't be encrypted / stored (for instance when the Android Keystore is not usable)
+     */
     fun setCredentials(mountId: Long, credentials: Credentials?) {
         prefs.edit {
             if (credentials != null)
