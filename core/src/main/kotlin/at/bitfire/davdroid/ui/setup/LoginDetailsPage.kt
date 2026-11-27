@@ -25,8 +25,8 @@ fun LoginDetailsPage(
         onLogin = { loginInfo ->
             model.updateLoginInfo(loginInfo)
 
-            // Credentials storage is managed in the view model
-            autofillManager?.cancel()
+            // API 34+: credentials storage is managed in the view model; older: autofill save prompt
+            autofillManager.onCredentialsSubmitted()
 
             model.navToNextPage(activity)
         }

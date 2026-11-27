@@ -238,7 +238,8 @@ class LoginScreenViewModel @AssistedInject constructor(
 
                     // Offer the password manager to store the credentials, if they are username+password
                     // other login methods cannot be stored in the password manager
-                    loginInfo.credentials?.let { credentials ->
+                    // (only with the platform Credential Manager; older versions use the autofill save prompt)
+                    loginInfo.credentials?.takeIf { useCredentialManager }?.let { credentials ->
                         activity ?: return@let
                         val username = credentials.username ?: return@let
                         val password = credentials.password?.asString() ?: return@let
