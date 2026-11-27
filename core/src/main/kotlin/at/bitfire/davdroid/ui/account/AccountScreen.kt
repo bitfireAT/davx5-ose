@@ -61,6 +61,7 @@ import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -561,7 +562,7 @@ fun AccountScreen_Actions(
     onDeleteAccount: () -> Unit,
     onAccountSettings: () -> Unit
 ) {
-    var showDeleteAccountDialog by remember { mutableStateOf(false) }
+    var showDeleteAccountDialog by rememberSaveable { mutableStateOf(false) }
     var showRenameAccountDialog by remember { mutableStateOf(false) }
 
     var overflowOpen by remember { mutableStateOf(false) }
