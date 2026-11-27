@@ -16,6 +16,7 @@ import at.bitfire.davdroid.sync.SyncFrameworkSettingsUpdater
 import at.bitfire.davdroid.sync.TasksAppManager
 import at.bitfire.davdroid.sync.account.AccountOperationFailedException
 import at.bitfire.davdroid.sync.account.InvalidAccountException
+import at.bitfire.davdroid.ui.NotificationRegistry
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
@@ -47,6 +48,7 @@ class AndroidAccountProviderTest {
         every { dbAccountDao() } returns dbAccountDao
     }
     private val logger = mockk<Logger>(relaxed = true)
+    private val notificationRegistry = mockk<NotificationRegistry>(relaxed = true)
     private val syncFrameworkSettingsUpdater = mockk<SyncFrameworkSettingsUpdater>(relaxed = true)
 
     private val androidAccountManager = AndroidAccountManager(
@@ -65,6 +67,7 @@ class AndroidAccountProviderTest {
         ioDispatcher = Dispatchers.IO,
         localCalendarStore = { localCalendarStore },
         logger = logger,
+        notificationRegistry = notificationRegistry,
         syncFrameworkSettingsUpdater = { syncFrameworkSettingsUpdater },
         tasksAppManager = { tasksAppManager }
     )
@@ -162,6 +165,17 @@ class AndroidAccountProviderTest {
     }
 
     @Test
+    fun `provide() notifies about account problems when account with same name is orphaned`() = runTest {
+        addDbAccount(1, "DB Name")
+        addAndroidAccount("DB Name", linkedId = 99)
+
+        assertFailsWith<InvalidAccountException> {
+            provider.provide(DbAccountId(1))
+        }
+        verify { notificationRegistry.notifyAccountsCheck() }
+    }
+
+    @Test
     fun `provide() creates linked account after account with same name has been removed`() = runTest {
         addDbAccount(1, "DB Name")
         val orphan = addAndroidAccount("DB Name", linkedId = 99)
@@ -188,6 +202,17 @@ class AndroidAccountProviderTest {
         assertEquals(1L, androidAccountManager.getLinkedDbAccountId(result))
         assertEquals(2L, androidAccountManager.getLinkedDbAccountId(Account("New Name", dbAccountType)))
         assertEquals(2, accountManager.getAccountsByType(dbAccountType).size)
+    }
+
+    @Test
+    fun `provide() doesn't notify about account problems when account with same name belongs to renamed DB account`() = runTest {
+        addDbAccount(1, "Old Name")
+        addDbAccount(2, "New Name")
+        addAndroidAccount("Old Name", linkedId = 2)
+
+        provider.provide(DbAccountId(1))
+
+        verify(exactly = 0) { notificationRegistry.notifyAccountsCheck() }
     }
 
     @Test

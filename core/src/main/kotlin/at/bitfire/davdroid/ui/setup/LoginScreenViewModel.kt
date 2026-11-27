@@ -17,6 +17,7 @@ import androidx.credentials.exceptions.CreateCredentialException
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.accounts.AccountId
+import at.bitfire.davdroid.accounts.AndroidAccountNameTakenException
 import at.bitfire.davdroid.log.DebugDirectory
 import at.bitfire.davdroid.log.FileLoggerFactory
 import at.bitfire.davdroid.network.HttpClientBuilder
@@ -360,7 +361,8 @@ class LoginScreenViewModel @AssistedInject constructor(
         val groupMethodReadOnly: Boolean = false,
         val creatingAccount: Boolean = false,
         val createdAccountId: AccountId? = null,
-        val couldNotCreateAccount: Boolean = false
+        val couldNotCreateAccount: Boolean = false,
+        val androidAccountNameTaken: Boolean = false
     ) {
         val showApostropheWarning = accountName.contains('\'') || accountName.contains('"')
     }
@@ -424,19 +426,35 @@ class LoginScreenViewModel @AssistedInject constructor(
         }
     }
 
+    fun resetAndroidAccountNameTaken() {
+        _accountDetailsUiState.update { currentState ->
+            currentState.copy(androidAccountNameTaken = false)
+        }
+    }
+
     fun createAccount() {
         _accountDetailsUiState.update { currentState ->
             currentState.copy(creatingAccount = true)
         }
 
         viewModelScope.launch {
-            val accountId = accountRepository.create(
-                accountDetailsUiState.value.accountName,
-                loginInfo.credentials,
-                foundConfig!!,
-                accountDetailsUiState.value.groupMethod,
-                loginInfo.preconfigurationUrl
-            )
+            val accountId = try {
+                accountRepository.create(
+                    accountDetailsUiState.value.accountName,
+                    loginInfo.credentials,
+                    foundConfig!!,
+                    accountDetailsUiState.value.groupMethod,
+                    loginInfo.preconfigurationUrl
+                )
+            } catch (_: AndroidAccountNameTakenException) {
+                _accountDetailsUiState.update { currentState ->
+                    currentState.copy(
+                        creatingAccount = false,
+                        androidAccountNameTaken = true
+                    )
+                }
+                return@launch
+            }
 
             _accountDetailsUiState.update { currentState ->
                 if (accountId != null)

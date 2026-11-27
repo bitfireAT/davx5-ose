@@ -10,6 +10,7 @@ import androidx.annotation.WorkerThread
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.accounts.AndroidAccountManager
+import at.bitfire.davdroid.accounts.AndroidAccountNameTakenException
 import at.bitfire.davdroid.accounts.DbAccountId
 import at.bitfire.davdroid.accounts.LegacyAccount
 import at.bitfire.davdroid.db.AppDatabase
@@ -132,6 +133,7 @@ class AccountRepository @Inject internal constructor(
      * @param groupMethod   whether CardDAV contact groups are separate VCards or as contact categories
      *
      * @return account if account creation was successful; null otherwise (for instance because an account with this name already exists)
+     * @throws AndroidAccountNameTakenException if a DB account shall be created, but an orphaned Android account has this name
      */
     suspend fun create(
         accountName: String,
@@ -146,6 +148,9 @@ class AccountRepository @Inject internal constructor(
         }
 
         return if (featureFlagsProvider.getFeatureFlag(FeatureFlags.NewAccountSystem).isEnabled) {
+            withContext(ioDispatcher) {
+                checkAndroidAccountNameAvailable(accountName)
+            }
             dbAccountRepository.create(accountName, credentials, config, groupMethod, preconfigurationUrl)
         } else {
             withContext(ioDispatcher) {
@@ -339,7 +344,8 @@ class AccountRepository @Inject internal constructor(
      * time it provides the account (usually during the next sync).
      *
      * @throws NoSuchElementException if the account does not exist
-     * @throws IllegalArgumentException if the new account name is blank, already exists, or is used by an orphaned Android account
+     * @throws IllegalArgumentException if the new account name is blank or already exists
+     * @throws AndroidAccountNameTakenException if an orphaned Android account has the new name
      */
     private suspend fun renameDbAccount(accountId: DbAccountId, newName: String): AccountId = withContext(ioDispatcher) {
         val dbAccount = dbAccountDao.get(accountId.id) ?: throw NoSuchElementException("No account found with id ${accountId.id}")
@@ -350,13 +356,7 @@ class AccountRepository @Inject internal constructor(
         // Make sure an account does not already exist with that name
         require(!exists(newName)) { "Account with name \"$newName\" already exists" }
 
-        // An orphaned Android account may have unsynced local data, so it must not be replaced; only the user may delete it
-        androidAccountManager.findAccountByName(newName)?.let { sameName ->
-            val linkedId = androidAccountManager.getLinkedDbAccountId(sameName)
-            require(linkedId == accountId.id || !androidAccountManager.isOrphaned(linkedId)) {
-                "Orphaned Android account with name \"$newName\" already exists"
-            }
-        }
+        checkAndroidAccountNameAvailable(newName)
 
         dbAccountDao.rename(accountId.id, newName)
         accountRenameFlow.emit(AccountRename(dbAccount.name, newName))
@@ -373,6 +373,17 @@ class AccountRepository @Inject internal constructor(
 
 
     // helpers
+
+    /**
+     * Orphaned Android accounts may have unsynced local data, so only the user may delete them.
+     *
+     * @throws AndroidAccountNameTakenException if an orphaned Android account (for DB accounts) is called [name]
+     */
+    private suspend fun checkAndroidAccountNameAvailable(name: String) {
+        val sameName = androidAccountManager.findAccountByName(name) ?: return
+        if (androidAccountManager.isOrphaned(androidAccountManager.getLinkedDbAccountId(sameName)))
+            throw AndroidAccountNameTakenException(name)
+    }
 
     private data class AccountRename(val oldName: String, val newName: String)
 }

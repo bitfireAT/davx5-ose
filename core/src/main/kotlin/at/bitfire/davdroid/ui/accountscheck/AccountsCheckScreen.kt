@@ -5,7 +5,6 @@
 package at.bitfire.davdroid.ui.accountscheck
 
 import android.accounts.Account
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -100,27 +99,19 @@ fun AccountsCheckScreen(
 
 @Composable
 private fun Explanation() {
-    Column {
-        Text(
-            text = stringResource(R.string.accounts_check_android_accounts),
-            style = MaterialTheme.typography.headlineSmall,
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
-
-        val manualUrl = remember {
-            ExternalUris.Manual.baseUrl.buildUpon()
-                .appendPath(ExternalUris.Manual.PATH_ACCOUNTS_COLLECTIONS)
-                .build()
-                .toString()
-        }
-        Text(
-            text = HtmlCompat.fromHtml(
-                stringResource(R.string.accounts_check_explanation, stringResource(R.string.app_name), manualUrl),
-                HtmlCompat.FROM_HTML_MODE_COMPACT
-            ).toAnnotatedString(),
-            style = MaterialTheme.typography.bodyMedium
-        )
+    val manualUrl = remember {
+        ExternalUris.Manual.baseUrl.buildUpon()
+            .appendPath(ExternalUris.Manual.PATH_ACCOUNTS_COLLECTIONS)
+            .build()
+            .toString()
     }
+    Text(
+        text = HtmlCompat.fromHtml(
+            stringResource(R.string.accounts_check_explanation, stringResource(R.string.app_name), manualUrl),
+            HtmlCompat.FROM_HTML_MODE_COMPACT
+        ).toAnnotatedString(),
+        style = MaterialTheme.typography.bodyMedium
+    )
 }
 
 @Composable

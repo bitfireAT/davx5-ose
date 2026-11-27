@@ -11,6 +11,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.accounts.AccountId
+import at.bitfire.davdroid.accounts.AndroidAccountNameTakenException
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.di.qualifier.ApplicationScope
 import at.bitfire.davdroid.di.qualifier.IoDispatcher
@@ -175,6 +176,13 @@ class AccountScreenViewModel @AssistedInject constructor(
     fun resetError() { error = null }
 
 
+    /** whether to hint to the "Android accounts" view because the new name is taken by an Android account */
+    var showAccountsCheckHint by mutableStateOf(false)
+        private set
+
+    fun resetAccountsCheckHint() { showAccountsCheckHint = false }
+
+
     var showNoWebcalApp by mutableStateOf(false)
         private set
 
@@ -215,6 +223,9 @@ class AccountScreenViewModel @AssistedInject constructor(
 
                 // synchronize again
                 syncWorkerManager.enqueueOneTimeAllAuthorities(newAccountId, manual = true)
+            } catch (e: AndroidAccountNameTakenException) {
+                logger.log(Level.WARNING, "Couldn't rename account", e)
+                showAccountsCheckHint = true
             } catch (e: Exception) {
                 logger.log(Level.SEVERE, "Couldn't rename account", e)
                 error = e.localizedMessage

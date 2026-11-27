@@ -34,6 +34,7 @@ import at.bitfire.davdroid.sync.worker.BaseSyncWorker
 import at.bitfire.davdroid.sync.worker.OneTimeSyncWorker
 import at.bitfire.davdroid.sync.worker.SyncWorkerManager
 import at.bitfire.davdroid.ui.account.AccountProgress
+import at.bitfire.davdroid.ui.accountscheck.AccountStatusesUseCase
 import at.bitfire.davdroid.ui.composable.FlavorComposable
 import at.bitfire.davdroid.ui.intro.IntroPage
 import at.bitfire.davdroid.ui.intro.IntroPageFactory
@@ -48,6 +49,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
@@ -55,6 +58,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.text.Collator
 import java.util.logging.Logger
@@ -63,6 +67,7 @@ import java.util.logging.Logger
 class AccountsViewModel @AssistedInject constructor(
     @Assisted private val syncAccountsOnInit: Boolean,
     private val accountRepository: AccountRepository,
+    accountStatuses: AccountStatusesUseCase,
     val composableItems: Set<@JvmSuppressWildcards FlavorComposable>,
     @ApplicationContext private val context: Context,
     private val db: AppDatabase,
@@ -104,6 +109,11 @@ class AccountsViewModel @AssistedInject constructor(
             FABStyle.Standard
     }
     val showSyncAll: Flow<Boolean> = accountIds.map { it.isNotEmpty() }
+
+    /** number of accounts with a problem in the "Android accounts" view */
+    val problemAccountsCount: StateFlow<Int> = accountStatuses()
+        .map { statuses -> statuses.count { it.isProblem } }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0)
 
     private val workManager = WorkManager.getInstance(context)
     private val runningWorkers = workManager.getWorkInfosFlow(WorkQuery.fromStates(WorkInfo.State.ENQUEUED, WorkInfo.State.RUNNING))

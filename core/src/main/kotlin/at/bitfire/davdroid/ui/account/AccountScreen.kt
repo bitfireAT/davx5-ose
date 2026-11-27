@@ -61,6 +61,7 @@ import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -85,6 +86,7 @@ import at.bitfire.davdroid.permissions.PermissionUtils
 import at.bitfire.davdroid.permissions.PermissionUtils.requiredPermissions
 import at.bitfire.davdroid.permissions.RequiredPermission
 import at.bitfire.davdroid.permissions.rememberPermissionsState
+import at.bitfire.davdroid.ui.accountscheck.AccountsCheckActivity
 import at.bitfire.davdroid.ui.composable.ActionCard
 import at.bitfire.davdroid.ui.composable.AppTheme
 import at.bitfire.davdroid.ui.composable.ProgressBar
@@ -95,6 +97,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun AccountScreen(
     accountId: AccountId,
+    initialShowDeleteAccountDialog: Boolean,
     onAccountSettings: () -> Unit,
     onCreateAddressBook: () -> Unit,
     onCreateCalendar: () -> Unit,
@@ -122,6 +125,8 @@ fun AccountScreen(
         accountName = accountName ?: "",
         error = model.error,
         onResetError = model::resetError,
+        showAccountsCheckHint = model.showAccountsCheckHint,
+        onResetAccountsCheckHint = model::resetAccountsCheckHint,
         invalidAccount = model.invalidAccount.collectAsStateWithLifecycle(false).value,
         showOnlyPersonal = model.showOnlyPersonal.collectAsStateWithLifecycle().value,
         showOnlyPersonalLocked = model.showOnlyPersonalLocked.collectAsStateWithLifecycle().value,
@@ -167,6 +172,7 @@ fun AccountScreen(
         onCreateAddressBook = onCreateAddressBook,
         onCreateCalendar = onCreateCalendar,
         onRenameAccount = model::renameAccount,
+        initialShowDeleteAccountDialog = initialShowDeleteAccountDialog,
         onDeleteAccount = model::deleteAccount,
         onNavUp = onNavUp,
         onFinish = onFinish
@@ -178,6 +184,8 @@ fun AccountScreen(
     accountName: String,
     error: String? = null,
     onResetError: () -> Unit = {},
+    showAccountsCheckHint: Boolean = false,
+    onResetAccountsCheckHint: () -> Unit = {},
     invalidAccount: Boolean = false,
     showOnlyPersonal: Boolean = false,
     showOnlyPersonalLocked: Boolean = false,
@@ -207,6 +215,7 @@ fun AccountScreen(
     onCreateAddressBook: () -> Unit = {},
     onCreateCalendar: () -> Unit = {},
     onRenameAccount: (newName: String) -> Unit = {},
+    initialShowDeleteAccountDialog: Boolean = false,
     onDeleteAccount: () -> Unit = {},
     onNavUp: () -> Unit = {},
     onFinish: () -> Unit = {}
@@ -237,6 +246,20 @@ fun AccountScreen(
                     snackbarHostState.showSnackbar(error)
                     onResetError()
                 }
+        }
+
+        @SuppressLint("LocalContextGetResourceValueCall")
+        LaunchedEffect(showAccountsCheckHint) {
+            if (showAccountsCheckHint) {
+                if (snackbarHostState.showSnackbar(
+                        message = context.getString(R.string.accounts_check_android_account_name_taken),
+                        actionLabel = context.getString(R.string.accounts_check_show),
+                        duration = SnackbarDuration.Long
+                    ) == SnackbarResult.ActionPerformed
+                )
+                    context.startActivity(Intent(context, AccountsCheckActivity::class.java))
+                onResetAccountsCheckHint()
+            }
         }
 
         var isRefreshing by remember { mutableStateOf(false) }
@@ -293,6 +316,7 @@ fun AccountScreen(
                             idxCardDav = idxCardDav,
                             idxCalDav = idxCalDav,
                             onRenameAccount = onRenameAccount,
+                            initialShowDeleteAccountDialog = initialShowDeleteAccountDialog,
                             onDeleteAccount = onDeleteAccount,
                             onAccountSettings = onAccountSettings
                         )
@@ -539,10 +563,12 @@ fun AccountScreen_Actions(
     idxCardDav: Int?,
     idxCalDav: Int?,
     onRenameAccount: (newName: String) -> Unit,
+    initialShowDeleteAccountDialog: Boolean,
     onDeleteAccount: () -> Unit,
     onAccountSettings: () -> Unit
 ) {
-    var showDeleteAccountDialog by remember { mutableStateOf(false) }
+    // saveable, so that the dialog isn't shown again from the intent after rotation
+    var showDeleteAccountDialog by rememberSaveable { mutableStateOf(initialShowDeleteAccountDialog) }
     var showRenameAccountDialog by remember { mutableStateOf(false) }
 
     var overflowOpen by remember { mutableStateOf(false) }

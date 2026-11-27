@@ -13,6 +13,7 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.TestUtils
 import at.bitfire.davdroid.accounts.AccountId
 import at.bitfire.davdroid.accounts.AndroidAccountManager
+import at.bitfire.davdroid.accounts.AndroidAccountNameTakenException
 import at.bitfire.davdroid.accounts.DbAccountId
 import at.bitfire.davdroid.accounts.LegacyAccount
 import at.bitfire.davdroid.db.AppDatabase
@@ -153,6 +154,26 @@ class AccountRepositoryTest {
     }
 
 
+    // testCreate
+
+    @Test(expected = AndroidAccountNameTakenException::class)
+    fun testCreate_throwsAndroidAccountNameTakenWhenOrphanHasName() = runTest {
+        createLinkedAndroidAccount(name = "Orphan", dbAccountId = 999L)
+        val newAccountSystem = mockk<FeatureFlagsProvider> {
+            every { getFeatureFlag(any()).isEnabled } returns true
+        }
+        val accountRepository = createAccountRepository(featureFlagsProvider = newAccountSystem)
+
+        accountRepository.create(
+            accountName = "Orphan",
+            credentials = null,
+            config = DavResourceFinder.Configuration(cardDAV = null, calDAV = null, encountered401 = false),
+            groupMethod = GroupMethod.GROUP_VCARDS,
+            preconfigurationUrl = null
+        )
+    }
+
+
     // testRename
 
     @Test(expected = IllegalArgumentException::class)
@@ -188,6 +209,14 @@ class AccountRepositoryTest {
         assertTrue(result.isFailure)
         assertTrue(accountManager.accounts.contains(orphan))
         assertEquals("999", accountManager.getUserData(orphan, AndroidAccountManager.USER_DATA_ACCOUNT_ID))
+    }
+
+    @Test(expected = AndroidAccountNameTakenException::class)
+    fun testRename_throwsAndroidAccountNameTakenWhenOrphanHasNewName() = runTest {
+        val dbAccountId = createDbAccountWithLinkedAndroidAccount(name = "DB Account")
+        createLinkedAndroidAccount(name = newName, dbAccountId = 999L)
+
+        accountRepository.rename(DbAccountId(dbAccountId), newName)
     }
 
     @Test
@@ -326,14 +355,17 @@ class AccountRepositoryTest {
         return account
     }
 
-    private fun createAccountRepository(listener: OnBeforeDeleteListener): AccountRepository {
+    private fun createAccountRepository(
+        listener: OnBeforeDeleteListener = OnBeforeDeleteListener {},
+        featureFlagsProvider: FeatureFlagsProvider = featureFlagProvider
+    ): AccountRepository {
         return AccountRepository(
             androidAccountManager = androidAccountManager,
             automaticSyncManager = { automaticSyncManager },
             context = context,
             db = appDatabase,
             dbAccountRepository = dbAccountRepository,
-            featureFlagsProvider = featureFlagProvider,
+            featureFlagsProvider = featureFlagsProvider,
             ioDispatcher = Dispatchers.IO,
             legacyAccountRepository = legacyAccountRepository,
             localCalendarStore = { localCalendarStore },

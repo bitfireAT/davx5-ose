@@ -263,9 +263,16 @@
     <string name="app_settings_experimental_title">Experimental</string>
 
     <!-- AccountsCheckActivity -->
-    <string name="accounts_check_title">Check and repair accounts</string>
+    <string name="accounts_check_title">Android accounts</string>
+    <string name="accounts_check_action">Check Android accounts</string>
     <string name="accounts_check_summary">Shows the status of Android accounts</string>
-    <string name="accounts_check_android_accounts">Android accounts</string>
+    <string name="accounts_check_problems">Some Android accounts link to app accounts that don\'t exist.</string>
+    <plurals name="accounts_check_problems_count">
+        <item quantity="one">%d Android account links to an app account that doesn\'t exist.</item>
+        <item quantity="other">%d Android accounts link to app accounts that don\'t exist.</item>
+    </plurals>
+    <string name="accounts_check_android_account_name_taken">There\'s already an Android account with this name.</string>
+    <string name="accounts_check_show">Show</string>
     <string name="accounts_check_explanation"><![CDATA[%1$s uses Android accounts to make your contacts, calendars and tasks available to other apps. As soon as an app account is synchronized, %1$s creates an Android account that links to it. Accounts that were created with older versions of %1$s are legacy accounts that only consist of an Android account. <a href=\"%2$s\">The manual</a> explains every status and how to export your data.]]></string>
     <string name="accounts_check_status">Android accounts status</string>
     <string name="accounts_check_legacy_account">(legacy account)</string>

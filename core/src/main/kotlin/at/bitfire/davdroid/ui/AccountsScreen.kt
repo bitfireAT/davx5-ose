@@ -21,6 +21,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Android
 import androidx.compose.material.icons.filled.BatterySaver
 import androidx.compose.material.icons.filled.DataSaverOn
 import androidx.compose.material.icons.filled.Lan
@@ -62,6 +63,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
@@ -91,6 +93,7 @@ fun AccountsScreen(
     onAddAccount: () -> Unit,
     onShowAccount: (AccountId) -> Unit,
     onManagePermissions: () -> Unit,
+    onAccountsCheck: () -> Unit,
     model: AccountsViewModel = hiltViewModel(
         creationCallback = { factory: AccountsViewModel.Factory ->
             factory.create(initialSyncAccounts)
@@ -121,6 +124,8 @@ fun AccountsScreen(
         onAddAccount = onAddAccount,
         onShowAccount = onShowAccount,
         onManagePermissions = onManagePermissions,
+        problemAccountsCount = model.problemAccountsCount.collectAsStateWithLifecycle().value,
+        onAccountsCheck = onAccountsCheck,
         internetUnavailable = !model.networkAvailable.collectAsStateWithLifecycle(false).value,
         batterySaverActive = model.batterySaverActive.collectAsStateWithLifecycle(false).value,
         dataSaverActive = model.dataSaverEnabled.collectAsStateWithLifecycle(false).value,
@@ -141,6 +146,8 @@ fun AccountsScreen(
     onAddAccount: () -> Unit = {},
     onShowAccount: (AccountId) -> Unit = {},
     onManagePermissions: () -> Unit = {},
+    problemAccountsCount: Int = 0,
+    onAccountsCheck: () -> Unit = {},
     internetUnavailable: Boolean = false,
     batterySaverActive: Boolean = false,
     dataSaverActive: Boolean = false,
@@ -268,6 +275,8 @@ fun AccountsScreen(
                             // Warnings show as action cards
                             val context = LocalContext.current
                             SyncWarnings(
+                                problemAccountsCount = problemAccountsCount,
+                                onAccountsCheck = onAccountsCheck,
                                 notificationsWarning = notificationsPermissionState?.allPermissionsGranted == false,
                                 localNetworkWarning = localNetworkPermissionState?.allPermissionsGranted == false,
                                 onManagePermissions = onManagePermissions,
@@ -502,6 +511,8 @@ fun AccountList_Preview_Syncing() {
 
 @Composable
 fun SyncWarnings(
+    problemAccountsCount: Int = 1,
+    onAccountsCheck: () -> Unit = {},
     notificationsWarning: Boolean = true,
     localNetworkWarning: Boolean = true,
     onManagePermissions: () -> Unit = {},
@@ -518,6 +529,16 @@ fun SyncWarnings(
     onManageApps: () -> Unit = {}
 ) {
     Column(Modifier.padding(horizontal = 8.dp)) {
+        if (problemAccountsCount > 0)
+            ActionCard(
+                icon = Icons.Default.Android,
+                actionText = stringResource(R.string.accounts_check_action),
+                onAction = onAccountsCheck,
+                modifier = Modifier.padding(vertical = 4.dp)
+            ) {
+                Text(pluralStringResource(R.plurals.accounts_check_problems_count, problemAccountsCount, problemAccountsCount))
+            }
+
         if (notificationsWarning)
             ActionCard(
                 icon = Icons.Default.NotificationsOff,

@@ -10,6 +10,7 @@ import at.bitfire.davdroid.accounts.AndroidAccountInfo
 import at.bitfire.davdroid.accounts.AndroidAccountManager
 import at.bitfire.davdroid.db.DbAccount
 import at.bitfire.davdroid.repository.DbAccountRepository
+import at.bitfire.davdroid.ui.NotificationRegistry
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
@@ -42,6 +43,7 @@ class AccountsCheckViewModelTest {
     private val dbAccountRepository = mockk<DbAccountRepository> {
         every { getAllDbAccountsFlow() } returns dbAccounts
     }
+    private val notificationRegistry = mockk<NotificationRegistry>(relaxed = true)
 
     private val orphan = Account("Orphan", "db")
 
@@ -51,9 +53,10 @@ class AccountsCheckViewModelTest {
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
         model = AccountsCheckViewModel(
+            accountStatuses = AccountStatusesUseCase(androidAccountManager, dbAccountRepository),
             androidAccountManager = androidAccountManager,
-            dbAccountRepository = dbAccountRepository,
-            ioDispatcher = testDispatcher
+            ioDispatcher = testDispatcher,
+            notificationRegistry = notificationRegistry
         )
     }
 
@@ -134,6 +137,29 @@ class AccountsCheckViewModelTest {
 
             assertEquals(listOf(AccountStatus.Linked("Linked")), awaitItem())
         }
+    }
+
+    @Test
+    fun `accounts cancels account problems notification when there are no problems`() = runTest(testDispatcher) {
+        androidAccounts.value = listOf(legacyAccount("Legacy"))
+
+        model.accounts.filterNotNull().test {
+            awaitItem()
+        }
+
+        verify { notificationRegistry.cancelAccountsCheck() }
+    }
+
+    @Test
+    fun `accounts doesn't cancel account problems notification while there are problems`() = runTest(testDispatcher) {
+        coEvery { androidAccountManager.isOrphaned(null) } returns true
+        androidAccounts.value = listOf(dbTypeAccount("Unlinked"))
+
+        model.accounts.filterNotNull().test {
+            awaitItem()
+        }
+
+        verify(exactly = 0) { notificationRegistry.cancelAccountsCheck() }
     }
 
     @Test

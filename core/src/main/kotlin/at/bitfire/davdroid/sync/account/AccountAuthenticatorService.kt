@@ -12,6 +12,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import at.bitfire.davdroid.R
+import at.bitfire.davdroid.ui.account.AccountActivity
 
 
 /**
@@ -38,6 +39,12 @@ open class AccountAuthenticatorService: Service() {
                 putParcelable(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response)
                 putInt(AccountManager.KEY_ERROR_CODE, AccountManager.ERROR_CODE_UNSUPPORTED_OPERATION)
                 putString(AccountManager.KEY_ERROR_MESSAGE, context.getString(R.string.account_prefs_use_app))
+            }
+
+        // removal from Android settings would also remove local data, so lead the user to the account in DAVx⁵ instead, so they learn how to do a backup first
+        override fun getAccountRemovalAllowed(response: AccountAuthenticatorResponse?, account: Account) =
+            Bundle().apply {
+                putParcelable(AccountManager.KEY_INTENT, AccountActivity.createDeleteAccountIntent(context, account))
             }
 
         override fun editProperties(response: AccountAuthenticatorResponse?, accountType: String?) = null
