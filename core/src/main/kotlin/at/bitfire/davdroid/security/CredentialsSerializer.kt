@@ -18,15 +18,11 @@ import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.encoding.decodeStructure
 import kotlinx.serialization.encoding.encodeStructure
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.jsonObject
 import net.openid.appauth.AuthState
-import org.json.JSONObject
 import kotlin.io.encoding.Base64
 
 /**
- * Serializes [Credentials]. The password is stored encrypted (Base64 of the ciphertext) using [CredentialCipher],
+ * Serializes [Credentials]. The password and the OAuth auth state are stored encrypted (Base64 of the ciphertext) using [CredentialCipher],
  * bound to [mountId] as associated data. Create instances with [Factory].
  */
 class CredentialsSerializer @AssistedInject constructor(
@@ -43,7 +39,7 @@ class CredentialsSerializer @AssistedInject constructor(
         element<String?>("username", isOptional = true)
         element<String?>("password", isOptional = true)
         element<String?>("certificateAlias", isOptional = true)
-        element("authState", JsonObject.serializer().descriptor, isOptional = true)
+        element<String?>("authState", isOptional = true)
     }
 
     companion object {
@@ -69,8 +65,10 @@ class CredentialsSerializer @AssistedInject constructor(
             value.certificateAlias?.let { alias ->
                 encodeStringElement(descriptor, IDX_CERT_ALIAS, alias)
             }
-            value.authState?.jsonSerialize()?.toJsonObject()?.let { json ->
-                encodeSerializableElement(descriptor, IDX_AUTH_STATE, JsonObject.serializer(), json)
+            value.authState?.jsonSerializeString()?.let { json ->
+                // contains refresh and access tokens, so it must be encrypted as well
+                val bytes = cipher.encryptSecret(json, authStateId())
+                encodeStringElement(descriptor, IDX_AUTH_STATE, Base64.Mime.encode(bytes))
             }
         }
     }
@@ -80,17 +78,14 @@ class CredentialsSerializer @AssistedInject constructor(
             var username: String? = null
             var passwordBase64: String? = null
             var certificateAlias: String? = null
-            var authState: AuthState? = null
+            var authStateBase64: String? = null
 
             while (true) {
                 when (val index = decodeElementIndex(descriptor)) {
                     IDX_USERNAME -> username = decodeStringElement(descriptor, IDX_USERNAME)
                     IDX_PASSWORD -> passwordBase64 = decodeStringElement(descriptor, IDX_PASSWORD)
                     IDX_CERT_ALIAS -> certificateAlias = decodeStringElement(descriptor, IDX_CERT_ALIAS)
-                    IDX_AUTH_STATE -> {
-                        val json = decodeSerializableElement(descriptor, IDX_AUTH_STATE, JsonObject.serializer())
-                        authState = AuthState.jsonDeserialize(json.toString())
-                    }
+                    IDX_AUTH_STATE -> authStateBase64 = decodeStringElement(descriptor, IDX_AUTH_STATE)
                     CompositeDecoder.DECODE_DONE -> break
                     else -> error("Unexpected index $index")
                 }
@@ -101,13 +96,14 @@ class CredentialsSerializer @AssistedInject constructor(
                 cipher.decryptSecret(bytes, mountId.toString())
             }?.toSensitiveString()
 
+            val authState = authStateBase64?.let { base64 ->
+                val bytes = Base64.Mime.decode(base64)
+                AuthState.jsonDeserialize(cipher.decryptSecret(bytes, authStateId()))
+            }
+
             Credentials(username, password, certificateAlias, authState)
         }
 
-    /**
-     * Converts a [JSONObject] into [JsonObject] to use `org.json` objects in Kotlin.
-     */
-    private fun JSONObject.toJsonObject(): JsonObject {
-        return Json.parseToJsonElement(toString()).jsonObject
-    }
+    /** Associated data ID of the auth state, so that it can't be swapped with the password ciphertext. */
+    private fun authStateId() = "$mountId.authState"
 }
