@@ -8,17 +8,15 @@ import android.content.Context
 import at.bitfire.dav4jvm.ktor.DavResource
 import at.bitfire.dav4jvm.ktor.allSuccessful
 import at.bitfire.dav4jvm.ktor.exception.DavException
-import at.bitfire.dav4jvm.ktor.exception.HttpException
+import at.bitfire.dav4jvm.ktor.exception.PreconditionFailedException
 import at.bitfire.dav4jvm.property.webdav.WebDAV
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.WebDavDocument
 import at.bitfire.davdroid.webdav.DavHttpClientBuilder
 import at.bitfire.davdroid.webdav.DocumentProviderUtils
 import at.bitfire.davdroid.webdav.DocumentProviderUtils.displayNameToMemberName
-import at.bitfire.davdroid.webdav.throwForDocumentProvider
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.ktor.client.HttpClient
-import io.ktor.http.URLBuilder
 import java.io.FileNotFoundException
 import java.util.logging.Level
 import java.util.logging.Logger
@@ -73,14 +71,10 @@ class RenameDocumentOperation @Inject constructor(
         }
 
     private suspend fun move(httpClient: HttpClient, doc: WebDavDocument, displayName: String) {
+        val oldUrl = doc.toKtorUrl(db)
         for (attempt in 0..DocumentProviderUtils.MAX_DISPLAYNAME_TO_MEMBERNAME_ATTEMPTS) {
             val newName = displayNameToMemberName(displayName, attempt)
-            val oldUrl = doc.toKtorUrl(db)
-            val newLocation = URLBuilder(oldUrl)
-                .apply {
-                    // Remove the last path segment (current file name) and add the new name
-                    pathSegments = pathSegments.dropLast(1) + newName
-                }.build()
+            val newLocation = doc.copy(name = newName).toKtorUrl(db)
             try {
                 val dav = DavResource(httpClient, oldUrl)
                 dav.move(newLocation, false) {
@@ -89,8 +83,8 @@ class RenameDocumentOperation @Inject constructor(
                 // the server may keep the old DAV:displayname, but show the new name until the next PROPFIND
                 documentDao.update(doc.copy(name = newName, displayName = null))
                 return
-            } catch (e: HttpException) {
-                e.throwForDocumentProvider(context, true)
+            } catch (_: PreconditionFailedException) {
+                // name already taken, try next one
             }
         }
     }

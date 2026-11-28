@@ -6,6 +6,7 @@ package at.bitfire.davdroid.ui.setup
 
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalAutofillManager
 import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
@@ -13,12 +14,18 @@ fun LoginDetailsPage(
     snackbarHostState: SnackbarHostState,
     model: LoginScreenViewModel = viewModel()
 ) {
+    val autofillManager = LocalAutofillManager.current
+
     val uiState = model.loginDetailsUiState
     uiState.loginType.LoginScreen(
         snackbarHostState = snackbarHostState,
         initialLoginInfo = uiState.loginInfo,
         onLogin = { loginInfo ->
             model.updateLoginInfo(loginInfo)
+
+            // API 34+: credentials storage is managed in the view model; older: autofill save prompt
+            autofillManager.onCredentialsSubmitted()
+
             model.navToNextPage()
         }
     )

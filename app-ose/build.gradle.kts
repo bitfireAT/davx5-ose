@@ -108,7 +108,6 @@ dependencies {
     // Kotlin / Android
     implementation(libs.kotlin.stdlib)
     implementation(libs.kotlinx.coroutines)
-    coreLibraryDesugaring(libs.android.desugaring)
 
     // Hilt
     implementation(libs.hilt.android.base)

@@ -450,20 +450,8 @@ class AndroidAccountManagerTest {
     }
 
     @Test
-    fun `getAccountId() looks up DB account by name when linked DB account does not exist`() = runTest {
+    fun `getAccountId() returns null when linked DB account does not exist`() = runTest {
         coEvery { dbAccountDao.get(3) } returns null
-        coEvery { dbAccountDao.getFromName("Name") } returns DbAccount(4, "Name")
-        val linked = addAndroidAccount("Name", linkedId = 3)
-
-        val result = androidAccountManager().getAccountId(linked)
-
-        assertEquals(DbAccountId(4), result)
-    }
-
-    @Test
-    fun `getAccountId() returns null when DB account does not exist`() = runTest {
-        coEvery { dbAccountDao.get(3) } returns null
-        coEvery { dbAccountDao.getFromName("Name") } returns null
         val linked = addAndroidAccount("Name", linkedId = 3)
 
         val result = androidAccountManager().getAccountId(linked)
@@ -472,13 +460,12 @@ class AndroidAccountManagerTest {
     }
 
     @Test
-    fun `getAccountId() looks up DB account by name when account is not linked`() = runTest {
-        coEvery { dbAccountDao.getFromName("Name") } returns DbAccount(4, "Name")
+    fun `getAccountId() returns null when account is not linked`() = runTest {
         val unlinked = addAndroidAccount("Name")
 
         val result = androidAccountManager().getAccountId(unlinked)
 
-        assertEquals(DbAccountId(4), result)
+        assertNull(result)
     }
 
 }

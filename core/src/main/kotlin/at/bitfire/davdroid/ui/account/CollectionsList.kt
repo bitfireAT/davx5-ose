@@ -10,7 +10,9 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.FlexBox
+import androidx.compose.foundation.layout.FlexDirection
+import androidx.compose.foundation.layout.FlexWrap
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -139,9 +141,12 @@ fun CollectionList_Item(
 
                     syncControl()
                 }
-                FlowRow(
-                    horizontalArrangement = Arrangement.spacedBy(4.dp),
-                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                FlexBox(
+                    config = {
+                        direction(FlexDirection.Row)
+                        wrap(FlexWrap.Wrap)
+                        gap(4.dp)
+                    }
                 ) {
                     if (addressBook)
                         CollectionList_Item_Chip(Icons.Default.Contacts, stringResource(R.string.account_contacts))

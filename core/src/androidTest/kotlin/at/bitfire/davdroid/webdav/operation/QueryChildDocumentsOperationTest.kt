@@ -4,205 +4,162 @@
 
 package at.bitfire.davdroid.webdav.operation
 
-import at.bitfire.davdroid.MockEngineUtils.basic
-import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.WebDavDocument
-import at.bitfire.davdroid.db.WebDavMount
-import at.bitfire.davdroid.webdav.DavHttpClientBuilder
 import dagger.hilt.android.testing.BindValue
-import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import io.ktor.client.HttpClient
-import io.ktor.client.engine.mock.MockEngine
+import io.ktor.client.engine.mock.MockRequestHandleScope
 import io.ktor.client.engine.mock.respond
+import io.ktor.client.request.HttpRequestData
+import io.ktor.client.request.HttpResponseData
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
-import io.ktor.http.Url
 import io.ktor.http.headersOf
 import io.ktor.http.withCharset
 import io.ktor.utils.io.charsets.Charsets
-import io.mockk.coEvery
-import io.mockk.junit4.MockKRule
-import io.mockk.mockk
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
-import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 import javax.inject.Inject
 
 @HiltAndroidTest
-class QueryChildDocumentsOperationTest {
-
-    @get:Rule
-    val hiltRule = HiltAndroidRule(this)
-
-    @get:Rule
-    val mockkRule = MockKRule(this)
-
-    @Inject
-    lateinit var db: AppDatabase
+class QueryChildDocumentsOperationTest : WebDavOperationTest() {
 
     @Inject
     lateinit var operation: QueryChildDocumentsOperation
 
     @BindValue
     @JvmField
-    val httpClientBuilder: DavHttpClientBuilder = mockk()
-
-    private lateinit var mount: WebDavMount
-    private lateinit var rootDocument: WebDavDocument
+    val httpClientBuilder = mockHttpClientBuilder()
 
     @Before
     fun setUp() {
-        hiltRule.inject()
-        coEvery { httpClientBuilder.build(any(), any()) } answers { HttpClient(buildDefaultEngine()) }
-
-        // create WebDAV mount and root document in DB
-        runBlocking {
-            val mountId = db.webDavMountDao().insert(
-                WebDavMount(0, "Cat food storage", Url("https://dav.example.com$PATH_WEBDAV_ROOT"))
-            )
-            mount = db.webDavMountDao().getById(mountId)
-            rootDocument = db.webDavDocumentDao().getOrCreateRoot(mount)
-        }
-    }
-
-    @After
-    fun tearDown() {
-        runBlocking {
-            db.webDavMountDao().delete(mount)
-        }
+        handler = { request -> respondPropfind(request) }
     }
 
 
     @Test
     fun testDoQueryChildren_insert() = runTest {
         // Query
-        operation.queryChildren(rootDocument)
+        operation.queryChildren(root)
 
         // Assert new children were inserted into db
-        assertEquals(3, db.webDavDocumentDao().getChildren(rootDocument.id).size)
-        assertEquals("Library", db.webDavDocumentDao().getChildren(rootDocument.id)[0].displayName)
-        assertEquals("MeowMeow_Cats.docx", db.webDavDocumentDao().getChildren(rootDocument.id)[1].displayName)
-        assertEquals("Secret_Document.pages", db.webDavDocumentDao().getChildren(rootDocument.id)[2].displayName)
+        assertEquals(3, documentDao.getChildren(root.id).size)
+        assertEquals("Library", documentDao.getChildren(root.id)[0].displayName)
+        assertEquals("MeowMeow_Cats.docx", documentDao.getChildren(root.id)[1].displayName)
+        assertEquals("Secret_Document.pages", documentDao.getChildren(root.id)[2].displayName)
     }
 
     @Test
     fun testDoQueryChildren_update() = runTest {
         // Create parent and root in database
-        assertEquals("Cat food storage", db.webDavDocumentDao().get(rootDocument.id)!!.displayName)
+        assertEquals("Test Mount", documentDao.get(root.id)!!.displayName)
 
         // Create a folder
-        val folderId = db.webDavDocumentDao().insert(
-            WebDavDocument(0, mount.id, rootDocument.id, "My_Books", true, "My Books")
+        val folderId = documentDao.insert(
+            WebDavDocument(mountId = root.mountId, parentId = root.id, name = "My_Books", isDirectory = true, displayName = "My Books")
         )
-        assertEquals("My_Books", db.webDavDocumentDao().get(folderId)!!.name)
-        assertEquals("My Books", db.webDavDocumentDao().get(folderId)!!.displayName)
+        assertEquals("My_Books", documentDao.get(folderId)!!.name)
+        assertEquals("My Books", documentDao.get(folderId)!!.displayName)
 
         // Query - should update the parent displayname and folder name
-        operation.queryChildren(rootDocument)
+        operation.queryChildren(root)
 
         // Assert parent and children were updated in database
-        assertEquals("Cats WebDAV", db.webDavDocumentDao().get(rootDocument.id)!!.displayName)
-        assertEquals("Library", db.webDavDocumentDao().getChildren(rootDocument.id)[0].name)
-        assertEquals("Library", db.webDavDocumentDao().getChildren(rootDocument.id)[0].displayName)
+        assertEquals("Cats WebDAV", documentDao.get(root.id)!!.displayName)
+        assertEquals("Library", documentDao.getChildren(root.id)[0].name)
+        assertEquals("Library", documentDao.getChildren(root.id)[0].displayName)
     }
 
     @Test
     fun testDoQueryChildren_delete() = runTest {
         // Create a folder
-        val folderId = db.webDavDocumentDao().insert(
-            WebDavDocument(0, mount.id, rootDocument.id, "deleteme", true, "Should be deleted")
-        )
-        assertEquals("deleteme", db.webDavDocumentDao().get(folderId)!!.name)
+        val folder = insertDocument(root, "deleteme", true)
 
         // Query - discovers serverside deletion
-        operation.queryChildren(rootDocument)
+        operation.queryChildren(root)
 
         // Assert folder got deleted
-        assertEquals(null, db.webDavDocumentDao().get(folderId))
+        assertEquals(null, documentDao.get(folder.id))
     }
 
     @Test
     fun testDoQueryChildren_propfindFails_doesNotDeleteChildren() = runTest {
         // Create a child document in DB
-        val childId = db.webDavDocumentDao().insert(
-            WebDavDocument(0, mount.id, rootDocument.id, "some_file.txt", false, "Some File")
-        )
-        assertNotNull(db.webDavDocumentDao().get(childId))
-
-        coEvery { httpClientBuilder.build(any(), any()) } answers {
-            HttpClient(MockEngine.basic(statusCode = HttpStatusCode.InternalServerError))
-        }
+        val child = insertDocument(root, "some_file.txt", false)
+        handler = { respond("", HttpStatusCode.InternalServerError) }
 
         // Query - PROPFIND fails
-        operation.queryChildren(rootDocument)
+        operation.queryChildren(root)
 
         // Child must NOT have been deleted despite the PROPFIND failure
-        assertNotNull(db.webDavDocumentDao().get(childId))
-        assertEquals("some_file.txt", db.webDavDocumentDao().get(childId)!!.name)
+        assertNotNull(documentDao.get(child.id))
+        assertEquals("some_file.txt", documentDao.get(child.id)!!.name)
     }
 
     @Test
     fun testDoQueryChildren_updateTwoDirectoriesSimultaneously() = runTest {
         // Create two directories
-        val parent1Id = db.webDavDocumentDao().insert(WebDavDocument(0, mount.id, rootDocument.id, "parent1", true))
-        val parent2Id = db.webDavDocumentDao().insert(WebDavDocument(0, mount.id, rootDocument.id, "parent2", true))
-        val parent1 = db.webDavDocumentDao().get(parent1Id)!!
-        val parent2 = db.webDavDocumentDao().get(parent2Id)!!
-        assertEquals("parent1", parent1.name)
-        assertEquals("parent2", parent2.name)
+        val parent1 = insertDocument(root, "parent1", true)
+        val parent2 = insertDocument(root, "parent2", true)
 
         // Query - find children of two nodes simultaneously
         operation.queryChildren(parent1)
         operation.queryChildren(parent2)
 
         // Assert the two folders names have changed
-        assertEquals("childOne.txt", db.webDavDocumentDao().getChildren(parent1Id)[0].name)
-        assertEquals("childTwo.txt", db.webDavDocumentDao().getChildren(parent2Id)[0].name)
+        assertEquals("childOne.txt", documentDao.getChildren(parent1.id)[0].name)
+        assertEquals("childTwo.txt", documentDao.getChildren(parent2.id)[0].name)
+    }
+
+    @Test
+    fun testDoQueryChildren_folder_usesTrailingSlash() = runTest {
+        val folder = insertDocument(root, "parent1", true)
+
+        operation.queryChildren(folder)
+
+        val propfind = mockEngine.requestHistory.single()
+        assertEquals("PROPFIND", propfind.method.value)
+        assertEquals("https://mock.example.com/webdav/parent1/", propfind.url.toString())
     }
 
     @Test
     fun testDoQueryChildren_blankDisplayName_storedAsNull() = runTest {
-        val parentId = db.webDavDocumentDao().insert(WebDavDocument(0, mount.id, rootDocument.id, "parent3", true))
-        val parent = db.webDavDocumentDao().get(parentId)!!
+        val parent = insertDocument(root, "parent3", true)
 
         operation.queryChildren(parent)
 
-        val child = db.webDavDocumentDao().getChildren(parentId).single()
+        val child = documentDao.getChildren(parent.id).single()
         assertEquals("blank.txt", child.name)
         assertNull(child.displayName)
     }
 
     @Test
     fun testDoQueryChildren_displayNameWithSurroundingWhitespace_trimmed() = runTest {
-        val parentId = db.webDavDocumentDao().insert(WebDavDocument(0, mount.id, rootDocument.id, "parent4", true))
-        val parent = db.webDavDocumentDao().get(parentId)!!
+        val parent = insertDocument(root, "parent4", true)
 
         operation.queryChildren(parent)
 
-        assertEquals("Spaced", db.webDavDocumentDao().getChildren(parentId).single().displayName)
+        assertEquals("Spaced", documentDao.getChildren(parent.id).single().displayName)
     }
 
 
-    // mock engine
+    // mock server
 
     private val xmlHeaders = headersOf(HttpHeaders.ContentType, ContentType.Application.Xml.withCharset(Charsets.UTF_8).toString())
 
-    private fun buildDefaultEngine() = MockEngine { request ->
-        val requestPath = request.url.encodedPath.trimEnd('/')
+    /** Answers PROPFIND requests to the folder URLs (with trailing slash) below. */
+    private fun MockRequestHandleScope.respondPropfind(request: HttpRequestData): HttpResponseData {
+        val requestPath = request.url.encodedPath
 
         if (!request.method.value.equals("PROPFIND", ignoreCase = true))
-            return@MockEngine respond("", HttpStatusCode.NotFound)
+            return respond("", HttpStatusCode.NotFound)
 
         val propsMap = mapOf(
-            PATH_WEBDAV_ROOT to listOf(
+            "/webdav/" to listOf(
                 Resource("",
                     "<resourcetype><collection/></resourcetype>" +
                             "<displayname>Cats WebDAV</displayname>"
@@ -218,25 +175,25 @@ class QueryChildDocumentsOperationTest {
                             "<displayname>Library</displayname>"
                 )
             ),
-            "$PATH_WEBDAV_ROOT/parent1" to listOf(
+            "/webdav/parent1/" to listOf(
                 Resource("childOne.txt", "<displayname>childOne.txt</displayname>")
             ),
-            "$PATH_WEBDAV_ROOT/parent2" to listOf(
+            "/webdav/parent2/" to listOf(
                 Resource("childTwo.txt", "<displayname>childTwo.txt</displayname>")
             ),
-            "$PATH_WEBDAV_ROOT/parent3" to listOf(
+            "/webdav/parent3/" to listOf(
                 Resource("blank.txt", "<displayname> </displayname>")
             ),
-            "$PATH_WEBDAV_ROOT/parent4" to listOf(
+            "/webdav/parent4/" to listOf(
                 Resource("spaced.txt", "<displayname> Spaced </displayname>")
             )
         )
 
         val resources = propsMap[requestPath]
-            ?: return@MockEngine respond("", HttpStatusCode.NotFound)
+            ?: return respond("", HttpStatusCode.NotFound)
 
         val responses = resources.joinToString("") { resource ->
-            "<response><href>$requestPath/${resource.name}</href>" +
+            "<response><href>$requestPath${resource.name}</href>" +
                     "<propstat><prop>${resource.props}</prop></propstat></response>"
         }
         val multistatus =
@@ -246,14 +203,9 @@ class QueryChildDocumentsOperationTest {
                     responses +
                     "</multistatus>"
 
-        respond(multistatus, HttpStatusCode.MultiStatus, xmlHeaders)
+        return respond(multistatus, HttpStatusCode.MultiStatus, xmlHeaders)
     }
 
     private data class Resource(val name: String, val props: String)
-
-
-    companion object {
-        private const val PATH_WEBDAV_ROOT = "/webdav"
-    }
 
 }

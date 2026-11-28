@@ -6,15 +6,11 @@ package at.bitfire.davdroid.webdav.operation
 
 import android.content.Context
 import at.bitfire.dav4jvm.ktor.DavResource
-import at.bitfire.dav4jvm.ktor.exception.HttpException
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.WebDavDocument
 import at.bitfire.davdroid.webdav.DavHttpClientBuilder
 import at.bitfire.davdroid.webdav.DocumentProviderUtils
-import at.bitfire.davdroid.webdav.throwForDocumentProvider
 import dagger.hilt.android.qualifiers.ApplicationContext
-import io.ktor.http.URLBuilder
-import io.ktor.http.appendPathSegments
 import java.io.FileNotFoundException
 import java.util.logging.Logger
 import javax.inject.Inject
@@ -41,16 +37,10 @@ class CopyDocumentOperation @Inject constructor(
             .build(srcDoc.mountId)
             .use { httpClient ->
                 val dav = DavResource(httpClient, srcDoc.toKtorUrl(db))
-                val dstUrl = URLBuilder(dstFolder.toKtorUrl(db))
-                    .appendPathSegments(name)
-                    .build()
+                val dstUrl = srcDoc.copy(parentId = dstFolder.id).toKtorUrl(db)
 
-                try {
-                    dav.copy(dstUrl, false) {
-                        // successfully copied
-                    }
-                } catch (e: HttpException) {
-                    e.throwForDocumentProvider(context)
+                dav.copy(dstUrl, false) {
+                    // successfully copied
                 }
             }
 

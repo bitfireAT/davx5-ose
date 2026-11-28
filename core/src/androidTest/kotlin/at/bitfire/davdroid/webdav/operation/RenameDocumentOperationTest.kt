@@ -4,222 +4,187 @@
 
 package at.bitfire.davdroid.webdav.operation
 
-import at.bitfire.davdroid.db.AppDatabase
-import at.bitfire.davdroid.db.WebDavDocument
-import at.bitfire.davdroid.db.WebDavMount
-import at.bitfire.davdroid.db.WebDavMountDao
-import at.bitfire.davdroid.webdav.DavHttpClientBuilder
+import at.bitfire.dav4jvm.ktor.exception.NotFoundException
 import dagger.hilt.android.testing.BindValue
-import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import io.ktor.client.HttpClient
-import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.MockRequestHandleScope
 import io.ktor.client.engine.mock.respond
 import io.ktor.client.request.HttpRequestData
-import io.ktor.client.request.HttpResponseData
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
-import io.ktor.http.Url
 import io.ktor.http.content.OutgoingContent
 import io.ktor.http.content.TextContent
 import io.ktor.http.headersOf
 import io.ktor.http.withCharset
 import io.ktor.utils.io.charsets.Charsets
-import io.mockk.coEvery
-import io.mockk.junit4.MockKRule
-import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
-import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertThrows
 import org.junit.Assert.assertTrue
-import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
-import java.io.FileNotFoundException
 import javax.inject.Inject
 
 @HiltAndroidTest
-class RenameDocumentOperationTest {
-
-    @get:Rule
-    val hiltRule = HiltAndroidRule(this)
-
-    @get:Rule
-    val mockkRule = MockKRule(this)
-
-    @Inject
-    lateinit var db: AppDatabase
+class RenameDocumentOperationTest : WebDavOperationTest() {
 
     @Inject
     lateinit var operation: RenameDocumentOperation
 
     @BindValue
     @JvmField
-    val httpClientBuilder: DavHttpClientBuilder = mockk()
-
-    private val requests = mutableListOf<RecordedRequest>()
-    private var responder: suspend MockRequestHandleScope.(HttpRequestData) -> HttpResponseData = {
-        respond("", HttpStatusCode.NotFound)
-    }
-    private val mockEngine = MockEngine { request ->
-        requests += RecordedRequest(request.method.value, request.headers["Destination"], request.body.text())
-        responder(request)
-    }
-
-    private lateinit var mountDao: WebDavMountDao
-    private lateinit var mount: WebDavMount
-    private lateinit var root: WebDavDocument
-
-    @Before
-    fun setUp() {
-        hiltRule.inject()
-        coEvery { httpClientBuilder.build(any(), any()) } answers { HttpClient(mockEngine) }
-
-        mountDao = db.webDavMountDao()
-        runBlocking {
-            val mountId = mountDao.insert(WebDavMount(0, "Test Mount", Url("https://mock.example.com/webdav/")))
-            mount = mountDao.getById(mountId)
-            root = db.webDavDocumentDao().getOrCreateRoot(mount)
-        }
-    }
-
-    @After
-    fun tearDown() {
-        runBlocking { mountDao.delete(mount) }
-    }
+    val httpClientBuilder = mockHttpClientBuilder()
 
 
     @Test
     fun testRename_withDifferingDisplayName_proppatchesDisplayName() = runTest {
-        val docId = insertDocument(name = "g5d5q4edj00n", displayName = "Upload", isDirectory = true)
-        responder = { request -> respondProppatch(request) }
+        val doc = insertDocument(root, "g5d5q4edj00n", true, "Upload")
+        handler = { request -> respondProppatch(request) }
 
-        val result = operation(docId.toString(), "Photos")
+        val result = operation(doc.id.toString(), "Photos")
 
         assertNull(result)
-        assertEquals(listOf("PROPPATCH"), requests.map { it.method })
-        assertTrue(requests[0].body.contains("displayname"))
-        assertTrue(requests[0].body.contains("Photos"))
-        val doc = db.webDavDocumentDao().get(docId)!!
-        assertEquals("g5d5q4edj00n", doc.name)
-        assertEquals("Photos", doc.displayName)
+        val request = mockEngine.requestHistory.single()
+        assertEquals("PROPPATCH", request.method.value)
+        assertTrue(request.body.text().contains("displayname"))
+        assertTrue(request.body.text().contains("Photos"))
+        val updated = documentDao.get(doc.id)!!
+        assertEquals("g5d5q4edj00n", updated.name)
+        assertEquals("Photos", updated.displayName)
     }
 
     @Test
     fun testRename_withDifferingDisplayName_stripsControlChars() = runTest {
-        val docId = insertDocument(name = "g5d5q4edj00n", displayName = "Upload", isDirectory = true)
-        responder = { request -> respondProppatch(request) }
+        val doc = insertDocument(root, "g5d5q4edj00n", true, "Upload")
+        handler = { request -> respondProppatch(request) }
 
-        operation(docId.toString(), "Pho\u0007tos")
+        operation(doc.id.toString(), "Pho\u0007tos")
 
-        assertEquals("Photos", db.webDavDocumentDao().get(docId)!!.displayName)
+        assertEquals("Photos", documentDao.get(doc.id)!!.displayName)
     }
 
     @Test
     fun testRename_withoutDisplayName_moves() = runTest {
-        val docId = insertDocument(name = "file.txt", displayName = null)
-        responder = { respond("", HttpStatusCode.Created) }
+        val doc = insertDocument(root, "file.txt", false)
 
-        val result = operation(docId.toString(), "file2.txt")
+        val result = operation(doc.id.toString(), "file2.txt")
 
         assertNull(result)
-        assertEquals(listOf("MOVE"), requests.map { it.method })
-        assertTrue(requests[0].destination!!.endsWith("/file2.txt"))
-        val doc = db.webDavDocumentDao().get(docId)!!
-        assertEquals("file2.txt", doc.name)
-        assertNull(doc.displayName)
+        val move = mockEngine.requestHistory.single()
+        assertEquals("MOVE", move.method.value)
+        assertTrue(move.headers["Destination"]!!.endsWith("/file2.txt"))
+        val updated = documentDao.get(doc.id)!!
+        assertEquals("file2.txt", updated.name)
+        assertNull(updated.displayName)
     }
 
     @Test
     fun testRename_withDisplayNameEqualToName_moves() = runTest {
-        val docId = insertDocument(name = "file.txt", displayName = "file.txt")
-        responder = { respond("", HttpStatusCode.Created) }
+        val doc = insertDocument(root, "file.txt", false, "file.txt")
 
-        operation(docId.toString(), "file2.txt")
+        operation(doc.id.toString(), "file2.txt")
 
-        assertEquals(listOf("MOVE"), requests.map { it.method })
-        val doc = db.webDavDocumentDao().get(docId)!!
-        assertEquals("file2.txt", doc.name)
-        assertNull(doc.displayName)
+        assertEquals(listOf("MOVE"), mockEngine.requestHistory.map { it.method.value })
+        val updated = documentDao.get(doc.id)!!
+        assertEquals("file2.txt", updated.name)
+        assertNull(updated.displayName)
     }
 
     @Test
     fun testRename_proppatchHttpError_fallsBackToMove() = runTest {
-        val docId = insertDocument(name = "g5d5q4edj00n", displayName = "Upload", isDirectory = true)
-        responder = { request ->
+        val doc = insertDocument(root, "g5d5q4edj00n", true, "Upload")
+        handler = { request ->
             when (request.method.value) {
                 "PROPPATCH" -> respond("", HttpStatusCode.Forbidden)
                 else -> respond("", HttpStatusCode.Created)
             }
         }
 
-        operation(docId.toString(), "Photos")
+        operation(doc.id.toString(), "Photos")
 
-        assertEquals(listOf("PROPPATCH", "MOVE"), requests.map { it.method })
-        val doc = db.webDavDocumentDao().get(docId)!!
-        assertEquals("Photos", doc.name)
-        assertNull(doc.displayName)
+        assertEquals(listOf("PROPPATCH", "MOVE"), mockEngine.requestHistory.map { it.method.value })
+        val updated = documentDao.get(doc.id)!!
+        assertEquals("Photos", updated.name)
+        assertNull(updated.displayName)
     }
 
     @Test
     fun testRename_proppatchPropstatForbidden_fallsBackToMove() = runTest {
-        val docId = insertDocument(name = "g5d5q4edj00n", displayName = "Upload", isDirectory = true)
-        responder = { request ->
+        val doc = insertDocument(root, "g5d5q4edj00n", true, "Upload")
+        handler = { request ->
             when (request.method.value) {
                 "PROPPATCH" -> respondProppatch(request, HttpStatusCode.Forbidden)
                 else -> respond("", HttpStatusCode.Created)
             }
         }
 
-        operation(docId.toString(), "Photos")
+        operation(doc.id.toString(), "Photos")
 
-        assertEquals(listOf("PROPPATCH", "MOVE"), requests.map { it.method })
-        val doc = db.webDavDocumentDao().get(docId)!!
-        assertEquals("Photos", doc.name)
-        assertNull(doc.displayName)
+        assertEquals(listOf("PROPPATCH", "MOVE"), mockEngine.requestHistory.map { it.method.value })
+        val updated = documentDao.get(doc.id)!!
+        assertEquals("Photos", updated.name)
+        assertNull(updated.displayName)
     }
 
     @Test
     fun testRename_proppatchNoMultistatus_treatsAsSuccess() = runTest {
-        val docId = insertDocument(name = "g5d5q4edj00n", displayName = "Upload", isDirectory = true)
-        responder = { request ->
+        val doc = insertDocument(root, "g5d5q4edj00n", true, "Upload")
+        handler = { request ->
             when (request.method.value) {
                 "PROPPATCH" -> respond("", HttpStatusCode.NoContent)
                 else -> respond("", HttpStatusCode.Created)
             }
         }
 
-        operation(docId.toString(), "Photos")
+        operation(doc.id.toString(), "Photos")
 
-        assertEquals(listOf("PROPPATCH"), requests.map { it.method })
-        val doc = db.webDavDocumentDao().get(docId)!!
-        assertEquals("g5d5q4edj00n", doc.name)
-        assertEquals("Photos", doc.displayName)
+        assertEquals(listOf("PROPPATCH"), mockEngine.requestHistory.map { it.method.value })
+        val updated = documentDao.get(doc.id)!!
+        assertEquals("g5d5q4edj00n", updated.name)
+        assertEquals("Photos", updated.displayName)
     }
 
     @Test
-    fun testRename_resourceGone_throwsFileNotFound() = runTest {
-        val docId = insertDocument(name = "g5d5q4edj00n", displayName = "Upload", isDirectory = true)
-        responder = { respond("", HttpStatusCode.NotFound) }
+    fun testRename_resourceGone_throwsNotFound() = runTest {
+        val doc = insertDocument(root, "g5d5q4edj00n", true, "Upload")
+        handler = { respond("", HttpStatusCode.NotFound) }
 
-        assertThrows(FileNotFoundException::class.java) {
-            runBlocking { operation(docId.toString(), "Photos") }
+        assertThrows(NotFoundException::class.java) {
+            runBlocking { operation(doc.id.toString(), "Photos") }
         }
-        assertEquals(listOf("PROPPATCH", "MOVE"), requests.map { it.method })
+        assertEquals(listOf("PROPPATCH", "MOVE"), mockEngine.requestHistory.map { it.method.value })
+    }
+
+    @Test
+    fun testRename_nameTaken_usesNextName() = runTest {
+        handler = { request ->
+            if (request.headers["Destination"].orEmpty().endsWith("/new.txt"))
+                respond("", HttpStatusCode.PreconditionFailed)
+            else
+                respond("", HttpStatusCode.Created)
+        }
+        val doc = insertDocument(root, "old.txt", false)
+
+        operation(doc.id.toString(), "new.txt")
+
+        assertEquals("new_1.txt", documentDao.get(doc.id)!!.name)
+    }
+
+    @Test
+    fun testRename_folder_usesTrailingSlashes() = runTest {
+        val folder = insertDocument(root, "old", true)
+
+        operation(folder.id.toString(), "new")
+
+        val move = mockEngine.requestHistory.single()
+        assertEquals("https://mock.example.com/webdav/old/", move.url.toString())
+        assertEquals("https://mock.example.com/webdav/new/", move.headers["Destination"])
     }
 
 
     // helpers
-
-    private suspend fun insertDocument(name: String, displayName: String?, isDirectory: Boolean = false): Long =
-        db.webDavDocumentDao().insert(
-            WebDavDocument(mountId = mount.id, parentId = root.id, name = name, isDirectory = isDirectory, displayName = displayName)
-        )
 
     private fun MockRequestHandleScope.respondProppatch(request: HttpRequestData, status: HttpStatusCode = HttpStatusCode.OK) =
         respond(
@@ -236,7 +201,5 @@ class RenameDocumentOperationTest {
             is OutgoingContent.ByteArrayContent -> bytes().decodeToString()
             else -> ""
         }
-
-    private data class RecordedRequest(val method: String, val destination: String?, val body: String)
 
 }

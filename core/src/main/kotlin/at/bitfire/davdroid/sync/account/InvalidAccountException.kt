@@ -9,4 +9,4 @@ import at.bitfire.davdroid.accounts.AccountId
 /**
  * Thrown when an account is invalid (usually because it doesn't exist anymore).
  */
-class InvalidAccountException(accountId: AccountId): Exception("Invalid account: $accountId")
+class InvalidAccountException(accountId: AccountId): AccountOperationFailedException("Invalid account: $accountId")

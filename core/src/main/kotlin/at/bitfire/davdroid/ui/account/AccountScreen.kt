@@ -108,7 +108,7 @@ fun AccountScreen(
         }
     )
 
-    val accountName by model.accountName.collectAsState("")
+    val accountName by model.accountName.collectAsState()
     val cardDavService by model.cardDavSvc.collectAsStateWithLifecycle()
     val addressBooks = model.addressBooks.collectAsLazyPagingItems()
 
@@ -119,7 +119,7 @@ fun AccountScreen(
 
     val context = LocalContext.current
     AccountScreen(
-        accountName = accountName,
+        accountName = accountName ?: "",
         error = model.error,
         onResetError = model::resetError,
         invalidAccount = model.invalidAccount.collectAsStateWithLifecycle(false).value,
