@@ -56,16 +56,6 @@ class RenameDocumentOperationTest : WebDavOperationTest() {
     }
 
     @Test
-    fun testRename_withDifferingDisplayName_stripsControlChars() = runTest {
-        val doc = insertDocument(root, "g5d5q4edj00n", true, "Upload")
-        handler = { request -> respondProppatch(request) }
-
-        operation(doc.id.toString(), "Pho\u0007tos")
-
-        assertEquals("Photos", documentDao.get(doc.id)!!.displayName)
-    }
-
-    @Test
     fun testRename_withoutDisplayName_moves() = runTest {
         val doc = insertDocument(root, "file.txt", false)
 

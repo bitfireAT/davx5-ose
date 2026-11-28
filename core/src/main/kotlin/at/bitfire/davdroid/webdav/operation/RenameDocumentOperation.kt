@@ -34,7 +34,6 @@ class RenameDocumentOperation @Inject constructor(
     suspend operator fun invoke(documentId: String, displayName: String): String? {
         logger.fine("WebDAV renameDocument $documentId $displayName")
         val doc = documentDao.get(documentId.toLong()) ?: throw FileNotFoundException()
-        val newDisplayName = displayName.filterNot { it.isISOControl() }
 
         davClientBuilder
             .build(doc.mountId)
@@ -42,8 +41,8 @@ class RenameDocumentOperation @Inject constructor(
                 val hasOwnDisplayName = doc.displayName != null && doc.displayName != doc.name
                 when {
                     // DAV:displayname is metadata, so changing it doesn't require a MOVE (RFC 4918 15.2)
-                    hasOwnDisplayName && setDisplayName(httpClient, doc, newDisplayName) ->
-                        documentDao.update(doc.copy(displayName = newDisplayName))
+                    hasOwnDisplayName && setDisplayName(httpClient, doc, displayName) ->
+                        documentDao.update(doc.copy(displayName = displayName))
                     else ->
                         move(httpClient, doc, displayName)
                 }
