@@ -105,8 +105,12 @@ data class WebDavDocument(
         }
         if (parent?.mayUnbind != false)
             flags += Document.FLAG_SUPPORTS_DELETE or
-                    Document.FLAG_SUPPORTS_MOVE or
-                    Document.FLAG_SUPPORTS_RENAME
+                    Document.FLAG_SUPPORTS_MOVE
+        /* Not exact: MOVE needs unbind on parent, PROPPATCH needs write-properties.
+        mayWriteProperties would be right, but isn't persisted yet, so use mayWriteContent
+        (comes from DAV:write-content or DAV:write, which implies write-properties). */
+        if (parent?.mayUnbind != false || mayWriteContent != false)
+            flags += Document.FLAG_SUPPORTS_RENAME
         bundle.putInt(Document.COLUMN_FLAGS, flags)
 
         return bundle

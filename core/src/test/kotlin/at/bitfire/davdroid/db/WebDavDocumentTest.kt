@@ -41,4 +41,25 @@ class WebDavDocumentTest {
         assertNull(bundle.getString(Document.COLUMN_SUMMARY))
     }
 
+    @Test
+    fun `toBundle() with write-content but without unbind on parent supports rename, but not delete`() {
+        val parent = WebDavDocument(id = 1, mountId = 1, parentId = null, name = "", isDirectory = true, mayUnbind = false)
+        val doc = WebDavDocument(mountId = 1, parentId = 1, name = "file.txt", mayWriteContent = true)
+
+        val flags = doc.toBundle(parent).getInt(Document.COLUMN_FLAGS)
+
+        assertEquals(Document.FLAG_SUPPORTS_RENAME, flags and Document.FLAG_SUPPORTS_RENAME)
+        assertEquals(0, flags and Document.FLAG_SUPPORTS_DELETE)
+    }
+
+    @Test
+    fun `toBundle() without write-content and without unbind on parent doesn't support rename`() {
+        val parent = WebDavDocument(id = 1, mountId = 1, parentId = null, name = "", isDirectory = true, mayUnbind = false)
+        val doc = WebDavDocument(mountId = 1, parentId = 1, name = "file.txt", mayWriteContent = false)
+
+        val flags = doc.toBundle(parent).getInt(Document.COLUMN_FLAGS)
+
+        assertEquals(0, flags and Document.FLAG_SUPPORTS_RENAME)
+    }
+
 }
