@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -77,6 +78,7 @@ fun WebdavMountsScreen(
     model: WebdavMountsViewModel = viewModel()
 ) {
     val mountInfos by model.mountInfos.collectAsStateWithLifecycle(emptyList())
+    val context = LocalContext.current
 
     AppTheme {
         WebdavMountsScreen(
@@ -85,6 +87,11 @@ fun WebdavMountsScreen(
             onRefreshQuota = {
                 model.refreshQuota()
             },
+            onBrowseMount = if (model.canBrowseFiles) {
+                { mount ->
+                    model.browseFiles(mount)?.let(context::startActivity)
+                }
+            } else null,
             onAddMount = onAddWebdavMount,
             onRemoveMount = { mount ->
                 model.remove(mount)
@@ -99,6 +106,7 @@ fun WebdavMountsScreen(
     mountInfos: List<WebDavMountWithQuota>,
     refreshingQuota: Boolean = false,
     onRefreshQuota: () -> Unit = {},
+    onBrowseMount: ((WebDavMount) -> Unit)? = null,
     onAddMount: () -> Unit = {},
     onRemoveMount: (WebDavMount) -> Unit = {},
     onNavUp: () -> Unit = {}
@@ -183,6 +191,7 @@ fun WebdavMountsScreen(
                         items(mountInfos, key = { it.mount.id }, contentType = { "mount" }) {
                             WebdavMountsItem(
                                 info = it,
+                                onBrowseMount = onBrowseMount,
                                 onRemoveMount = onRemoveMount
                             )
                         }
@@ -227,6 +236,7 @@ fun HintText() {
 @Composable
 fun WebdavMountsItem(
     info: WebDavMountWithQuota,
+    onBrowseMount: ((WebDavMount) -> Unit)? = null,
     onRemoveMount: (WebDavMount) -> Unit = {},
 ) {
     var showingDialog by remember { mutableStateOf(false) }
@@ -318,7 +328,18 @@ fun WebdavMountsItem(
                     }
                 }
 
-                Button(
+                if (onBrowseMount != null) {
+                    Button(
+                        onClick = { onBrowseMount(info.mount) }
+                    ) {
+                        Text(
+                            text = stringResource(R.string.webdav_mounts_browse_files)
+                        )
+                    }
+                    Spacer(Modifier.width(8.dp))
+                }
+
+                OutlinedButton(
                     onClick = {
                         val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
                             addCategory(Intent.CATEGORY_OPENABLE)
@@ -407,7 +428,8 @@ fun WebdavMountsItem_Preview() {
                 ),
                 quotaAvailable = 1024 * 1024 * 1024,
                 quotaUsed = 512 * 1024 * 1024
-            )
+            ),
+            onBrowseMount = {}
         )
     }
 }

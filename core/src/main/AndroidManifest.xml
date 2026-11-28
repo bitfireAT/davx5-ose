@@ -319,6 +319,12 @@
             <data android:scheme="https" />
         </intent>
 
+        <!-- Browse WebDAV mounts in the system file manager (DocumentsUI "Files" activity) -->
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:mimeType="vnd.android.document/root" />
+        </intent>
+
         <!-- Custom Tabs support (e.g. Nextcloud Login Flow) -->
         <intent>
             <action android:name="android.support.customtabs.action.CustomTabsService" />
