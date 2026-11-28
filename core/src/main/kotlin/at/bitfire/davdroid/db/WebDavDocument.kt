@@ -104,7 +104,8 @@ data class WebDavDocument(
             if (mayWriteContent != false)
                 flags += Document.FLAG_SUPPORTS_WRITE
         }
-        if (parent?.mayUnbind != false)
+        // root documents can't be deleted, moved or renamed (they represent the mount itself)
+        if (parentId != null && parent?.mayUnbind != false)
             flags += Document.FLAG_SUPPORTS_DELETE or
                     Document.FLAG_SUPPORTS_MOVE or
                     Document.FLAG_SUPPORTS_RENAME
