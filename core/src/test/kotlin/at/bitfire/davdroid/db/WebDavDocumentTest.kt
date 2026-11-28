@@ -17,7 +17,7 @@ class WebDavDocumentTest {
         id = 1,
         mountId = 1,
         parentId = null,
-        name = "root",
+        name = "",
         isDirectory = true
     )
 
@@ -35,8 +35,8 @@ class WebDavDocumentTest {
         val parent = rootDirectory()
         val doc = WebDavDocument(
             id = 2,
-            mountId = 1,
-            parentId = 1,
+            mountId = parent.mountId,
+            parentId = parent.id,
             name = "file.txt",
             isDirectory = false
         )
