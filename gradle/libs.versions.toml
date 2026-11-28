@@ -29,7 +29,7 @@ coil = "3.6.3"
 conscrypt = "2.9.0"
 dnsjava = "3.7.1"
 ezvcard = "0.12.2"
-ical4j = "4.4.0"
+ical4j = "4.5.0"
 glance = "1.1.1"
 guava = "33.8.0-android"
 hilt = "2.60.1"
@@ -113,8 +113,8 @@ conscrypt-openjdk-uber = { module = "org.conscrypt:conscrypt-openjdk-uber", vers
 dnsjava = { module = "dnsjava:dnsjava", version.ref = "dnsjava" }
 ezvcard = { module = "com.googlecode.ez-vcard:ez-vcard", version.ref = "ezvcard" }
 guava = { module = "com.google.guava:guava", version.ref = "guava" }
-#ical4j = { module = "org.mnode.ical4j:ical4j", version.ref = "ical4j" }
-ical4j-fork = { module = "com.github.bitfireAT:ical4j", version = "4.4.0-patch.pst" }
+ical4j = { module = "org.mnode.ical4j:ical4j", version.ref = "ical4j" }
+#ical4j-fork = { module = "com.github.bitfireAT:ical4j", version = "4.4.0-patch.pst" }
 hilt-android-base = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
 hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hilt" }
 hilt-android-testing = { module = "com.google.dagger:hilt-android-testing", version.ref = "hilt" }
