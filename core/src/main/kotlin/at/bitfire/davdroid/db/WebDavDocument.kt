@@ -78,10 +78,9 @@ data class WebDavDocument(
 
         val bundle = Bundle().apply {
             putString(Document.COLUMN_DOCUMENT_ID, id.toString())
-            putString(Document.COLUMN_DISPLAY_NAME, name)
+            putString(Document.COLUMN_DISPLAY_NAME, displayName ?: name)
         }
 
-        displayName?.let { bundle.putString(Document.COLUMN_SUMMARY, it) }
         size?.let { bundle.putLong(Document.COLUMN_SIZE, it) }
         lastModified?.let { bundle.putLong(Document.COLUMN_LAST_MODIFIED, it) }
 
@@ -106,8 +105,12 @@ data class WebDavDocument(
         }
         if (parent?.mayUnbind != false)
             flags += Document.FLAG_SUPPORTS_DELETE or
-                    Document.FLAG_SUPPORTS_MOVE or
-                    Document.FLAG_SUPPORTS_RENAME
+                    Document.FLAG_SUPPORTS_MOVE
+        /* Not exact: MOVE needs unbind on parent, PROPPATCH needs write-properties.
+        mayWriteProperties would be right, but isn't persisted yet, so use mayWriteContent
+        (comes from DAV:write-content or DAV:write, which implies write-properties). */
+        if (parent?.mayUnbind != false || mayWriteContent != false)
+            flags += Document.FLAG_SUPPORTS_RENAME
         bundle.putInt(Document.COLUMN_FLAGS, flags)
 
         return bundle
