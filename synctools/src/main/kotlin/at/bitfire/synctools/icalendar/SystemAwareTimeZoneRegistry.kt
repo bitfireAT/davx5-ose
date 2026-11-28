@@ -8,12 +8,14 @@ import net.fortuna.ical4j.model.DefaultTimeZoneRegistryFactory
 import net.fortuna.ical4j.model.TimeZone
 import net.fortuna.ical4j.model.TimeZoneRegistry
 import net.fortuna.ical4j.model.TimeZoneRegistryFactory
+import net.fortuna.ical4j.model.ZoneRulesProviderImpl
 import net.fortuna.ical4j.model.component.Observance
 import java.time.DateTimeException
 import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.zone.ZoneRules
 import java.util.logging.Logger
+import kotlin.jvm.optionals.getOrNull
 
 /**
  * A [TimeZoneRegistry] that uses system timezone IDs for all TZIDs recognised by [ZoneId.of],
@@ -60,6 +62,7 @@ class SystemAwareTimeZoneRegistry(
             return
         }
 
+        triggerGcBeforeZoneIdAllocation()
         timeZoneRegistry.register(timeZone, update)
     }
 
@@ -96,6 +99,20 @@ class SystemAwareTimeZoneRegistry(
         val standardObservances = vTimeZone.getComponents<Observance>(Observance.STANDARD)
         val daylightObservances = vTimeZone.getComponents<Observance>(Observance.DAYLIGHT)
         return standardObservances.isEmpty() && daylightObservances.isEmpty()
+    }
+
+    /**
+     * Workaround for https://github.com/bitfireAT/davx5/issues/914 that reduces
+     * the chance of pool exhaustion during time zone registration.
+     */
+    private fun triggerGcBeforeZoneIdAllocation() {
+        // IDE inspector fails because `java.time.zone.ZoneRulesProvider` is not available, but it's fixed with desugaring. Compile works well
+        val provider = ZoneRulesProviderImpl.getInstance().getOrNull() ?: return
+        if (provider.zoneIdPool.availableZoneIds() == 0) {
+            // Trigger garbage collection in the hope that old TimeZoneRegistry instances will be freed and in turn
+            // ZoneIdPool.cleanup() will be able to reclaim zone IDs that are no longer used.
+            Runtime.getRuntime().gc()
+        }
     }
 
     private companion object {
