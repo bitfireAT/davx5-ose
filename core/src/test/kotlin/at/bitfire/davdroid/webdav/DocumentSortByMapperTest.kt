@@ -17,32 +17,32 @@ class DocumentSortByMapperTest {
     fun test_MapContentProviderToSql() {
         // Valid column without direction
         assertEquals(
-            "displayName ASC",
+            "COALESCE(displayName, name) ASC",
             mapper.mapContentProviderToSql(Document.COLUMN_DISPLAY_NAME)
         )
         // Valid column with direction
         assertEquals(
-            "displayName DESC",
+            "COALESCE(displayName, name) DESC",
             mapper.mapContentProviderToSql("${Document.COLUMN_DISPLAY_NAME} DESC")
         )
         // Valid column with direction and multiple spaces
         assertEquals(
-            "displayName ASC",
+            "COALESCE(displayName, name) ASC",
             mapper.mapContentProviderToSql("${Document.COLUMN_DISPLAY_NAME}   ASC")
         )
         // Invalid column without direction
         assertEquals(
-            "displayName ASC",
+            "COALESCE(displayName, name) ASC",
             mapper.mapContentProviderToSql("invalid")
         )
         // Invalid column with direction
         assertEquals(
-            "displayName ASC",
+            "COALESCE(displayName, name) ASC",
             mapper.mapContentProviderToSql("invalid ASC")
         )
         // Valid and invalid columns with and without directions
         assertEquals(
-            "displayName ASC, mimeType DESC",
+            "COALESCE(displayName, name) ASC, mimeType DESC",
             mapper.mapContentProviderToSql(
                 "${Document.COLUMN_DISPLAY_NAME}, invalid DESC, ${Document.COLUMN_MIME_TYPE} DESC"
             )

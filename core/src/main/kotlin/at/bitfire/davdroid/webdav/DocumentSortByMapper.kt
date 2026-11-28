@@ -6,6 +6,7 @@ package at.bitfire.davdroid.webdav
 
 import android.provider.DocumentsContract.Document
 import at.bitfire.davdroid.db.WebDavDocument
+import at.bitfire.davdroid.db.WebDavDocumentDao
 import java.util.logging.Logger
 import javax.inject.Inject
 
@@ -18,7 +19,7 @@ class DocumentSortByMapper @Inject constructor(
      */
     private val columnsMap = mapOf(
         Document.COLUMN_DOCUMENT_ID to "id",
-        Document.COLUMN_DISPLAY_NAME to "displayName",
+        Document.COLUMN_DISPLAY_NAME to WebDavDocumentDao.DISPLAY_NAME_SQL,
         Document.COLUMN_MIME_TYPE to "mimeType",
         Document.COLUMN_SIZE to "size",
         Document.COLUMN_LAST_MODIFIED to "lastModified"

@@ -20,6 +20,7 @@ import io.ktor.utils.io.charsets.Charsets
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
 import org.junit.Before
 import org.junit.Test
 import javax.inject.Inject
@@ -125,6 +126,26 @@ class QueryChildDocumentsOperationTest : WebDavOperationTest() {
         assertEquals("https://mock.example.com/webdav/parent1/", propfind.url.toString())
     }
 
+    @Test
+    fun testDoQueryChildren_blankDisplayName_storedAsNull() = runTest {
+        val parent = insertDocument(root, "parent3", true)
+
+        operation.queryChildren(parent)
+
+        val child = documentDao.getChildren(parent.id).single()
+        assertEquals("blank.txt", child.name)
+        assertNull(child.displayName)
+    }
+
+    @Test
+    fun testDoQueryChildren_displayNameWithSurroundingWhitespace_trimmed() = runTest {
+        val parent = insertDocument(root, "parent4", true)
+
+        operation.queryChildren(parent)
+
+        assertEquals("Spaced", documentDao.getChildren(parent.id).single().displayName)
+    }
+
 
     // mock server
 
@@ -159,6 +180,12 @@ class QueryChildDocumentsOperationTest : WebDavOperationTest() {
             ),
             "/webdav/parent2/" to listOf(
                 Resource("childTwo.txt", "<displayname>childTwo.txt</displayname>")
+            ),
+            "/webdav/parent3/" to listOf(
+                Resource("blank.txt", "<displayname> </displayname>")
+            ),
+            "/webdav/parent4/" to listOf(
+                Resource("spaced.txt", "<displayname> Spaced </displayname>")
             )
         )
 

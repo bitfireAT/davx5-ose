@@ -36,8 +36,7 @@ class QueryDocumentOperation @Inject constructor(
             Document.COLUMN_FLAGS,
             Document.COLUMN_SIZE,
             Document.COLUMN_LAST_MODIFIED,
-            Document.COLUMN_ICON,
-            Document.COLUMN_SUMMARY
+            Document.COLUMN_ICON
         )).apply {
             val bundle = doc.toBundle(parent)
             logger.fine("queryDocument($documentId) = $bundle")

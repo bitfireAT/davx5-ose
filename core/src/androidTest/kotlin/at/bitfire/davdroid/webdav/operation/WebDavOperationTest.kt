@@ -62,9 +62,9 @@ abstract class WebDavOperationTest {
         coEvery { build(any(), any()) } answers { HttpClient(mockEngine) }
     }
 
-    suspend fun insertDocument(parent: WebDavDocument, name: String, isDirectory: Boolean): WebDavDocument {
+    suspend fun insertDocument(parent: WebDavDocument, name: String, isDirectory: Boolean, displayName: String? = null): WebDavDocument {
         val id = documentDao.insert(
-            WebDavDocument(mountId = parent.mountId, parentId = parent.id, name = name, isDirectory = isDirectory)
+            WebDavDocument(mountId = parent.mountId, parentId = parent.id, name = name, isDirectory = isDirectory, displayName = displayName)
         )
         return documentDao.get(id)!!
     }
