@@ -41,7 +41,8 @@ class WebdavMountsViewModel @Inject constructor(
         private set
 
     init {
-        canBrowseFiles = browseFilesIntentResolves()
+        // root ID doesn't matter for intent-filter matching, but the intent shape must match browseFiles()
+        canBrowseFiles = browseFilesIntent("").hasHandler()
 
         // refresh quota as soon as mounts are available
         viewModelScope.launch {
@@ -55,19 +56,19 @@ class WebdavMountsViewModel @Inject constructor(
      * Returns an intent to browse [mount] in the system file manager, or null if none is available.
      */
     fun browseFiles(mount: WebDavMount): Intent? {
-        val intent = Intent(Intent.ACTION_VIEW).apply {
-            setDataAndType(
-                DocumentsContract.buildRootUri(authority, mount.id.toString()),
-                DocumentsContract.Root.MIME_TYPE_ITEM
-            )
-        }
-        return if (intent.resolveActivity(context.packageManager) == null) null else intent
+        val intent = browseFilesIntent(mount.id.toString())
+        return if (intent.hasHandler()) intent else null
     }
 
-    private fun browseFilesIntentResolves(): Boolean =
-        Intent(Intent.ACTION_VIEW)
-            .setType(DocumentsContract.Root.MIME_TYPE_ITEM)
-            .resolveActivity(context.packageManager) != null
+    private fun browseFilesIntent(rootId: String) = Intent(Intent.ACTION_VIEW).apply {
+        setDataAndType(
+            DocumentsContract.buildRootUri(authority, rootId),
+            DocumentsContract.Root.MIME_TYPE_ITEM
+        )
+    }
+
+    /** Returns whether there's an app that can handle this intent. */
+    private fun Intent.hasHandler() = resolveActivity(context.packageManager) != null
 
     /**
      * Refreshes quota of all mounts (causes progress bar to be shown during refresh).
