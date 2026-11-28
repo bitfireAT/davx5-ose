@@ -28,7 +28,6 @@ import net.fortuna.ical4j.model.property.ProdId
 import net.fortuna.ical4j.transform.compliance.DatePropertyRule
 import net.fortuna.ical4j.util.CompatibilityHints
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Assume.assumeTrue
@@ -37,7 +36,6 @@ import java.io.StringReader
 import java.io.StringWriter
 import java.time.Duration
 import java.time.LocalDateTime
-import java.time.Period
 import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
@@ -135,20 +133,6 @@ class Ical4jTest {
     fun `TemporalAmountAdapter durationToString drops minutes`() {
         // https://github.com/ical4j/ical4j/issues/420
         assertEquals("P1DT1H4M", TemporalAmountAdapter.parse("P1DT1H4M").toString())
-    }
-
-    @Test(expected = AssertionError::class)
-    fun `TemporalAmountAdapter months`() {
-        // https://github.com/ical4j/ical4j/issues/419
-        // A month usually doesn't have 4 weeks = 4*7 days = 28 days (except February in non-leap years).
-        assertNotEquals("P4W", TemporalAmountAdapter(Period.ofMonths(1)).toString())
-    }
-
-    @Test(expected = AssertionError::class)
-    fun `TemporalAmountAdapter year`() {
-        // https://github.com/ical4j/ical4j/issues/419
-        // A year has 365 or 366 days, but never 52 weeks = 52*7 days = 364 days.
-        assertNotEquals("P52W", TemporalAmountAdapter(Period.ofYears(1)).toString())
     }
 
     @Test
