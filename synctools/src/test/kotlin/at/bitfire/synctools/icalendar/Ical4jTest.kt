@@ -136,6 +136,20 @@ class Ical4jTest {
     }
 
     @Test
+    fun `TemporalAmountAdapter months`() {
+        // https://github.com/ical4j/ical4j/issues/419
+        // A month usually doesn't have 4 weeks = 4*7 days = 28 days (except February in non-leap years).
+        assertNotEquals("P4W", TemporalAmountAdapter(Period.ofMonths(1)).toString())
+    }
+
+    @Test
+    fun `TemporalAmountAdapter year`() {
+        // https://github.com/ical4j/ical4j/issues/419
+        // A year has 365 or 366 days, but never 52 weeks = 52*7 days = 364 days.
+        assertNotEquals("P52W", TemporalAmountAdapter(Period.ofYears(1)).toString())
+    }
+
+    @Test
     fun `TemporalComparator compares Instant and ZonedDateTime`() {
         // https://github.com/ical4j/ical4j/issues/880
         val zdt = ZonedDateTime.of(2026, 5, 28, 18, 4, 22, 0, ZoneOffset.UTC)
