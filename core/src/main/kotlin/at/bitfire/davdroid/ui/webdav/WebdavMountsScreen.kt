@@ -14,6 +14,9 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlexBox
+import androidx.compose.foundation.layout.FlexDirection
+import androidx.compose.foundation.layout.FlexWrap
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -77,6 +80,7 @@ fun WebdavMountsScreen(
     model: WebdavMountsViewModel = viewModel()
 ) {
     val mountInfos by model.mountInfos.collectAsStateWithLifecycle(emptyList())
+    val context = LocalContext.current
 
     AppTheme {
         WebdavMountsScreen(
@@ -85,6 +89,11 @@ fun WebdavMountsScreen(
             onRefreshQuota = {
                 model.refreshQuota()
             },
+            onBrowseMount = if (model.canBrowseFiles) {
+                { mount ->
+                    model.browseFiles(mount)?.let(context::startActivity)
+                }
+            } else null,
             onAddMount = onAddWebdavMount,
             onRemoveMount = { mount ->
                 model.remove(mount)
@@ -99,6 +108,7 @@ fun WebdavMountsScreen(
     mountInfos: List<WebDavMountWithQuota>,
     refreshingQuota: Boolean = false,
     onRefreshQuota: () -> Unit = {},
+    onBrowseMount: ((WebDavMount) -> Unit)? = null,
     onAddMount: () -> Unit = {},
     onRemoveMount: (WebDavMount) -> Unit = {},
     onNavUp: () -> Unit = {}
@@ -183,6 +193,7 @@ fun WebdavMountsScreen(
                         items(mountInfos, key = { it.mount.id }, contentType = { "mount" }) {
                             WebdavMountsItem(
                                 info = it,
+                                onBrowseMount = onBrowseMount,
                                 onRemoveMount = onRemoveMount
                             )
                         }
@@ -227,6 +238,7 @@ fun HintText() {
 @Composable
 fun WebdavMountsItem(
     info: WebDavMountWithQuota,
+    onBrowseMount: ((WebDavMount) -> Unit)? = null,
     onRemoveMount: (WebDavMount) -> Unit = {},
 ) {
     var showingDialog by remember { mutableStateOf(false) }
@@ -318,28 +330,48 @@ fun WebdavMountsItem(
                     }
                 }
 
-                Button(
-                    onClick = {
-                        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
-                            addCategory(Intent.CATEGORY_OPENABLE)
-                            type = "*/*"
-                        }
-                        @SuppressLint("LocalContextGetResourceValueCall")
-                        val uri = DocumentsContract.buildRootUri(
-                            context.getString(R.string.webdav_authority),
-                            info.mount.id.toString()
-                        )
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                            intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, uri)
-                        }
-                        browser.launch(intent)
+                // FlexBox lets the buttons wrap to the next line on narrow screens / large font scales
+                FlexBox(
+                    modifier = Modifier.weight(1f),
+                    config = {
+                        direction(FlexDirection.Row)
+                        wrap(FlexWrap.Wrap)
+                        gap(8.dp)
                     }
                 ) {
-                    Text(
-                        text = stringResource(R.string.webdav_mounts_share_content)
-                    )
+                    if (onBrowseMount != null) {
+                        Button(
+                            onClick = { onBrowseMount(info.mount) }
+                        ) {
+                            Text(
+                                text = stringResource(R.string.webdav_mounts_browse_files)
+                            )
+                        }
+                    }
+
+                    OutlinedButton(
+                        onClick = {
+                            val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+                                addCategory(Intent.CATEGORY_OPENABLE)
+                                type = "*/*"
+                            }
+                            @SuppressLint("LocalContextGetResourceValueCall")
+                            val uri = DocumentsContract.buildRootUri(
+                                context.getString(R.string.webdav_authority),
+                                info.mount.id.toString()
+                            )
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, uri)
+                            }
+                            browser.launch(intent)
+                        }
+                    ) {
+                        Text(
+                            text = stringResource(R.string.webdav_mounts_share_content)
+                        )
+                    }
                 }
-                Spacer(Modifier.weight(1f))
+
                 IconButton(
                     onClick = { showingDialog = true }
                 ) {
@@ -407,7 +439,8 @@ fun WebdavMountsItem_Preview() {
                 ),
                 quotaAvailable = 1024 * 1024 * 1024,
                 quotaUsed = 512 * 1024 * 1024
-            )
+            ),
+            onBrowseMount = {}
         )
     }
 }
