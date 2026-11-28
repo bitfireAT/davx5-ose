@@ -4,7 +4,6 @@
 
 package at.bitfire.davdroid.db
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.provider.DocumentsContract.Document
 import android.webkit.MimeTypeMap
@@ -65,13 +64,16 @@ data class WebDavDocument(
 
 ) {
 
+    /** whether this document is the root document of its mount (has no parent) */
+    val isRoot
+        get() = parentId == null
+
     fun cacheKey(): CacheKey? {
         if (eTag != null || lastModified != null)
             return CacheKey(id, DocumentState(eTag, lastModified?.let { ts -> Instant.ofEpochMilli(ts) }))
         return null
     }
 
-    @SuppressLint("InlinedApi")
     fun toBundle(parent: WebDavDocument?): Bundle {
         if (parent?.isDirectory == false)
             throw IllegalArgumentException("Parent must be a directory")
@@ -84,36 +86,44 @@ data class WebDavDocument(
         size?.let { bundle.putLong(Document.COLUMN_SIZE, it) }
         lastModified?.let { bundle.putLong(Document.COLUMN_LAST_MODIFIED, it) }
 
+        bundle.putString(
+            Document.COLUMN_MIME_TYPE,
+            if (isDirectory) Document.MIME_TYPE_DIR else reportedMimeType().toString()
+        )
+        bundle.putInt(Document.COLUMN_FLAGS, supportedFlags(parent))
+
+        return bundle
+    }
+
+    /** MIME type to report for this file; guessed from the file name extension if unknown */
+    private fun reportedMimeType(): ContentType =
+        mimeType ?: MimeTypeMap.getSingleton().getMimeTypeFromExtension(
+            MimeTypeMap.getFileExtensionFromUrl(name)
+        )?.toContentTypeOrNull() ?: MEDIA_TYPE_OCTET_STREAM
+
+    /** SAF flags for this document, derived from its own and its parent's DAV privileges (RFC 3744) */
+    private fun supportedFlags(parent: WebDavDocument?): Int {
         // see RFC 3744 appendix B for required privileges for the various operations
         var flags = Document.FLAG_SUPPORTS_COPY
         if (isDirectory) {
-            bundle.putString(Document.COLUMN_MIME_TYPE, Document.MIME_TYPE_DIR)
             if (mayBind != false)
                 flags += Document.FLAG_DIR_SUPPORTS_CREATE
         } else {
-            val reportedMimeType = mimeType ?:
-                MimeTypeMap.getSingleton().getMimeTypeFromExtension(
-                    MimeTypeMap.getFileExtensionFromUrl(name)
-                )?.toContentTypeOrNull() ?:
-                MEDIA_TYPE_OCTET_STREAM
-
-            bundle.putString(Document.COLUMN_MIME_TYPE, reportedMimeType.toString())
             if (mimeType?.match(ContentType.Image.Any) == true)
                 flags += Document.FLAG_SUPPORTS_THUMBNAIL
             if (mayWriteContent != false)
                 flags += Document.FLAG_SUPPORTS_WRITE
         }
-        if (parent?.mayUnbind != false)
+        // root documents can't be deleted, moved or renamed (they represent the mount itself)
+        if (!isRoot && parent?.mayUnbind != false)
             flags += Document.FLAG_SUPPORTS_DELETE or
                     Document.FLAG_SUPPORTS_MOVE
         /* Not exact: MOVE needs unbind on parent, PROPPATCH needs write-properties.
         mayWriteProperties would be right, but isn't persisted yet, so use mayWriteContent
         (comes from DAV:write-content or DAV:write, which implies write-properties). */
-        if (parent?.mayUnbind != false || mayWriteContent != false)
+        if (!isRoot && (parent?.mayUnbind != false || mayWriteContent != false))
             flags += Document.FLAG_SUPPORTS_RENAME
-        bundle.putInt(Document.COLUMN_FLAGS, flags)
-
-        return bundle
+        return flags
     }
 
     /**

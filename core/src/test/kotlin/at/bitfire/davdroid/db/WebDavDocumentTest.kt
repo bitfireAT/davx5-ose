@@ -14,6 +14,14 @@ import org.robolectric.RobolectricTestRunner
 @RunWith(RobolectricTestRunner::class)
 class WebDavDocumentTest {
 
+    private fun rootDirectory() = WebDavDocument(
+        id = 1,
+        mountId = 1,
+        parentId = null,
+        name = "",
+        isDirectory = true
+    )
+
     @Test
     fun `toBundle() uses displayName as display name`() {
         val doc = WebDavDocument(mountId = 1, parentId = null, name = "g5d5q4edj00n", displayName = "Upload")
@@ -39,6 +47,38 @@ class WebDavDocumentTest {
         val bundle = doc.toBundle(null)
 
         assertNull(bundle.getString(Document.COLUMN_SUMMARY))
+    }
+
+    @Test
+    fun `toBundle() for root document offers copy and create, but not delete, move and rename`() {
+        val root = rootDirectory()
+
+        val flags = root.toBundle(null).getInt(Document.COLUMN_FLAGS)
+
+        assertEquals(Document.FLAG_SUPPORTS_COPY or Document.FLAG_DIR_SUPPORTS_CREATE, flags)
+    }
+
+    @Test
+    fun `toBundle() for non-root document offers delete, move and rename`() {
+        val parent = rootDirectory()
+        val doc = WebDavDocument(
+            id = 2,
+            mountId = parent.mountId,
+            parentId = parent.id,
+            name = "file.txt",
+            isDirectory = false
+        )
+
+        val flags = doc.toBundle(parent).getInt(Document.COLUMN_FLAGS)
+
+        assertEquals(
+            Document.FLAG_SUPPORTS_COPY or
+                    Document.FLAG_SUPPORTS_WRITE or
+                    Document.FLAG_SUPPORTS_DELETE or
+                    Document.FLAG_SUPPORTS_MOVE or
+                    Document.FLAG_SUPPORTS_RENAME,
+            flags
+        )
     }
 
     @Test
