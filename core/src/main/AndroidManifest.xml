@@ -35,6 +35,12 @@
     to get the current WiFi SSID, and we don't need GPS for that. -->
     <uses-feature android:name="android.hardware.location.gps" android:required="false" />
 
+    <!-- Portrait is not strictly required, and it is required by default, which blocks installation in some devices. -->
+    <uses-feature android:name="android.hardware.screen.portrait" android:required="false" />
+
+    <!-- Even though DAVx⁵ requires a connection, it may not always be through WiFi, so the requirement should not be enforced. -->
+    <uses-feature android:name="android.hardware.wifi" android:required="false" />
+
     <application
         android:allowBackup="false"
         android:networkSecurityConfig="@xml/network_security_config"
