@@ -28,6 +28,7 @@ import net.fortuna.ical4j.model.property.ProdId
 import net.fortuna.ical4j.transform.compliance.DatePropertyRule
 import net.fortuna.ical4j.util.CompatibilityHints
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Assume.assumeTrue
@@ -36,6 +37,7 @@ import java.io.StringReader
 import java.io.StringWriter
 import java.time.Duration
 import java.time.LocalDateTime
+import java.time.Period
 import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
